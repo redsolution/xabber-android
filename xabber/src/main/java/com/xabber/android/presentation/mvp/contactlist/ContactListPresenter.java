@@ -82,7 +82,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         this.view = view;
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         updateBackpressure.build();
     }
 
