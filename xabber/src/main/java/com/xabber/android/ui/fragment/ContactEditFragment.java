@@ -287,7 +287,6 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         }
         saveSubscriptionSettings();
         saveGroups();
-        updateContact();
     }
 
     private void saveSubscriptionSettings() {
