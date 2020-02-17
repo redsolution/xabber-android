@@ -258,7 +258,7 @@ public class ContextMenuHelper {
                 }
             }
 
-            menu.findItem(R.id.action_configure_notifications).setVisible(false);
+            //menu.findItem(R.id.action_configure_notifications).setVisible(false);
 
             Boolean supported = BlockingManager.getInstance().isSupported(account);
 
@@ -272,7 +272,6 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_edit_contact).setVisible(false);
             menu.findItem(R.id.action_delete_contact).setVisible(false);
             menu.findItem(R.id.action_block_contact).setVisible(false);
-            menu.findItem(R.id.action_delete_chat).setVisible(false);
 //            menu.findItem(R.id.action_request_subscription).setVisible(false);
 
             if (MUCManager.getInstance().inUse(account, user.getJid().asEntityBareJidIfPossible())) {
