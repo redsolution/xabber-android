@@ -591,6 +591,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     /** Bottom Bar Chats click handler */
     @Override
     public void onChatsClick() {
+        getChatListFragment().scrollToTop();
+
         /* Show ChatsList fragment if another fragment on top */
         if (currentActiveFragment != ActiveFragment.CHATS){
             showChatListFragment();
@@ -600,7 +602,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (!getChatListFragment().isOnTop()
                 && getChatListFragment().getListSize() != 0
                 && unreadMessagesCount == 0){
-            getChatListFragment().scrollToTop();
             return;
         }
         /* Show recent if archived displayed */

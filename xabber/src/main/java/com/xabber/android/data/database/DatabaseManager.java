@@ -24,7 +24,7 @@ public class DatabaseManager implements OnClearListener {
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
-        Realm.compactRealm(realmConfiguration);
+        Realm.compactRealm(Realm.getDefaultInstance().getConfiguration());
     }
 
     public static DatabaseManager getInstance(){
