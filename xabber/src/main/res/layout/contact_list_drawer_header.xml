@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:background="?attr/navigation_drawer_background"
+    android:focusableInTouchMode="true"
     android:elevation="4dp">
 
     <RelativeLayout
