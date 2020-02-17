@@ -53,14 +53,14 @@
             android:title="@string/share_qr_code"
             app:showAsAction="always"/>
 
-        <item android:id="@+id/action_send_contact"
-            android:title="@string/action_send_contact" />
-
         <item
             android:id="@+id/action_edit_contact"
             android:title="@string/edit_contact"
             app:showAsAction="never" />
 
+        <item
+            android:id="@+id/action_send_contact"
+            android:title="@string/action_send_contact" />
         <item
             android:id="@+id/action_remove_contact"
             android:orderInCategory="110"

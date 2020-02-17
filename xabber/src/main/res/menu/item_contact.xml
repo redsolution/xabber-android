@@ -9,33 +9,15 @@
     <item android:id="@+id/action_discard_subscription"
         android:title="@string/discard_subscription" />
 
-    <group android:id="@+id/group_conference_actions">
-        <item android:id="@+id/action_edit_conference"
-            android:title="@string/muc_edit" />
-
-        <item android:id="@+id/action_delete_conference"
-            android:title="@string/muc_delete" />
-
-        <item android:id="@+id/action_join_conference"
-            android:title="@string/muc_join" />
-
-        <item android:id="@+id/action_leave_conference"
-            android:title="@string/muc_leave" />
-    </group>
 <!--
     <item android:id="@+id/action_contact_info"
         android:title="@string/contact_viewer" />
 -->
     <group android:id="@+id/group_edit_contact">
+
         <item
             android:id="@+id/action_edit_contact"
             android:title="@string/edit_contact" />
-
-<!--
-        <item android:id="@+id/action_edit_contact_groups"
-            android:title="@string/edit_contact_groups"
-            android:visible="false"/>
--->
 
     </group>
 
@@ -45,21 +27,41 @@
     <item android:id="@+id/action_unmute_chat"
         android:title="@string/unmute_chat" />
 
-    <group android:id="@+id/group_more_actions">
-        <item android:id="@+id/action_configure_notifications"
-            android:title="@string/configure_notifications" />
+    <item android:id="@+id/action_more"
+        android:title="@string/chat_more_actions">
+        <menu>
+            <group android:id="@+id/group_more_actions">
+                <item android:id="@+id/action_configure_notifications"
+                    android:title="@string/configure_notifications" />
 
-        <item android:id="@+id/action_delete_chat"
-            android:title="@string/delete_chat" />
+                <item android:id="@+id/action_delete_chat"
+                    android:title="@string/delete_chat" />
 
-        <item android:id="@+id/action_delete_contact"
-            android:title="@string/contact_delete_full" />
+                <item android:id="@+id/action_delete_contact"
+                    android:title="@string/contact_delete_full" />
 
-        <item android:id="@+id/action_block_contact"
-            android:title="@string/contact_block" />
+                <item android:id="@+id/action_block_contact"
+                    android:title="@string/contact_block" />
 
-    </group>
+            </group>
 
+            <group android:id="@+id/group_conference_actions">
+                <item android:id="@+id/action_edit_conference"
+                    android:title="@string/muc_edit" />
+
+                <item android:id="@+id/action_delete_conference"
+                    android:title="@string/muc_delete" />
+
+                <item android:id="@+id/action_join_conference"
+                    android:title="@string/muc_join" />
+
+                <item android:id="@+id/action_leave_conference"
+                    android:title="@string/muc_leave" />
+
+            </group>
+
+        </menu>
+    </item>
 
     <!--<item android:id="@+id/action_request_subscription"-->
         <!--android:title="@string/request_subscription" />-->
