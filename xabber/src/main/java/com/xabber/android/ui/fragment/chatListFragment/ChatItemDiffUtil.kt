@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
 import androidx.recyclerview.widget.DiffUtil
+import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.roster.AbstractContact
 import com.xabber.android.ui.color.ColorManager
@@ -24,7 +25,11 @@ class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
 
         if (oldItemHolder == null || newMessageItem == null) return false
 
-        val isMessagesAreEqual = oldItemHolder.messageItem!!.isUiEqual(newMessageItem)
+        var isMessagesAreEqual = false
+        try {
+            val isMessagesAreEqual = oldItemHolder.messageItem?.isUiEqual(newMessageItem)
+        } catch (e: Exception) { LogManager.exception("ChatItemViewHolder", e)}
+
         val isStatusesAreEqual = oldItemHolder.rosterStatus == newAbstractContact.statusMode.statusLevel
         val isAvatarsAreEqual = oldItemHolder.avatarIV.drawable == newAbstractContact.avatar
         val isColorIndicatorsAreEqual = oldItemHolder.accountColorIndicator == ColorManager
