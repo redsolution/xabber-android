@@ -15,7 +15,7 @@ public class GroupRepository {
     public static NestedMap<GroupConfiguration> getGroupConfigurationsFromRealm(){
         final NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
 
-        Application.getInstance().runInBackground(() -> {
+        Application.getInstance().runOnUiThread(() -> {
             RealmResults<GroupRealm> groupRealmResults = Realm.getDefaultInstance()
                     .where(GroupRealm.class)
                     .findAll();
