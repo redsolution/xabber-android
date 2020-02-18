@@ -93,7 +93,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
             }
 
-            if (abstractChat != null && abstractChat.isGroupchat()) {
+            if (abstractChat != null && abstractChat.isGroupchat() || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
                 viewHolder.status.setImageResource(R.drawable.ic_groupchat_14_border);
                 viewHolder.status.setVisibility(View.VISIBLE);
             } else {
@@ -152,19 +152,20 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         hasGroupInvites = false;
         final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts != null) {
-            Collection<UserJid> filteredContacts = new ArrayList<>();
+            // list of blocked contacts after filtering out group invites.
+            Collection<UserJid> newBlockedContacts = new ArrayList<>();
+            // list of group invites
             Collection<UserJid> groupInvites = new ArrayList<>();
             for (UserJid user : blockedContacts) {
-                AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                if (chat != null && chat.isGroupchat()) {
-                    if (user.getJid().getResourceOrEmpty().equals(Resourcepart.EMPTY)) {
-                        filteredContacts.add(user);
-                    } else {
-                        groupInvites.add(user);
-                        hasGroupInvites = true;
-                    }
+                if (user.getJid().getResourceOrEmpty().equals(Resourcepart.EMPTY)) {
+                    // Any contact with a BareJid block address is considered as a
+                    // normal blocked contact, since our clients normally block with BareJids
+                    newBlockedContacts.add(user);
                 } else {
-                    filteredContacts.add(user);
+                    // And contacts with resources are considered group invites, since we use
+                    // the blocking mechanism to differentiate between new and old invitations
+                    groupInvites.add(user);
+                    hasGroupInvites = true;
                 }
             }
 
@@ -173,7 +174,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             if (currentBlockListState == BlockedListActivity.BLOCKED_LIST) {
-                this.blockedContacts.addAll(filteredContacts);
+                this.blockedContacts.addAll(newBlockedContacts);
             } else {
                 this.blockedContacts.addAll(groupInvites);
             }
