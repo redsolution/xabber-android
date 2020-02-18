@@ -51,6 +51,7 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
     private RealmConfiguration createRealmConfiguration(){
         return new RealmConfiguration.Builder()
                 .name(DATABASE_NAME)
+                .compactOnLaunch()
                 .schemaVersion(CURRENT_DATABASE_VERSION)
                 .deleteRealmIfMigrationNeeded() //TODO DELETE THIS
                 .build();
