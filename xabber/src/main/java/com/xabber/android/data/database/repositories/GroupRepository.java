@@ -13,16 +13,20 @@ import io.realm.RealmResults;
 public class GroupRepository {
 
     public static NestedMap<GroupConfiguration> getGroupConfigurationsFromRealm(){
-        NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
-        RealmResults<GroupRealm> groupRealmResults = Realm.getDefaultInstance()
-                .where(GroupRealm.class)
-                .findAll();
-        for (GroupRealm groupRealm : groupRealmResults){
-            GroupConfiguration groupConfiguration = new GroupConfiguration();
-            groupConfiguration.setExpanded(groupRealm.isExpanded());
-            groupConfiguration.setShowOfflineMode(groupRealm.getShowOfflineMode());
-            groupConfigurationNestedMap.put(groupRealm.getAccount(), groupRealm.getGroupName(), groupConfiguration);
-        }
+        final NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
+
+        Application.getInstance().runInBackground(() -> {
+            RealmResults<GroupRealm> groupRealmResults = Realm.getDefaultInstance()
+                    .where(GroupRealm.class)
+                    .findAll();
+            for (GroupRealm groupRealm : groupRealmResults){
+                GroupConfiguration groupConfiguration = new GroupConfiguration();
+                groupConfiguration.setExpanded(groupRealm.isExpanded());
+                groupConfiguration.setShowOfflineMode(groupRealm.getShowOfflineMode());
+                groupConfigurationNestedMap.put(groupRealm.getAccount(), groupRealm.getGroupName(), groupConfiguration);
+            }
+        });
+
         return groupConfigurationNestedMap;
     }
 
