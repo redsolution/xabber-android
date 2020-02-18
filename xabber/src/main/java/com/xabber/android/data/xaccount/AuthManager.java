@@ -121,7 +121,10 @@ public class AuthManager {
                         }
                         XabberAccountManager.getInstance().setAccountSyncState(syncState);
 
-                        return Single.just(xmppAccounts);
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+
+                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
                     }
                 });
     }

@@ -132,7 +132,8 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 @Override
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
-                    updateSettings();
+                    //updateRemoteSettings();
+                    updateLocalSettings();
                     AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
                 }
             }, new Action1<Throwable>() {
@@ -143,25 +144,49 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             });
     }
 
-    protected void updateSettings() {
-        AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                @Override
-                public void call(List<XMPPAccountSettings> s) {
-                    Log.d(XMPPAuthManager.class.toString(),
-                            "xabber account settings updated successfully");
-                    XabberAccountManager.getInstance().registerEndpoint();
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(),
-                            "xabber account settings update failed: " + throwable.toString());
-                }
-            });
+
+    /**
+     * Get Xabber account settings from the server and save them locally.
+     */
+    protected void updateLocalSettings() {
+        AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(XMPPAuthManager.class.toString(),
+                                "xabber account settings updated successfully");
+                        XabberAccountManager.getInstance().registerEndpoint();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(XMPPAuthManager.class.toString(),
+                                "xabber account settings update failed: " + throwable.toString());
+                    }
+                });
     }
+
+    //protected void updateRemoteSettings() {
+    //    AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+    //        .subscribeOn(Schedulers.io())
+    //        .observeOn(AndroidSchedulers.mainThread())
+    //        .subscribe(new Action1<List<XMPPAccountSettings>>() {
+    //            @Override
+    //            public void call(List<XMPPAccountSettings> s) {
+    //                Log.d(XMPPAuthManager.class.toString(),
+    //                        "xabber account settings updated successfully");
+    //                XabberAccountManager.getInstance().registerEndpoint();
+    //            }
+    //        }, new Action1<Throwable>() {
+    //            @Override
+    //            public void call(Throwable throwable) {
+    //                Log.d(XMPPAuthManager.class.toString(),
+    //                        "xabber account settings update failed: " + throwable.toString());
+    //            }
+    //        });
+    //}
 
     private void onRequestReceived(Request request) {
         if (requests.containsKey(request.id)) {

@@ -17,15 +17,16 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.core.app.NavUtils;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -124,7 +125,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
             XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
             if (XabberAccountManager.getInstance().getAccount() != null)
-                XabberAccountManager.getInstance().updateAccountSettings();
+                XabberAccountManager.getInstance().updateRemoteAccountSettings();
         }
     }
 

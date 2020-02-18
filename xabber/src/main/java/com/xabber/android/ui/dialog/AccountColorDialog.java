@@ -68,7 +68,7 @@ public class AccountColorDialog extends DialogFragment implements AccountColorPi
         AccountManager.getInstance().onAccountChanged(accountJid);
 
         if (XabberAccountManager.getInstance().getAccount() != null)
-            XabberAccountManager.getInstance().updateAccountSettings();
+            XabberAccountManager.getInstance().updateRemoteAccountSettings();
         dialogEntity.dismiss();
     }
 }

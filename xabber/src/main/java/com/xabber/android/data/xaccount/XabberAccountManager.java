@@ -67,6 +67,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private CompositeSubscription updateSettingsSubscriptions = new CompositeSubscription();
+    private CompositeSubscription updateLocalSettingsSubscriptions = new CompositeSubscription();
 
     public static XabberAccountManager getInstance() {
         if (instance == null)
@@ -238,7 +239,10 @@ public class XabberAccountManager implements OnLoadListener {
         getAccountFromNet(account.getToken(), false);
     }
 
-    public void updateAccountSettings() {
+    /**
+     * Send local Xabber account settings updates to the server.
+     */
+    public void updateRemoteAccountSettings() {
         List<XMPPAccountSettings> list = createSettingsList();
         if (list != null && list.size() > 0) {
             // prevents simultaneous calls
@@ -271,10 +275,44 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
+    /**
+     * Get Xabber account settings from the server and save them locally
+     */
+    public void updateLocalAccountSettings() {
+        if (!updateLocalSettingsSubscriptions.hasSubscriptions()) {
+            Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                        @Override
+                        public void call(List<XMPPAccountSettings> list) {
+                            Log.d(LOG_TAG, "Account settings loaded successfully");
+                            updateLocalSettingsSubscriptions.clear();
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+                            // invalid token
+                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                            if (message != null && message.equals("Invalid token")) {
+                                // logout from deleted account
+                                onInvalidToken();
+                            }
+                            updateLocalSettingsSubscriptions.clear();
+                        }
+                    });
+            updateLocalSettingsSubscriptions.add(getSettingsSubscription);
+        }
+    }
+
+
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount, boolean needUpdateSettings) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
         setAccount(xabberAccount);
-        if (needUpdateSettings) updateAccountSettings();
+        //if (needUpdateSettings) updateRemoteAccountSettings();
+        if (needUpdateSettings) updateLocalAccountSettings();
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
