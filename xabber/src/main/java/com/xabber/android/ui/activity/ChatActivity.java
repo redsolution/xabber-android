@@ -15,10 +15,10 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -41,7 +41,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -147,6 +149,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private UpdateBackpressure updateBackpressure;
     private String extraText = null;
     private ArrayList<String> forwardsIds;
+    private Uri attachmentUri;
+    private ArrayList<Uri> attachmentUris;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -422,9 +426,31 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     public void handleShareFileUri(Uri fileUri) {
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            List<Uri> uris = new ArrayList<>();
-            uris.add(fileUri);
-            HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
+            if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+                List<Uri> uris = new ArrayList<>();
+                uris.add(fileUri);
+                HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
+            } else {
+                showUploadNotSupportedDialog();
+            }
+        } else {
+            attachmentUri = fileUri;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_ATTACH_FILE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (getIntent().getAction() != null) {
+                switch (getIntent().getAction()) {
+                    case Intent.ACTION_SEND:
+                        handleShareFileUri(attachmentUri);
+                        break;
+                    case Intent.ACTION_SEND_MULTIPLE:
+                        handleShareFileUris(attachmentUris);
+                        break;
+                }
+            }
         }
     }
 
@@ -440,7 +466,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
+            if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+                HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
+            } else {
+                showUploadNotSupportedDialog();
+            }
+        } else {
+            attachmentUris = uris;
         }
     }
 
@@ -471,6 +503,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
         getIntent().removeExtra(EXTRA_OTR_REQUEST);
         getIntent().removeExtra(EXTRA_OTR_PROGRESS);
+    }
+
+    private void showUploadNotSupportedDialog() {
+        String serverName = account.getFullJid().getDomain().toString();
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setMessage(this.getResources().getString(R.string.error_file_upload_not_support, serverName))
+                .setTitle(getString(R.string.error_sending_file, ""))
+                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
