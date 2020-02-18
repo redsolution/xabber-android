@@ -1112,7 +1112,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     public void clearSavedStatuses() {
         savedStatuses.clear();
-        StatusRepository.clearAllSavedStatusesInrealm();
+        StatusRepository.clearAllSavedStatusesInRealm();
     }
 
     /**
