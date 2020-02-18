@@ -16,18 +16,19 @@ import io.realm.RealmResults;
 public class PhraseNotificationRepository {
 
     public static ArrayList<Phrase> getAllPhrases(){
+        final ArrayList<Phrase> phrasesList = new ArrayList<>();
 
-        RealmResults<PhraseNotificationRealm> realmObjList = Realm.getDefaultInstance()
-                .where(PhraseNotificationRealm.class)
-                .findAll();
+        Application.getInstance().runOnUiThread(() -> {
+            RealmResults<PhraseNotificationRealm> realmObjList = Realm.getDefaultInstance()
+                    .where(PhraseNotificationRealm.class)
+                    .findAll();
 
-        ArrayList<Phrase> phrasesList = new ArrayList<>();
-
-        for (PhraseNotificationRealm realmObj : realmObjList){
-            Uri uri = Uri.parse(realmObj.getSound());
-            phrasesList.add(new Phrase(realmObj.getId(), realmObj.getValue(), realmObj.getUser(),
-                    realmObj.getGroup(), realmObj.getRegexp(), uri));
-        }
+            for (PhraseNotificationRealm realmObj : realmObjList){
+                Uri uri = Uri.parse(realmObj.getSound());
+                phrasesList.add(new Phrase(realmObj.getId(), realmObj.getValue(), realmObj.getUser(),
+                        realmObj.getGroup(), realmObj.getRegexp(), uri));
+            }
+        });
 
         return phrasesList;
     }

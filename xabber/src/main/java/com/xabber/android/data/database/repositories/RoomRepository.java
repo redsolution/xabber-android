@@ -19,39 +19,47 @@ import io.realm.RealmResults;
 public class RoomRepository {
 
     public static Collection<RoomChat> getAllRoomChatsFromRealm(){
-        Collection<RoomChat> roomChats = new ArrayList<>();
-        try {
-            RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
-                    .where(RoomRealm.class)
-                    .findAll();
-            for (RoomRealm roomRealm : realmResults){
-                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                AccountJid account = AccountJid.from(roomRealm.getAccount());
-                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                String password = roomRealm.getPassword();
+        final Collection<RoomChat> roomChats = new ArrayList<>();
 
-                roomChats.add(RoomChat.create(account, room, nickName, password));
-            }
-        } catch (Exception e) { LogManager.exception("RoomRepository", e); }
+        Application.getInstance().runOnUiThread(() -> {
+            try {
+                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
+                        .where(RoomRealm.class)
+                        .findAll();
+                for (RoomRealm roomRealm : realmResults){
+                    Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
+                    AccountJid account = AccountJid.from(roomRealm.getAccount());
+                    EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
+                    String password = roomRealm.getPassword();
+
+                    roomChats.add(RoomChat.create(account, room, nickName, password));
+                }
+            } catch (Exception e) { LogManager.exception("RoomRepository", e); }
+        });
+
         return roomChats;
     }
 
     public static Collection<RoomChat> getAllNeedJoinRoomChatsFromRealm(){
-        Collection<RoomChat> roomChats = new ArrayList<>();
-        try {
-            RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
-                    .where(RoomRealm.class)
-                    .equalTo(RoomRealm.Fields.NEED_JOIN, true)
-                    .findAll();
-            for (RoomRealm roomRealm : realmResults){
-                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                AccountJid account = AccountJid.from(roomRealm.getAccount());
-                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                String password = roomRealm.getPassword();
+        final Collection<RoomChat> roomChats = new ArrayList<>();
 
-                roomChats.add(RoomChat.create(account, room, nickName, password));
-            }
-        } catch (Exception e) { LogManager.exception("RoomRepository", e); }
+        Application.getInstance().runOnUiThread(() -> {
+            try {
+                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
+                        .where(RoomRealm.class)
+                        .equalTo(RoomRealm.Fields.NEED_JOIN, true)
+                        .findAll();
+                for (RoomRealm roomRealm : realmResults){
+                    Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
+                    AccountJid account = AccountJid.from(roomRealm.getAccount());
+                    EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
+                    String password = roomRealm.getPassword();
+
+                    roomChats.add(RoomChat.create(account, room, nickName, password));
+                }
+            } catch (Exception e) { LogManager.exception("RoomRepository", e); }
+        });
+
         return roomChats;
     }
 

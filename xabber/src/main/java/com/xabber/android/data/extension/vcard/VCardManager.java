@@ -24,7 +24,6 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.repositories.VCardRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -100,8 +99,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(
-                () -> this.names.putAll(VCardRepository.getAllVCardsFromRealm()));
     }
 
     @Override
@@ -217,8 +214,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 .getManagers(OnRosterChangedListener.class)) {
             listener.onContactStructuredInfoChanged(rosterContact, name);
         }
-
-        VCardRepository.saveVCardToRealm(bareAddress, name);
 
         if (vCard.getFrom() == null) { // account it self
             AccountManager.getInstance().onAccountChanged(account);

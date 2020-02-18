@@ -381,7 +381,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     /** @return  Return true when first element on the top of list*/
     public boolean isOnTop(){
-        return linearLayoutManager.findLastCompletelyVisibleItemPosition() == 0;
+        return linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
     }
 
     /** @return Size of list */
@@ -437,6 +437,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     Update chat items in adapter
      */
     private void updateItems(List<AbstractContact> newItems){
+        boolean tempIsOnTop = isOnTop();
          if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
@@ -464,6 +465,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         items.addAll(newItems);
         adapter.addItems(newItems);
         diffResult.dispatchUpdatesTo(adapter);
+        if (tempIsOnTop) scrollToTop();
     }
 
     @Override
