@@ -243,7 +243,9 @@ public class ContextMenuHelper {
         if (!MUCManager.getInstance().hasRoom(account, user)) {
             // is not conference
 
-            menu.setGroupVisible(R.id.group_conference_actions, false);
+            if (menu.findItem(R.id.action_more).getSubMenu() != null) {
+                menu.findItem(R.id.action_more).getSubMenu().setGroupVisible(R.id.group_conference_actions, false);
+            }
 
             if (fragment == ContactListActivity.ActiveFragment.CHATS) {
 
