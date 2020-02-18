@@ -11,16 +11,20 @@ import io.realm.RealmResults;
 public class OtrRepository {
 
     public static NestedNestedMaps<String, Boolean> getFingerprintsFromRealm(){
-        NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
-        RealmResults<OtrRealm> realmResults = Realm.getDefaultInstance()
-                .where(OtrRealm.class)
-                .findAll();
-        for (OtrRealm otrRealm : realmResults){
-            fingerprints.put(otrRealm.getAccount(),
-                    otrRealm.getUser(),
-                    otrRealm.getFingerprint(),
-                    otrRealm.isVerified());
-        }
+        final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
+
+        Application.getInstance().runOnUiThread(() -> {
+            RealmResults<OtrRealm> realmResults = Realm.getDefaultInstance()
+                    .where(OtrRealm.class)
+                    .findAll();
+            for (OtrRealm otrRealm : realmResults){
+                fingerprints.put(otrRealm.getAccount(),
+                        otrRealm.getUser(),
+                        otrRealm.getFingerprint(),
+                        otrRealm.isVerified());
+            }
+        });
+
         return fingerprints;
     }
 
