@@ -158,7 +158,8 @@ public class CrowdfundingManager {
         Realm realm = Realm.getDefaultInstance();
         return realm.where(CrowdfundingMessage.class)
                 .lessThanOrEqualTo(CrowdfundingMessage.Fields.DELAY, delay)
-                .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
+                .findAll()
+                .sort(CrowdfundingMessage.Fields.TIMESTAMP);
     }
 
     public void removeDelay(int delay) {
@@ -177,7 +178,7 @@ public class CrowdfundingManager {
     public CrowdfundingMessage getLastMessageFromRealm() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
-                .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
+                .findAll().sort(CrowdfundingMessage.Fields.TIMESTAMP);
         if (messages != null && !messages.isEmpty()) return messages.last();
         else return null;
     }
@@ -186,7 +187,7 @@ public class CrowdfundingManager {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
                 .equalTo(CrowdfundingMessage.Fields.DELAY, 0)
-                .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
+                .findAll().sort(CrowdfundingMessage.Fields.TIMESTAMP);
         if (messages != null && !messages.isEmpty()) return messages.last();
         else return null;
     }
@@ -198,11 +199,11 @@ public class CrowdfundingManager {
         return count.intValue();
     }
 
-    public Observable<RealmResults<CrowdfundingMessage>> getUnreadMessageCountAsObservable() {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.where(CrowdfundingMessage.class).equalTo(CrowdfundingMessage.Fields.READ, false)
-                .equalTo(CrowdfundingMessage.Fields.DELAY, 0).findAll().asObservable();
-    }
+//    public Observable<RealmResults<CrowdfundingMessage>> getUnreadMessageCountAsObservable() {
+//        Realm realm = Realm.getDefaultInstance();
+//        return realm.where(CrowdfundingMessage.class).equalTo(CrowdfundingMessage.Fields.READ, false)
+//                .equalTo(CrowdfundingMessage.Fields.DELAY, 0).findAll().asChangesetObservable();
+//    }
 
     public void reloadMessages() {
         removeAllMessages();

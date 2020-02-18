@@ -2,6 +2,7 @@ package com.xabber.android.data.database;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
+import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.Realm;
@@ -10,7 +11,7 @@ import io.realm.RealmConfiguration;
 import rx.Emitter;
 import rx.Observable;
 
-public class DatabaseManager implements OnClearListener {
+public class DatabaseManager implements OnClearListener, OnCloseListener {
 
     private static final int CURRENT_DATABASE_VERSION = 0;
     private static final String DATABASE_NAME = "realm_db_xabber";
@@ -24,7 +25,6 @@ public class DatabaseManager implements OnClearListener {
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
-        Realm.compactRealm(Realm.getDefaultInstance().getConfiguration());
     }
 
     public static DatabaseManager getInstance(){
@@ -45,10 +45,15 @@ public class DatabaseManager implements OnClearListener {
     @Override
     public void onClear() { deleteRealmDatabase(); }
 
+    @Override
+    public void onClose() { Realm.compactRealm(Realm.getDefaultConfiguration()); }
+
     private RealmConfiguration createRealmConfiguration(){
         return new RealmConfiguration.Builder()
                 .name(DATABASE_NAME)
+                .compactOnLaunch()
                 .schemaVersion(CURRENT_DATABASE_VERSION)
+                .deleteRealmIfMigrationNeeded() //TODO DELETE THIS
                 .build();
     }
 

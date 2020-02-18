@@ -184,7 +184,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                         .getFullChatStateString(contact.account, contact.user)
             else if (forwardedCount!! > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            else if (lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0].title
+            else if (lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0]?.title
             else holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
         } else {
