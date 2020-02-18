@@ -75,11 +75,11 @@ import java.util.TimeZone;
 
 public class AccountInfoEditFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener, TextWatcher {
 
-    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
-    public static final String ARGUMENT_VCARD = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.ARGUMENT_USER";
-    public static final String SAVE_NEW_AVATAR_IMAGE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_NEW_AVATAR_IMAGE_URI";
-    public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_PHOTO_FILE_URI";
-    public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_REMOVE_AVATAR_FLAG";
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_VCARD = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_USER";
+    public static final String SAVE_NEW_AVATAR_IMAGE_URI = "com.xabber.android.ui.fragment.AccountInfoEditFragment.SAVE_NEW_AVATAR_IMAGE_URI";
+    public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.fragment.AccountInfoEditFragment.SAVE_PHOTO_FILE_URI";
+    public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.fragment.AccountInfoEditFragment.SAVE_REMOVE_AVATAR_FLAG";
     public URL test;
 
     public static final int REQUEST_NEED_VCARD = 2;
@@ -149,8 +149,6 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private EditText addressWorkPostalCode;
 
     private ImageView avatar;
-    //private TextView avatarSize;
-    //private View changeAvatarButton;
     private View saveAvatarButton;
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
@@ -163,7 +161,16 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     public interface Listener {
         void onProgressModeStarted(String message);
         void onProgressModeFinished();
-        void enableSave();
+        void toggleSave(boolean value);
+    }
+
+    public static AccountInfoEditFragment newInstance(AccountJid account, String vCard) {
+        AccountInfoEditFragment fragment = new AccountInfoEditFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_VCARD, vCard);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     public static AccountInfoEditFragment newInstance(AccountJid account) {
@@ -187,6 +194,14 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         account = args.getParcelable(ARGUMENT_ACCOUNT);
+        String xmlVCard = args.getString(ARGUMENT_VCARD, null);
+        if (xmlVCard != null) {
+            try {
+                vCard = ContactVcardViewerFragment.parseVCard(xmlVCard);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         if (savedInstanceState != null) {
             final String avatarImageUriString = savedInstanceState.getString(SAVE_NEW_AVATAR_IMAGE_URI);
@@ -561,7 +576,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         newAvatarImageUri = null;
         removeAvatarFlag = true;
         setUpAvatarView();
-        listener.enableSave();
+        listener.toggleSave(true);
     }
 
     @Override
@@ -838,7 +853,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
             //avatarSize.setVisibility(View.VISIBLE);
             if (listener != null) {
-                listener.enableSave();
+                listener.toggleSave(true);
             }
         } else if (removeAvatarFlag) {
             avatar.setImageDrawable(AvatarManager.getInstance().getDefaultAccountAvatar(account));
@@ -1059,7 +1074,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         }
 
         disableProgressMode();
-        listener.enableSave();
+        listener.toggleSave(true);
         Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
         isSaveSuccess = false;
     }
@@ -1124,7 +1139,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (!updateFromVCardFlag && listener != null) {
-            listener.enableSave();
+            listener.toggleSave(true);
         }
     }
 

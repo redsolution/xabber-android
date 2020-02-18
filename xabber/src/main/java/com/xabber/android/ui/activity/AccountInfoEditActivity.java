@@ -23,11 +23,17 @@ import com.xabber.android.ui.fragment.AccountInfoEditFragment;
 
 public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditFragment.Listener {
 
+    public static final String ARG_VCARD = "com.xabber.android.ui.activity.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.toolbar_save;
     public static final String ARGUMENT_SAVE_BUTTON_ENABLED = "com.xabber.android.ui.activity.AccountInfoEdit.ARGUMENT_SAVE_BUTTON_ENABLED";
 
     private Toolbar toolbar;
 
+    public static Intent createIntent(Context context, AccountJid account, String vCard) {
+        Intent intent = new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
+        intent.putExtra(ARG_VCARD, vCard);
+        return intent;
+    }
 
     public static Intent createIntent(Context context, AccountJid account) {
         return new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
@@ -44,6 +50,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         Intent intent = getIntent();
         AccountJid account = getAccount(intent);
+        String vCard = intent.getStringExtra(ARG_VCARD);
 
         if (AccountManager.getInstance().getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
@@ -55,7 +62,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         toolbar.inflateMenu(SAVE_MENU);
         toolbar.setOnMenuItemClickListener(this);
         View view = toolbar.findViewById(R.id.action_save);
-        if (view != null && view instanceof TextView)
+        if (view instanceof TextView)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(Color.WHITE);
@@ -64,12 +71,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle(R.string.edit_account_user_info);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
@@ -82,7 +84,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         } else {
             isSaveButtonEnabled = savedInstanceState.getBoolean(ARGUMENT_SAVE_BUTTON_ENABLED);
         }
-        toolbar.getMenu().findItem(R.id.action_save).setEnabled(isSaveButtonEnabled);
+        enableSave(isSaveButtonEnabled);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -135,7 +137,23 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     }
 
     @Override
-    public void enableSave() {
-        toolbar.getMenu().findItem(R.id.action_save).setEnabled(true);
+    public void toggleSave(boolean value) {
+        enableSave(value);
+    }
+
+    private void enableSave() {
+        enableSave(!toolbar.getMenu().findItem(R.id.action_save).isEnabled());
+    }
+
+    private void enableSave(boolean enable) {
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(enable);
+        View view = toolbar.findViewById(R.id.action_save);
+        if (view instanceof TextView) {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                ((TextView) view).setTextColor(getResources().getColor(enable ? R.color.grey_900 : R.color.grey_700));
+            } else {
+                ((TextView) view).setTextColor(enable ? Color.WHITE : Color.GRAY);
+            }
+        }
     }
 }

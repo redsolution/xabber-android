@@ -36,7 +36,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.AccountInfoEditorActivity;
+import com.xabber.android.ui.activity.AccountInfoEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
@@ -162,15 +162,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
 
         editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (vCard != null) {
-                    Intent intent = AccountInfoEditorActivity.createIntent(getActivity(), account,
-                            vCard.getChildElementXML().toString());
+        editButton.setOnClickListener(v -> {
+            if (vCard != null) {
+                Intent intent = AccountInfoEditActivity.createIntent(getActivity(), account,
+                        vCard.getChildElementXML().toString());
 
-                    startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
-                }
+                startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
             }
         });
 
