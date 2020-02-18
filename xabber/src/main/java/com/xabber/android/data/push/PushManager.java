@@ -205,7 +205,8 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         List<String> logs = new ArrayList<>();
         RealmResults<PushLogRecord> records = Realm.getDefaultInstance()
                 .where(PushLogRecord.class)
-                .findAllSorted(PushLogRecord.Fields.TIME, Sort.DESCENDING);
+                .findAll()
+                .sort(PushLogRecord.Fields.TIME, Sort.DESCENDING);
         for (PushLogRecord record : records) {
             String time = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss",
                     Locale.getDefault()).format(new Date(record.getTime()));

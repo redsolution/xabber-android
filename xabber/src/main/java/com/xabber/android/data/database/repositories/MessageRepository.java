@@ -22,7 +22,8 @@ public class MessageRepository {
                 .equalTo(MessageItem.Fields.USER, userJid.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.TEXT)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
     }
 
     public static void removeAllAccountMessagesFromRealm(){

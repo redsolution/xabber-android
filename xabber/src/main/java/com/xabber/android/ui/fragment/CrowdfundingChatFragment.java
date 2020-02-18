@@ -146,15 +146,15 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     }
 
     private void subscribeForUnreadCount() {
-        compositeSubscription.add(
-            CrowdfundingManager.getInstance().getUnreadMessageCountAsObservable()
-                .subscribe(new Action1<RealmResults<CrowdfundingMessage>>() {
-                    @Override
-                    public void call(RealmResults<CrowdfundingMessage> crowdfundingMessages) {
-                        realUnread = crowdfundingMessages.size();
-                        updateButton();
-                    }
-                }));
+//        compositeSubscription.add(
+//            CrowdfundingManager.getInstance().getUnreadMessageCountAsObservable()
+//                .subscribe(new Action1<RealmResults<CrowdfundingMessage>>() {
+//                    @Override
+//                    public void call(RealmResults<CrowdfundingMessage> crowdfundingMessages) {
+//                        realUnread = crowdfundingMessages.size();
+//                        updateButton();
+//                    }
+//                }));
     }
 
     private void markAsRead(CrowdfundingMessage message) {

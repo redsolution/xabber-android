@@ -603,7 +603,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.TEXT)
                 .isNotNull(MessageItem.Fields.ACTION)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
     }
 
     /**
@@ -770,7 +771,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                     .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                                     .equalTo(MessageItem.Fields.USER, user.toString())
                                     .equalTo(MessageItem.Fields.SENT, false)
-                                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    .findAll()
+                                    .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
                             for (final MessageItem messageItem : messagesToSend) {
                                 if (messageItem.isInProgress()) continue;
@@ -1016,7 +1018,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private RealmResults<MessageItem> getAllUnreadAscending() {
-        return getAllUnreadQuery().findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        return getAllUnreadQuery().findAll().sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
     }
 
     /** ^ UNREAD MESSAGES ^ */

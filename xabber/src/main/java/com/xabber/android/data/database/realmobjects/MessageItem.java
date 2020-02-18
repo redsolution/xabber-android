@@ -487,7 +487,8 @@ public class MessageItem extends RealmObject {
                 RealmResults<MessageItem> forwardedMessages = Realm.getDefaultInstance()
                         .where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
-                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                        .findAll()
+                        .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
 
                 if (forwardedMessages.size() > 0) {

@@ -188,7 +188,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                     Realm.getDefaultInstance()
                             .where(MessageItem.class)
                             .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
-                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                            .findAll()
+                            .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
             if (forwardedMessages.size() > 0) {
                 RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);

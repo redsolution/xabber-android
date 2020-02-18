@@ -116,7 +116,8 @@ public class BackpressureMessageMarker {
 
     private MessageItem getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
         MessageItem message;
-        RealmQuery<MessageItem> realmQuery = RealmQuery.createQuery(realm, MessageItem.class);
+
+        RealmQuery<MessageItem> realmQuery = realm.where(MessageItem.class);
 
         realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
         if (stanzaIds != null && stanzaIds.size()>0) {

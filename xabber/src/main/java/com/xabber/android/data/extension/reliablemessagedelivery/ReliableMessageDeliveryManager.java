@@ -69,7 +69,8 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
                                     .equalTo(MessageItem.Fields.READ, false)
                                     .equalTo(MessageItem.Fields.DISPLAYED, false)
-                                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    .findAll()
+                                    .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
                             if (messagesUndelivered.size() != 0)
                                 for (MessageItem messageItem : messagesUndelivered){
                                     if (messageItem != null

@@ -36,7 +36,6 @@ import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -347,18 +346,19 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
                 .findFirst();
 
         if (attachmentForSubscribe == null) return;
-        Observable<Attachment> observable = attachmentForSubscribe.asObservable();
-
-        attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
-            @Override
-            public void call(Attachment attachment) {
-                updateToolbar();
-                if (waitForSharing) {
-                    waitForSharing = false;
-                    onShareClick();
-                }
-            }
-        }).subscribe());
+        //TODO FIX THIS
+//        Observable<Attachment> observable = attachmentForSubscribe.asObservable();
+//
+//        attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
+//            @Override
+//            public void call(Attachment attachment) {
+//                updateToolbar();
+//                if (waitForSharing) {
+//                    waitForSharing = false;
+//                    onShareClick();
+//                }
+//            }
+//        }).subscribe());
     }
 
     private void unsubscribeAttachmentState() {

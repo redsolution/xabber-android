@@ -854,7 +854,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.ARCHIVED_ID)
                 .isNull(MessageItem.Fields.PREVIOUS_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.DESCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.DESCENDING);
 
         if (results != null && !results.isEmpty()) {
             return new ArrayList<>(results);
@@ -868,7 +869,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.ARCHIVED_ID)
                 .lessThan(MessageItem.Fields.TIMESTAMP, messageItem.getTimestamp())
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.DESCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.DESCENDING);
 
         if (results != null && !results.isEmpty()) {
             return results.first();
@@ -897,7 +899,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.ARCHIVED_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         if (results != null && !results.isEmpty()) {
             MessageItem lastMessage = results.last();
@@ -911,7 +914,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.ARCHIVED_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         if (results != null && !results.isEmpty()) {
             return results.first();
@@ -923,7 +927,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
                 .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         if (results != null && !results.isEmpty()) {
             return results.first();
@@ -934,7 +939,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         RealmResults<MessageItem> results = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         if (results != null && !results.isEmpty()) {
             MessageItem lastMessage = results.last();
@@ -947,7 +953,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
                 .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAll()
+                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         if (results != null && !results.isEmpty()) {
             MessageItem lastMessage = results.last();
