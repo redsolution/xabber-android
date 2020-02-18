@@ -155,9 +155,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(() -> {
-            onLoaded(OtrRepository.getFingerprintsFromRealm());
-        });
+        onLoaded(OtrRepository.getFingerprintsFromRealm());
     }
 
     private void onLoaded(NestedNestedMaps<String, Boolean> fingerprints) {

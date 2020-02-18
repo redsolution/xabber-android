@@ -17,17 +17,21 @@ import io.realm.RealmResults;
 public class AvatarRepository {
 
     public static Map<Jid, String> getPepHashesMapFromRealm(){
-        Map<Jid, String> pepHashes = new HashMap<>();
-        try {
-            RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
-                    .where(AvatarRealm.class)
-                    .findAll();
-            for (AvatarRealm avatarRealm : avatarRealms){
-                Jid jid = JidCreate.from(avatarRealm.getUser());
-                String pepHash = avatarRealm.getPepHash();
-                pepHashes.put(jid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
-            }
-        } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
+        final Map<Jid, String> pepHashes = new HashMap<>();
+
+        Application.getInstance().runOnUiThread(() -> {
+            try {
+                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
+                        .where(AvatarRealm.class)
+                        .findAll();
+                for (AvatarRealm avatarRealm : avatarRealms){
+                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    String pepHash = avatarRealm.getPepHash();
+                    pepHashes.put(jid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
+                }
+            } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
+        });
+
         return pepHashes;
     }
 
@@ -48,17 +52,21 @@ public class AvatarRepository {
     }
 
     public static Map<Jid, String> getHashesMapFromRealm(){
-        Map<Jid, String> pepHashes = new HashMap<>();
-        try {
-            RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
-                    .where(AvatarRealm.class)
-                    .findAll();
-            for (AvatarRealm avatarRealm : avatarRealms){
-                Jid jid = JidCreate.from(avatarRealm.getUser());
-                String hash = avatarRealm.getHash();
-                pepHashes.put(jid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
-            }
-        } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
+        final Map<Jid, String> pepHashes = new HashMap<>();
+
+        Application.getInstance().runOnUiThread(() -> {
+            try {
+                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
+                        .where(AvatarRealm.class)
+                        .findAll();
+                for (AvatarRealm avatarRealm : avatarRealms){
+                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    String hash = avatarRealm.getHash();
+                    pepHashes.put(jid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
+                }
+            } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
+        });
+
         return pepHashes;
     }
 

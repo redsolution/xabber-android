@@ -1112,7 +1112,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     public void clearSavedStatuses() {
         savedStatuses.clear();
-        StatusRepository.clearAllSavedStatusesInrealm();
+        StatusRepository.clearAllSavedStatusesInRealm();
     }
 
     /**
@@ -1225,7 +1225,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : allAccountItems) {
             if (accountItem.isClearHistoryOnExit()) {
                 LogManager.i(LOG_TAG, "Removing all history for account " + accountItem.getAccount());
-                MessageRepository.removeAccountMessages(accountItem.getAccount());
+                MessageRepository.removeAllAccountMessagesFromRealm();
             }
         }
     }

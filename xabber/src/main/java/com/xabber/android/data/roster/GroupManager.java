@@ -86,9 +86,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(() -> {
-            this.groupConfigurations.addAll(GroupRepository.getGroupConfigurationsFromRealm());
-        });
+        this.groupConfigurations.addAll(GroupRepository.getGroupConfigurationsFromRealm());
     }
 
     @Override

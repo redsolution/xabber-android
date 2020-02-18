@@ -15,15 +15,20 @@ import io.realm.RealmResults;
 public class StatusRepository {
 
     public static Collection<SavedStatus> getAllSavedStatusesFromRealm(){
-        RealmResults<StatusRealm> realObjectsList = Realm.getDefaultInstance()
-                .where(StatusRealm.class)
-                .findAll();
-        Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
-        for (StatusRealm statusRealm : realObjectsList){
+        final Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
 
-            savedStatusCollection.add(new SavedStatus(StatusMode.fromString(statusRealm.getStatusMode())
-                    , statusRealm.getStatusText()));
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            RealmResults<StatusRealm> realObjectsList = Realm.getDefaultInstance()
+                    .where(StatusRealm.class)
+                    .findAll();
+
+            for (StatusRealm statusRealm : realObjectsList){
+
+                savedStatusCollection.add(new SavedStatus(StatusMode.fromString(statusRealm.getStatusMode())
+                        , statusRealm.getStatusText()));
+            }
+        });
+
         return savedStatusCollection;
     }
 
@@ -61,7 +66,7 @@ public class StatusRepository {
         });
     }
 
-    public static void clearAllSavedStatusesInrealm(){
+    public static void clearAllSavedStatusesInRealm(){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
