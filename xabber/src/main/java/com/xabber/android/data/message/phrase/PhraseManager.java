@@ -18,7 +18,6 @@ import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.repositories.PhraseNotificationRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -57,9 +56,7 @@ public class PhraseManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(() -> {
-            this.phrases.addAll(PhraseNotificationRepository.getAllPhrases());
-        });
+        this.phrases.addAll(PhraseNotificationRepository.getAllPhrases());
     }
 
     public long getPhraseID(AccountJid account, UserJid user, String text) {
