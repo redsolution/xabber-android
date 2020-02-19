@@ -91,6 +91,7 @@
     <string name="blocked_contacts_empty">No blocked contacts.</string>
     <string name="blocked_group_invitations">Group invitations</string>
     <string name="blocked_group_invitations_summary">Blocking is used to mark group invitations as \'read\'</string>
+    <string name="blocked_group_invitations_summary_full">Blocking is used to mark group invitations as \'read\'. If you remove these entries from the block list, you might see invitation dialog again.</string>
 
     <plurals name="blocked_contacts_number">
         <item quantity="one">%d contact blocked</item>

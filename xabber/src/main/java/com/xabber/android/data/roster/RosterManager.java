@@ -29,9 +29,9 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.realmobjects.ContactGroup;
 import com.xabber.android.data.database.realmobjects.ContactRealm;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -359,6 +359,17 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return user.toString();
         }
         return contact.getName();
+    }
+
+    /**
+     * @return Roster contact's nickname if present.
+     */
+    public String getNickname(AccountJid account, UserJid user) {
+        RosterContact contact = getRosterContact(account, user);
+        if (contact == null) {
+            return "";
+        }
+        return contact.getNickname();
     }
 
     /**

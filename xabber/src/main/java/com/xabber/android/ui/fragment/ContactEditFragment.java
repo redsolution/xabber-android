@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -30,8 +29,6 @@ import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
-import org.jivesoftware.smack.roster.packet.RosterPacket;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +50,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     private boolean stateRestored = false;
     private boolean sendChecked;
     private boolean receiveChecked;
-    private RosterPacket.ItemType subType;
+    private boolean saveNickname;
     private SubscriptionState subscriptionState;
     private ArrayList<String> contactGroups = new ArrayList<>();
 
@@ -76,9 +73,10 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         avatar = view.findViewById(R.id.contact_avatar);
         tvSendPresence = view.findViewById(R.id.tvSendPresence);
         tvReceivePresence = view.findViewById(R.id.tvReceivePresence);
-        ((TextView) view.findViewById(R.id.tvNickname)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
-        ((TextView) view.findViewById(R.id.tvSubInfo)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
-        ((TextView) view.findViewById(R.id.tvCircles)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
+        int accountColor = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount());
+        ((TextView) view.findViewById(R.id.tvNickname)).setTextColor(accountColor);
+        ((TextView) view.findViewById(R.id.tvSubInfo)).setTextColor(accountColor);
+        ((TextView) view.findViewById(R.id.tvCircles)).setTextColor(accountColor);
         return view;
     }
 
@@ -114,27 +112,24 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         avatar.setImageDrawable(abstractContact.getAvatar());
         userJid.setText(getUser().getBareJid().toString());
         contactEditNickname.setHint(abstractContact.getName());
+        if (abstractContact instanceof RosterContact) {
+            contactEditNickname.setText(((RosterContact) abstractContact).getNickname());
+        }
 
         subscriptionState = RosterManager.getInstance().getSubscriptionState(getAccount(), getUser());
 
         setPresenceSettings();
 
-        chkSendPresence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                sendChecked = isChecked;
-                stateRestored = false;
-                enableSaveIfNeeded();
-            }
+        chkSendPresence.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sendChecked = isChecked;
+            stateRestored = false;
+            enableSaveIfNeeded();
         });
 
-        chkReceivePresence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                receiveChecked = isChecked;
-                stateRestored = false;
-                enableSaveIfNeeded();
-            }
+        chkReceivePresence.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            receiveChecked = isChecked;
+            stateRestored = false;
+            enableSaveIfNeeded();
         });
 
         contactGroups = new ArrayList<String>(RosterManager.getInstance().getGroups(getAccount(), getUser()));
@@ -215,16 +210,30 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     private void enableSaveIfNeeded() {
-        //Nickname
+        // Nickname
         String name = RosterManager.getInstance().getName(getAccount(), getUser());
-        if (!name.equals(contactEditNickname.getText().toString()) && !contactEditNickname.getText().toString().isEmpty()) {
-            ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
+        String nickname = RosterManager.getInstance().getNickname(getAccount(), getUser());
+        String setName = contactEditNickname.getText().toString().trim();
+
+        // Set name must be different from the general name
+        // (could be a nickname from the Roster if not empty/from the vCard)
+        if (!setName.equals(name)) {
+            // And must be different from the nickname itself, since it could be empty.
+            if (!setName.equals(nickname)) {
+                // This will allow us to save when we actually need to modify
+                // the nickname or when we want to remove the nickname completely
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
+                saveNickname = true;
+                return;
+            }
+        }
+        saveNickname = false;
+
+        // Subscription settings
+        if (subscriptionState == null) {
             return;
         }
-
-        //Subscription settings
-        boolean hasOutgoingSubscription = subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT
-                || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT;
+        boolean hasOutgoingSubscription = subscriptionState.hasOutgoingSubscription();
         boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser());
 
         switch (subscriptionState.getSubscriptionType()) {
@@ -261,7 +270,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                 break;
         }
 
-        //Circles
+        // Circles
         ArrayList<String> selectedGroups = getSelected();
         Collections.sort(contactGroups);
         Collections.sort(selectedGroups);
@@ -282,7 +291,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     public void saveChanges() {
-        if (!contactEditNickname.getText().toString().isEmpty()) {
+        if (saveNickname) {
             RosterManager.getInstance().setName(getAccount(), getUser(), contactEditNickname.getText().toString());
         }
         saveSubscriptionSettings();

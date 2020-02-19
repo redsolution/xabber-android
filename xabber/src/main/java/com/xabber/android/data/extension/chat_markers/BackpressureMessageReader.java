@@ -63,42 +63,34 @@ public class BackpressureMessageReader {
         PublishSubject<MessageDataHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<MessageDataHolder>() {
-                    @Override
-                    public void call(final MessageDataHolder holder) {
-                        final List<String> ids = new ArrayList<>();
+                .subscribe(holder -> {
+                    final List<String> ids = new ArrayList<>();
 
-                        Application.getInstance().runInBackground(new Runnable() {
-                            @Override
-                            public void run() {
-                                Realm realm = null;
-                                try {
-                                    realm = Realm.getDefaultInstance();
-                                    realm.executeTransaction(new Realm.Transaction() {
-                                        @Override
-                                        public void execute(Realm realm) {
-                                            MessageItem message = getMessageById(realm, holder);
-                                            if (message != null) {
-                                                if (holder.trySendDisplayed)
-                                                    ChatMarkerManager.getInstance().sendDisplayed(message);
+                    Application.getInstance().runInBackground(() -> {
+                        Realm realm = null;
+                        try {
+                            realm = Realm.getDefaultInstance();
+                            realm.executeTransaction(realm1 -> {
+                                MessageItem message = getMessageById(realm1, holder);
+                                if (message != null) {
+                                    if (holder.trySendDisplayed)
+                                        ChatMarkerManager.getInstance().sendDisplayed(message);
 
-                                                RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
-                                                for (MessageItem mes : messages) {
-                                                    mes.setRead(true);
-                                                    ids.add(mes.getUniqueId());
-                                                }
-                                            }
-                                        }
+                                    RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm1, message);
+                                    messages.setBoolean(MessageItem.Fields.READ, true);
+                                    for (MessageItem mes : messages) {
+                                        ids.add(mes.getUniqueId());
+                                    }
+                                    Application.getInstance().runOnUiThread(() -> {
+                                        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
+                                        if (chat != null) chat.approveRead(ids);
                                     });
-                                } catch (Exception e) {
-                                    LogManager.exception(BackpressureMessageReader.class.getSimpleName(), e);
-                                } finally { if (realm != null) realm.close(); }
-                            }
-                        });
-
-                        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
-                        if (chat != null) chat.approveRead(ids);
-                    }
+                                }
+                            });
+                        } catch (Exception e) {
+                            LogManager.exception(BackpressureMessageReader.class.getSimpleName(), e);
+                        } finally { if (realm != null) realm.close(); }
+                    });
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
