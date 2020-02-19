@@ -5,7 +5,7 @@ import com.xabber.android.data.database.realmobjects.AvatarRealm;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
-import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.HashMap;
@@ -16,8 +16,8 @@ import io.realm.RealmResults;
 
 public class AvatarRepository {
 
-    public static Map<Jid, String> getPepHashesMapFromRealm(){
-        final Map<Jid, String> pepHashes = new HashMap<>();
+    public static Map<BareJid, String> getPepHashesMapFromRealm(){
+        final Map<BareJid, String> pepHashes = new HashMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
             try {
@@ -25,9 +25,9 @@ public class AvatarRepository {
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
-                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
                     String pepHash = avatarRealm.getPepHash();
-                    pepHashes.put(jid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
+                    pepHashes.put(bareJid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
                 }
             } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
         });
@@ -51,8 +51,8 @@ public class AvatarRepository {
         });
     }
 
-    public static Map<Jid, String> getHashesMapFromRealm(){
-        final Map<Jid, String> pepHashes = new HashMap<>();
+    public static Map<BareJid, String> getHashesMapFromRealm(){
+        final Map<BareJid, String> pepHashes = new HashMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
             try {
@@ -60,9 +60,9 @@ public class AvatarRepository {
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
-                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
                     String hash = avatarRealm.getHash();
-                    pepHashes.put(jid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
+                    pepHashes.put(bareJid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
                 }
             } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
         });
