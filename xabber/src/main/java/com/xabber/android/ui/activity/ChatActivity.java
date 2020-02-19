@@ -55,6 +55,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -440,6 +441,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == PERMISSIONS_REQUEST_ATTACH_FILE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             if (getIntent().getAction() != null) {
                 switch (getIntent().getAction()) {
@@ -451,6 +454,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                         break;
                 }
             }
+        } else if (requestCode == PERMISSIONS_REQUEST_ATTACH_FILE && grantResults[0] == PackageManager.PERMISSION_DENIED){
+            Toast.makeText(this, R.string.no_permission_storage, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -604,12 +609,19 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
-        updateBackpressure.refreshRequest();
+        for (BaseEntity entity : entities) {
+            if (entity.equals(account, user)) {
+                updateBackpressure.refreshRequest();
+                break;
+            }
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        updateBackpressure.refreshRequest();
+        if (accounts.contains(account)) {
+            updateBackpressure.refreshRequest();
+        }
     }
 
     @Override
