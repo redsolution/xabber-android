@@ -63,7 +63,7 @@ public class PushService extends FirebaseMessagingService {
 
             switch (data.getAction()) {
                 case ACTION_SETTINGS_UPDATED:
-                    XabberAccountManager.getInstance().updateAccountSettings();
+                    //XabberAccountManager.getInstance().updateAccountSettings();
                     // used async function updateAccountSettings
                     // inside function exist check that prevents simultaneous calls
                     break;
