@@ -6,7 +6,6 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.HashMap;
@@ -21,16 +20,15 @@ public class AvatarRepository {
         LogManager.d("AvatarRepos", "getPepHashes");
         final Map<BareJid, String> pepHashes = new HashMap<>();
 
-
         Application.getInstance().runOnUiThread(() -> {
             try {
                 RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
-                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
                     String pepHash = avatarRealm.getPepHash();
-                    pepHashes.put(jid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
+                    pepHashes.put(bareJid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
                 }
             } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
         });
@@ -65,9 +63,9 @@ public class AvatarRepository {
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
-                    Jid jid = JidCreate.from(avatarRealm.getUser());
+                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
                     String hash = avatarRealm.getHash();
-                    pepHashes.put(jid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
+                    pepHashes.put(bareJid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
                 }
             } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
         });
