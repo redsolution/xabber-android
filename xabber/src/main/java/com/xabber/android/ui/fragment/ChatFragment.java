@@ -22,6 +22,7 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -170,6 +172,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private final long STOP_TYPING_DELAY = 2500; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
 
+    private FrameLayout inputPanel;
     private EditText inputView;
     private ImageButton sendButton;
     private ImageButton securityButton;
@@ -177,6 +180,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageButton recordButton;
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
+    private TextView blockedView;
 
     private ViewStub stubNotify;
     private RelativeLayout notifyLayout;
@@ -263,6 +267,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private float toolbarElevation;
 
+    private int accountColor;
+
     private Intent notifyIntent;
 
     private BottomMessagesPanel bottomMessagesPanel;
@@ -335,6 +341,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         final View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        accountColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
         btnScrollDown = view.findViewById(R.id.btnScrollDown);
         btnScrollDown.setOnClickListener(this);
@@ -350,6 +358,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 }
             }
         });
+
+        inputPanel = view.findViewById(R.id.bottomPanel);
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
@@ -508,7 +518,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         recordingPresenterLayout = view.findViewById(R.id.recording_presenter_layout);
         recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
-        recordingPresenterPlaybarLayout.getBackground().setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account), PorterDuff.Mode.SRC_IN);
+        recordingPresenterPlaybarLayout.getBackground().setColorFilter(accountColor, PorterDuff.Mode.SRC_IN);
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
         recordingPresenter.setNotPlayedColor(Color.WHITE); //ContextCompat.getColor(getContext(), R.color.grey_800)
         recordingPresenter.setNotPlayedColorAlpha(127);
@@ -517,7 +527,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordingDeleteButton = view.findViewById(R.id.voice_presenter_delete);
         recordingPresenterDuration = view.findViewById(R.id.voice_presenter_time);
         recordingPresenterSendButton = view.findViewById(R.id.voice_presenter_send);
-        recordingPresenterSendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        recordingPresenterSendButton.setColorFilter(accountColor);
 
         voiceMessageRecorderLayout = view.findViewById(R.id.record_layout);
 
@@ -535,7 +545,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
 
         recordButtonExpanded = (FloatingActionButton) view.findViewById(R.id.record_float_button);
-        recordButtonExpanded.setBackgroundTintList(ColorStateList.valueOf(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
+        recordButtonExpanded.setBackgroundTintList(ColorStateList.valueOf(accountColor));
         recordButtonExpanded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -730,18 +740,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         realmRecyclerView.setItemAnimator(null);
         realmRecyclerView.addItemDecoration(new MessageHeaderViewDecoration());
 
-        replySwipe = new ReplySwipeCallback(new ReplySwipeCallback.SwipeAction() {
-            @Override
-            public void onFullSwipe(int position) {
-                MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
-                if (messageItem != null) {
-                    if (messageItem.getUniqueId() != null) {
-                        bottomPanelMessagesIds.clear();
-                        bottomPanelMessagesIds.add(messageItem.getUniqueId());
-                        isReply = true;
-                        showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
-                        setUpInputViewButtons();
-                    }
+        replySwipe = new ReplySwipeCallback(position -> {
+            MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+            if (messageItem != null) {
+                if (messageItem.getUniqueId() != null) {
+                    bottomPanelMessagesIds.clear();
+                    bottomPanelMessagesIds.add(messageItem.getUniqueId());
+                    isReply = true;
+                    showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
+                    setUpInputViewButtons();
                 }
             }
         });
@@ -767,7 +774,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         } else {
             introView.getBackground().setLevel(0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                introView.getBackground().setTint(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+                introView.getBackground().setTint(accountColor);
             }
         }
         realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView));
@@ -1177,7 +1184,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         } else {
             sendButton.setVisibility(View.VISIBLE);
             sendButton.setEnabled(true);
-            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+            sendButton.setColorFilter(accountColor);
             showSecurityButton(false);
             recordButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
@@ -1188,6 +1195,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void restoreInputState() {
         //if (!inputView.getText().equals("") && inputView.getText() != null) return;
+
+        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+            showBlockedBar();
+            return;
+        }
 
         skipOnTextChanges = true;
 
@@ -1873,6 +1885,28 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 notifyLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void showBlockedBar() {
+        for(int i = 0; i < inputPanel.getChildCount(); i++) {
+            View view = inputPanel.getChildAt(i);
+            if (view != null && view.getVisibility() == View.VISIBLE) {
+                view.setVisibility(View.GONE);
+            }
+        }
+        if (blockedView == null) {
+            blockedView = new TextView(getContext());
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    getResources().getDimensionPixelOffset(R.dimen.input_view_height));
+            blockedView.setTextColor(accountColor);
+            blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f);
+            blockedView.setText(R.string.blocked_contact);
+            blockedView.setBackgroundColor(Utils.getAttrColor(getContext(), R.attr.chat_input_background));
+            blockedView.setLayoutParams(layoutParams);
+            blockedView.setGravity(Gravity.CENTER);
+            blockedView.setOnClickListener(v -> startActivity(ContactViewerActivity.createIntent(getContext(), account, user)));
+            inputPanel.addView(blockedView);
+        }
     }
 
     private void showNewContactLayoutIfNeed() {

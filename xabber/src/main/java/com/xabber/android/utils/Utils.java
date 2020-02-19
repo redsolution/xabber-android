@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.TypedValue;
@@ -11,6 +12,8 @@ import android.view.Display;
 import android.view.HapticFeedbackConstants;
 import android.view.Surface;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
@@ -170,5 +173,16 @@ public class Utils {
     public static void performHapticFeedback(View view, int feedbackType, int flag) {
         if (view != null)
             view.performHapticFeedback(feedbackType, flag);
+    }
+
+    @ColorInt
+    public static int getAttrColor(Context context, int attrId) {
+        if (context == null) {
+            return 0;
+        }
+        TypedValue value = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(attrId, value, true);
+        return value.data;
     }
 }
