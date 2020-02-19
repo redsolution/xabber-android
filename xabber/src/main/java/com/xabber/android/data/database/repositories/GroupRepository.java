@@ -13,6 +13,7 @@ import io.realm.RealmResults;
 public class GroupRepository {
 
     public static NestedMap<GroupConfiguration> getGroupConfigurationsFromRealm(){
+        LogManager.d("GroupRepo", "getGroupConf");
         final NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
@@ -32,6 +33,7 @@ public class GroupRepository {
 
     public static void saveGroupToRealm(final String account, final String group,
                                         final boolean expanded, final ShowOfflineMode showOfflineMode){
+        LogManager.d("GroupRepo", "savegrouptorealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

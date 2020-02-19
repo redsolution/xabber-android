@@ -15,6 +15,7 @@ import io.realm.RealmResults;
 public class StatusRepository {
 
     public static Collection<SavedStatus> getAllSavedStatusesFromRealm(){
+        LogManager.d("StatusRepo", "getAllSaved");
         final Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
 
         Application.getInstance().runOnUiThread(() -> {
@@ -33,6 +34,8 @@ public class StatusRepository {
     }
 
     public static void saveStatusToRealm(SavedStatus savedStatus){
+        LogManager.d("StatusRepo", "save status");
+
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -49,6 +52,7 @@ public class StatusRepository {
     }
 
     public static void deleteSavedStatusFromRealm(SavedStatus savedStatus){
+        LogManager.d("StatusRepo", "delete saved");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -67,6 +71,7 @@ public class StatusRepository {
     }
 
     public static void clearAllSavedStatusesInRealm(){
+        LogManager.d("StatusRepo", "clear all");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

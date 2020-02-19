@@ -12,7 +12,7 @@ public class OtrRepository {
 
     public static NestedNestedMaps<String, Boolean> getFingerprintsFromRealm(){
         final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
-
+        LogManager.d("OtrRepo", "getFingerprints");
         Application.getInstance().runOnUiThread(() -> {
             RealmResults<OtrRealm> realmResults = Realm.getDefaultInstance()
                     .where(OtrRealm.class)
@@ -30,6 +30,7 @@ public class OtrRepository {
 
     public static void saveOtrToRealm(final String account, final String user,
                                       final String fingerprint, final boolean verified){
+        LogManager.d("OtrRepo", "saveFing");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
