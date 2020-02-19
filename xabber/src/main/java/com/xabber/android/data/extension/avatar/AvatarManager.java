@@ -54,6 +54,7 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 
 import java.security.MessageDigest;
@@ -92,7 +93,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private final Application application;
 
-    private final Map<Jid, String> XEPHashes;
+    private final Map<BareJid, String> XEPHashes;
     /**
      * Map with hashes for specified users.
      * <p/>
@@ -235,9 +236,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Override
     public void onLoad() {
-        final Map<Jid, String> hashes = AvatarRepository.getHashesMapFromRealm();
+        final Map<BareJid, String> hashes = AvatarRepository.getHashesMapFromRealm();
         final Map<String, Bitmap> bitmaps = new HashMap<>();
-        final Map<Jid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
+        final Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
 
         for (String hash : new HashSet<>(hashes.values()))
             if (!hash.equals(EMPTY_HASH)) {
@@ -258,7 +259,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         });
     }
 
-    private void onLoaded(Map<Jid, String> XEPHashes, Map<Jid, String> hashes, Map<String, Bitmap> bitmaps) {
+    private void onLoaded(Map<BareJid, String> XEPHashes, Map<BareJid, String> hashes, Map<String, Bitmap> bitmaps) {
         this.XEPHashes.putAll(XEPHashes);
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
@@ -274,18 +275,18 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param jid
      * @param hash        can be <code>null</code>.
      */
-    private void setHash(final Jid jid, final String hash) {
+    private void setHash(final BareJid jid, final String hash) {
         hashes.put(jid, hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        AvatarRepository.saveHashToRealm(jid.toString(), hash);
+        AvatarRepository.saveHashToRealm(jid.asBareJid().toString(), hash);
     }
 
     private void setXEPHash(final Jid jid, final String hash) {
-        XEPHashes.put(jid, hash == null ? EMPTY_HASH : hash);
+        XEPHashes.put(jid.asBareJid(), hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        AvatarRepository.savePepHashToRealm(jid.toString(), hash);
+        AvatarRepository.savePepHashToRealm(jid.asBareJid().toString(), hash);
     }
 
     /**
@@ -323,7 +324,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Nullable
     public String getHash(Jid bareAddress) {
-        return hashes.get(bareAddress);
+        return hashes.get(bareAddress.asBareJid());
     }
 
     @Nullable
@@ -566,7 +567,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     public void onAvatarReceived(Jid jid, String hash, byte[] value, String type) {
         if(type.equals("vcard")){
             setValue(hash, value, type);
-            setHash(jid, hash);
+            setHash(jid.asBareJid(), hash);
         }else{
             //XEP-0084-avi
             setValue(hash, value, type);
@@ -619,12 +620,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private void onPhotoReady(final AccountJid account, final UserJid user, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
-            setHash(user.getJid(), EMPTY_HASH);
+            setHash(user.getJid().asBareJid(), EMPTY_HASH);
             return;
         }
         final String hash = vCardUpdate.getPhotoHash();
         if (bitmaps.containsKey(hash)) {
-            setHash(user.getJid(), hash);
+            setHash(user.getJid().asBareJid(), hash);
             return;
         }
         Application.getInstance().runInBackground(new Runnable() {
@@ -661,7 +662,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
             }
         } else {
             bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-            setHash(jid, hash);
+            setHash(jid.asBareJid(), hash);
         }
     }
 
