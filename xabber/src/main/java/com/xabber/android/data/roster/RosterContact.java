@@ -121,6 +121,14 @@ public class RosterContact extends AbstractContact {
         }
     }
 
+    public String getNickname() {
+        if (TextUtils.isEmpty(name)) {
+            return "";
+        } else {
+            return name;
+        }
+    }
+
     @Override
     public boolean isConnected() {
         return connected;
