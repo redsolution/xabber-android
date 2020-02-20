@@ -39,6 +39,7 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -144,7 +145,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public void onPreInitialize() {
-        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
+        RealmResults<AccountRealm> accountRealms = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(AccountRealm.class).findAll();
 
         for (AccountRealm accountRealm : accountRealms) {
@@ -188,7 +189,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         final Collection<AccountItem> accountItems = new ArrayList<>();
 
-        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
+        RealmResults<AccountRealm> accountRealms = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(AccountRealm.class).findAll();
 
         LogManager.i(LOG_TAG, "onLoad got realmobjects accounts: " + accountRealms.size());
@@ -762,7 +763,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public boolean checkAccounts() {
-        return !Realm.getDefaultInstance().where(AccountRealm.class).findAll().isEmpty();
+        return !DatabaseManager.getInstance().getRealmDefaultInstance().where(AccountRealm.class).findAll().isEmpty();
     }
 
     /**

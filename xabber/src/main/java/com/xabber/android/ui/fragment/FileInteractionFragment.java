@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -54,7 +55,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -215,7 +215,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        MessageItem messageItem = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID)
                 .findFirst();
@@ -577,7 +577,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     private void openFileOrDownload(String messageUID, int attachmentPosition) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        MessageItem messageItem = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID)
                 .findFirst();

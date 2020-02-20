@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PatreonGoalRealm;
 import com.xabber.android.data.database.realmobjects.PatreonRealm;
 import com.xabber.android.data.log.LogManager;
@@ -103,7 +104,7 @@ public class PatreonManager implements OnLoadListener {
 
         // TODO: 13.03.18 ANR - WRITE
         final long startTime = System.currentTimeMillis();
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
         realm.beginTransaction();
         PatreonRealm resultRealm = realm.copyToRealmOrUpdate(patreonRealm);
         realm.commitTransaction();
@@ -121,7 +122,7 @@ public class PatreonManager implements OnLoadListener {
     private XabberComClient.Patreon loadPatreonFromRealm() {
         XabberComClient.Patreon patreon = null;
 
-        RealmResults<PatreonRealm> patreonRealms = Realm.getDefaultInstance()
+        RealmResults<PatreonRealm> patreonRealms = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(PatreonRealm.class)
                 .findAll();
 

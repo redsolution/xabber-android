@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -22,7 +23,6 @@ import com.xabber.android.ui.color.ColorManager;
 import java.util.HashSet;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class BottomMessagesPanel extends Fragment {
@@ -74,8 +74,8 @@ public class BottomMessagesPanel extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (messagesIds != null && messagesIds.size() > 0) {
-            RealmResults<MessageItem> messages = Realm
-                    .getDefaultInstance().where(MessageItem.class)
+            RealmResults<MessageItem> messages = DatabaseManager.getInstance().getRealmDefaultInstance()
+                    .where(MessageItem.class)
                     .in(MessageItem.Fields.UNIQUE_ID, messagesIds.toArray(new String[0]))
                     .findAll();
 

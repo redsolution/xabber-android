@@ -3,6 +3,7 @@ package com.xabber.android.data.database.repositories;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.StatusRealm;
 import com.xabber.android.data.log.LogManager;
 
@@ -15,11 +16,10 @@ import io.realm.RealmResults;
 public class StatusRepository {
 
     public static Collection<SavedStatus> getAllSavedStatusesFromRealm(){
-        LogManager.d("StatusRepo", "getAllSaved");
         final Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
 
         Application.getInstance().runOnUiThread(() -> {
-            RealmResults<StatusRealm> realObjectsList = Realm.getDefaultInstance()
+            RealmResults<StatusRealm> realObjectsList = DatabaseManager.getInstance().getRealmDefaultInstance()
                     .where(StatusRealm.class)
                     .findAll();
 
@@ -34,12 +34,10 @@ public class StatusRepository {
     }
 
     public static void saveStatusToRealm(SavedStatus savedStatus){
-        LogManager.d("StatusRepo", "save status");
-
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     StatusRealm statusRealm = new StatusRealm(savedStatus.getStatusMode().toString(),
                             savedStatus.getStatusText());
@@ -52,11 +50,10 @@ public class StatusRepository {
     }
 
     public static void deleteSavedStatusFromRealm(SavedStatus savedStatus){
-        LogManager.d("StatusRepo", "delete saved");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(StatusRealm.class)
                             .equalTo(StatusRealm.Fields.STATUS_MODE, savedStatus.getStatusMode().toString())
@@ -71,11 +68,10 @@ public class StatusRepository {
     }
 
     public static void clearAllSavedStatusesInRealm(){
-        LogManager.d("StatusRepo", "clear all");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(StatusRealm.class)
                             .findAll()

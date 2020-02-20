@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
@@ -104,7 +105,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     public void voiceClicked(String messageId, int attachmentIndex, Long timestamp) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        MessageItem messageItem = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
@@ -602,7 +603,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                     if (voiceFileDuration != 0) {
                         Realm realm = null;
                         try {
-                            realm = Realm.getDefaultInstance();
+                            realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                             realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {

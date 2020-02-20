@@ -11,6 +11,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.EmailRealm;
 import com.xabber.android.data.database.realmobjects.SocialBindingRealm;
 import com.xabber.android.data.database.realmobjects.SyncStateRealm;
@@ -425,7 +426,7 @@ public class XabberAccountManager implements OnLoadListener {
         }
         xabberAccountRealm.setSocialBindings(realmSocials);
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
         realm.beginTransaction();
         XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
         account = xabberAccountRealmToPOJO(accountRealm);
@@ -500,7 +501,7 @@ public class XabberAccountManager implements OnLoadListener {
     public XabberAccount loadXabberAccountFromRealm() {
         XabberAccount xabberAccount = null;
 
-        RealmResults<XabberAccountRealm> xabberAccounts = Realm.getDefaultInstance()
+        RealmResults<XabberAccountRealm> xabberAccounts = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(XabberAccountRealm.class)
                 .findAll();
 
@@ -516,7 +517,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     success[0] = realm1.where(XabberAccountRealm.class)
                             .findAll()
@@ -690,7 +691,7 @@ public class XabberAccountManager implements OnLoadListener {
     public Map<String, Boolean> loadSyncStatesFromRealm() {
         Map<String, Boolean> resultMap = new HashMap<>();
 
-        RealmResults<SyncStateRealm> realmItems = Realm.getDefaultInstance()
+        RealmResults<SyncStateRealm> realmItems = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(SyncStateRealm.class)
                 .findAll();
         for (SyncStateRealm realmItem : realmItems) {
@@ -705,7 +706,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     success[0] = realm1.where(SyncStateRealm.class)
                             .findAll()
@@ -735,7 +736,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     List<SyncStateRealm> oldItems = realm1
                             .where(SyncStateRealm.class)

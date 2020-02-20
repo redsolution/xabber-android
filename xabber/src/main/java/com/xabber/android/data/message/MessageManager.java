@@ -36,6 +36,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.ForwardId;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -137,7 +138,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onLoad() {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -278,7 +279,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        DatabaseManager.getInstance().getRealmDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
@@ -329,7 +330,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -369,7 +370,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateMessageWithNewAttachments(final String messageId, final List<File> files) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -409,7 +410,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -417,7 +418,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             });
         } else {
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -446,7 +447,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -586,7 +587,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void clearHistory(final AccountJid account, final UserJid user) {
         final long startTime = System.currentTimeMillis();
 
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        DatabaseManager.getInstance().getRealmDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -607,7 +608,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
 
                 MessageItem messageItem = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId).findFirst();
@@ -631,7 +632,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 RealmResults<MessageItem> items = realm.where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
 
@@ -950,7 +951,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 RealmResults<MessageItem> messageItems = MessageRepository.getChatMessages(account, user);
 
                 for (MessageItem messageItem : messageItems) {
@@ -1058,7 +1059,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public static void setAttachmentLocalPathToNull(final String uniqId) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        DatabaseManager.getInstance().getRealmDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Attachment first = realm.where(Attachment.class)

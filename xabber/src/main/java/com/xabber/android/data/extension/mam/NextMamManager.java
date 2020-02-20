@@ -10,6 +10,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.ForwardId;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -101,7 +102,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     public void onAccountConnected(AccountItem accountItem) {
         updateIsSupported(accountItem);
         updatePreferencesFromServer(accountItem);
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
             initializeStartTimestamp(realm, accountItem);
@@ -129,7 +130,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
 
                 // if history is empty - load last message
                 MessageItem firstMessage = getFirstMessage(chat, realm);
@@ -177,7 +178,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     else isRequested = true;
                 }
                 EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 loadNextHistory(realm, accountItem, chat);
                 realm.close();
                 EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
@@ -192,7 +193,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
         if (accountItem == null || !isSupported(accountItem.getAccount()) || chat.historyIsFull()) return;
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
 
         // if history is empty - load last message
         MessageItem firstMessage = getFirstMessage(chat, realm);
@@ -227,7 +228,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                             (MamElements.MamResultExtension) packetExtension;
                     String resultID = resultExtension.getQueryId();
                     if (waitingRequests.containsKey(resultID)) {
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                         parseAndSaveMessageFromMamResult(realm, connection.getAccount(), resultExtension.getForwarded());
                         UserJid userJid = waitingRequests.get(resultID);
                         AbstractChat chat = MessageManager.getInstance().getChat(connection.getAccount(), userJid);

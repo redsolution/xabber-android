@@ -7,6 +7,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -109,7 +110,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -159,7 +160,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -229,7 +230,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -260,7 +261,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {

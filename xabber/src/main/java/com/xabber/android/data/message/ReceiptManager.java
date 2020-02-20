@@ -20,6 +20,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -123,7 +124,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     private void markAsError(final AccountJid account, final Message message) {
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getRealmDefaultInstance();
             realm.executeTransaction(realm1 -> {
                 MessageItem first = realm1.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
@@ -158,7 +159,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     private void markAsDelivered(final Jid toJid, final String receiptId) {
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getRealmDefaultInstance();
             MessageItem first = realm.where(MessageItem.class)
                     .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
             first.setDelivered(true);

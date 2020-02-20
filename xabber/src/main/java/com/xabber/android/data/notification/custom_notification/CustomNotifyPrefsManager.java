@@ -7,6 +7,7 @@ import android.os.Build;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -119,7 +120,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
 
     private List<NotifyPrefs> findAllFromRealm() {
         List<NotifyPrefs> results = new ArrayList<>();
-        RealmResults<NotifyPrefsRealm> items = Realm.getDefaultInstance()
+        RealmResults<NotifyPrefsRealm> items = DatabaseManager.getInstance().getRealmDefaultInstance()
                 .where(NotifyPrefsRealm.class)
                 .findAll();
         for (NotifyPrefsRealm item : items) {
@@ -135,7 +136,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(NotifyPrefsRealm.class)
                             .equalTo(NotifyPrefsRealm.Fields.ID, id)
@@ -152,7 +153,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(NotifyPrefsRealm.class)
                             .findAll()
@@ -168,7 +169,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
 

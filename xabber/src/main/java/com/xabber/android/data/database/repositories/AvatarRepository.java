@@ -1,6 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AvatarRealm;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
@@ -17,12 +18,12 @@ import io.realm.RealmResults;
 public class AvatarRepository {
 
     public static Map<BareJid, String> getPepHashesMapFromRealm(){
-        LogManager.d("AvatarRepos", "getPepHashes");
+
         final Map<BareJid, String> pepHashes = new HashMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
             try {
-                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
+                RealmResults<AvatarRealm> avatarRealms = DatabaseManager.getInstance().getRealmDefaultInstance()
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
@@ -37,11 +38,11 @@ public class AvatarRepository {
     }
 
     public static void savePepHashToRealm(final String user, final String pepHash){
-        LogManager.d("AvatarRepos", "savePepHashes");
+
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     AvatarRealm avatarRealm = new AvatarRealm(user);
                     avatarRealm.setPepHash(pepHash);
@@ -54,12 +55,12 @@ public class AvatarRepository {
     }
 
     public static Map<BareJid, String> getHashesMapFromRealm(){
-        LogManager.d("AvatarRepos", "getHashes");
+
         final Map<BareJid, String> pepHashes = new HashMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
             try {
-                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
+                RealmResults<AvatarRealm> avatarRealms = DatabaseManager.getInstance().getRealmDefaultInstance()
                         .where(AvatarRealm.class)
                         .findAll();
                 for (AvatarRealm avatarRealm : avatarRealms){
@@ -74,11 +75,11 @@ public class AvatarRepository {
     }
 
     public static void saveHashToRealm(final String user, final String hash){
-        LogManager.d("AvatarRepos", "saveHashes");
+
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     AvatarRealm avatarRealm = new AvatarRealm(user);
                     avatarRealm.setHash(hash);

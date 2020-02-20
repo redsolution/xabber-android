@@ -1,6 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.RoomRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -23,7 +24,7 @@ public class RoomRepository {
 
         Application.getInstance().runOnUiThread(() -> {
             try {
-                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
+                RealmResults<RoomRealm> realmResults = DatabaseManager.getInstance().getRealmDefaultInstance()
                         .where(RoomRealm.class)
                         .findAll();
                 for (RoomRealm roomRealm : realmResults){
@@ -36,17 +37,15 @@ public class RoomRepository {
                 }
             } catch (Exception e) { LogManager.exception("RoomRepository", e); }
         });
-        LogManager.d("RoomRepo", "get all room chats");
         return roomChats;
     }
 
     public static Collection<RoomChat> getAllNeedJoinRoomChatsFromRealm(){
         final Collection<RoomChat> roomChats = new ArrayList<>();
-        LogManager.d("RoomRepo", "get all need join");
 
         Application.getInstance().runOnUiThread(() -> {
             try {
-                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
+                RealmResults<RoomRealm> realmResults = DatabaseManager.getInstance().getRealmDefaultInstance()
                         .where(RoomRealm.class)
                         .equalTo(RoomRealm.Fields.NEED_JOIN, true)
                         .findAll();
@@ -67,11 +66,10 @@ public class RoomRepository {
     public static void saveRoomToRealm(final String account, final String room,
                                        final String nickname, final String password,
                                        final boolean isNeedJoin){
-        LogManager.d("RoomRepo", "save room");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(new RoomRealm(account, room, nickname, password,
                             isNeedJoin));
@@ -83,11 +81,10 @@ public class RoomRepository {
     }
 
     public static void deleteRoomFromRealm(final String account, final String room){
-        LogManager.d("RoomRepo", "delete room");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(RoomRealm.class)
                             .equalTo(RoomRealm.Fields.ACCOUNT, account)
