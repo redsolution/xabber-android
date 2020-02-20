@@ -66,6 +66,7 @@ public abstract class ConnectionItem {
      */
     @NonNull
     XMPPTCPConnection connection;
+    public static long defaultReplyTimeout = 30000; // in ms
 
     /**
      * Current state.

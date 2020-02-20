@@ -204,11 +204,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
     public void onAuthorized(final ConnectionItem connectionItem) {
         try {
+            connectionItem.getConnection().setReplyTimeout(120000);
             discoverSupport(connectionItem.getAccount(), connectionItem.getConnection());
         } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
                 | SmackException.NoResponseException | InterruptedException e) {
             LogManager.exception(this, e);
         }
+        connectionItem.getConnection().setReplyTimeout(ConnectionItem.defaultReplyTimeout);
     }
 
     public static long getVoiceLength(String filePath) {
