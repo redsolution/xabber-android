@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -48,6 +49,8 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final File file = files[position];
 
         fileHolder.fileName.setText(file.getName());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            fileHolder.fileName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
         TypedValue typedValue = new TypedValue();
         holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);

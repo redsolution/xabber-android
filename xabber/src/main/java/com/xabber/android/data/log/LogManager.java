@@ -15,16 +15,19 @@
 package com.xabber.android.data.log;
 
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.extension.file.FileManager;
 
 import org.jivesoftware.smack.SmackConfiguration;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 
 /**
@@ -194,7 +197,14 @@ public class LogManager {
         }
         File dir = new File(sdCard.getAbsolutePath() + "/logs");
         return dir.listFiles();
-
     }
+
+    public static ArrayList<Uri> getAllLogFilesUris(){
+        ArrayList<Uri> arrayList = new ArrayList<>();
+        for (File file : LogManager.getLogFiles())
+            arrayList.add(FileManager.getFileUri(file));
+        return arrayList;
+    }
+
 }
 

@@ -5,12 +5,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -84,7 +85,15 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
                 return true;
+            case R.id.send_all_log_files:
+                Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
 
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("vnd.android.cursor.dir/email");
+                intent.putExtra(Intent.EXTRA_STREAM, LogManager.getAllLogFilesUris());
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Send all log files");
+                recyclerView.getContext().startActivity(Intent.createChooser(intent , "Send log file"));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
