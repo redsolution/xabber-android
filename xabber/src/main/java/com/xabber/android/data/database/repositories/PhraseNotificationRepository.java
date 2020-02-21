@@ -1,6 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
 import android.net.Uri;
+import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.PhraseNotificationRealm;
@@ -16,11 +17,11 @@ import io.realm.RealmResults;
 public class PhraseNotificationRepository {
 
     public static ArrayList<Phrase> getAllPhrases(){
-        LogManager.d("PhrasesRepo", "getAll");
-        final ArrayList<Phrase> phrasesList = new ArrayList<>();
-
-        Application.getInstance().runOnUiThread(() -> {
-            RealmResults<PhraseNotificationRealm> realmObjList = Realm.getDefaultInstance()
+        ArrayList<Phrase> phrasesList = new ArrayList<>();
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<PhraseNotificationRealm> realmObjList = realm
                     .where(PhraseNotificationRealm.class)
                     .findAll();
 
@@ -29,13 +30,13 @@ public class PhraseNotificationRepository {
                 phrasesList.add(new Phrase(realmObj.getId(), realmObj.getValue(), realmObj.getUser(),
                         realmObj.getGroup(), realmObj.getRegexp(), uri));
             }
-        });
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+
 
         return phrasesList;
     }
 
     public static void removePhraseById(final long id){
-        LogManager.d("PhrasesRepo", "removeById");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
@@ -54,7 +55,6 @@ public class PhraseNotificationRepository {
 
     public static void saveNewPhrase(final Phrase phrase, final String value, final String user,
                                      final String group, final boolean regexp, final Uri sound){
-        LogManager.d("PhrasesRepo", "saveNew");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

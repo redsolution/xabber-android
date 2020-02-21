@@ -358,8 +358,8 @@ public class Application extends android.app.Application {
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
-        addManager(AvatarStorage.getInstance());
         addManager(OTRManager.getInstance());
+        addManager(AvatarStorage.getInstance());
         addManager(ConnectionManager.getInstance());
         addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());

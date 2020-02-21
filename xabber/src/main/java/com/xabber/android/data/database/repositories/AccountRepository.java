@@ -12,7 +12,7 @@ import io.realm.Realm;
 public class AccountRepository {
 
     public static void saveAccountToRealm(AccountItem accountItem){
-        LogManager.d("AcountRepos", "saveAccountToRealm");
+
         Application.getInstance().runInBackground(() -> {
             AccountRealm accountRealm = new AccountRealm(accountItem.getId());
 
@@ -78,7 +78,6 @@ public class AccountRepository {
     }
 
     public static void clearAllAccountsFromRealm(){
-        LogManager.d("AcountRepos", "clearAllAccountsFromrealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -95,7 +94,6 @@ public class AccountRepository {
     }
 
     public static void deleteAccountFromRealm(final String account, final String id){
-        LogManager.d("AcountRepos", "deleteAccountFromRealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -103,7 +101,7 @@ public class AccountRepository {
                 realm.executeTransaction(realm1 -> {
                     AccountRealm accountRealm = realm1
                             .where(AccountRealm.class)
-                            .equalTo(AccountRealm.Fields.USERNAME, account) //TODO WARN this is possible reason of non deleting accounts
+                            //.equalTo(AccountRealm.Fields.USERNAME, account) //TODO WARN this is possible reason of non deleting accounts
                             .equalTo(AccountRealm.Fields.ID, id)
                             .findFirst();
 

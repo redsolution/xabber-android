@@ -236,24 +236,23 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Override
     public void onLoad() {
-        final Map<BareJid, String> hashes = AvatarRepository.getHashesMapFromRealm();
-        final Map<String, Bitmap> bitmaps = new HashMap<>();
-        final Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
-
-        for (String hash : new HashSet<>(hashes.values()))
-            if (!hash.equals(EMPTY_HASH)) {
-                Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
-                bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-            }
-        for (String hash : new HashSet<>(XEPHashes.values()))
-            if (!hash.equals(EMPTY_HASH)) {
-                Bitmap bitmap = makeXEPBitmap(AvatarStorage.getInstance().read(hash));
-                bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-            }
-
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Map<BareJid, String> hashes = AvatarRepository.getHashesMapFromRealm();
+                Map<String, Bitmap> bitmaps = new HashMap<>();
+                Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
+
+                for (String hash : new HashSet<>(hashes.values()))
+                    if (!hash.equals(EMPTY_HASH)) {
+                        Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
+                        bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
+                    }
+                for (String hash : new HashSet<>(XEPHashes.values()))
+                    if (!hash.equals(EMPTY_HASH)) {
+                        Bitmap bitmap = makeXEPBitmap(AvatarStorage.getInstance().read(hash));
+                        bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
+                    }
                 onLoaded(XEPHashes, hashes, bitmaps);
             }
         });

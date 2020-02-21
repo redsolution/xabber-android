@@ -16,7 +16,6 @@ public class MessageRepository {
     private static final String LOG_TAG = MessageRepository.class.getSimpleName();
 
     public static RealmResults<MessageItem> getChatMessages(AccountJid accountJid, UserJid userJid) {
-        LogManager.d("MessageRepo", "getChatMessages");
         return Realm.getDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
@@ -28,7 +27,6 @@ public class MessageRepository {
     }
 
     public static void removeAllAccountMessagesFromRealm(){
-        LogManager.d("MessageRepo", "removeallaccountmes");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
