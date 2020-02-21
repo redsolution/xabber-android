@@ -181,10 +181,13 @@ public class BlockingManager {
         cachedBlockedContacts.put(account, blockedContacts);
     }
 
+
     public boolean contactIsBlocked(AccountJid account, UserJid user) {
-        Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        Collection<UserJid> blockedContacts = getBlockedContacts(account);
         for (UserJid blockedContact : blockedContacts) {
-            if (blockedContact.getBareJid().equals(user.getBareJid())) {
+            // we specifically check for the blocked contact's full jid
+            // to filter out jids blocked as a group-invite.
+            if (blockedContact.getJid().equals(user.getBareJid())) {
                 return true;
             }
         }

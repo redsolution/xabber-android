@@ -572,14 +572,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void checkForBlockedStatus() {
-        Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
-        for (UserJid blockedContact : blockedContacts) {
-            if (blockedContact.getBareJid().equals(getUser().getBareJid())) {
-                blocked = true;
-                return;
-            }
-        }
-        blocked = false;
+        blocked = BlockingManager.getInstance().contactIsBlocked(account, user);
     }
 
     @Override
