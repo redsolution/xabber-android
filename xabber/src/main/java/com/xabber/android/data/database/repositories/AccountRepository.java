@@ -3,7 +3,6 @@ package com.xabber.android.data.database.repositories;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionSettings;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
@@ -13,7 +12,7 @@ import io.realm.Realm;
 public class AccountRepository {
 
     public static void saveAccountToRealm(AccountItem accountItem){
-
+        LogManager.d("AcountRepos", "saveAccountToRealm");
         Application.getInstance().runInBackground(() -> {
             AccountRealm accountRealm = new AccountRealm(accountItem.getId());
 
@@ -68,7 +67,7 @@ public class AccountRepository {
 
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(accountRealm);
                 });
@@ -79,11 +78,11 @@ public class AccountRepository {
     }
 
     public static void clearAllAccountsFromRealm(){
-
+        LogManager.d("AcountRepos", "clearAllAccountsFromrealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(AccountRealm.class)
                             .findAll()
@@ -96,11 +95,11 @@ public class AccountRepository {
     }
 
     public static void deleteAccountFromRealm(final String account, final String id){
-
+        LogManager.d("AcountRepos", "deleteAccountFromRealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     AccountRealm accountRealm = realm1
                             .where(AccountRealm.class)

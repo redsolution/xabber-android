@@ -1,7 +1,6 @@
 package com.xabber.android.data.database.repositories;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.realmobjects.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -17,7 +16,8 @@ public class MessageRepository {
     private static final String LOG_TAG = MessageRepository.class.getSimpleName();
 
     public static RealmResults<MessageItem> getChatMessages(AccountJid accountJid, UserJid userJid) {
-        return DatabaseManager.getInstance().getRealmDefaultInstance()
+        LogManager.d("MessageRepo", "getChatMessages");
+        return Realm.getDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
                 .equalTo(MessageItem.Fields.USER, userJid.toString())
@@ -28,10 +28,11 @@ public class MessageRepository {
     }
 
     public static void removeAllAccountMessagesFromRealm(){
+        LogManager.d("MessageRepo", "removeallaccountmes");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(MessageItem.class).findAll().deleteAllFromRealm();
                 });
@@ -45,7 +46,7 @@ public class MessageRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(MessageItem.class)
                             .equalTo(MessageItem.Fields.ACCOUNT, account.toString())

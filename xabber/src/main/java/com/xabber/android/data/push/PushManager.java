@@ -13,7 +13,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PushLogRecord;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -190,7 +189,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
                     realm1.copyToRealm(pushLogRecord);
@@ -204,7 +203,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     public static List<String> getPushLogs() {
         List<String> logs = new ArrayList<>();
-        RealmResults<PushLogRecord> records = DatabaseManager.getInstance().getRealmDefaultInstance()
+        RealmResults<PushLogRecord> records = Realm.getDefaultInstance()
                 .where(PushLogRecord.class)
                 .findAll()
                 .sort(PushLogRecord.Fields.TIME, Sort.DESCENDING);
@@ -220,7 +219,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(PushLogRecord.class)
                             .findAll()

@@ -3,7 +3,6 @@ package com.xabber.android.data.extension.chat_markers;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -70,7 +69,7 @@ public class BackpressureMessageReader {
                     Application.getInstance().runInBackground(() -> {
                         Realm realm = null;
                         try {
-                            realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                            realm = Realm.getDefaultInstance();
                             realm.executeTransaction(realm1 -> {
                                 MessageItem message = getMessageById(realm1, holder);
                                 if (message != null) {

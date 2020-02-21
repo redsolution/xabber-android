@@ -20,7 +20,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -485,7 +484,7 @@ public class MessageItem extends RealmObject {
         if (haveForwardedMessages()) {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
-                RealmResults<MessageItem> forwardedMessages = DatabaseManager.getInstance().getRealmDefaultInstance()
+                RealmResults<MessageItem> forwardedMessages = Realm.getDefaultInstance()
                         .where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
                         .findAll()

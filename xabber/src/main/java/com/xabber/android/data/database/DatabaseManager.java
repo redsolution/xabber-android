@@ -1,7 +1,5 @@
 package com.xabber.android.data.database;
 
-import android.os.Looper;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnCloseListener;
@@ -23,12 +21,14 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
     private Observable<Realm> observableListenerInstance;
     private RealmConfiguration realmConfiguration;
 
-    private int realmInstancesCount = 0;
-
     private DatabaseManager(){
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
+        Realm.getDefaultInstance().addChangeListener(realm -> {
+            int instances = realm.getGlobalInstanceCount(realm.getConfiguration());
+            LogManager.d("DatabaseManager", Integer.toString(instances));
+        });
     }
 
     public static DatabaseManager getInstance(){
@@ -36,22 +36,9 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
         return instance;
     }
 
-    public Realm getRealmDefaultInstance(){
-        Realm realm = Realm.getDefaultInstance();
-        if (realm.getGlobalInstanceCount(realmConfiguration) > realmInstancesCount){
-            LogManager.d(LOG_TAG, "New realm instance! Instances count: " + realm.getGlobalInstanceCount(realmConfiguration));
-            if (Looper.myLooper() == null)
-                LogManager.d(LOG_TAG, "Realm instance at non looper thread");
-            for (StackTraceElement ste : Thread.currentThread().getStackTrace())
-                LogManager.d(LOG_TAG, "    " + ste.toString());
-                LogManager.d(LOG_TAG, "------------------------------------");
-        }
-        return realm;
-    }
-
     public Observable<Realm> getObservableListener(){
         if (observableListenerInstance == null) observableListenerInstance = Observable.create(realmEmitter -> {
-            final Realm observableRealm = DatabaseManager.getInstance().getRealmDefaultInstance();
+            final Realm observableRealm = Realm.getDefaultInstance();
             final RealmChangeListener<Realm> listener = realmEmitter::onNext;
             observableRealm.addChangeListener(listener);
             realmEmitter.onNext(observableRealm);
@@ -78,7 +65,7 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.deleteRealm(realm.getConfiguration());
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);

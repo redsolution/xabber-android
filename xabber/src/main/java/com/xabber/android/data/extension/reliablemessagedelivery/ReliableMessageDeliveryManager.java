@@ -5,7 +5,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -57,7 +56,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
@@ -91,10 +90,10 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
-        Application.getInstance().runInBackground(() -> {
+        Application.getInstance().runInBackgroundUserRequest(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
                 realm.executeTransaction(realm1 -> {
                     MessageItem messageItem = realm1

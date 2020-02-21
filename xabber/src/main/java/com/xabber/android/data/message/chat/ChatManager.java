@@ -22,7 +22,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.entity.AccountJid;
@@ -144,7 +143,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                Realm realm = Realm.getDefaultInstance();
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -190,7 +189,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         String userJid = chat.getUser().toString();
         ChatData chatData = null;
 
-        ChatDataRealm realmChat = DatabaseManager.getInstance().getRealmDefaultInstance()
+        ChatDataRealm realmChat = Realm.getDefaultInstance()
                 .where(ChatDataRealm.class)
                 .equalTo("accountJid", accountJid)
                 .equalTo("userJid", userJid)
@@ -227,7 +226,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<NotificationStateRealm> results = realm1
                             .where(NotificationStateRealm.class)

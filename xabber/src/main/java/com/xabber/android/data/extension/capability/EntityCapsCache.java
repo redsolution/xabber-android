@@ -3,7 +3,6 @@ package com.xabber.android.data.extension.capability;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.DiscoveryInfoCache;
 import com.xabber.android.data.log.LogManager;
 
@@ -28,7 +27,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
                     realm1.copyToRealmOrUpdate(discoveryInfoCache);
@@ -45,9 +44,9 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public DiscoverInfo lookup(String nodeVer) {
-        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
 
-        DiscoveryInfoCache discoveryInfoCache = DatabaseManager.getInstance().getRealmDefaultInstance()
+        DiscoveryInfoCache discoveryInfoCache = Realm.getDefaultInstance()
                 .where(DiscoveryInfoCache.class)
                 .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
                 .findFirst();
@@ -68,7 +67,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(DiscoveryInfoCache.class)
                             .findAll()

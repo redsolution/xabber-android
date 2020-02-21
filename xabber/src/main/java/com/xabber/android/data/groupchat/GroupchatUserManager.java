@@ -2,7 +2,6 @@ package com.xabber.android.data.groupchat;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupchatUserRealm;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.log.LogManager;
@@ -25,7 +24,7 @@ public class GroupchatUserManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        RealmResults<GroupchatUserRealm> users = DatabaseManager.getInstance().getRealmDefaultInstance()
+        RealmResults<GroupchatUserRealm> users = Realm.getDefaultInstance()
                 .where(GroupchatUserRealm.class).findAll();
         for (GroupchatUserRealm user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
@@ -58,7 +57,7 @@ public class GroupchatUserManager implements OnLoadListener {
             user.setTimestamp(timestamp);
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(user);
                 });

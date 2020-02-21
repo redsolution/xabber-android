@@ -10,7 +10,6 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -178,7 +177,7 @@ public class DownloadService extends IntentService {
     }
 
     private void saveAttachmentPathToRealm(final String path) {
-        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
         try {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override

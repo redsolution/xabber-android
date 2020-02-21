@@ -19,7 +19,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -420,7 +419,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     UploadServer item = realm1.where(UploadServer.class)
                             .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
@@ -438,7 +437,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     UploadServer item = realm1.where(UploadServer.class)
                             .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
@@ -452,7 +451,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
     private void loadAllFromRealm(Map<BareJid, Jid> uploadServers) {
         uploadServers.clear();
-        RealmResults<UploadServer> items = DatabaseManager.getInstance().getRealmDefaultInstance()
+        RealmResults<UploadServer> items = Realm.getDefaultInstance()
                 .where(UploadServer.class)
                 .findAll();
         for (UploadServer item : items) {

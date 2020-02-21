@@ -23,7 +23,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.ForwardId;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -484,7 +483,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
-        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -591,7 +590,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void updateLastMessage() {
-        lastMessage = DatabaseManager.getInstance().getRealmDefaultInstance()
+        lastMessage = Realm.getDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
@@ -727,7 +726,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
-        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<MessageItem> items = realm.where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
 
@@ -764,7 +763,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             public void run() {
                 Realm realm = null;
                 try{
-                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -783,7 +782,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                             }
                         }
                     });
-
                 } catch (Exception e) {
                     LogManager.exception(LOG_TAG, e);
                 } finally { if (realm != null) realm.close(); }
@@ -844,7 +842,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                        Realm realm = Realm.getDefaultInstance();
                         realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {
@@ -1010,7 +1008,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private RealmQuery<MessageItem> getAllUnreadQuery() {
-        return DatabaseManager.getInstance().getRealmDefaultInstance()
+        return Realm.getDefaultInstance()
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())

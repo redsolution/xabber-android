@@ -1,7 +1,6 @@
 package com.xabber.android.data.database.repositories;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupRealm;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
@@ -14,11 +13,11 @@ import io.realm.RealmResults;
 public class GroupRepository {
 
     public static NestedMap<GroupConfiguration> getGroupConfigurationsFromRealm(){
-
+        LogManager.d("GroupRepo", "getGroupConf");
         final NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
 
         Application.getInstance().runOnUiThread(() -> {
-            RealmResults<GroupRealm> groupRealmResults = DatabaseManager.getInstance().getRealmDefaultInstance()
+            RealmResults<GroupRealm> groupRealmResults = Realm.getDefaultInstance()
                     .where(GroupRealm.class)
                     .findAll();
             for (GroupRealm groupRealm : groupRealmResults){
@@ -34,11 +33,11 @@ public class GroupRepository {
 
     public static void saveGroupToRealm(final String account, final String group,
                                         final boolean expanded, final ShowOfflineMode showOfflineMode){
-
+        LogManager.d("GroupRepo", "savegrouptorealm");
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                realm = Realm.getDefaultInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(new GroupRealm(account, group, expanded, showOfflineMode));
                 });
