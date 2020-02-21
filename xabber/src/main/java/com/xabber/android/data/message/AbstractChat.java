@@ -590,7 +590,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void updateLastMessage() {
-            lastMessage = messages.last(null);
+        lastMessage = messages.last(null);
     }
 
     /**
