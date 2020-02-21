@@ -28,7 +28,7 @@ import com.xabber.android.ui.activity.ChatActivity;
 public class SubscriptionRequest extends BaseEntity implements EntityNotificationItem {
 
     public SubscriptionRequest(AccountJid account, UserJid user) {
-        super(account, user);
+        super(account, user.getBareUserJid());
     }
 
     @Override
