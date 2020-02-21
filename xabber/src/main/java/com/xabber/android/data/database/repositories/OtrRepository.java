@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.OtrRealm;
 import com.xabber.android.data.entity.NestedNestedMaps;
@@ -11,10 +13,11 @@ import io.realm.RealmResults;
 public class OtrRepository {
 
     public static NestedNestedMaps<String, Boolean> getFingerprintsFromRealm(){
-        final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
-
-        Application.getInstance().runOnUiThread(() -> {
-            RealmResults<OtrRealm> realmResults = Realm.getDefaultInstance()
+        NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
+        Realm realm = null;
+        try{
+            realm = Realm.getDefaultInstance();
+            RealmResults<OtrRealm> realmResults = realm
                     .where(OtrRealm.class)
                     .findAll();
             for (OtrRealm otrRealm : realmResults){
@@ -23,7 +26,7 @@ public class OtrRepository {
                         otrRealm.getFingerprint(),
                         otrRealm.isVerified());
             }
-        });
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
         return fingerprints;
     }

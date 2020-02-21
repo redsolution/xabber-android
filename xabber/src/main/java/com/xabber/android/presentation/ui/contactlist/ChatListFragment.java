@@ -96,6 +96,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
@@ -197,6 +198,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         realmChangeListenerSubscription = DatabaseManager.getInstance().getObservableListener()
                 .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.trampoline())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
                 .subscribe(realm -> {

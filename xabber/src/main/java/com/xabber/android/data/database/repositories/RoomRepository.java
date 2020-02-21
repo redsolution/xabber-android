@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.RoomRealm;
 import com.xabber.android.data.entity.AccountJid;
@@ -19,46 +21,47 @@ import io.realm.RealmResults;
 public class RoomRepository {
 
     public static Collection<RoomChat> getAllRoomChatsFromRealm(){
-        final Collection<RoomChat> roomChats = new ArrayList<>();
+        Collection<RoomChat> roomChats = new ArrayList<>();
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<RoomRealm> realmResults = realm
+                    .where(RoomRealm.class)
+                    .findAll();
+            for (RoomRealm roomRealm : realmResults){
+                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
+                AccountJid account = AccountJid.from(roomRealm.getAccount());
+                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
+                String password = roomRealm.getPassword();
 
-        Application.getInstance().runOnUiThread(() -> {
-            try {
-                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
-                        .where(RoomRealm.class)
-                        .findAll();
-                for (RoomRealm roomRealm : realmResults){
-                    Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                    AccountJid account = AccountJid.from(roomRealm.getAccount());
-                    EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                    String password = roomRealm.getPassword();
-
-                    roomChats.add(RoomChat.create(account, room, nickName, password));
-                }
-            } catch (Exception e) { LogManager.exception("RoomRepository", e); }
-        });
-
+                roomChats.add(RoomChat.create(account, room, nickName, password));
+            }
+        } catch (Exception e) {
+            LogManager.exception("RoomRepository", e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         return roomChats;
     }
 
     public static Collection<RoomChat> getAllNeedJoinRoomChatsFromRealm(){
-        final Collection<RoomChat> roomChats = new ArrayList<>();
+        Collection<RoomChat> roomChats = new ArrayList<>();
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<RoomRealm> realmResults = realm
+                    .where(RoomRealm.class)
+                    .equalTo(RoomRealm.Fields.NEED_JOIN, true)
+                    .findAll();
+            for (RoomRealm roomRealm : realmResults){
+                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
+                AccountJid account = AccountJid.from(roomRealm.getAccount());
+                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
+                String password = roomRealm.getPassword();
 
-        Application.getInstance().runOnUiThread(() -> {
-            try {
-                RealmResults<RoomRealm> realmResults = Realm.getDefaultInstance()
-                        .where(RoomRealm.class)
-                        .equalTo(RoomRealm.Fields.NEED_JOIN, true)
-                        .findAll();
-                for (RoomRealm roomRealm : realmResults){
-                    Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                    AccountJid account = AccountJid.from(roomRealm.getAccount());
-                    EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                    String password = roomRealm.getPassword();
-
-                    roomChats.add(RoomChat.create(account, room, nickName, password));
-                }
-            } catch (Exception e) { LogManager.exception("RoomRepository", e); }
-        });
+                roomChats.add(RoomChat.create(account, room, nickName, password));
+            }
+        } catch (Exception e) {
+            LogManager.exception("RoomRepository", e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
         return roomChats;
     }

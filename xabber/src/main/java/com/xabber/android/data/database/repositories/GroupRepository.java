@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.GroupRealm;
 import com.xabber.android.data.entity.NestedMap;
@@ -13,10 +15,11 @@ import io.realm.RealmResults;
 public class GroupRepository {
 
     public static NestedMap<GroupConfiguration> getGroupConfigurationsFromRealm(){
-        final NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
-
-        Application.getInstance().runOnUiThread(() -> {
-            RealmResults<GroupRealm> groupRealmResults = Realm.getDefaultInstance()
+        NestedMap<GroupConfiguration> groupConfigurationNestedMap = new NestedMap<>();
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<GroupRealm> groupRealmResults = realm
                     .where(GroupRealm.class)
                     .findAll();
             for (GroupRealm groupRealm : groupRealmResults){
@@ -25,7 +28,8 @@ public class GroupRepository {
                 groupConfiguration.setShowOfflineMode(groupRealm.getShowOfflineMode());
                 groupConfigurationNestedMap.put(groupRealm.getAccount(), groupRealm.getGroupName(), groupConfiguration);
             }
-        });
+        } finally { if (realm != null && Looper.myLooper() == Looper.getMainLooper()) realm.close(); }
+
 
         return groupConfigurationNestedMap;
     }

@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
@@ -15,24 +17,26 @@ import io.realm.RealmResults;
 public class StatusRepository {
 
     public static Collection<SavedStatus> getAllSavedStatusesFromRealm(){
-        final Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
+        Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
+        Realm realm = null;
+        try{
+            realm = Realm.getDefaultInstance();
 
-        Application.getInstance().runOnUiThread(() -> {
-            RealmResults<StatusRealm> realObjectsList = Realm.getDefaultInstance()
+            RealmResults<StatusRealm> realObjectsList = realm
                     .where(StatusRealm.class)
                     .findAll();
 
             for (StatusRealm statusRealm : realObjectsList){
-
                 savedStatusCollection.add(new SavedStatus(StatusMode.fromString(statusRealm.getStatusMode())
                         , statusRealm.getStatusText()));
             }
-        });
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
         return savedStatusCollection;
     }
 
     public static void saveStatusToRealm(SavedStatus savedStatus){
+
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

@@ -78,40 +78,40 @@ public class AccountRepository {
     }
 
     public static void clearAllAccountsFromRealm(){
-//        Application.getInstance().runInBackground(() -> {
-//            Realm realm = null;
-//            try {
-//                realm = Realm.getDefaultInstance();
-//                realm.executeTransaction(realm1 -> {
-//                    realm1.where(AccountRealm.class)
-//                            .findAll()
-//                            .deleteAllFromRealm();
-//                });
-//            } catch (Exception e){
-//                LogManager.exception("AccountRepository", e);
-//            } finally { if (realm != null) realm.close(); }
-//        });
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(AccountRealm.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e){
+                LogManager.exception("AccountRepository", e);
+            } finally { if (realm != null) realm.close(); }
+        });
     }
 
     public static void deleteAccountFromRealm(final String account, final String id){
-//        Application.getInstance().runInBackground(() -> {
-//            Realm realm = null;
-//            try {
-//                realm = Realm.getDefaultInstance();
-//                realm.executeTransaction(realm1 -> {
-//                    AccountRealm accountRealm = realm1
-//                            .where(AccountRealm.class)
-//                            .equalTo(AccountRealm.Fields.USERNAME, account) //TODO WARN this is possible reason of non deleting accounts
-//                            .equalTo(AccountRealm.Fields.ID, id)
-//                            .findFirst();
-//
-//                    if (accountRealm != null) {
-//                        accountRealm.deleteFromRealm();
-//                    }
-//                });
-//            } catch (Exception e) {
-//                LogManager.exception("AccountTable", e);
-//            } finally { if (realm != null) realm.close(); }
-//        });
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealm accountRealm = realm1
+                            .where(AccountRealm.class)
+                            //.equalTo(AccountRealm.Fields.USERNAME, account) //TODO WARN this is possible reason of non deleting accounts
+                            .equalTo(AccountRealm.Fields.ID, id)
+                            .findFirst();
+
+                    if (accountRealm != null) {
+                        accountRealm.deleteFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception("AccountTable", e);
+            } finally { if (realm != null) realm.close(); }
+        });
     }
 }

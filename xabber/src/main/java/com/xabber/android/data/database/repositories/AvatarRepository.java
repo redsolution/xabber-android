@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AvatarRealm;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -17,20 +19,22 @@ import io.realm.RealmResults;
 public class AvatarRepository {
 
     public static Map<BareJid, String> getPepHashesMapFromRealm(){
-        final Map<BareJid, String> pepHashes = new HashMap<>();
-
-        Application.getInstance().runOnUiThread(() -> {
-            try {
-                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
-                        .where(AvatarRealm.class)
-                        .findAll();
-                for (AvatarRealm avatarRealm : avatarRealms){
-                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
+        Map<BareJid, String> pepHashes = new HashMap<>();
+        Realm realm = null;
+        try {
+            RealmResults<AvatarRealm> avatarRealms = realm
+                    .where(AvatarRealm.class)
+                    .findAll();
+            for (AvatarRealm avatarRealm : avatarRealms){
+                BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
+                if (avatarRealm.getPepHash() != null){
                     String pepHash = avatarRealm.getPepHash();
                     pepHashes.put(bareJid, pepHash.isEmpty()? AvatarManager.EMPTY_HASH : pepHash);
                 }
-            } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
-        });
+            }
+        } catch (Exception e) {
+            LogManager.exception("AvatarRepository", e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
         return pepHashes;
     }
@@ -52,20 +56,23 @@ public class AvatarRepository {
     }
 
     public static Map<BareJid, String> getHashesMapFromRealm(){
-        final Map<BareJid, String> pepHashes = new HashMap<>();
-
-        Application.getInstance().runOnUiThread(() -> {
-            try {
-                RealmResults<AvatarRealm> avatarRealms = Realm.getDefaultInstance()
-                        .where(AvatarRealm.class)
-                        .findAll();
-                for (AvatarRealm avatarRealm : avatarRealms){
-                    BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
+        Map<BareJid, String> pepHashes = new HashMap<>();
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<AvatarRealm> avatarRealms = realm
+                    .where(AvatarRealm.class)
+                    .findAll();
+            for (AvatarRealm avatarRealm : avatarRealms){
+                BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
+                if (avatarRealm.getHash() != null){
                     String hash = avatarRealm.getHash();
                     pepHashes.put(bareJid, hash.isEmpty()? AvatarManager.EMPTY_HASH : hash);
                 }
-            } catch (Exception e) { LogManager.exception("AvatarRepository", e); }
-        });
+            }
+        } catch (Exception e) {
+            LogManager.exception("AvatarRepository", e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
         return pepHashes;
     }
