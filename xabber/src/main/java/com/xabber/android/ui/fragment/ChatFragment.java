@@ -1898,9 +1898,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             blockedView = new TextView(getContext());
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     getResources().getDimensionPixelOffset(R.dimen.input_view_height));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                blockedView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button);
+            } else {
+                blockedView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Widget_Button);
+            }
             blockedView.setTextColor(accountColor);
-            blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f);
-            blockedView.setText(R.string.blocked_contact);
+            blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+            blockedView.setText(R.string.blocked_contact_message);
+
             blockedView.setBackgroundColor(Utils.getAttrColor(getContext(), R.attr.chat_input_background));
             blockedView.setLayoutParams(layoutParams);
             blockedView.setGravity(Gravity.CENTER);
