@@ -457,7 +457,6 @@ public class MessageNotificationManager implements OnLoadListener {
                         messages.add(messageToRealm(message));
                     }
                     chatRealm.setMessages(messages);
-                    realm1.beginTransaction();
                     realm1.copyToRealmOrUpdate(chatRealm);
                 });
             } catch (Exception e){
