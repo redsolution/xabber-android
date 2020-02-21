@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.capability;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.DiscoveryInfoCache;
@@ -55,7 +57,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         if (discoveryInfoCache != null) {
             discoverInfo = realm.copyFromRealm(discoveryInfoCache).getDiscoveryInfo();
         }
-
+        realm.close();
         return discoverInfo;
     }
 

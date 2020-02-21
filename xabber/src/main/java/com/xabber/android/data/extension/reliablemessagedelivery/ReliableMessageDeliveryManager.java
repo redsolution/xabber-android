@@ -54,7 +54,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     public boolean isSupported(AccountJid accountJid) { return isSupported(AccountManager.getInstance().getAccount(accountJid)); }
 
     public void resendMessagesWithoutReceipt() {
-        Application.getInstance().runInBackgroundUserRequest(() -> {
+        Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getRealmDefaultInstance();
@@ -91,33 +91,23 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getRealmDefaultInstance();
-                    final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem messageItem = realm
-                                    .where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ORIGIN_ID, originId)
-                                    .findFirst();
-                            messageItem.setStanzaId(stanzaId);
-                            messageItem.setTimestamp(millis);
-                            messageItem.setAcknowledged(true);
-                            LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
-                        }
-                    });
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getRealmDefaultInstance();
+                final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
+                realm.executeTransaction(realm1 -> {
+                    MessageItem messageItem = realm1
+                            .where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.ORIGIN_ID, originId)
+                            .findFirst();
+                    messageItem.setStanzaId(stanzaId);
+                    messageItem.setTimestamp(millis);
+                    messageItem.setAcknowledged(true);
+                    LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
+                });
+            } finally { if (realm != null) realm.close(); }
         });
-
     }
 
     @Override
