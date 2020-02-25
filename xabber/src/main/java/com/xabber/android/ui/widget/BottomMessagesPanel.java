@@ -2,6 +2,7 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -73,9 +75,10 @@ public class BottomMessagesPanel extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         if (messagesIds != null && messagesIds.size() > 0) {
-            RealmResults<MessageItem> messages = Realm
-                    .getDefaultInstance().where(MessageItem.class)
+            RealmResults<MessageItem> messages = realm
+                    .where(MessageItem.class)
                     .in(MessageItem.Fields.UNIQUE_ID, messagesIds.toArray(new String[0]))
                     .findAll();
 
@@ -96,6 +99,7 @@ public class BottomMessagesPanel extends Fragment {
                 listener.onClose();
             }
         });
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     private String getNames(RealmResults<MessageItem> messages) {

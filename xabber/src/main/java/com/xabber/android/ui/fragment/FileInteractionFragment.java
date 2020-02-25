@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -215,7 +217,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID)
                 .findFirst();
@@ -242,6 +245,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 LogManager.exception(LOG_TAG, e);
             }
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     @Override
@@ -577,7 +581,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     private void openFileOrDownload(String messageUID, int attachmentPosition) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID)
                 .findFirst();
@@ -620,6 +625,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 }
             }
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     private void showAutoDownloadDialog() {

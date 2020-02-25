@@ -1,5 +1,6 @@
 package com.xabber.android.data.xaccount;
 
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.EmailRealm;
 import com.xabber.android.data.database.realmobjects.SocialBindingRealm;
 import com.xabber.android.data.database.realmobjects.SyncStateRealm;
@@ -425,12 +427,12 @@ public class XabberAccountManager implements OnLoadListener {
         }
         xabberAccountRealm.setSocialBindings(realmSocials);
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.beginTransaction();
         XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
         account = xabberAccountRealmToPOJO(accountRealm);
         realm.commitTransaction();
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         setAccount(account);
         return Single.just(account);
@@ -502,7 +504,7 @@ public class XabberAccountManager implements OnLoadListener {
         Realm realm = null;
 
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<XabberAccountRealm> xabberAccounts = realm
                     .where(XabberAccountRealm.class)
                     .findAll();
@@ -512,9 +514,7 @@ public class XabberAccountManager implements OnLoadListener {
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally {
-            if (realm != null) realm.close();
-        }
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         return xabberAccount;
     }
 
@@ -523,7 +523,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     success[0] = realm1.where(XabberAccountRealm.class)
                             .findAll()
@@ -698,7 +698,7 @@ public class XabberAccountManager implements OnLoadListener {
         Map<String, Boolean> resultMap = new HashMap<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<SyncStateRealm> realmItems = realm
                     .where(SyncStateRealm.class)
                     .findAll();
@@ -707,9 +707,7 @@ public class XabberAccountManager implements OnLoadListener {
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally {
-            if (realm != null) realm.close();
-        }
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         return resultMap;
     }
 
@@ -718,7 +716,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     success[0] = realm1.where(SyncStateRealm.class)
                             .findAll()
@@ -748,7 +746,7 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     List<SyncStateRealm> oldItems = realm1
                             .where(SyncStateRealm.class)

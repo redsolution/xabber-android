@@ -1905,7 +1905,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
             blockedView.setTextColor(accountColor);
             blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
-            blockedView.setText(R.string.blocked_contact_message);
+            blockedView.setText("Blocked contact");
 
             blockedView.setBackgroundColor(Utils.getAttrColor(getContext(), R.attr.chat_input_background));
             blockedView.setLayoutParams(layoutParams);

@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.extension.muc;
 
+import android.os.Looper;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.ForwardId;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -421,7 +423,7 @@ public class RoomChat extends AbstractChat {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -443,13 +445,13 @@ public class RoomChat extends AbstractChat {
     @Nullable
     private String getMessageIdIfInHistory(String stanzaId, String body) {
         if (stanzaId == null) return null;
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageItem message = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.TEXT, body)
                 .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                 .findFirst();
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         if (message != null) return message.getUniqueId();
         else return null;
     }

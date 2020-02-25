@@ -1,7 +1,10 @@
 package com.xabber.android.data.message;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.filedownload.DownloadManager;
@@ -56,10 +59,11 @@ public class BackpressureMessageSaver {
                 public void call(final List<MessageItem> messageItems) {
                     if (messageItems == null || messageItems.isEmpty()) return;
                     try {
-                        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+                        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();;
+                        realm.executeTransactionAsync(new Realm.Transaction() {
                             @Override
-                            public void execute(Realm realm) {
-                                realm.copyToRealm(messageItems);
+                            public void execute(Realm realm1) {
+                                realm1.copyToRealm(messageItems);
                             }
                         }, new Realm.Transaction.OnSuccess() {
                             @Override
@@ -69,6 +73,8 @@ public class BackpressureMessageSaver {
                                 checkForAttachmentsAndDownload(messageItems);
                             }
                         });
+                        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
                     } catch (Exception e) {
                         LogManager.exception(this, e);
                     }
@@ -88,7 +94,7 @@ public class BackpressureMessageSaver {
         boolean result = false;
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
             realm.beginTransaction();
             MessageItem item;
@@ -132,6 +138,7 @@ public class BackpressureMessageSaver {
                 }
             }
             realm.commitTransaction();
+            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
 
         return result;

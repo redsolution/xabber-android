@@ -14,12 +14,14 @@
  */
 package com.xabber.android.data.database.realmobjects;
 
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -484,7 +486,8 @@ public class MessageItem extends RealmObject {
         if (haveForwardedMessages()) {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
-                RealmResults<MessageItem> forwardedMessages = Realm.getDefaultInstance()
+                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                RealmResults<MessageItem> forwardedMessages = realm
                         .where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
                         .findAll()
@@ -511,6 +514,7 @@ public class MessageItem extends RealmObject {
                     if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))
                         text = stringBuilder.toString();
                 }
+                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
             }
         }
         return text;

@@ -5,6 +5,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.StatusRealm;
 import com.xabber.android.data.log.LogManager;
 
@@ -20,7 +21,7 @@ public class StatusRepository {
         Collection<SavedStatus> savedStatusCollection = new ArrayList<>();
         Realm realm = null;
         try{
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
             RealmResults<StatusRealm> realObjectsList = realm
                     .where(StatusRealm.class)
@@ -40,7 +41,7 @@ public class StatusRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     StatusRealm statusRealm = new StatusRealm(savedStatus.getStatusMode().toString(),
                             savedStatus.getStatusText());
@@ -56,7 +57,7 @@ public class StatusRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(StatusRealm.class)
                             .equalTo(StatusRealm.Fields.STATUS_MODE, savedStatus.getStatusMode().toString())
@@ -74,7 +75,7 @@ public class StatusRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(StatusRealm.class)
                             .findAll()

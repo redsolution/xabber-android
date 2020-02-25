@@ -3,6 +3,7 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
@@ -184,8 +186,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
         String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
-            RealmResults<MessageItem> forwardedMessages =
-                    Realm.getDefaultInstance()
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            RealmResults<MessageItem> forwardedMessages = realm
                             .where(MessageItem.class)
                             .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
                             .findAll()
@@ -209,6 +211,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 }
                 forwardLayout.setVisibility(View.VISIBLE);
             }
+            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         }
     }
 

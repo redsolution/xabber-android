@@ -1,8 +1,11 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionSettings;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
@@ -67,13 +70,13 @@ public class AccountRepository {
 
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(accountRealm);
                 });
             } catch (Exception e) {
                 LogManager.exception("AccountTable", e);
-            } finally { if (realm != null ) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
@@ -81,7 +84,7 @@ public class AccountRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(AccountRealm.class)
                             .findAll()
@@ -89,7 +92,7 @@ public class AccountRepository {
                 });
             } catch (Exception e){
                 LogManager.exception("AccountRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
@@ -97,7 +100,7 @@ public class AccountRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     AccountRealm accountRealm = realm1
                             .where(AccountRealm.class)
@@ -111,7 +114,7 @@ public class AccountRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AccountTable", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 }

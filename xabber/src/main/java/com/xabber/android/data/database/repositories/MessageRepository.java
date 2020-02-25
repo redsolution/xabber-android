@@ -1,6 +1,9 @@
 package com.xabber.android.data.database.repositories;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.realmobjects.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -16,7 +19,8 @@ public class MessageRepository {
     private static final String LOG_TAG = MessageRepository.class.getSimpleName();
 
     public static RealmResults<MessageItem> getChatMessages(AccountJid accountJid, UserJid userJid) {
-        return Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<MessageItem> results = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
                 .equalTo(MessageItem.Fields.USER, userJid.toString())
@@ -24,19 +28,21 @@ public class MessageRepository {
                 .isNotNull(MessageItem.Fields.TEXT)
                 .findAll()
                 .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return results;
     }
 
     public static void removeAllAccountMessagesFromRealm(){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(MessageItem.class).findAll().deleteAllFromRealm();
                 });
             } catch (Exception e) {
                 LogManager.exception("messageRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
@@ -44,7 +50,7 @@ public class MessageRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(MessageItem.class)
                             .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
@@ -58,7 +64,7 @@ public class MessageRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 

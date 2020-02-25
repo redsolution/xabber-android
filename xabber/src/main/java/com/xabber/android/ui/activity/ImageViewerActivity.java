@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.xabber.android.R;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -109,7 +111,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         });
 
         // get imageAttachments
-        MessageItem messageItem = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
@@ -128,6 +131,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
         // get account jid
         this.accountJid = messageItem.getAccount();
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         // find views
         progressBar = findViewById(R.id.progressBar);
@@ -340,11 +345,12 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void subscribeForAttachment(Attachment attachment) {
         if (attachment == null) return;
-        Attachment attachmentForSubscribe = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        Attachment attachmentForSubscribe = realm
                 .where(Attachment.class)
                 .equalTo(Attachment.Fields.UNIQUE_ID, attachment.getUniqueId())
                 .findFirst();
-
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         if (attachmentForSubscribe == null) return;
         //TODO FIX THIS
 //        Observable<Attachment> observable = attachmentForSubscribe.asObservable();

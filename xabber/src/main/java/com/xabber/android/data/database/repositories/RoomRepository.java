@@ -3,6 +3,7 @@ package com.xabber.android.data.database.repositories;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.RoomRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -24,7 +25,7 @@ public class RoomRepository {
         Collection<RoomChat> roomChats = new ArrayList<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<RoomRealm> realmResults = realm
                     .where(RoomRealm.class)
                     .findAll();
@@ -46,7 +47,7 @@ public class RoomRepository {
         Collection<RoomChat> roomChats = new ArrayList<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<RoomRealm> realmResults = realm
                     .where(RoomRealm.class)
                     .equalTo(RoomRealm.Fields.NEED_JOIN, true)
@@ -72,7 +73,7 @@ public class RoomRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealmOrUpdate(new RoomRealm(account, room, nickname, password,
                             isNeedJoin));
@@ -87,7 +88,7 @@ public class RoomRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(RoomRealm.class)
                             .equalTo(RoomRealm.Fields.ACCOUNT, account)

@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Context;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.log.LogManager;
@@ -29,7 +30,7 @@ public class ClipManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     String text = messagesToText(realm, ids, 0);
                     if (!text.isEmpty()) insertDataToClipboard(text);
                 } catch (Exception e) {

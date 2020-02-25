@@ -3,6 +3,7 @@ package com.xabber.android.data.database.repositories;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.OtrRealm;
 import com.xabber.android.data.entity.NestedNestedMaps;
 import com.xabber.android.data.log.LogManager;
@@ -16,7 +17,7 @@ public class OtrRepository {
         NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
         Realm realm = null;
         try{
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<OtrRealm> realmResults = realm
                     .where(OtrRealm.class)
                     .findAll();
@@ -36,13 +37,13 @@ public class OtrRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.copyToRealm(new OtrRealm(account, user, fingerprint, verified));
                 });
             } catch (Exception e){
                 LogManager.exception("OtrRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 }

@@ -15,6 +15,7 @@
 package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
@@ -22,6 +23,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.entity.AccountJid;
@@ -143,7 +145,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -176,7 +178,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                         RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
                     }
                 });
-                realm.close();
+                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
             }
         });
         LogManager.d("REALM", Thread.currentThread().getName()
@@ -189,7 +191,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         String userJid = chat.getUser().toString();
         ChatData chatData = null;
 
-        ChatDataRealm realmChat = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        ChatDataRealm realmChat = realm
                 .where(ChatDataRealm.class)
                 .equalTo("accountJid", accountJid)
                 .equalTo("userJid", userJid)
@@ -217,6 +220,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.getChatstateMode(),
                     realmChat.isGroupchat());
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return chatData;
     }
 
@@ -226,7 +230,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<NotificationStateRealm> results = realm1
                             .where(NotificationStateRealm.class)

@@ -1,6 +1,9 @@
 package com.xabber.android.data.roster;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ContactGroup;
 import com.xabber.android.data.database.realmobjects.ContactRealm;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -31,10 +34,10 @@ public class RosterCacheManager {
     }
 
     public static List<ContactRealm> loadContacts() {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<ContactRealm> contacts = realm.where(ContactRealm.class)
                 .findAll();
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return contacts;
     }
 
@@ -44,7 +47,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -97,7 +100,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -128,7 +131,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -156,7 +159,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {

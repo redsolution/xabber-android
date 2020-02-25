@@ -29,6 +29,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
@@ -192,7 +193,7 @@ public class FileMessageVH extends MessageVH
                     public void run() {
                         Realm realm = null;
                         try {
-                            realm = Realm.getDefaultInstance();
+                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                             realm.executeTransactionAsync(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {
@@ -274,7 +275,7 @@ public class FileMessageVH extends MessageVH
                                     public void run() {
                                         Realm realm = null;
                                         try {
-                                            realm = Realm.getDefaultInstance();
+                                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                                             realm.executeTransactionAsync(new Realm.Transaction() {
                                                 @Override
                                                 public void execute(Realm realm) {

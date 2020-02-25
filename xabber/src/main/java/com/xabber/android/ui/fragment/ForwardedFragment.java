@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -96,13 +98,15 @@ public class ForwardedFragment extends FileInteractionFragment {
             backgroundView.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
         }
 
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+
         // messages adapter
-        MessageItem messageItem = Realm.getDefaultInstance()
+        MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
 
-        RealmResults<MessageItem> forwardedMessages = Realm.getDefaultInstance()
+        RealmResults<MessageItem> forwardedMessages = realm
                 .where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray())
                 .findAll();
@@ -121,5 +125,7 @@ public class ForwardedFragment extends FileInteractionFragment {
             recyclerView.setAdapter(adapter);
             ((ForwardedActivity)getActivity()).setToolbar(forwardedMessages.size());
         }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 }

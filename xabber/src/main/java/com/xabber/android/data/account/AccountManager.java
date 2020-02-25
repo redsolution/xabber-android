@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.account;
 
+import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,7 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -144,8 +146,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public void onPreInitialize() {
-        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
-                .where(AccountRealm.class).findAll();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
 
         for (AccountRealm accountRealm : accountRealms) {
             DomainBareJid serverName = null;
@@ -179,6 +182,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             if (accountRealm.isEnabled())
                 cachedEnabledAccounts.add(AccountJid.from(userName, serverName, resource));
         }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     @Override
@@ -188,8 +193,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         final Collection<AccountItem> accountItems = new ArrayList<>();
 
-        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
-                .where(AccountRealm.class).findAll();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
 
         LogManager.i(LOG_TAG, "onLoad got realmobjects accounts: " + accountRealms.size());
 
@@ -281,6 +287,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItems.add(accountItem);
 
         }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -762,7 +770,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public boolean checkAccounts() {
-        return !Realm.getDefaultInstance().where(AccountRealm.class).findAll().isEmpty();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        boolean result = !realm.where(AccountRealm.class).findAll().isEmpty();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return result;
     }
 
     /**

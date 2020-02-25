@@ -3,6 +3,7 @@ package com.xabber.android.data.database.repositories;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AvatarRealm;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
@@ -43,7 +44,7 @@ public class AvatarRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     AvatarRealm avatarRealm = new AvatarRealm(user);
                     avatarRealm.setPepHash(pepHash);
@@ -51,7 +52,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
@@ -59,7 +60,7 @@ public class AvatarRepository {
         Map<BareJid, String> pepHashes = new HashMap<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<AvatarRealm> avatarRealms = realm
                     .where(AvatarRealm.class)
                     .findAll();
@@ -81,7 +82,7 @@ public class AvatarRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     AvatarRealm avatarRealm = new AvatarRealm(user);
                     avatarRealm.setHash(hash);
@@ -89,7 +90,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 

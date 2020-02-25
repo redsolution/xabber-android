@@ -2,6 +2,7 @@ package com.xabber.android.data.push;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PushLogRecord;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -189,7 +191,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
                     realm1.copyToRealm(pushLogRecord);
@@ -203,7 +205,8 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     public static List<String> getPushLogs() {
         List<String> logs = new ArrayList<>();
-        RealmResults<PushLogRecord> records = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<PushLogRecord> records = realm
                 .where(PushLogRecord.class)
                 .findAll()
                 .sort(PushLogRecord.Fields.TIME, Sort.DESCENDING);
@@ -212,6 +215,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
                     Locale.getDefault()).format(new Date(record.getTime()));
             logs.add(time + ": " + record.getMessage());
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return logs;
     }
 
@@ -219,7 +223,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(PushLogRecord.class)
                             .findAll()

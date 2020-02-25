@@ -9,6 +9,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.realmobjects.NotifChatRealm;
@@ -364,7 +365,7 @@ public class MessageNotificationManager implements OnLoadListener {
         List<Chat> results = new ArrayList<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<NotifChatRealm> items = realm
                     .where(NotifChatRealm.class)
                     .findAll();
@@ -389,7 +390,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<NotifChatRealm> items = realm1
                             .where(NotifChatRealm.class)
@@ -411,7 +412,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<NotifChatRealm> items = realm1
                             .where(NotifChatRealm.class)
@@ -432,7 +433,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<NotifChatRealm> items = realm1
                             .where(NotifChatRealm.class)
@@ -452,7 +453,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     NotifChatRealm chatRealm = new NotifChatRealm(chat.getId());
                     chatRealm.setAccount(chat.getAccountJid());

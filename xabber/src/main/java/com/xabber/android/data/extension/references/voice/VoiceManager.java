@@ -9,8 +9,10 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
@@ -104,7 +106,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     public void voiceClicked(String messageId, int attachmentIndex, Long timestamp) {
-        MessageItem messageItem = Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();;
+        MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
@@ -114,6 +117,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 || !messageItem.getAttachments().get(attachmentIndex).isVoice()) {
             return;
         }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         voiceClicked(messageItem, attachmentIndex, timestamp);
     }
@@ -602,7 +607,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                     if (voiceFileDuration != 0) {
                         Realm realm = null;
                         try {
-                            realm = Realm.getDefaultInstance();
+                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                             realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {

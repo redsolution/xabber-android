@@ -200,7 +200,7 @@ public class CrowdfundingManager {
     }
 
 //    public Observable<RealmResults<CrowdfundingMessage>> getUnreadMessageCountAsObservable() {
-//        Realm realm = Realm.getDefaultInstance();
+//        Realm realm = Realm.getDefaultRealmInstance();
 //        return realm.where(CrowdfundingMessage.class).equalTo(CrowdfundingMessage.Fields.READ, false)
 //                .equalTo(CrowdfundingMessage.Fields.DELAY, 0).findAll().asChangesetObservable();
 //    }

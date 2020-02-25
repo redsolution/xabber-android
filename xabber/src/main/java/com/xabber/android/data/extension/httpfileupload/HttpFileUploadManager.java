@@ -7,6 +7,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.webkit.MimeTypeMap;
@@ -19,6 +20,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -421,7 +423,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     UploadServer item = realm1.where(UploadServer.class)
                             .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
@@ -439,7 +441,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     UploadServer item = realm1.where(UploadServer.class)
                             .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
@@ -455,7 +457,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         uploadServers.clear();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<UploadServer> items = realm
                     .where(UploadServer.class)
                     .findAll();
@@ -464,8 +466,6 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             }
         } catch (Exception e) {
             LogManager.exception(HttpFileUploadManager.class.getName(), e);
-        } finally {
-            if (realm != null) realm.close();
-        }
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
     }
 }

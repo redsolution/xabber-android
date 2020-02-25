@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.net.Uri;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.ForwardId;
 import com.xabber.android.data.database.realmobjects.MessageItem;
@@ -483,7 +485,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -521,7 +523,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.copyToRealm(messageItem);
             }
         });
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         return messageId;
     }
@@ -712,7 +714,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageItem> items = realm.where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
 
@@ -726,7 +728,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 message.addExtension(reference);
             }
         }
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     private int getSizeOfEncodedChars(String str) {
@@ -749,7 +751,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             public void run() {
                 Realm realm = null;
                 try{
-                    realm = Realm.getDefaultInstance();
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -828,7 +830,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {
@@ -842,7 +844,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                     }
                                 }
                             });
-                        realm.close();
+                        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                     }
                 });
             } catch (NetworkException e) {
@@ -956,7 +958,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     //public void markAsRead(String messageId, boolean trySendDisplay) {
-    //    MessageItem message = Realm.getDefaultInstance()
+    //    MessageItem message = Realm.getDefaultRealmInstance()
     //            .where(MessageItem.class)
     //            .equalTo(MessageItem.Fields.STANZA_ID, messageId)
     //            .findFirst();
@@ -994,7 +996,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private RealmQuery<MessageItem> getAllUnreadQuery() {
-        return Realm.getDefaultInstance()
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmQuery<MessageItem> result = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
@@ -1002,6 +1005,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .isNotNull(MessageItem.Fields.TEXT)
                 .equalTo(MessageItem.Fields.INCOMING, true)
                 .equalTo(MessageItem.Fields.READ, false);
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return result;
     }
 
     private RealmResults<MessageItem> getAllUnreadAscending() {

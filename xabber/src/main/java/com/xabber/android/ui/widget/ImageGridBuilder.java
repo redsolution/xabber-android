@@ -3,6 +3,7 @@ package com.xabber.android.ui.widget;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
@@ -139,7 +141,9 @@ public class ImageGridBuilder {
                                     return;
                                 }
 
-                                Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+                                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+
+                                realm.executeTransactionAsync(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
                                         Attachment first = realm.where(Attachment.class)
@@ -153,6 +157,7 @@ public class ImageGridBuilder {
                                 });
                                 FileManager.scaleImage(layoutParams, height, width);
                                 imageView.setImageBitmap(resource);
+                                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                             }
 
                             @Override

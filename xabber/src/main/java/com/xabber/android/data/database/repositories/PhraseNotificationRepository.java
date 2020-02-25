@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PhraseNotificationRealm;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -20,7 +21,7 @@ public class PhraseNotificationRepository {
         ArrayList<Phrase> phrasesList = new ArrayList<>();
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<PhraseNotificationRealm> realmObjList = realm
                     .where(PhraseNotificationRealm.class)
                     .findAll();
@@ -40,7 +41,7 @@ public class PhraseNotificationRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     realm1.where(PhraseNotificationRealm.class)
                             .equalTo(PhraseNotificationRealm.Fields.ID, id)
@@ -49,7 +50,7 @@ public class PhraseNotificationRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("PhraseNotificationRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
@@ -58,7 +59,7 @@ public class PhraseNotificationRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
-                realm = Realm.getDefaultInstance();
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
 
                     PhraseNotificationRealm phraseNotifRealm = new PhraseNotificationRealm(phrase.getId());
@@ -73,7 +74,7 @@ public class PhraseNotificationRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("PhraseNotificationRepository", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 }
