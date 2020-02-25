@@ -91,12 +91,8 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         }
         final Message message = (Message) packet;
         if (message.getType() == Message.Type.error) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                @Override
-                public void run() {
-                    markAsError(account, message);
-                }
-            });
+            Application.getInstance().runInBackgroundUserRequest(() -> markAsError(account, message));
+
         } else {
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
@@ -142,9 +138,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             EventBus.getDefault().post(new MessageUpdateEvent(account));
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally {
-            if (realm != null) realm.close();
-        }
+        } finally { if (realm != null) realm.close(); }
     }
 
     @Override
@@ -155,17 +149,22 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             return;
         }
 
-        markAsDelivered(toJid, receiptId);
+        Application.getInstance().runInBackground(() -> markAsDelivered(toJid, receiptId));
     }
 
     private void markAsDelivered(final Jid toJid, final String receiptId) {
         Realm realm = null;
         try {
             realm = Realm.getDefaultInstance();
-            MessageItem first = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-            first.setDelivered(true);
+            realm.executeTransaction(realm1 -> {
+                MessageItem first = realm1.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
+                first.setDelivered(true);
+            });
+
             EventBus.getDefault().post(new MessageUpdateEvent());
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally { if (realm != null) realm.close(); }
     }
 }
