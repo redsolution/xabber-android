@@ -25,9 +25,17 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
-        Realm.getDefaultInstance().addChangeListener(realm -> {
-            int instances = Realm.getGlobalInstanceCount(realm.getConfiguration());
-            LogManager.d("DatabaseManager", Integer.toString(instances));
+        Realm.getDefaultInstance().addChangeListener(realm1 -> {
+            int instances = Realm.getGlobalInstanceCount(realm1.getConfiguration());
+            LogManager.d("DatabaseManager global ", Integer.toString(instances));
+            Application.getInstance().runOnUiThread(() -> {
+                int localInstances = Realm.getLocalInstanceCount(realm1.getConfiguration());
+                LogManager.d("DatabaseManager local at " + Thread.currentThread().getName(), Integer.toString(localInstances));
+            });
+            Application.getInstance().runInBackground(() -> {
+                int localInstances = Realm.getLocalInstanceCount(realm1.getConfiguration());
+                LogManager.d("DatabaseManager local at " + Thread.currentThread().getName(), Integer.toString(localInstances));
+            });
         });
     }
 
