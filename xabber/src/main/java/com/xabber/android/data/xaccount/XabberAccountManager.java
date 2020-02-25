@@ -499,15 +499,22 @@ public class XabberAccountManager implements OnLoadListener {
     @Nullable
     public XabberAccount loadXabberAccountFromRealm() {
         XabberAccount xabberAccount = null;
+        Realm realm = null;
 
-        RealmResults<XabberAccountRealm> xabberAccounts = Realm.getDefaultInstance()
-                .where(XabberAccountRealm.class)
-                .findAll();
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<XabberAccountRealm> xabberAccounts = realm
+                    .where(XabberAccountRealm.class)
+                    .findAll();
 
-        for (XabberAccountRealm xabberAccountRealm : xabberAccounts) {
-            xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
+            for (XabberAccountRealm xabberAccountRealm : xabberAccounts) {
+                xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null) realm.close();
         }
-
         return xabberAccount;
     }
 
@@ -689,14 +696,20 @@ public class XabberAccountManager implements OnLoadListener {
 
     public Map<String, Boolean> loadSyncStatesFromRealm() {
         Map<String, Boolean> resultMap = new HashMap<>();
-
-        RealmResults<SyncStateRealm> realmItems = Realm.getDefaultInstance()
-                .where(SyncStateRealm.class)
-                .findAll();
-        for (SyncStateRealm realmItem : realmItems) {
-            resultMap.put(realmItem.getJid(), realmItem.isSync());
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<SyncStateRealm> realmItems = realm
+                    .where(SyncStateRealm.class)
+                    .findAll();
+            for (SyncStateRealm realmItem : realmItems) {
+                resultMap.put(realmItem.getJid(), realmItem.isSync());
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null) realm.close();
         }
-
         return resultMap;
     }
 

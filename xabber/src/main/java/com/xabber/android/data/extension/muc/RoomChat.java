@@ -449,6 +449,7 @@ public class RoomChat extends AbstractChat {
                 .equalTo(MessageItem.Fields.TEXT, body)
                 .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                 .findFirst();
+        realm.close();
         if (message != null) return message.getUniqueId();
         else return null;
     }

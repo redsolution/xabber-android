@@ -362,17 +362,25 @@ public class MessageNotificationManager implements OnLoadListener {
     /** Called not from Main thread */
     private List<Chat> loadNotifChatsFromRealm() {
         List<Chat> results = new ArrayList<>();
-        RealmResults<NotifChatRealm> items = Realm.getDefaultInstance()
-                .where(NotifChatRealm.class)
-                .findAll();
-        for (NotifChatRealm item : items) {
-            Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
-                    item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
-            for (NotifMessageRealm message : item.getMessages()) {
-                chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
-                        message.getTimestamp()));
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<NotifChatRealm> items = realm
+                    .where(NotifChatRealm.class)
+                    .findAll();
+            for (NotifChatRealm item : items) {
+                Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
+                        item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
+                for (NotifMessageRealm message : item.getMessages()) {
+                    chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
+                            message.getTimestamp()));
+                }
+                results.add(chat);
             }
-            results.add(chat);
+        } catch (Exception e) {
+            LogManager.exception(MessageNotificationManager.class.getName(), e);
+        } finally {
+            if (realm != null) realm.close();
         }
         return results;
     }

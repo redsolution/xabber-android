@@ -52,7 +52,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         DiscoverInfo discoverInfo = null;
 
         if (discoveryInfoCache != null) {
-            discoverInfo = realm.copyFromRealm(discoveryInfoCache).getDiscoveryInfo();
+            discoverInfo = discoveryInfoCache.getDiscoveryInfo();
         }
         realm.close();
         return discoverInfo;

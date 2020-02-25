@@ -453,11 +453,19 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
     private void loadAllFromRealm(Map<BareJid, Jid> uploadServers) {
         uploadServers.clear();
-        RealmResults<UploadServer> items = Realm.getDefaultInstance()
-                .where(UploadServer.class)
-                .findAll();
-        for (UploadServer item : items) {
-            uploadServers.put(item.getAccount(), item.getServer());
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            RealmResults<UploadServer> items = realm
+                    .where(UploadServer.class)
+                    .findAll();
+            for (UploadServer item : items) {
+                uploadServers.put(item.getAccount(), item.getServer());
+            }
+        } catch (Exception e) {
+            LogManager.exception(HttpFileUploadManager.class.getName(), e);
+        } finally {
+            if (realm != null) realm.close();
         }
     }
 }
