@@ -26,7 +26,7 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
         Realm.getDefaultInstance().addChangeListener(realm -> {
-            int instances = realm.getGlobalInstanceCount(realm.getConfiguration());
+            int instances = Realm.getGlobalInstanceCount(realm.getConfiguration());
             LogManager.d("DatabaseManager", Integer.toString(instances));
         });
     }
@@ -71,5 +71,9 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
+    }
+
+    public RealmConfiguration getDefaultRealmConfig() {
+        return realmConfiguration;
     }
 }

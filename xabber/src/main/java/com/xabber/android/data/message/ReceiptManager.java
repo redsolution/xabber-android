@@ -140,8 +140,11 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                 }
             });
             EventBus.getDefault().post(new MessageUpdateEvent(account));
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null) realm.close();
+        }
     }
 
     @Override

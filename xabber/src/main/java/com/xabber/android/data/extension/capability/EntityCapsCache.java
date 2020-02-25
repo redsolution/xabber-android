@@ -1,7 +1,5 @@
 package com.xabber.android.data.extension.capability;
 
-import android.os.Looper;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.DiscoveryInfoCache;
 import com.xabber.android.data.log.LogManager;
@@ -46,7 +44,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
     public DiscoverInfo lookup(String nodeVer) {
         Realm realm = Realm.getDefaultInstance();
 
-        DiscoveryInfoCache discoveryInfoCache = Realm.getDefaultInstance()
+        DiscoveryInfoCache discoveryInfoCache = realm
                 .where(DiscoveryInfoCache.class)
                 .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
                 .findFirst();

@@ -32,7 +32,12 @@ public class ClipManager {
                     realm = Realm.getDefaultInstance();
                     String text = messagesToText(realm, ids, 0);
                     if (!text.isEmpty()) insertDataToClipboard(text);
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
+
             }
         });
     }
