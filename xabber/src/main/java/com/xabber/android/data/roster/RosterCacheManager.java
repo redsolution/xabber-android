@@ -1,9 +1,9 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.realmobjects.ContactGroup;
 import com.xabber.android.data.database.realmobjects.ContactRealm;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
@@ -110,7 +110,11 @@ public class RosterCacheManager {
                             }
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
     }
@@ -131,7 +135,11 @@ public class RosterCacheManager {
                             results.deleteAllFromRealm();
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
     }
@@ -158,7 +166,11 @@ public class RosterCacheManager {
                             }
                         }
                     });
-                } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e){
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
     }

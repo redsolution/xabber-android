@@ -52,7 +52,11 @@ public class ForwardManager {
                             chat.sendMessages();
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
     }

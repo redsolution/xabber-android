@@ -431,7 +431,11 @@ public class RoomChat extends AbstractChat {
                             message.setOriginalFrom(originalFrom);
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
     }

@@ -242,7 +242,11 @@ public class ChatMarkerManager implements OnPacketListener {
                             }
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); } //TODO maybe should close!
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
 
@@ -280,7 +284,11 @@ public class ChatMarkerManager implements OnPacketListener {
                             }
                         }
                     });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); } //TODO maybe should close!
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    if (realm != null) realm.close();
+                }
             }
         });
 
