@@ -25,10 +25,16 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
 
     private Realm realmInstanceInUI;
 
+    private int prevGlobalInstCount;
+    private int prevLocalInstCount;
+
     private DatabaseManager(){
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
+
+        prevGlobalInstCount = 0;
+        prevLocalInstCount = 0;
     }
 
     public static DatabaseManager getInstance(){
@@ -37,10 +43,26 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
     }
 
     public Realm getDefaultRealmInstance(){
+        Realm result;
+
         if (Looper.myLooper() == Looper.getMainLooper()){
             if (realmInstanceInUI == null) realmInstanceInUI = Realm.getInstance(Realm.getDefaultConfiguration());
-            return realmInstanceInUI;
-        } else return Realm.getDefaultInstance();
+            result = realmInstanceInUI;
+        } else result = Realm.getDefaultInstance();
+
+        int localInstances = Realm.getLocalInstanceCount(Realm.getDefaultConfiguration());
+        LogManager.d("DatabaseManager local at " + Thread.currentThread().getName(), Integer.toString(localInstances));
+
+        int instances = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+        LogManager.d("DatabaseManager global ", Integer.toString(instances));
+
+        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances)
+            LogManager.exception("DatabaseManager AHTUNG! Instances count was changed! ", new Exception());
+
+        prevLocalInstCount = localInstances;
+        prevGlobalInstCount = instances;
+
+        return result;
     }
 
     public Observable<Realm> getObservableListener(){ //TODO pay attention!
