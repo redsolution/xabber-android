@@ -235,9 +235,7 @@ public class ChatMarkerManager implements OnPacketListener {
                                         .findAll();
 
                                 if (results != null) {
-                                    for (MessageItem item : results) {
-                                        item.setDisplayed(true);
-                                    }
+                                    results.setBoolean(MessageItem.Fields.DISPLAYED, true);
                                     EventBus.getDefault().post(new MessageUpdateEvent());
                                 }
                             }
@@ -275,9 +273,7 @@ public class ChatMarkerManager implements OnPacketListener {
                                         .findAll();
 
                                 if (results != null) {
-                                    for (MessageItem item : results) {
-                                        item.setDelivered(true);
-                                    }
+                                    results.setBoolean(MessageItem.Fields.DELIVERED, true);
                                     EventBus.getDefault().post(new MessageUpdateEvent());
                                 }
                             }
