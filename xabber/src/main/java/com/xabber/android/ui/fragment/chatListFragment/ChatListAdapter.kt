@@ -52,7 +52,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     override fun onClick(v: View?) {
         if (v!!.id == R.id.ivAvatar) listener.onChatAvatarClick(
-                list[recyclerView.getChildLayoutPosition(v.parent.parent.parent.parent as View)])
+                list[recyclerView.getChildLayoutPosition(v.parent.parent.parent as View)])
         else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
@@ -62,7 +62,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
             ChatViewHolder(LayoutInflater
                     .from(parent.context)
-                    .inflate(R.layout.item_chat_in_contact_list, parent, false))
+                    .inflate(R.layout.chat_item_relative_layout, parent, false))
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
