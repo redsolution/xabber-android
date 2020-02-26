@@ -29,7 +29,7 @@ public class GroupRepository {
                 groupConfiguration.setShowOfflineMode(groupRealm.getShowOfflineMode());
                 groupConfigurationNestedMap.put(groupRealm.getAccount(), groupRealm.getGroupName(), groupConfiguration);
             }
-        } finally { if (realm != null && Looper.myLooper() == Looper.getMainLooper()) realm.close(); }
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
 
         return groupConfigurationNestedMap;
