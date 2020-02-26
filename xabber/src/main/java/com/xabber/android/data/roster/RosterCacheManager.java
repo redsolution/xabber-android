@@ -35,117 +35,101 @@ public class RosterCacheManager {
 
     public static List<ContactRealm> loadContacts() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<ContactRealm> contacts = realm.where(ContactRealm.class)
+        RealmResults<ContactRealm> contacts = realm
+                .where(ContactRealm.class)
                 .findAll();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return contacts;
     }
 
     public static void saveContact(final AccountJid accountJid, final Collection<RosterContact> contacts) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            if (contacts.size() > 1) {
-                                RealmResults<ContactRealm> results = realm.where(ContactRealm.class)
-                                        .equalTo(ContactRealm.Fields.ACCOUNT,
-                                                accountJid.getFullJid().asBareJid().toString()).findAll();
-                                results.deleteAllFromRealm();
-                            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    if (contacts.size() > 1) {
+                        RealmResults<ContactRealm> results = realm1
+                                .where(ContactRealm.class)
+                                .equalTo(ContactRealm.Fields.ACCOUNT,
+                                        accountJid.getFullJid().asBareJid().toString())
+                                .findAll();
+                        results.deleteAllFromRealm();
+                    }
 
-                            List<ContactRealm> newContacts = new ArrayList<>();
-                            for (RosterContact contact : contacts) {
-                                String account = contact.getAccount().getFullJid().asBareJid().toString();
-                                String user = contact.getUser().getBareJid().toString();
+                    List<ContactRealm> newContacts = new ArrayList<>();
+                    for (RosterContact contact : contacts) {
+                        String account = contact.getAccount().getFullJid().asBareJid().toString();
+                        String user = contact.getUser().getBareJid().toString();
 
-                                ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
-                                        account + "/" + user).findFirst();
-                                if (contactRealm == null) {
-                                    contactRealm = new ContactRealm(account + "/" + user);
-                                }
-
-                                RealmList<ContactGroup> groups = new RealmList<>();
-                                for (String groupName : contact.getGroupNames()) {
-                                    ContactGroup group = realm.copyToRealmOrUpdate(new ContactGroup(groupName));
-                                    if (group.isManaged() && group.isValid())
-                                        groups.add(group);
-                                }
-
-                                contactRealm.setGroups(groups);
-                                contactRealm.setAccount(account);
-                                contactRealm.setUser(user);
-                                contactRealm.setName(contact.getName());
-                                contactRealm.setAccountResource(contact.getAccount().getFullJid().getResourcepart().toString());
-                                newContacts.add(contactRealm);
-                            }
-                            realm.copyToRealmOrUpdate(newContacts);
+                        ContactRealm contactRealm = realm1
+                                .where(ContactRealm.class)
+                                .equalTo(ContactRealm.Fields.ID,account + "/" + user).findFirst();
+                        if (contactRealm == null) {
+                            contactRealm = new ContactRealm(account + "/" + user);
                         }
-                    });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-                finally {
-                    if (realm != null) realm.close();
-                }
-            }
+
+                        RealmList<ContactGroup> groups = new RealmList<>();
+                        for (String groupName : contact.getGroupNames()) {
+                            ContactGroup group = realm1.copyToRealmOrUpdate(new ContactGroup(groupName));
+                            if (group.isManaged() && group.isValid())
+                                groups.add(group);
+                        }
+
+                        contactRealm.setGroups(groups);
+                        contactRealm.setAccount(account);
+                        contactRealm.setUser(user);
+                        contactRealm.setName(contact.getName());
+                        contactRealm.setAccountResource(contact.getAccount().getFullJid().getResourcepart().toString());
+                        newContacts.add(contactRealm);
+                    }
+                    realm1.copyToRealmOrUpdate(newContacts);
+                });
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            finally { if (realm != null) realm.close(); }
         });
     }
 
     public static void removeContact(final Collection<RosterContact> contacts) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            for (RosterContact contact : contacts) {
-                                String account = contact.getAccount().getFullJid().asBareJid().toString();
-                                String user = contact.getUser().getBareJid().toString();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    for (RosterContact contact : contacts) {
+                        String account = contact.getAccount().getFullJid().asBareJid().toString();
+                        String user = contact.getUser().getBareJid().toString();
 
-                                ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
-                                        account + "/" + user).findFirst();
-                                if (contactRealm != null)
-                                    contactRealm.deleteFromRealm();
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-            }
+                        ContactRealm contactRealm = realm1
+                                .where(ContactRealm.class)
+                                .equalTo(ContactRealm.Fields.ID,account + "/" + user).findFirst();
+                        if (contactRealm != null)
+                            contactRealm.deleteFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+
         });
     }
 
     public static void removeContacts(AccountJid account) {
         final String accountJid = account.getFullJid().asBareJid().toString();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            RealmResults<ContactRealm> results = realm.where(ContactRealm.class)
-                                    .equalTo(ContactRealm.Fields.ACCOUNT, accountJid).findAll();
-                            results.deleteAllFromRealm();
-                        }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                        RealmResults<ContactRealm> results = realm1
+                                .where(ContactRealm.class)
+                                .equalTo(ContactRealm.Fields.ACCOUNT, accountJid)
+                                .findAll();
+                        results.deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -154,29 +138,27 @@ public class RosterCacheManager {
         final String account = messageItem.getAccount().getFullJid().asBareJid().toString();
         final String user = messageItem.getUser().getBareJid().toString();
         final String messageID = messageItem.getUniqueId();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
-                            MessageItem message = realm.where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageID).findFirst();
-                            if (contactRealm != null && message != null && message.isValid() && message.isManaged()) {
-                                contactRealm.setLastMessage(message);
-                                realm.copyToRealmOrUpdate(contactRealm);
-                            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                        ContactRealm contactRealm = realm1
+                                .where(ContactRealm.class)
+                                .equalTo(ContactRealm.Fields.ID, account + "/" + user)
+                                .findFirst();
+                        MessageItem message = realm1
+                                .where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, messageID)
+                                .findFirst();
+                        if (contactRealm != null && message != null && message.isValid() && message.isManaged()) {
+                            contactRealm.setLastMessage(message);
+                            realm1.copyToRealmOrUpdate(contactRealm);
                         }
-                    });
-                } catch (Exception e){
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-            }
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

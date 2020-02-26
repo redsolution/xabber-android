@@ -2,12 +2,12 @@ package com.xabber.android.data.message;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -23,24 +23,11 @@ public class ClipManager {
     private static final String LOG_TAG = ClipManager.class.getSimpleName();
 
     public static void copyMessagesToClipboard(final List<String> messageIDs) {
-
         final String[] ids = messageIDs.toArray(new String[0]);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    String text = messagesToText(realm, ids, 0);
-                    if (!text.isEmpty()) insertDataToClipboard(text);
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-
-            }
-        });
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        String text = messagesToText(realm, ids, 0);
+        if (!text.isEmpty()) insertDataToClipboard(text);
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     public static String createMessageTree(Realm realm, String id) {

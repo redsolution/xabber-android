@@ -29,7 +29,8 @@ public class GroupchatUserManager implements OnLoadListener {
     public void onLoad() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<GroupchatUserRealm> users = realm
-                .where(GroupchatUserRealm.class).findAll();
+                .where(GroupchatUserRealm.class)
+                .findAll();
         for (GroupchatUserRealm user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }

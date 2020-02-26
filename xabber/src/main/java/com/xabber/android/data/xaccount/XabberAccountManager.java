@@ -501,20 +501,16 @@ public class XabberAccountManager implements OnLoadListener {
     @Nullable
     public XabberAccount loadXabberAccountFromRealm() {
         XabberAccount xabberAccount = null;
-        Realm realm = null;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        try {
-            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<XabberAccountRealm> xabberAccounts = realm
+        RealmResults<XabberAccountRealm> xabberAccounts = realm
                     .where(XabberAccountRealm.class)
                     .findAll();
 
-            for (XabberAccountRealm xabberAccountRealm : xabberAccounts) {
-                xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
-            }
-        } catch (Exception e) {
-            LogManager.exception(LOG_TAG, e);
-        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+        for (XabberAccountRealm xabberAccountRealm : xabberAccounts)
+            xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return xabberAccount;
     }
 
@@ -696,18 +692,15 @@ public class XabberAccountManager implements OnLoadListener {
 
     public Map<String, Boolean> loadSyncStatesFromRealm() {
         Map<String, Boolean> resultMap = new HashMap<>();
-        Realm realm = null;
-        try {
-            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<SyncStateRealm> realmItems = realm
-                    .where(SyncStateRealm.class)
+
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<SyncStateRealm> realmItems = realm.where(SyncStateRealm.class)
                     .findAll();
-            for (SyncStateRealm realmItem : realmItems) {
+
+        for (SyncStateRealm realmItem : realmItems)
                 resultMap.put(realmItem.getJid(), realmItem.isSync());
-            }
-        } catch (Exception e) {
-            LogManager.exception(LOG_TAG, e);
-        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return resultMap;
     }
 

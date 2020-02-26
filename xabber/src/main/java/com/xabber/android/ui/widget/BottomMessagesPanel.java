@@ -93,11 +93,8 @@ public class BottomMessagesPanel extends Fragment {
             } else tvText.setText(text);
         }
 
-        ivCloseBottomMessagePanel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        ivCloseBottomMessagePanel.setOnClickListener(v ->  {
                 listener.onClose();
-            }
         });
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }

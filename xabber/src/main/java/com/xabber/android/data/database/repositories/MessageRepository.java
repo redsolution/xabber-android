@@ -42,7 +42,7 @@ public class MessageRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("messageRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -64,7 +64,7 @@ public class MessageRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

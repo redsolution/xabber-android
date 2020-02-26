@@ -58,26 +58,20 @@ public class BackpressureMessageSaver {
                 @Override
                 public void call(final List<MessageItem> messageItems) {
                     if (messageItems == null || messageItems.isEmpty()) return;
+                    Realm realm = null;
                     try {
-                        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();;
-                        realm.executeTransactionAsync(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm1) {
-                                realm1.copyToRealm(messageItems);
-                            }
-                        }, new Realm.Transaction.OnSuccess() {
-                            @Override
-                            public void onSuccess() {
-                                EventBus.getDefault().post(new NewMessageEvent());
-                                SyncManager.getInstance().onMessageSaved();
-                                checkForAttachmentsAndDownload(messageItems);
-                            }
+                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                        realm.executeTransactionAsync(realm1 -> {
+                            realm1.copyToRealm(messageItems);
+                        }, () ->  {
+                            EventBus.getDefault().post(new NewMessageEvent());
+                            SyncManager.getInstance().onMessageSaved();
+                            checkForAttachmentsAndDownload(messageItems);
                         });
-                        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-
                     } catch (Exception e) {
                         LogManager.exception(this, e);
-                    }
+                    } finally { if ( realm != null && Looper.myLooper() != Looper.getMainLooper())
+                        realm.close(); }
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -92,54 +86,52 @@ public class BackpressureMessageSaver {
     //TODO refactor this method before releasing
     private boolean hasCopyInRealm(final MessageItem newIncomingMessageItem){
         boolean result = false;
-        Realm realm = null;
-        try {
-            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageItem item;
 
-            realm.beginTransaction();
-            MessageItem item;
-            if (newIncomingMessageItem.getUniqueId() != null) {
-                item = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
-                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                        .findFirst();
-                if (item != null && !newIncomingMessageItem.isForwarded()) {
-                    result = true;
-                    LogManager.d(LOG_TAG,
-                            "Received message, but we already have message with same ID! \n Message stanza: "
-                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                    + item.getOriginalStanza());
-                }
+        if (newIncomingMessageItem.getUniqueId() != null) {
+            item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
+                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageItem.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
             }
-            if (newIncomingMessageItem.getStanzaId() != null) {
-                item = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
-                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                        .findFirst();
-                if (item != null && !newIncomingMessageItem.isForwarded()) {
-                    result = true;
-                    LogManager.d(LOG_TAG,
-                            "Received message, but we already have message with same ID! \n Message stanza: "
-                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                    + item.getOriginalStanza());
-                }
+        }
+
+        if (newIncomingMessageItem.getStanzaId() != null) {
+            item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
+                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageItem.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
             }
-            if (newIncomingMessageItem.getOriginId() != null) {
-                item = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
-                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                        .findFirst();
-                if (item != null && !newIncomingMessageItem.isForwarded()) {
-                    result = true;
-                    LogManager.d(LOG_TAG,
-                            "Received message, but we already have message with same ID! \n Message stanza: "
-                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                    + item.getOriginalStanza());
-                }
+        }
+
+        if (newIncomingMessageItem.getOriginId() != null) {
+            item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
+                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageItem.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
             }
-            realm.commitTransaction();
-            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         return result;
     }

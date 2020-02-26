@@ -1,9 +1,9 @@
 package com.xabber.android.data.http;
 
-import androidx.annotation.Nullable;
-
 import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -116,7 +116,7 @@ public class PatreonManager implements OnLoadListener {
                 + " save patreon data: " + (System.currentTimeMillis() - startTime));
 
         Log.d(LOG_TAG, "Patreon was saved to Realm");
-
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return Single.just(result);
     }
 

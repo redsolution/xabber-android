@@ -56,8 +56,6 @@ import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -485,45 +483,46 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         final String messageId = UUID.randomUUID().toString();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm.executeTransaction(realm1 ->  {
+                    RealmList<Attachment> attachments;
+                    if (files != null) attachments = attachmentsFromFiles(files, referenceType);
+                    else attachments = attachmentsFromUris(uris);
+                    String initialID = UUID.randomUUID().toString();
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmList<Attachment> attachments;
-                if (files != null) attachments = attachmentsFromFiles(files, referenceType);
-                else attachments = attachmentsFromUris(uris);
-                String initialID = UUID.randomUUID().toString();
+                    MessageItem messageItem = new MessageItem(messageId);
 
-                MessageItem messageItem = new MessageItem(messageId);
+                    if (forwards != null && forwards.size()>0) {
+                        RealmList<ForwardId> ids = new RealmList<>();
 
-                if (forwards != null && forwards.size()>0) {
-                    RealmList<ForwardId> ids = new RealmList<>();
-
-                    for (String forward : forwards) {
-                        ids.add(new ForwardId(forward));
+                        for (String forward : forwards) {
+                            ids.add(new ForwardId(forward));
+                        }
+                        messageItem.setForwardedIds(ids);
                     }
-                    messageItem.setForwardedIds(ids);
-                }
 
-                messageItem.setAccount(account);
-                messageItem.setUser(user);
-                messageItem.setOriginalFrom(account.toString());
-                messageItem.setText(FileMessageVH.UPLOAD_TAG);
-                messageItem.setAttachments(attachments);
-                messageItem.setTimestamp(System.currentTimeMillis());
-                messageItem.setRead(true);
-                messageItem.setSent(true);
-                messageItem.setError(false);
-                messageItem.setIncoming(false);
-                messageItem.setInProgress(true);
-                messageItem.setStanzaId(initialID);
-                messageItem.setOriginId(initialID);
-                realm.copyToRealm(messageItem);
-            }
+                    messageItem.setAccount(account);
+                    messageItem.setUser(user);
+                    messageItem.setOriginalFrom(account.toString());
+                    messageItem.setText(FileMessageVH.UPLOAD_TAG);
+                    messageItem.setAttachments(attachments);
+                    messageItem.setTimestamp(System.currentTimeMillis());
+                    messageItem.setRead(true);
+                    messageItem.setSent(true);
+                    messageItem.setError(false);
+                    messageItem.setIncoming(false);
+                    messageItem.setInProgress(true);
+                    messageItem.setStanzaId(initialID);
+                    messageItem.setOriginId(initialID);
+                    realm1.copyToRealm(messageItem);
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         return messageId;
     }
@@ -715,8 +714,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
+        RealmResults<MessageItem> items = realm
+                .where(MessageItem.class)
+                .in(MessageItem.Fields.UNIQUE_ID, forwardedIds)
+                .findAll();
 
         if (items != null && !items.isEmpty()) {
             for (MessageItem item : items) {
@@ -746,34 +747,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
 
     public void sendMessages() {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try{
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                                    .equalTo(MessageItem.Fields.USER, user.toString())
-                                    .equalTo(MessageItem.Fields.SENT, false)
-                                    .findAll()
-                                    .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        Application.getInstance().runInBackgroundUserRequest(() ->  {
+            Realm realm = null;
+            try{
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                        RealmResults<MessageItem> messagesToSend = realm1.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                                .equalTo(MessageItem.Fields.USER, user.toString())
+                                .equalTo(MessageItem.Fields.SENT, false)
+                                .findAll()
+                                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
-                            for (final MessageItem messageItem : messagesToSend) {
-                                if (messageItem.isInProgress()) continue;
-                                if (!sendMessage(messageItem)) {
-                                    break;
-                                }
+                        for (final MessageItem messageItem : messagesToSend) {
+                            if (messageItem.isInProgress()) continue;
+                            if (!sendMessage(messageItem)) {
+                                break;
                             }
                         }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally { if (realm != null) realm.close(); }
-            }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -827,25 +822,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
             final String messageId = messageItem.getUniqueId();
             try {
-                StanzaSender.sendStanza(account, message, new StanzaListener() {
-                    @Override
-                    public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                        realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    MessageItem acknowledgedMessage = realm
-                                            .where(MessageItem.class)
-                                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                                            .findFirst();
+                StanzaSender.sendStanza(account, message, packet ->  {
+                    Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                    realm.executeTransaction(realm1 ->  {
+                            MessageItem acknowledgedMessage = realm1
+                                    .where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                                    .findFirst();
 
-                                    if (acknowledgedMessage != null && !ReliableMessageDeliveryManager.getInstance().isSupported(account)) {
-                                        acknowledgedMessage.setAcknowledged(true);
-                                    }
-                                }
-                            });
-                        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-                    }
+                            if (acknowledgedMessage != null && !ReliableMessageDeliveryManager
+                                    .getInstance().isSupported(account)) {
+                                acknowledgedMessage.setAcknowledged(true);
+                            }
+                    });
+                    if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                 });
             } catch (NetworkException e) {
                 return false;

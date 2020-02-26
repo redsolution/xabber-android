@@ -35,7 +35,6 @@ import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.message.NotificationState;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 
 /**
@@ -142,44 +141,42 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        String accountJid = chat.getAccount().toString();
-                        String userJid = chat.getUser().toString();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    String accountJid = chat.getAccount().toString();
+                    String userJid = chat.getUser().toString();
 
-                        ChatDataRealm chatRealm = realm.where(ChatDataRealm.class)
-                                .equalTo("accountJid", accountJid)
-                                .equalTo("userJid", userJid)
-                                .findFirst();
+                    ChatDataRealm chatRealm = realm1.where(ChatDataRealm.class)
+                            .equalTo("accountJid", accountJid)
+                            .equalTo("userJid", userJid)
+                            .findFirst();
 
-                        if (chatRealm == null)
-                            chatRealm = new ChatDataRealm(accountJid, userJid);
+                    if (chatRealm == null)
+                        chatRealm = new ChatDataRealm(accountJid, userJid);
 
-                        chatRealm.setLastPosition(chat.getLastPosition());
-                        chatRealm.setArchived(chat.isArchived());
-                        chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
-                        chatRealm.setLastActionTimestamp(chat.getLastActionTimestamp());
-                        chatRealm.setChatStateMode(chat.getChatstateMode());
-                        chatRealm.setGroupchat(chat.isGroupchat());
+                    chatRealm.setLastPosition(chat.getLastPosition());
+                    chatRealm.setArchived(chat.isArchived());
+                    chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
+                    chatRealm.setLastActionTimestamp(chat.getLastActionTimestamp());
+                    chatRealm.setChatStateMode(chat.getChatstateMode());
+                    chatRealm.setGroupchat(chat.isGroupchat());
 
-                        NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
-                        if (notificationStateRealm == null)
-                            notificationStateRealm = new NotificationStateRealm();
+                    NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
+                    if (notificationStateRealm == null)
+                        notificationStateRealm = new NotificationStateRealm();
 
-                        notificationStateRealm.setMode(chat.getNotificationState().getMode());
-                        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
-                        chatRealm.setNotificationState(notificationStateRealm);
+                    notificationStateRealm.setMode(chat.getNotificationState().getMode());
+                    notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
+                    chatRealm.setNotificationState(notificationStateRealm);
 
-                        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
-                    }
+                    realm1.copyToRealmOrUpdate(chatRealm);
                 });
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-            }
+            } catch (Exception e){
+                LogManager.exception(ChatManager.class.getSimpleName(), e);
+            } finally { if (realm != null) realm.close(); }
         });
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save chat data: " + (System.currentTimeMillis() - startTime));
@@ -226,7 +223,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void clearUnusedNotificationStateFromRealm() {
         final long startTime = System.currentTimeMillis();
-        // TODO: 13.03.18 ANR - WRITE
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

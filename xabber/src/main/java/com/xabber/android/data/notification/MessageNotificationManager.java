@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -363,26 +364,21 @@ public class MessageNotificationManager implements OnLoadListener {
     /** Called not from Main thread */
     private List<Chat> loadNotifChatsFromRealm() {
         List<Chat> results = new ArrayList<>();
-        Realm realm = null;
-        try {
-            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<NotifChatRealm> items = realm
-                    .where(NotifChatRealm.class)
-                    .findAll();
-            for (NotifChatRealm item : items) {
-                Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
-                        item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
-                for (NotifMessageRealm message : item.getMessages()) {
-                    chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
-                            message.getTimestamp()));
-                }
-                results.add(chat);
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<NotifChatRealm> items = realm
+                .where(NotifChatRealm.class)
+                .findAll();
+        for (NotifChatRealm item : items) {
+            Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
+                    item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
+            for (NotifMessageRealm message : item.getMessages()) {
+                chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
+                        message.getTimestamp()));
             }
-        } catch (Exception e) {
-            LogManager.exception(MessageNotificationManager.class.getName(), e);
-        } finally {
-            if (realm != null) realm.close();
+            results.add(chat);
         }
+
+        if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
         return results;
     }
 

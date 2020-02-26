@@ -43,7 +43,7 @@ public class OtrRepository {
                 });
             } catch (Exception e){
                 LogManager.exception("OtrRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 }

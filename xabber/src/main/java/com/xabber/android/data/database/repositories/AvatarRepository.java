@@ -52,7 +52,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -90,7 +90,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

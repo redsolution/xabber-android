@@ -140,25 +140,21 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void onLoad() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.SENT, false)
-                        .findAll();
+        RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.SENT, false)
+                .findAll();
 
-                for (MessageItem messageItem : messagesToSend) {
-                    AccountJid account = messageItem.getAccount();
-                    UserJid user = messageItem.getUser();
+        for (MessageItem messageItem : messagesToSend) {
+            AccountJid account = messageItem.getAccount();
+            UserJid user = messageItem.getUser();
 
-                    if (account != null && user != null) {
-                        if (getChat(account, user) == null) {
-                            createChat(account, user);
-                        }
-                    }
+            if (account != null && user != null) {
+                if (getChat(account, user) == null) {
+                    createChat(account, user);
                 }
             }
-        });
+        }
+
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         NotificationManager.getInstance().registerNotificationProvider(mucPrivateChatRequestProvider);
@@ -280,14 +276,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     private void sendMessage(final String text, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm1) {
-                MessageItem newMessageItem = chat.createNewMessageItem(text);
-                realm1.copyToRealm(newMessageItem);
-                if (chat.canSendMessage())
-                    chat.sendMessages();
-            }
+        realm.executeTransactionAsync(realm1 -> {
+            MessageItem newMessageItem = chat.createNewMessageItem(text);
+            realm1.copyToRealm(newMessageItem);
+            if (chat.canSendMessage())
+                chat.sendMessages();
         });
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         // mark incoming messages as read
@@ -333,36 +326,33 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm1) {
-                MessageItem messageItem = realm1.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                        .findFirst();
+        realm.executeTransaction(realm1 -> {
+            MessageItem messageItem = realm1.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                    .findFirst();
 
-                if (messageItem != null) {
-                    RealmList<Attachment> attachments = messageItem.getAttachments();
+            if (messageItem != null) {
+                RealmList<Attachment> attachments = messageItem.getAttachments();
 
-                    // remove attachments that not uploaded
-                    for (String file : notUploadedFilesUrls) {
-                        for (Attachment attachment : attachments) {
-                            if (file.equals(attachment.getFilePath())) {
-                                attachments.remove(attachment);
-                                break;
-                            }
+                // remove attachments that not uploaded
+                for (String file : notUploadedFilesUrls) {
+                    for (Attachment attachment : attachments) {
+                        if (file.equals(attachment.getFilePath())) {
+                            attachments.remove(attachment);
+                            break;
                         }
                     }
-
-                    for (Attachment attachment : attachments) {
-                        attachment.setFileUrl(urls.get(attachment.getFilePath()));
-                    }
-
-                    messageItem.setText("");
-                    messageItem.setSent(false);
-                    messageItem.setInProgress(false);
-                    messageItem.setError(false);
-                    messageItem.setErrorDescription("");
                 }
+
+                for (Attachment attachment : attachments) {
+                    attachment.setFileUrl(urls.get(attachment.getFilePath()));
+                }
+
+                messageItem.setText("");
+                messageItem.setSent(false);
+                messageItem.setInProgress(false);
+                messageItem.setError(false);
+                messageItem.setErrorDescription("");
             }
         });
 
@@ -373,37 +363,34 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public void updateMessageWithNewAttachments(final String messageId, final List<File> files) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm1) {
-                MessageItem messageItem = realm1.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                        .findFirst();
+        realm.executeTransaction(realm1 ->  {
+            MessageItem messageItem = realm1.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                    .findFirst();
 
-                if (messageItem != null) {
-                    RealmList<Attachment> attachments = messageItem.getAttachments();
+            if (messageItem != null) {
+                RealmList<Attachment> attachments = messageItem.getAttachments();
 
-                    // remove temporary attachments created from uri
-                    // to replace it with attachments created from files
-                    attachments.deleteAllFromRealm();
+                // remove temporary attachments created from uri
+                // to replace it with attachments created from files
+                attachments.deleteAllFromRealm();
 
-                    for (File file : files) {
-                        Attachment attachment = new Attachment();
-                        attachment.setFilePath(file.getPath());
-                        attachment.setFileSize(file.length());
-                        attachment.setTitle(file.getName());
-                        attachment.setIsImage(FileManager.fileIsImage(file));
-                        attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-                        attachment.setDuration((long) 0);
+                for (File file : files) {
+                    Attachment attachment = new Attachment();
+                    attachment.setFilePath(file.getPath());
+                    attachment.setFileSize(file.length());
+                    attachment.setTitle(file.getName());
+                    attachment.setIsImage(FileManager.fileIsImage(file));
+                    attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                    attachment.setDuration((long) 0);
 
-                        if (attachment.isImage()) {
-                            HttpFileUploadManager.ImageSize imageSize =
-                                    HttpFileUploadManager.getImageSizes(file.getPath());
-                            attachment.setImageHeight(imageSize.getHeight());
-                            attachment.setImageWidth(imageSize.getWidth());
-                        }
-                        attachments.add(attachment);
+                    if (attachment.isImage()) {
+                        HttpFileUploadManager.ImageSize imageSize =
+                                HttpFileUploadManager.getImageSizes(file.getPath());
+                        attachment.setImageHeight(imageSize.getHeight());
+                        attachment.setImageWidth(imageSize.getWidth());
                     }
+                    attachments.add(attachment);
                 }
             }
         });
@@ -414,21 +401,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void updateMessageWithError(final String messageId, final String errorDescription) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    updateMessageWithError(realm, messageId, errorDescription);
-                }
+            realm.executeTransactionAsync(realm1 -> {
+                updateMessageWithError(realm1, messageId, errorDescription);
             });
         } else {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    updateMessageWithError(realm, messageId, errorDescription);
-                }
+            realm.executeTransaction(realm1 ->  {
+                updateMessageWithError(realm1, messageId, errorDescription);
             });
-            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+            realm.close();
         }
     }
 
@@ -451,18 +432,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                MessageItem messageItem = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                        .findFirst();
+        realm.executeTransaction(realm1 -> {
+            MessageItem messageItem = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                    .findFirst();
 
-                if (messageItem != null) {
-                    messageItem.setError(false);
-                    messageItem.setSent(false);
-                    messageItem.setErrorDescription("");
-                }
+            if (messageItem != null) {
+                messageItem.setError(false);
+                messageItem.setSent(false);
+                messageItem.setErrorDescription("");
             }
         });
 
@@ -591,16 +569,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm1) {
-                realm1.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                        .equalTo(MessageItem.Fields.USER, user.toString())
-                        .findAll().deleteAllFromRealm();
-                LogManager.d("REALM", Thread.currentThread().getName()
-                        + " clear history: " + (System.currentTimeMillis() - startTime));
-            }
+        realm.executeTransactionAsync(realm1 -> {
+            realm1.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                    .equalTo(MessageItem.Fields.USER, user.toString())
+                    .findAll().deleteAllFromRealm();
+            LogManager.d("REALM", Thread.currentThread().getName()
+                    + " clear history: " + (System.currentTimeMillis() - startTime));
         });
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
@@ -611,21 +586,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      *
      */
     public void removeMessage(final String messageItemId) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
-                MessageItem messageItem = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId).findFirst();
-                if (messageItem != null) {
-                    realm.beginTransaction();
-                    messageItem.deleteFromRealm();
-                    realm.commitTransaction();
-                }
-
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-            }
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    MessageItem messageItem = realm1
+                            .where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId)
+                            .findFirst();
+                    if (messageItem != null) messageItem.deleteFromRealm();
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -635,20 +609,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void removeMessage(final List<String> messageIDs) {
         final String[] ids = messageIDs.toArray(new String[0]);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    RealmResults<MessageItem> items = realm1.where(MessageItem.class)
+                            .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
 
-                if (items != null && !items.isEmpty()) {
-                    realm.beginTransaction();
-                    items.deleteAllFromRealm();
-                    realm.commitTransaction();
-                }
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-            }
+                    if (items != null && !items.isEmpty())
+                        items.deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -957,7 +931,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 RealmResults<MessageItem> messageItems = MessageRepository.getChatMessages(account, user);
 
                 for (MessageItem messageItem : messageItems) {
@@ -982,7 +955,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     out.write(StringUtils.escapeHtml(messageItem.getText()));
                     out.write("</p><hr />\n");
                 }
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
             }
             out.write("</body></html>");
             out.close();
@@ -1067,15 +1040,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public static void setAttachmentLocalPathToNull(final String uniqId) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm1) {
-                Attachment first = realm1.where(Attachment.class)
-                        .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
-                        .findFirst();
-                if (first != null) {
-                    first.setFilePath(null);
-                }
+        realm.executeTransactionAsync(realm1 -> {
+            Attachment first = realm1.where(Attachment.class)
+                    .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                    .findFirst();
+            if (first != null) {
+                first.setFilePath(null);
             }
         });
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
