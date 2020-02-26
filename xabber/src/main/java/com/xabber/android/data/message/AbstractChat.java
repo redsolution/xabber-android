@@ -141,6 +141,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private Date lastSyncedTime;
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
+    private RealmResults<MessageItem> unreadMessages;
     private String lastMessageId = null;
     private boolean addContactSuggested = false;
     private boolean historyIsFull = false;
@@ -942,7 +943,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public int getUnreadMessageCount() {
-        int unread = ((int) getAllUnreadQuery().count()) - waitToMarkAsRead.size();
+        //int unread = ((int) getAllUnreadQuery().count()) - waitToMarkAsRead.size();
+        int unread = ((int) getAllUnreadMessages().size()) - waitToMarkAsRead.size();
         if (unread < 0) unread = 0;
         if (getLastMessage() != null && !getLastMessage().isIncoming()) unread = 0;
         return unread;
@@ -995,22 +997,33 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
     }
 
-    private RealmQuery<MessageItem> getAllUnreadQuery() {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmQuery<MessageItem> result = realm
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.USER, user.toString())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
-                .equalTo(MessageItem.Fields.INCOMING, true)
-                .equalTo(MessageItem.Fields.READ, false);
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        return result;
+    private RealmResults<MessageItem> getAllUnreadMessages() {
+        if (unreadMessages == null) {
+            //Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            //unreadMessages = realm.where(MessageItem.class)
+            //        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+            //        .equalTo(MessageItem.Fields.USER, user.toString())
+            //        .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+            //        .isNotNull(MessageItem.Fields.TEXT)
+            //        .equalTo(MessageItem.Fields.INCOMING, true)
+            //        .equalTo(MessageItem.Fields.READ, false)
+            if (messages == null) {
+                unreadMessages = getMessages().where()
+                        .equalTo(MessageItem.Fields.INCOMING, true)
+                        .equalTo(MessageItem.Fields.READ, false)
+                        .findAll();
+            } else {
+                unreadMessages = messages.where()
+                        .equalTo(MessageItem.Fields.INCOMING, true)
+                        .equalTo(MessageItem.Fields.READ, false)
+                        .findAll();
+            }
+        }
+        return unreadMessages;
     }
 
     private RealmResults<MessageItem> getAllUnreadAscending() {
-        return getAllUnreadQuery().findAll().sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        return getAllUnreadMessages();//.sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
     }
 
     /** ^ UNREAD MESSAGES ^ */
