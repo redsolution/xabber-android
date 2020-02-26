@@ -80,10 +80,10 @@ public class BackpressureMessageReader {
                                         ChatMarkerManager.getInstance().sendDisplayed(message);
 
                                     RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm1, message);
-                                    messages.setBoolean(MessageItem.Fields.READ, true);
                                     for (MessageItem mes : messages) {
                                         ids.add(mes.getUniqueId());
                                     }
+                                    messages.setBoolean(MessageItem.Fields.READ, true);
                                     Application.getInstance().runOnUiThread(() -> {
                                         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
                                         if (chat != null) chat.approveRead(ids);
@@ -155,7 +155,7 @@ public class BackpressureMessageReader {
                 .findAll();
     }
 
-    private class MessageDataHolder {
+    private static class MessageDataHolder {
         final String messageId;
         final String uniqueId;
         final ArrayList<String> stanzaId;
@@ -194,7 +194,7 @@ public class BackpressureMessageReader {
         }
     }
 
-    private class MessageHolder {
+    private static class MessageHolder {
         final MessageItem messageItem;
         final boolean trySendDisplayed;
 
