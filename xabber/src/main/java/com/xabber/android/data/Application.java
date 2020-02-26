@@ -447,6 +447,22 @@ public class Application extends android.app.Application {
         super.onTerminate();
     }
 
+    public void onScreenPowerOn(){
+        for (Object manager : registeredManagers) {
+            if (manager instanceof OnScreenListener) {
+                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.ON);
+            }
+        }
+    }
+
+    public void onScreenPowerOff(){
+        for (Object manager : registeredManagers) {
+            if (manager instanceof OnScreenListener) {
+                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.OFF);
+            }
+        }
+    }
+
     /**
      * Start periodically callbacks.
      */

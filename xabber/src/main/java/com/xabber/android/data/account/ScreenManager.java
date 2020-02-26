@@ -105,6 +105,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
 
+            Application.getInstance().onScreenPowerOn();
             AccountManager.getInstance().stopGracePeriod();
             Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
@@ -124,6 +125,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getTime(goXa),
                         goXaPendingIntent);
 
+            Application.getInstance().onScreenPowerOff();
             Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
