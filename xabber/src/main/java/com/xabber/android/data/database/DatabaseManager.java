@@ -54,13 +54,11 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
         } else result = Realm.getDefaultInstance();
 
         int localInstances = Realm.getLocalInstanceCount(Realm.getDefaultConfiguration());
-        LogManager.d("DatabaseManager local at " + Thread.currentThread().getName(), Integer.toString(localInstances));
-
         int instances = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
-        LogManager.d("DatabaseManager global ", Integer.toString(instances));
-
-        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances)
-            LogManager.exception("DatabaseManager AHTUNG! Instances count was changed! ", new Exception());
+        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances){
+            LogManager.e("DatabaseManager AHTUNG! Instances count was changed! ", "");
+            LogManager.exception("\t", new Exception());
+        }
 
         prevLocalInstCount = localInstances;
         prevGlobalInstCount = instances;
@@ -89,7 +87,7 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
     public void onScreenStateChanged(@NotNull ScreenState screenState) {
         if (screenState == ScreenState.OFF)
             LogManager.d(LOG_TAG, "Screen state changed! Running compacting Realm.");
-            //Realm.compactRealm(Realm.getDefaultConfiguration());
+            Realm.compactRealm(Realm.getDefaultConfiguration());
     }
 
     private RealmConfiguration createRealmConfiguration(){
