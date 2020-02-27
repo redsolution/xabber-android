@@ -16,7 +16,6 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -105,92 +104,73 @@ public class RrrManager implements OnPacketListener {
     }
 
     public void tryToRetractMessage(final AccountJid accountJid, final String id, final boolean symmetrically) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            final MessageItem messageItem = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.UNIQUE_ID, id).findFirst();
-                            try {
-                                RetractMessageIQ iq = new RetractMessageIQ(accountJid.toString(), messageItem.getStanzaId(), symmetrically);
-                                AccountManager.getInstance().getAccount(accountJid).getConnection()
-                                        .sendIqWithResponseCallback(iq, new StanzaListener() {
-                                            @Override
-                                            public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-                                                if (packet instanceof IQ) {
-                                                    if (((IQ) packet).getType().equals(IQ.Type.error)){
-                                                        LogManager.d(LOG_TAG, "Failed to retract message");
-                                                        Toast.makeText(Application.getInstance().getBaseContext(), "Failed to retract message", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                    if (((IQ) packet).getType().equals(IQ.Type.result)){
-                                                        LogManager.d(LOG_TAG, "Message successfully retracted");
-                                                    }
-                                                }
-                                            }
-                                        });
-                            } catch (Exception e) {
-                                LogManager.exception(LOG_TAG, e);
-                            }
-                            //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
-                            messageItem.deleteFromRealm();
-                        }
-                    });
+        Application.getInstance().runInBackgroundUserRequest(() ->  {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    final MessageItem messageItem = realm1.where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.UNIQUE_ID, id).findFirst();
+                    try {
+                        RetractMessageIQ iq = new RetractMessageIQ(accountJid.toString(),
+                                messageItem.getStanzaId(), symmetrically);
+                        AccountManager.getInstance().getAccount(accountJid).getConnection()
+                                .sendIqWithResponseCallback(iq, packet ->  {
+                                    if (packet instanceof IQ) {
+                                        if (((IQ) packet).getType().equals(IQ.Type.error)){
+                                            LogManager.d(LOG_TAG, "Failed to retract message");
+                                            Toast.makeText(Application.getInstance().getBaseContext(),
+                                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
+                                        }
+                                        if (((IQ) packet).getType().equals(IQ.Type.result)){
+                                            LogManager.d(LOG_TAG, "Message successfully retracted");
+                                        }
+                                    }
+                                });
+                    } catch (Exception e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
+                    //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
+                    messageItem.deleteFromRealm();
+                });
 
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
-            }
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
     public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid,
                                   final String uniqueId, final String text){
-        final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
         final Message message = new Message();
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem messageItem = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                    .findFirst();
-                            messageItem.setText(text);
-                            EventBus.getDefault().post(new MessageUpdateEvent());
-                            message.setBody(messageItem.getText());
-                            message.setStanzaId(messageItem.getStanzaId());
-                            message.setTo(messageItem.getUser().getBareJid());
-                            message.setFrom(messageItem.getAccount().getFullJid());
-                            message.addExtension(new OriginIdElement(messageItem.getOriginId()));
-                        }
-                    });
-                } finally { if (realm != null) realm.close(); }
-                //now try to send packet to server
-                try {
-                    ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(),
-                            accountJid.toString(), message);
-                    AccountManager.getInstance().getAccount(accountJid).getConnection()
-                            .sendIqWithResponseCallback(replaceMessageIQ, new StanzaListener() {
-                                @Override
-                                public void processStanza(Stanza packet)
-                                        throws SmackException.NotConnectedException, InterruptedException {
-                                    LogManager.d(LOG_TAG, "OLOLO");
-                                }
-                            });
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-            }
+        Application.getInstance().runInBackgroundUserRequest(() ->  {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                        MessageItem messageItem = realm1.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                .findFirst();
+                        messageItem.setText(text);
+                        EventBus.getDefault().post(new MessageUpdateEvent());
+                        message.setBody(messageItem.getText());
+                        message.setStanzaId(messageItem.getStanzaId());
+                        message.setTo(messageItem.getUser().getBareJid());
+                        message.setFrom(messageItem.getAccount().getFullJid());
+                        message.addExtension(new OriginIdElement(messageItem.getOriginId()));
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+            //now try to send packet to server
+            try {
+                ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(),
+                        accountJid.toString(), message);
+                AccountManager.getInstance().getAccount(accountJid).getConnection()
+                        .sendIqWithResponseCallback(replaceMessageIQ, packet -> {
+                                //TODO implement iq replies handler
+                        });
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         });
     }
 
@@ -225,29 +205,22 @@ public class RrrManager implements OnPacketListener {
 
     private void handleIncomingRetractMessage(final String id, final String by,
                                               final String conversation) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
+        Application.getInstance().runInBackgroundUserRequest(() ->  {
                 Realm realm = null;
                 try {
                     realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem messageItem = realm.where(MessageItem.class)
+                    realm.executeTransaction(realm1 ->  {
+                            MessageItem messageItem = realm1.where(MessageItem.class)
                                     .equalTo(MessageItem.Fields.USER, conversation)
                                     .equalTo(MessageItem.Fields.STANZA_ID, id)
                                     .findFirst();
                             if (messageItem != null)
                                 messageItem.deleteFromRealm();
                             EventBus.getDefault().post(new MessageUpdateEvent());
-                        }
                     });
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
-            }
+                } catch (Exception e){
+                    LogManager.exception(LOG_TAG, e);
+                } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -255,40 +228,34 @@ public class RrrManager implements OnPacketListener {
                                               final String stamp, final String body,
                                               final String markupText, final String originalStanza,
                                               final RealmList<Attachment> attachments) {
-        //TODO rewrite this
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem messageItem = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.USER, conversation)
-                                    .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
-                                    .findFirst();
-                            if (messageItem != null) {
-                                if (markupText != null)
-                                    messageItem.setMarkupText(markupText);
-                                if (originalStanza != null)
-                                    messageItem.setOriginalStanza(originalStanza);
-                                if (attachments != null)
-                                    messageItem.setAttachments(attachments);
-                                if (body != null)
-                                    messageItem.setText(body);
-                                if (stamp != null)
-                                    messageItem.setEditedTimestamp(StringUtils.parseReceivedReceiptTimestampString(stamp).getTime());
-                            }
-                            EventBus.getDefault().post(new MessageUpdateEvent());
-                        }
-                    });
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
-            }
+        //TODO pay attention to this code
+        Application.getInstance().runInBackgroundUserRequest(() ->  {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    MessageItem messageItem = realm1.where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.USER, conversation)
+                            .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+                            .findFirst();
+                    if (messageItem != null) {
+                        if (markupText != null)
+                            messageItem.setMarkupText(markupText);
+                        if (originalStanza != null)
+                            messageItem.setOriginalStanza(originalStanza);
+                        if (attachments != null)
+                            messageItem.setAttachments(attachments);
+                        if (body != null)
+                            messageItem.setText(body);
+                        if (stamp != null)
+                            messageItem.setEditedTimestamp(StringUtils
+                                    .parseReceivedReceiptTimestampString(stamp).getTime());
+                    }
+                    EventBus.getDefault().post(new MessageUpdateEvent());
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

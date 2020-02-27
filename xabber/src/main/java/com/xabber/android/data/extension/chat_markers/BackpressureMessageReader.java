@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import android.os.Looper;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
@@ -90,7 +92,8 @@ public class BackpressureMessageReader {
                             });
                         } catch (Exception e) {
                             LogManager.exception(BackpressureMessageReader.class.getSimpleName(), e);
-                        } finally { if (realm != null) realm.close(); }
+                        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                            realm.close(); }
                     });
                 }, new Action1<Throwable>() {
                     @Override

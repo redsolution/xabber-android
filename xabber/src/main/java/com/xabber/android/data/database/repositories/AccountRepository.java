@@ -114,7 +114,7 @@ public class AccountRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AccountTable", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 }

@@ -106,6 +106,8 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                     messageItem.setAcknowledged(true);
                     LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
                 });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
     }

@@ -24,7 +24,6 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             return;
         }
 
-        // TODO: 13.03.18 ANR - WRITE
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -64,7 +63,6 @@ class EntityCapsCache implements EntityCapsPersistentCache {
     @Override
     public void emptyCache() {
         final long startTime = System.currentTimeMillis();
-        // TODO: 13.03.18 ANR - WRITE
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

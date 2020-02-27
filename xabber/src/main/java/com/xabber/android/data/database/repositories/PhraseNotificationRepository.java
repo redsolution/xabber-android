@@ -50,7 +50,7 @@ public class PhraseNotificationRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("PhraseNotificationRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -74,7 +74,7 @@ public class PhraseNotificationRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("PhraseNotificationRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally { if (realm != null) realm.close(); }
         });
     }
 }

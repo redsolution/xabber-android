@@ -186,7 +186,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                     prefsRealm.setSound(prefs.getSound());
                     prefsRealm.setVibro(prefs.getVibro());
 
-                    NotifyPrefsRealm result = realm1.copyToRealmOrUpdate(prefsRealm);
+                    realm1.copyToRealmOrUpdate(prefsRealm);
                 });
             } catch (Exception e) {
                 LogManager.exception("CustomNotifyPrefsManager", e);

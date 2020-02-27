@@ -3,7 +3,6 @@ package com.xabber.android.ui.widget;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.helper.RoundedBorders;
 
@@ -123,14 +123,17 @@ public class ImageGridBuilder {
                 //imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 Glide.with(parent.getContext())
                         .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterInside(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .transform(new MultiTransformation<>(new CenterInside(),
+                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .into(imageView);
             } else {
 
                 Glide.with(parent.getContext())
                         .asBitmap()
                         .load(imageUrl)
-                        .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .into(new CustomTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -140,26 +143,26 @@ public class ImageGridBuilder {
                                 if (width <= 0 || height <= 0) {
                                     return;
                                 }
-
-                                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
-                                realm.executeTransactionAsync(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        Attachment first = realm.where(Attachment.class)
-                                                .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
-                                                .findFirst();
-                                        if (first != null) {
-                                            first.setImageWidth(width);
-                                            first.setImageHeight(height);
-                                        }
-                                    }
+                                Application.getInstance().runInBackground(() -> {
+                                    Realm realm = null;
+                                    try {
+                                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                                        realm.executeTransactionAsync(realm1 -> {
+                                            Attachment first = realm1.where(Attachment.class)
+                                                    .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                                                    .findFirst();
+                                            if (first != null) {
+                                                first.setImageWidth(width);
+                                                first.setImageHeight(height);
+                                            }
+                                        });
+                                        FileManager.scaleImage(layoutParams, height, width);
+                                        imageView.setImageBitmap(resource);
+                                    } catch (Exception e){
+                                        LogManager.exception(ImageGridBuilder.class.getSimpleName(), e);
+                                    } finally { if (realm != null) realm.close();}
                                 });
-                                FileManager.scaleImage(layoutParams, height, width);
-                                imageView.setImageBitmap(resource);
-                                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                             }
-
                             @Override
                             public void onLoadCleared(@Nullable Drawable placeholder) { }
                         });

@@ -188,28 +188,21 @@ public class FileMessageVH extends MessageVH
             if (result) {
                 messageImage.setVisibility(View.VISIBLE);
             } else {
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        Realm realm = null;
-                        try {
-                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                            realm.executeTransactionAsync(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    MessageItem first = realm.where(MessageItem.class)
-                                            .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                            .findFirst();
-                                    if (first != null) {
-                                        first.setFilePath(null);
-                                    }
-                                }
-                            });
-                        } catch (Exception e) {
-                            LogManager.exception(LOG_TAG, e);
-                        } finally {
-                            if (realm != null) realm.close();
-                        }
+                Application.getInstance().runInBackground(() -> {
+                    Realm realm = null;
+                    try {
+                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                        realm.executeTransactionAsync(realm1 -> {
+                            MessageItem first = realm1.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                    .findFirst();
+                            if (first != null) first.setFilePath(null);
+
+                        });
+                    } catch (Exception e) {
+                        LogManager.exception(LOG_TAG, e);
+                    } finally {
+                        if (realm != null) realm.close();
                     }
                 });
             }
@@ -220,7 +213,9 @@ public class FileMessageVH extends MessageVH
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
                         .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .transform(new MultiTransformation<>(new CenterCrop(),
+                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model,
@@ -243,7 +238,9 @@ public class FileMessageVH extends MessageVH
                 Glide.with(context)
                         .asBitmap()
                         .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .transform(new MultiTransformation<>(new CenterCrop(),
+                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
                         .placeholder(R.drawable.ic_recent_image_placeholder)
                         .error(R.drawable.ic_recent_image_placeholder)
                         .into(new CustomTarget<Bitmap>() {
@@ -270,30 +267,22 @@ public class FileMessageVH extends MessageVH
                                     messageImage.setVisibility(View.GONE);
                                     return;
                                 }
-                                Application.getInstance().runInBackground(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Realm realm = null;
-                                        try {
-                                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                                            realm.executeTransactionAsync(new Realm.Transaction() {
-                                                @Override
-                                                public void execute(Realm realm) {
-                                                    MessageItem first = realm.where(MessageItem.class)
-                                                            .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                                            .findFirst();
-                                                    if (first != null) {
-                                                        first.setImageWidth(width);
-                                                        first.setImageHeight(height);
-                                                    }
+                                Application.getInstance().runInBackground(() -> {
+                                    Realm realm = null;
+                                    try {
+                                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                                        realm.executeTransactionAsync(realm1 -> {
+                                                MessageItem first = realm1.where(MessageItem.class)
+                                                        .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                                        .findFirst();
+                                                if (first != null) {
+                                                    first.setImageWidth(width);
+                                                    first.setImageHeight(height);
                                                 }
-                                            });
-                                        } catch (Exception e) {
-                                            LogManager.exception(LOG_TAG, e);
-                                        } finally {
-                                            if (realm != null) realm.close();
-                                        }
-                                    }
+                                        });
+                                    } catch (Exception e) {
+                                        LogManager.exception(LOG_TAG, e);
+                                    } finally { if (realm != null) realm.close(); }
                                 });
 
 

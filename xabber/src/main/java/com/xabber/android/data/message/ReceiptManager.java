@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.message;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -139,7 +141,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             EventBus.getDefault().post(new MessageUpdateEvent(account));
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally { if (realm != null) realm.close(); }
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
     }
 
     @Override
@@ -166,6 +168,6 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             EventBus.getDefault().post(new MessageUpdateEvent());
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally { if (realm != null) realm.close(); }
+        } finally { if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close(); }
     }
 }

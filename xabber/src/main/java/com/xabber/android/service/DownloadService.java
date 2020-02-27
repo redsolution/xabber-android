@@ -11,10 +11,12 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.HttpClientWithMTM;
 
 import java.io.File;
@@ -180,19 +182,18 @@ public class DownloadService extends IntentService {
 
     private void saveAttachmentPathToRealm(final String path) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        try {
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
+        Application.getInstance().runInBackground(() -> {
+            try {
+                realm.executeTransaction(realm1 -> {
                     Attachment attachment = realm.where(Attachment.class)
                             .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
                     attachment.setFilePath(path);
-                }
-            });
-        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
-
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+        });
         publishCompleted();
-
     }
 
     private void publishProgress(long downloadedBytes, long fileSize) {

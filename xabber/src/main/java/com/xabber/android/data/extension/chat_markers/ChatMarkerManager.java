@@ -212,78 +212,65 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void markAsDisplayed(final String messageID) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
+        Application.getInstance().runInBackground(() ->  {
                 Realm realm = null;
                 try {
                     realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem first = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
+                    realm.executeTransaction(realm1 ->  {
+                        MessageItem first = realm1.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
 
-                            if (first != null) {
-                                RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                                        .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                                        .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                                        .equalTo(MessageItem.Fields.INCOMING, false)
-                                        .equalTo(MessageItem.Fields.DISPLAYED, false)
-                                        .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                                        .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                                        .findAll();
+                        if (first != null) {
+                            RealmResults<MessageItem> results = realm1.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
+                                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
+                                    .equalTo(MessageItem.Fields.INCOMING, false)
+                                    .equalTo(MessageItem.Fields.DISPLAYED, false)
+                                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
+                                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                                    .findAll();
 
-                                if (results != null) {
-                                    results.setBoolean(MessageItem.Fields.DISPLAYED, true);
-                                    EventBus.getDefault().post(new MessageUpdateEvent());
-                                }
+                            if (results != null) {
+                                results.setBoolean(MessageItem.Fields.DISPLAYED, true);
+                                EventBus.getDefault().post(new MessageUpdateEvent());
                             }
                         }
                     });
                 } catch (Exception e) {
                     LogManager.exception(LOG_TAG, e);
                 } finally { if (realm != null) realm.close(); }
-            }
         });
-
     }
 
     private void markAsDelivered(final String stanzaID) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem first = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    MessageItem first = realm1.where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
 
-                            if (first != null) {
-                                RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                                        .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                                        .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                                        .equalTo(MessageItem.Fields.INCOMING, false)
-                                        .equalTo(MessageItem.Fields.DELIVERED, false)
-                                        .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                                        .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                                        .findAll();
+                    if (first != null) {
+                        RealmResults<MessageItem> results = realm1.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
+                                .equalTo(MessageItem.Fields.USER, first.getUser().toString())
+                                .equalTo(MessageItem.Fields.INCOMING, false)
+                                .equalTo(MessageItem.Fields.DELIVERED, false)
+                                .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
+                                .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                                .findAll();
 
-                                if (results != null) {
-                                    results.setBoolean(MessageItem.Fields.DELIVERED, true);
-                                    EventBus.getDefault().post(new MessageUpdateEvent());
-                                }
-                            }
+                        if (results != null) {
+                            results.setBoolean(MessageItem.Fields.DELIVERED, true);
+                            EventBus.getDefault().post(new MessageUpdateEvent());
                         }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
             }
         });
 

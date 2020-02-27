@@ -46,36 +46,38 @@ public class BackpressureMessageMarker {
         subject.buffer(1000, TimeUnit.MILLISECONDS)
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MessageIdAndMarker>>() {
-                    @Override
-                    public void call(final List<MessageIdAndMarker> messageAndMarkers) {
-                        if (messageAndMarkers == null || messageAndMarkers.isEmpty()) return;
-                        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                        realm.beginTransaction();
-                        for (MessageIdAndMarker messageAndMarker : messageAndMarkers) {
+                .subscribe(messageIdAndMarkers -> {
+                    if (messageIdAndMarkers == null || messageIdAndMarkers.isEmpty()) return;
+                    Realm realm = null;
+                    try{
+                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                        realm.executeTransaction(realm1 -> {
+                            for (MessageIdAndMarker messageAndMarker : messageIdAndMarkers) {
 
-                            String headMessageId = messageAndMarker.messageId;
-                            ArrayList<String> altHeadMessageId = messageAndMarker.stanzaId;
-                            ChatMarkersState marker = messageAndMarker.marker;
-                            AccountJid accountJid = messageAndMarker.accountJid;
+                                String headMessageId = messageAndMarker.messageId;
+                                ArrayList<String> altHeadMessageId = messageAndMarker.stanzaId;
+                                ChatMarkersState marker = messageAndMarker.marker;
+                                AccountJid accountJid = messageAndMarker.accountJid;
 
-                            MessageItem headMessage = getMessageById(realm, headMessageId,altHeadMessageId, accountJid);
-                            if (headMessage != null && marker != null) {
-                                RealmResults<MessageItem> messages = getPreviousUnmarkedMessages(realm, headMessage, marker);
-                                List<String> ids = new ArrayList<>();
-                                if (messages != null) {
-                                    for (MessageItem mes : messages) {
-                                        setMarkedState(mes, marker);
+                                MessageItem headMessage = getMessageById(realm1, headMessageId,altHeadMessageId, accountJid);
+                                if (headMessage != null && marker != null) {
+                                    RealmResults<MessageItem> messages = getPreviousUnmarkedMessages(realm1, headMessage, marker);
+                                    List<String> ids = new ArrayList<>();
+                                    if (messages != null) {
+                                        for (MessageItem mes : messages) {
+                                            setMarkedState(mes, marker);
+                                        }
                                     }
                                 }
-
                             }
-                        }
-                        if (realm.isInTransaction())
-                            realm.commitTransaction();
-                        if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
-                        EventBus.getDefault().post(new MessageUpdateEvent());
+                        });
+                    } catch (Exception e) {
+                        LogManager.exception(BackpressureMessageMarker.class.getSimpleName(), e);
+                    } finally {
+                        if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                            realm.close();
                     }
+                    EventBus.getDefault().post(new MessageUpdateEvent());
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {

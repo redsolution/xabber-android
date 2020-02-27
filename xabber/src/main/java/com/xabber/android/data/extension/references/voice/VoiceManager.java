@@ -106,7 +106,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     public void voiceClicked(String messageId, int attachmentIndex, Long timestamp) {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageItem messageItem = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
@@ -595,32 +595,28 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     private void setDurationIfEmpty(final String path, final String id) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                if (path != null) {
-                    mmr.setDataSource(path);
+        Application.getInstance().runInBackground(() -> {
+            final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            if (path != null) {
+                mmr.setDataSource(path);
 
-                    final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    voiceFileDuration = Integer.valueOf(dur);
-                    if (voiceFileDuration != 0) {
-                        Realm realm = null;
-                        try {
-                            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    Attachment backgroundAttachment = realm.where(Attachment.class).equalTo(Attachment.Fields.UNIQUE_ID, id).findFirst();
-                                    if (backgroundAttachment != null)
-                                        backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
-                                }
-                            });
-                        } finally {
-                            if (realm != null)
-                                realm.close();
-                        }
-                    }
+                final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                voiceFileDuration = Integer.valueOf(dur);
+                if (voiceFileDuration != 0) {
+                    Realm realm = null;
+                    try {
+                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                        realm.executeTransaction(realm1 -> {
+                                Attachment backgroundAttachment = realm1
+                                        .where(Attachment.class)
+                                        .equalTo(Attachment.Fields.UNIQUE_ID, id)
+                                        .findFirst();
+                                if (backgroundAttachment != null)
+                                    backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
+                        });
+                    } catch (Exception e) {
+                        LogManager.exception(LOG_TAG, e);
+                    } finally { if (realm != null) realm.close(); }
                 }
             }
         });

@@ -418,27 +418,19 @@ public class RoomChat extends AbstractChat {
     }
 
         private void markMessageAsDelivered(final String messageUId, final String originalFrom) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem message = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
-                            message.setDelivered(true);
-                            message.setOriginalFrom(originalFrom);
-                        }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-            }
+        Application.getInstance().runInBackground(() ->  {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    MessageItem message = realm1.where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
+                    message.setDelivered(true);
+                    message.setOriginalFrom(originalFrom);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

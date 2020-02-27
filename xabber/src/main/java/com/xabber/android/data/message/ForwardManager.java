@@ -39,26 +39,18 @@ public class ForwardManager {
 
         messageItem.setForwardedIds(ids);
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            realm.copyToRealm(messageItem);
-                            EventBus.getDefault().post(new NewMessageEvent());
-                            chat.sendMessages();
-                        }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null) realm.close();
-                }
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    realm1.copyToRealm(messageItem);
+                    EventBus.getDefault().post(new NewMessageEvent());
+                    chat.sendMessages();
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
