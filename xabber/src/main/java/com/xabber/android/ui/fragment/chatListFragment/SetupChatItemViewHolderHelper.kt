@@ -43,7 +43,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupTime(holder, contact)
         setupMessageText(holder, contact)
         setupMessageStatus(holder, contact)
-        setupSwipeBackground(holder, contact)
     }
 
     private fun setupAccountColorIndicator(holder: ChatViewHolder, contact: AbstractContact) {
@@ -236,20 +235,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 return R.drawable.ic_message_acknowledged_14dp
             else return R.drawable.ic_message_not_sent_14dp
         } else return R.drawable.ic_message_not_sent_14dp
-    }
-
-    //TODO delete this
-    fun setupSwipeBackground(holder: ChatViewHolder, contact: AbstractContact){
-        val isArchived = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-                .isArchived
-        holder.actionTV.setText(if (isArchived) R.string.unarchive_chat else R.string.archive_chat)
-        holder.actionLeftTV.setText(if (isArchived) R.string.unarchive_chat else R.string.archive_chat)
-        val drawable: Drawable = if (isArchived) holder.itemView.context.getResources().getDrawable(R.drawable.ic_unarchived)
-        else holder.itemView.context.getResources().getDrawable(R.drawable.ic_arcived)
-        holder.actionTV.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
-        holder.actionLeftTV.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
-        holder.actionLeftTV.visibility = View.VISIBLE
-        holder.actionTV.visibility = View.VISIBLE
     }
 
     private fun getThemeResource(context: Context, themeResourceId: Int): Int {
