@@ -488,6 +488,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
                     RealmList<Attachment> attachments;
                     if (files != null) attachments = attachmentsFromFiles(files, referenceType);
