@@ -18,8 +18,6 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
     val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)
     val statusIV = itemView.findViewById<ImageView>(R.id.ivStatus)
     val onlyStatusIV = itemView.findViewById<ImageView>(R.id.ivOnlyStatus)
-    val actionTV = itemView.findViewById<TextView>(R.id.tvAction)
-    val actionLeftTV = itemView.findViewById<TextView>(R.id.tvActionLeft)
     val contactNameTV = itemView.findViewById<TextView>(R.id.tvContactName)
     val messageTextTV = itemView.findViewById<EmojiconTextView>(R.id.tvMessageText)
     val timeTV = itemView.findViewById<TextView>(R.id.tvTime)
