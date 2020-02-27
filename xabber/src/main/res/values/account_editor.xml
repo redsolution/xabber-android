@@ -82,6 +82,7 @@
     <string name="account_active_sessions_disabled">Server does not support X-Token</string>
     <string name="account_active_sessions_error">Failed to get a list of active sessions</string>
 
+    <string name="blocked_contact_message">Contact blocked</string>
     <string name="blocked_contact">Blocked contact</string>
     <string name="blocked_group">Blocked group</string>
     <string name="blocked_domain">Blocked domain</string>
