@@ -52,7 +52,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     override fun onClick(v: View?) {
         if (v!!.id == R.id.ivAvatar) listener.onChatAvatarClick(
-                list[recyclerView.getChildLayoutPosition(v.parent.parent.parent.parent as View)])
+                list[recyclerView.getChildLayoutPosition(v.parent.parent.parent as View)])
         else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
