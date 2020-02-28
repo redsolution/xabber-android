@@ -1,41 +1,42 @@
 package com.xabber.xmpp.smack;
 
-import android.os.Build;
-
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.DnssecMode;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.AlreadyConnectedException;
 import org.jivesoftware.smack.SmackException.AlreadyLoggedInException;
+import org.jivesoftware.smack.SmackException.ConnectionException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.SmackException.ConnectionException;
 import org.jivesoftware.smack.SmackException.SecurityRequiredByServerException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SynchronizationPoint;
-import org.jivesoftware.smack.XMPPException.FailedNonzaException;
-import org.jivesoftware.smack.XMPPException.StreamErrorException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.FailedNonzaException;
+import org.jivesoftware.smack.XMPPException.StreamErrorException;
+import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.compress.packet.Compressed;
 import org.jivesoftware.smack.compression.XMPPInputOutputStream;
 import org.jivesoftware.smack.filter.StanzaFilter;
-import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Mechanisms;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.StreamOpen;
-import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StartTls;
 import org.jivesoftware.smack.packet.StreamError;
+import org.jivesoftware.smack.packet.StreamOpen;
+import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.Challenge;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
@@ -56,9 +57,6 @@ import org.jivesoftware.smack.sm.packet.StreamManagement.Resumed;
 import org.jivesoftware.smack.sm.packet.StreamManagement.StreamManagementFeature;
 import org.jivesoftware.smack.sm.predicates.Predicate;
 import org.jivesoftware.smack.sm.provider.ParseStreamManagement;
-import org.jivesoftware.smack.packet.Nonza;
-import org.jivesoftware.smack.proxy.ProxyInfo;
-
 import org.jivesoftware.smack.util.ArrayBlockingQueueWithShutdown;
 import org.jivesoftware.smack.util.Async;
 import org.jivesoftware.smack.util.DNSUtil;
@@ -76,19 +74,6 @@ import org.jxmpp.util.XmppStringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.PasswordCallback;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -102,6 +87,7 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -128,6 +114,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.PasswordCallback;
 
 /**
  * Creates a socket connection to an XMPP server. This is the default connection
@@ -571,6 +570,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                     // Create a *new* Socket before every connection attempt, i.e. connect() call, since Sockets are not
                     // re-usable after a failed connection attempt. See also SMACK-724.
                     socket = socketFactory.createSocket();
+                    debugSocketSettings(socket);
 
                     final InetAddress inetAddress = inetAddresses.next();
                     final String inetAddressAndPort = inetAddress + " at port " + port;
@@ -607,6 +607,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 failedAddresses.add(hostAddress);
             } else {
                 socket = socketFactory.createSocket();
+                debugSocketSettings(socket);
                 StringUtils.requireNotNullOrEmpty(host, "Host of HostAddress " + hostAddress + " must not be null when using a Proxy");
                 final String hostAndPort = host + " at port " + port;
                 LOGGER.finer("Trying to establish TCP connection via Proxy to " + hostAndPort);
@@ -627,6 +628,23 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         // throw an exception and report all tried
         // HostAddresses in the exception
         throw ConnectionException.from(failedAddresses);
+    }
+
+    private void debugSocketSettings(Socket socket) throws SocketException {
+        if (socket instanceof SSLSocket) {
+            LogManager.d("socket", "ssl socket");
+        } else {
+            LogManager.d("socket", "tcp socket");
+        }
+        LogManager.d("socket", "socket timeout = " + (socket.getSoTimeout() == 0 ? "infinite" : socket.getSoTimeout()));
+        LogManager.d("socket", "socket linger = " + (socket.getSoLinger() == -1 ? "turned off" : socket.getSoLinger()));
+        LogManager.d("socket", "socket keepAlive = " + socket.getKeepAlive());
+        if (socket.getSoTimeout() != 0) {
+            if (!socket.isClosed()) socket.setSoTimeout(0);
+        }
+        if (!socket.getKeepAlive()) {
+            socket.setKeepAlive(true);
+        }
     }
 
     /**
@@ -819,6 +837,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
         // Set that TLS was successful
         secureSocket = sslSocket;
+        debugSocketSettings(secureSocket);
     }
 
     /**
