@@ -95,7 +95,8 @@
     <string name="otr_start">Начать шифрование</string>
     <string name="otr_unreadable_message">Зашифрованное сообщение, отправленное Вами, невозможно прочитать</string>
     <string name="otr_not_decrypted_message">Сообщение не может быть расшифровано</string>
-    <string name="forwarded_messages_count">%d пересланных сообщений</string>
+    <string name="forwarded_messages_count">%d пересланное сообщение</string>
+    <string name="forwarded_messages_count_plural">%d пересланных сообщений</string>
     <string name="otr_verification">Проверка личности OTR</string>
     <string name="otr_verify_fingerprint">Проверка отпечатком пальца</string>
     <string name="otr_verify_question">Проверка вопросом</string>
