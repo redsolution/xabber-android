@@ -90,7 +90,7 @@ public class ForwardedFragment extends FileInteractionFragment {
         // background
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                backgroundView.setBackgroundResource(R.drawable.chat_background_repeat_dark);
+                backgroundView.setBackgroundResource(R.color.black);
             } else {
                 backgroundView.setBackgroundResource(R.drawable.chat_background_repeat);
             }
