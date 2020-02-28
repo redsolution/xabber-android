@@ -77,7 +77,6 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -485,47 +484,41 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
         final String messageId = UUID.randomUUID().toString();
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 ->  {
-                    RealmList<Attachment> attachments;
-                    if (files != null) attachments = attachmentsFromFiles(files, referenceType);
-                    else attachments = attachmentsFromUris(uris);
-                    String initialID = UUID.randomUUID().toString();
 
-                    MessageItem messageItem = new MessageItem(messageId);
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> {
+            RealmList<Attachment> attachments;
+            if (files != null) attachments = attachmentsFromFiles(files, referenceType);
+            else attachments = attachmentsFromUris(uris);
+            String initialID = UUID.randomUUID().toString();
 
-                    if (forwards != null && forwards.size()>0) {
-                        RealmList<ForwardId> ids = new RealmList<>();
+            MessageItem messageItem = new MessageItem(messageId);
 
-                        for (String forward : forwards) {
-                            ids.add(new ForwardId(forward));
-                        }
-                        messageItem.setForwardedIds(ids);
-                    }
+            if (forwards != null && forwards.size() > 0) {
+                RealmList<ForwardId> ids = new RealmList<>();
 
-                    messageItem.setAccount(account);
-                    messageItem.setUser(user);
-                    messageItem.setOriginalFrom(account.toString());
-                    messageItem.setText(FileMessageVH.UPLOAD_TAG);
-                    messageItem.setAttachments(attachments);
-                    messageItem.setTimestamp(System.currentTimeMillis());
-                    messageItem.setRead(true);
-                    messageItem.setSent(true);
-                    messageItem.setError(false);
-                    messageItem.setIncoming(false);
-                    messageItem.setInProgress(true);
-                    messageItem.setStanzaId(initialID);
-                    messageItem.setOriginId(initialID);
-                    realm1.copyToRealm(messageItem);
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+                for (String forward : forwards) {
+                    ids.add(new ForwardId(forward));
+                }
+                messageItem.setForwardedIds(ids);
+            }
+
+            messageItem.setAccount(account);
+            messageItem.setUser(user);
+            messageItem.setOriginalFrom(account.toString());
+            messageItem.setText(FileMessageVH.UPLOAD_TAG);
+            messageItem.setAttachments(attachments);
+            messageItem.setTimestamp(System.currentTimeMillis());
+            messageItem.setRead(true);
+            messageItem.setSent(true);
+            messageItem.setError(false);
+            messageItem.setIncoming(false);
+            messageItem.setInProgress(true);
+            messageItem.setStanzaId(initialID);
+            messageItem.setOriginId(initialID);
+            realm1.copyToRealm(messageItem);
         });
-
+        if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
         return messageId;
     }
 
