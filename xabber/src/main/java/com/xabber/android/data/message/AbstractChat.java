@@ -337,26 +337,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageItem);
         else {
             final long startTime = System.currentTimeMillis();
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    Realm realm = null;
-                    try {
-                        realm = realm;
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.copyToRealm(messageItem);
-                                LogManager.d("REALM", Thread.currentThread().getName()
-                                        + " save message item: " + (System.currentTimeMillis() - startTime));
-                                EventBus.getDefault().post(new NewMessageEvent());
-                            }
-                        });
-                    } catch (Exception e) {
-                        LogManager.exception(LOG_TAG, e);
-                    } finally { if (realm != null) realm.close(); }
-                }
-            });
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.copyToRealm(messageItem);
+                    LogManager.d("REALM", Thread.currentThread().getName()
+                            + " save message item: " + (System.currentTimeMillis() - startTime));
+                    EventBus.getDefault().post(new NewMessageEvent());
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
         }
     }
 

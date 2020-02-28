@@ -760,7 +760,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     private List<MessageItem> saveOrUpdateMessages(Realm realm, final Collection<MessageItem> messages, boolean ui) {
         List<MessageItem> messagesToSave = new ArrayList<>();
-        realm.beginTransaction();
+        realm.refresh();
         if (messages != null && !messages.isEmpty()) {
             Iterator<MessageItem> iterator = messages.iterator();
             while (iterator.hasNext()) {
@@ -768,6 +768,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 if (newMessage != null) messagesToSave.add(newMessage);
             }
         }
+        realm.beginTransaction();
         realm.copyToRealmOrUpdate(messagesToSave);
         realm.commitTransaction();
         SyncManager.getInstance().onMessageSaved();
@@ -808,7 +809,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             return message;
         } else {
             LogManager.d(this, "Matching message found! Updating message");
+            realm.beginTransaction();
             localMessage.setArchivedId(message.getArchivedId());
+            realm.commitTransaction();
             return localMessage;
         }
     }
