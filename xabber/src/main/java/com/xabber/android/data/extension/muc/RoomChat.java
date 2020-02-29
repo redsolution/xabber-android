@@ -323,7 +323,9 @@ public class RoomChat extends AbstractChat {
                 Occupant oldOccupant = occupants.get(resource);
                 Occupant newOccupant = createOccupant(resource, presence);
                 newOccupant.setJid(from);
-                occupants.put(resource, newOccupant);
+                if (newOccupant != null && newOccupant.getNickname() != null) {
+                    occupants.put(resource, newOccupant);
+                }
                 if (oldOccupant == null) {
                     onAvailable(resource);
                     RosterManager.onContactChanged(account, user);
