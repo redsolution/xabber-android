@@ -87,8 +87,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private String currentPicturePath;
     private Long messageTimestamp;
     private List<String> forwardIds = new ArrayList<>();
-    protected boolean sendImmediately = false;
-    protected boolean ignore = true;
+    boolean sendImmediately = false;
+    boolean ignoreReceiver = true;
 
     private OpusReceiver opusReceiver = new OpusReceiver();
     private PublishSubject<DownloadManager.ProgressData> voiceDownload;
@@ -430,7 +430,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             forwardIdsForAttachments(forwardIDs);
             VoiceManager.getInstance().stopRecording(false);
         } else {
-            ignore = true;
+            ignoreReceiver = true;
             VoiceManager.getInstance().stopRecording(true);
         }
     }
@@ -445,14 +445,14 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         getActivity().unregisterReceiver(opusReceiver);
     }
 
-    void stopRecordingIfPossibleAsync(final boolean saveFile) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                stopRecordingAndSend(saveFile);
-            }
-        });
-    }
+    //void stopRecordingIfPossibleAsync(final boolean saveFile) {
+    //    Application.getInstance().runInBackground(new Runnable() {
+    //        @Override
+    //        public void run() {
+    //            stopRecordingAndSend(saveFile);
+    //        }
+    //    });
+    //}
 
     private void startCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -666,7 +666,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     class OpusReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (ignore) {
+            if (ignoreReceiver) {
                 return;
             }
             Bundle bundle = intent.getExtras();
@@ -690,12 +690,12 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                             String tempPath = VoiceManager.getInstance().getTempFilePath();
                             ((ChatActivity)getActivity()).setUpVoiceMessagePresenter(tempPath);
                         }
-                        ignore = true;
+                        ignoreReceiver = true;
                         break;
                     case OpusEvent.RECORD_FAILED:
                         ((ChatActivity)getActivity()).finishVoiceRecordLayout();
                         Toast.makeText(Application.getInstance(), getResources().getString(R.string.VOICE_RECORDING_ERROR), Toast.LENGTH_LONG).show();
-                        ignore = true;
+                        ignoreReceiver = true;
                         break;
                     case OpusEvent.PLAYING_FAILED:
                     case OpusEvent.CONVERT_FAILED:

@@ -63,8 +63,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     public static final int COMPLETED_AUDIO_PROGRESS = 99;
     public static final int NORMAL_AUDIO_PROGRESS = 98;
     public static final int PAUSED_AUDIO_PROGRESS = 97;
-    public static final int NO_AUDIO_FOCUS_MANAGEMENT_FOR_PLAYBACK = 260;
-    private static final int SAMPLING_RATE = 48000;
+    //public static final int NO_AUDIO_FOCUS_MANAGEMENT_FOR_PLAYBACK = 260;
+    //private static final int SAMPLING_RATE = 48000;
 
     public static VoiceManager getInstance() {
         if (instance == null)
@@ -75,16 +75,6 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     private VoiceManager() {
         audioManager = (AudioManager) Application.getInstance().getSystemService(Context.AUDIO_SERVICE);
     }
-
-    //private Runnable createLocalWaveform = new Runnable() {
-    //    @Override
-    //    public void run() {
-    //        if (mr != null) {
-    //            waveForm.add((float) mr.getMaxAmplitude());
-    //            mHandler.postDelayed(this, 30);
-    //        }
-    //    }
-    //};
 
     private Runnable updateAudioProgress = new Runnable() {
         @Override
@@ -123,7 +113,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         voiceClicked(messageItem, attachmentIndex, timestamp);
     }
 
-    public void voiceClicked(MessageItem message, int attachmentIndex, Long timestamp) {
+    private void voiceClicked(MessageItem message, int attachmentIndex, Long timestamp) {
         if (message == null || message.getAttachments() == null
                 || message.getAttachments().size() <= attachmentIndex
                 || !message.getAttachments().get(attachmentIndex).isVoice())
@@ -285,7 +275,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 seekToTime = duration;
 
             mp.seekTo(seekToTime);
-        } else return;
+        }
     }
 
     private void manageSameVoicePlaybackControls(String path) {
@@ -443,6 +433,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
             waveForm.clear();
             tempOpusFile = FileManager.createTempOpusFile("tempOpusFile");
             RecordService.record(Application.getInstance().getApplicationContext(), tempOpusFile.getPath());
+            deleteRecordedFile();
             tempOpusPath = tempOpusFile.getPath();
         } catch (Exception e) {
             e.printStackTrace();
@@ -512,31 +503,6 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         return false;
     }
 
-    //public String stopRecordingAndGetTempFilePath() {
-    //    if(stopRecording()) {
-    //        VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(opusRecorder.getSampleArray(), tempOpusPath);
-    //        return getTempFilePath();
-    //    } else return null;
-    //}
-
-    //public String stopRecordingAndGetNewFilePath() {
-    //    stopRecording();
-    //    File file;
-    //    try {
-    //        file = FileManager.createAudioFile("Voice Message.ogg");
-    //        FileManager.copy(new File(tempOpusPath), file);
-    //    } catch (IOException e) {
-    //        e.printStackTrace();
-    //        deleteRecordedFile();
-    //        return null;
-    //    }
-    //    if (file == null)
-    //        return null;
-    //
-    //    VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(opusRecorder.getSampleArray(), file.getPath());
-    //    return file.getPath();
-    //}
-
     public String getTempFilePath() {
         return tempOpusPath;
     }
@@ -574,14 +540,9 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     public void deleteRecordedFile() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (tempOpusPath != null) {
-                    FileManager.deleteTempFile(tempOpusPath);
-                }
-            }
-        });
+        if (tempOpusPath != null) {
+            Application.getInstance().runInBackground(() -> FileManager.deleteTempFile(tempOpusPath));
+        }
         tempOpusPath = null;
     }
 
@@ -651,7 +612,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
             return instance;
         }
 
-        public void updateAudioProgress(int currentPosition, int duration, int attachmentIdHash, int resultCode, Long timestamp) {
+        void updateAudioProgress(int currentPosition, int duration, int attachmentIdHash, int resultCode, Long timestamp) {
             subject.onNext(new AudioInfo(currentPosition, duration, attachmentIdHash, resultCode, timestamp));
         }
 
@@ -668,14 +629,14 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
             return subject;
         }
 
-        public class AudioInfo {
+        public static class AudioInfo {
             final int currentPosition;
             final int duration;
             final int attachmentIdHash;
             final int resultCode;
             final Long timestamp;
 
-            public AudioInfo(int currentPosition, int duration, int attachmentIdHash, int resultCode, Long timestamp) {
+            AudioInfo(int currentPosition, int duration, int attachmentIdHash, int resultCode, Long timestamp) {
                 this.currentPosition = currentPosition;
                 this.duration = duration;
                 this.attachmentIdHash = attachmentIdHash;
