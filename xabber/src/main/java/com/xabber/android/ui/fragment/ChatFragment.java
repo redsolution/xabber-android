@@ -264,6 +264,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private List<HashMap<String, String>> menuItems = null;
 
+    private boolean userIsBlocked = false;
+
     private int checkedResource; // use only for alert dialog
 
     private float toolbarElevation;
@@ -831,8 +833,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         showJoinButtonIfNeed();
 
-        showNewContactLayoutIfNeed();
-
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -1199,10 +1199,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void restoreInputState() {
         //if (!inputView.getText().equals("") && inputView.getText() != null) return;
 
-        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
-            showBlockedBar();
-            return;
-        }
+        //if (userIsBlocked) {
+        //    showBlockedBar();
+        //    return;
+        //}
 
         skipOnTextChanges = true;
 
@@ -1263,6 +1263,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void updateContact() {
         updateSecurityButton();
         updateSendButtonSecurityLevel();
+        updateBlockedState();
         showNewContactLayoutIfNeed();
     }
 
@@ -1890,6 +1891,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
     }
 
+    private void updateBlockedState() {
+        userIsBlocked = BlockingManager.getInstance().contactIsBlocked(account, user);
+        if (userIsBlocked) {
+            showBlockedBar();
+        } else {
+            if (blockedView != null) blockedView.setVisibility(View.GONE);
+            inputLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void showBlockedBar() {
         for(int i = 0; i < inputPanel.getChildCount(); i++) {
             View view = inputPanel.getChildAt(i);
@@ -1915,6 +1926,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             blockedView.setGravity(Gravity.CENTER);
             blockedView.setOnClickListener(v -> startActivity(ContactViewerActivity.createIntent(getContext(), account, user)));
             inputPanel.addView(blockedView);
+        } else {
+            blockedView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1922,7 +1935,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() instanceof RoomChat)
             return;
 
-        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+        //if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+        //    if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+        //    return;
+        //}
+        if (userIsBlocked) {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             return;
         }
