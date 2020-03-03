@@ -181,13 +181,16 @@ public class DownloadService extends IntentService {
     }
 
     private void saveAttachmentPathToRealm(final String path) {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        Application.getInstance().runInBackground(() -> {
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            Realm realm = null;
             try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    Attachment attachment = realm.where(Attachment.class)
+                    Attachment attachment = realm1.where(Attachment.class)
                             .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
-                    attachment.setFilePath(path);
+                    if (attachment != null) {
+                        attachment.setFilePath(path);
+                    }
                 });
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
