@@ -7,8 +7,13 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -41,6 +46,7 @@ public class AccountRealm extends RealmObject {
         public static final String PUSH_ENABLED = "pushEnabled";
         public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
         public static final String XTOKEN = "xToken";
+        public static final String UPLOAD_SERVER = "uploadServer";
     }
 
     @PrimaryKey
@@ -51,6 +57,7 @@ public class AccountRealm extends RealmObject {
     private boolean enabled;
 
     private String serverName;
+    private String uploadServer;
     private String userName;
     private String resource;
 
@@ -466,5 +473,32 @@ public class AccountRealm extends RealmObject {
 
     public void setXToken(XTokenRealm xToken) {
         this.xToken = xToken;
+    }
+
+    public void setUploadServer(String uploadServer) { this.uploadServer = uploadServer; }
+
+    //TODO maybe not username
+    public BareJid getAccount() {
+        if (userName == null) return null;
+        try {
+            return JidCreate.bareFrom(userName);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
+
+    public Jid getUploadServer() {
+        if (uploadServer == null) return null;
+        try {
+            return JidCreate.from(uploadServer);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
+
+    public void setUploadServer(Jid server) {
+        this.uploadServer = server.toString();
     }
 }

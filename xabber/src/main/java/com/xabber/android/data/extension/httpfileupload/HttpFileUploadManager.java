@@ -21,6 +21,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -425,10 +426,10 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    UploadServer item = realm1.where(UploadServer.class)
-                            .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
-                    if (item == null) item = new UploadServer(account, server);
-                    else item.setServer(server);
+                    AccountRealm item = realm1.where(AccountRealm.class)
+                            .equalTo(AccountRealm.Fields.USERNAME, account.toString())
+                            .findFirst();
+                    item.setUploadServer(server);
                     realm1.copyToRealmOrUpdate(item);
                 });
             } catch (Exception e) {
@@ -443,9 +444,10 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    UploadServer item = realm1.where(UploadServer.class)
-                            .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
-                    if (item != null) item.deleteFromRealm();
+                    AccountRealm item = realm1.where(AccountRealm.class)
+                            .equalTo(AccountRealm.Fields.USERNAME, account.toString())
+                            .findFirst();
+                    if (item != null) item.setUploadServer("");
                 });
             } catch (Exception e) {
                 LogManager.exception("HttpFileUploadManager", e);
@@ -458,11 +460,11 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<UploadServer> items = realm
-                    .where(UploadServer.class)
+            RealmResults<AccountRealm> items = realm
+                    .where(AccountRealm.class)
                     .findAll();
-            for (UploadServer item : items) {
-                uploadServers.put(item.getAccount(), item.getServer());
+            for (AccountRealm item : items) {
+                uploadServers.put(item.getAccount(), item.getUploadServer());
             }
         } catch (Exception e) {
             LogManager.exception(HttpFileUploadManager.class.getName(), e);
