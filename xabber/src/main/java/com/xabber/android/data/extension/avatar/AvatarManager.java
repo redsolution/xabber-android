@@ -236,26 +236,23 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Map<BareJid, String> hashes = AvatarRepository.getHashesMapFromRealm();
-                Map<String, Bitmap> bitmaps = new HashMap<>();
-                Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
+        Map<BareJid, String> hashes = AvatarRepository.getHashesMapFromRealm();
+        Map<String, Bitmap> bitmaps = new HashMap<>();
+        Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
 
-                for (String hash : new HashSet<>(hashes.values()))
-                    if (!hash.equals(EMPTY_HASH)) {
-                        Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
-                        bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-                    }
-                for (String hash : new HashSet<>(XEPHashes.values()))
-                    if (!hash.equals(EMPTY_HASH)) {
-                        Bitmap bitmap = makeXEPBitmap(AvatarStorage.getInstance().read(hash));
-                        bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-                    }
-                onLoaded(XEPHashes, hashes, bitmaps);
+        for (String hash : new HashSet<>(hashes.values()))
+            if (!hash.equals(EMPTY_HASH)) {
+                Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
+                bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
             }
-        });
+        for (String hash : new HashSet<>(XEPHashes.values()))
+            if (!hash.equals(EMPTY_HASH)) {
+                Bitmap bitmap = makeXEPBitmap(AvatarStorage.getInstance().read(hash));
+                bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
+            }
+        Application.getInstance().runOnUiThread(() ->
+            onLoaded(XEPHashes, hashes, bitmaps)
+        );
     }
 
     private void onLoaded(Map<BareJid, String> XEPHashes, Map<BareJid, String> hashes, Map<String, Bitmap> bitmaps) {

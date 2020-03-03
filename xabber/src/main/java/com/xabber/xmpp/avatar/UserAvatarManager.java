@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -50,6 +51,7 @@ public final class UserAvatarManager extends Manager {
     public static final String DATA_NAMESPACE = "urn:xmpp:avatar:data";
     public static final String METADATA_NAMESPACE = "urn:xmpp:avatar:metadata";
     public static final String FEATURE_METADATA = METADATA_NAMESPACE + "+notify";
+    private static final String LOG_TAG = UserAvatarManager.class.getName();
 
     private static final Map<XMPPConnection, UserAvatarManager> INSTANCES = new WeakHashMap<>();
 
@@ -81,7 +83,6 @@ public final class UserAvatarManager extends Manager {
         super(connection);
         this.pepManager = PEPManager.getInstanceFor(connection);
         this.serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(connection);
-        //connection.setReplyTimeout(120000);
     }
 
     /**
@@ -275,7 +276,7 @@ public final class UserAvatarManager extends Manager {
 
         ItemsExtension items = new ItemsExtension(ItemsExtension.ItemsElementType.items, DATA_NAMESPACE, Collections.singletonList(new Item(metadataInfo.getId())));
         PubSub avatarRequest = PubSub.createPubsubPacket(from, IQ.Type.get, items, null);
-        PubSub reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow();
+        PubSub reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow(120000);
         ItemsExtension receivedItems = reply.getExtension(PubSubElementType.ITEMS);
         for (ExtensionElement itm : (receivedItems).getExtensions()) {
             if (!(itm instanceof PayloadItem<?>)) {
@@ -476,23 +477,18 @@ public final class UserAvatarManager extends Manager {
                                 }
                                 AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                LogManager.exception(LOG_TAG, e);
                             } catch (PubSubException.NotALeafNodeException e) {
-                                e.printStackTrace();
+                                LogManager.exception(LOG_TAG, e);
                             } catch (NoResponseException e) {
-                                e.printStackTrace();
+                                LogManager.exception(LOG_TAG, e);
                             } catch (NotConnectedException e) {
-                                e.printStackTrace();
+                                LogManager.exception(LOG_TAG, e);
                             } catch (XMPPErrorException e) {
-                                e.printStackTrace();
+                                LogManager.exception(LOG_TAG, e);
                             }
                         }
-                    } /*else if (payloadItem.getPayload() instanceof DataExtension){
-                        DataExtension dataExtension = (DataExtension) payloadItem.getPayload();
-                        byte[] avatar = dataExtension.getData();
-                        String sh1 = AvatarManager.getAvatarHash(avatar);
-                        AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
-                    }*/
+                    }
                 }
             }
         }
