@@ -90,7 +90,6 @@ public class DownloadManager {
         intent.putExtra(DownloadService.KEY_URL, attachment.getFileUrl());
         intent.putExtra(DownloadService.KEY_FILE_SIZE, attachment.getFileSize());
         context.startService(intent);
-        return;
     }
 
     private void nextDownload() {
@@ -114,7 +113,7 @@ public class DownloadManager {
 
     private class DownloadReceiver extends ResultReceiver {
 
-        public DownloadReceiver(Handler handler) {
+        DownloadReceiver(Handler handler) {
             super(handler);
         }
 
@@ -141,13 +140,13 @@ public class DownloadManager {
         }
     }
 
-    public class ProgressData {
+    public static class ProgressData {
         final int progress;
         final String error;
         final boolean completed;
         final String attachmentId;
 
-        public ProgressData(int progress, String error, boolean completed, String attachmentId) {
+        ProgressData(int progress, String error, boolean completed, String attachmentId) {
             this.progress = progress;
             this.error = error;
             this.completed = completed;

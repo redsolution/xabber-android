@@ -168,6 +168,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
     public static final String VOICE_MESSAGE = "VOICE_MESSAGE";
+    private static final String VOICE_MESSAGE_RECEIVER_IGNORE = "VOICE_MESSAGE_RECEIVER_IGNORE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private final long STOP_TYPING_DELAY = 2500; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
@@ -263,6 +264,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private List<HashMap<String, String>> menuItems = null;
 
+    private boolean userIsBlocked = false;
+
     private int checkedResource; // use only for alert dialog
 
     private float toolbarElevation;
@@ -295,6 +298,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             throw new ClassCastException(activity.toString()
                     + " must implement ChatViewerFragmentListener");
         }
+        registerOpusBroadcastReceiver();
     }
 
     @Override
@@ -666,6 +670,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         setChat(account, user);
         if (savedInstanceState != null) {
             String voiceRecordPath = savedInstanceState.getString(VOICE_MESSAGE);
+            ignoreReceiver = savedInstanceState.getBoolean(VOICE_MESSAGE_RECEIVER_IGNORE);
             if (voiceRecordPath != null) {
                 recordingPath = voiceRecordPath;
                 currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
@@ -828,9 +833,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         showJoinButtonIfNeed();
 
-        showNewContactLayoutIfNeed();
-
-        registerOpusBroadcastReceiver();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -846,7 +848,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 || currentVoiceRecordingState == VoiceRecordState.TouchRecording)
             stopRecording();
 
-        unregisterOpusBroadcastReceiver();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -872,16 +873,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         handler.removeCallbacks(record);
         handler.removeCallbacks(postAnimation);
         if (audioProgressSubscription != null) audioProgressSubscription.unsubscribe();
-        if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
-            stopRecordingIfPossibleAsync(false);
-        }
+        //if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
+        //    stopRecordingIfPossibleAsync(false);
+        //}
         cleanUpVoice(false);
+        unregisterOpusBroadcastReceiver();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(VOICE_MESSAGE, recordingPath);
+        outState.putBoolean(VOICE_MESSAGE_RECEIVER_IGNORE, ignoreReceiver);
     }
 
     private void setUpInputView(View view) {
@@ -1196,10 +1199,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void restoreInputState() {
         //if (!inputView.getText().equals("") && inputView.getText() != null) return;
 
-        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
-            showBlockedBar();
-            return;
-        }
+        //if (userIsBlocked) {
+        //    showBlockedBar();
+        //    return;
+        //}
 
         skipOnTextChanges = true;
 
@@ -1260,6 +1263,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void updateContact() {
         updateSecurityButton();
         updateSendButtonSecurityLevel();
+        updateBlockedState();
         showNewContactLayoutIfNeed();
     }
 
@@ -1887,6 +1891,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
     }
 
+    private void updateBlockedState() {
+        userIsBlocked = BlockingManager.getInstance().contactIsBlocked(account, user);
+        if (userIsBlocked) {
+            showBlockedBar();
+        } else {
+            if (blockedView != null) blockedView.setVisibility(View.GONE);
+            inputLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void showBlockedBar() {
         for(int i = 0; i < inputPanel.getChildCount(); i++) {
             View view = inputPanel.getChildAt(i);
@@ -1912,6 +1926,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             blockedView.setGravity(Gravity.CENTER);
             blockedView.setOnClickListener(v -> startActivity(ContactViewerActivity.createIntent(getContext(), account, user)));
             inputPanel.addView(blockedView);
+        } else {
+            blockedView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1919,7 +1935,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() instanceof RoomChat)
             return;
 
-        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+        //if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+        //    if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+        //    return;
+        //}
+        if (userIsBlocked) {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             return;
         }
@@ -2227,7 +2247,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             beginTimer(false);
             currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
         } else {
-            ignore = true;
+            ignoreReceiver = true;
             clearVoiceMessage();
         }
     }
@@ -2389,7 +2409,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (start) {
             ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.voice);
             stopTypingTimer.cancel();
-            ignore = false;
+            ignoreReceiver = false;
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);

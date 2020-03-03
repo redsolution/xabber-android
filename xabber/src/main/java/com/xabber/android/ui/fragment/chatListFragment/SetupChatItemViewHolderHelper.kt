@@ -177,13 +177,13 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val context = holder.itemView.context
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
-        if (text!!.isEmpty()) {
+        if (text.isNullOrEmpty()) {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.account, contact.user) != null)
                 holder.messageTextTV.text = ChatStateManager.getInstance()
                         .getFullChatStateString(contact.account, contact.user)
-            else if (forwardedCount!! > 0) holder.messageTextTV.text = String
+            else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            else if (lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0]?.title
+            else if (lastMessage != null && lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0]?.title
             else holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
         } else {
@@ -215,9 +215,11 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
         val lastMessage = MessageManager.getInstance()
                 .getOrCreateChat(contact.account, contact.user).lastMessage
-        holder.messageStatusTV.visibility = if (lastMessage?.text!!.isEmpty() || lastMessage.isIncoming)
+        holder.messageStatusTV.visibility = if (lastMessage?.text == null || lastMessage.isIncoming)
             View.INVISIBLE else View.VISIBLE
-        holder.messageStatusTV.setImageResource(getMEssageStatusImage(lastMessage))
+        if (lastMessage != null) {
+            holder.messageStatusTV.setImageResource(getMEssageStatusImage(lastMessage))
+        }
     }
 
     fun getMEssageStatusImage(messageItem: MessageItem): Int{
