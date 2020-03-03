@@ -193,8 +193,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     }
                     messageText = StringUtils.getColoredText(voiceText.toString(), accountColorIndicator);
                 } else messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
-            } else if (lastMessage.getFilePath() != null) {
-                messageText = new File(lastMessage.getFilePath()).getName();
+            } else if (lastMessage.getAttachments() != null && lastMessage.getAttachments().get(0).getFilePath() != null) {
+                messageText = new File(lastMessage.getAttachments().get(0).getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
                 messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
             } else {

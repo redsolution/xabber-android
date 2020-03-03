@@ -74,7 +74,8 @@ public class FileManager {
 
     public static void processFileMessage (final MessageItem messageItem) {
         boolean isImage = isImageUrl(messageItem.getText());
-        messageItem.setIsImage(isImage);
+        if (messageItem.getAttachments() != null)
+            messageItem.getAttachments().get(0).setIsImage(isImage);
     }
 
     public static boolean fileIsImage(File file) {

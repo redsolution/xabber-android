@@ -49,7 +49,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         if (messageItem == null) return 0;
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
-        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage()) {
+        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.hasImage()) {
             if(messageItem.haveAttachments() && messageItem.isAttachmentImageOnly() && messageItem.getText().trim().isEmpty())
                 return VIEW_TYPE_IMAGE;
             else

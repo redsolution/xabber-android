@@ -121,15 +121,16 @@ public class FileMessageVH extends MessageVH
             setUpImage(messageItem.getAttachments());
             //setUpVoice(messageItem.getAttachments(), context);
             setUpFile(messageItem.getAttachments(), context);
-        } else if (messageItem.isImage()) {
+        } else if (messageItem.hasImage() && messageItem.getAttachments().get(0).isImage()) {
             prepareImage(messageItem, context);
         }
     }
 
+    //todo check this
     private void prepareImage(MessageItem messageItem, Context context) {
-        String filePath = messageItem.getFilePath();
-        Integer imageWidth = messageItem.getImageWidth();
-        Integer imageHeight = messageItem.getImageHeight();
+        String filePath = messageItem.getAttachments().get(0).getFilePath();
+        Integer imageWidth = messageItem.getAttachments().get(0).getImageWidth();
+        Integer imageHeight = messageItem.getAttachments().get(0).getImageHeight();
         String imageUrl = messageItem.getText();
         final String uniqueId = messageItem.getUniqueId();
         setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, context);
@@ -196,7 +197,7 @@ public class FileMessageVH extends MessageVH
                             MessageItem first = realm1.where(MessageItem.class)
                                     .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
                                     .findFirst();
-                            if (first != null) first.setFilePath(null);
+                            if (first != null) first.getAttachments().get(0).setFilePath(null);
 
                         });
                     } catch (Exception e) {
@@ -276,8 +277,8 @@ public class FileMessageVH extends MessageVH
                                                         .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
                                                         .findFirst();
                                                 if (first != null) {
-                                                    first.setImageWidth(width);
-                                                    first.setImageHeight(height);
+                                                    first.getAttachments().get(0).setImageWidth(width);
+                                                    first.getAttachments().get(0).setImageHeight(height);
                                                 }
                                         });
                                     } catch (Exception e) {

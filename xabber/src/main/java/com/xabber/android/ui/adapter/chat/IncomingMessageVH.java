@@ -82,7 +82,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 }
                 if(imageOnly) needTail = false;
             }
-        } else if (messageItem.isImage()) {
+        } else if (messageItem.hasImage() && messageItem.getAttachments().get(0).isImage()) {
             if (messageText.getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images

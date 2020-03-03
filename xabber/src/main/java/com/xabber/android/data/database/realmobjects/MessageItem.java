@@ -19,8 +19,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -72,12 +70,6 @@ public class MessageItem extends RealmObject {
         public static final String ORIGIN_ID = "originId";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
-        public static final String FILE_PATH = "filePath";
-        public static final String FILE_URL = "fileUrl";
-        public static final String FILE_SIZE = "fileSize";
-        public static final String IS_IMAGE = "isImage";
-        public static final String IMAGE_WIDTH = "imageWidth";
-        public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String ACKNOWLEDGED = "acknowledged";
         public static final String IS_IN_PROGRESS = "isInProgress";
         public static final String ATTACHMENTS = "attachments";
@@ -184,35 +176,6 @@ public class MessageItem extends RealmObject {
      * If message was forwarded (e.g. message carbons (XEP-0280))
      */
     private boolean forwarded;
-
-    /**
-     * If message text contains url to file
-     */
-    @Deprecated
-    private String fileUrl;
-
-    /**
-     * If message "contains" file with local file path
-     */
-    @Deprecated
-    private String filePath;
-
-    /**
-     * If message contains URL to image (and may be drawn as image)
-     */
-    @Deprecated
-    private boolean isImage;
-
-    @Deprecated
-    @Nullable
-    private Integer imageWidth;
-
-    @Deprecated
-    @Nullable
-    private Integer imageHeight;
-
-    @Deprecated
-    private Long fileSize;
 
     /**
      * If message was acknowledged by server (XEP-0198: Stream Management)
@@ -359,49 +322,14 @@ public class MessageItem extends RealmObject {
 
     public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
-    @Deprecated
-    public String getFilePath() { return filePath; }
-
-    @Deprecated
-    public void setFilePath(String filePath) { this.filePath = filePath; }
-
-    @Deprecated
-    public boolean isImage() { return isImage; }
-
-    @Deprecated
-    public void setIsImage(boolean isImage) { this.isImage = isImage; }
-
-    @Deprecated
-    @Nullable
-    public Integer getImageWidth() { return imageWidth; }
-
-    @Deprecated
-    public void setImageWidth(@Nullable Integer imageWidth) { this.imageWidth = imageWidth; }
-
-    @Deprecated
-    @Nullable
-    public Integer getImageHeight() { return imageHeight; }
-
-    @Deprecated
-    public void setImageHeight(@Nullable Integer imageHeight) { this.imageHeight = imageHeight; }
-
-    @Deprecated
-    public String getFileUrl() { return fileUrl; }
-
-    @Deprecated
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
-
-    @Deprecated
-    public Long getFileSize() { return fileSize; }
-
-    @Deprecated
-    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
-
     public static ChatAction getChatAction(MessageItem messageItem) { return ChatAction.valueOf(messageItem.getAction()); }
 
     public static Spannable getSpannable(MessageItem messageItem) { return new SpannableString(messageItem.getText()); }
 
-    public static boolean isUploadFileMessage(MessageItem messageItem) { return messageItem.getFilePath() != null && !messageItem.isIncoming() && !messageItem.isSent(); }
+    public static boolean isUploadFileMessage(MessageItem messageItem) {
+        return messageItem.getAttachments() != null
+                && messageItem.getAttachments().size() != 0
+                && !messageItem.isSent(); }
 
     public boolean isAcknowledged() { return acknowledged; }
 
