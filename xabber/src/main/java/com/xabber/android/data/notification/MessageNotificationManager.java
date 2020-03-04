@@ -13,8 +13,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.realmobjects.NotifChatRealmObject;
-import com.xabber.android.data.database.realmobjects.NotifMessageRealmObject;
+import com.xabber.android.data.database.realmobjects.NotificationChatRealmObject;
+import com.xabber.android.data.database.realmobjects.NotificationMessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.filedownload.FileCategory;
@@ -365,13 +365,13 @@ public class MessageNotificationManager implements OnLoadListener {
     private List<Chat> loadNotifChatsFromRealm() {
         List<Chat> results = new ArrayList<>();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<NotifChatRealmObject> items = realm
-                .where(NotifChatRealmObject.class)
+        RealmResults<NotificationChatRealmObject> items = realm
+                .where(NotificationChatRealmObject.class)
                 .findAll();
-        for (NotifChatRealmObject item : items) {
+        for (NotificationChatRealmObject item : items) {
             Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
                     item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
-            for (NotifMessageRealmObject message : item.getMessages()) {
+            for (NotificationMessageRealmObject message : item.getMessages()) {
                 chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
                         message.getTimestamp()));
             }
@@ -388,12 +388,12 @@ public class MessageNotificationManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    RealmResults<NotifChatRealmObject> items = realm1
-                            .where(NotifChatRealmObject.class)
-                            .equalTo(NotifChatRealmObject.Fields.ACCOUNT, accountJid.toString())
-                            .equalTo(NotifChatRealmObject.Fields.USER, userJid.toString())
+                    RealmResults<NotificationChatRealmObject> items = realm1
+                            .where(NotificationChatRealmObject.class)
+                            .equalTo(NotificationChatRealmObject.Fields.ACCOUNT, accountJid.toString())
+                            .equalTo(NotificationChatRealmObject.Fields.USER, userJid.toString())
                             .findAll();
-                    for (NotifChatRealmObject item : items) {
+                    for (NotificationChatRealmObject item : items) {
                         item.getMessages().deleteAllFromRealm();
                         item.deleteFromRealm();
                     }
@@ -410,11 +410,11 @@ public class MessageNotificationManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    RealmResults<NotifChatRealmObject> items = realm1
-                            .where(NotifChatRealmObject.class)
-                            .equalTo(NotifChatRealmObject.Fields.ACCOUNT, accountJid.toString())
+                    RealmResults<NotificationChatRealmObject> items = realm1
+                            .where(NotificationChatRealmObject.class)
+                            .equalTo(NotificationChatRealmObject.Fields.ACCOUNT, accountJid.toString())
                             .findAll();
-                    for (NotifChatRealmObject item : items) {
+                    for (NotificationChatRealmObject item : items) {
                         item.getMessages().deleteAllFromRealm();
                         item.deleteFromRealm();
                     }
@@ -431,10 +431,10 @@ public class MessageNotificationManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    RealmResults<NotifChatRealmObject> items = realm1
-                            .where(NotifChatRealmObject.class)
+                    RealmResults<NotificationChatRealmObject> items = realm1
+                            .where(NotificationChatRealmObject.class)
                             .findAll();
-                    for (NotifChatRealmObject item : items) {
+                    for (NotificationChatRealmObject item : items) {
                         item.getMessages().deleteAllFromRealm();
                         item.deleteFromRealm();
                     }
@@ -451,13 +451,13 @@ public class MessageNotificationManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    NotifChatRealmObject chatRealm = new NotifChatRealmObject(chat.getId());
+                    NotificationChatRealmObject chatRealm = new NotificationChatRealmObject(chat.getId());
                     chatRealm.setAccount(chat.getAccountJid());
                     chatRealm.setUser(chat.getUserJid());
                     chatRealm.setChatTitle(chat.getChatTitle().toString());
                     chatRealm.setNotificationID(chat.getNotificationId());
                     chatRealm.setGroupChat(chat.isGroupChat);
-                    RealmList<NotifMessageRealmObject> messages = new RealmList<>();
+                    RealmList<NotificationMessageRealmObject> messages = new RealmList<>();
                     for (Message message : chat.getMessages()) {
                         messages.add(messageToRealm(message));
                     }
@@ -470,8 +470,8 @@ public class MessageNotificationManager implements OnLoadListener {
         });
     }
 
-    private NotifMessageRealmObject messageToRealm(Message message) {
-        NotifMessageRealmObject messageRealm = new NotifMessageRealmObject(message.getId());
+    private NotificationMessageRealmObject messageToRealm(Message message) {
+        NotificationMessageRealmObject messageRealm = new NotificationMessageRealmObject(message.getId());
         messageRealm.setAuthor(message.getAuthor().toString());
         messageRealm.setText(message.getMessageText().toString());
         messageRealm.setTimestamp(message.getTimestamp());

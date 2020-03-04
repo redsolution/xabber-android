@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class NotifMessageRealmObject extends RealmObject {
+public class NotificationMessageRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -22,11 +22,11 @@ public class NotifMessageRealmObject extends RealmObject {
     private String text;
     private long timestamp;
 
-    public NotifMessageRealmObject() {
+    public NotificationMessageRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public NotifMessageRealmObject(String id) {
+    public NotificationMessageRealmObject(String id) {
         this.id = id;
     }
 
