@@ -130,6 +130,7 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
             inputCheckbox = itemView.findViewById(R.id.group_add_checkbox);
             inputCheckbox.setOnClickListener(this);
             inputCheckbox.setVisibility(View.INVISIBLE);
+            inputCheckbox.setChecked(false);
             this.listener = listener;
         }
 
@@ -159,6 +160,7 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
         public void afterTextChanged(Editable s) {
             if (s == null || s.toString().isEmpty() || getCircles().contains(s.toString().trim())) {
                 inputCheckbox.setVisibility(View.INVISIBLE);
+                inputCheckbox.setChecked(false);
                 inputNewCircle = "";
             } else {
                 inputCheckbox.setVisibility(View.VISIBLE);
