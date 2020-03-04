@@ -11,7 +11,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 03.10.17.
  */
 
-public class PatreonRealm extends RealmObject {
+public class PatreonRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -19,13 +19,13 @@ public class PatreonRealm extends RealmObject {
 
     private String string;
     private int pledged;
-    private RealmList<PatreonGoalRealm> goals;
+    private RealmList<PatreonGoalRealmObject> goals;
 
-    public PatreonRealm(String id) {
+    public PatreonRealmObject(String id) {
         this.id = id;
     }
 
-    public PatreonRealm() {
+    public PatreonRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
@@ -49,11 +49,11 @@ public class PatreonRealm extends RealmObject {
         this.pledged = pledged;
     }
 
-    public RealmList<PatreonGoalRealm> getGoals() {
+    public RealmList<PatreonGoalRealmObject> getGoals() {
         return goals;
     }
 
-    public void setGoals(RealmList<PatreonGoalRealm> goals) {
+    public void setGoals(RealmList<PatreonGoalRealmObject> goals) {
         this.goals = goals;
     }
 }

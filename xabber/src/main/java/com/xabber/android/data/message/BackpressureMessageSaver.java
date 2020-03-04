@@ -5,8 +5,8 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
@@ -33,16 +33,16 @@ public class BackpressureMessageSaver {
     private static final String LOG_TAG = BackpressureMessageSaver.class.getSimpleName();
 
     private static BackpressureMessageSaver instance;
-    private PublishSubject<MessageItem> subject;
+    private PublishSubject<MessageRealmObject> subject;
 
     public static BackpressureMessageSaver getInstance() {
         if (instance == null) instance = new BackpressureMessageSaver();
         return instance;
     }
 
-    public void saveMessageItem(MessageItem messageItem) {
-        if (hasCopyInRealm(messageItem)) return;
-        subject.onNext(messageItem);
+    public void saveMessageItem(MessageRealmObject messageRealmObject) {
+        if (hasCopyInRealm(messageRealmObject)) return;
+        subject.onNext(messageRealmObject);
     }
 
     private BackpressureMessageSaver() {
@@ -54,19 +54,19 @@ public class BackpressureMessageSaver {
         subject.buffer(250, TimeUnit.MILLISECONDS)
             .onBackpressureBuffer()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<MessageItem>>() {
+            .subscribe(new Action1<List<MessageRealmObject>>() {
                 @Override
-                public void call(final List<MessageItem> messageItems) {
-                    if (messageItems == null || messageItems.isEmpty()) return;
+                public void call(final List<MessageRealmObject> messageRealmObjects) {
+                    if (messageRealmObjects == null || messageRealmObjects.isEmpty()) return;
                     Realm realm = null;
                     try {
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransactionAsync(realm1 -> {
-                            realm1.copyToRealm(messageItems);
+                            realm1.copyToRealm(messageRealmObjects);
                         }, () ->  {
                             EventBus.getDefault().post(new NewMessageEvent());
                             SyncManager.getInstance().onMessageSaved();
-                            checkForAttachmentsAndDownload(messageItems);
+                            checkForAttachmentsAndDownload(messageRealmObjects);
                         });
                     } catch (Exception e) {
                         LogManager.exception(this, e);
@@ -84,49 +84,49 @@ public class BackpressureMessageSaver {
     }
 
     //TODO refactor this method before releasing
-    private boolean hasCopyInRealm(final MessageItem newIncomingMessageItem){
+    private boolean hasCopyInRealm(final MessageRealmObject newIncomingMessageRealmObject){
         boolean result = false;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        MessageItem item;
+        MessageRealmObject item;
 
-        if (newIncomingMessageItem.getUniqueId() != null) {
-            item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+        if (newIncomingMessageRealmObject.getUniqueId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, newIncomingMessageRealmObject.getUniqueId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
                     .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()) {
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
                 result = true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
                                 + item.getOriginalStanza());
             }
         }
 
-        if (newIncomingMessageItem.getStanzaId() != null) {
-            item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+        if (newIncomingMessageRealmObject.getStanzaId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, newIncomingMessageRealmObject.getStanzaId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
                     .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()) {
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
                 result = true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
                                 + item.getOriginalStanza());
             }
         }
 
-        if (newIncomingMessageItem.getOriginId() != null) {
-            item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+        if (newIncomingMessageRealmObject.getOriginId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.ORIGIN_ID, newIncomingMessageRealmObject.getOriginId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
                     .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()) {
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
                 result = true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
                                 + item.getOriginalStanza());
             }
         }
@@ -136,13 +136,13 @@ public class BackpressureMessageSaver {
         return result;
     }
 
-    private void checkForAttachmentsAndDownload(List<MessageItem> messageItems) {
+    private void checkForAttachmentsAndDownload(List<MessageRealmObject> messageRealmObjects) {
         if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
-            for (MessageItem message : messageItems) {
+            for (MessageRealmObject message : messageRealmObjects) {
                 if (message.haveAttachments()) {
-                    for (Attachment attachment : message.getAttachments()) {
-                        if (attachment.isVoice() && attachment.getFilePath() == null) {
-                            DownloadManager.getInstance().downloadFile(attachment, message.getAccount(), Application.getInstance());
+                    for (AttachmentRealmObject attachmentRealmObject : message.getAttachmentRealmObjects()) {
+                        if (attachmentRealmObject.isVoice() && attachmentRealmObject.getFilePath() == null) {
+                            DownloadManager.getInstance().downloadFile(attachmentRealmObject, message.getAccount(), Application.getInstance());
                         }
                     }
                 }

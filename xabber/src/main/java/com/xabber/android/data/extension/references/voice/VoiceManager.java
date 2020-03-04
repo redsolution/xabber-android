@@ -13,8 +13,8 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -84,7 +84,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         }
     };
 
-    public void voiceClicked(MessageItem message) {
+    public void voiceClicked(MessageRealmObject message) {
         voiceClicked(message, 0, null);
     }
 
@@ -97,45 +97,45 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
 
     public void voiceClicked(String messageId, int attachmentIndex, Long timestamp) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        MessageItem messageItem = realm
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+        MessageRealmObject messageRealmObject = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
                 .findFirst();
 
-        if (messageItem == null || messageItem.getAttachments() == null
-                || messageItem.getAttachments().size() <= attachmentIndex
-                || !messageItem.getAttachments().get(attachmentIndex).isVoice()) {
+        if (messageRealmObject == null || messageRealmObject.getAttachmentRealmObjects() == null
+                || messageRealmObject.getAttachmentRealmObjects().size() <= attachmentIndex
+                || !messageRealmObject.getAttachmentRealmObjects().get(attachmentIndex).isVoice()) {
             return;
         }
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
-        voiceClicked(messageItem, attachmentIndex, timestamp);
+        voiceClicked(messageRealmObject, attachmentIndex, timestamp);
     }
 
-    private void voiceClicked(MessageItem message, int attachmentIndex, Long timestamp) {
-        if (message == null || message.getAttachments() == null
-                || message.getAttachments().size() <= attachmentIndex
-                || !message.getAttachments().get(attachmentIndex).isVoice())
+    private void voiceClicked(MessageRealmObject message, int attachmentIndex, Long timestamp) {
+        if (message == null || message.getAttachmentRealmObjects() == null
+                || message.getAttachmentRealmObjects().size() <= attachmentIndex
+                || !message.getAttachmentRealmObjects().get(attachmentIndex).isVoice())
             return;
 
-        Attachment attachment = message.getAttachments().get(attachmentIndex);
+        AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(attachmentIndex);
 
         String path;
         if (message.isInProgress()) {
-            path = attachment.getFilePath();
+            path = attachmentRealmObject.getFilePath();
         } else {
-            if (attachment.getFilePath() != null) {
-                if (new File(attachment.getFilePath()).exists())
-                    path = attachment.getFilePath();
+            if (attachmentRealmObject.getFilePath() != null) {
+                if (new File(attachmentRealmObject.getFilePath()).exists())
+                    path = attachmentRealmObject.getFilePath();
                 else {
-                    MessageManager.setAttachmentLocalPathToNull(attachment.getUniqueId());
+                    MessageManager.setAttachmentLocalPathToNull(attachmentRealmObject.getUniqueId());
                     return;
                 }
             } else
-                path = attachment.getFileUrl();
+                path = attachmentRealmObject.getFileUrl();
         }
-        voiceClicked(message.getUniqueId(), attachment.getUniqueId(), path, attachment.getDuration(), true, timestamp);
+        voiceClicked(message.getUniqueId(), attachmentRealmObject.getUniqueId(), path, attachmentRealmObject.getDuration(), true, timestamp);
     }
 
     private void voiceClicked(String messageId, String attachmentId, String filePath, Long duration, boolean alreadySentMessage, Long timestamp) {
@@ -568,12 +568,12 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                     try {
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransaction(realm1 -> {
-                                Attachment backgroundAttachment = realm1
-                                        .where(Attachment.class)
-                                        .equalTo(Attachment.Fields.UNIQUE_ID, id)
+                                AttachmentRealmObject backgroundAttachmentRealmObject = realm1
+                                        .where(AttachmentRealmObject.class)
+                                        .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, id)
                                         .findFirst();
-                                if (backgroundAttachment != null)
-                                    backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
+                                if (backgroundAttachmentRealmObject != null)
+                                    backgroundAttachmentRealmObject.setDuration(Long.valueOf(dur) / 1000);
                         });
                     } catch (Exception e) {
                         LogManager.exception(LOG_TAG, e);

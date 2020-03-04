@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class PushLogRecord extends RealmObject {
+public class PushLogRecordRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -20,13 +20,13 @@ public class PushLogRecord extends RealmObject {
     private long time;
     private String message;
 
-    public PushLogRecord(long time, String message) {
+    public PushLogRecordRealmObject(long time, String message) {
         this.id = UUID.randomUUID().toString();
         this.time = time;
         this.message = message;
     }
 
-    public PushLogRecord() {
+    public PushLogRecordRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

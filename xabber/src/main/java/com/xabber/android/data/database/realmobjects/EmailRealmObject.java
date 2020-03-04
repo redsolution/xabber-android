@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 26.07.17.
  */
 
-public class EmailRealm extends RealmObject {
+public class EmailRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -20,11 +20,11 @@ public class EmailRealm extends RealmObject {
     private boolean verified;
     private boolean primary;
 
-    public EmailRealm(String id) {
+    public EmailRealmObject(String id) {
         this.id = id;
     }
 
-    public EmailRealm() {
+    public EmailRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

@@ -22,7 +22,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -44,25 +44,25 @@ public class ImageGridBuilder {
         return LayoutInflater.from(parent.getContext()).inflate(getLayoutResource(imageCount), parent, false);
     }
 
-    public void bindView(View view, RealmList<Attachment> attachments, View.OnClickListener clickListener) {
+    public void bindView(View view, RealmList<AttachmentRealmObject> attachmentRealmObjects, View.OnClickListener clickListener) {
 
         Resources resources = Application.getInstance().getResources();
         maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
-        if (attachments.size() == 1) {
+        if (attachmentRealmObjects.size() == 1) {
             ImageView imageView = getImageView(view, 0);
-            bindOneImage(attachments.get(0), view, imageView);
+            bindOneImage(attachmentRealmObjects.get(0), view, imageView);
             imageView.setOnClickListener(clickListener);
         } else {
             TextView tvCounter = view.findViewById(R.id.tvCounter);
             int index = 0;
             loop:
-            for (Attachment attachment : attachments) {
+            for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
                 if (index > 5)
                     break loop;
 
                 ImageView imageView = getImageView(view, index);
                 if (imageView != null) {
-                    bindImage(attachment, view, imageView);
+                    bindImage(attachmentRealmObject, view, imageView);
                     imageView.setOnClickListener(clickListener);
                     int r = imageView.getPaddingRight();
                     int l = imageView.getPaddingLeft();
@@ -74,18 +74,18 @@ public class ImageGridBuilder {
             }
 
             if (tvCounter != null) {
-                if (attachments.size() > MAX_IMAGE_IN_GRID) {
-                    tvCounter.setText(new StringBuilder("+").append(attachments.size() - MAX_IMAGE_IN_GRID));
+                if (attachmentRealmObjects.size() > MAX_IMAGE_IN_GRID) {
+                    tvCounter.setText(new StringBuilder("+").append(attachmentRealmObjects.size() - MAX_IMAGE_IN_GRID));
                     tvCounter.setVisibility(View.VISIBLE);
                 } else tvCounter.setVisibility(View.GONE);
             }
         }
     }
 
-    private void bindImage(Attachment attachment, View parent, ImageView imageView) {
-        String uri = attachment.getFilePath();
+    private void bindImage(AttachmentRealmObject attachmentRealmObject, View parent, ImageView imageView) {
+        String uri = attachmentRealmObject.getFilePath();
         if (uri == null || uri.isEmpty())
-            uri = attachment.getFileUrl();
+            uri = attachmentRealmObject.getFileUrl();
 
         Glide.with(parent.getContext())
                 .load(uri)
@@ -95,12 +95,12 @@ public class ImageGridBuilder {
                 .into(imageView);
     }
 
-    private void bindOneImage(final Attachment attachment, View parent, final ImageView imageView) {
-        String imagePath = attachment.getFilePath();
-        String imageUrl = attachment.getFileUrl();
-        Integer imageWidth = attachment.getImageWidth();
-        Integer imageHeight = attachment.getImageHeight();
-        final String uniqId = attachment.getUniqueId();
+    private void bindOneImage(final AttachmentRealmObject attachmentRealmObject, View parent, final ImageView imageView) {
+        String imagePath = attachmentRealmObject.getFilePath();
+        String imageUrl = attachmentRealmObject.getFileUrl();
+        Integer imageWidth = attachmentRealmObject.getImageWidth();
+        Integer imageHeight = attachmentRealmObject.getImageHeight();
+        final String uniqId = attachmentRealmObject.getUniqueId();
 
         //boolean rotation = FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(imagePath)));
 
@@ -148,8 +148,8 @@ public class ImageGridBuilder {
                                     try {
                                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                                         realm.executeTransactionAsync(realm1 -> {
-                                            Attachment first = realm1.where(Attachment.class)
-                                                    .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                                            AttachmentRealmObject first = realm1.where(AttachmentRealmObject.class)
+                                                    .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, uniqId)
                                                     .findFirst();
                                             if (first != null) {
                                                 first.setImageWidth(width);

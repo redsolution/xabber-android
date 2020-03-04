@@ -19,7 +19,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
@@ -88,11 +88,11 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         itemView.setOnLongClickListener(this);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
         if (extraData.isMuc()) {
-            messageHeader.setText(messageItem.getResource());
+            messageHeader.setText(messageRealmObject.getResource());
             messageHeader.setTextColor(ColorManager.changeColor(
-                    ColorGenerator.MATERIAL.getColor(messageItem.getResource()), 0.8f));
+                    ColorGenerator.MATERIAL.getColor(messageRealmObject.getResource()), 0.8f));
             messageHeader.setVisibility(View.VISIBLE);
         } else {
             messageHeader.setVisibility(View.GONE);
@@ -112,7 +112,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
             else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
 
-        if (messageItem.isEncrypted()) {
+        if (messageRealmObject.isEncrypted()) {
             ivEncrypted.setVisibility(View.VISIBLE);
         } else {
             ivEncrypted.setVisibility(View.GONE);
@@ -121,24 +121,24 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
-        if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
-            Spanned markupText = Html.fromHtml(messageItem.getMarkupText().trim()
+        if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()){
+            Spanned markupText = Html.fromHtml(messageRealmObject.getMarkupText().trim()
                             .replace("\n", "<br/>").concat("&zwj;"), null,
-                    new ClickTagHandler(extraData.getContext(), messageItem.getAccount()));
+                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount()));
             messageText.setText(markupText, TextView.BufferType.SPANNABLE);
         } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
             try{
-                messageText.setText(URLDecoder.decode(messageItem.getText().trim()
+                messageText.setText(URLDecoder.decode(messageRealmObject.getText().trim()
                         .concat(String.valueOf(Character.MIN_VALUE)), StandardCharsets.UTF_8.name()));
             } catch (Exception e) {
                 LogManager.e(this, e.getMessage());
-                messageText.setText(messageItem.getText().trim()
+                messageText.setText(messageRealmObject.getText().trim()
                         .concat(String.valueOf(Character.MIN_VALUE)));
             }
-        } else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+        } else messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
 
 
-        if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
+        if (OTRManager.getInstance().isEncrypted(messageRealmObject.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
             else messageText.setVisibility(View.GONE);
@@ -156,14 +156,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         //TODO:should probably swap timestamp to the UID of the message, since it's more versatile
         timestamp = extraData.getMainMessageTimestamp();
 
-        String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
-        Long delayTimestamp = messageItem.getDelayTimestamp();
+        String time = StringUtils.getTimeText(new Date(messageRealmObject.getTimestamp()));
+        Long delayTimestamp = messageRealmObject.getDelayTimestamp();
         if (delayTimestamp != null) {
-            String delay = extraData.getContext().getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
+            String delay = extraData.getContext().getString(messageRealmObject.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
         }
-        Long editedTimestamp = messageItem.getEditedTimestamp();
+        Long editedTimestamp = messageRealmObject.getEditedTimestamp();
         if (editedTimestamp != null) {
             time += extraData.getContext().getString(R.string.edited, StringUtils.getTimeText(new Date (editedTimestamp)));
         }
@@ -175,7 +175,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // set date
         needDate = extraData.isNeedDate();
-        date = StringUtils.getDateStringForMessage(messageItem.getTimestamp());
+        date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
@@ -183,15 +183,15 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         else itemView.setBackgroundDrawable(null);
     }
 
-    protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
+    protected void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+        String[] forwardedIDs = messageRealmObject.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<MessageItem> forwardedMessages = realm
-                            .where(MessageItem.class)
-                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+            RealmResults<MessageRealmObject> forwardedMessages = realm
+                            .where(MessageRealmObject.class)
+                            .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
                             .findAll()
-                            .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
             if (forwardedMessages.size() > 0) {
                 RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
@@ -206,7 +206,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 }
                 else{
                     forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
-                            .getAccountPainter().getAccountColorWithTint(messageItem.getAccount(), 900));
+                            .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
                     forwardLeftBorder.setAlpha(0.6f);
                 }
                 forwardLayout.setVisibility(View.VISIBLE);

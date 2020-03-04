@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 21.07.17.
  */
 
-public class XMPPAccountSettignsRealm extends RealmObject {
+public class XMPPAccountSettingsRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -24,10 +24,10 @@ public class XMPPAccountSettignsRealm extends RealmObject {
     private String color;
     private String token;
 
-    public XMPPAccountSettignsRealm(String jid) {
+    public XMPPAccountSettingsRealmObject(String jid) {
         this.jid = jid;
     }
-    public XMPPAccountSettignsRealm() {
+    public XMPPAccountSettingsRealmObject() {
         this.jid = UUID.randomUUID().toString();
     }
 

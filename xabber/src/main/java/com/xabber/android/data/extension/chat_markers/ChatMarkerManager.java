@@ -8,7 +8,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
@@ -99,17 +99,17 @@ public class ChatMarkerManager implements OnPacketListener {
         }
     }
 
-    public void sendDisplayed(MessageItem messageItem) {
-        if (messageItem.getStanzaId() == null && messageItem.getOriginId() == null) return;
+    public void sendDisplayed(MessageRealmObject messageRealmObject) {
+        if (messageRealmObject.getStanzaId() == null && messageRealmObject.getOriginId() == null) return;
 
-        String id = messageItem.getOriginId() != null ?
-                messageItem.getOriginId() : messageItem.getStanzaId();
+        String id = messageRealmObject.getOriginId() != null ?
+                messageRealmObject.getOriginId() : messageRealmObject.getStanzaId();
         if (id == null || id.isEmpty()) return;
 
-        Message displayed = new Message(messageItem.getUser().getJid());
+        Message displayed = new Message(messageRealmObject.getUser().getJid());
         Message originalMessage = null;
         try {
-            originalMessage = PacketParserUtils.parseStanza(messageItem.getOriginalStanza());
+            originalMessage = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,7 +123,7 @@ public class ChatMarkerManager implements OnPacketListener {
         displayed.addExtension(displayedExtension);
         displayed.setType(Message.Type.chat);
 
-        sendMessageInBackgroundUserRequest(displayed, messageItem.getAccount());
+        sendMessageInBackgroundUserRequest(displayed, messageRealmObject.getAccount());
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
@@ -217,21 +217,21 @@ public class ChatMarkerManager implements OnPacketListener {
                 try {
                     realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(realm1 ->  {
-                        MessageItem first = realm1.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
+                        MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.ORIGIN_ID, messageID).findFirst();
 
                         if (first != null) {
-                            RealmResults<MessageItem> results = realm1.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                                    .equalTo(MessageItem.Fields.INCOMING, false)
-                                    .equalTo(MessageItem.Fields.DISPLAYED, false)
-                                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                            RealmResults<MessageRealmObject> results = realm1.where(MessageRealmObject.class)
+                                    .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
+                                    .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
+                                    .equalTo(MessageRealmObject.Fields.INCOMING, false)
+                                    .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
+                                    .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                    .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
                                     .findAll();
 
                             if (results != null) {
-                                results.setBoolean(MessageItem.Fields.DISPLAYED, true);
+                                results.setBoolean(MessageRealmObject.Fields.DISPLAYED, true);
                                 EventBus.getDefault().post(new MessageUpdateEvent());
                             }
                         }
@@ -248,21 +248,21 @@ public class ChatMarkerManager implements OnPacketListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    MessageItem first = realm1.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
+                    MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ORIGIN_ID, stanzaID).findFirst();
 
                     if (first != null) {
-                        RealmResults<MessageItem> results = realm1.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                                .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                                .equalTo(MessageItem.Fields.INCOMING, false)
-                                .equalTo(MessageItem.Fields.DELIVERED, false)
-                                .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                                .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                        RealmResults<MessageRealmObject> results = realm1.where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
+                                .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
+                                .equalTo(MessageRealmObject.Fields.INCOMING, false)
+                                .equalTo(MessageRealmObject.Fields.DELIVERED, false)
+                                .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
                                 .findAll();
 
                         if (results != null) {
-                            results.setBoolean(MessageItem.Fields.DELIVERED, true);
+                            results.setBoolean(MessageRealmObject.Fields.DELIVERED, true);
                             EventBus.getDefault().post(new MessageUpdateEvent());
                         }
                     }

@@ -5,7 +5,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.GroupchatUserRealm;
+import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.log.LogManager;
 
@@ -28,10 +28,10 @@ public class GroupchatUserManager implements OnLoadListener {
     @Override
     public void onLoad() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<GroupchatUserRealm> users = realm
-                .where(GroupchatUserRealm.class)
+        RealmResults<GroupchatUserRealmObject> users = realm
+                .where(GroupchatUserRealmObject.class)
                 .findAll();
-        for (GroupchatUserRealm user : users) {
+        for (GroupchatUserRealmObject user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -58,7 +58,7 @@ public class GroupchatUserManager implements OnLoadListener {
         saveGroupchatUserToRealm(refUserToRealm(user), timestamp);
     }
 
-    private void saveGroupchatUserToRealm(final GroupchatUserRealm user, final long timestamp) {
+    private void saveGroupchatUserToRealm(final GroupchatUserRealmObject user, final long timestamp) {
         Application.getInstance().runInBackground(() -> {
             user.setTimestamp(timestamp);
             Realm realm = null;
@@ -73,8 +73,8 @@ public class GroupchatUserManager implements OnLoadListener {
         });
     }
 
-    private GroupchatUserRealm refUserToRealm(RefUser user) {
-        GroupchatUserRealm realmUser = new GroupchatUserRealm(user.getId());
+    private GroupchatUserRealmObject refUserToRealm(RefUser user) {
+        GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
         if (user.getJid() != null) realmUser.setJid(user.getJid());
@@ -93,7 +93,7 @@ public class GroupchatUserManager implements OnLoadListener {
         return user;
     }
 
-    private GroupchatUser realmUserToUser(GroupchatUserRealm groupchatUser) {
+    private GroupchatUser realmUserToUser(GroupchatUserRealmObject groupchatUser) {
         GroupchatUser user = new GroupchatUser(groupchatUser.getUniqueId());
         user.setAvatar(groupchatUser.getAvatar());
         user.setBadge(groupchatUser.getBadge());

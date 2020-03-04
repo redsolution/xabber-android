@@ -11,7 +11,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 19.07.17.
  */
 
-public class XabberAccountRealm extends RealmObject {
+public class XabberAccountRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -27,15 +27,15 @@ public class XabberAccountRealm extends RealmObject {
     private String phone;
     private boolean needToVerifyPhone;
     private boolean hasPassword;
-    private RealmList<XMPPUserRealm> xmppUsers;
-    private RealmList<EmailRealm> emails;
-    private RealmList<SocialBindingRealm> socialBindings;
+    private RealmList<XMPPUserRealmObject> xmppUsers;
+    private RealmList<EmailRealmObject> emails;
+    private RealmList<SocialBindingRealmObject> socialBindings;
 
-    public XabberAccountRealm(String id) {
+    public XabberAccountRealmObject(String id) {
         this.id = id;
     }
 
-    public XabberAccountRealm() {
+    public XabberAccountRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
@@ -107,27 +107,27 @@ public class XabberAccountRealm extends RealmObject {
         this.language = language;
     }
 
-    public RealmList<XMPPUserRealm> getXmppUsers() {
+    public RealmList<XMPPUserRealmObject> getXmppUsers() {
         return xmppUsers;
     }
 
-    public void setXmppUsers(RealmList<XMPPUserRealm> xmppUsers) {
+    public void setXmppUsers(RealmList<XMPPUserRealmObject> xmppUsers) {
         this.xmppUsers = xmppUsers;
     }
 
-    public RealmList<EmailRealm> getEmails() {
+    public RealmList<EmailRealmObject> getEmails() {
         return emails;
     }
 
-    public void setEmails(RealmList<EmailRealm> emails) {
+    public void setEmails(RealmList<EmailRealmObject> emails) {
         this.emails = emails;
     }
 
-    public RealmList<SocialBindingRealm> getSocialBindings() {
+    public RealmList<SocialBindingRealmObject> getSocialBindings() {
         return socialBindings;
     }
 
-    public void setSocialBindings(RealmList<SocialBindingRealm> socialBindings) {
+    public void setSocialBindings(RealmList<SocialBindingRealmObject> socialBindings) {
         this.socialBindings = socialBindings;
     }
 

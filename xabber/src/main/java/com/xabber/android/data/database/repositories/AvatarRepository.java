@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AvatarRealm;
+import com.xabber.android.data.database.realmobjects.AvatarRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
@@ -24,13 +24,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<AvatarRealm> avatarRealms = realm
-                    .where(AvatarRealm.class)
-                    .isNotNull(AvatarRealm.Fields.PEP_HASH)
+            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
+                    .where(AvatarRealmObject.class)
+                    .isNotNull(AvatarRealmObject.Fields.PEP_HASH)
                     .findAll();
-            for (AvatarRealm avatarRealm : avatarRealms) {
-                BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
-                String pepHash = avatarRealm.getPepHash();
+            for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(avatarRealmObject.getUser()).asBareJid();
+                String pepHash = avatarRealmObject.getPepHash();
                 pepHashes.put(bareJid, pepHash.isEmpty() ? AvatarManager.EMPTY_HASH : pepHash);
             }
         } catch (Exception e) {
@@ -46,17 +46,17 @@ public class AvatarRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AvatarRealm avatarRealm = realm1
-                            .where(AvatarRealm.class)
-                            .equalTo(AvatarRealm.Fields.USER, user)
+                    AvatarRealmObject avatarRealmObject = realm1
+                            .where(AvatarRealmObject.class)
+                            .equalTo(AvatarRealmObject.Fields.USER, user)
                             .findFirst();
-                    if (avatarRealm != null) {
-                        avatarRealm.setPepHash(pepHash);
+                    if (avatarRealmObject != null) {
+                        avatarRealmObject.setPepHash(pepHash);
                     } else {
-                        avatarRealm = new AvatarRealm(user);
-                        avatarRealm.setPepHash(pepHash);
+                        avatarRealmObject = new AvatarRealmObject(user);
+                        avatarRealmObject.setPepHash(pepHash);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealm);
+                    realm1.copyToRealmOrUpdate(avatarRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
@@ -69,13 +69,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<AvatarRealm> avatarRealms = realm
-                    .where(AvatarRealm.class)
-                    .isNotNull(AvatarRealm.Fields.HASH)
+            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
+                    .where(AvatarRealmObject.class)
+                    .isNotNull(AvatarRealmObject.Fields.HASH)
                     .findAll();
-            for (AvatarRealm avatarRealm : avatarRealms) {
-                BareJid bareJid = JidCreate.from(avatarRealm.getUser()).asBareJid();
-                String hash = avatarRealm.getHash();
+            for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(avatarRealmObject.getUser()).asBareJid();
+                String hash = avatarRealmObject.getHash();
                 pepHashes.put(bareJid, hash.isEmpty() ? AvatarManager.EMPTY_HASH : hash);
             }
         } catch (Exception e) {
@@ -91,17 +91,17 @@ public class AvatarRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AvatarRealm avatarRealm = realm1
-                            .where(AvatarRealm.class)
-                            .equalTo(AvatarRealm.Fields.USER, user)
+                    AvatarRealmObject avatarRealmObject = realm1
+                            .where(AvatarRealmObject.class)
+                            .equalTo(AvatarRealmObject.Fields.USER, user)
                             .findFirst();
-                    if (avatarRealm != null) {
-                        avatarRealm.setHash(hash);
+                    if (avatarRealmObject != null) {
+                        avatarRealmObject.setHash(hash);
                     } else {
-                        avatarRealm = new AvatarRealm(user);
-                        avatarRealm.setHash(hash);
+                        avatarRealmObject = new AvatarRealmObject(user);
+                        avatarRealmObject.setHash(hash);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealm);
+                    realm1.copyToRealmOrUpdate(avatarRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);

@@ -6,7 +6,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -62,23 +62,23 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                     for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                         if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
-                            RealmResults<MessageItem> messagesUndelivered = realm1.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                    .equalTo(MessageItem.Fields.SENT, true)
-                                    .equalTo(MessageItem.Fields.INCOMING, false)
-                                    .equalTo(MessageItem.Fields.DELIVERED, false)
-                                    .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
-                                    .equalTo(MessageItem.Fields.READ, false)
-                                    .equalTo(MessageItem.Fields.DISPLAYED, false)
+                            RealmResults<MessageRealmObject> messagesUndelivered = realm1.where(MessageRealmObject.class)
+                                    .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                                    .equalTo(MessageRealmObject.Fields.SENT, true)
+                                    .equalTo(MessageRealmObject.Fields.INCOMING, false)
+                                    .equalTo(MessageRealmObject.Fields.DELIVERED, false)
+                                    .equalTo(MessageRealmObject.Fields.IS_RECEIVED_FROM_MAM, false)
+                                    .equalTo(MessageRealmObject.Fields.READ, false)
+                                    .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
                                     .findAll()
-                                    .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
                             if (messagesUndelivered.size() != 0)
-                                for (MessageItem messageItem : messagesUndelivered){
-                                    if (messageItem != null
-                                            && !messageItem.getStanzaId().equals(messageItem.getOriginId())
-                                            && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
-                                        MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
-                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
+                                for (MessageRealmObject messageRealmObject : messagesUndelivered){
+                                    if (messageRealmObject != null
+                                            && !messageRealmObject.getStanzaId().equals(messageRealmObject.getOriginId())
+                                            && messageRealmObject.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
+                                        MessageManager.getInstance().getChat(messageRealmObject.getAccount(), messageRealmObject.getUser()).sendMessage(messageRealmObject);
+                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageRealmObject.getOriginalStanza());
                                     }
                                 }
                         }
@@ -97,14 +97,14 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
                 realm.executeTransaction(realm1 -> {
-                    MessageItem messageItem = realm1
-                            .where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.ORIGIN_ID, originId)
+                    MessageRealmObject messageRealmObject = realm1
+                            .where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
                             .findFirst();
-                    messageItem.setStanzaId(stanzaId);
-                    messageItem.setTimestamp(millis);
-                    messageItem.setAcknowledged(true);
-                    LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
+                    messageRealmObject.setStanzaId(stanzaId);
+                    messageRealmObject.setTimestamp(millis);
+                    messageRealmObject.setAcknowledged(true);
+                    LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageRealmObject.getOriginalStanza());
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);

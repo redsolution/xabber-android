@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class XTokenRealm extends RealmObject {
+public class XTokenRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -20,11 +20,11 @@ public class XTokenRealm extends RealmObject {
     private String token;
     private long expire;
 
-    public XTokenRealm() {
+    public XTokenRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public XTokenRealm(String id, String token, long expire) {
+    public XTokenRealmObject(String id, String token, long expire) {
         this.id = id;
         this.token = token;
         this.expire = expire;

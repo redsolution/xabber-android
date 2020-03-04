@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.GroupRealm;
+import com.xabber.android.data.database.realmobjects.GroupRealmObject;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.GroupConfiguration;
@@ -20,14 +20,14 @@ public class GroupRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<GroupRealm> groupRealmResults = realm
-                    .where(GroupRealm.class)
+            RealmResults<GroupRealmObject> groupRealmObjectResults = realm
+                    .where(GroupRealmObject.class)
                     .findAll();
-            for (GroupRealm groupRealm : groupRealmResults){
+            for (GroupRealmObject groupRealmObject : groupRealmObjectResults){
                 GroupConfiguration groupConfiguration = new GroupConfiguration();
-                groupConfiguration.setExpanded(groupRealm.isExpanded());
-                groupConfiguration.setShowOfflineMode(groupRealm.getShowOfflineMode());
-                groupConfigurationNestedMap.put(groupRealm.getAccount(), groupRealm.getGroupName(), groupConfiguration);
+                groupConfiguration.setExpanded(groupRealmObject.isExpanded());
+                groupConfiguration.setShowOfflineMode(groupRealmObject.getShowOfflineMode());
+                groupConfigurationNestedMap.put(groupRealmObject.getAccount(), groupRealmObject.getGroupName(), groupConfiguration);
             }
         } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
@@ -42,7 +42,7 @@ public class GroupRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.copyToRealmOrUpdate(new GroupRealm(account, group, expanded, showOfflineMode));
+                    realm1.copyToRealmOrUpdate(new GroupRealmObject(account, group, expanded, showOfflineMode));
                 });
             } catch (Exception e){
                 LogManager.exception("GroupRepository", e);

@@ -15,7 +15,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.PushLogRecord;
+import com.xabber.android.data.database.realmobjects.PushLogRecordRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
@@ -193,8 +193,8 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
-                    realm1.copyToRealm(pushLogRecord);
+                    PushLogRecordRealmObject pushLogRecordRealmObject = new PushLogRecordRealmObject(System.currentTimeMillis(), message);
+                    realm1.copyToRealm(pushLogRecordRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("PushManager", e);
@@ -206,11 +206,11 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     public static List<String> getPushLogs() {
         List<String> logs = new ArrayList<>();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<PushLogRecord> records = realm
-                .where(PushLogRecord.class)
+        RealmResults<PushLogRecordRealmObject> records = realm
+                .where(PushLogRecordRealmObject.class)
                 .findAll()
-                .sort(PushLogRecord.Fields.TIME, Sort.DESCENDING);
-        for (PushLogRecord record : records) {
+                .sort(PushLogRecordRealmObject.Fields.TIME, Sort.DESCENDING);
+        for (PushLogRecordRealmObject record : records) {
             String time = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss",
                     Locale.getDefault()).format(new Date(record.getTime()));
             logs.add(time + ": " + record.getMessage());
@@ -225,7 +225,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(PushLogRecord.class)
+                    realm1.where(PushLogRecordRealmObject.class)
                             .findAll()
                             .deleteAllFromRealm();
                 });

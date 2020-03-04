@@ -32,7 +32,7 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 
-public class AccountRealm extends RealmObject {
+public class AccountRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -67,7 +67,7 @@ public class AccountRealm extends RealmObject {
     private boolean storePassword;
     private String password;
     private String token;
-    private XTokenRealm xToken;
+    private XTokenRealmObject xToken;
 
     private int colorIndex;
     private int timestamp;
@@ -112,11 +112,11 @@ public class AccountRealm extends RealmObject {
     private boolean pushEnabled;
     private boolean pushWasEnabled;
 
-    public AccountRealm(String id) {
+    public AccountRealmObject(String id) {
         this.id = id;
     }
 
-    public AccountRealm() {
+    public AccountRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
@@ -467,11 +467,11 @@ public class AccountRealm extends RealmObject {
         this.pushWasEnabled = pushWasEnabled;
     }
 
-    public XTokenRealm getXToken() {
+    public XTokenRealmObject getXToken() {
         return xToken;
     }
 
-    public void setXToken(XTokenRealm xToken) {
+    public void setXToken(XTokenRealmObject xToken) {
         this.xToken = xToken;
     }
 

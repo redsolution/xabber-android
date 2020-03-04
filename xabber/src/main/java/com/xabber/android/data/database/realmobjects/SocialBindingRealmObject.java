@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 01.08.17.
  */
 
-public class SocialBindingRealm extends RealmObject {
+public class SocialBindingRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -21,11 +21,11 @@ public class SocialBindingRealm extends RealmObject {
     private String firstName;
     private String lastName;
 
-    public SocialBindingRealm(String id) {
+    public SocialBindingRealmObject(String id) {
         this.id = id;
     }
 
-    public SocialBindingRealm() {
+    public SocialBindingRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

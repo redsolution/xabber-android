@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 17.10.17.
  */
 
-public class ChatDataRealm extends RealmObject {
+public class ChatRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -21,20 +21,20 @@ public class ChatDataRealm extends RealmObject {
     private String userJid;
     private int unreadCount;
     private boolean archived;
-    private NotificationStateRealm notificationState;
+    private NotificationStateRealmObject notificationState;
     private int lastPosition;
     private boolean historyRequestedAtStart;
     private Long lastActionTimestamp;
     private int chatStateMode;
     private boolean isGroupchat;
 
-    public ChatDataRealm(String accountJid, String userJid) {
+    public ChatRealmObject(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
         this.accountJid = accountJid;
         this.userJid = userJid;
     }
 
-    public ChatDataRealm() {
+    public ChatRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
@@ -78,11 +78,11 @@ public class ChatDataRealm extends RealmObject {
         this.archived = archived;
     }
 
-    public NotificationStateRealm getNotificationState() {
+    public NotificationStateRealmObject getNotificationState() {
         return notificationState;
     }
 
-    public void setNotificationState(NotificationStateRealm notificationState) {
+    public void setNotificationState(NotificationStateRealmObject notificationState) {
         this.notificationState = notificationState;
     }
 

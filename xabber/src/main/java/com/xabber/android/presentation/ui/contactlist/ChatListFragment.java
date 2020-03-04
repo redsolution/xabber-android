@@ -44,7 +44,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -659,7 +659,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
         List<AbstractChat> newChats = new ArrayList<>();
         for (AbstractChat abstractChat : chats) {
-            MessageItem lastMessage = abstractChat.getLastMessage();
+            MessageRealmObject lastMessage = abstractChat.getLastMessage();
             if (lastMessage != null || abstractChat.getChatstateMode() == AbstractChat.ChatstateType.CLEARED_HISTORY) {
                 switch (state) {
                     case unread:

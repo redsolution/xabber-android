@@ -6,7 +6,7 @@ import com.xabber.android.data.entity.UserJid;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 
-public class SyncInfo extends RealmObject {
+public class SyncInfoRealmObject extends RealmObject {
 
     public static final String FIELD_ACCOUNT = "account";
     public static final String FIELD_USER = "user";

@@ -20,7 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.helper.RoundedBorders;
@@ -72,10 +72,10 @@ public class FileManager {
         return instance;
     }
 
-    public static void processFileMessage (final MessageItem messageItem) {
-        boolean isImage = isImageUrl(messageItem.getText());
-        if (messageItem.getAttachments() != null)
-            messageItem.getAttachments().get(0).setIsImage(isImage);
+    public static void processFileMessage (final MessageRealmObject messageRealmObject) {
+        boolean isImage = isImageUrl(messageRealmObject.getText());
+        if (messageRealmObject.getAttachmentRealmObjects() != null)
+            messageRealmObject.getAttachmentRealmObjects().get(0).setIsImage(isImage);
     }
 
     public static boolean fileIsImage(File file) {

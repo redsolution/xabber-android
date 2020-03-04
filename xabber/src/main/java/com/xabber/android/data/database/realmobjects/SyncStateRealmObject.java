@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 08.09.17.
  */
 
-public class SyncStateRealm extends RealmObject {
+public class SyncStateRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -18,7 +18,7 @@ public class SyncStateRealm extends RealmObject {
     private String jid;
     private boolean sync;
 
-    public SyncStateRealm() {
+    public SyncStateRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

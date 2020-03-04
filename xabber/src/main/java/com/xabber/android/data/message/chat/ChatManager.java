@@ -24,8 +24,8 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ChatDataRealm;
-import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
+import com.xabber.android.data.database.realmobjects.ChatRealmObject;
+import com.xabber.android.data.database.realmobjects.NotificationStateRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -149,13 +149,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     String accountJid = chat.getAccount().toString();
                     String userJid = chat.getUser().toString();
 
-                    ChatDataRealm chatRealm = realm1.where(ChatDataRealm.class)
+                    ChatRealmObject chatRealm = realm1.where(ChatRealmObject.class)
                             .equalTo("accountJid", accountJid)
                             .equalTo("userJid", userJid)
                             .findFirst();
 
                     if (chatRealm == null)
-                        chatRealm = new ChatDataRealm(accountJid, userJid);
+                        chatRealm = new ChatRealmObject(accountJid, userJid);
 
                     chatRealm.setLastPosition(chat.getLastPosition());
                     chatRealm.setArchived(chat.isArchived());
@@ -164,13 +164,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     chatRealm.setChatStateMode(chat.getChatstateMode());
                     chatRealm.setGroupchat(chat.isGroupchat());
 
-                    NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
-                    if (notificationStateRealm == null)
-                        notificationStateRealm = new NotificationStateRealm();
+                    NotificationStateRealmObject notificationStateRealmObject = chatRealm.getNotificationState();
+                    if (notificationStateRealmObject == null)
+                        notificationStateRealmObject = new NotificationStateRealmObject();
 
-                    notificationStateRealm.setMode(chat.getNotificationState().getMode());
-                    notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
-                    chatRealm.setNotificationState(notificationStateRealm);
+                    notificationStateRealmObject.setMode(chat.getNotificationState().getMode());
+                    notificationStateRealmObject.setTimestamp(chat.getNotificationState().getTimestamp());
+                    chatRealm.setNotificationState(notificationStateRealmObject);
 
                     realm1.copyToRealmOrUpdate(chatRealm);
                 });
@@ -189,8 +189,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatData chatData = null;
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        ChatDataRealm realmChat = realm
-                .where(ChatDataRealm.class)
+        ChatRealmObject realmChat = realm
+                .where(ChatRealmObject.class)
                 .equalTo("accountJid", accountJid)
                 .equalTo("userJid", userJid)
                 .findFirst();
@@ -228,16 +228,16 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    RealmResults<NotificationStateRealm> results = realm1
-                            .where(NotificationStateRealm.class)
+                    RealmResults<NotificationStateRealmObject> results = realm1
+                            .where(NotificationStateRealmObject.class)
                             .findAll();
 
-                    for (NotificationStateRealm notificationState : results) {
-                        ChatDataRealm chatDataRealm = realm1
-                                .where(ChatDataRealm.class)
+                    for (NotificationStateRealmObject notificationState : results) {
+                        ChatRealmObject chatRealmObject = realm1
+                                .where(ChatRealmObject.class)
                                 .equalTo("notificationState.id", notificationState.getId())
                                 .findFirst();
-                        if (chatDataRealm == null) notificationState.deleteFromRealm();
+                        if (chatRealmObject == null) notificationState.deleteFromRealm();
                     }
                 });
             } catch (Exception e) {

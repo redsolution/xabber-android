@@ -6,7 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.StatusRealm;
+import com.xabber.android.data.database.realmobjects.StatusRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
@@ -23,13 +23,13 @@ public class StatusRepository {
         try{
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-            RealmResults<StatusRealm> realObjectsList = realm
-                    .where(StatusRealm.class)
+            RealmResults<StatusRealmObject> realObjectsList = realm
+                    .where(StatusRealmObject.class)
                     .findAll();
 
-            for (StatusRealm statusRealm : realObjectsList){
-                savedStatusCollection.add(new SavedStatus(StatusMode.fromString(statusRealm.getStatusMode())
-                        , statusRealm.getStatusText()));
+            for (StatusRealmObject statusRealmObject : realObjectsList){
+                savedStatusCollection.add(new SavedStatus(StatusMode.fromString(statusRealmObject.getStatusMode())
+                        , statusRealmObject.getStatusText()));
             }
         } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
@@ -43,9 +43,9 @@ public class StatusRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    StatusRealm statusRealm = new StatusRealm(savedStatus.getStatusMode().toString(),
+                    StatusRealmObject statusRealmObject = new StatusRealmObject(savedStatus.getStatusMode().toString(),
                             savedStatus.getStatusText());
-                    realm1.copyToRealm(statusRealm);
+                    realm1.copyToRealm(statusRealmObject);
                 });
             } catch (Exception e){
                 LogManager.exception("StatusRepository", e);
@@ -59,9 +59,9 @@ public class StatusRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(StatusRealm.class)
-                            .equalTo(StatusRealm.Fields.STATUS_MODE, savedStatus.getStatusMode().toString())
-                            .equalTo(StatusRealm.Fields.STATUS_TEXT, savedStatus.getStatusText())
+                    realm1.where(StatusRealmObject.class)
+                            .equalTo(StatusRealmObject.Fields.STATUS_MODE, savedStatus.getStatusMode().toString())
+                            .equalTo(StatusRealmObject.Fields.STATUS_TEXT, savedStatus.getStatusText())
                             .findAll()
                             .deleteAllFromRealm();
                 });
@@ -77,7 +77,7 @@ public class StatusRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(StatusRealm.class)
+                    realm1.where(StatusRealmObject.class)
                             .findAll()
                             .deleteAllFromRealm();
                 });

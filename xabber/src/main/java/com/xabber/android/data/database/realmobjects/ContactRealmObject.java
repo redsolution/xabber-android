@@ -7,7 +7,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class ContactRealm extends RealmObject {
+public class ContactRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -27,14 +27,14 @@ public class ContactRealm extends RealmObject {
     private String user;
     private String accountResource;
     private String name;
-    private MessageItem lastMessage;
-    private RealmList<ContactGroup> groups;
+    private MessageRealmObject lastMessage;
+    private RealmList<ContactGroupRealmObject> groups;
 
-    public ContactRealm() {
+    public ContactRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public ContactRealm(String id) {
+    public ContactRealmObject(String id) {
         this.id = id;
     }
 
@@ -74,19 +74,19 @@ public class ContactRealm extends RealmObject {
         this.accountResource = accountResource;
     }
 
-    public MessageItem getLastMessage() {
+    public MessageRealmObject getLastMessage() {
         return lastMessage;
     }
 
-    public void setLastMessage(MessageItem lastMessage) {
+    public void setLastMessage(MessageRealmObject lastMessage) {
         this.lastMessage = lastMessage;
     }
 
-    public RealmList<ContactGroup> getGroups() {
+    public RealmList<ContactGroupRealmObject> getGroups() {
         return groups;
     }
 
-    public void setGroups(RealmList<ContactGroup> groups) {
+    public void setGroups(RealmList<ContactGroupRealmObject> groups) {
         this.groups = groups;
     }
 }

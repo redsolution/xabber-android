@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.OtrRealm;
+import com.xabber.android.data.database.realmobjects.OtrRealmObject;
 import com.xabber.android.data.entity.NestedNestedMaps;
 import com.xabber.android.data.log.LogManager;
 
@@ -18,14 +18,14 @@ public class OtrRepository {
         Realm realm = null;
         try{
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<OtrRealm> realmResults = realm
-                    .where(OtrRealm.class)
+            RealmResults<OtrRealmObject> realmResults = realm
+                    .where(OtrRealmObject.class)
                     .findAll();
-            for (OtrRealm otrRealm : realmResults){
-                fingerprints.put(otrRealm.getAccount(),
-                        otrRealm.getUser(),
-                        otrRealm.getFingerprint(),
-                        otrRealm.isVerified());
+            for (OtrRealmObject otrRealmObject : realmResults){
+                fingerprints.put(otrRealmObject.getAccount(),
+                        otrRealmObject.getUser(),
+                        otrRealmObject.getFingerprint(),
+                        otrRealmObject.isVerified());
             }
         } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
 
@@ -39,7 +39,7 @@ public class OtrRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.copyToRealm(new OtrRealm(account, user, fingerprint, verified));
+                    realm1.copyToRealm(new OtrRealmObject(account, user, fingerprint, verified));
                 });
             } catch (Exception e){
                 LogManager.exception("OtrRepository", e);

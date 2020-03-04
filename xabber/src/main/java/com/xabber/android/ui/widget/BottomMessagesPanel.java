@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -77,9 +77,9 @@ public class BottomMessagesPanel extends Fragment {
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         if (messagesIds != null && messagesIds.size() > 0) {
-            RealmResults<MessageItem> messages = realm
-                    .where(MessageItem.class)
-                    .in(MessageItem.Fields.UNIQUE_ID, messagesIds.toArray(new String[0]))
+            RealmResults<MessageRealmObject> messages = realm
+                    .where(MessageRealmObject.class)
+                    .in(MessageRealmObject.Fields.UNIQUE_ID, messagesIds.toArray(new String[0]))
                     .findAll();
 
             tvFrom.setText(Html.fromHtml(getNames(messages)));
@@ -99,9 +99,9 @@ public class BottomMessagesPanel extends Fragment {
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
-    private String getNames(RealmResults<MessageItem> messages) {
+    private String getNames(RealmResults<MessageRealmObject> messages) {
         HashSet<String> names = new HashSet<>();
-        for (MessageItem message : messages) {
+        for (MessageRealmObject message : messages) {
             String name = RosterManager.getDisplayAuthorName(message);
             if (name == null) name = "null";
             int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);

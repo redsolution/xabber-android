@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
@@ -17,7 +17,7 @@ import com.xabber.android.data.log.LogManager;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
-public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, BasicMessageVH>
+public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObject, BasicMessageVH>
     implements MessageVH.MessageClickListener, MessageVH.MessageLongClickListener {
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
@@ -35,7 +35,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         void onForwardClick(String messageId);
     }
 
-    public ForwardedAdapter(RealmResults<MessageItem> realmResults,
+    public ForwardedAdapter(RealmResults<MessageRealmObject> realmResults,
                             MessagesAdapter.MessageExtraData extraData) {
         super(extraData.getContext(), realmResults, true);
         this.extraData = extraData;
@@ -45,12 +45,12 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     @Override
     public int getItemViewType(int position) {
-        MessageItem messageItem = getMessageItem(position);
-        if (messageItem == null) return 0;
+        MessageRealmObject messageRealmObject = getMessageItem(position);
+        if (messageRealmObject == null) return 0;
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
-        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.hasImage()) {
-            if(messageItem.haveAttachments() && messageItem.isAttachmentImageOnly() && messageItem.getText().trim().isEmpty())
+        if (messageRealmObject.haveForwardedMessages() || messageRealmObject.haveAttachments() || messageRealmObject.hasImage()) {
+            if(messageRealmObject.haveAttachments() && messageRealmObject.isAttachmentImageOnly() && messageRealmObject.getText().trim().isEmpty())
                 return VIEW_TYPE_IMAGE;
             else
                 return VIEW_TYPE_MESSAGE_NOFLEX;
@@ -65,7 +65,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
     }
 
     @Nullable
-    public MessageItem getMessageItem(int position) {
+    public MessageRealmObject getMessageItem(int position) {
         if (position == RecyclerView.NO_POSITION) return null;
 
         if (position < realmResults.size())
@@ -93,22 +93,22 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     @Override
     public void onBindViewHolder(final BasicMessageVH holder, int position) {
-        MessageItem messageItem = getMessageItem(position);
+        MessageRealmObject messageRealmObject = getMessageItem(position);
 
-        if (messageItem == null) {
+        if (messageRealmObject == null) {
             LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
             return;
         }
 
         // setup message uniqueId
         if (holder instanceof MessageVH)
-            ((MessageVH)holder).messageId = messageItem.getUniqueId();
+            ((MessageVH)holder).messageId = messageRealmObject.getUniqueId();
 
         // groupchat user
-        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
+        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
-                null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
+                null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),
                 this.extraData.getColorStateList(), groupchatUser,
                 this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
                 this.extraData.getMainMessageTimestamp(), false, false, false, false, false, false);
@@ -117,18 +117,18 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         switch (viewType) {
             case VIEW_TYPE_IMAGE:
             case VIEW_TYPE_MESSAGE_NOFLEX:
-                ((NoFlexForwardedVH)holder).bind(messageItem, extraData,
-                        messageItem.getAccount().getFullJid().asBareJid().toString());
+                ((NoFlexForwardedVH)holder).bind(messageRealmObject, extraData,
+                        messageRealmObject.getAccount().getFullJid().asBareJid().toString());
                 break;
             default:
-                ((ForwardedVH)holder).bind(messageItem, extraData,
-                        messageItem.getAccount().getFullJid().asBareJid().toString());
+                ((ForwardedVH)holder).bind(messageRealmObject, extraData,
+                        messageRealmObject.getAccount().getFullJid().asBareJid().toString());
         }
     }
 
     @Override
     public void onMessageClick(View caller, int position) {
-        MessageItem message = getItem(position);
+        MessageRealmObject message = getItem(position);
         if (message != null && message.haveForwardedMessages())
             fwdListener.onForwardClick(message.getUniqueId());
     }

@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.DiscoveryInfoCache;
+import com.xabber.android.data.database.realmobjects.DiscoveryInfoRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.caps.cache.EntityCapsPersistentCache;
@@ -29,8 +29,8 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
-                    realm1.copyToRealmOrUpdate(discoveryInfoCache);
+                    DiscoveryInfoRealmObject discoveryInfoRealmObject = new DiscoveryInfoRealmObject(nodeVer, info);
+                    realm1.copyToRealmOrUpdate(discoveryInfoRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("EntityCapsCache", e);
@@ -46,15 +46,15 @@ class EntityCapsCache implements EntityCapsPersistentCache {
     public DiscoverInfo lookup(String nodeVer) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        DiscoveryInfoCache discoveryInfoCache = realm
-                .where(DiscoveryInfoCache.class)
-                .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
+        DiscoveryInfoRealmObject discoveryInfoRealmObject = realm
+                .where(DiscoveryInfoRealmObject.class)
+                .equalTo(DiscoveryInfoRealmObject.Fields.NODE_VER, nodeVer)
                 .findFirst();
 
         DiscoverInfo discoverInfo = null;
 
-        if (discoveryInfoCache != null) {
-            discoverInfo = discoveryInfoCache.getDiscoveryInfo();
+        if (discoveryInfoRealmObject != null) {
+            discoverInfo = discoveryInfoRealmObject.getDiscoveryInfo();
         }
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return discoverInfo;
@@ -68,7 +68,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(DiscoveryInfoCache.class)
+                    realm1.where(DiscoveryInfoRealmObject.class)
                             .findAll()
                             .deleteAllFromRealm();
                 });

@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.RoomRealm;
+import com.xabber.android.data.database.realmobjects.RoomRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -26,14 +26,14 @@ public class RoomRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<RoomRealm> realmResults = realm
-                    .where(RoomRealm.class)
+            RealmResults<RoomRealmObject> realmResults = realm
+                    .where(RoomRealmObject.class)
                     .findAll();
-            for (RoomRealm roomRealm : realmResults){
-                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                AccountJid account = AccountJid.from(roomRealm.getAccount());
-                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                String password = roomRealm.getPassword();
+            for (RoomRealmObject roomRealmObject : realmResults){
+                Resourcepart nickName = Resourcepart.from(roomRealmObject.getNickname());
+                AccountJid account = AccountJid.from(roomRealmObject.getAccount());
+                EntityBareJid room = JidCreate.entityBareFrom(roomRealmObject.getRoom());
+                String password = roomRealmObject.getPassword();
 
                 roomChats.add(RoomChat.create(account, room, nickName, password));
             }
@@ -48,15 +48,15 @@ public class RoomRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<RoomRealm> realmResults = realm
-                    .where(RoomRealm.class)
-                    .equalTo(RoomRealm.Fields.NEED_JOIN, true)
+            RealmResults<RoomRealmObject> realmResults = realm
+                    .where(RoomRealmObject.class)
+                    .equalTo(RoomRealmObject.Fields.NEED_JOIN, true)
                     .findAll();
-            for (RoomRealm roomRealm : realmResults){
-                Resourcepart nickName = Resourcepart.from(roomRealm.getNickname());
-                AccountJid account = AccountJid.from(roomRealm.getAccount());
-                EntityBareJid room = JidCreate.entityBareFrom(roomRealm.getRoom());
-                String password = roomRealm.getPassword();
+            for (RoomRealmObject roomRealmObject : realmResults){
+                Resourcepart nickName = Resourcepart.from(roomRealmObject.getNickname());
+                AccountJid account = AccountJid.from(roomRealmObject.getAccount());
+                EntityBareJid room = JidCreate.entityBareFrom(roomRealmObject.getRoom());
+                String password = roomRealmObject.getPassword();
 
                 roomChats.add(RoomChat.create(account, room, nickName, password));
             }
@@ -75,7 +75,7 @@ public class RoomRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.copyToRealmOrUpdate(new RoomRealm(account, room, nickname, password,
+                    realm1.copyToRealmOrUpdate(new RoomRealmObject(account, room, nickname, password,
                             isNeedJoin));
                 });
             } catch (Exception e){
@@ -90,9 +90,9 @@ public class RoomRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(RoomRealm.class)
-                            .equalTo(RoomRealm.Fields.ACCOUNT, account)
-                            .equalTo(RoomRealm.Fields.ROOM, room)
+                    realm1.where(RoomRealmObject.class)
+                            .equalTo(RoomRealmObject.Fields.ACCOUNT, account)
+                            .equalTo(RoomRealmObject.Fields.ROOM, room)
                             .findAll()
                             .deleteAllFromRealm();
                 });

@@ -43,7 +43,7 @@ import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class MessageItem extends RealmObject {
+public class MessageRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
@@ -187,7 +187,7 @@ public class MessageItem extends RealmObject {
      */
     private boolean isInProgress;
 
-    private RealmList<Attachment> attachments;
+    private RealmList<AttachmentRealmObject> attachmentRealmObjects;
 
     /** Message forwarding */
 
@@ -203,13 +203,13 @@ public class MessageItem extends RealmObject {
     private String packetId;
     private String groupchatUserId;
 
-    private RealmList<ForwardId> forwardedIds;
+    private RealmList<ForwardIdRealmObject> forwardedIds;
 
     private boolean fromMUC;
 
-    public MessageItem(String uniqueId) { this.uniqueId = uniqueId; }
+    public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId; }
 
-    public MessageItem() { this.uniqueId = UUID.randomUUID().toString(); }
+    public MessageRealmObject() { this.uniqueId = UUID.randomUUID().toString(); }
 
     public String getUniqueId() { return uniqueId; }
 
@@ -322,14 +322,14 @@ public class MessageItem extends RealmObject {
 
     public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
-    public static ChatAction getChatAction(MessageItem messageItem) { return ChatAction.valueOf(messageItem.getAction()); }
+    public static ChatAction getChatAction(MessageRealmObject messageRealmObject) { return ChatAction.valueOf(messageRealmObject.getAction()); }
 
-    public static Spannable getSpannable(MessageItem messageItem) { return new SpannableString(messageItem.getText()); }
+    public static Spannable getSpannable(MessageRealmObject messageRealmObject) { return new SpannableString(messageRealmObject.getText()); }
 
-    public static boolean isUploadFileMessage(MessageItem messageItem) {
-        return messageItem.getAttachments() != null
-                && messageItem.getAttachments().size() != 0
-                && !messageItem.isSent(); }
+    public static boolean isUploadFileMessage(MessageRealmObject messageRealmObject) {
+        return messageRealmObject.getAttachmentRealmObjects() != null
+                && messageRealmObject.getAttachmentRealmObjects().size() != 0
+                && !messageRealmObject.isSent(); }
 
     public boolean isAcknowledged() { return acknowledged; }
 
@@ -347,19 +347,19 @@ public class MessageItem extends RealmObject {
 
     public void setErrorDescription(String errorDescription) { this.errorDescription = errorDescription; }
 
-    public RealmList<Attachment> getAttachments() { return attachments; }
+    public RealmList<AttachmentRealmObject> getAttachmentRealmObjects() { return attachmentRealmObjects; }
 
-    public void setAttachments(RealmList<Attachment> attachments) { this.attachments = attachments; }
+    public void setAttachmentRealmObjects(RealmList<AttachmentRealmObject> attachmentRealmObjects) { this.attachmentRealmObjects = attachmentRealmObjects; }
 
-    public boolean haveAttachments() { return attachments != null && attachments.size() > 0; }
+    public boolean haveAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
 
-    public RealmList<ForwardId> getForwardedIds() { return forwardedIds; }
+    public RealmList<ForwardIdRealmObject> getForwardedIds() { return forwardedIds; }
 
     public String[] getForwardedIdsAsArray() {
         String forwardedIds[] = new String[getForwardedIds().size()];
 
         int i = 0;
-        for (ForwardId id : getForwardedIds()) {
+        for (ForwardIdRealmObject id : getForwardedIds()) {
             forwardedIds[i] = id.getForwardMessageId();
             i++;
         }
@@ -367,7 +367,7 @@ public class MessageItem extends RealmObject {
         return forwardedIds;
     }
 
-    public void setForwardedIds(RealmList<ForwardId> forwardedMessages) { this.forwardedIds = forwardedMessages; }
+    public void setForwardedIds(RealmList<ForwardIdRealmObject> forwardedMessages) { this.forwardedIds = forwardedMessages; }
 
     public boolean haveForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
 
@@ -415,15 +415,15 @@ public class MessageItem extends RealmObject {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
                 Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                RealmResults<MessageItem> forwardedMessages = realm
-                        .where(MessageItem.class)
-                        .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+                RealmResults<MessageRealmObject> forwardedMessages = realm
+                        .where(MessageRealmObject.class)
+                        .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
                         .findAll()
-                        .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                        .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
 
                 if (forwardedMessages.size() > 0) {
-                    MessageItem message = forwardedMessages.last();
+                    MessageRealmObject message = forwardedMessages.last();
                     String author = RosterManager.getDisplayAuthorName(message);
                     StringBuilder stringBuilder = new StringBuilder();
                     if (author!=null && !author.isEmpty()) {
@@ -434,9 +434,9 @@ public class MessageItem extends RealmObject {
                     }
                     stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
-                    if (message.haveAttachments() && message.getAttachments().size() > 0) {
-                        Attachment attachment = message.getAttachments().get(0);
-                        attachmentName = StringUtils.getColoredText(attachment.getTitle().trim(), color);
+                    if (message.haveAttachments() && message.getAttachmentRealmObjects().size() > 0) {
+                        AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(0);
+                        attachmentName = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), color);
                         stringBuilder.append(attachmentName);
                     }
                     if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))
@@ -449,8 +449,8 @@ public class MessageItem extends RealmObject {
     }
 
     public boolean isAttachmentImageOnly(){
-        if(attachments!=null && attachments.size()>0) {
-            for (Attachment a : attachments) {
+        if(attachmentRealmObjects !=null && attachmentRealmObjects.size()>0) {
+            for (AttachmentRealmObject a : attachmentRealmObjects) {
                 if (!a.isImage()) {
                     return false;
                 }
@@ -461,8 +461,8 @@ public class MessageItem extends RealmObject {
 
     public boolean hasImage(){
          
-        if(attachments!=null && attachments.size()>0) {
-            for (Attachment a : attachments) {
+        if(attachmentRealmObjects !=null && attachmentRealmObjects.size()>0) {
+            for (AttachmentRealmObject a : attachmentRealmObjects) {
                 if (a.isImage()) {
                     return true;
                 }
@@ -471,15 +471,15 @@ public class MessageItem extends RealmObject {
         return false;
     }
 
-    public boolean isUiEqual(MessageItem comparableMessageItem){
-        return this.getText().equals(comparableMessageItem.getText())
-                && this.isIncoming() == comparableMessageItem.isIncoming()
-                && this.getTimestamp().equals(comparableMessageItem.getTimestamp())
-                && this.isError() == comparableMessageItem.isError()
-                && this.isDelivered() == comparableMessageItem.isDelivered()
-                && this.isDisplayed() == comparableMessageItem.isDisplayed()
-                && this.isSent() == comparableMessageItem.isSent()
-                && this.isRead() == comparableMessageItem.isRead()
-                && this.isAcknowledged() == comparableMessageItem.isAcknowledged();
+    public boolean isUiEqual(MessageRealmObject comparableMessageRealmObject){
+        return this.getText().equals(comparableMessageRealmObject.getText())
+                && this.isIncoming() == comparableMessageRealmObject.isIncoming()
+                && this.getTimestamp().equals(comparableMessageRealmObject.getTimestamp())
+                && this.isError() == comparableMessageRealmObject.isError()
+                && this.isDelivered() == comparableMessageRealmObject.isDelivered()
+                && this.isDisplayed() == comparableMessageRealmObject.isDisplayed()
+                && this.isSent() == comparableMessageRealmObject.isSent()
+                && this.isRead() == comparableMessageRealmObject.isRead()
+                && this.isAcknowledged() == comparableMessageRealmObject.isAcknowledged();
     }
 }

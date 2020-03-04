@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 03.10.17.
  */
 
-public class PatreonGoalRealm extends RealmObject {
+public class PatreonGoalRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -19,11 +19,11 @@ public class PatreonGoalRealm extends RealmObject {
     private String title;
     private int goal;
 
-    public PatreonGoalRealm(String id) {
+    public PatreonGoalRealmObject(String id) {
         this.id = id;
     }
 
-    public PatreonGoalRealm() {
+    public PatreonGoalRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

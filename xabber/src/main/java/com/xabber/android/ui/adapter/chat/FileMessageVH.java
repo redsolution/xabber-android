@@ -30,8 +30,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
@@ -80,7 +80,7 @@ public class FileMessageVH extends MessageVH
         void onImageClick(int messagePosition, int attachmentPosition, String messageUID);
         void onFileClick(int messagePosition, int attachmentPosition, String messageUID);
         void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp);
-        void onFileLongClick(Attachment attachment, View caller);
+        void onFileLongClick(AttachmentRealmObject attachmentRealmObject, View caller);
         void onDownloadCancel();
         void onUploadCancel();
         void onDownloadError(String error);
@@ -105,74 +105,74 @@ public class FileMessageVH extends MessageVH
         if (messageImage != null) messageImage.setOnClickListener(this);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        super.bind(messageItem, extraData);
-        setupImageOrFile(messageItem, extraData.getContext());
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageRealmObject, extraData);
+        setupImageOrFile(messageRealmObject, extraData.getContext());
     }
 
-    protected void setupImageOrFile(MessageItem messageItem, Context context) {
+    protected void setupImageOrFile(MessageRealmObject messageRealmObject, Context context) {
         fileLayout.setVisibility(View.GONE);
         if (messageImage != null) messageImage.setVisibility(View.GONE);
         if (imageGridContainer != null) {
             imageGridContainer.removeAllViews();
             imageGridContainer.setVisibility(View.GONE);
         }
-        if (messageItem.haveAttachments()) {
-            setUpImage(messageItem.getAttachments());
+        if (messageRealmObject.haveAttachments()) {
+            setUpImage(messageRealmObject.getAttachmentRealmObjects());
             //setUpVoice(messageItem.getAttachments(), context);
-            setUpFile(messageItem.getAttachments(), context);
-        } else if (messageItem.hasImage() && messageItem.getAttachments().get(0).isImage()) {
-            prepareImage(messageItem, context);
+            setUpFile(messageRealmObject.getAttachmentRealmObjects(), context);
+        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
+            prepareImage(messageRealmObject, context);
         }
     }
 
     //todo check this
-    private void prepareImage(MessageItem messageItem, Context context) {
-        String filePath = messageItem.getAttachments().get(0).getFilePath();
-        Integer imageWidth = messageItem.getAttachments().get(0).getImageWidth();
-        Integer imageHeight = messageItem.getAttachments().get(0).getImageHeight();
-        String imageUrl = messageItem.getText();
-        final String uniqueId = messageItem.getUniqueId();
+    private void prepareImage(MessageRealmObject messageRealmObject, Context context) {
+        String filePath = messageRealmObject.getAttachmentRealmObjects().get(0).getFilePath();
+        Integer imageWidth = messageRealmObject.getAttachmentRealmObjects().get(0).getImageWidth();
+        Integer imageHeight = messageRealmObject.getAttachmentRealmObjects().get(0).getImageHeight();
+        String imageUrl = messageRealmObject.getText();
+        final String uniqueId = messageRealmObject.getUniqueId();
         setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, context);
     }
 
-    private void setUpImage(RealmList<Attachment> attachments) {
+    private void setUpImage(RealmList<AttachmentRealmObject> attachmentRealmObjects) {
         final ImageGridBuilder gridBuilder = new ImageGridBuilder();
 
         if (!SettingsManager.connectionLoadImages()) return;
 
-        RealmList<Attachment> imageAttachments = new RealmList<>();
-        for (Attachment attachment : attachments) {
-            if (attachment.isImage()) {
-                imageAttachments.add(attachment);
+        RealmList<AttachmentRealmObject> imageAttachmentRealmObjects = new RealmList<>();
+        for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
+            if (attachmentRealmObject.isImage()) {
+                imageAttachmentRealmObjects.add(attachmentRealmObject);
                 imageCounter++;
             }
         }
         imageCount = imageCounter;
         imageCounter = 0;
-        if (imageAttachments.size() > 0) {
-            View imageGridView = gridBuilder.inflateView(imageGridContainer, imageAttachments.size());
-            gridBuilder.bindView(imageGridView, imageAttachments, this);
+        if (imageAttachmentRealmObjects.size() > 0) {
+            View imageGridView = gridBuilder.inflateView(imageGridContainer, imageAttachmentRealmObjects.size());
+            gridBuilder.bindView(imageGridView, imageAttachmentRealmObjects, this);
 
             imageGridContainer.addView(imageGridView);
             imageGridContainer.setVisibility(View.VISIBLE);
         }
     }
 
-    private void setUpFile(RealmList<Attachment> attachments, Context context) {
-        RealmList<Attachment> fileAttachments = new RealmList<>();
-        for (Attachment attachment : attachments) {
-            if (!attachment.isImage()) {
-                fileAttachments.add(attachment);
+    private void setUpFile(RealmList<AttachmentRealmObject> attachmentRealmObjects, Context context) {
+        RealmList<AttachmentRealmObject> fileAttachmentRealmObjects = new RealmList<>();
+        for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
+            if (!attachmentRealmObject.isImage()) {
+                fileAttachmentRealmObjects.add(attachmentRealmObject);
                 fileCounter++;
             }
         }
         fileCount = fileCounter;
         fileCounter = 0;
-        if (fileAttachments.size() > 0) {
+        if (fileAttachmentRealmObjects.size() > 0) {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
             rvFileList.setLayoutManager(layoutManager);
-            FilesAdapter adapter = new FilesAdapter(fileAttachments, timestamp, this);
+            FilesAdapter adapter = new FilesAdapter(fileAttachmentRealmObjects, timestamp, this);
             rvFileList.setAdapter(adapter);
             fileLayout.setVisibility(View.VISIBLE);
         }
@@ -194,10 +194,10 @@ public class FileMessageVH extends MessageVH
                     try {
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransactionAsync(realm1 -> {
-                            MessageItem first = realm1.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                            MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
                                     .findFirst();
-                            if (first != null) first.getAttachments().get(0).setFilePath(null);
+                            if (first != null) first.getAttachmentRealmObjects().get(0).setFilePath(null);
 
                         });
                     } catch (Exception e) {
@@ -273,12 +273,12 @@ public class FileMessageVH extends MessageVH
                                     try {
                                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                                         realm.executeTransactionAsync(realm1 -> {
-                                                MessageItem first = realm1.where(MessageItem.class)
-                                                        .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                                                        .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
                                                         .findFirst();
                                                 if (first != null) {
-                                                    first.getAttachments().get(0).setImageWidth(width);
-                                                    first.getAttachments().get(0).setImageHeight(height);
+                                                    first.getAttachmentRealmObjects().get(0).setImageWidth(width);
+                                                    first.getAttachmentRealmObjects().get(0).setImageHeight(height);
                                                 }
                                         });
                                     } catch (Exception e) {
@@ -335,8 +335,8 @@ public class FileMessageVH extends MessageVH
     }
 
     @Override
-    public void onFileLongClick(Attachment attachment, View caller) {
-        listener.onFileLongClick(attachment, caller);
+    public void onFileLongClick(AttachmentRealmObject attachmentRealmObject, View caller) {
+        listener.onFileLongClick(attachmentRealmObject, caller);
     }
 
     @Override

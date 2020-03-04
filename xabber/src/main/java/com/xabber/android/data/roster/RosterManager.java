@@ -29,9 +29,9 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.database.realmobjects.ContactGroup;
-import com.xabber.android.data.database.realmobjects.ContactRealm;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.ContactGroupRealmObject;
+import com.xabber.android.data.database.realmobjects.ContactRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -94,21 +94,21 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public void onPreInitialize() {
-        List<ContactRealm> contacts = RosterCacheManager.loadContacts();
-        for (ContactRealm contactRealm : contacts) {
+        List<ContactRealmObject> contacts = RosterCacheManager.loadContacts();
+        for (ContactRealmObject contactRealmObject : contacts) {
             try {
-                AccountJid account = AccountJid.from(contactRealm.getAccount() + "/" + contactRealm.getAccountResource());
-                UserJid userJid = UserJid.from(contactRealm.getUser());
-                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealm.getName());
+                AccountJid account = AccountJid.from(contactRealmObject.getAccount() + "/" + contactRealmObject.getAccountResource());
+                UserJid userJid = UserJid.from(contactRealmObject.getUser());
+                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealmObject.getName());
 
-                for (ContactGroup group : contactRealm.getGroups()) {
+                for (ContactGroupRealmObject group : contactRealmObject.getGroups()) {
                     contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
                 }
 
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
-                MessageItem lastMessage = contactRealm.getLastMessage();
+                MessageRealmObject lastMessage = contactRealmObject.getLastMessage();
                 if (lastMessage != null) {
                     MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser(), lastMessage);
                 } else MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
@@ -727,28 +727,28 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         });
     }
 
-    public static String getDisplayAuthorName(MessageItem messageItem) {
+    public static String getDisplayAuthorName(MessageRealmObject messageRealmObject) {
         UserJid jid = null;
         try {
-            jid = UserJid.from(messageItem.getOriginalFrom());
+            jid = UserJid.from(messageRealmObject.getOriginalFrom());
         } catch (UserJid.UserJidCreateException e) {
             e.printStackTrace();
         }
 
         String author = null;
         if (jid != null) {
-            EntityBareJid room = messageItem.getUser().getBareJid().asEntityBareJidIfPossible();
+            EntityBareJid room = messageRealmObject.getUser().getBareJid().asEntityBareJidIfPossible();
             RoomChat roomChat = null;
-            if (room != null) roomChat = MUCManager.getInstance().getRoomChat(messageItem.getAccount(), room);
+            if (room != null) roomChat = MUCManager.getInstance().getRoomChat(messageRealmObject.getAccount(), room);
 
             if (roomChat != null) {
-                if (!messageItem.isIncoming())
-                    author = MUCManager.getInstance().getNickname(messageItem.getAccount(), room).toString();
+                if (!messageRealmObject.isIncoming())
+                    author = MUCManager.getInstance().getNickname(messageRealmObject.getAccount(), room).toString();
                 else author = jid.getJid().getResourceOrEmpty().toString();
             } else {
-                if (!messageItem.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
-                    author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
-                else author = AccountManager.getInstance().getNickName(messageItem.getAccount());
+                if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
+                    author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
+                else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
             }
         }
 

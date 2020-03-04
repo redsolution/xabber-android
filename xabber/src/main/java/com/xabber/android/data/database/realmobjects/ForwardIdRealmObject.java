@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class ForwardId extends RealmObject {
+public class ForwardIdRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -14,11 +14,11 @@ public class ForwardId extends RealmObject {
 
     private String forwardMessageId;
 
-    public ForwardId() {
+    public ForwardIdRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public ForwardId(String forwardMessageId) {
+    public ForwardIdRealmObject(String forwardMessageId) {
         this.id = UUID.randomUUID().toString();
         this.forwardMessageId = forwardMessageId;
     }

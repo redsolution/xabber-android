@@ -21,7 +21,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -169,7 +169,7 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
         List<AbstractChat> recentChats = new ArrayList<>();
 
         for (AbstractChat abstractChat : chats) {
-            MessageItem lastMessage = abstractChat.getLastMessage();
+            MessageRealmObject lastMessage = abstractChat.getLastMessage();
 
             if (lastMessage != null) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());

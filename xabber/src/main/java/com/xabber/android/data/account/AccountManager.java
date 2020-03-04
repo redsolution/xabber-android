@@ -41,7 +41,7 @@ import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AccountRealm;
+import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.repositories.StatusRepository;
@@ -148,26 +148,26 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void onPreInitialize() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        RealmResults<AccountRealmObject> accountRealmObjects = realm.where(AccountRealmObject.class).findAll();
 
-        for (AccountRealm accountRealm : accountRealms) {
+        for (AccountRealmObject accountRealmObject : accountRealmObjects) {
             DomainBareJid serverName = null;
             try {
-                serverName = JidCreate.domainBareFrom(accountRealm.getServerName());
+                serverName = JidCreate.domainBareFrom(accountRealmObject.getServerName());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
 
             Localpart userName = null;
             try {
-                userName = Localpart.from(accountRealm.getUserName());
+                userName = Localpart.from(accountRealmObject.getUserName());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
 
             Resourcepart resource = null;
             try {
-                resource = Resourcepart.from(accountRealm.getResource());
+                resource = Resourcepart.from(accountRealmObject.getResource());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
@@ -179,7 +179,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 continue;
             }
 
-            if (accountRealm.isEnabled())
+            if (accountRealmObject.isEnabled())
                 cachedEnabledAccounts.add(AccountJid.from(userName, serverName, resource));
         }
 
@@ -195,28 +195,28 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        RealmResults<AccountRealmObject> accountRealmObjects = realm.where(AccountRealmObject.class).findAll();
 
-        LogManager.i(LOG_TAG, "onLoad got realmobjects accounts: " + accountRealms.size());
+        LogManager.i(LOG_TAG, "onLoad got realmobjects accounts: " + accountRealmObjects.size());
 
-        for (AccountRealm accountRealm : accountRealms) {
+        for (AccountRealmObject accountRealmObject : accountRealmObjects) {
             DomainBareJid serverName = null;
             try {
-                serverName = JidCreate.domainBareFrom(accountRealm.getServerName());
+                serverName = JidCreate.domainBareFrom(accountRealmObject.getServerName());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
 
             Localpart userName = null;
             try {
-                userName = Localpart.from(accountRealm.getUserName());
+                userName = Localpart.from(accountRealmObject.getUserName());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
 
             Resourcepart resource = null;
             try {
-                resource = Resourcepart.from(accountRealm.getResource());
+                resource = Resourcepart.from(accountRealmObject.getResource());
             } catch (XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
@@ -229,7 +229,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
 
             // fix for db migration
-            int order = accountRealm.getOrder();
+            int order = accountRealmObject.getOrder();
             if (order == 0) {
                 for (AccountItem item : accountItems) {
                     if (item.getOrder() > order) order = item.getOrder();
@@ -238,51 +238,51 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
 
             AccountItem accountItem = new AccountItem(
-                    accountRealm.isCustom(),
-                    accountRealm.getHost(),
-                    accountRealm.getPort(),
+                    accountRealmObject.isCustom(),
+                    accountRealmObject.getHost(),
+                    accountRealmObject.getPort(),
                     serverName,
                     userName,
                     resource,
-                    accountRealm.isStorePassword(),
-                    accountRealm.getPassword(),
-                    accountRealm.getToken(),
-                    accountRealm.getXToken() != null
-                            ? XTokenManager.xTokenRealmToXToken(accountRealm.getXToken()) : null,
-                    accountRealm.getColorIndex(),
+                    accountRealmObject.isStorePassword(),
+                    accountRealmObject.getPassword(),
+                    accountRealmObject.getToken(),
+                    accountRealmObject.getXToken() != null
+                            ? XTokenManager.xTokenRealmToXToken(accountRealmObject.getXToken()) : null,
+                    accountRealmObject.getColorIndex(),
                     order,
-                    accountRealm.isSyncNotAllowed(),
-                    accountRealm.getTimestamp(),
-                    accountRealm.getPriority(),
-                    accountRealm.getStatusMode(),
-                    accountRealm.getStatusText(),
-                    accountRealm.isEnabled(),
-                    accountRealm.isSaslEnabled(),
-                    accountRealm.getTlsMode(),
-                    accountRealm.isCompression(),
-                    accountRealm.getProxyType(),
-                    accountRealm.getProxyHost(),
-                    accountRealm.getProxyPort(),
-                    accountRealm.getProxyUser(),
-                    accountRealm.getProxyPassword(),
-                    accountRealm.isSyncable(),
-                    accountRealm.getKeyPair(),
-                    accountRealm.getLastSync(),
-                    accountRealm.getArchiveMode(),
-                    accountRealm.isXabberAutoLoginEnabled());
-            accountItem.setId(accountRealm.getId());
-            accountItem.setClearHistoryOnExit(accountRealm.isClearHistoryOnExit());
-            if (accountRealm.getMamDefaultBehavior() != null) {
-                accountItem.setMamDefaultBehaviour(accountRealm.getMamDefaultBehavior());
+                    accountRealmObject.isSyncNotAllowed(),
+                    accountRealmObject.getTimestamp(),
+                    accountRealmObject.getPriority(),
+                    accountRealmObject.getStatusMode(),
+                    accountRealmObject.getStatusText(),
+                    accountRealmObject.isEnabled(),
+                    accountRealmObject.isSaslEnabled(),
+                    accountRealmObject.getTlsMode(),
+                    accountRealmObject.isCompression(),
+                    accountRealmObject.getProxyType(),
+                    accountRealmObject.getProxyHost(),
+                    accountRealmObject.getProxyPort(),
+                    accountRealmObject.getProxyUser(),
+                    accountRealmObject.getProxyPassword(),
+                    accountRealmObject.isSyncable(),
+                    accountRealmObject.getKeyPair(),
+                    accountRealmObject.getLastSync(),
+                    accountRealmObject.getArchiveMode(),
+                    accountRealmObject.isXabberAutoLoginEnabled());
+            accountItem.setId(accountRealmObject.getId());
+            accountItem.setClearHistoryOnExit(accountRealmObject.isClearHistoryOnExit());
+            if (accountRealmObject.getMamDefaultBehavior() != null) {
+                accountItem.setMamDefaultBehaviour(accountRealmObject.getMamDefaultBehavior());
             }
-            if (accountRealm.getLoadHistorySettings() != null) {
-                accountItem.setLoadHistorySettings(accountRealm.getLoadHistorySettings());
+            if (accountRealmObject.getLoadHistorySettings() != null) {
+                accountItem.setLoadHistorySettings(accountRealmObject.getLoadHistorySettings());
             }
-            accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
-            accountItem.setPushNode(accountRealm.getPushNode());
-            accountItem.setPushServiceJid(accountRealm.getPushServiceJid());
-            accountItem.setPushEnabled(accountRealm.isPushEnabled());
-            accountItem.setPushWasEnabled(accountRealm.isPushWasEnabled());
+            accountItem.setSuccessfulConnectionHappened(accountRealmObject.isSuccessfulConnectionHappened());
+            accountItem.setPushNode(accountRealmObject.getPushNode());
+            accountItem.setPushServiceJid(accountRealmObject.getPushServiceJid());
+            accountItem.setPushEnabled(accountRealmObject.isPushEnabled());
+            accountItem.setPushWasEnabled(accountRealmObject.isPushWasEnabled());
 
             accountItems.add(accountItem);
 
@@ -771,7 +771,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public boolean checkAccounts() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        boolean result = !realm.where(AccountRealm.class).findAll().isEmpty();
+        boolean result = !realm.where(AccountRealmObject.class).findAll().isEmpty();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return result;
     }

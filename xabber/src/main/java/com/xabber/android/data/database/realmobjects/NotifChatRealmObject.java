@@ -13,7 +13,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class NotifChatRealm extends RealmObject {
+public class NotifChatRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -33,13 +33,13 @@ public class NotifChatRealm extends RealmObject {
     private int notificationID;
     private String chatTitle;
     private boolean isGroupChat;
-    private RealmList<NotifMessageRealm> messages;
+    private RealmList<NotifMessageRealmObject> messages;
 
-    public NotifChatRealm() {
+    public NotifChatRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public NotifChatRealm(String id) {
+    public NotifChatRealmObject(String id) {
         this.id = id;
     }
 
@@ -97,11 +97,11 @@ public class NotifChatRealm extends RealmObject {
         isGroupChat = groupChat;
     }
 
-    public RealmList<NotifMessageRealm> getMessages() {
+    public RealmList<NotifMessageRealmObject> getMessages() {
         return messages;
     }
 
-    public void setMessages(RealmList<NotifMessageRealm> messages) {
+    public void setMessages(RealmList<NotifMessageRealmObject> messages) {
         this.messages = messages;
     }
 }

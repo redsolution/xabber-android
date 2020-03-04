@@ -10,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 
-public class DiscoveryInfoCache extends RealmObject {
+public class DiscoveryInfoRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String NODE_VER = "nodeVer";
@@ -23,10 +23,10 @@ public class DiscoveryInfoCache extends RealmObject {
     @Required
     private String discoveryInfoXml;
 
-    public DiscoveryInfoCache() {
+    public DiscoveryInfoRealmObject() {
     }
 
-    public DiscoveryInfoCache(@NonNull String nodeVer, @NonNull DiscoverInfo discoveryInfo) {
+    public DiscoveryInfoRealmObject(@NonNull String nodeVer, @NonNull DiscoverInfo discoveryInfo) {
         this.nodeVer = nodeVer;
         this.discoveryInfoXml = discoveryInfo.toXML().toString();
     }

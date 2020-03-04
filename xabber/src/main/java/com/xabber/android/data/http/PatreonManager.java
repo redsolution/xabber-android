@@ -8,8 +8,8 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.PatreonGoalRealm;
-import com.xabber.android.data.database.realmobjects.PatreonRealm;
+import com.xabber.android.data.database.realmobjects.PatreonGoalRealmObject;
+import com.xabber.android.data.database.realmobjects.PatreonRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
@@ -90,25 +90,25 @@ public class PatreonManager implements OnLoadListener {
 
     public Single<XabberComClient.Patreon> savePatreonToRealm(XabberComClient.Patreon patreon) {
 
-        RealmList<PatreonGoalRealm> patreonGoals = new RealmList<>();
+        RealmList<PatreonGoalRealmObject> patreonGoals = new RealmList<>();
         for (XabberComClient.PatreonGoal patreonGoal : patreon.getGoals()) {
-            PatreonGoalRealm patreonGoalRealm = new PatreonGoalRealm();
-            patreonGoalRealm.setGoal(patreonGoal.getGoal());
-            patreonGoalRealm.setTitle(patreonGoal.getTitle());
+            PatreonGoalRealmObject patreonGoalRealmObject = new PatreonGoalRealmObject();
+            patreonGoalRealmObject.setGoal(patreonGoal.getGoal());
+            patreonGoalRealmObject.setTitle(patreonGoal.getTitle());
 
-            patreonGoals.add(patreonGoalRealm);
+            patreonGoals.add(patreonGoalRealmObject);
         }
 
-        PatreonRealm patreonRealm = new PatreonRealm("1");
-        patreonRealm.setPledged(patreon.getPledged());
-        patreonRealm.setString(patreon.getString());
-        patreonRealm.setGoals(patreonGoals);
+        PatreonRealmObject patreonRealmObject = new PatreonRealmObject("1");
+        patreonRealmObject.setPledged(patreon.getPledged());
+        patreonRealmObject.setString(patreon.getString());
+        patreonRealmObject.setGoals(patreonGoals);
 
         // TODO: 13.03.18 ANR - WRITE
         final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.beginTransaction();
-        PatreonRealm resultRealm = realm.copyToRealmOrUpdate(patreonRealm);
+        PatreonRealmObject resultRealm = realm.copyToRealmOrUpdate(patreonRealmObject);
         realm.commitTransaction();
         XabberComClient.Patreon result = patreonRealmToDTO(resultRealm);
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -124,24 +124,24 @@ public class PatreonManager implements OnLoadListener {
     private XabberComClient.Patreon loadPatreonFromRealm() {
         XabberComClient.Patreon patreon = null;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<PatreonRealm> patreonRealms = realm
-                .where(PatreonRealm.class)
+        RealmResults<PatreonRealmObject> patreonRealmObjects = realm
+                .where(PatreonRealmObject.class)
                 .findAll();
 
-        if (patreonRealms.size() > 0)
-            patreon = patreonRealmToDTO(patreonRealms.get(0));
+        if (patreonRealmObjects.size() > 0)
+            patreon = patreonRealmToDTO(patreonRealmObjects.get(0));
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         return patreon;
     }
 
-    private XabberComClient.Patreon patreonRealmToDTO(PatreonRealm realmItem) {
+    private XabberComClient.Patreon patreonRealmToDTO(PatreonRealmObject realmItem) {
 
         List<XabberComClient.PatreonGoal> patreonGoals = new ArrayList<>();
-        for (PatreonGoalRealm patreonGoalRealm : realmItem.getGoals()) {
+        for (PatreonGoalRealmObject patreonGoalRealmObject : realmItem.getGoals()) {
             XabberComClient.PatreonGoal patreonGoal =
-                    new XabberComClient.PatreonGoal(patreonGoalRealm.getTitle(), patreonGoalRealm.getGoal());
+                    new XabberComClient.PatreonGoal(patreonGoalRealmObject.getTitle(), patreonGoalRealmObject.getGoal());
 
             patreonGoals.add(patreonGoal);
         }

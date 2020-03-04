@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -28,8 +28,8 @@ public class ForwardedVH extends FileMessageVH {
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
-        super.bind(messageItem, extraData);
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData, String accountJid) {
+        super.bind(messageRealmObject, extraData);
 
         // hide STATUS ICONS
         statusIcon.setVisibility(View.GONE);
@@ -37,11 +37,11 @@ public class ForwardedVH extends FileMessageVH {
         // setup MESSAGE AUTHOR
         UserJid jid = null;
         try {
-            jid = UserJid.from(messageItem.getOriginalFrom());
+            jid = UserJid.from(messageRealmObject.getOriginalFrom());
         } catch (UserJid.UserJidCreateException e) {
             e.printStackTrace();
         }
-        String author = RosterManager.getDisplayAuthorName(messageItem);
+        String author = RosterManager.getDisplayAuthorName(messageRealmObject);
         if (extraData.getGroupchatUser() != null)
             author = extraData.getGroupchatUser().getNickname();
 
@@ -54,11 +54,11 @@ public class ForwardedVH extends FileMessageVH {
 
         // setup FORWARDED
         Context context = extraData.getContext();
-        boolean haveForwarded = messageItem.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
         if (haveForwarded) {
             forwardLayout.setVisibility(View.VISIBLE);
             tvForwardedCount.setText(String.format(extraData.getContext()
-                    .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
+                    .getResources().getString(R.string.forwarded_messages_count), messageRealmObject.getForwardedIds().size()));
             tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
@@ -68,7 +68,7 @@ public class ForwardedVH extends FileMessageVH {
             }
             else{
                 forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
-                        .getAccountPainter().getAccountColorWithTint(messageItem.getAccount(), 900));
+                        .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
                 forwardLeftBorder.setAlpha(0.6f);
                 tvForwardedCount.setAlpha(0.6f);
             }
@@ -85,8 +85,8 @@ public class ForwardedVH extends FileMessageVH {
 
 
         float border = 3.5f;
-        if(messageItem.haveAttachments()) {
-            if(messageItem.isAttachmentImageOnly()) {
+        if(messageRealmObject.haveAttachments()) {
+            if(messageRealmObject.isAttachmentImageOnly()) {
                 messageBalloon.setPadding(
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border, context),

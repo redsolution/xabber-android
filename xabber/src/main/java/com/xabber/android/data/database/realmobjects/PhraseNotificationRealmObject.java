@@ -5,7 +5,7 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class PhraseNotificationRealm extends RealmObject {
+public class PhraseNotificationRealmObject extends RealmObject {
 
     public static class Fields{
         public static final String ID = "id";
@@ -25,9 +25,9 @@ public class PhraseNotificationRealm extends RealmObject {
     private boolean regexp;
     private String sound;
 
-    public PhraseNotificationRealm(long id) { this.id = id; }
+    public PhraseNotificationRealmObject(long id) { this.id = id; }
 
-    public PhraseNotificationRealm(){ this.id = UUID.randomUUID().toString().toCharArray().hashCode(); }
+    public PhraseNotificationRealmObject(){ this.id = UUID.randomUUID().toString().toCharArray().hashCode(); }
 
     public long getId() { return id; }
 

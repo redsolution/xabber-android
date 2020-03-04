@@ -13,7 +13,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.DownloadService;
@@ -31,7 +31,7 @@ public class DownloadManager {
     private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isDownloading;
     private String attachmentId;
-    private LinkedList<Attachment> downloadQueue = new LinkedList<>();
+    private LinkedList<AttachmentRealmObject> downloadQueue = new LinkedList<>();
     private HashMap<String, AccountJid> accountAttachments = new HashMap<>();
 
     public static DownloadManager getInstance() {
@@ -43,7 +43,7 @@ public class DownloadManager {
         return progressSubscribe;
     }
 
-    public void downloadFile(Attachment attachment, AccountJid accountJid, Context context) {
+    public void downloadFile(AttachmentRealmObject attachmentRealmObject, AccountJid accountJid, Context context) {
 
         if (isDownloading) {
             if (downloadQueue.size() >= 10) {
@@ -52,18 +52,18 @@ public class DownloadManager {
             } else {
                 boolean duplicate = false;
                 for (int i = 0; i < downloadQueue.size(); i++) {
-                    if (downloadQueue.get(i).getUniqueId().equals(attachment.getUniqueId())) {
+                    if (downloadQueue.get(i).getUniqueId().equals(attachmentRealmObject.getUniqueId())) {
                         duplicate = true; //already have this file in the queue
                     }
                 }
-                if (attachmentId != null && attachmentId.equals(attachment.getUniqueId()))
+                if (attachmentId != null && attachmentId.equals(attachmentRealmObject.getUniqueId()))
                     duplicate = true; //already downloading this file
 
                 if (duplicate) return;
                 else {
-                    downloadQueue.offer(attachment);
-                    accountAttachments.put(attachment.getUniqueId(), accountJid);
-                    LogManager.d(LOG_TAG + "/PUT_IN_QUEUE", "attachment id = " + attachment.getUniqueId() + " account = " + accountJid);
+                    downloadQueue.offer(attachmentRealmObject);
+                    accountAttachments.put(attachmentRealmObject.getUniqueId(), accountJid);
+                    LogManager.d(LOG_TAG + "/PUT_IN_QUEUE", "attachment id = " + attachmentRealmObject.getUniqueId() + " account = " + accountJid);
                     return;
                 }
             }
@@ -72,30 +72,30 @@ public class DownloadManager {
         isDownloading = true;
 
         // check space
-        if (attachment.getFileSize() >= getAvailableSpace()) {
+        if (attachmentRealmObject.getFileSize() >= getAvailableSpace()) {
             Log.d(LOG_TAG, "Not enough space for downloading");
             progressSubscribe.onNext(new ProgressData(0, "Not enough space for downloading", false, attachmentId));
             isDownloading = false;
             return;
         }
 
-        attachmentId = attachment.getUniqueId();
+        attachmentId = attachmentRealmObject.getUniqueId();
         accountAttachments.put(attachmentId, accountJid);
-        LogManager.d(LOG_TAG + "/ACTIVE_DOWNLOAD", "attachment id = " + attachment.getUniqueId() + " account = " + accountJid);
+        LogManager.d(LOG_TAG + "/ACTIVE_DOWNLOAD", "attachment id = " + attachmentRealmObject.getUniqueId() + " account = " + accountJid);
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(DownloadService.KEY_RECEIVER, new DownloadReceiver(new Handler()));
-        intent.putExtra(DownloadService.KEY_ATTACHMENT_ID, attachment.getUniqueId());
+        intent.putExtra(DownloadService.KEY_ATTACHMENT_ID, attachmentRealmObject.getUniqueId());
         intent.putExtra(DownloadService.KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        intent.putExtra(DownloadService.KEY_FILE_NAME, attachment.getTitle());
-        intent.putExtra(DownloadService.KEY_URL, attachment.getFileUrl());
-        intent.putExtra(DownloadService.KEY_FILE_SIZE, attachment.getFileSize());
+        intent.putExtra(DownloadService.KEY_FILE_NAME, attachmentRealmObject.getTitle());
+        intent.putExtra(DownloadService.KEY_URL, attachmentRealmObject.getFileUrl());
+        intent.putExtra(DownloadService.KEY_FILE_SIZE, attachmentRealmObject.getFileSize());
         context.startService(intent);
     }
 
     private void nextDownload() {
         accountAttachments.remove(attachmentId);
         if (downloadQueue.size() > 0) {
-            Attachment first = downloadQueue.poll();
+            AttachmentRealmObject first = downloadQueue.poll();
             if (first != null)
                 downloadFile(first, accountAttachments.get(first.getUniqueId()), Application.getInstance().getApplicationContext());
         }

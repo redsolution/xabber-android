@@ -13,8 +13,8 @@ import androidx.annotation.StyleRes;
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -32,7 +32,7 @@ public class IncomingMessageVH  extends FileMessageVH {
     private BindListener listener;
 
     public interface BindListener {
-        void onBind(MessageItem message);
+        void onBind(MessageRealmObject message);
     }
 
     IncomingMessageVH(View itemView, MessageClickListener messageListener,
@@ -44,8 +44,8 @@ public class IncomingMessageVH  extends FileMessageVH {
         this.listener = listener;
     }
 
-    public void bind(final MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        super.bind(messageItem, extraData);
+    public void bind(final MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageRealmObject, extraData);
 
         Context context = extraData.getContext();
         boolean needTail = extraData.isNeedTail();
@@ -55,9 +55,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         statusIcon.setVisibility(View.GONE);
 
         // setup FORWARDED
-        boolean haveForwarded = messageItem.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
         if (haveForwarded) {
-            setupForwarded(messageItem, extraData);
+            setupForwarded(messageRealmObject, extraData);
 
             LinearLayout.LayoutParams forwardedParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -73,8 +73,8 @@ public class IncomingMessageVH  extends FileMessageVH {
 
         boolean imageAttached = false;
         boolean imageOnly = true;
-        if(messageItem.haveAttachments()) {
-            for (Attachment a : messageItem.getAttachments()){
+        if(messageRealmObject.haveAttachments()) {
+            for (AttachmentRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
                 } else {
@@ -82,7 +82,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 }
                 if(imageOnly) needTail = false;
             }
-        } else if (messageItem.hasImage() && messageItem.getAttachments().get(0).isImage()) {
+        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
             if (messageText.getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
@@ -125,7 +125,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context));
-            if(messageText.getText().toString().trim().isEmpty() && messageItem.isAttachmentImageOnly())
+            if(messageText.getText().toString().trim().isEmpty() && messageRealmObject.isAttachmentImageOnly())
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
         }
 
@@ -134,13 +134,13 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(context, extraData.getGroupchatUser(), messageItem,
+        setUpAvatar(context, extraData.getGroupchatUser(), messageRealmObject,
                 extraData.isMuc(), extraData.getUsername(), needTail);
 
         // hide empty message
-        if (messageItem.getText().trim().isEmpty()
-                && !messageItem.haveForwardedMessages()
-                && !messageItem.haveAttachments()) {
+        if (messageRealmObject.getText().trim().isEmpty()
+                && !messageRealmObject.haveForwardedMessages()
+                && !messageRealmObject.haveAttachments()) {
             messageBalloon.setVisibility(View.GONE);
             messageShadow.setVisibility(View.GONE);
             messageTime.setVisibility(View.GONE);
@@ -155,7 +155,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
-                if (listener != null) listener.onBind(messageItem);
+                if (listener != null) listener.onBind(messageRealmObject);
             }
 
             @Override
@@ -165,7 +165,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         });
     }
 
-    private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageItem messageItem,
+    private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageRealmObject messageRealmObject,
                              boolean isMUC, String userName, boolean needTail) {
         boolean needAvatar = isMUC ? SettingsManager.chatsShowAvatarsMUC() : SettingsManager.chatsShowAvatars();
         // for new groupchats (0GGG)
@@ -190,7 +190,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         if (groupchatUser != null) {
             Drawable placeholder;
             try {
-                UserJid userJid = UserJid.from(messageItem.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
+                UserJid userJid = UserJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
                 placeholder = AvatarManager.getInstance().getOccupantAvatar(userJid, groupchatUser.getNickname());
             } catch (UserJid.UserJidCreateException e) {
                placeholder = AvatarManager.getInstance()
@@ -205,9 +205,9 @@ public class IncomingMessageVH  extends FileMessageVH {
             return;
         }
 
-        final UserJid user = messageItem.getUser();
-        final AccountJid account = messageItem.getAccount();
-        final Resourcepart resource = messageItem.getResource();
+        final UserJid user = messageRealmObject.getUser();
+        final AccountJid account = messageRealmObject.getAccount();
+        final Resourcepart resource = messageRealmObject.getResource();
 
         if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatarForContactList(user, userName));
         else {

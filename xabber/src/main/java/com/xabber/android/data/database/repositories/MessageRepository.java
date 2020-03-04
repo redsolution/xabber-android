@@ -4,8 +4,8 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
-import com.xabber.android.data.database.realmobjects.SyncInfo;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -18,16 +18,16 @@ public class MessageRepository {
 
     private static final String LOG_TAG = MessageRepository.class.getSimpleName();
 
-    public static RealmResults<MessageItem> getChatMessages(AccountJid accountJid, UserJid userJid) {
+    public static RealmResults<MessageRealmObject> getChatMessages(AccountJid accountJid, UserJid userJid) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<MessageItem> results = realm
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                .equalTo(MessageItem.Fields.USER, userJid.toString())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
+        RealmResults<MessageRealmObject> results = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                .equalTo(MessageRealmObject.Fields.USER, userJid.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.TEXT)
                 .findAll()
-                .sort(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return results;
     }
@@ -38,7 +38,7 @@ public class MessageRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(MessageItem.class).findAll().deleteAllFromRealm();
+                    realm1.where(MessageRealmObject.class).findAll().deleteAllFromRealm();
                 });
             } catch (Exception e) {
                 LogManager.exception("messageRepository", e);
@@ -52,13 +52,13 @@ public class MessageRepository {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                    realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
                             .findAll()
                             .deleteAllFromRealm();
 
-                    realm1.where(SyncInfo.class)
-                            .equalTo(SyncInfo.FIELD_ACCOUNT, account.toString())
+                    realm1.where(SyncInfoRealmObject.class)
+                            .equalTo(SyncInfoRealmObject.FIELD_ACCOUNT, account.toString())
                             .findAll()
                             .deleteAllFromRealm();
                 });

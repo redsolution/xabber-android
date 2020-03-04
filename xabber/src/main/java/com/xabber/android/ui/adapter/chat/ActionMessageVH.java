@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
@@ -23,19 +23,19 @@ public class ActionMessageVH extends BasicMessageVH {
         messageTime = itemView.findViewById(R.id.message_time);
     }
 
-    public void bind(MessageItem messageItem, Context context, AccountJid account, boolean isMUC, boolean needDate) {
-        ChatAction action = MessageItem.getChatAction(messageItem);
-        String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
+    public void bind(MessageRealmObject messageRealmObject, Context context, AccountJid account, boolean isMUC, boolean needDate) {
+        ChatAction action = MessageRealmObject.getChatAction(messageRealmObject);
+        String time = StringUtils.getTimeText(new Date(messageRealmObject.getTimestamp()));
 
         String name;
         if (isMUC) {
-            name = messageItem.getResource().toString();
+            name = messageRealmObject.getResource().toString();
         } else {
-            name = RosterManager.getInstance().getBestContact(account, messageItem.getUser()).getName();
+            name = RosterManager.getInstance().getBestContact(account, messageRealmObject.getUser()).getName();
         }
-        messageText.setText(action.getText(context, name, MessageItem.getSpannable(messageItem).toString()));
+        messageText.setText(action.getText(context, name, MessageRealmObject.getSpannable(messageRealmObject).toString()));
         messageTime.setText(time);
         this.needDate = needDate;
-        date = StringUtils.getDateStringForMessage(messageItem.getTimestamp());
+        date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
     }
 }

@@ -36,7 +36,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -400,8 +400,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
     }
 
-    public void onMessageNotification(MessageItem messageItem) {
-        MessageNotificationManager.getInstance().onNewMessage(messageItem);
+    public void onMessageNotification(MessageRealmObject messageRealmObject) {
+        MessageNotificationManager.getInstance().onNewMessage(messageRealmObject);
     }
 
     /**

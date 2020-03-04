@@ -4,7 +4,7 @@ import com.xabber.android.data.roster.ShowOfflineMode;
 
 import io.realm.RealmObject;
 
-public class GroupRealm extends RealmObject {
+public class GroupRealmObject extends RealmObject {
 
     public static final class Fields {
         public static final String ACCOUNT = "account";
@@ -18,15 +18,15 @@ public class GroupRealm extends RealmObject {
     private boolean expanded;
     private int offline;
 
-    public GroupRealm(String account, String groupName, boolean expanded,
-                      ShowOfflineMode showOfflineMode){
+    public GroupRealmObject(String account, String groupName, boolean expanded,
+                            ShowOfflineMode showOfflineMode){
         this.account = account;
         this.groupName = groupName;
         this.expanded = expanded;
         this.setShowOfflineMode(showOfflineMode);
     }
 
-    public GroupRealm(){
+    public GroupRealmObject(){
         this.account = "account";
         this.groupName = "group name";
         this.expanded = false;

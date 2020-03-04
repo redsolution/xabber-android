@@ -6,8 +6,8 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.ui.text.ClickSpan;
 import com.xabber.android.utils.Utils;
 
@@ -39,37 +39,37 @@ public class ReferencesManager {
         return forwarded;
     }
 
-    public static Media createMediaReferences(Attachment attachment, int begin, int end) {
+    public static Media createMediaReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
         List<RefMedia> mediaList = new ArrayList<>();
         RefFile.Builder builder = RefFile.newBuilder();
-        builder.setName(attachment.getTitle());
-        builder.setMediaType(attachment.getMimeType());
-        builder.setDuration(attachment.getDuration());
-        builder.setSize(attachment.getFileSize());
-        if (attachment.getImageHeight() != null)
-            builder.setHeight(attachment.getImageHeight());
-        if (attachment.getImageWidth() != null)
-            builder.setWidth(attachment.getImageWidth());
-        RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
+        builder.setName(attachmentRealmObject.getTitle());
+        builder.setMediaType(attachmentRealmObject.getMimeType());
+        builder.setDuration(attachmentRealmObject.getDuration());
+        builder.setSize(attachmentRealmObject.getFileSize());
+        if (attachmentRealmObject.getImageHeight() != null)
+            builder.setHeight(attachmentRealmObject.getImageHeight());
+        if (attachmentRealmObject.getImageWidth() != null)
+            builder.setWidth(attachmentRealmObject.getImageWidth());
+        RefMedia media = new RefMedia(builder.build(), attachmentRealmObject.getFileUrl());
         mediaList.add(media);
 
         return new Media(begin, end, mediaList);
     }
 
-    public static Voice createVoiceReferences(Attachment attachment, int begin, int end) {
+    public static Voice createVoiceReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
         List<RefMedia> voiceList = new ArrayList<>();
         RefFile.Builder builder = RefFile.newBuilder();
-        builder.setName(attachment.getTitle());
-        builder.setMediaType(attachment.getMimeType());
-        builder.setDuration(attachment.getDuration());
-        builder.setSize(attachment.getFileSize());
-        RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
+        builder.setName(attachmentRealmObject.getTitle());
+        builder.setMediaType(attachmentRealmObject.getMimeType());
+        builder.setDuration(attachmentRealmObject.getDuration());
+        builder.setSize(attachmentRealmObject.getFileSize());
+        RefMedia media = new RefMedia(builder.build(), attachmentRealmObject.getFileUrl());
         voiceList.add(media);
 
         return new Voice(begin, end, voiceList);
     }
 
-    public static Forward createForwardReference(MessageItem item, int begin, int end) {
+    public static Forward createForwardReference(MessageRealmObject item, int begin, int end) {
         List<Forwarded> forwardedList = new ArrayList<>();
         try {
             Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());

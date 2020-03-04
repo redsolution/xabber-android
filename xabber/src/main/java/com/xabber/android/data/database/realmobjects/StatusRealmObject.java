@@ -2,7 +2,7 @@ package com.xabber.android.data.database.realmobjects;
 
 import io.realm.RealmObject;
 
-public class StatusRealm extends RealmObject {
+public class StatusRealmObject extends RealmObject {
 
     public static class Fields{
         public static final String STATUS_MODE = "statusMode";
@@ -12,12 +12,12 @@ public class StatusRealm extends RealmObject {
     private String statusMode;
     private String statusText;
 
-    public StatusRealm(String statusMode, String statusText){
+    public StatusRealmObject(String statusMode, String statusText){
         this.statusMode = statusMode;
         this.statusText = statusText;
     }
 
-    public StatusRealm(){
+    public StatusRealmObject(){
         this.statusMode = "unavailable";
         this.statusText = "Saved text";
     }

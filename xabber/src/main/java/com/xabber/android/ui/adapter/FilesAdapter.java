@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
 import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
@@ -38,7 +38,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHolder> {
 
-    private RealmList<Attachment> items;
+    private RealmList<AttachmentRealmObject> items;
     private FileListListener listener;
     private Long timestamp;
 
@@ -46,12 +46,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         void onFileClick(int position);
         void onVoiceClick(int position, String attachmentId, boolean saved, Long timestamp);
         void onVoiceProgressClick(int position, String attachmentId, Long timestamp, int current, int max);
-        void onFileLongClick(Attachment attachment, View caller);
+        void onFileLongClick(AttachmentRealmObject attachmentRealmObject, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
     }
 
-    public FilesAdapter(RealmList<Attachment> items, Long timestamp, FileListListener listener) {
+    public FilesAdapter(RealmList<AttachmentRealmObject> items, Long timestamp, FileListListener listener) {
         this.items = items;
         this.timestamp = timestamp;
         this.listener = listener;
@@ -66,22 +66,22 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final FileViewHolder holder, final int position) {
-        final Attachment attachment = items.get(position);
+        final AttachmentRealmObject attachmentRealmObject = items.get(position);
 
-        holder.attachmentId = attachment.getUniqueId();
+        holder.attachmentId = attachmentRealmObject.getUniqueId();
 
-        if (attachment.isVoice()) {
+        if (attachmentRealmObject.isVoice()) {
             holder.voiceMessage = true;
             holder.subscribeForAudioProgress();
 
             StringBuilder voiceText = new StringBuilder();
             voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
-            if (attachment.getDuration() != null && attachment.getDuration() != 0) {
-                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+            if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
+                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
                 int width = Utils.dipToPx(140, holder.fileInfoLayout.getContext());
-                if (attachment.getDuration() < 10) {
-                    lp.width = width + Utils.dipToPx(6 * attachment.getDuration(), holder.fileInfoLayout.getContext());
+                if (attachmentRealmObject.getDuration() < 10) {
+                    lp.width = width + Utils.dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
                     holder.fileInfoLayout.setLayoutParams(lp);
                 } else {
                     lp.width = width + Utils.dipToPx(60, holder.fileInfoLayout.getContext());
@@ -90,14 +90,14 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             }
             holder.tvFileName.setText(voiceText);
 
-            Long size = attachment.getFileSize();
+            Long size = attachmentRealmObject.getFileSize();
 
-            if (attachment.getFilePath() != null) {
+            if (attachmentRealmObject.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
-                holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
-                        StringUtils.getDurationStringForVoiceMessage(0L, attachment.getDuration())
+                holder.tvFileSize.setText((attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
+                        StringUtils.getDurationStringForVoiceMessage(0L, attachmentRealmObject.getDuration())
                         : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
+                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachmentRealmObject.getFilePath(), holder.audioVisualizer);
                 holder.audioVisualizer.setVisibility(View.VISIBLE);
                 holder.audioVisualizer.setOnTouchListener(new PlayerVisualizerView.onProgressTouch() {
                     @Override
@@ -133,18 +133,18 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         } else {
             // set file icon
             holder.voiceMessage = false;
-            holder.tvFileName.setText(attachment.getTitle());
-            Long size = attachment.getFileSize();
+            holder.tvFileName.setText(attachmentRealmObject.getTitle());
+            Long size = attachmentRealmObject.getFileSize();
             holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-            holder.ivFileIcon.setImageResource(attachment.getFilePath() != null
-                    ? getFileIconByCategory(FileCategory.determineFileCategory(attachment.getMimeType()))
+            holder.ivFileIcon.setImageResource(attachmentRealmObject.getFilePath() != null
+                    ? getFileIconByCategory(FileCategory.determineFileCategory(attachmentRealmObject.getMimeType()))
                     : R.drawable.ic_download);
         }
         holder.ivFileIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (holder.voiceMessage)
-                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachment.getFilePath()!=null, timestamp);
+                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachmentRealmObject.getFilePath()!=null, timestamp);
                 else
                     listener.onFileClick(position);
             }

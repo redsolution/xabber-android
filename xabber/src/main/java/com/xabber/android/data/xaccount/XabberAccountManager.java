@@ -13,11 +13,11 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.EmailRealm;
-import com.xabber.android.data.database.realmobjects.SocialBindingRealm;
-import com.xabber.android.data.database.realmobjects.SyncStateRealm;
-import com.xabber.android.data.database.realmobjects.XMPPUserRealm;
-import com.xabber.android.data.database.realmobjects.XabberAccountRealm;
+import com.xabber.android.data.database.realmobjects.EmailRealmObject;
+import com.xabber.android.data.database.realmobjects.SocialBindingRealmObject;
+import com.xabber.android.data.database.realmobjects.SyncStateRealmObject;
+import com.xabber.android.data.database.realmobjects.XMPPUserRealmObject;
+import com.xabber.android.data.database.realmobjects.XabberAccountRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -382,54 +382,54 @@ public class XabberAccountManager implements OnLoadListener {
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
         XabberAccount account;
-        XabberAccountRealm xabberAccountRealm = new XabberAccountRealm(String.valueOf(xabberAccount.getId()));
+        XabberAccountRealmObject xabberAccountRealmObject = new XabberAccountRealmObject(String.valueOf(xabberAccount.getId()));
 
-        xabberAccountRealm.setToken(token);
-        xabberAccountRealm.setAccountStatus(xabberAccount.getAccountStatus());
-        xabberAccountRealm.setUsername(xabberAccount.getUsername());
-        xabberAccountRealm.setDomain(xabberAccount.getDomain());
-        xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
-        xabberAccountRealm.setLastName(xabberAccount.getLastName());
-        xabberAccountRealm.setLanguage(xabberAccount.getLanguage());
-        xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
-        xabberAccountRealm.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
-        xabberAccountRealm.setPhone(xabberAccount.getPhone());
-        xabberAccountRealm.setHasPassword(xabberAccount.hasPassword());
+        xabberAccountRealmObject.setToken(token);
+        xabberAccountRealmObject.setAccountStatus(xabberAccount.getAccountStatus());
+        xabberAccountRealmObject.setUsername(xabberAccount.getUsername());
+        xabberAccountRealmObject.setDomain(xabberAccount.getDomain());
+        xabberAccountRealmObject.setFirstName(xabberAccount.getFirstName());
+        xabberAccountRealmObject.setLastName(xabberAccount.getLastName());
+        xabberAccountRealmObject.setLanguage(xabberAccount.getLanguage());
+        xabberAccountRealmObject.setRegisterDate(xabberAccount.getRegistrationDate());
+        xabberAccountRealmObject.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
+        xabberAccountRealmObject.setPhone(xabberAccount.getPhone());
+        xabberAccountRealmObject.setHasPassword(xabberAccount.hasPassword());
 
-        RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
+        RealmList<XMPPUserRealmObject> realmUsers = new RealmList<>();
         for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
-            XMPPUserRealm realmUser = new XMPPUserRealm(String.valueOf(user.getId()));
+            XMPPUserRealmObject realmUser = new XMPPUserRealmObject(String.valueOf(user.getId()));
             realmUser.setUsername(user.getUsername());
             realmUser.setHost(user.getHost());
             realmUser.setRegistration_date(user.getRegistrationDate());
             realmUsers.add(realmUser);
         }
-        xabberAccountRealm.setXmppUsers(realmUsers);
+        xabberAccountRealmObject.setXmppUsers(realmUsers);
 
-        RealmList<EmailRealm> realmEmails = new RealmList<>();
+        RealmList<EmailRealmObject> realmEmails = new RealmList<>();
         for (EmailDTO email : xabberAccount.getEmails()) {
-            EmailRealm realmEmail = new EmailRealm(String.valueOf(email.getId()));
+            EmailRealmObject realmEmail = new EmailRealmObject(String.valueOf(email.getId()));
             realmEmail.setEmail(email.getEmail());
             realmEmail.setPrimary(email.isPrimary());
             realmEmail.setVerified(email.isVerified());
             realmEmails.add(realmEmail);
         }
-        xabberAccountRealm.setEmails(realmEmails);
+        xabberAccountRealmObject.setEmails(realmEmails);
 
-        RealmList<SocialBindingRealm> realmSocials = new RealmList<>();
+        RealmList<SocialBindingRealmObject> realmSocials = new RealmList<>();
         for (SocialBindingDTO social : xabberAccount.getSocialBindings()) {
-            SocialBindingRealm realmSocial = new SocialBindingRealm(String.valueOf(social.getId()));
+            SocialBindingRealmObject realmSocial = new SocialBindingRealmObject(String.valueOf(social.getId()));
             realmSocial.setProvider(social.getProvider());
             realmSocial.setUid(social.getUid());
             realmSocial.setFirstName(social.getFirstName());
             realmSocial.setLastName(social.getLastName());
             realmSocials.add(realmSocial);
         }
-        xabberAccountRealm.setSocialBindings(realmSocials);
+        xabberAccountRealmObject.setSocialBindings(realmSocials);
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.beginTransaction();
-        XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
+        XabberAccountRealmObject accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealmObject);
         account = xabberAccountRealmToPOJO(accountRealm);
         realm.commitTransaction();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -438,35 +438,35 @@ public class XabberAccountManager implements OnLoadListener {
         return Single.just(account);
     }
 
-    public static XabberAccount xabberAccountRealmToPOJO(XabberAccountRealm accountRealm) {
+    public static XabberAccount xabberAccountRealmToPOJO(XabberAccountRealmObject accountRealm) {
         if (accountRealm == null) return null;
 
         XabberAccount xabberAccount = null;
 
         List<XMPPUser> xmppUsers = new ArrayList<>();
-        for (XMPPUserRealm xmppUserRealm : accountRealm.getXmppUsers()) {
+        for (XMPPUserRealmObject xmppUserRealmObject : accountRealm.getXmppUsers()) {
             XMPPUser xmppUser = new XMPPUser(
-                    Integer.parseInt(xmppUserRealm.getId()),
-                    xmppUserRealm.getUsername(),
-                    xmppUserRealm.getHost(),
-                    xmppUserRealm.getRegistration_date());
+                    Integer.parseInt(xmppUserRealmObject.getId()),
+                    xmppUserRealmObject.getUsername(),
+                    xmppUserRealmObject.getHost(),
+                    xmppUserRealmObject.getRegistration_date());
 
             xmppUsers.add(xmppUser);
         }
 
         List<EmailDTO> emails = new ArrayList<>();
-        for (EmailRealm emailRealm : accountRealm.getEmails()) {
+        for (EmailRealmObject emailRealmObject : accountRealm.getEmails()) {
             EmailDTO email = new EmailDTO(
-                    Integer.parseInt(emailRealm.getId()),
-                    emailRealm.getEmail(),
-                    emailRealm.isVerified(),
-                    emailRealm.isPrimary());
+                    Integer.parseInt(emailRealmObject.getId()),
+                    emailRealmObject.getEmail(),
+                    emailRealmObject.isVerified(),
+                    emailRealmObject.isPrimary());
 
             emails.add(email);
         }
 
         List<SocialBindingDTO> socials = new ArrayList<>();
-        for (SocialBindingRealm socialRealm : accountRealm.getSocialBindings()) {
+        for (SocialBindingRealmObject socialRealm : accountRealm.getSocialBindings()) {
             SocialBindingDTO social = new SocialBindingDTO(
                     Integer.parseInt(socialRealm.getId()),
                     socialRealm.getProvider(),
@@ -503,12 +503,12 @@ public class XabberAccountManager implements OnLoadListener {
         XabberAccount xabberAccount = null;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        RealmResults<XabberAccountRealm> xabberAccounts = realm
-                    .where(XabberAccountRealm.class)
+        RealmResults<XabberAccountRealmObject> xabberAccounts = realm
+                    .where(XabberAccountRealmObject.class)
                     .findAll();
 
-        for (XabberAccountRealm xabberAccountRealm : xabberAccounts)
-            xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
+        for (XabberAccountRealmObject xabberAccountRealmObject : xabberAccounts)
+            xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealmObject);
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return xabberAccount;
@@ -521,7 +521,7 @@ public class XabberAccountManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    success[0] = realm1.where(XabberAccountRealm.class)
+                    success[0] = realm1.where(XabberAccountRealmObject.class)
                             .findAll()
                             .deleteAllFromRealm();
                 });
@@ -694,10 +694,10 @@ public class XabberAccountManager implements OnLoadListener {
         Map<String, Boolean> resultMap = new HashMap<>();
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<SyncStateRealm> realmItems = realm.where(SyncStateRealm.class)
+        RealmResults<SyncStateRealmObject> realmItems = realm.where(SyncStateRealmObject.class)
                     .findAll();
 
-        for (SyncStateRealm realmItem : realmItems)
+        for (SyncStateRealmObject realmItem : realmItems)
                 resultMap.put(realmItem.getJid(), realmItem.isSync());
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -711,7 +711,7 @@ public class XabberAccountManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    success[0] = realm1.where(SyncStateRealm.class)
+                    success[0] = realm1.where(SyncStateRealmObject.class)
                             .findAll()
                             .deleteAllFromRealm();
                 });
@@ -724,10 +724,10 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void saveSyncStatesToRealm(Map<String, Boolean> syncStateMap) {
 
-        RealmList<SyncStateRealm> realmItems = new RealmList<>();
+        RealmList<SyncStateRealmObject> realmItems = new RealmList<>();
 
         for (Map.Entry<String, Boolean> entry : syncStateMap.entrySet()) {
-            SyncStateRealm realmItem = new SyncStateRealm();
+            SyncStateRealmObject realmItem = new SyncStateRealmObject();
             realmItem.setJid(entry.getKey());
             realmItem.setSync(entry.getValue());
 
@@ -741,13 +741,13 @@ public class XabberAccountManager implements OnLoadListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    List<SyncStateRealm> oldItems = realm1
-                            .where(SyncStateRealm.class)
+                    List<SyncStateRealmObject> oldItems = realm1
+                            .where(SyncStateRealmObject.class)
                             .findAll();
-                    for (SyncStateRealm item : oldItems)
+                    for (SyncStateRealmObject item : oldItems)
                         item.deleteFromRealm();
 
-                    List<SyncStateRealm> resultRealm = realm1.copyToRealmOrUpdate(realmItems);
+                    List<SyncStateRealmObject> resultRealm = realm1.copyToRealmOrUpdate(realmItems);
                     LogManager.d(LOG_TAG, resultRealm.size() + " syncState items was saved to Realm");
                 });
             } catch (Exception e){

@@ -10,7 +10,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 19.07.17.
  */
 
-public class XMPPUserRealm extends RealmObject {
+public class XMPPUserRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -20,11 +20,11 @@ public class XMPPUserRealm extends RealmObject {
     private String host;
     private String registration_date;
 
-    public XMPPUserRealm(String id) {
+    public XMPPUserRealmObject(String id) {
         this.id = id;
     }
 
-    public XMPPUserRealm() {
+    public XMPPUserRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

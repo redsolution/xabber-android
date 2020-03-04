@@ -26,9 +26,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.ForwardId;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -192,7 +192,7 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem createNewMessageItem(String text) {
+    protected MessageRealmObject createNewMessageItem(String text) {
         String id = UUID.randomUUID().toString();
         return createMessageItem(nickname, text, null, null, null, false,
                 false, false, false, id, id, null,
@@ -296,24 +296,24 @@ public class RoomChat extends AbstractChat {
 
                 updateThreadId(message.getThread());
 
-                RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(stanza);
+                RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(stanza);
 
                 String uid = UUID.randomUUID().toString();
-                RealmList<ForwardId> forwardIds = parseForwardedMessage(true, stanza, uid);
+                RealmList<ForwardIdRealmObject> forwardIdRealmObjects = parseForwardedMessage(true, stanza, uid);
                 String originalStanza = stanza.toXML().toString();
 
                 // create message with file-attachments
-                if (attachments.size() > 0)
+                if (attachmentRealmObjects.size() > 0)
                     createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                             null, delay, true, notify,
-                            false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
-                            originalStanza, null, originalFrom, true, forwardIds, true, false, null);
+                            false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects,
+                            originalStanza, null, originalFrom, true, forwardIdRealmObjects, true, false, null);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                         null, delay, true, notify,
                         false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                        originalStanza, null, originalFrom, true, forwardIds, true, false, null);
+                        originalStanza, null, originalFrom, true, forwardIdRealmObjects, true, false, null);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -386,10 +386,10 @@ public class RoomChat extends AbstractChat {
         if (text == null) return null;
         if (subject != null) return null;
 
-        RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+        RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
-        RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
+        RealmList<ForwardIdRealmObject> forwardIdRealmObjects = parseForwardedMessage(ui, message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
@@ -404,15 +404,15 @@ public class RoomChat extends AbstractChat {
         String markupText = bodies.second;
 
         // create message with file-attachments
-        if (attachments.size() > 0)
+        if (attachmentRealmObjects.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                     true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                    attachments, originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMUC, true, null);
+                    attachmentRealmObjects, originalStanza, parentMessageId, originalFrom, true, forwardIdRealmObjects, fromMUC, true, null);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                 true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMUC, true, null);
+                originalStanza, parentMessageId, originalFrom, true, forwardIdRealmObjects, fromMUC, true, null);
 
         return uid;
     }
@@ -423,8 +423,8 @@ public class RoomChat extends AbstractChat {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    MessageItem message = realm1.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
+                    MessageRealmObject message = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageUId).findFirst();
                     message.setDelivered(true);
                     message.setOriginalFrom(originalFrom);
                 });
@@ -438,10 +438,10 @@ public class RoomChat extends AbstractChat {
     private String getMessageIdIfInHistory(String stanzaId, String body) {
         if (stanzaId == null) return null;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        MessageItem message = realm
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.TEXT, body)
-                .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+        MessageRealmObject message = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.TEXT, body)
+                .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId)
                 .findFirst();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         if (message != null) return message.getUniqueId();

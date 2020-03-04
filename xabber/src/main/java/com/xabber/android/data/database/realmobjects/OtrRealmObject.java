@@ -2,7 +2,7 @@ package com.xabber.android.data.database.realmobjects;
 
 import io.realm.RealmObject;
 
-public class OtrRealm extends RealmObject {
+public class OtrRealmObject extends RealmObject {
     public static final class Fields{
         public static final String ACCOUNT = "account";
         public static final String USER = "user";
@@ -15,14 +15,14 @@ public class OtrRealm extends RealmObject {
     private String fingerprint;
     private boolean verified;
 
-    public OtrRealm(String account, String user, String fingerprint, boolean verified){
+    public OtrRealmObject(String account, String user, String fingerprint, boolean verified){
         this.account = account;
         this.user = user;
         this.fingerprint = fingerprint;
         this.verified = verified;
     }
 
-    public OtrRealm(){
+    public OtrRealmObject(){
         this.account = "account";
         this.user = "user";
         this.fingerprint = "fingerprint";

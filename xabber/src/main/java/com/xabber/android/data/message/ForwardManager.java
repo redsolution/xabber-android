@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ForwardId;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.forward.ForwardComment;
@@ -29,22 +29,22 @@ public class ForwardManager {
 
     public static void forwardMessage(List<String> messages, AccountJid account, UserJid user, String text) {
         final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
-        final MessageItem messageItem = chat.createNewMessageItem(text);
+        final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
 
-        RealmList<ForwardId> ids = new RealmList<>();
+        RealmList<ForwardIdRealmObject> ids = new RealmList<>();
 
         for (String message : messages) {
-            ids.add(new ForwardId(message));
+            ids.add(new ForwardIdRealmObject(message));
         }
 
-        messageItem.setForwardedIds(ids);
+        messageRealmObject.setForwardedIds(ids);
 
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    realm1.copyToRealm(messageItem);
+                    realm1.copyToRealm(messageRealmObject);
                     EventBus.getDefault().post(new NewMessageEvent());
                     chat.sendMessages();
                 });

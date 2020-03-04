@@ -5,7 +5,7 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class RoomRealm extends RealmObject {
+public class RoomRealmObject extends RealmObject {
 
     public static final class Fields {
         public static final String ID = "id";
@@ -25,8 +25,8 @@ public class RoomRealm extends RealmObject {
     private String password;
     private boolean needJoin;
 
-    public RoomRealm(String id, String account, String room, String nickname, String password,
-                     boolean needJoin){
+    public RoomRealmObject(String id, String account, String room, String nickname, String password,
+                           boolean needJoin){
         this.id = id;
         this.account = account;
         this.room = room;
@@ -35,7 +35,7 @@ public class RoomRealm extends RealmObject {
         this.needJoin = needJoin;
     }
 
-    public RoomRealm(String account, String room, String nickname, String password, boolean needJoin){
+    public RoomRealmObject(String account, String room, String nickname, String password, boolean needJoin){
         this.id = UUID.randomUUID().toString();
         this.account = account;
         this.room = room;
@@ -44,7 +44,7 @@ public class RoomRealm extends RealmObject {
         this.needJoin = needJoin;
     }
 
-    public RoomRealm(){ this.id = UUID.randomUUID().toString(); }
+    public RoomRealmObject(){ this.id = UUID.randomUUID().toString(); }
 
     public void setId(String id) { this.id = id; }
     public String getId() { return id; }

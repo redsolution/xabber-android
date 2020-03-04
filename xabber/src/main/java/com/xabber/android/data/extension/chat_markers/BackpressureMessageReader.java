@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -45,9 +45,9 @@ public class BackpressureMessageReader {
         return instance;
     }
 
-    public void markAsRead(MessageItem messageItem, boolean trySendDisplayed) {
-        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(messageItem.getAccount(), messageItem.getUser());
-        subject.onNext(new MessageDataHolder(messageItem, trySendDisplayed));
+    public void markAsRead(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
+        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(messageRealmObject.getAccount(), messageRealmObject.getUser());
+        subject.onNext(new MessageDataHolder(messageRealmObject, trySendDisplayed));
     }
 
     public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
@@ -74,16 +74,16 @@ public class BackpressureMessageReader {
                         try {
                             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                             realm.executeTransaction(realm1 -> {
-                                MessageItem message = getMessageById(realm1, holder);
+                                MessageRealmObject message = getMessageById(realm1, holder);
                                 if (message != null) {
                                     if (holder.trySendDisplayed)
                                         ChatMarkerManager.getInstance().sendDisplayed(message);
 
-                                    RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm1, message);
-                                    for (MessageItem mes : messages) {
+                                    RealmResults<MessageRealmObject> messages = getPreviousUnreadMessages(realm1, message);
+                                    for (MessageRealmObject mes : messages) {
                                         ids.add(mes.getUniqueId());
                                     }
-                                    messages.setBoolean(MessageItem.Fields.READ, true);
+                                    messages.setBoolean(MessageRealmObject.Fields.READ, true);
                                     Application.getInstance().runOnUiThread(() -> {
                                         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
                                         if (chat != null) chat.approveRead(ids);
@@ -107,26 +107,26 @@ public class BackpressureMessageReader {
         return subject;
     }
 
-    private MessageItem getMessageById(Realm realm, MessageDataHolder data) {
+    private MessageRealmObject getMessageById(Realm realm, MessageDataHolder data) {
         return getMessageById(realm, data.messageId, data.uniqueId, data.stanzaId, data.account);
     }
 
-    private MessageItem getMessageById(Realm realm, String id, String uniqueId, ArrayList<String> stanzaIds, AccountJid accountJid) {
-        MessageItem message;
-        RealmQuery<MessageItem> realmQuery = realm.where(MessageItem.class);
-        realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
+    private MessageRealmObject getMessageById(Realm realm, String id, String uniqueId, ArrayList<String> stanzaIds, AccountJid accountJid) {
+        MessageRealmObject message;
+        RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
+        realmQuery.equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString());
         if (stanzaIds != null && stanzaIds.size()>0) {
             realmQuery.beginGroup();
             if (uniqueId != null && !uniqueId.isEmpty()) {
-                realmQuery.equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId);
+                realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
                 realmQuery.or();
             }
-            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
+            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
             realmQuery.or();
-            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
             for (String stanzaId : stanzaIds) {
                 realmQuery.or();
-                realmQuery.equalTo(MessageItem.Fields.STANZA_ID, stanzaId);
+                realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
             }
             realmQuery.endGroup();
             message = realmQuery.findFirst();
@@ -134,24 +134,24 @@ public class BackpressureMessageReader {
         } else {
             realmQuery.beginGroup();
             if (uniqueId != null && !uniqueId.isEmpty()) {
-                realmQuery.equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId);
+                realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
                 realmQuery.or();
             }
-            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
+            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
             realmQuery.or();
-            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
             realmQuery.endGroup();
             message = realmQuery.findFirst();
         }
         return message;
     }
 
-    private RealmResults<MessageItem> getPreviousUnreadMessages(Realm realm, MessageItem messageItem) {
-        return realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, messageItem.getAccount().toString())
-                .equalTo(MessageItem.Fields.USER, messageItem.getUser().toString())
-                .equalTo(MessageItem.Fields.READ, false)
-                .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, messageItem.getTimestamp())
+    private RealmResults<MessageRealmObject> getPreviousUnreadMessages(Realm realm, MessageRealmObject messageRealmObject) {
+        return realm.where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.getAccount().toString())
+                .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.READ, false)
+                .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, messageRealmObject.getTimestamp())
                 .findAll();
     }
 
@@ -163,12 +163,12 @@ public class BackpressureMessageReader {
         final UserJid user;
         final boolean trySendDisplayed;
 
-        MessageDataHolder(MessageItem messageItem, boolean trySendDisplayed) {
-            this.messageId = messageItem.getOriginId();
-            this.uniqueId = messageItem.getUniqueId();
-            this.stanzaId = getStanzaIds(messageItem);
-            this.account = messageItem.getAccount();
-            this.user = messageItem.getUser();
+        MessageDataHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
+            this.messageId = messageRealmObject.getOriginId();
+            this.uniqueId = messageRealmObject.getUniqueId();
+            this.stanzaId = getStanzaIds(messageRealmObject);
+            this.account = messageRealmObject.getAccount();
+            this.user = messageRealmObject.getUser();
             this.trySendDisplayed = trySendDisplayed;
         }
 
@@ -182,24 +182,24 @@ public class BackpressureMessageReader {
             this.trySendDisplayed = trySendDisplayed;
         }
 
-        private ArrayList<String> getStanzaIds(MessageItem messageItem) {
+        private ArrayList<String> getStanzaIds(MessageRealmObject messageRealmObject) {
             ArrayList<String> stanzaIds = new ArrayList<>();
-            if (messageItem.getStanzaId() != null) {
-                stanzaIds.add(messageItem.getStanzaId());
+            if (messageRealmObject.getStanzaId() != null) {
+                stanzaIds.add(messageRealmObject.getStanzaId());
             }
-            if (messageItem.getArchivedId() != null && !messageItem.getArchivedId().equals(messageItem.getStanzaId())) {
-                stanzaIds.add(messageItem.getArchivedId());
+            if (messageRealmObject.getArchivedId() != null && !messageRealmObject.getArchivedId().equals(messageRealmObject.getStanzaId())) {
+                stanzaIds.add(messageRealmObject.getArchivedId());
             }
             return stanzaIds;
         }
     }
 
     private static class MessageHolder {
-        final MessageItem messageItem;
+        final MessageRealmObject messageRealmObject;
         final boolean trySendDisplayed;
 
-        public MessageHolder(MessageItem messageItem, boolean trySendDisplayed) {
-            this.messageItem = messageItem;
+        public MessageHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
+            this.messageRealmObject = messageRealmObject;
             this.trySendDisplayed = trySendDisplayed;
         }
     }

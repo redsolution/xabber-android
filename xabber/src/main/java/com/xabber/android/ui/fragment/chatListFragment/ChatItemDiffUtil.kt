@@ -27,7 +27,7 @@ class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
 
         var isMessagesAreEqual = false
         try {
-            val isMessagesAreEqual = oldItemHolder.messageItem?.isUiEqual(newMessageItem)
+            val isMessagesAreEqual = oldItemHolder.messageRealmObject?.isUiEqual(newMessageItem)
         } catch (e: Exception) { LogManager.exception("ChatItemViewHolder", e)}
 
         val isStatusesAreEqual = oldItemHolder.rosterStatus == newAbstractContact.statusMode.statusLevel

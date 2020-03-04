@@ -8,7 +8,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.realmobjects.XTokenRealm;
+import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -91,11 +91,11 @@ public class XTokenManager implements OnPacketListener {
         });
     }
 
-    public static XTokenRealm tokenToXTokenRealm(XToken token) {
-        return new XTokenRealm(token.getUid(), token.getToken(), token.getExpire());
+    public static XTokenRealmObject tokenToXTokenRealm(XToken token) {
+        return new XTokenRealmObject(token.getUid(), token.getToken(), token.getExpire());
     }
 
-    public static XToken xTokenRealmToXToken(XTokenRealm token) {
+    public static XToken xTokenRealmToXToken(XTokenRealmObject token) {
         return new XToken(token.getId(), token.getToken(), token.getExpire());
     }
 

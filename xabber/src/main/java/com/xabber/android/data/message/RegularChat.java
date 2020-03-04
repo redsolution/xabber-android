@@ -23,9 +23,9 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.ForwardId;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -151,7 +151,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem createNewMessageItem(String text) {
+    protected MessageRealmObject createNewMessageItem(String text) {
         String id = UUID.randomUUID().toString();
         return createMessageItem(null, text, null, null, null, false,
                 false, false, false, id,
@@ -236,10 +236,10 @@ public class RegularChat extends AbstractChat {
                 GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
             }
 
-            RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
+            RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
 
             String uid = UUID.randomUUID().toString();
-            RealmList<ForwardId> forwardIds = parseForwardedMessage(true, packet, uid);
+            RealmList<ForwardIdRealmObject> forwardIdRealmObjects = parseForwardedMessage(true, packet, uid);
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
 
@@ -248,7 +248,7 @@ public class RegularChat extends AbstractChat {
             if (forwardComment != null) text = forwardComment;
 
             // System message received.
-            if ((text == null || text.trim().equals("")) && (forwardIds == null || forwardIds.isEmpty()))
+            if ((text == null || text.trim().equals("")) && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty()))
                 return true;
 
             // modify body with references
@@ -262,19 +262,19 @@ public class RegularChat extends AbstractChat {
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
             // create message with file-attachments
-            if (attachments.size() > 0)
+            if (attachmentRealmObjects.size() > 0)
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments, originalStanza, null,
-                        originalFrom, false, forwardIds, false, false, gropchatUserId);
+                        getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
+                        originalFrom, false, forwardIdRealmObjects, false, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
-                    originalFrom, false, forwardIds,false, false, gropchatUserId);
+                    originalFrom, false, forwardIdRealmObjects,false, false, gropchatUserId);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -296,10 +296,10 @@ public class RegularChat extends AbstractChat {
 
         boolean encrypted = OTRManager.getInstance().isEncrypted(text);
 
-        RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+        RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
-        RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
+        RealmList<ForwardIdRealmObject> forwardIdRealmObjects = parseForwardedMessage(ui, message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = "";
         if (fromJid != null) originalFrom = fromJid.toString();
@@ -323,17 +323,17 @@ public class RegularChat extends AbstractChat {
         String markupText = bodies.second;
 
         // create message with file-attachments
-        if (attachments.size() > 0)
+        if (attachmentRealmObjects.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
-                    false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMuc, true, gropchatUserId);
+                    false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects,
+                    originalStanza, parentMessageId, originalFrom, true, forwardIdRealmObjects, fromMuc, true, gropchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
                 false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza,
-                parentMessageId, originalFrom, true, forwardIds, fromMuc, true, gropchatUserId);
+                parentMessageId, originalFrom, true, forwardIdRealmObjects, fromMuc, true, gropchatUserId);
 
         return uid;
     }

@@ -12,7 +12,7 @@ import io.realm.annotations.Required;
  * Created by valery.miller on 21.11.17.
  */
 
-public class NotificationStateRealm extends RealmObject {
+public class NotificationStateRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -21,7 +21,7 @@ public class NotificationStateRealm extends RealmObject {
     private String mode;
     private int timestamp;
 
-    public NotificationStateRealm() {
+    public NotificationStateRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 

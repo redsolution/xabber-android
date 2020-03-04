@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class GroupchatUserRealm extends RealmObject {
+public class GroupchatUserRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
@@ -28,11 +28,11 @@ public class GroupchatUserRealm extends RealmObject {
     private String avatar;
     private long timestamp;
 
-    public GroupchatUserRealm(String uniqueId) {
+    public GroupchatUserRealmObject(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
-    public GroupchatUserRealm() {
+    public GroupchatUserRealmObject() {
         this.uniqueId = UUID.randomUUID().toString();
     }
 

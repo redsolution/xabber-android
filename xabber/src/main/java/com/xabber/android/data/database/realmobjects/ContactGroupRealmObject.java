@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class ContactGroup extends RealmObject {
+public class ContactGroupRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String GROUP_NAME = "groupName";
@@ -16,11 +16,11 @@ public class ContactGroup extends RealmObject {
     @Required
     private String groupName;
 
-    public ContactGroup() {
+    public ContactGroupRealmObject() {
         this.groupName = UUID.randomUUID().toString();
     }
 
-    public ContactGroup(String groupName) {
+    public ContactGroupRealmObject(String groupName) {
         this.groupName = groupName;
     }
 

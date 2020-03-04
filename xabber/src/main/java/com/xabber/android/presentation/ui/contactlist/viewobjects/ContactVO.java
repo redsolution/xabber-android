@@ -24,8 +24,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -174,7 +174,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         MessageManager messageManager = MessageManager.getInstance();
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
-        MessageItem lastMessage = chat.getLastMessage();
+        MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
@@ -183,20 +183,20 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser()) != null) {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser());
                 messageText = StringUtils.getColoredText(chatState, accountColorIndicatorLight);
-            } else if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
-                Attachment attachment = lastMessage.getAttachments().get(0);
-                if (attachment.isVoice()) {
+            } else if (lastMessage.haveAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
+                AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
+                if (attachmentRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
-                    if (attachment.getDuration() != null && attachment.getDuration() != 0) {
-                        voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+                    if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
+                        voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
                     }
                     messageText = StringUtils.getColoredText(voiceText.toString(), accountColorIndicator);
-                } else messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
-            } else if (lastMessage.getAttachments() != null
-                    && lastMessage.getAttachments().size() !=0
-                    && lastMessage.getAttachments().get(0).getFilePath() != null) {
-                messageText = new File(lastMessage.getAttachments().get(0).getFilePath()).getName();
+                } else messageText = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
+            } else if (lastMessage.getAttachmentRealmObjects() != null
+                    && lastMessage.getAttachmentRealmObjects().size() !=0
+                    && lastMessage.getAttachmentRealmObjects().get(0).getFilePath() != null) {
+                messageText = new File(lastMessage.getAttachmentRealmObjects().get(0).getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
                 messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
             } else {
@@ -213,7 +213,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             // message status
             if (isOutgoing) {
-                if (!MessageItem.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
+                if (!MessageRealmObject.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
                         && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
                     messageStatus = 5;
                 } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {

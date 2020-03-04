@@ -8,8 +8,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -109,11 +109,11 @@ public class RrrManager implements OnPacketListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    final MessageItem messageItem = realm1.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.UNIQUE_ID, id).findFirst();
+                    final MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, id).findFirst();
                     try {
                         RetractMessageIQ iq = new RetractMessageIQ(accountJid.toString(),
-                                messageItem.getStanzaId(), symmetrically);
+                                messageRealmObject.getStanzaId(), symmetrically);
                         AccountManager.getInstance().getAccount(accountJid).getConnection()
                                 .sendIqWithResponseCallback(iq, packet ->  {
                                     if (packet instanceof IQ) {
@@ -131,7 +131,7 @@ public class RrrManager implements OnPacketListener {
                         LogManager.exception(LOG_TAG, e);
                     }
                     //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
-                    messageItem.deleteFromRealm();
+                    messageRealmObject.deleteFromRealm();
                 });
 
             } catch (Exception e) {
@@ -148,16 +148,16 @@ public class RrrManager implements OnPacketListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                        MessageItem messageItem = realm1.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                        MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
                                 .findFirst();
-                        messageItem.setText(text);
+                        messageRealmObject.setText(text);
                         EventBus.getDefault().post(new MessageUpdateEvent());
-                        message.setBody(messageItem.getText());
-                        message.setStanzaId(messageItem.getStanzaId());
-                        message.setTo(messageItem.getUser().getBareJid());
-                        message.setFrom(messageItem.getAccount().getFullJid());
-                        message.addExtension(new OriginIdElement(messageItem.getOriginId()));
+                        message.setBody(messageRealmObject.getText());
+                        message.setStanzaId(messageRealmObject.getStanzaId());
+                        message.setTo(messageRealmObject.getUser().getBareJid());
+                        message.setFrom(messageRealmObject.getAccount().getFullJid());
+                        message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -210,12 +210,12 @@ public class RrrManager implements OnPacketListener {
                 try {
                     realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(realm1 ->  {
-                            MessageItem messageItem = realm1.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.USER, conversation)
-                                    .equalTo(MessageItem.Fields.STANZA_ID, id)
+                            MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                                    .equalTo(MessageRealmObject.Fields.USER, conversation)
+                                    .equalTo(MessageRealmObject.Fields.STANZA_ID, id)
                                     .findFirst();
-                            if (messageItem != null)
-                                messageItem.deleteFromRealm();
+                            if (messageRealmObject != null)
+                                messageRealmObject.deleteFromRealm();
                             EventBus.getDefault().post(new MessageUpdateEvent());
                     });
                 } catch (Exception e){
@@ -227,28 +227,28 @@ public class RrrManager implements OnPacketListener {
     private void handleIncomingRewriteMessage(final String stanzaId, final String conversation,
                                               final String stamp, final String body,
                                               final String markupText, final String originalStanza,
-                                              final RealmList<Attachment> attachments) {
+                                              final RealmList<AttachmentRealmObject> attachmentRealmObjects) {
         //TODO pay attention to this code
         Application.getInstance().runInBackgroundUserRequest(() ->  {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    MessageItem messageItem = realm1.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.USER, conversation)
-                            .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+                    MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.USER, conversation)
+                            .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId)
                             .findFirst();
-                    if (messageItem != null) {
+                    if (messageRealmObject != null) {
                         if (markupText != null)
-                            messageItem.setMarkupText(markupText);
+                            messageRealmObject.setMarkupText(markupText);
                         if (originalStanza != null)
-                            messageItem.setOriginalStanza(originalStanza);
-                        if (attachments != null)
-                            messageItem.setAttachments(attachments);
+                            messageRealmObject.setOriginalStanza(originalStanza);
+                        if (attachmentRealmObjects != null)
+                            messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
                         if (body != null)
-                            messageItem.setText(body);
+                            messageRealmObject.setText(body);
                         if (stamp != null)
-                            messageItem.setEditedTimestamp(StringUtils
+                            messageRealmObject.setEditedTimestamp(StringUtils
                                     .parseReceivedReceiptTimestampString(stamp).getTime());
                     }
                     EventBus.getDefault().post(new MessageUpdateEvent());
@@ -292,12 +292,12 @@ public class RrrManager implements OnPacketListener {
                     Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
                     text = bodies.first;
                     String markupText = bodies.second;
-                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+                    RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
                     //RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
                     String forwardComment = ForwardManager.parseForwardComment(message);
                     if (forwardComment != null) text = forwardComment;
                     handleIncomingRewriteMessage(stanzaId, conversation, stamp, text, markupText,
-                            originalStanza, attachments);
+                            originalStanza, attachmentRealmObjects);
                 }
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         }

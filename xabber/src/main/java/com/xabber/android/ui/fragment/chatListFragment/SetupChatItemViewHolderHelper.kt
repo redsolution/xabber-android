@@ -11,7 +11,7 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.database.realmobjects.MessageItem
+import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.muc.MUCManager
 import com.xabber.android.data.extension.muc.RoomChat
@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
     fun setup(){
-        holder.messageItem = MessageManager.getInstance()
+        holder.messageRealmObject = MessageManager.getInstance()
                 .getOrCreateChat(contact.account, contact.user).lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
@@ -183,7 +183,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                         .getFullChatStateString(contact.account, contact.user)
             else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            else if (lastMessage != null && lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0]?.title
+            else if (lastMessage != null && lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachmentRealmObjects[0]?.title
             else holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
         } else {
@@ -222,18 +222,18 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    fun getMEssageStatusImage(messageItem: MessageItem): Int{
-        if (!messageItem.isIncoming) {
-            if (MessageItem.isUploadFileMessage(messageItem) && !messageItem.isSent
-                    && System.currentTimeMillis() - messageItem.timestamp > 1000)
+    fun getMEssageStatusImage(messageRealmObject: MessageRealmObject): Int{
+        if (!messageRealmObject.isIncoming) {
+            if (MessageRealmObject.isUploadFileMessage(messageRealmObject) && !messageRealmObject.isSent
+                    && System.currentTimeMillis() - messageRealmObject.timestamp > 1000)
                 return R.drawable.ic_message_not_sent_14dp
-            else if (messageItem.isDisplayed || messageItem.isReceivedFromMessageArchive)
+            else if (messageRealmObject.isDisplayed || messageRealmObject.isReceivedFromMessageArchive)
                 return R.drawable.ic_message_displayed
-            else if (messageItem.isDelivered)
+            else if (messageRealmObject.isDelivered)
                 return R.drawable.ic_message_delivered_14dp
-            else if (messageItem.isError)
+            else if (messageRealmObject.isError)
                 return R.drawable.ic_message_has_error_14dp
-            else if (messageItem.isAcknowledged || messageItem.isForwarded)
+            else if (messageRealmObject.isAcknowledged || messageRealmObject.isForwarded)
                 return R.drawable.ic_message_acknowledged_14dp
             else return R.drawable.ic_message_not_sent_14dp
         } else return R.drawable.ic_message_not_sent_14dp

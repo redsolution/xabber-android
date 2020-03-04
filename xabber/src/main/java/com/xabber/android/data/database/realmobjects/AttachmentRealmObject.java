@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class Attachment extends RealmObject {
+public class AttachmentRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
@@ -64,7 +64,7 @@ public class Attachment extends RealmObject {
     /** Duration in seconds */
     private Long duration;
 
-    public Attachment() {
+    public AttachmentRealmObject() {
         this.uniqueId = UUID.randomUUID().toString();
     }
 

@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.PhraseNotificationRealm;
+import com.xabber.android.data.database.realmobjects.PhraseNotificationRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.Phrase;
@@ -22,11 +22,11 @@ public class PhraseNotificationRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<PhraseNotificationRealm> realmObjList = realm
-                    .where(PhraseNotificationRealm.class)
+            RealmResults<PhraseNotificationRealmObject> realmObjList = realm
+                    .where(PhraseNotificationRealmObject.class)
                     .findAll();
 
-            for (PhraseNotificationRealm realmObj : realmObjList){
+            for (PhraseNotificationRealmObject realmObj : realmObjList){
                 Uri uri = Uri.parse(realmObj.getSound());
                 phrasesList.add(new Phrase(realmObj.getId(), realmObj.getValue(), realmObj.getUser(),
                         realmObj.getGroup(), realmObj.getRegexp(), uri));
@@ -43,8 +43,8 @@ public class PhraseNotificationRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    realm1.where(PhraseNotificationRealm.class)
-                            .equalTo(PhraseNotificationRealm.Fields.ID, id)
+                    realm1.where(PhraseNotificationRealmObject.class)
+                            .equalTo(PhraseNotificationRealmObject.Fields.ID, id)
                             .findAll()
                             .deleteAllFromRealm();
                 });
@@ -62,7 +62,7 @@ public class PhraseNotificationRepository {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
 
-                    PhraseNotificationRealm phraseNotifRealm = new PhraseNotificationRealm(phrase.getId());
+                    PhraseNotificationRealmObject phraseNotifRealm = new PhraseNotificationRealmObject(phrase.getId());
                     phraseNotifRealm.setValue(value);
                     phraseNotifRealm.setUser(user);
                     phraseNotifRealm.setGroup(group);

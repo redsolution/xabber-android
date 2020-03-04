@@ -12,7 +12,7 @@ import androidx.annotation.StyleRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.utils.Utils;
 
 public class OutgoingMessageVH extends FileMessageVH {
@@ -23,16 +23,16 @@ public class OutgoingMessageVH extends FileMessageVH {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        super.bind(messageItem, extraData);
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageRealmObject, extraData);
 
         final Context context = extraData.getContext();
         boolean needTail = extraData.isNeedTail();
 
-        setStatusIcon(messageItem);
+        setStatusIcon(messageRealmObject);
 
         // setup PROGRESS
-        if (messageItem.isInProgress()) {
+        if (messageRealmObject.isInProgress()) {
             progressBar.setVisibility(View.VISIBLE);
             messageFileInfo.setText(R.string.message_status_uploading);
             messageFileInfo.setVisibility(View.VISIBLE);
@@ -45,9 +45,9 @@ public class OutgoingMessageVH extends FileMessageVH {
         }
 
         // setup FORWARDED
-        boolean haveForwarded = messageItem.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
         if (haveForwarded) {
-            setupForwarded(messageItem, extraData);
+            setupForwarded(messageRealmObject, extraData);
 
             LinearLayout.LayoutParams forwardedParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -62,8 +62,8 @@ public class OutgoingMessageVH extends FileMessageVH {
         } else if (forwardLayout != null) forwardLayout.setVisibility(View.GONE);
 
         boolean imageAttached = false;
-        if(messageItem.haveAttachments()) {
-            if (messageItem.hasImage()) {
+        if(messageRealmObject.haveAttachments()) {
+            if (messageRealmObject.hasImage()) {
                 imageAttached = true;
                 needTail = false;
             }
@@ -98,14 +98,14 @@ public class OutgoingMessageVH extends FileMessageVH {
                 Utils.dipToPx(8f, context));
 
         float border = 3.5f;
-        if(messageItem.haveAttachments()) {
-            if(messageItem.hasImage()) {
+        if(messageRealmObject.haveAttachments()) {
+            if(messageRealmObject.hasImage()) {
                 messageBalloon.setPadding(
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border-0.05f, context),
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border, context));
-                if (messageItem.isAttachmentImageOnly()) {
+                if (messageRealmObject.isAttachmentImageOnly()) {
                     messageTime.setTextColor(context.getResources().getColor(R.color.white));
                 } else messageInfo.setPadding(0, 0, Utils.dipToPx(border+1.5f, context), Utils.dipToPx(4.7f, context));
             }
@@ -129,36 +129,36 @@ public class OutgoingMessageVH extends FileMessageVH {
         });
     }
 
-    private void setStatusIcon(MessageItem messageItem) {
+    private void setStatusIcon(MessageRealmObject messageRealmObject) {
         statusIcon.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        boolean isFileUploadInProgress = MessageItem.isUploadFileMessage(messageItem);
+        boolean isFileUploadInProgress = MessageRealmObject.isUploadFileMessage(messageRealmObject);
 
         //if (isFileUploadInProgress)
         //    progressBar.setVisibility(View.VISIBLE);
 
         int messageIcon = R.drawable.ic_message_not_sent_14dp;
 
-        if (messageItem.getText().equals(UPLOAD_TAG)) {
+        if (messageRealmObject.getText().equals(UPLOAD_TAG)) {
             messageIcon = 0;
             messageText.setText("");
         }
 
-        if (!isFileUploadInProgress && !messageItem.isSent()) {
+        if (!isFileUploadInProgress && !messageRealmObject.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
-        } else if (messageItem.isError()) {
+        } else if (messageRealmObject.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
-        } else if (messageItem.isDisplayed() || messageItem.isReceivedFromMessageArchive()) {
-            if(messageItem.isAttachmentImageOnly())
+        } else if (messageRealmObject.isDisplayed() || messageRealmObject.isReceivedFromMessageArchive()) {
+            if(messageRealmObject.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_displayed_image;
             else messageIcon = R.drawable.ic_message_displayed;
-        } else if (messageItem.isDelivered()) {
-            if(messageItem.isAttachmentImageOnly())
+        } else if (messageRealmObject.isDelivered()) {
+            if(messageRealmObject.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_delivered_image_14dp;
             else messageIcon = R.drawable.ic_message_delivered_14dp;
-        } else if (messageItem.isAcknowledged() || messageItem.isForwarded()) {
-            if(messageItem.isAttachmentImageOnly())
+        } else if (messageRealmObject.isAcknowledged() || messageRealmObject.isForwarded()) {
+            if(messageRealmObject.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
             else{
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)

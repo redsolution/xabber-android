@@ -21,9 +21,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AccountRealm;
-import com.xabber.android.data.database.realmobjects.Attachment;
-import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.AccountRealmObject;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -96,19 +96,19 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         return false;
     }
 
-    public void retrySendFileMessage(final MessageItem messageItem, Context context) {
+    public void retrySendFileMessage(final MessageRealmObject messageRealmObject, Context context) {
         List<String> notUploadedFilesPaths = new ArrayList<>();
 
-        for (Attachment attachment : messageItem.getAttachments()) {
-            if (attachment.getFileUrl() == null || attachment.getFileUrl().isEmpty())
-                notUploadedFilesPaths.add(attachment.getFilePath());
+        for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+            if (attachmentRealmObject.getFileUrl() == null || attachmentRealmObject.getFileUrl().isEmpty())
+                notUploadedFilesPaths.add(attachmentRealmObject.getFilePath());
         }
 
         // if all attachments have url that they was uploaded. just resend existing message
         if (notUploadedFilesPaths.size() == 0) {
-            final AccountJid accountJid = messageItem.getAccount();
-            final UserJid userJid = messageItem.getUser();
-            final String messageId = messageItem.getUniqueId();
+            final AccountJid accountJid = messageRealmObject.getAccount();
+            final UserJid userJid = messageRealmObject.getUser();
+            final String messageId = messageRealmObject.getUniqueId();
             Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
@@ -118,8 +118,8 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         }
 
         // else, upload files that haven't urls. Then write they in existing message and send
-        else uploadFile(messageItem.getAccount(), messageItem.getUser(),
-                notUploadedFilesPaths, null, messageItem.getUniqueId(), context);
+        else uploadFile(messageRealmObject.getAccount(), messageRealmObject.getUser(),
+                notUploadedFilesPaths, null, messageRealmObject.getUniqueId(), context);
     }
 
     public void uploadFile(final AccountJid account, final UserJid user,
@@ -271,20 +271,20 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         return type;
     }
 
-    public static RealmList<Attachment> parseFileMessage(Stanza packet) {
-        RealmList<Attachment> attachments = new RealmList<>();
+    public static RealmList<AttachmentRealmObject> parseFileMessage(Stanza packet) {
+        RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
 
         // parsing data references
         List<RefMedia> refMediaList = ReferencesManager.getMediaFromReferences(packet);
         List<RefMedia> refVoiceList = ReferencesManager.getVoiceFromReferences(packet);
         if (!refMediaList.isEmpty()) {
             for (RefMedia media : refMediaList) {
-                attachments.add(refMediaToAttachment(media, ReferenceElement.Type.media.name()));
+                attachmentRealmObjects.add(refMediaToAttachment(media, ReferenceElement.Type.media.name()));
             }
         }
         if (!refVoiceList.isEmpty()) {
             for (RefMedia voice : refVoiceList) {
-                attachments.add(refMediaToAttachment(voice, ReferenceElement.Type.voice.name()));
+                attachmentRealmObjects.add(refMediaToAttachment(voice, ReferenceElement.Type.voice.name()));
             }
         }
 
@@ -297,43 +297,43 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 if (field instanceof ExtendedFormField) {
                     ExtendedFormField.Media media = ((ExtendedFormField)field).getMedia();
                     if (media!=null)
-                        attachments.add(mediaToAttachment(media, field.getLabel()));
+                        attachmentRealmObjects.add(mediaToAttachment(media, field.getLabel()));
                 }
             }
         }
-        return attachments;
+        return attachmentRealmObjects;
     }
 
-    private static Attachment refMediaToAttachment(RefMedia media, String referenceType) {
-        Attachment attachment = new Attachment();
-        attachment.setFileUrl(media.getUri());
-        attachment.setIsImage(FileManager.isImageUrl(media.getUri()));
+    private static AttachmentRealmObject refMediaToAttachment(RefMedia media, String referenceType) {
+        AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
+        attachmentRealmObject.setFileUrl(media.getUri());
+        attachmentRealmObject.setIsImage(FileManager.isImageUrl(media.getUri()));
         if (ReferenceElement.Type.voice.name().equals(referenceType))
-            attachment.setIsVoice(true);
-        attachment.setRefType(referenceType);
+            attachmentRealmObject.setIsVoice(true);
+        attachmentRealmObject.setRefType(referenceType);
 
         RefFile file = media.getFile();
         if (file != null) {
-            attachment.setTitle(file.getName());
-            attachment.setMimeType(file.getMediaType());
-            attachment.setDuration(file.getDuration());
-            attachment.setFileSize(file.getSize());
-            if (file.getHeight() > 0) attachment.setImageHeight(file.getHeight());
-            if (file.getWidth() > 0) attachment.setImageWidth(file.getWidth());
+            attachmentRealmObject.setTitle(file.getName());
+            attachmentRealmObject.setMimeType(file.getMediaType());
+            attachmentRealmObject.setDuration(file.getDuration());
+            attachmentRealmObject.setFileSize(file.getSize());
+            if (file.getHeight() > 0) attachmentRealmObject.setImageHeight(file.getHeight());
+            if (file.getWidth() > 0) attachmentRealmObject.setImageWidth(file.getWidth());
         }
-        return attachment;
+        return attachmentRealmObject;
     }
 
-    private static Attachment mediaToAttachment(ExtendedFormField.Media media, String title) {
-        Attachment attachment = new Attachment();
-        attachment.setTitle(title);
+    private static AttachmentRealmObject mediaToAttachment(ExtendedFormField.Media media, String title) {
+        AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
+        attachmentRealmObject.setTitle(title);
 
         try {
             if (media.getWidth() != null && !media.getWidth().isEmpty())
-                attachment.setImageWidth(Integer.valueOf(media.getWidth()));
+                attachmentRealmObject.setImageWidth(Integer.valueOf(media.getWidth()));
 
             if (media.getHeight() != null && !media.getHeight().isEmpty())
-                attachment.setImageHeight(Integer.valueOf(media.getHeight()));
+                attachmentRealmObject.setImageHeight(Integer.valueOf(media.getHeight()));
 
         } catch (NumberFormatException e) {
             LogManager.exception(LOG_TAG, e);
@@ -341,13 +341,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
         ExtendedFormField.Uri uri = media.getUri();
         if (uri != null) {
-            attachment.setMimeType(uri.getType());
-            attachment.setFileSize(uri.getSize());
-            attachment.setDuration(uri.getDuration());
-            attachment.setFileUrl(uri.getUri());
-            attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
+            attachmentRealmObject.setMimeType(uri.getType());
+            attachmentRealmObject.setFileSize(uri.getSize());
+            attachmentRealmObject.setDuration(uri.getDuration());
+            attachmentRealmObject.setFileUrl(uri.getUri());
+            attachmentRealmObject.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
-        return attachment;
+        return attachmentRealmObject;
     }
 
     public class UploadReceiver extends ResultReceiver {
@@ -426,8 +426,8 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AccountRealm item = realm1.where(AccountRealm.class)
-                            .equalTo(AccountRealm.Fields.USERNAME, account.toString())
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME, account.toString())
                             .findFirst();
                     item.setUploadServer(server);
                     realm1.copyToRealmOrUpdate(item);
@@ -444,8 +444,8 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AccountRealm item = realm1.where(AccountRealm.class)
-                            .equalTo(AccountRealm.Fields.USERNAME, account.toString())
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME, account.toString())
                             .findFirst();
                     if (item != null) item.setUploadServer("");
                 });
@@ -460,10 +460,10 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<AccountRealm> items = realm
-                    .where(AccountRealm.class)
+            RealmResults<AccountRealmObject> items = realm
+                    .where(AccountRealmObject.class)
                     .findAll();
-            for (AccountRealm item : items) {
+            for (AccountRealmObject item : items) {
                 uploadServers.put(item.getAccount(), item.getUploadServer());
             }
         } catch (Exception e) {

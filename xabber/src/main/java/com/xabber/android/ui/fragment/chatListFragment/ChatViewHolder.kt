@@ -5,12 +5,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.database.realmobjects.MessageItem
+import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-    var messageItem: MessageItem? = null
+    var messageRealmObject: MessageRealmObject? = null
     var rosterStatus: Int? = null
     var accountColorIndicator: Int? = null
 
