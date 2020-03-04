@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -106,7 +105,6 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     private void updateContact() {
-        getListView().setDivider(null);
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
 
         avatar.setImageDrawable(abstractContact.getAvatar());
@@ -295,7 +293,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
             RosterManager.getInstance().setName(getAccount(), getUser(), contactEditNickname.getText().toString());
         }
         saveSubscriptionSettings();
-        saveGroups();
+        saveCircles();
     }
 
     private void saveSubscriptionSettings() {
@@ -381,14 +379,14 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+    public void onCircleAdded() {
+        super.onCircleAdded();
         enableSaveIfNeeded();
     }
 
     @Override
-    public void onClick(View v) {
-        super.onClick(v);
+    public void onCircleToggled() {
+        super.onCircleToggled();
         enableSaveIfNeeded();
     }
 
