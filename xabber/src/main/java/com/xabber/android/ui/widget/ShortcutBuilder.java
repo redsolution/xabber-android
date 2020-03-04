@@ -13,7 +13,6 @@ import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ChatActivity;
 
@@ -26,14 +25,6 @@ public class ShortcutBuilder {
     public static void updateShortcuts(Context context, List<AbstractContact> contacts) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             List<ShortcutInfo> shortcuts = new ArrayList<>();
-            int added = 0;
-            for (AbstractContact contact : contacts) {
-                if (added == 4) break;
-                else if (!contact.getUser().equals(CrowdfundingChat.getDefaultUser())) {
-                    shortcuts.add(createShortcutInfo(context, contact));
-                    added++;
-                }
-            }
 
             ShortcutManager manager = context.getSystemService(ShortcutManager.class);
             if (manager != null && !shortcuts.isEmpty()) {

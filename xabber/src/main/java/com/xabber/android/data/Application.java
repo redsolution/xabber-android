@@ -55,7 +55,6 @@ import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -365,7 +364,6 @@ public class Application extends android.app.Application {
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());
         addManager(PatreonManager.getInstance());
-        addManager(CrowdfundingManager.getInstance());
         addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());

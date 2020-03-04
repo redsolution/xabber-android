@@ -67,7 +67,6 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
@@ -306,14 +305,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         updateBackpressure = new UpdateBackpressure(this);
 
         contactTitleView = findViewById(R.id.contact_title);
-        contactTitleView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!CrowdfundingChat.USER.equals(user.getBareJid().toString())){
-                    startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account,user));
-                }
-            }
-        });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
@@ -821,10 +812,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (abstractChat != null) {
             menu.clear();
             MenuInflater inflater = getMenuInflater();
-            if (CrowdfundingChat.USER.equals(user.getBareJid().toString())) {
-                menu.clear();
-                return;
-            }
             if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)) {
                 inflater.inflate(R.menu.toolbar_contact, menu);
                 setUpContactInfoMenu(menu, abstractChat);
