@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class ContactAddFragment extends GroupEditorFragment
-        implements AdapterView.OnItemSelectedListener, ContactAdder {
+        implements AdapterView.OnItemSelectedListener, ContactAdder, View.OnClickListener {
 
     private static final String SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME";
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT";
@@ -165,11 +165,6 @@ public class ContactAddFragment extends GroupEditorFragment
         if (name != null) {
             nameView.setText(name);
         }
-/*
-        if(getArguments()!=null){
-            userView.setText(getArguments().getString("contact"));
-        }
-*/
 
         return view;
     }
@@ -271,7 +266,7 @@ public class ContactAddFragment extends GroupEditorFragment
             if (!selectedAccount.equals(getAccount())) {
                 setAccount(selectedAccount);
                 setAccountGroups();
-                updateGroups();
+                updateCircles();
             }
 
             if (getListView().getVisibility() == View.GONE) {
