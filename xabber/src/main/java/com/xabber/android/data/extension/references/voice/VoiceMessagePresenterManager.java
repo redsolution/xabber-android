@@ -143,12 +143,18 @@ public final class VoiceMessagePresenterManager {
                     @Override
                     public void onInputBufferAvailable(@NonNull MediaCodec mediaCodec, int index) {
                         ByteBuffer input = codec.getInputBuffer(index);
-                        int size = extractor.readSampleData(input, 0);
-                        if (size > 0) {
-                            extractor.advance();
-                            codec.queueInputBuffer(index, 0, input.limit(), extractor.getSampleTime(), 0);
-                        } else {
-                            codec.queueInputBuffer(index, 0, 0, extractor.getSampleTime(), MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                        if (input != null) {
+                            try {
+                                int size = extractor.readSampleData(input, 0);
+                                if (size > 0) {
+                                    extractor.advance();
+                                    codec.queueInputBuffer(index, 0, input.limit(), extractor.getSampleTime(), 0);
+                                } else {
+                                    codec.queueInputBuffer(index, 0, 0, extractor.getSampleTime(), MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                                }
+                            } catch (Exception e) {
+                                LogManager.exception("MediaCodec", e);
+                            }
                         }
                     }
 
@@ -227,6 +233,7 @@ public final class VoiceMessagePresenterManager {
 
                     @Override
                     public void onError(@NonNull MediaCodec mediaCodec, @NonNull MediaCodec.CodecException e) {
+
                         LogManager.e("MediaCodec", e.getDiagnosticInfo());
                     }
 
@@ -241,6 +248,9 @@ public final class VoiceMessagePresenterManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            ArrayList<Integer> emptyArray = new ArrayList<>(0);
+            voiceWaveData.put(file.getPath(), emptyArray);
         }
     }
 
