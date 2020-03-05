@@ -8,13 +8,29 @@
 
     <include layout="@layout/toolbar_default" />
 
+
+    <TextView
+        android:id="@+id/tvTokensUnavailableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_default"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/account_active_sessions_disabled"
+        android:textAppearance="@style/ChatText"
+        android:textSize="24sp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tvTokensUnavailable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar_default"
+        android:layout_below="@+id/tvTokensUnavailableHeader"
         android:text="@string/account_active_sessions_not_supported"
-        android:padding="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
         android:visibility="gone"
         />
 

@@ -27,6 +27,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
@@ -93,9 +94,9 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
         xmppItems.removeAllViews();
         List<View> resourcesList = new ArrayList<>();
         fillResourceList(resourcesList);
-        if (!resourcesList.isEmpty()) {
-            addHeader(xmppItems, getString(R.string.contact_info_connected_clients_header));
-        }
+        //if (!resourcesList.isEmpty()) {
+        //    addHeader(xmppItems, getString(R.string.contact_info_connected_clients_header));
+        //}
         addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp, false);
     }
 
@@ -178,6 +179,10 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
             thisDeviceIndicatorTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
             thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
             thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
+            resourceView.setPadding(resourceView.getPaddingLeft(),
+                    Utils.dipToPx(8f, this),
+                    resourceView.getPaddingRight(),
+                    resourceView.getPaddingBottom());
         }
 
         ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);

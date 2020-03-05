@@ -465,7 +465,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTED_DEVICES:
-                startActivity(ConnectedDevicesActivity.createIntent(this, account));
+                if (PresenceManager.getInstance().getAvailableAccountPresences(account).size() > 0) {
+                    startActivity(ConnectedDevicesActivity.createIntent(this, account));
+                }
                 break;
             case CONNECTION_SETTINGS:
                 startAccountSettingsActivity();
