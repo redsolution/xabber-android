@@ -48,6 +48,7 @@ import com.xabber.xmpp.vcardupdate.VCardUpdate;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -58,7 +59,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Process contact's presence information.
@@ -76,6 +79,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * subscription request.
      */
     private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
+
+    private final Map<BareJid, Map<Resourcepart, Presence>> accountsPresenceMap = new ConcurrentHashMap<>();
 
     public static PresenceManager getInstance() {
         if (instance == null) {
@@ -387,73 +392,119 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         Presence presence = (Presence) stanza;
 
         UserJid from;
+        Resourcepart fromResource;
         try {
             from = UserJid.from(stanza.getFrom());
+            fromResource = stanza.getFrom().getResourceOrEmpty();
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             return;
         }
-
-        if (presence.getType() == Presence.Type.subscribe) {
-            AccountJid account = connection.getAccount();
-
-            // check spam-filter settings
-
-            // reject all subscribe-requests
-            if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.noAuth) {
-                // send a warning message to sender
-                MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
-                        StringUtils.randomString(12), account,
-                        Application.getInstance().getResources().getString(R.string.spam_filter_ban_subscription));
-                // and discard subscription
-                try {
-                    discardSubscription(account, UserJid.from(from.toString()));
-                } catch (NetworkException | UserJid.UserJidCreateException e) {
-                    e.printStackTrace();
+        boolean accountPresence = AccountManager.getInstance().isAccountExist(from.getBareJid().toString());
+        Map<Resourcepart, Presence> userPresences;
+        switch (presence.getType()) {
+            case available:
+                if (accountPresence) {
+                    userPresences = getAccountPresences(from.getBareJid());
+                    userPresences.remove(Resourcepart.EMPTY);
+                    userPresences.put(fromResource, presence);
+                    AccountManager.getInstance().onAccountChanged(connection.getAccount());
                 }
-
-                return;
-            }
-
-            // require captcha for subscription
-            if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
-
-                Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, from);
-
-                // if captcha for this user already exist, check expires time and discard if need
-                if (captcha != null) {
-
-                    if (captcha.getExpiresDate() < System.currentTimeMillis()) {
-                        // discard subscription
-                        try {
-                            discardSubscription(account, UserJid.from(from.toString()));
-                        } catch (NetworkException | UserJid.UserJidCreateException e) {
-                            e.printStackTrace();
-                        }
-                        return;
+                break;
+            case unavailable:
+                // If no resource, this is likely an offline presence as part of
+                // a roster presence flood. In that case, we store it.
+                if (accountPresence) {
+                    if (fromResource.equals(Resourcepart.EMPTY)) {
+                        // Get the user presence map
+                        userPresences = getAccountPresences(from.getBareJid());
+                        userPresences.put(Resourcepart.EMPTY, presence);
+                    } else {
+                        userPresences = getAccountPresences(from.getBareJid());
+                        userPresences.put(fromResource, presence);
                     }
+                    AccountManager.getInstance().onAccountChanged(connection.getAccount());
+                }
+                break;
+            case error:
+                // No need to act on error presences send without from, i.e.
+                // directly send from the users XMPP service, or where the from
+                // address is not a bare JID
+                if (accountPresence) {
+                    if (!fromResource.equals(Resourcepart.EMPTY)) {
+                        break;
+                    }
+                    userPresences = getAccountPresences(from.getBareJid());
+                    // Any other presence data is invalidated by the error packet.
+                    userPresences.clear();
+                    // Set the new presence using the empty resource as a key.
+                    userPresences.put(Resourcepart.EMPTY, presence);
+                    AccountManager.getInstance().onAccountChanged(connection.getAccount());
+                }
+                break;
+            case subscribe:
 
-                    // skip subscription, waiting for captcha in messageManager
-                    return;
+                AccountJid account = connection.getAccount();
 
-                } else {
-                    // generate captcha
-                    String captchaQuestion = CaptchaManager.getInstance().generateAndSaveCaptcha(account, from);
+                // check spam-filter settings
 
-                    // send captcha message to sender
+                // reject all subscribe-requests
+                if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.noAuth) {
+                    // send a warning message to sender
                     MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
                             StringUtils.randomString(12), account,
-                            Application.getInstance().getResources().getString(R.string.spam_filter_limit_subscription) + " " + captchaQuestion);
+                            Application.getInstance().getResources().getString(R.string.spam_filter_ban_subscription));
+                    // and discard subscription
+                    try {
+                        discardSubscription(account, UserJid.from(from.toString()));
+                    } catch (NetworkException | UserJid.UserJidCreateException e) {
+                        e.printStackTrace();
+                    }
 
-                    // and skip subscription, waiting for captcha in messageManager
                     return;
                 }
-            }
 
-            // subscription request
-            handleSubscriptionRequest(account, from);
-        } else if (presence.getType() == Presence.Type.subscribed) {
-            handleSubscriptionAccept(connection.getAccount(), from);
+                // require captcha for subscription
+                if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
+
+                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, from);
+
+                    // if captcha for this user already exist, check expires time and discard if need
+                    if (captcha != null) {
+
+                        if (captcha.getExpiresDate() < System.currentTimeMillis()) {
+                            // discard subscription
+                            try {
+                                discardSubscription(account, UserJid.from(from.toString()));
+                            } catch (NetworkException | UserJid.UserJidCreateException e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+
+                        // skip subscription, waiting for captcha in messageManager
+                        return;
+
+                    } else {
+                        // generate captcha
+                        String captchaQuestion = CaptchaManager.getInstance().generateAndSaveCaptcha(account, from);
+
+                        // send captcha message to sender
+                        MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
+                                StringUtils.randomString(12), account,
+                                Application.getInstance().getResources().getString(R.string.spam_filter_limit_subscription) + " " + captchaQuestion);
+
+                        // and skip subscription, waiting for captcha in messageManager
+                        return;
+                    }
+                }
+
+                // subscription request
+                handleSubscriptionRequest(account, from);
+                break;
+            case subscribed:
+                handleSubscriptionAccept(connection.getAccount(), from);
+                break;
         }
     }
 
@@ -504,6 +555,30 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 e.printStackTrace();
             }
         }
+    }
+
+    private Map<Resourcepart, Presence> getAccountPresences(BareJid bareJid) {
+        Map<Resourcepart, Presence> accountPresences = accountsPresenceMap.get(bareJid);
+        if (accountPresences == null) {
+            accountPresences = new ConcurrentHashMap<>();
+            accountsPresenceMap.put(bareJid, accountPresences);
+        }
+        return accountPresences;
+    }
+
+    public List<Presence> getAvailableAccountPresences(AccountJid account) {
+        Map<Resourcepart, Presence> accountPresences = getAccountPresences(account.getFullJid().asBareJid());
+        ArrayList<Presence> allAccountAvailablePresences = new ArrayList<>(accountPresences.values().size());
+        for (Presence presence : accountPresences.values()) {
+            if (presence.isAvailable()) {
+                allAccountAvailablePresences.add(presence.clone());
+            }
+        }
+        return allAccountAvailablePresences;
+    }
+
+    public void clearAccountPresences(AccountJid account) {
+        getAccountPresences(account.getFullJid().asBareJid()).clear();
     }
 
     public static void sortPresencesByPriority(List<Presence> allPresences) {
