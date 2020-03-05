@@ -233,7 +233,7 @@ public final class VoiceMessagePresenterManager {
 
                     @Override
                     public void onError(@NonNull MediaCodec mediaCodec, @NonNull MediaCodec.CodecException e) {
-
+                        mediaCodec.release();
                         LogManager.e("MediaCodec", e.getDiagnosticInfo());
                     }
 
