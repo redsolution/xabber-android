@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AvatarRealmObject;
+import com.xabber.android.data.database.realmobjects.OldAvatarRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
@@ -24,13 +24,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
-                    .where(AvatarRealmObject.class)
-                    .isNotNull(AvatarRealmObject.Fields.PEP_HASH)
+            RealmResults<OldAvatarRealmObject> oldAvatarRealmObjects = realm
+                    .where(OldAvatarRealmObject.class)
+                    .isNotNull(OldAvatarRealmObject.Fields.PEP_HASH)
                     .findAll();
-            for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(avatarRealmObject.getUser()).asBareJid();
-                String pepHash = avatarRealmObject.getPepHash();
+            for (OldAvatarRealmObject oldAvatarRealmObject : oldAvatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getUser()).asBareJid();
+                String pepHash = oldAvatarRealmObject.getPepHash();
                 pepHashes.put(bareJid, pepHash.isEmpty() ? AvatarManager.EMPTY_HASH : pepHash);
             }
         } catch (Exception e) {
@@ -46,17 +46,17 @@ public class AvatarRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AvatarRealmObject avatarRealmObject = realm1
-                            .where(AvatarRealmObject.class)
-                            .equalTo(AvatarRealmObject.Fields.USER, user)
+                    OldAvatarRealmObject oldAvatarRealmObject = realm1
+                            .where(OldAvatarRealmObject.class)
+                            .equalTo(OldAvatarRealmObject.Fields.USER, user)
                             .findFirst();
-                    if (avatarRealmObject != null) {
-                        avatarRealmObject.setPepHash(pepHash);
+                    if (oldAvatarRealmObject != null) {
+                        oldAvatarRealmObject.setPepHash(pepHash);
                     } else {
-                        avatarRealmObject = new AvatarRealmObject(user);
-                        avatarRealmObject.setPepHash(pepHash);
+                        oldAvatarRealmObject = new OldAvatarRealmObject(user);
+                        oldAvatarRealmObject.setPepHash(pepHash);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealmObject);
+                    realm1.copyToRealmOrUpdate(oldAvatarRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
@@ -69,13 +69,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
-                    .where(AvatarRealmObject.class)
-                    .isNotNull(AvatarRealmObject.Fields.HASH)
+            RealmResults<OldAvatarRealmObject> oldAvatarRealmObjects = realm
+                    .where(OldAvatarRealmObject.class)
+                    .isNotNull(OldAvatarRealmObject.Fields.HASH)
                     .findAll();
-            for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(avatarRealmObject.getUser()).asBareJid();
-                String hash = avatarRealmObject.getHash();
+            for (OldAvatarRealmObject oldAvatarRealmObject : oldAvatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getUser()).asBareJid();
+                String hash = oldAvatarRealmObject.getHash();
                 pepHashes.put(bareJid, hash.isEmpty() ? AvatarManager.EMPTY_HASH : hash);
             }
         } catch (Exception e) {
@@ -91,17 +91,17 @@ public class AvatarRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AvatarRealmObject avatarRealmObject = realm1
-                            .where(AvatarRealmObject.class)
-                            .equalTo(AvatarRealmObject.Fields.USER, user)
+                    OldAvatarRealmObject oldAvatarRealmObject = realm1
+                            .where(OldAvatarRealmObject.class)
+                            .equalTo(OldAvatarRealmObject.Fields.USER, user)
                             .findFirst();
-                    if (avatarRealmObject != null) {
-                        avatarRealmObject.setHash(hash);
+                    if (oldAvatarRealmObject != null) {
+                        oldAvatarRealmObject.setHash(hash);
                     } else {
-                        avatarRealmObject = new AvatarRealmObject(user);
-                        avatarRealmObject.setHash(hash);
+                        oldAvatarRealmObject = new OldAvatarRealmObject(user);
+                        oldAvatarRealmObject.setHash(hash);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealmObject);
+                    realm1.copyToRealmOrUpdate(oldAvatarRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);

@@ -169,8 +169,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int statusId = contact.getStatusMode().getStringID();
 
         String lastActivity = "";
-        if (contact instanceof RosterContact)
-             lastActivity = ((RosterContact) contact).getLastActivity();
+//        if (contact instanceof RosterContact)
+//             lastActivity = ((RosterContact) contact).getLastActivity(); //REALM UPDATE
 
         MessageManager messageManager = MessageManager.getInstance();
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());

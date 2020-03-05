@@ -43,6 +43,7 @@ import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.repositories.AccountRepository;
+import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.repositories.StatusRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -56,7 +57,6 @@ import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
@@ -493,7 +493,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         PushManager.getInstance().disablePushNotification(getAccount(account), false);
 
         // remove contacts and account from cache
-        RosterCacheManager.removeContacts(account);
+        ContactRepository.removeContacts(account);
         cachedEnabledAccounts.remove(account);
 
         boolean wasEnabled = accountItem.isEnabled();

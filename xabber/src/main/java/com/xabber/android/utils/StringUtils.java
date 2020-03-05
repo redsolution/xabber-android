@@ -20,10 +20,8 @@ import android.icu.text.Transliterator;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.roster.RosterCacheManager;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -219,63 +217,63 @@ public class StringUtils {
         return logDateTimeFormat;
     }
 
-    public static String getLastActivityString(long lastActivityTime) {
-        String result = RosterCacheManager.getInstance().getCachedLastActivityString(lastActivityTime);
-
-        if (result == null || result.isEmpty()) {
-            result = "";
-            if (lastActivityTime > 0) {
-                long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
-                long time;
-                String sTime;
-                Date date = new Date(lastActivityTime * 1000);
-                Date today = new Date();
-                Locale locale = Application.getInstance().getResources().getConfiguration().locale;
-
-                if (timeAgo < 60) {
-                    result = Application.getInstance().getString(R.string.last_seen_now);
-
-                } else if (timeAgo < 3600) {
-                    time = TimeUnit.SECONDS.toMinutes(timeAgo);
-                    result = Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
-
-                } else if (timeAgo < 7200) {
-                    result = Application.getInstance().getString(R.string.last_seen_hours);
-
-                } else if (isToday(date)) {
-                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                    sTime = pattern.format(date);
-                    result = Application.getInstance().getString(R.string.last_seen_today, sTime);
-
-                } else if (isYesterday(date)) {
-                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                    sTime = pattern.format(date);
-                    result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
-
-                } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
-                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                    sTime = pattern.format(date);
-                    result = Application.getInstance().getString(R.string.last_seen_on_week,
-                            getDayOfWeek(date, locale), sTime);
-
-                } else if (date.getYear() == today.getYear()) {
-                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
-                    sTime = pattern.format(date);
-                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
-
-                } else if (date.getYear() < today.getYear()) {
-                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
-                    sTime = pattern.format(date);
-                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
-                }
-
-                if (!result.isEmpty())
-                    RosterCacheManager.getInstance().putLastActivityStringToCache(lastActivityTime, result);
-            }
-        }
-
-        return result;
-    }
+//    public static String getLastActivityString(long lastActivityTime) { //TODO REALM UPDATE
+//        String result = RosterCacheManager.getInstance().getCachedLastActivityString(lastActivityTime);
+//
+//        if (result == null || result.isEmpty()) {
+//            result = "";
+//            if (lastActivityTime > 0) {
+//                long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
+//                long time;
+//                String sTime;
+//                Date date = new Date(lastActivityTime * 1000);
+//                Date today = new Date();
+//                Locale locale = Application.getInstance().getResources().getConfiguration().locale;
+//
+//                if (timeAgo < 60) {
+//                    result = Application.getInstance().getString(R.string.last_seen_now);
+//
+//                } else if (timeAgo < 3600) {
+//                    time = TimeUnit.SECONDS.toMinutes(timeAgo);
+//                    result = Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
+//
+//                } else if (timeAgo < 7200) {
+//                    result = Application.getInstance().getString(R.string.last_seen_hours);
+//
+//                } else if (isToday(date)) {
+//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+//                    sTime = pattern.format(date);
+//                    result = Application.getInstance().getString(R.string.last_seen_today, sTime);
+//
+//                } else if (isYesterday(date)) {
+//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+//                    sTime = pattern.format(date);
+//                    result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
+//
+//                } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+//                    sTime = pattern.format(date);
+//                    result = Application.getInstance().getString(R.string.last_seen_on_week,
+//                            getDayOfWeek(date, locale), sTime);
+//
+//                } else if (date.getYear() == today.getYear()) {
+//                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
+//                    sTime = pattern.format(date);
+//                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+//
+//                } else if (date.getYear() < today.getYear()) {
+//                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
+//                    sTime = pattern.format(date);
+//                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+//                }
+//
+//                if (!result.isEmpty())
+//                    RosterCacheManager.getInstance().putLastActivityStringToCache(lastActivityTime, result);
+//            }
+//        }
+//
+//        return result;
+//    }
 
     public static boolean isToday(Date date) {
         Calendar calendarOne = Calendar.getInstance();

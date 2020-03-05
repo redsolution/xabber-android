@@ -32,6 +32,7 @@ import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.database.realmobjects.ContactGroupRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -94,12 +95,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public void onPreInitialize() {
-        List<ContactRealmObject> contacts = RosterCacheManager.loadContacts();
+        List<ContactRealmObject> contacts = ContactRepository.getContactsFromRealm();
         for (ContactRealmObject contactRealmObject : contacts) {
             try {
-                AccountJid account = AccountJid.from(contactRealmObject.getAccount() + "/" + contactRealmObject.getAccountResource());
-                UserJid userJid = UserJid.from(contactRealmObject.getUser());
-                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealmObject.getName());
+                AccountJid account = AccountJid.from(contactRealmObject.getAccountJid()); //TODO REALM UPDATE possibly there we need there an account resource
+                UserJid userJid = UserJid.from(contactRealmObject.getContactJid());
+                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealmObject.getBestName());
 
                 for (ContactGroupRealmObject group : contactRealmObject.getGroups()) {
                     contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
@@ -108,10 +109,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
-                MessageRealmObject lastMessage = contactRealmObject.getLastMessage();
-                if (lastMessage != null) {
-                    MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser(), lastMessage);
-                } else MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+                MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
 
             } catch (UserJid.UserJidCreateException e) {
                 e.printStackTrace();
@@ -230,12 +228,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             }
         }
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RosterCacheManager.saveContact(account, newContacts);
-            }
-        });
+        ContactRepository.saveContactToRealm(account, newContacts);
+
         onContactsChanged(newContacts);
     }
 
@@ -252,12 +246,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 removedContacts.add(contact);
             }
         }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RosterCacheManager.removeContact(removedContacts);
-            }
-        });
+
+        ContactRepository.removeContacts(removedContacts);
 
         onContactsChanged(removedContacts);
     }

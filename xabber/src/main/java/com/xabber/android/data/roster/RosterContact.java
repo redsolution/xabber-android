@@ -95,7 +95,7 @@ public class RosterContact extends AbstractContact {
         return Collections.unmodifiableCollection(groupReferences.values());
     }
 
-    Collection<String> getGroupNames() {
+    public Collection<String> getGroupNames() {
         return Collections.unmodifiableCollection(groupReferences.keySet());
     }
 
@@ -146,7 +146,7 @@ public class RosterContact extends AbstractContact {
         this.enabled = enabled;
     }
 
-    public String getLastActivity() {
-        return StringUtils.getLastActivityString(LastActivityInteractor.getInstance().getLastActivity(getUser()));
-    }
+//    public String getLastActivity() {
+//        return StringUtils.getLastActivityString(LastActivityInteractor.getInstance().getLastActivity(getUser()));
+//    }
 }

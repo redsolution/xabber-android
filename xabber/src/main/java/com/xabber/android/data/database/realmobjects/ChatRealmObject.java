@@ -1,128 +1,32 @@
 package com.xabber.android.data.database.realmobjects;
 
-import java.util.UUID;
-
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
-/**
- * Created by valery.miller on 17.10.17.
- */
 
 public class ChatRealmObject extends RealmObject {
 
+    public static final class Fields{
+        public static final String ID = "id";
+        public static final String CONTACT = "contact";
+        public static final String LAST_MESSAGE = "lastMessage";
+        public static final String IS_GROUPCHAT = "isGroupchat";
+        public static final String IS_ARCHIVED = "isArchived";
+        public static final String IS_BLOCKED = "isBlocked";
+        public static final String UNREAD_MESSAGES_COUNT = "unreadMessagesCount";
+        public static final String CHAT_NOTIFICATIONS_PREFERENCES = "chatNotificationsPreferences";
+    }
+
     @PrimaryKey
-    @Required
     private String id;
 
-    private String subject;
-    private String accountJid;
-    private String userJid;
-    private int unreadCount;
-    private boolean archived;
-    private NotificationStateRealmObject notificationState;
-    private int lastPosition;
-    private boolean historyRequestedAtStart;
-    private Long lastActionTimestamp;
-    private int chatStateMode;
+    //private RealmResults<ContactRealmObject> contact;
+
+    private MessageRealmObject lastMessage;
     private boolean isGroupchat;
+    private boolean isArchived;
+    private boolean isBlocked;
+    private int unreadMessagesCount;
+    private ChatNotificationsPreferencesRealmObject chatNotificationsPreferences;
 
-    public ChatRealmObject(String accountJid, String userJid) {
-        this.id = accountJid + "-" + userJid;
-        this.accountJid = accountJid;
-        this.userJid = userJid;
-    }
-
-    public ChatRealmObject() {
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public String getAccountJid() {
-        return accountJid;
-    }
-
-    public void setAccountJid(String accountJid) {
-        this.accountJid = accountJid;
-    }
-
-    public String getUserJid() {
-        return userJid;
-    }
-
-    public void setUserJid(String userJid) {
-        this.userJid = userJid;
-    }
-
-    public int getUnreadCount() {
-        return unreadCount;
-    }
-
-    public void setUnreadCount(int unreadCount) {
-        this.unreadCount = unreadCount;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public boolean isArchived() {
-        return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
-
-    public NotificationStateRealmObject getNotificationState() {
-        return notificationState;
-    }
-
-    public void setNotificationState(NotificationStateRealmObject notificationState) {
-        this.notificationState = notificationState;
-    }
-
-    public int getLastPosition() {
-        return lastPosition;
-    }
-
-    public void setLastPosition(int lastPosition) {
-        this.lastPosition = lastPosition;
-    }
-
-    public boolean isHistoryRequestedAtStart() {
-        return historyRequestedAtStart;
-    }
-
-    public void setHistoryRequestedAtStart(boolean historyRequestedAtStart) {
-        this.historyRequestedAtStart = historyRequestedAtStart;
-    }
-
-    public Long getLastActionTimestamp() {
-        return lastActionTimestamp;
-    }
-
-    public void setLastActionTimestamp(Long lastActionTimestamp) {
-        this.lastActionTimestamp = lastActionTimestamp;
-    }
-
-    public int getChatstateMode() {
-        return chatStateMode;
-    }
-
-    public void setChatStateMode(int mode) {
-        chatStateMode = mode;
-    }
-
-    public boolean isGroupchat() {
-        return isGroupchat;
-    }
-
-    public void setGroupchat(boolean groupchat) {
-        isGroupchat = groupchat;
-    }
 }

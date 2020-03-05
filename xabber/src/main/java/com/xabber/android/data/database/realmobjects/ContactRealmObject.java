@@ -1,92 +1,65 @@
 package com.xabber.android.data.database.realmobjects;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 public class ContactRealmObject extends RealmObject {
 
-    public static class Fields {
+    public static final class Fields {
         public static final String ID = "id";
-        public static final String ACCOUNT = "account";
-        public static final String USER = "user";
-        public static final String NAME = "name";
-        public static final String ACCOUNT_RESOURCE = "accountResource";
-        public static final String LAST_MESSAGE = "lastMessage";
-        public static final String GROUPS = "groups";
+        public static final String ACCOUNT_JID = "accountJid";
+        public static final String CONTACT_JID = "contactJid";
+        public static final String BEST_NAME = "bestName";
+        public static final String CHATS = "chats";
+        public static final String AVATARS = "avatars";
+        public static final String RESOURCES = "resources";
     }
 
+    //TODO REALM UPDATE add status link
     @PrimaryKey
-    @Required
     private String id;
+    private String accountJid;
+    private String contactJid;
+    private String bestName;
+    public RealmList<ChatRealmObject> chats;
+    public RealmList<OldAvatarRealmObject> avatars;
+    public RealmList<ResourceRealmObject> resources;
+    public RealmList<ContactGroupRealmObject> groups;
 
-    private String account;
-    private String user;
-    private String accountResource;
-    private String name;
-    private MessageRealmObject lastMessage;
-    private RealmList<ContactGroupRealmObject> groups;
-
-    public ContactRealmObject() {
+    public ContactRealmObject(){
         this.id = UUID.randomUUID().toString();
     }
 
-    public ContactRealmObject(String id) {
-        this.id = id;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getId() {
-        return id;
-    }
+    public String getAccountJid() { return accountJid; }
+    public void setAccountJid(String accountJid) { this.accountJid = accountJid; }
 
-    public String getAccount() {
-        return account;
-    }
+    public String getContactJid() { return contactJid; }
+    public void setContactJid(String contactJid) { this.contactJid = contactJid; }
 
-    public void setAccount(String account) {
-        this.account = account;
-    }
+    public String getBestName() { return bestName; }
+    public void setBestName(String bestName) { this.bestName = bestName; }
 
-    public String getUser() {
-        return user;
-    }
+    public RealmList<ChatRealmObject> getChats() { return chats; }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+    public RealmList<OldAvatarRealmObject> getAvatars() { return avatars; }
 
-    public String getName() {
-        return name;
-    }
+    public RealmList<ResourceRealmObject> getResources() { return resources; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public RealmList<ContactGroupRealmObject> getGroups() { return groups; }
+    public void setGroups(RealmList<ContactGroupRealmObject> groups) { this.groups = groups; }
 
-    public String getAccountResource() {
-        return accountResource;
-    }
-
-    public void setAccountResource(String accountResource) {
-        this.accountResource = accountResource;
-    }
-
-    public MessageRealmObject getLastMessage() {
-        return lastMessage;
-    }
-
-    public void setLastMessage(MessageRealmObject lastMessage) {
-        this.lastMessage = lastMessage;
-    }
-
-    public RealmList<ContactGroupRealmObject> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(RealmList<ContactGroupRealmObject> groups) {
-        this.groups = groups;
+    public Collection<String> getGroupsNames() {
+        Collection<String> result = new ArrayList<String>();
+        for (ContactGroupRealmObject contactGroupRealmObject : getGroups())
+            result.add(contactGroupRealmObject.getGroupName());
+        return result;
     }
 }

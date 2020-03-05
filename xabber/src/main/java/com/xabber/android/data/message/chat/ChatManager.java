@@ -24,7 +24,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ChatRealmObject;
+import com.xabber.android.data.database.realmobjects.OldChatRealmObject;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -149,13 +149,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     String accountJid = chat.getAccount().toString();
                     String userJid = chat.getUser().toString();
 
-                    ChatRealmObject chatRealm = realm1.where(ChatRealmObject.class)
+                    OldChatRealmObject chatRealm = realm1.where(OldChatRealmObject.class)
                             .equalTo("accountJid", accountJid)
                             .equalTo("userJid", userJid)
                             .findFirst();
 
                     if (chatRealm == null)
-                        chatRealm = new ChatRealmObject(accountJid, userJid);
+                        chatRealm = new OldChatRealmObject(accountJid, userJid);
 
                     chatRealm.setLastPosition(chat.getLastPosition());
                     chatRealm.setArchived(chat.isArchived());
@@ -189,8 +189,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatData chatData = null;
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        ChatRealmObject realmChat = realm
-                .where(ChatRealmObject.class)
+        OldChatRealmObject realmChat = realm
+                .where(OldChatRealmObject.class)
                 .equalTo("accountJid", accountJid)
                 .equalTo("userJid", userJid)
                 .findFirst();
@@ -233,11 +233,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                             .findAll();
 
                     for (NotificationStateRealmObject notificationState : results) {
-                        ChatRealmObject chatRealmObject = realm1
-                                .where(ChatRealmObject.class)
+                        OldChatRealmObject oldChatRealmObject = realm1
+                                .where(OldChatRealmObject.class)
                                 .equalTo("notificationState.id", notificationState.getId())
                                 .findFirst();
-                        if (chatRealmObject == null) notificationState.deleteFromRealm();
+                        if (oldChatRealmObject == null) notificationState.deleteFromRealm();
                     }
                 });
             } catch (Exception e) {

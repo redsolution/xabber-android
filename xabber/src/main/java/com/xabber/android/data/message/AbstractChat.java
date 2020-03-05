@@ -50,7 +50,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
@@ -904,7 +903,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageRealmObject> messageRealmObjects) {
         updateLastMessage();
-        RosterCacheManager.saveLastMessageToContact(lastMessage);
+        //RosterCacheManager.saveLastMessageToContact(lastMessage); TODO REALM UPDATING
     }
 
     /** UNREAD MESSAGES */

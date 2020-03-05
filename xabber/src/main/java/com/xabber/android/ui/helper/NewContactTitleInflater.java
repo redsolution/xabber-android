@@ -206,11 +206,11 @@ public class NewContactTitleInflater {
     }
 
     private static String getLastActivity(AbstractContact contact) {
-        if (contact instanceof RosterContact) {
-            RosterContact rosterContact = (RosterContact) contact;
-            if (!rosterContact.getStatusMode().isOnline())
-                return rosterContact.getLastActivity();
-        }
+//        if (contact instanceof RosterContact) {
+//            RosterContact rosterContact = (RosterContact) contact;
+//            if (!rosterContact.getStatusMode().isOnline())
+//                return rosterContact.getLastActivity();
+//        } //TODO REALM UPDATE
         return "";
     }
 
