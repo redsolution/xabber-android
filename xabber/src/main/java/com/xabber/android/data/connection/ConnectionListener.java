@@ -84,6 +84,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosed() {
         LogManager.i(getLogTag(), "connectionClosed");
+        PresenceManager.getInstance().clearAccountPresences(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(new Runnable() {

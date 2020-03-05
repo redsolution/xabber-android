@@ -8,30 +8,45 @@
 
     <include layout="@layout/toolbar_default" />
 
+
+    <TextView
+        android:id="@+id/tvTokensUnavailableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_default"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/account_active_sessions_disabled"
+        android:textAppearance="@style/ChatText"
+        android:textSize="24sp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvTokensUnavailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTokensUnavailableHeader"
+        android:text="@string/account_active_sessions_not_supported"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:visibility="gone"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar_default"
         >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/xmpp_items"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/contentView"
@@ -115,9 +130,6 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
 
     </androidx.core.widget.NestedScrollView>
 

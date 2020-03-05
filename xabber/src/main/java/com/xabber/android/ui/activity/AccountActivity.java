@@ -65,6 +65,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -402,6 +403,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private void updateOptions() {
         AccountOption.SYNCHRONIZATION.setDescription(getString(R.string.account_sync_summary));
 
+        AccountOption.CONNECTED_DEVICES.setDescription(getConnectedDevicesDescription());
+
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
         AccountOption.VCARD.setDescription(getString(R.string.account_vcard_summary));
@@ -447,9 +450,25 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         accountOptionsAdapter.notifyItemChanged(AccountOption.BLOCK_LIST.ordinal());
     }
 
+    private String getConnectedDevicesDescription() {
+        int connectedDevices = PresenceManager.getInstance().getAvailableAccountPresences(account).size();
+        if (connectedDevices == 0) {
+            return getResources().getString(R.string.account_connected_devices_none);
+        } else if (connectedDevices == 1) {
+            return getResources().getString(R.string.account_connected_devices_singular);
+        } else {
+            return getResources().getString(R.string.account_connected_devices_plural, connectedDevices);
+        }
+    }
+
     @Override
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
+            case CONNECTED_DEVICES:
+                if (PresenceManager.getInstance().getAvailableAccountPresences(account).size() > 0) {
+                    startActivity(ConnectedDevicesActivity.createIntent(this, account));
+                }
+                break;
             case CONNECTION_SETTINGS:
                 startAccountSettingsActivity();
                 break;

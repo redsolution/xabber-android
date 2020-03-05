@@ -82,6 +82,16 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
                 holder.description.setText(R.string.account_active_sessions_disabled);
             }
         }
+
+        if (accountOption.equals(AccountOption.CONNECTED_DEVICES)) {
+            if (holder.description.getText().equals(holder.description.getContext().getString(R.string.account_connected_devices_none))) {
+                holder.title.setEnabled(false);
+                holder.description.setEnabled(false);
+            } else {
+                holder.title.setEnabled(true);
+                holder.description.setEnabled(true);
+            }
+        }
     }
 
     @Override
