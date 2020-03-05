@@ -41,6 +41,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private TextView tvCurrentIPAddress;
     private TextView tvCurrentDate;
     private TextView tvActiveSessions;
+    private TextView tvTokensUnavailable;
     private View terminateAll;
     private ProgressBar progressBar;
     private View contentView;
@@ -97,6 +98,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         tvActiveSessions = findViewById(R.id.tvActiveSessions);
         terminateAll = findViewById(R.id.llTerminateAll);
         terminateAll.setOnClickListener(view -> showTerminateAllSessionsDialog());
+        tvTokensUnavailable = findViewById(R.id.tvTokensUnavailable);
 
         // other sessions
         if (XTokenEnabled) {
@@ -112,7 +114,11 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
             tvCurrentDate = findViewById(R.id.tvDate);
 
+            tvTokensUnavailable.setVisibility(View.GONE);
             getSessionsData();
+        } else {
+            tvTokensUnavailable.setVisibility(View.VISIBLE);
+            tvTokensUnavailable.setText(getString(R.string.account_active_sessions_not_supported, account.getFullJid().getDomain()));
         }
     }
 

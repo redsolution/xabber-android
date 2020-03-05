@@ -74,6 +74,11 @@
     <string name="account_color_name_deep_orange">Deep-orange</string>
     <string name="account_color_name_brown">Brown</string>
 
+    <string name="account_connected_devices">Connected devices</string>
+    <string name="account_connected_devices_none">Account is offline</string>
+    <string name="account_connected_devices_singular">1 connected device</string>
+    <string name="account_connected_devices_plural">%d connected devices</string>
+
     <string name="account_connection_settings">Connection settings</string>
     <string name="account_active_sessions">Active sessions</string>
     <string name="account_current_session">Current session</string>
@@ -81,6 +86,7 @@
     <string name="account_active_sessions_summary">Manage your sessions with X-Token</string>
     <string name="account_active_sessions_disabled">Server does not support X-Token</string>
     <string name="account_active_sessions_error">Failed to get a list of active sessions</string>
+    <string name="account_active_sessions_not_supported">XMPP client typically needs to store a password to connect to a server. This leads to increased security threats associated with storing account password on client device: in can be extracted from the device by whoever gains access to it. Also, a user can\'t revoke access from connected clients even by changing password. \n\nXabber supports superior way to handle this issue: XMPP tokens. They allow users to control client sessions and revoke them when needed, providing greater chat security. However, %s does not support this standard.</string>
 
     <string name="blocked_contact_message">Contact blocked</string>
     <string name="blocked_contact">Blocked contact</string>

@@ -8,6 +8,16 @@
 
     <include layout="@layout/toolbar_default" />
 
+    <TextView
+        android:id="@+id/tvTokensUnavailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_default"
+        android:text="@string/account_active_sessions_not_supported"
+        android:padding="16dp"
+        android:visibility="gone"
+        />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
