@@ -29,7 +29,7 @@ public class CircleRepository {
                 CircleConfiguration circleConfiguration = new CircleConfiguration();
                 circleConfiguration.setExpanded(circleRealmObject.isExpanded());
                 circleConfiguration.setShowOfflineMode(circleRealmObject.getShowOfflineMode());
-                circleConfigurationNestedMap.put(circleRealmObject.getContacts().get(0).getAccountJid(),
+                circleConfigurationNestedMap.put( circleRealmObject.getContacts().size() != 0 ? circleRealmObject.getContacts().get(0).getAccountJid() : "empty",
                         circleRealmObject.getCircleName(), circleConfiguration);
             }
         } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
