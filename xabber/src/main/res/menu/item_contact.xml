@@ -9,10 +9,9 @@
     <item android:id="@+id/action_discard_subscription"
         android:title="@string/discard_subscription" />
 
-<!--
     <item android:id="@+id/action_contact_info"
         android:title="@string/contact_viewer" />
--->
+
     <group android:id="@+id/group_edit_contact">
 
         <item
