@@ -51,6 +51,7 @@ import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatDeleteDialog;
@@ -79,7 +80,7 @@ public class ContextMenuHelper {
                                                 AbstractContact abstractContact, ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
         final UserJid user = abstractContact.getUser();
-        menu.setHeaderTitle(abstractContact.getName());
+        //menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
         inflater.inflate(R.menu.item_contact, menu);
 
@@ -97,6 +98,8 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_edit_conference).setIntent(
                 ConferenceAddActivity.createIntent(activity, account, user.getBareUserJid()));
+
+        menu.findItem(R.id.action_contact_info).setIntent(ContactViewerActivity.createIntent(activity, account, user));
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {

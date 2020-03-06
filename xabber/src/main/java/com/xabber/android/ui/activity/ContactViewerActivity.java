@@ -99,10 +99,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             changeTextColor();
             manageAvailableUsernameSpace();
         } else {
-            getTitleView().findViewById(R.id.name).setOnClickListener(v ->
-                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
-            getTitleView().findViewById(R.id.address_text).setOnClickListener(v ->
-                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
+            getTitleView().setOnClickListener(v -> startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
             menu.findItem(R.id.action_add_contact).setVisible(false);
             menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
             menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed() && !RosterManager.getInstance().hasSubscriptionPending(getAccount(), getUser()));
