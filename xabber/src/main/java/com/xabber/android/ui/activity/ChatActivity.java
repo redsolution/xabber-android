@@ -305,6 +305,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         updateBackpressure = new UpdateBackpressure(this);
 
         contactTitleView = findViewById(R.id.contact_title);
+        contactTitleView.setOnClickListener(v ->
+                startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account, user)));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
