@@ -26,10 +26,10 @@ public class ContactRealmObject extends RealmObject {
     private String accountJid;
     private String contactJid;
     private String bestName;
-    public RealmList<ChatRealmObject> chats;
-    public RealmList<OldAvatarRealmObject> avatars;
-    public RealmList<ResourceRealmObject> resources;
-    public RealmList<ContactGroupRealmObject> groups;
+    private RealmList<ChatRealmObject> chats;
+    private RealmList<AvatarRealmObject> avatars;
+    private RealmList<ResourceRealmObject> resources;
+    private RealmList<ContactGroupRealmObject> groups;
 
     public ContactRealmObject(){
         this.id = UUID.randomUUID().toString();
@@ -49,7 +49,7 @@ public class ContactRealmObject extends RealmObject {
 
     public RealmList<ChatRealmObject> getChats() { return chats; }
 
-    public RealmList<OldAvatarRealmObject> getAvatars() { return avatars; }
+    public RealmList<AvatarRealmObject> getAvatars() { return avatars; }
 
     public RealmList<ResourceRealmObject> getResources() { return resources; }
 

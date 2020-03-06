@@ -4,7 +4,8 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.OldAvatarRealmObject;
+import com.xabber.android.data.database.realmobjects.AvatarRealmObject;
+import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
@@ -24,13 +25,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<OldAvatarRealmObject> oldAvatarRealmObjects = realm
-                    .where(OldAvatarRealmObject.class)
-                    .isNotNull(OldAvatarRealmObject.Fields.PEP_HASH)
+            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
+                    .where(AvatarRealmObject.class)
+                    .isNotNull(AvatarRealmObject.Fields.PEP_HASH)
                     .findAll();
-            for (OldAvatarRealmObject oldAvatarRealmObject : oldAvatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getUser()).asBareJid();
-                String pepHash = oldAvatarRealmObject.getPepHash();
+            for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(avatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
+                String pepHash = avatarRealmObject.getPepHash();
                 pepHashes.put(bareJid, pepHash.isEmpty() ? AvatarManager.EMPTY_HASH : pepHash);
             }
         } catch (Exception e) {
@@ -40,23 +41,29 @@ public class AvatarRepository {
         return pepHashes;
     }
 
-    public static void savePepHashToRealm(final String user, final String pepHash){
+    public static void savePepHashToRealm(final String contactJid, final String pepHash){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    OldAvatarRealmObject oldAvatarRealmObject = realm1
-                            .where(OldAvatarRealmObject.class)
-                            .equalTo(OldAvatarRealmObject.Fields.USER, user)
+                    ContactRealmObject contactRealmObject = realm1
+                            .where(ContactRealmObject.class)
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
                             .findFirst();
-                    if (oldAvatarRealmObject != null) {
-                        oldAvatarRealmObject.setPepHash(pepHash);
-                    } else {
-                        oldAvatarRealmObject = new OldAvatarRealmObject(user);
-                        oldAvatarRealmObject.setPepHash(pepHash);
+                    AvatarRealmObject avatarRealmObject = realm1
+                            .where(AvatarRealmObject.class)
+                            .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID, contactRealmObject.getAccountJid())
+                            .findFirst();
+                    if (avatarRealmObject != null)
+                        avatarRealmObject.setPepHash(pepHash);
+                    else {
+                        avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                        avatarRealmObject.setPepHash(pepHash);
                     }
-                    realm1.copyToRealmOrUpdate(oldAvatarRealmObject);
+                    realm1.copyToRealmOrUpdate(avatarRealmObject);
+                    contactRealmObject.getAvatars().add(avatarRealmObject);
+                    realm1.copyToRealmOrUpdate(contactRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
@@ -69,13 +76,13 @@ public class AvatarRepository {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            RealmResults<OldAvatarRealmObject> oldAvatarRealmObjects = realm
-                    .where(OldAvatarRealmObject.class)
-                    .isNotNull(OldAvatarRealmObject.Fields.HASH)
+            RealmResults<AvatarRealmObject> avatarRealmObjects = realm
+                    .where(AvatarRealmObject.class)
+                    .isNotNull(AvatarRealmObject.Fields.VCARD_HASH)
                     .findAll();
-            for (OldAvatarRealmObject oldAvatarRealmObject : oldAvatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getUser()).asBareJid();
-                String hash = oldAvatarRealmObject.getHash();
+            for (AvatarRealmObject oldAvatarRealmObject : avatarRealmObjects) {
+                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
+                String hash = oldAvatarRealmObject.getVCardHash();
                 pepHashes.put(bareJid, hash.isEmpty() ? AvatarManager.EMPTY_HASH : hash);
             }
         } catch (Exception e) {
@@ -85,23 +92,29 @@ public class AvatarRepository {
         return pepHashes;
     }
 
-    public static void saveHashToRealm(final String user, final String hash){
+    public static void saveHashToRealm(final String contactJid, final String hash){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    OldAvatarRealmObject oldAvatarRealmObject = realm1
-                            .where(OldAvatarRealmObject.class)
-                            .equalTo(OldAvatarRealmObject.Fields.USER, user)
+                    ContactRealmObject contactRealmObject = realm1
+                            .where(ContactRealmObject.class)
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
                             .findFirst();
-                    if (oldAvatarRealmObject != null) {
-                        oldAvatarRealmObject.setHash(hash);
+                    AvatarRealmObject avatarRealmObject = realm1
+                            .where(AvatarRealmObject.class)
+                            .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID , contactJid)
+                            .findFirst();
+                    if (avatarRealmObject != null) {
+                        avatarRealmObject.setVCardHash(hash);
                     } else {
-                        oldAvatarRealmObject = new OldAvatarRealmObject(user);
-                        oldAvatarRealmObject.setHash(hash);
+                        avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                        avatarRealmObject.setVCardHash(hash);
                     }
-                    realm1.copyToRealmOrUpdate(oldAvatarRealmObject);
+                    realm1.copyToRealmOrUpdate(avatarRealmObject);
+                    contactRealmObject.getAvatars().add(avatarRealmObject);
+                    realm1.copyToRealmOrUpdate(contactRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);

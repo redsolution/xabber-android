@@ -170,7 +170,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String lastActivity = "";
 //        if (contact instanceof RosterContact)
-//             lastActivity = ((RosterContact) contact).getLastActivity(); //REALM UPDATE
+//             lastActivity = ((RosterContact) contact).getLastActivity(); //TODO REALM UPDATE
 
         MessageManager messageManager = MessageManager.getInstance();
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());

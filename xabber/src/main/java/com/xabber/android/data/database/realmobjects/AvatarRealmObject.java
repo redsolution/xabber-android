@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
 public class AvatarRealmObject extends RealmObject {
     public static final class Fields{
         public static final String ID = "id";
-        public static final String contact = "contactRealmObject";
+        public static final String CONTACT = "contactRealmObject";
         public static final String VCARD_HASH = "vCardHash";
         public static final String PEP_HASH = "pepHash";
     }
