@@ -19,7 +19,7 @@ package com.xabber.android.data.roster;
  *
  * @author alexander.ivanov
  */
-public interface Group {
+public interface Circle {
 
     String getName();
 

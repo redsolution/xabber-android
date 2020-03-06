@@ -22,7 +22,7 @@ import com.xabber.android.data.entity.AccountRelated;
  *
  * @author alexander.ivanov
  */
-public class RosterGroup extends AccountRelated implements Group {
+public class RosterCircle extends AccountRelated implements Circle {
 
     private final String name;
 
@@ -33,7 +33,7 @@ public class RosterGroup extends AccountRelated implements Group {
      */
     private Long id;
 
-    public RosterGroup(AccountJid account, String name) {
+    public RosterCircle(AccountJid account, String name) {
         super(account);
         this.name = name;
         id = null;
@@ -68,7 +68,7 @@ public class RosterGroup extends AccountRelated implements Group {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RosterGroup other = (RosterGroup) obj;
+        RosterCircle other = (RosterCircle) obj;
         if (name == null) {
             if (other.name != null)
                 return false;

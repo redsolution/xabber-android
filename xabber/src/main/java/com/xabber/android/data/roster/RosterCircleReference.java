@@ -19,9 +19,9 @@ package com.xabber.android.data.roster;
  *
  * @author alexander.ivanov
  */
-public class RosterGroupReference implements Group {
+public class RosterCircleReference implements Circle {
 
-    private final RosterGroup rosterGroup;
+    private final RosterCircle rosterGroup;
 
     /**
      * System contact list id.
@@ -30,7 +30,7 @@ public class RosterGroupReference implements Group {
      */
     private Long id;
 
-    public RosterGroupReference(RosterGroup rosterGroup) {
+    public RosterCircleReference(RosterCircle rosterGroup) {
         this.rosterGroup = rosterGroup;
         id = null;
     }
@@ -43,7 +43,7 @@ public class RosterGroupReference implements Group {
     /**
      * @return the rosterGroup
      */
-    RosterGroup getRosterGroup() {
+    RosterCircle getRosterGroup() {
         return rosterGroup;
     }
 

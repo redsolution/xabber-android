@@ -19,7 +19,7 @@ package com.xabber.android.data.roster;
  *
  * @author alexander.ivanov
  */
-public class GroupConfiguration {
+public class CircleConfiguration {
 
     /**
      * Whether group must be expanded.
@@ -31,7 +31,7 @@ public class GroupConfiguration {
      */
     private ShowOfflineMode showOfflineMode;
 
-    public GroupConfiguration() {
+    public CircleConfiguration() {
         super();
         expanded = true;
         showOfflineMode = ShowOfflineMode.normal;

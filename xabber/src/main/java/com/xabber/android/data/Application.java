@@ -66,7 +66,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.push.SyncManager;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
@@ -371,7 +371,7 @@ public class Application extends android.app.Application {
         addManager(AvatarManager.getInstance());
         addManager(PresenceManager.getInstance());
         addManager(RosterManager.getInstance());
-        addManager(GroupManager.getInstance());
+        addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());
         addManager(NotificationManager.getInstance());
         addManager(CustomNotifyPrefsManager.getInstance());

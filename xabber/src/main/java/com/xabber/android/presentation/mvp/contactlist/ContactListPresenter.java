@@ -21,7 +21,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -245,7 +245,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             contacts = null;
             for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
                 entry.setValue(new AccountConfiguration(entry.getKey(),
-                        GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
+                        CircleManager.IS_ACCOUNT, CircleManager.getInstance()));
             }
         } else {
             if (showGroups) {
@@ -295,13 +295,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 final String group;
                 final boolean online;
                 if (abstractChat instanceof RoomChat) {
-                    group = GroupManager.IS_ROOM;
+                    group = CircleManager.IS_ROOM;
                     online = abstractContact.getStatusMode().isOnline();
                 } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
-                    group = GroupManager.IS_ROOM;
+                    group = CircleManager.IS_ROOM;
                     online = abstractContact.getStatusMode().isOnline();
                 } else {
-                    group = GroupManager.NO_GROUP;
+                    group = CircleManager.NO_GROUP;
                     online = false;
                 }
                 hasVisibleContacts = true;

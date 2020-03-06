@@ -42,7 +42,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
@@ -303,36 +303,36 @@ public class ContextMenuHelper {
 
     public static void createGroupContextMenu(final Activity activity,
               final ListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
-        menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
-        if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
+        menu.setHeaderTitle(CircleManager.getInstance().getGroupName(account, group));
+        if (!group.equals(CircleManager.ACTIVE_CHATS) && !group.equals(CircleManager.IS_ROOM)) {
             menu.add(R.string.circle_rename).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             GroupRenameDialogFragment.newInstance(
-                                    account.equals(GroupManager.NO_ACCOUNT) ? null : account,
-                                    group.equals(GroupManager.NO_GROUP) ? null
+                                    account.equals(CircleManager.NO_ACCOUNT) ? null : account,
+                                    group.equals(CircleManager.NO_GROUP) ? null
                                             : group).show(activity.getFragmentManager(),
                                     "GROUP_RENAME");
                             return true;
                         }
                     });
-            if (!group.equals(GroupManager.NO_GROUP)) {
+            if (!group.equals(CircleManager.NO_GROUP)) {
                 menu.add(R.string.circle_remove).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
 
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 GroupDeleteDialogFragment.newInstance(
-                                        account.equals(GroupManager.NO_ACCOUNT) ? null : account, group)
+                                        account.equals(CircleManager.NO_ACCOUNT) ? null : account, group)
                                         .show(activity.getFragmentManager(), "GROUP_DELETE");
                                 return true;
                             }
                         });
             }
         }
-        if (!group.equals(GroupManager.ACTIVE_CHATS)) {
+        if (!group.equals(CircleManager.ACTIVE_CHATS)) {
                 menu.add(R.string.show_offline_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -342,7 +342,7 @@ public class ContextMenuHelper {
                 });
         }
 
-        if (!group.equals(GroupManager.NO_GROUP)) {
+        if (!group.equals(CircleManager.NO_GROUP)) {
             menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
@@ -406,7 +406,7 @@ public class ContextMenuHelper {
                         public boolean onMenuItemClick(MenuItem item) {
                             ContextMenuHelper.createOfflineContactsDialog(activity, presenter
                                     ,
-                                    account, GroupManager.IS_ACCOUNT).show();
+                                    account, CircleManager.IS_ACCOUNT).show();
                             return true;
                         }
                     });
@@ -419,11 +419,11 @@ public class ContextMenuHelper {
                 .setTitle(R.string.show_offline_settings)
                 .setSingleChoiceItems(
                         R.array.offline_contacts_show_option,
-                        GroupManager.getInstance().getShowOfflineMode(account, group).ordinal(),
+                        CircleManager.getInstance().getShowOfflineMode(account, group).ordinal(),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                GroupManager.getInstance().setShowOfflineMode(account,
+                                CircleManager.getInstance().setShowOfflineMode(account,
                                         group, ShowOfflineMode.values()[which]);
                                 presenter.updateContactList();
                                 dialog.dismiss();

@@ -9,12 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -156,7 +155,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     @Override
     public void setExpanded(boolean expanded) {
         this.mExpanded = expanded;
-        GroupManager.getInstance().setExpanded(accountJid, groupName, mExpanded);
+        CircleManager.getInstance().setExpanded(accountJid, groupName, mExpanded);
     }
 
     @Override
@@ -178,7 +177,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     public static GroupVO convert(GroupConfiguration configuration, boolean firstInAccount,
                                   GroupClickListener listener) {
 
-        String name = GroupManager.getInstance().getGroupName(configuration.getAccount(),
+        String name = CircleManager.getInstance().getGroupName(configuration.getAccount(),
                 configuration.getGroup());
         int accountColorIndicator;
         int accountColorIndicatorBack;
@@ -186,7 +185,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         int offlineIndicatorLevel;
 
         AccountJid account = configuration.getAccount();
-        if (account == null || account == GroupManager.NO_ACCOUNT) {
+        if (account == null || account == CircleManager.NO_ACCOUNT) {
             accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
             accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
         } else {

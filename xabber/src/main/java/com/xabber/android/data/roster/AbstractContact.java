@@ -111,7 +111,7 @@ public class AbstractContact extends BaseEntity {
         }
     }
 
-    public Collection<? extends Group> getGroups() {
+    public Collection<? extends Circle> getGroups() {
         return Collections.emptyList();
     }
 

@@ -20,7 +20,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.color.ColorManager;
@@ -191,7 +191,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
 
-        jid = GroupManager.getInstance().getGroupName(account, configuration.getGroup());
+        jid = CircleManager.getInstance().getGroupName(account, configuration.getGroup());
         name = AccountManager.getInstance().getNickName(account);
 
         contactCount = configuration.getOnline() + "/" + configuration.getTotal();

@@ -31,13 +31,13 @@ public interface OnRosterChangedListener extends BaseManagerInterface {
      *
      */
     void onRosterUpdate(
-            Collection<RosterGroup> addedGroups,
+            Collection<RosterCircle> addedGroups,
             Map<RosterContact, String> addedContacts,
             Map<RosterContact, String> renamedContacts,
-            Map<RosterContact, Collection<RosterGroupReference>> addedGroupReference,
-            Map<RosterContact, Collection<RosterGroupReference>> removedGroupReference,
+            Map<RosterContact, Collection<RosterCircleReference>> addedGroupReference,
+            Map<RosterContact, Collection<RosterCircleReference>> removedGroupReference,
             Collection<RosterContact> removedContacts,
-            Collection<RosterGroup> removedGroups);
+            Collection<RosterCircle> removedGroups);
 
     /**
      * Contact's presence has been changed.

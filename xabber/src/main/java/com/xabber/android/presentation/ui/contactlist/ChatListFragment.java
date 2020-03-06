@@ -58,7 +58,7 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -655,8 +655,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     private GroupConfiguration getChatsGroup(ChatListState state) {
         Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-        GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
+        GroupConfiguration chatsGroup = new GroupConfiguration(CircleManager.NO_ACCOUNT,
+                GroupVO.RECENT_CHATS_TITLE, CircleManager.getInstance());
         List<AbstractChat> newChats = new ArrayList<>();
         for (AbstractChat abstractChat : chats) {
             MessageRealmObject lastMessage = abstractChat.getLastMessage();

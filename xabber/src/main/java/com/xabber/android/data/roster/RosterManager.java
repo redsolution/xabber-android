@@ -29,7 +29,7 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.database.realmobjects.ContactGroupRealmObject;
+import com.xabber.android.data.database.realmobjects.CircleRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
@@ -102,8 +102,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 UserJid userJid = UserJid.from(contactRealmObject.getContactJid());
                 RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealmObject.getBestName());
 
-                for (ContactGroupRealmObject group : contactRealmObject.getGroups()) {
-                    contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
+                for (CircleRealmObject group : contactRealmObject.getGroups()) {
+                    contact.addGroupReference(new RosterCircleReference(new RosterCircle(account, group.getCircleName())));
                 }
 
                 rosterContacts.put(contact.getAccount().toString(),
@@ -262,7 +262,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         contact.clearGroupReferences();
         for (org.jivesoftware.smack.roster.RosterGroup group : groups) {
             if (group.contains(rosterEntry)) {
-                contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getName())));
+                contact.addGroupReference(new RosterCircleReference(new RosterCircle(account, group.getName())));
             }
         }
         contact.setEnabled(true);

@@ -29,7 +29,7 @@ public class ContactRealmObject extends RealmObject {
     private RealmList<ChatRealmObject> chats;
     private RealmList<AvatarRealmObject> avatars;
     private RealmList<ResourceRealmObject> resources;
-    private RealmList<ContactGroupRealmObject> groups;
+    private RealmList<CircleRealmObject> groups;
 
     public ContactRealmObject(){
         this.id = UUID.randomUUID().toString();
@@ -53,13 +53,13 @@ public class ContactRealmObject extends RealmObject {
 
     public RealmList<ResourceRealmObject> getResources() { return resources; }
 
-    public RealmList<ContactGroupRealmObject> getGroups() { return groups; }
-    public void setGroups(RealmList<ContactGroupRealmObject> groups) { this.groups = groups; }
+    public RealmList<CircleRealmObject> getGroups() { return groups; }
+    public void setGroups(RealmList<CircleRealmObject> groups) { this.groups = groups; }
 
     public Collection<String> getGroupsNames() {
         Collection<String> result = new ArrayList<String>();
-        for (ContactGroupRealmObject contactGroupRealmObject : getGroups())
-            result.add(contactGroupRealmObject.getGroupName());
+        for (CircleRealmObject contactGroupRealmObject : getGroups())
+            result.add(contactGroupRealmObject.getCircleName());
         return result;
     }
 }

@@ -20,7 +20,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.repositories.GroupRepository;
+import com.xabber.android.data.database.repositories.CircleRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
@@ -28,8 +28,8 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
-        GroupStateProvider {
+public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
+        CircleStateProvider {
 
     /**
      * Reserved group name for the rooms.
@@ -55,14 +55,14 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * Account name used to store information that don't belong to any account.
      */
     public static AccountJid NO_ACCOUNT;
-    private static GroupManager instance;
+    private static CircleManager instance;
 
     static {
         try {
             // TODO: looks ugly, comes from times, when account was string.
             NO_ACCOUNT = AccountJid.from("com.xabber.android@data/NO_ACCOUNT");
         } catch (XmppStringprepException e) {
-            LogManager.exception(GroupManager.class.getSimpleName(), e);
+            LogManager.exception(CircleManager.class.getSimpleName(), e);
             NO_ACCOUNT = null;
         }
     }
@@ -70,23 +70,23 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
     /**
      * List of settings for roster groups in accounts.
      */
-    private final NestedMap<GroupConfiguration> groupConfigurations;
+    private final NestedMap<CircleConfiguration> groupConfigurations;
 
-    public static GroupManager getInstance() {
+    public static CircleManager getInstance() {
         if (instance == null) {
-            instance = new GroupManager();
+            instance = new CircleManager();
         }
 
         return instance;
     }
 
-    private GroupManager() {
+    private CircleManager() {
         groupConfigurations = new NestedMap<>();
     }
 
     @Override
     public void onLoad() {
-        this.groupConfigurations.addAll(GroupRepository.getGroupConfigurationsFromRealm());
+        this.groupConfigurations.addAll(CircleRepository.getGroupConfigurationsFromRealm());
     }
 
     @Override
@@ -100,13 +100,13 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * {@link #IS_ACCOUNT}, {@link #NO_ACCOUNT}.
      */
     public String getGroupName(AccountJid account, String group) {
-        if (GroupManager.NO_GROUP.equals(group)) {
+        if (CircleManager.NO_GROUP.equals(group)) {
             return Application.getInstance().getString(R.string.no_group_contacts);
-        } else if (GroupManager.IS_ROOM.equals(group)) {
+        } else if (CircleManager.IS_ROOM.equals(group)) {
             return Application.getInstance().getString(R.string.group_room);
-        } else if (GroupManager.ACTIVE_CHATS.equals(group)) {
+        } else if (CircleManager.ACTIVE_CHATS.equals(group)) {
             return Application.getInstance().getString(R.string.group_active_chat);
-        } else if (GroupManager.IS_ACCOUNT.equals(group)) {
+        } else if (CircleManager.IS_ACCOUNT.equals(group)) {
             return AccountManager.getInstance().getVerboseName(account);
         }
         return group;
@@ -117,7 +117,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
         if (account == null) {
             return true;
         }
-        GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
+        CircleConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
             return true;
         }
@@ -129,7 +129,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
         if (account == null) {
             return ShowOfflineMode.normal;
         }
-        GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
+        CircleConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
             return ShowOfflineMode.normal;
         }
@@ -138,26 +138,26 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public void setExpanded(AccountJid account, String group, boolean expanded) {
-        GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
+        CircleConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
-            configuration = new GroupConfiguration();
+            configuration = new CircleConfiguration();
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setExpanded(expanded);
-        GroupRepository.saveGroupToRealm(account.toString(), group, expanded,
+        CircleRepository.saveGroupToRealm(account.toString(), group, expanded,
                 configuration.getShowOfflineMode());
     }
 
     @Override
     public void setShowOfflineMode(AccountJid account, String group,
                                    ShowOfflineMode showOfflineMode) {
-        GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
+        CircleConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
-            configuration = new GroupConfiguration();
+            configuration = new CircleConfiguration();
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setShowOfflineMode(showOfflineMode);
-        GroupRepository.saveGroupToRealm(account.toString(), group, configuration.isExpanded(),
+        CircleRepository.saveGroupToRealm(account.toString(), group, configuration.isExpanded(),
                 showOfflineMode);
     }
 
@@ -165,7 +165,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * Reset all show offline modes.
      */
     public void resetShowOfflineModes() {
-        for (Entry<GroupConfiguration> entry : groupConfigurations) {
+        for (Entry<CircleConfiguration> entry : groupConfigurations) {
             if (entry.getValue().getShowOfflineMode() != ShowOfflineMode.normal) {
                 try {
                     setShowOfflineMode(AccountJid.from(entry.getFirst()), entry.getSecond(),

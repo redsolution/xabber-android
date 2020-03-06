@@ -21,7 +21,7 @@ import com.xabber.android.data.entity.AccountJid;
  *
  * @author alexander.ivanov
  */
-public interface GroupStateProvider {
+public interface CircleStateProvider {
 
     /**
      * @return Whether specified group in specified account is expanded.

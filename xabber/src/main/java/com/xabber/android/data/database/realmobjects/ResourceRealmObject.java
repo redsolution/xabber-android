@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
 public class ResourceRealmObject extends RealmObject {
     public static final class Fields{
         public static final String ID = "id";
-        public static final String CONTACT_JID = "contactJid";
+        public static final String CONTACT = "contact";
         public static final String RESOURCE = "resource";
         public static final String RESOURCE_PRIORITY = "resourcePriority";
         public static final String STATUS = "status";
@@ -18,7 +18,7 @@ public class ResourceRealmObject extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private String contactJid;
+
 
 
 

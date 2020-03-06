@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ContactGroupRealmObject;
+import com.xabber.android.data.database.realmobjects.CircleRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -59,9 +59,9 @@ public class ContactRepository {
                             contactRealmObject = new ContactRealmObject();
                         }
 
-                        RealmList<ContactGroupRealmObject> groups = new RealmList<>();
+                        RealmList<CircleRealmObject> groups = new RealmList<>();
                         for (String groupName : contact.getGroupNames()) {
-                            ContactGroupRealmObject group = realm1.copyToRealmOrUpdate(new ContactGroupRealmObject(groupName));
+                            CircleRealmObject group = realm1.copyToRealmOrUpdate(new CircleRealmObject(groupName));
                             if (group.isManaged() && group.isValid())
                                 groups.add(group);
                         }

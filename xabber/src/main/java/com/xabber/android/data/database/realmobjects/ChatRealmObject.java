@@ -20,7 +20,7 @@ public class ChatRealmObject extends RealmObject {
     @PrimaryKey
     private String id;
 
-    //private RealmResults<ContactRealmObject> contact;
+    private ContactRealmObject contact;
 
     private MessageRealmObject lastMessage;
     private boolean isGroupchat;

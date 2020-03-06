@@ -20,8 +20,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.utils.StringUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -46,7 +44,7 @@ public class RosterContact extends AbstractContact {
     /**
      * Used groups with its names.
      */
-    private final Map<String, RosterGroupReference> groupReferences;
+    private final Map<String, RosterCircleReference> groupReferences;
 
     /**
      * Whether contact`s account is connected.
@@ -91,7 +89,7 @@ public class RosterContact extends AbstractContact {
     }
 
     @Override
-    public Collection<RosterGroupReference> getGroups() {
+    public Collection<RosterCircleReference> getGroups() {
         return Collections.unmodifiableCollection(groupReferences.values());
     }
 
@@ -103,7 +101,7 @@ public class RosterContact extends AbstractContact {
         groupReferences.clear();
     }
 
-    void addGroupReference(RosterGroupReference groupReference) {
+    void addGroupReference(RosterCircleReference groupReference) {
         groupReferences.put(groupReference.getName(), groupReference);
     }
 

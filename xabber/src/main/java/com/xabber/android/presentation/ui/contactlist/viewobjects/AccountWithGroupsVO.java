@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class AccountWithGroupsVO extends AccountVO implements IExpandable<Accoun
     @Override
     public void setExpanded(boolean expanded) {
         mExpanded = expanded;
-        GroupManager.getInstance().setExpanded(getAccountJid(), getGroupName(), mExpanded);
+        CircleManager.getInstance().setExpanded(getAccountJid(), getGroupName(), mExpanded);
     }
 
     @Override
