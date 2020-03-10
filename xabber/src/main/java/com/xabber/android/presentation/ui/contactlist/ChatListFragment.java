@@ -643,6 +643,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             markAllAsReadButton.setOnClickListener(v -> {
                 for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
                     MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
+                    MessageNotificationManager.getInstance().removeAllMessageNotifications();
                 }
                 onStateSelected(ChatListFragment.ChatListState.recent);
                 Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
