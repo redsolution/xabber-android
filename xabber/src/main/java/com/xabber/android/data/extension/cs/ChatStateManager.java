@@ -283,6 +283,8 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
 
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
+
         cancelComposingSender();
 
         Message message = new Message();
@@ -291,14 +293,13 @@ public class ChatStateManager implements OnDisconnectListener,
         message.addExtension(new ChatStateExtension(chatState, type));
         try {
             StanzaSender.sendStanza(account, message);
-            sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
             if (chatState == ChatState.composing) {
                 setComposingSender(chat, chatState, type);
             } else {
                 cancelComposingSender();
             }
         } catch (NetworkException e) {
-            // Just ignore it.
+            sent.remove(chat.getAccount().toString(), chat.getUser().toString());
         }
     }
 
@@ -319,7 +320,7 @@ public class ChatStateManager implements OnDisconnectListener,
             }
         };
         stateSenders.add(stateSender);
-        stateSenderHandler.post(stateSender);
+        stateSenderHandler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
     }
 
     /**
