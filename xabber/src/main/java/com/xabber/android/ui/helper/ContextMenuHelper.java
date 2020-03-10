@@ -99,7 +99,10 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_edit_conference).setIntent(
                 ConferenceAddActivity.createIntent(activity, account, user.getBareUserJid()));
 
-        menu.findItem(R.id.action_contact_info).setIntent(ContactViewerActivity.createIntent(activity, account, user));
+        menu.findItem(R.id.action_contact_info).setOnMenuItemClickListener(item -> {
+            activity.startActivity(ContactViewerActivity.createIntent(activity, account, user));
+            return true;
+        });
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
