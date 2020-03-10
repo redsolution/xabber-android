@@ -434,7 +434,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageRealmObject.setStanzaId(stanzaId);
         messageRealmObject.setOriginId(originId);
         if (attachmentRealmObjects != null) messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
-        FileManager.processFileMessage(messageRealmObject);
+        // FileManager.processFileMessage(messageRealmObject);
 
         // forwarding
         if (forwardIdRealmObjects != null) messageRealmObject.setForwardedIds(forwardIdRealmObjects);

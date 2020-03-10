@@ -733,7 +733,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setEncrypted(encrypted);
 
         // attachments
-        FileManager.processFileMessage(messageRealmObject);
+        // FileManager.processFileMessage(messageRealmObject);
 
         RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
         if (attachmentRealmObjects.size() > 0)
