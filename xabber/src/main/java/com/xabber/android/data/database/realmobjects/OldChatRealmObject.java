@@ -16,7 +16,6 @@ public class OldChatRealmObject extends RealmObject {
     @Required
     private String id;
 
-    private String subject;
     private String accountJid;
     private String userJid;
     private int unreadCount;
@@ -24,7 +23,6 @@ public class OldChatRealmObject extends RealmObject {
     private NotificationStateRealmObject notificationState;
     private int lastPosition;
     private boolean historyRequestedAtStart;
-    private Long lastActionTimestamp;
     private int chatStateMode;
     private boolean isGroupchat;
 
@@ -62,14 +60,6 @@ public class OldChatRealmObject extends RealmObject {
         this.unreadCount = unreadCount;
     }
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
     public boolean isArchived() {
         return archived;
     }
@@ -100,14 +90,6 @@ public class OldChatRealmObject extends RealmObject {
 
     public void setHistoryRequestedAtStart(boolean historyRequestedAtStart) {
         this.historyRequestedAtStart = historyRequestedAtStart;
-    }
-
-    public Long getLastActionTimestamp() {
-        return lastActionTimestamp;
-    }
-
-    public void setLastActionTimestamp(Long lastActionTimestamp) {
-        this.lastActionTimestamp = lastActionTimestamp;
     }
 
     public int getChatstateMode() {

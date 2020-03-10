@@ -24,8 +24,8 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.OldChatRealmObject;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealmObject;
+import com.xabber.android.data.database.realmobjects.OldChatRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -160,7 +160,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     chatRealm.setLastPosition(chat.getLastPosition());
                     chatRealm.setArchived(chat.isArchived());
                     chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
-                    chatRealm.setLastActionTimestamp(chat.getLastActionTimestamp());
                     chatRealm.setChatStateMode(chat.getChatstateMode());
                     chatRealm.setGroupchat(chat.isGroupchat());
 
@@ -206,14 +205,12 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
             chatData = new ChatData(
-                    realmChat.getSubject(),
                     realmChat.getAccountJid(),
                     realmChat.getUserJid(),
                     realmChat.isArchived(),
                     notificationState,
                     realmChat.getLastPosition(),
                     realmChat.isHistoryRequestedAtStart(),
-                    realmChat.getLastActionTimestamp(),
                     realmChat.getChatstateMode(),
                     realmChat.isGroupchat());
         }

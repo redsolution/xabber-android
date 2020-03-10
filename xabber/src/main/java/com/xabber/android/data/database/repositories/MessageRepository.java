@@ -4,6 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
@@ -66,6 +67,14 @@ public class MessageRepository {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
+    }
+
+    public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
+        return DatabaseManager.getInstance().getDefaultRealmInstance()
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, contactRealmObject.getAccountJid())
+                .equalTo(MessageRealmObject.Fields.USER, contactRealmObject.getContactJid())
+                .findFirst();
     }
 
 }

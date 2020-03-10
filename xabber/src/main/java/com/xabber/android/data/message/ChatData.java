@@ -6,39 +6,27 @@ package com.xabber.android.data.message;
 
 public class ChatData {
 
-    private String subject;
     private String accountJid;
     private String userJid;
     private boolean archived;
     private NotificationState notificationState;
     private int lastPosition;
     private boolean historyRequestedAtStart;
-    private Long lastActionTimestamp;
     private int state;
     private boolean isGroupchat;
 
-    public ChatData(String subject, String accountJid, String userJid,
+    public ChatData(String accountJid, String userJid,
                     boolean archived, NotificationState notificationState, int lastPosition,
-                    boolean historyRequestedAtStart, Long lastActionTimestamp, int state,
+                    boolean historyRequestedAtStart, int state,
                     boolean isGroupchat) {
-        this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.archived = archived;
         this.notificationState = notificationState;
         this.lastPosition = lastPosition;
         this.historyRequestedAtStart = historyRequestedAtStart;
-        this.lastActionTimestamp = lastActionTimestamp;
         this.state = state;
         this.isGroupchat = isGroupchat;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public String getAccountJid() {
@@ -83,14 +71,6 @@ public class ChatData {
 
     public boolean isHistoryRequestedAtStart() {
         return historyRequestedAtStart;
-    }
-
-    public Long getLastActionTimestamp() {
-        return lastActionTimestamp;
-    }
-
-    public void setLastActionTimestamp(Long lastActionTimestamp) {
-        this.lastActionTimestamp = lastActionTimestamp;
     }
 
     public int getLastState() {
