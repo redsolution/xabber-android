@@ -84,9 +84,6 @@ import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -109,7 +106,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
@@ -137,7 +133,6 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -1323,9 +1318,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void showSecurityButton(boolean show) {
-        boolean isRoom = getChat() instanceof RoomChat;
-        if (isRoom) securityButton.setVisibility(View.GONE);
-        else securityButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        securityButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void updateSendButtonSecurityLevel() {
@@ -1562,10 +1555,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 //        if (v.getId() == R.id.placeholder) {
 //            ((ChatActivity)getActivity()).selectPage(1, true);
 //        }
-        if (v.getId() == R.id.actionJoin) {
-            ((ChatActivity)getActivity()).onJoinConferenceClick();
-            showJoinButtonIfNeed();
-        }
         if (v.getId() == R.id.btnScrollDown) {
             onScrollDownClick();
         }
@@ -1573,11 +1562,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void showContactInfo() {
         Intent intent;
-        if (MUCManager.getInstance().hasRoom(account, user)) {
-            intent = ContactActivity.createIntent(getActivity(), account, user);
-        } else {
-            intent = ContactViewerActivity.createIntent(getActivity(), account, user);
-        }
+        intent = ContactViewerActivity.createIntent(getActivity(), account, user);
         startActivity(intent);
     }
 
@@ -1589,11 +1574,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void clearHistory(AccountJid account, UserJid user) {
         ChatHistoryClearDialog.newInstance(account, user).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
-    }
-
-    public void leaveConference(AccountJid account, UserJid user) {
-        MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
-        closeChat(account, user);
     }
 
     public void callAttention() {
@@ -1652,11 +1632,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_repeat", getString(R.string.message_repeat));
         }
 
-        if (clickedMessageRealmObject.isIncoming() && MUCManager.getInstance()
-                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_appeal", getString(R.string.message_appeal));
-        }
-
         if (!MessageRealmObject.isUploadFileMessage(clickedMessageRealmObject)) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_quote", getString(R.string.message_quote));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
@@ -1665,11 +1640,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments())
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
-
-        if (clickedMessageRealmObject.isIncoming() && MUCManager.getInstance()
-                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_open_muc_private_chat", getString(R.string.message_open_private_chat));
-        }
 
         if (OTRManager.getInstance().isEncrypted(clickedMessageRealmObject.getText())) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
@@ -1719,19 +1689,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     ArrayList<MessageRealmObject> arrayList = new ArrayList<>();
                     arrayList.add(clickedMessageRealmObject);
                     deleteMessage(arrayList);
-                    break;
-                case "action_message_open_muc_private_chat":
-                    UserJid occupantFullJid = null;
-                    try {
-                        occupantFullJid = UserJid.from(
-                                JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
-                                        clickedMessageRealmObject.getResource()));
-                        MessageManager.getInstance().openChat(account, occupantFullJid);
-                        startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
-
-                    } catch (UserJid.UserJidCreateException e) {
-                        LogManager.exception(this, e);
-                    }
                     break;
                 case "action_message_show_original_otr":
                     chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getUniqueId());
@@ -1870,18 +1827,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void showJoinButtonIfNeed() {
         AbstractChat chat = getChat();
-        if (chat != null && chat instanceof RoomChat) {
-            RoomState chatState = ((RoomChat) chat).getState();
-            if (chatState == RoomState.unavailable) {
-                if (joinLayout == null)
-                    inflateJoinLayout();
-                joinLayout.setVisibility(View.VISIBLE);
-                inputView.setVisibility(View.GONE);
-            } else {
-                if (joinLayout != null)
-                    joinLayout.setVisibility(View.GONE);
-                inputView.setVisibility(View.VISIBLE);
-            }
+        if (chat != null) {
+            if (joinLayout != null)
+                joinLayout.setVisibility(View.GONE);
+            inputView.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -1955,8 +1905,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void showNewContactLayoutIfNeed() {
-        if (getChat() instanceof RoomChat)
-            return;
 
         //if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
         //    if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);

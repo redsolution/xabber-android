@@ -183,9 +183,6 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                 case R.id.action_add_contact:
                     listener.onAddContactClick();
                     return true;
-                case R.id.action_join_conference:
-                    listener.onJoinConferenceClick();
-                    return true;
                 case R.id.action_recent_chats:
                     listener.onStateSelected(ChatListFragment.ChatListState.recent);
                     return true;

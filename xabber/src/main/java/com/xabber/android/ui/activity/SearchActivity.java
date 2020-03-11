@@ -19,14 +19,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -39,8 +36,6 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
-import com.xabber.android.ui.dialog.MucInviteDialog;
-import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -59,9 +54,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     /* Constants for in app Intents */
     private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.SearchActivity.ACTION_CLEAR_STACK";
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.SearchActivity.ACTION_ROOM_INVITE";
-    private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.SearchActivity.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.SearchActivity.ACTION_CONTACT_SUBSCRIPTION";
-    private static final String ACTION_INCOMING_MUC_INVITE = "com.xabber.android.ui.activity.SearchActivity.ACTION_INCOMING_MUC_INVITE";
     private static final String ACTION_SEARCH = "com.xabber.android.ui.activity.SearchActivity.ACTION_SEARCH";
 
     /* Toolbar variables */
@@ -238,20 +231,12 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     }
                     break;
                 }
-                case ACTION_MUC_PRIVATE_CHAT_INVITE:
-                    action = null;
-                    showMucPrivateChatDialog();
-                    break;
 
                 case ACTION_CONTACT_SUBSCRIPTION:
                     action = null;
                     showContactSubscriptionDialog();
                     break;
 
-                case ACTION_INCOMING_MUC_INVITE:
-                    action = null;
-                    showMucInviteDialog();
-                    break;
                 case ACTION_SEARCH:
                     toolbarGreetingsSearchTitle.setText("Search");
                     toolbarGreetingsLayout.setVisibility(View.GONE);
@@ -349,30 +334,12 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         }
     }
 
-    private void showMucInviteDialog() {
-        Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
-        if (account != null && user != null) {
-            MucInviteDialog.newInstance(account, user).show(getFragmentManager(), MucInviteDialog.class.getName());
-        }
-    }
-
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
         AccountJid account = getRoomInviteAccount(intent);
         UserJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
-        }
-    }
-
-    private void showMucPrivateChatDialog() {
-        Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
-        if (account != null && user != null) {
-            MucPrivateChatInvitationDialog.newInstance(account, user).show(getFragmentManager(), MucPrivateChatInvitationDialog.class.getName());
         }
     }
 
@@ -459,21 +426,6 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             return;
         }
         switch (action) {
-            case ACTION_ROOM_INVITE: {
-                action = null;
-                Intent intent = getIntent();
-                AccountJid account = getRoomInviteAccount(intent);
-                UserJid user = getRoomInviteUser(intent);
-                if (account != null && user != null) {
-                    try {
-                        MUCManager.getInstance().invite(account, user.getJid().asEntityBareJidIfPossible(), abstractContact.getUser());
-                    } catch (NetworkException e) {
-                        Application.getInstance().onError(e);
-                    }
-                }
-                finish();
-                break;
-            }
             case Intent.ACTION_SEND:
                 if (!isSharedText(getIntent().getType())) {
                     // share file

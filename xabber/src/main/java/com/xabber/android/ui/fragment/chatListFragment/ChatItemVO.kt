@@ -4,8 +4,6 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.extension.muc.MUCManager
-import com.xabber.android.data.extension.muc.RoomChat
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
@@ -46,14 +44,11 @@ data class ChatItemVO(val contact: AbstractContact){
             else View.GONE
 
     private fun getContactStatusVisibility() : Int {
-        val mucIndicatorLevel = if (MUCManager.getInstance().hasRoom(contact.account, contact.user)) 1
-        else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3 else 0
         val statusLevel = contact.statusMode.statusLevel
         val isServer = contact.user.jid.isDomainBareJid
         val isGroupchat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
                 .isGroupchat
-        if (((statusLevel == 6 || contact.user.jid.isDomainBareJid) ||
-                        (mucIndicatorLevel != 0 && statusLevel != 1))
+        if (((statusLevel == 6 || contact.user.jid.isDomainBareJid) || statusLevel != 1)
                 || !SettingsManager.contactsShowAvatars() || isServer || isGroupchat ) return View.GONE
         else  return View.VISIBLE
     }
@@ -97,7 +92,7 @@ data class ChatItemVO(val contact: AbstractContact){
         val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
                 .isPrefsExist(Key.createKey(contact.account, contact.user))
-        val mode = chat.notificationState.determineModeByGlobalSettings(chat is RoomChat)
+        val mode = chat.notificationState.determineModeByGlobalSettings()
 
         when (mode){
             NotificationState.NotificationMode.enabled -> return R.drawable.ic_unmute

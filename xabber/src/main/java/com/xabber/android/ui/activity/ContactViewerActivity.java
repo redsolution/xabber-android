@@ -25,8 +25,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -83,11 +81,8 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
         menu.clear();
         getMenuInflater().inflate(R.menu.toolbar_contact, menu);
 
-        if (chat instanceof RoomChat) {
-            setUpMUCInfoMenu(menu, chat);
-        } else {
-            setUpContactInfoMenu(menu, rosterContact);
-        }
+        setUpContactInfoMenu(menu, rosterContact);
+
         return true;
     }
 
@@ -106,39 +101,11 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
         }
     }
 
-    private void setUpMUCInfoMenu(Menu menu, AbstractChat abstractChat) {
-        AbstractContact contact = RosterManager.getInstance().getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
-        RoomState chatState = ((RoomChat) abstractChat).getState();
-
-        menu.setGroupVisible(R.id.group_conference_actions, true);
-
-        if (chatState == RoomState.unavailable)
-            menu.findItem(R.id.action_join_conference).setVisible(true);
-        else {
-            menu.findItem(R.id.action_invite_to_chat).setVisible(true);
-
-            if (chatState != RoomState.error) {
-                menu.findItem(R.id.action_leave_conference).setVisible(true);
-            }
-        }
-
-        if (contact != null) {
-            menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed());
-        }
-
-        menu.setGroupVisible(R.id.roster_actions, false);
-        menu.findItem(R.id.action_delete_conference).setVisible(true);
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
-        if (chat instanceof RoomChat) {
-            setUpMUCInfoMenu(menu, chat);
-        } else {
-            setUpContactInfoMenu(menu, rosterContact);
-        }
+        setUpContactInfoMenu(menu, rosterContact);
         return true;
     }
 

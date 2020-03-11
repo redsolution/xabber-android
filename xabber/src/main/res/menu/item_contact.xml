@@ -44,21 +44,6 @@
 
             </group>
 
-            <group android:id="@+id/group_conference_actions">
-                <item android:id="@+id/action_edit_conference"
-                    android:title="@string/muc_edit" />
-
-                <item android:id="@+id/action_delete_conference"
-                    android:title="@string/muc_delete" />
-
-                <item android:id="@+id/action_join_conference"
-                    android:title="@string/muc_join" />
-
-                <item android:id="@+id/action_leave_conference"
-                    android:title="@string/muc_leave" />
-
-            </group>
-
         </menu>
     </item>
 

@@ -196,16 +196,6 @@
                 android:value="com.xabber.android.ui.activity.AccountListActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.ConferenceAddActivity"
-            android:label="@string/muc_add"
-            android:parentActivityName=".ui.activity.ConferenceSelectActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ConferenceSelectActivity" />
-        </activity>
-        <activity
             android:name=".ui.activity.StatusEditActivity"
             android:label="@string/status_editor"
             android:parentActivityName=".ui.activity.ContactListActivity">

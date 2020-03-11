@@ -39,7 +39,6 @@ import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -324,7 +323,6 @@ public class TestApplication extends android.app.Application {
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());
         addManager(PatreonManager.getInstance());
-        addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());

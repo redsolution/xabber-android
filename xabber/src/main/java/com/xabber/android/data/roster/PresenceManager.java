@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.roster;
 
-import androidx.annotation.Nullable;
-
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -35,8 +33,6 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -49,7 +45,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -267,47 +262,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public StatusMode getStatusMode(AccountJid account, UserJid user) {
-        final Occupant occupant = getOccupant(account, user);
-        if (occupant != null) {
-            return occupant.getStatusMode();
-        }
-
         return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
-    /**
-     * if contact is private MUC chat
-     */
-    @Nullable
-    private Occupant getOccupant(AccountJid account, UserJid user) {
-        EntityBareJid userEntityBareJid = user.getJid().asEntityBareJidIfPossible();
-        if (userEntityBareJid == null) {
-            return null;
-        }
-
-        Resourcepart resourcepart = user.getJid().getResourceOrNull();
-        if (resourcepart == null) {
-            return null;
-        }
-
-        if (MUCManager.getInstance().hasRoom(account, userEntityBareJid)) {
-            final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account,
-                    userEntityBareJid);
-            for (Occupant occupant : occupants) {
-                if (occupant.getNickname().equals(resourcepart)) {
-                    return occupant;
-                }
-            }
-        }
-        return null;
-    }
-
     public String getStatusText(AccountJid account, UserJid bareAddress) {
-        final Occupant occupant = getOccupant(account, bareAddress);
-        if (occupant != null) {
-            return occupant.getStatusText();
-        }
-
         final Presence presence = RosterManager.getInstance().getPresence(account, bareAddress);
         if (presence == null) {
             return null;

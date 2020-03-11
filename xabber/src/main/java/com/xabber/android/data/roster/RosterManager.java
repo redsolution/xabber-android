@@ -37,9 +37,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
@@ -53,7 +50,6 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -129,6 +125,23 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         return Roster.getInstanceFor(accountItem.getConnection());
+    }
+
+    public static String getDisplayAuthorName(MessageRealmObject messageRealmObject) {
+        UserJid jid = null;
+        try {
+            jid = UserJid.from(messageRealmObject.getOriginalFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            e.printStackTrace();
+        }
+
+        String author;
+
+        if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
+            author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
+        else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
+
+        return author;
     }
 
     @Nullable
@@ -303,10 +316,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      */
     public AbstractContact getBestContact(AccountJid account, UserJid user) {
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        if (abstractChat != null && abstractChat instanceof RoomChat) {
-            return new RoomContact((RoomChat) abstractChat);
-        }
-
 
         RosterContact rosterContact = getRosterContact(account, user);
         if (rosterContact != null) {
@@ -715,34 +724,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 }
             }
         });
-    }
-
-    public static String getDisplayAuthorName(MessageRealmObject messageRealmObject) {
-        UserJid jid = null;
-        try {
-            jid = UserJid.from(messageRealmObject.getOriginalFrom());
-        } catch (UserJid.UserJidCreateException e) {
-            e.printStackTrace();
-        }
-
-        String author = null;
-        if (jid != null) {
-            EntityBareJid room = messageRealmObject.getUser().getBareJid().asEntityBareJidIfPossible();
-            RoomChat roomChat = null;
-            if (room != null) roomChat = MUCManager.getInstance().getRoomChat(messageRealmObject.getAccount(), room);
-
-            if (roomChat != null) {
-                if (!messageRealmObject.isIncoming())
-                    author = MUCManager.getInstance().getNickname(messageRealmObject.getAccount(), room).toString();
-                else author = jid.getJid().getResourceOrEmpty().toString();
-            } else {
-                if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
-                    author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
-                else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
-            }
-        }
-
-        return author;
     }
 
     //A wrapper for the current subscription type and any current
