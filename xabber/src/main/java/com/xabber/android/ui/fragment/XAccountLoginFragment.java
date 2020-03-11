@@ -307,6 +307,11 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             return true;
         }
 
+        if (slashIndex != -1) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
             Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return true;

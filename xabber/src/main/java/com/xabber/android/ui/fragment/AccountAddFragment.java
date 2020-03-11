@@ -205,9 +205,15 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             return false;
         }
 
+        int slashIndex = contactString.indexOf('/');
         int atChar = contactString.indexOf('@');
 
         if (atChar<=0) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (slashIndex != -1) {
             Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return false;
         }
