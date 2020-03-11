@@ -314,7 +314,13 @@ public class XabberAccountManager implements OnLoadListener {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
         setAccount(xabberAccount);
         //if (needUpdateSettings) updateRemoteAccountSettings();
-        if (needUpdateSettings) updateLocalAccountSettings();
+        if (needUpdateSettings) {
+            if (AccountManager.getInstance().isLoaded()) {
+                updateLocalAccountSettings();
+            } else {
+                AccountManager.getInstance().setCallAccountUpdate(true);
+            }
+        }
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
@@ -606,6 +612,12 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public AccountJid getExistingAccount(String jid) {
+        int slash = jid.indexOf('/');
+        if (slash != -1) {
+            LogManager.d(LOG_TAG, "Got FullJid instead of BareJid to check if account already exists, possibly from the server. Jid = " + jid);
+            LogManager.d(LOG_TAG, Log.getStackTraceString(new Throwable()));
+            jid = jid.substring(0, slash); // make sure we compare barejids
+        }
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
             String accountJidString = accountJid.getFullJid().asBareJid().toString();
             if (jid.equals(accountJidString)) return accountJid;

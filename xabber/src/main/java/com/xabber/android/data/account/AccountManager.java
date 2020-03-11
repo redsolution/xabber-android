@@ -16,6 +16,7 @@ package com.xabber.android.data.account;
 
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -124,6 +125,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     private boolean xa;
 
+    private boolean isLoaded;
+    private boolean callAccountUpdate;
+
     public static AccountManager getInstance() {
         if (instance == null) {
             instance = new AccountManager();
@@ -143,6 +147,14 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         away = false;
         xa = false;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void setCallAccountUpdate(boolean call) {
+        callAccountUpdate = call;
     }
 
     public void onPreInitialize() {
@@ -304,6 +316,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             addAccount(accountItem);
         }
         NotificationManager.getInstance().registerNotificationProvider(accountErrorProvider);
+        isLoaded = true;
+        if (callAccountUpdate) {
+            XabberAccountManager.getInstance().updateLocalAccountSettings();
+        }
     }
 
     private void addAccount(AccountItem accountItem) {
@@ -356,6 +372,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public boolean isAccountExist(String user) {
+        int slash = user.indexOf('/');
+        if (slash != -1) {
+            LogManager.d(LOG_TAG, "Trying to find account with FullJid instead of BareJid with jid =  " + user);
+            LogManager.d(LOG_TAG, Log.getStackTraceString(new Throwable()));
+            user = user.substring(0, slash); // make sure we compare barejids
+        }
         Collection<AccountJid> accounts = getAllAccounts();
         for (AccountJid account : accounts) {
             if (account.getFullJid().asBareJid().equals(user))
@@ -391,7 +413,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     /**
      * Creates new account.
      *
-     * @param user full or bare jid.
+     * @param user bare jid.
      * @return assigned account name.
      * @throws NetworkException if user or server part are invalid.
      */
