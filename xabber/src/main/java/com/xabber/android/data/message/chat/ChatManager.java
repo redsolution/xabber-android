@@ -26,6 +26,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealmObject;
 import com.xabber.android.data.database.realmobjects.OldChatRealmObject;
+import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -140,45 +141,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
-        final long startTime = System.currentTimeMillis();
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    String accountJid = chat.getAccount().toString();
-                    String userJid = chat.getUser().toString();
-
-                    OldChatRealmObject chatRealm = realm1.where(OldChatRealmObject.class)
-                            .equalTo("accountJid", accountJid)
-                            .equalTo("userJid", userJid)
-                            .findFirst();
-
-                    if (chatRealm == null)
-                        chatRealm = new OldChatRealmObject(accountJid, userJid);
-
-                    chatRealm.setLastPosition(chat.getLastPosition());
-                    chatRealm.setArchived(chat.isArchived());
-                    chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
-                    chatRealm.setChatStateMode(chat.getChatstateMode());
-                    chatRealm.setGroupchat(chat.isGroupchat());
-
-                    NotificationStateRealmObject notificationStateRealmObject = chatRealm.getNotificationState();
-                    if (notificationStateRealmObject == null)
-                        notificationStateRealmObject = new NotificationStateRealmObject();
-
-                    notificationStateRealmObject.setMode(chat.getNotificationState().getMode());
-                    notificationStateRealmObject.setTimestamp(chat.getNotificationState().getTimestamp());
-                    chatRealm.setNotificationState(notificationStateRealmObject);
-
-                    realm1.copyToRealmOrUpdate(chatRealm);
-                });
-            } catch (Exception e){
-                LogManager.exception(ChatManager.class.getSimpleName(), e);
-            } finally { if (realm != null) realm.close(); }
-        });
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " save chat data: " + (System.currentTimeMillis() - startTime));
+        ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
+                chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
+                chat.isGroupchat(), chat.getUnreadMessageCount(), null);
     }
 
     @Nullable

@@ -18,6 +18,7 @@ public class ContactRealmObject extends RealmObject {
         public static final String CHATS = "chats";
         public static final String AVATARS = "avatars";
         public static final String RESOURCES = "resources";
+        public static final String CIRCLES = "circles";
     }
 
     //TODO REALM UPDATE add status link
@@ -29,7 +30,7 @@ public class ContactRealmObject extends RealmObject {
     private RealmList<ChatRealmObject> chats;
     private RealmList<AvatarRealmObject> avatars;
     private RealmList<ResourceRealmObject> resources;
-    private RealmList<CircleRealmObject> groups;
+    private RealmList<CircleRealmObject> circles;
 
     public ContactRealmObject(){
         this.id = UUID.randomUUID().toString();
@@ -53,12 +54,12 @@ public class ContactRealmObject extends RealmObject {
 
     public RealmList<ResourceRealmObject> getResources() { return resources; }
 
-    public RealmList<CircleRealmObject> getGroups() { return groups; }
-    public void setGroups(RealmList<CircleRealmObject> groups) { this.groups = groups; }
+    public RealmList<CircleRealmObject> getCircles() { return circles; }
+    public void setCircles(RealmList<CircleRealmObject> circles) { this.circles = circles; }
 
-    public Collection<String> getGroupsNames() {
+    public Collection<String> getCirclesNames() {
         Collection<String> result = new ArrayList<String>();
-        for (CircleRealmObject contactGroupRealmObject : getGroups())
+        for (CircleRealmObject contactGroupRealmObject : getCircles())
             result.add(contactGroupRealmObject.getCircleName());
         return result;
     }

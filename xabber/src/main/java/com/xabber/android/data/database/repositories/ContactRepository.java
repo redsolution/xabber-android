@@ -59,14 +59,14 @@ public class ContactRepository {
                             contactRealmObject = new ContactRealmObject();
                         }
 
-                        RealmList<CircleRealmObject> groups = new RealmList<>();
-                        for (String groupName : contact.getGroupNames()) {
-                            CircleRealmObject group = realm1.copyToRealmOrUpdate(new CircleRealmObject(groupName));
-                            if (group.isManaged() && group.isValid())
-                                groups.add(group);
-                        }
+//                        RealmList<CircleRealmObject> groups = new RealmList<>();
+//                        for (String groupName : contact.getGroupNames()) {
+//                            CircleRealmObject group = realm1.copyToRealmOrUpdate(new CircleRealmObject(groupName));
+//                            if (group.isManaged() && group.isValid())
+//                                groups.add(group);
+//                        } TODO REALM UPDATE. THIS!
 
-                        contactRealmObject.setGroups(groups);
+                        //contactRealmObject.setGroups(groups);
                         contactRealmObject.setAccountJid(account);
                         contactRealmObject.setContactJid(user);
                         contactRealmObject.setBestName(contact.getName());
