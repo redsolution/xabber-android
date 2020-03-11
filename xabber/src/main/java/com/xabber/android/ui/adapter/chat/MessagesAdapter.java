@@ -16,7 +16,6 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
@@ -24,8 +23,6 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
-
-import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +58,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private int accountMainColor;
     private ColorStateList colorStateList;
     private int mentionColor;
-    private boolean isMUC;
-    private Resourcepart mucNickname;
     private String userName;
     private AccountJid account;
     private UserJid user;
@@ -106,9 +101,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
         mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
-
-        isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
-        if (isMUC) mucNickname = MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible());
     }
 
     @Override
@@ -139,10 +131,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage) || (!messageRealmObject.isAttachmentImageOnly());
 
         if (messageRealmObject.isIncoming()) {
-            if (isMUC && messageRealmObject.getResource().equals(mucNickname)) {
-                if(isImage) return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
-                else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
-            }
             if(isImage) {
                 return notJustImage? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
             }else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
@@ -237,12 +225,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         // need tail
         boolean needTail = false;
-        if (isMUC) {
-            MessageRealmObject nextMessage = getMessageItem(position + 1);
-            if (nextMessage != null)
-                needTail = !messageRealmObject.getResource().equals(nextMessage.getResource());
-            else needTail = true;
-        } else if (groupchatUser != null) {
+        if (groupchatUser != null) {
             MessageRealmObject nextMessage = getMessageItem(position + 1);
             if (nextMessage != null) {
                 GroupchatUser user2 = GroupchatUserManager.getInstance().getGroupchatUser(nextMessage.getGroupchatUserId());
@@ -263,12 +246,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         mainMessageTimestamp = messageRealmObject.getTimestamp();
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener,
-                context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, mainMessageTimestamp, isMUC,
+                context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, mainMessageTimestamp,
                 showOriginalOTR, unread, checked, needTail, needDate);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
-                ((ActionMessageVH)holder).bind(messageRealmObject, context, account, isMUC, needDate);
+                ((ActionMessageVH)holder).bind(messageRealmObject, context, account, needDate);
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
@@ -453,7 +436,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         private Long mainTimestamp;
         private GroupchatUser groupchatUser;
 
-        private boolean isMuc;
         private boolean showOriginalOTR;
         private boolean unread;
         private boolean checked;
@@ -464,7 +446,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
                                 GroupchatUser groupchatUser, int accountMainColor, int mentionColor, Long mainTimestamp,
-                                boolean isMuc, boolean showOriginalOTR, boolean unread, boolean checked,
+                                boolean showOriginalOTR, boolean unread, boolean checked,
                                 boolean needTail, boolean needDate) {
             this.listener = listener;
             this.fwdListener = fwdListener;
@@ -473,7 +455,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             this.colorStateList = colorStateList;
             this.accountMainColor = accountMainColor;
             this.mentionColor = mentionColor;
-            this.isMuc = isMuc;
             this.showOriginalOTR = showOriginalOTR;
             this.unread = unread;
             this.checked = checked;
@@ -517,10 +498,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         public Long getMainMessageTimestamp() {
             return mainTimestamp;
-        }
-
-        public boolean isMuc() {
-            return isMuc;
         }
 
         public boolean isShowOriginalOTR() {

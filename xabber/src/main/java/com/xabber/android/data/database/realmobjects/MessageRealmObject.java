@@ -77,7 +77,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ORIGINAL_STANZA = "originalStanza";
         public static final String ORIGINAL_FROM = "originalFrom";
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
-        public static final String FROM_MUC = "fromMUC";
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
@@ -204,8 +203,6 @@ public class MessageRealmObject extends RealmObject {
     private String groupchatUserId;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
-
-    private boolean fromMUC;
 
     public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId; }
 
@@ -394,10 +391,6 @@ public class MessageRealmObject extends RealmObject {
     public String getPacketId() { return packetId; }
 
     public void setPacketId(String packetId) { this.packetId = packetId; }
-
-    public boolean isFromMUC() { return fromMUC; }
-
-    public void setFromMUC(boolean fromMUC) { this.fromMUC = fromMUC; }
 
     public String getMarkupText() { return markupText; }
 

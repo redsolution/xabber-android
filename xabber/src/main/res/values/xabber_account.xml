@@ -28,6 +28,7 @@
     <string name="progress_title_sync">Synchronization</string>
     <string name="progress_title_quit">Quit</string>
     <string name="progress_title_login">Login</string>
+    <string name="xaccount_next">Next</string>
     <string name="progress_title_signup">Registration</string>
     <string name="progress_title_confirm">Verification</string>
     <string name="progress_title_resend">Resending email</string>

@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.View;
@@ -29,8 +28,6 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -38,7 +35,6 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -155,14 +151,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String name = contact.getName();
 
-        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
-            mucIndicatorLevel = 1;
-        } else if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
-            mucIndicatorLevel = 2;
-        } else {
-            mucIndicatorLevel = 0;
-        }
-
         statusLevel = contact.getStatusMode().getStatusLevel();
         String messageText;
         String statusText = contact.getStatusText().trim();
@@ -207,10 +195,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             isOutgoing = !lastMessage.isIncoming();
 
-            if ((mucIndicatorLevel == 1 || mucIndicatorLevel == 2) && lastMessage.isIncoming()
-                    && lastMessage.getText() != null && !lastMessage.getText().trim().isEmpty())
-                messageOwner = lastMessage.getResource().toString();
-
             // message status
             if (isOutgoing) {
                 if (!MessageRealmObject.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
@@ -241,7 +225,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         // notification icon
         NotificationState.NotificationMode mode =
-                chat.getNotificationState().determineModeByGlobalSettings(chat instanceof RoomChat);
+                chat.getNotificationState().determineModeByGlobalSettings();
 
         // custom notification
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
@@ -249,7 +233,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
                 name, statusText, statusId,
-                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
+                statusLevel, avatar, 0, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
                 isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid());
@@ -339,17 +323,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         viewHolder.tvContactName.setText(getName());
 
         /** set up MUC indicator */
-        Drawable mucIndicator;
-        if (getMucIndicatorLevel() == 0)
-            mucIndicator = null;
-        else {
-            mucIndicator = context.getResources().getDrawable(R.drawable.muc_indicator_view);
-            mucIndicator.setLevel(getMucIndicatorLevel());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mucIndicator.setTint(context.getResources().getColor(getThemeResource(context,
-                        R.attr.contact_list_contact_name_text_color)));
-            }
-        }
+        Drawable mucIndicator = null;
 
         /** set up GROUPCHAT indicator */
         if (viewHolder.ivStatus.getVisibility() == View.VISIBLE) {

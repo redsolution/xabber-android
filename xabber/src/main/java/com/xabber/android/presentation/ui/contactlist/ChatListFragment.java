@@ -49,9 +49,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
@@ -63,8 +60,6 @@ import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.ui.activity.ConferenceSelectActivity;
-import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
@@ -412,9 +407,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             case R.id.action_add_contact:
                 startActivity(ContactAddActivity.createIntent(getActivity()));
                 return true;
-            case R.id.action_join_conference:
-                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
-                return true;
             case R.id.action_recent_chats:
                 onStateSelected(ChatListFragment.ChatListState.recent);
                 return true;
@@ -519,11 +511,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Intent intent;
         AccountJid accountJid = item.getAccount();
         UserJid userJid = item.getUser();
-        if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
-            intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
-        } else {
-            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
-        }
+        intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
         getActivity().startActivity(intent);
     }
 
@@ -586,8 +574,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             /*  Make list of rooms and active chats grouped by users inside accounts */
             final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
             for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
-                if ((abstractChat instanceof RoomChat || abstractChat.isActive())
-                        && accounts.containsKey(abstractChat.getAccount())) {
+                if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
                     final AccountJid account = abstractChat.getAccount();
                     Map<UserJid, AbstractChat> users = abstractChats.get(account);
                     if (users == null) {
@@ -713,11 +700,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         for (Map<UserJid, AbstractChat> users : abstractChats.values()) {
             for (AbstractChat abstractChat : users.values()) {
                 final AbstractContact abstractContact;
-                if (abstractChat instanceof RoomChat) {
-                    abstractContact = new RoomContact((RoomChat) abstractChat);
-                } else {
-                    abstractContact = new ChatContact(abstractChat);
-                }
+                abstractContact = new ChatContact(abstractChat);
                 if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
                         || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
                         || abstractContact.getName().toLowerCase(Locale.getDefault()).contains(transliterated)

@@ -89,14 +89,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     }
 
     public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
-        if (extraData.isMuc()) {
-            messageHeader.setText(messageRealmObject.getResource());
-            messageHeader.setTextColor(ColorManager.changeColor(
-                    ColorGenerator.MATERIAL.getColor(messageRealmObject.getResource()), 0.8f));
-            messageHeader.setVisibility(View.VISIBLE);
-        } else {
-            messageHeader.setVisibility(View.GONE);
-        }
+
+        messageHeader.setVisibility(View.GONE);
 
         // groupchat
         if (extraData.getGroupchatUser() != null) {

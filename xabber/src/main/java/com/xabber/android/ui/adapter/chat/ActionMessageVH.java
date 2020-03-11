@@ -23,16 +23,11 @@ public class ActionMessageVH extends BasicMessageVH {
         messageTime = itemView.findViewById(R.id.message_time);
     }
 
-    public void bind(MessageRealmObject messageRealmObject, Context context, AccountJid account, boolean isMUC, boolean needDate) {
+    public void bind(MessageRealmObject messageRealmObject, Context context, AccountJid account, boolean needDate) {
         ChatAction action = MessageRealmObject.getChatAction(messageRealmObject);
         String time = StringUtils.getTimeText(new Date(messageRealmObject.getTimestamp()));
 
-        String name;
-        if (isMUC) {
-            name = messageRealmObject.getResource().toString();
-        } else {
-            name = RosterManager.getInstance().getBestContact(account, messageRealmObject.getUser()).getName();
-        }
+        String name = RosterManager.getInstance().getBestContact(account, messageRealmObject.getUser()).getName();
         messageText.setText(action.getText(context, name, MessageRealmObject.getSpannable(messageRealmObject).toString()));
         messageTime.setText(time);
         this.needDate = needDate;

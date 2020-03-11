@@ -128,16 +128,14 @@ public class MessageNotificationManager implements OnLoadListener {
     /** PUBLIC METHODS */
 
     public void onNewMessage(MessageRealmObject messageRealmObject) {
-        boolean isMUC = messageRealmObject.isFromMUC();
         String chatTitle = RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
-        String author = isMUC ? messageRealmObject.getResource().toString() : chatTitle;
         Chat chat = getChat(messageRealmObject.getAccount(), messageRealmObject.getUser());
         if (chat == null) {
             chat = new Chat(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                    getNextChatNotificationId(), chatTitle, isMUC);
+                    getNextChatNotificationId(), chatTitle, false);
             chats.add(chat);
         }
-        addMessage(chat, author, getNotificationText(messageRealmObject), true);
+        addMessage(chat, chatTitle, getNotificationText(messageRealmObject), true);
         saveNotifChatToRealm(chat);
     }
 

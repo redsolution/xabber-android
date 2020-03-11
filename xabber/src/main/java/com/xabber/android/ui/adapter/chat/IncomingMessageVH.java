@@ -18,7 +18,6 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
@@ -134,8 +133,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(context, extraData.getGroupchatUser(), messageRealmObject,
-                extraData.isMuc(), extraData.getUsername(), needTail);
+        setUpAvatar(context, extraData.getGroupchatUser(), messageRealmObject, extraData.getUsername(), needTail);
 
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
@@ -166,10 +164,10 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageRealmObject messageRealmObject,
-                             boolean isMUC, String userName, boolean needTail) {
-        boolean needAvatar = isMUC ? SettingsManager.chatsShowAvatarsMUC() : SettingsManager.chatsShowAvatars();
+                             String userName, boolean needTail) {
+        boolean needAvatar = SettingsManager.chatsShowAvatars();
         // for new groupchats (0GGG)
-        if (groupchatUser != null && SettingsManager.chatsShowAvatarsMUC()) needAvatar = true;
+        if (groupchatUser != null) needAvatar = true;
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
@@ -209,31 +207,22 @@ public class IncomingMessageVH  extends FileMessageVH {
         final AccountJid account = messageRealmObject.getAccount();
         final Resourcepart resource = messageRealmObject.getResource();
 
-        if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatarForContactList(user, userName));
-        else {
-            if ((MUCManager.getInstance()
-                    .getNickname(account, user.getJid().asEntityBareJidIfPossible())
-                    .equals(resource))) {
-                avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-            } else {
-                if (resource.equals(Resourcepart.EMPTY)) {
-                    avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatarForContactList(user));
-                } else {
+        if (resource.equals(Resourcepart.EMPTY)) {
+            avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatarForContactList(user));
+        } else {
 
-                    String nick = resource.toString();
-                    UserJid userJid = null;
+            String nick = resource.toString();
+            UserJid userJid = null;
 
-                    try {
-                        userJid = UserJid.from(user.getJid().toString() + "/" + resource.toString());
-                        avatar.setImageDrawable(AvatarManager.getInstance()
-                                .getOccupantAvatar(userJid, nick));
+            try {
+                userJid = UserJid.from(user.getJid().toString() + "/" + resource.toString());
+                avatar.setImageDrawable(AvatarManager.getInstance()
+                        .getOccupantAvatar(userJid, nick));
 
-                    } catch (UserJid.UserJidCreateException e) {
-                        LogManager.exception(this, e);
-                        avatar.setImageDrawable(AvatarManager.getInstance()
-                                .generateDefaultAvatar(nick, nick));
-                    }
-                }
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+                avatar.setImageDrawable(AvatarManager.getInstance()
+                        .generateDefaultAvatar(nick, nick));
             }
         }
     }

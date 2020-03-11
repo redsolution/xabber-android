@@ -31,7 +31,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
@@ -42,7 +41,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
@@ -297,11 +295,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
             Intent intent;
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
-            if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
-                intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
-            } else {
-                intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
-            }
+            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
             getActivity().startActivity(intent);
         }
     }

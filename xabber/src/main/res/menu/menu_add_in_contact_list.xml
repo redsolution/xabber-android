@@ -7,9 +7,4 @@
         android:title="@string/contact_add"
         />
 
-    <item android:id="@+id/action_join_conference"
-        android:icon="@drawable/ic_group_add_white_24dp"
-        android:orderInCategory="120"
-        android:title="@string/muc_add"
-        />
 </menu>

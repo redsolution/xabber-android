@@ -50,8 +50,6 @@ import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
@@ -59,8 +57,6 @@ import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessage
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.MucPrivateChatNotification;
-import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
@@ -74,7 +70,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
-import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
 
 import java.io.BufferedWriter;
@@ -107,7 +102,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     private static MessageManager instance;
     private static final String LOG_TAG = MessageManager.class.getSimpleName();
-    private final EntityNotificationProvider<MucPrivateChatNotification> mucPrivateChatRequestProvider;
 
     /**
      * Registered chats for bareAddresses in accounts.
@@ -130,10 +124,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     private MessageManager() {
         chats = new NestedMap<>();
-
-        mucPrivateChatRequestProvider = new EntityNotificationProvider<>
-                (R.drawable.ic_stat_muc_private_chat_request_white_24dp);
-        mucPrivateChatRequestProvider.setCanClearNotifications(false);
     }
 
     @Override
@@ -156,8 +146,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-
-        NotificationManager.getInstance().registerNotificationProvider(mucPrivateChatRequestProvider);
     }
 
     /**
@@ -217,19 +205,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastActionTimestamp(chatData.getLastActionTimestamp());
             chat.setChatstate(chatData.getLastState());
             chat.setGroupchat(chatData.isGroupchat());
-            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
-        }
-        addChat(chat);
-        return chat;
-    }
-
-    private RegularChat createPrivateMucChat(AccountJid account, FullJid fullJid) throws UserJid.UserJidCreateException {
-        RegularChat chat = new RegularChat(account, UserJid.from(fullJid), true);
-        ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
-        if (chatData != null) {
-            chat.setLastPosition(chatData.getLastPosition());
-            chat.setArchived(chatData.isArchived(), false);
-            chat.setNotificationState(chatData.getNotificationState(), false);
             if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
@@ -482,29 +457,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      *
      */
     public AbstractChat getOrCreateChat(AccountJid account, UserJid user) {
-        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            try {
-                return getOrCreatePrivateMucChat(account, user.getJid().asFullJidIfPossible());
-            } catch (UserJid.UserJidCreateException e) {
-                return null;
-            }
-        }
-
         AbstractChat chat = getChat(account, user);
         if (chat == null) {
             chat = createChat(account, user);
         }
         return chat;
     }
-
-    public AbstractChat getOrCreatePrivateMucChat(AccountJid account, FullJid fullJid) throws UserJid.UserJidCreateException {
-        AbstractChat chat = getChat(account, UserJid.from(fullJid));
-        if (chat == null) {
-            chat = createPrivateMucChat(account, fullJid);
-        }
-        return chat;
-    }
-
 
     /**
      * Force open chat (make it active).
@@ -514,10 +472,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void openChat(AccountJid account, UserJid user) {
         getOrCreateChat(account, user).openChat();
-    }
-
-    public void openPrivateMucChat(AccountJid account, FullJid fullJid) throws UserJid.UserJidCreateException {
-        getOrCreatePrivateMucChat(account, fullJid).openChat();
     }
 
     /**
@@ -658,16 +612,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
         final AbstractChat chat = getChat(account, user);
 
-        if (chat != null && stanza instanceof Message) {
-            if (chat.isPrivateMucChat() && !chat.isPrivateMucChatAccepted()) {
-                if (mucPrivateChatRequestProvider.get(chat.getAccount(), chat.getUser()) == null) {
-                    mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
-                }
-            }
-
-
-            return;
-        }
         if (!processed && stanza instanceof Message) {
             final Message message = (Message) stanza;
             final String body = message.getBody();
@@ -734,16 +678,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     // and skip received message as spam
                     return;
                 }
-            }
-
-            if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-                try {
-                    createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza, false);
-                } catch (UserJid.UserJidCreateException e) {
-                    LogManager.exception(this, e);
-                }
-                mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
-                return;
             }
 
             for (ExtensionElement packetExtension : message.getExtensions()) {
@@ -927,7 +861,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             out.write("</title></head><body>");
             final AbstractChat abstractChat = getChat(account, user);
             if (abstractChat != null) {
-                final boolean isMUC = abstractChat instanceof RoomChat;
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
@@ -938,15 +871,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         continue;
                     }
                     final String name;
-                    if (isMUC) {
-                        name = messageRealmObject.getResource().toString();
+                    if (messageRealmObject.isIncoming()) {
+                        name = userName;
                     } else {
-                        if (messageRealmObject.isIncoming()) {
-                            name = userName;
-                        } else {
-                            name = accountName;
-                        }
+                        name = accountName;
                     }
+
                     out.write("<b>");
                     out.write(StringUtils.escapeHtml(name));
                     out.write("</b>&nbsp;(");
@@ -1018,15 +948,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 //                });
 //            }
 //        }
-    }
-
-    public void acceptMucPrivateChat(AccountJid account, UserJid user) throws UserJid.UserJidCreateException {
-        mucPrivateChatRequestProvider.remove(account, user);
-        getOrCreatePrivateMucChat(account, user.getJid().asFullJidIfPossible()).setIsPrivateMucChatAccepted(true);
-    }
-
-    public void discardMucPrivateChat(AccountJid account, UserJid user) {
-        mucPrivateChatRequestProvider.remove(account, user);
     }
 
     public static void closeActiveChats() {

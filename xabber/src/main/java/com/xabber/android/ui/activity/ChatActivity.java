@@ -61,9 +61,6 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -88,7 +85,6 @@ import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
-import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
@@ -111,7 +107,7 @@ import java.util.List;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
-        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener, SnoozeDialog.OnSnoozeListener, SensorEventListener {
+        UpdateBackpressure.UpdatableObject, SnoozeDialog.OnSnoozeListener, SensorEventListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
@@ -775,33 +771,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
     }
 
-    private void setUpMUCInfoMenu(Menu menu, AbstractChat abstractChat) {
-        RoomState chatState = ((RoomChat) abstractChat).getState();
-        menu.setGroupVisible(R.id.group_conference_actions, true);
-        if (chatState == RoomState.unavailable)
-            menu.findItem(R.id.action_join_conference).setVisible(true);
-        else {
-            menu.findItem(R.id.action_invite_to_chat).setVisible(true);
-
-            if (chatState != RoomState.error) {
-                menu.findItem(R.id.action_leave_conference).setVisible(true);
-            }
-        }
-
-        menu.setGroupVisible(R.id.roster_actions, false);
-        menu.findItem(R.id.action_delete_conference).setVisible(true);
-    }
-
-    private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
-
-        RoomState chatState = ((RoomChat) abstractChat).getState();
-        if (chatState == RoomState.error) {
-            menu.findItem(R.id.action_authorization_settings).setVisible(true);
-        }
-
-        setUpRegularChatMenu(menu, abstractChat);
-    }
-
     private void setUpContactInfoMenu(Menu menu, AbstractChat abstractChat) {
         // request subscription
         AbstractContact abstractContact = RosterManager.getInstance()
@@ -817,13 +786,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)) {
                 inflater.inflate(R.menu.toolbar_contact, menu);
                 setUpContactInfoMenu(menu, abstractChat);
-                if (abstractChat instanceof RoomChat)
-                    setUpMUCInfoMenu(menu, abstractChat);
-                return;
-            }
-            if (abstractChat instanceof RoomChat) {
-                inflater.inflate(R.menu.menu_chat_muc, menu);
-                setUpMUCMenu(menu, abstractChat);
                 return;
             }
             if (abstractChat instanceof RegularChat) {
@@ -893,10 +855,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 startActivity(CustomNotifySettings.createIntent(this, account, user));
                 return true;
 
-            case R.id.action_authorization_settings:
-                startActivity(ConferenceAddActivity.createIntent(this, account, user.getBareUserJid()));
-                return true;
-
             case R.id.action_clear_history:
                 if (chatFragment != null)
                     chatFragment.clearHistory(account, user);
@@ -950,18 +908,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 onSnoozed();
                 return true;
 
-            /* conference specific options menu */
-            case R.id.action_join_conference:
-                onJoinConferenceClick();
-                return true;
-
             case R.id.action_invite_to_chat:
                 startActivity(SearchActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
-                return true;
-
-            case R.id.action_leave_conference:
-                if (chatFragment != null)
-                    chatFragment.leaveConference(account, user);
                 return true;
 
             /* contact info menu */
@@ -969,11 +917,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 startActivity(ContactEditActivity.createIntent(this, account, user));
                 return true;
 
-            case R.id.action_delete_conference:
             case R.id.action_remove_contact:
                 ContactDeleteDialog.newInstance(account, user)
                         .show(getSupportFragmentManager(), ContactDeleteDialog.class.getName());
                 return true;
+
             case R.id.action_delete_chat:
                 ChatDeleteDialog.newInstance(account, user)
                         .show(getSupportFragmentManager(), ChatDeleteDialog.class.getName());
@@ -990,15 +938,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 
-    @Override
-    public void onOccupantClick(String username) {
-        if (chatFragment != null) chatFragment.mentionUser(username);
-    }
-
     private NotificationState.NotificationMode getNotifMode() {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         if (chat != null)
-            return chat.getNotificationState().determineModeByGlobalSettings(chat instanceof RoomChat);
+            return chat.getNotificationState().determineModeByGlobalSettings();
         else return NotificationState.NotificationMode.bydefault;
     }
 
@@ -1048,10 +991,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
         //finish();
         startActivity(sendIntent);
-    }
-
-    public void onJoinConferenceClick() {
-        MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
     }
 
     public void showShowcase(boolean show) {
