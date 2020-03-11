@@ -30,7 +30,6 @@ public class ColorManager {
 
     private int colorContactSecondLine;
 
-    private int colorMucPrivateChatText;
     private int colorMain;
     private int activeChatTextColor;
     private int activeChatBackgroundColor;
@@ -98,7 +97,6 @@ public class ColorManager {
         }
 
         colorContactSecondLine = getThemeColor(context, R.attr.contact_list_contact_second_line_text_color);
-        colorMucPrivateChatText = getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
         colorMain = getThemeColor(context, R.attr.contact_list_contact_name_text_color);
         activeChatTextColor = getThemeColor(context, R.attr.contact_list_active_chat_text_color);
         activeChatBackgroundColor = getThemeColor(context, R.attr.contact_list_active_chat_background);
@@ -146,10 +144,6 @@ public class ColorManager {
 
     public void onSettingsChanged() {
         loadResources();
-    }
-
-    public int getColorMucPrivateChatText() {
-        return colorMucPrivateChatText;
     }
 
     public int getColorMain() {

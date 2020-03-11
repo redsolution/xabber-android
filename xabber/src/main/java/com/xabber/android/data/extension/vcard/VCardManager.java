@@ -28,7 +28,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -264,16 +263,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 return;
             }
 
-            Jid addressForVcard = from;
-
-            if (MUCManager.getInstance().hasRoom(account, from.asEntityBareJidIfPossible())) {
-                addressForVcard = from;
-            }
-
             // Request vCard for new users
-            if (!names.containsKey(addressForVcard)) {
+            if (!names.containsKey(from)) {
                 if (SettingsManager.connectionLoadVCard()) {
-                    request(account, addressForVcard);
+                    request(account, from);
                 }
             }
         }

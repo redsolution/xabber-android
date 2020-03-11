@@ -29,7 +29,6 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -108,8 +107,7 @@ public class RegularChat extends AbstractChat {
         if (OTRresource != null) {
             return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), OTRresource);
         } else {
-            if (resource == null
-                    || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat)) {
+            if (resource == null) {
                 return user.getJid();
             } else {
                 return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);

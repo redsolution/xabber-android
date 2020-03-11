@@ -34,7 +34,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
-import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.AccountPainter;
@@ -164,9 +163,6 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         switch (item.getItemId()) {
             case R.id.action_add_contact:
                 //startActivity(ContactAddActivity.createIntent(getActivity()));
-                return true;
-            case R.id.action_join_conference:
-                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
                 return true;
             default:
                 return false;
