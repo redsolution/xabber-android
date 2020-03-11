@@ -12,9 +12,6 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -225,8 +222,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
-            if ((abstractChat instanceof RoomChat || abstractChat.isActive())
-                    && accounts.containsKey(abstractChat.getAccount())) {
+            if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
                 final AccountJid account = abstractChat.getAccount();
                 Map<UserJid, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
@@ -284,26 +280,14 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         for (Map<UserJid, AbstractChat> users : abstractChats.values())
             for (AbstractChat abstractChat : users.values()) {
                 final AbstractContact abstractContact;
-                if (abstractChat instanceof RoomChat) {
-                    abstractContact = new RoomContact((RoomChat) abstractChat);
-                } else {
-                    abstractContact = new ChatContact(abstractChat);
-                }
+                abstractContact = new ChatContact(abstractChat);
                 if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
                     continue;
                 }
                 final String group;
                 final boolean online;
-                if (abstractChat instanceof RoomChat) {
-                    group = CircleManager.IS_ROOM;
-                    online = abstractContact.getStatusMode().isOnline();
-                } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
-                    group = CircleManager.IS_ROOM;
-                    online = abstractContact.getStatusMode().isOnline();
-                } else {
-                    group = CircleManager.NO_GROUP;
-                    online = false;
-                }
+                group = CircleManager.NO_GROUP;
+                online = false;
                 hasVisibleContacts = true;
                 ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
                         showAccounts, showGroups);

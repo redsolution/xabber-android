@@ -142,6 +142,14 @@ public class FileManager {
         }
     }
 
+    public static String extractFileName(String uri) {
+        if (uri == null || uri.isEmpty()) {
+            return null;
+        }
+
+        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase();
+    }
+
     private static String extractRelevantExtension(URL url) {
         String path = url.getPath();
         return extractRelevantExtension(path);

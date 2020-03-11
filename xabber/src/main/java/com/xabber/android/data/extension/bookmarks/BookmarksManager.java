@@ -2,18 +2,13 @@ package com.xabber.android.data.extension.bookmarks;
 
 import androidx.annotation.NonNull;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.notification.NotificationManager;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -196,43 +191,12 @@ public class BookmarksManager {
             return;
         }
 
-        if (!conferences.isEmpty()) {
-            for (BookmarkedConference conference : conferences) {
-                if (!MUCManager.getInstance().hasRoom(account, conference.getJid())) {
-                    createMUC(account, conference);
-                    LogManager.d(this, " Conference " + conference.getJid() + "was added to roster from bookmarks");
-                }
-            }
-        }
-
         // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
         if (!isBookmarkCheckedByXabber(account)) {
             // add conferences from phone to bookmarks
             Collection<AbstractChat> chats = MessageManager.getInstance().getChats(account);
-            if (!chats.isEmpty()) {
-                for (AbstractChat chat : chats) {
-                    if (chat instanceof RoomChat) {
-                        RoomChat roomChat = (RoomChat) chat;
-                        if (!hasConference(conferences, roomChat.getTo())) {
-                            addConferenceToBookmarks(account, roomChat.getTo().toString(), roomChat.getTo(), roomChat.getNickname());
-                        }
-                    }
-                }
-            }
             // add url about check to bookmarks
             addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
-        }
-
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChats(account);
-        if (!chats.isEmpty()) {
-            for (AbstractChat chat : chats) {
-                if (chat instanceof RoomChat) {
-                    if (!hasConference(conferences, ((RoomChat)chat).getTo())) {
-                        removeMUC(account, chat.getUser());
-                        LogManager.d(this, " Conference " + chat.getTo().toString() + " was deleted from phone");
-                    }
-                }
-            }
         }
     }
 
@@ -252,54 +216,6 @@ public class BookmarksManager {
             if (conference.getJid().toString().equals(jid.toString())) return true;
         }
         return false;
-    }
-
-    private void removeMUC(final AccountJid account, final UserJid user) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                MUCManager.getInstance().removeRoom(account, user.getJid().asEntityBareJidIfPossible());
-                MessageManager.getInstance().closeChat(account, user);
-                NotificationManager.getInstance().removeMessageNotification(account, user);
-            }
-        });
-        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
-    }
-
-    private void createMUC(AccountJid account, BookmarkedConference conference) {
-        Resourcepart nickname = conference.getNickname();
-        if (nickname == null)
-            nickname = getNickname(account, conference.getJid());
-
-        String password = conference.getPassword();
-        if (password == null) password = "";
-
-        MUCManager.getInstance().createRoom(
-                account,
-                conference.getJid(),
-                nickname,
-                password,
-                conference.isAutoJoin()
-        );
-    }
-
-    @NonNull
-    private Resourcepart getNickname(AccountJid account, EntityBareJid conferenceJid) {
-        // try get nickname from exist muc
-        Resourcepart nickname = MUCManager.getInstance().getNickname(account, conferenceJid);
-        if (nickname == null || nickname.toString().isEmpty()) {
-            // try get nickname from account
-            try {
-                nickname = Resourcepart.from(getStringNick(account));
-            } catch (XmppStringprepException e) {
-                e.printStackTrace();
-            }
-        }
-        // try get nickname from resource
-        if (nickname == null || nickname.toString().isEmpty()) {
-            nickname = account.getFullJid().getResourcepart();
-        }
-        return nickname;
     }
 
     private String getStringNick(AccountJid account) {

@@ -38,6 +38,7 @@ import com.xabber.android.service.UploadService;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.xdata.FormField;
@@ -301,6 +302,12 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 }
             }
         }
+
+        if (attachmentRealmObjects.size() == 0) {
+            AttachmentRealmObject attachment = messageBodyToAttachment(packet);
+            if (attachment != null) attachmentRealmObjects.add(attachment);
+        }
+
         return attachmentRealmObjects;
     }
 
@@ -348,6 +355,19 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             attachmentRealmObject.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
         return attachmentRealmObject;
+    }
+
+    private static AttachmentRealmObject messageBodyToAttachment(Stanza packet) {
+        Message message = (Message) packet;
+        if (FileManager.isImageUrl(message.getBody())) {
+            AttachmentRealmObject bodyAttachment = new AttachmentRealmObject();
+            bodyAttachment.setTitle(FileManager.extractFileName(message.getBody()));
+            bodyAttachment.setFileUrl(message.getBody());
+            bodyAttachment.setIsImage(true);
+            bodyAttachment.setMimeType(getMimeType(message.getBody()));
+            bodyAttachment.setRefType(ReferenceElement.Type.media.name());
+            return bodyAttachment;
+        } else return null;
     }
 
     public class UploadReceiver extends ResultReceiver {

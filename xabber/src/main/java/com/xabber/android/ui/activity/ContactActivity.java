@@ -58,7 +58,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
@@ -73,7 +72,6 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
-import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
@@ -182,12 +180,7 @@ public class ContactActivity extends ManagedActivity implements
         setContentView(R.layout.activity_contact_new);
 
         if (savedInstanceState == null) {
-            Fragment fragment;
-            if (MUCManager.getInstance().hasRoom(account, user)) {
-                fragment = ConferenceInfoFragment.newInstance(account, user.getJid().asEntityBareJidIfPossible());
-            } else {
-                fragment = ContactVcardViewerFragment.newInstance(account, user);
-            }
+            Fragment fragment = ContactVcardViewerFragment.newInstance(account, user);
             getSupportFragmentManager().beginTransaction().add(R.id.scrollable_container, fragment).commit();
         }
 

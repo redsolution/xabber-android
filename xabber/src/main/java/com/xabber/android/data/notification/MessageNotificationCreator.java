@@ -26,7 +26,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -231,9 +230,7 @@ public class MessageNotificationCreator {
 
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
         String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getUserJid());
-        if (MUCManager.getInstance().hasRoom(chat.getAccountJid(), chat.getUserJid().getJid().asEntityBareJidIfPossible()))
-            return AvatarManager.getInstance().getRoomBitmap(chat.getUserJid());
-        else return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
+        return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {

@@ -35,7 +35,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedNestedMaps;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -229,8 +228,6 @@ public class ChatStateManager implements OnDisconnectListener,
      * Whether sending chat notification for specified chat is supported.
      */
     private boolean isSupported(AbstractChat chat, boolean outgoingMessage) {
-        if (chat instanceof RoomChat)
-            return false;
         Jid to = chat.getTo();
         BareJid bareAddress = to.asBareJid();
         Resourcepart resource = to.getResourceOrNull();
@@ -283,6 +280,8 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
 
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
+
         cancelComposingSender();
 
         Message message = new Message();
@@ -291,14 +290,13 @@ public class ChatStateManager implements OnDisconnectListener,
         message.addExtension(new ChatStateExtension(chatState, type));
         try {
             StanzaSender.sendStanza(account, message);
-            sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
             if (chatState == ChatState.composing) {
                 setComposingSender(chat, chatState, type);
             } else {
                 cancelComposingSender();
             }
         } catch (NetworkException e) {
-            // Just ignore it.
+            sent.remove(chat.getAccount().toString(), chat.getUser().toString());
         }
     }
 
@@ -319,7 +317,7 @@ public class ChatStateManager implements OnDisconnectListener,
             }
         };
         stateSenders.add(stateSender);
-        stateSenderHandler.post(stateSender);
+        stateSenderHandler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
     }
 
     /**
@@ -346,9 +344,6 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
         final AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-        if (chat == null || chat instanceof RoomChat) {
-            return;
-        }
 
         Message message = new Message();
         message.setType(chat.getType());

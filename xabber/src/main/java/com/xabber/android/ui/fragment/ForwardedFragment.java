@@ -18,7 +18,6 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -40,7 +39,6 @@ public class ForwardedFragment extends FileInteractionFragment {
     private int accountMainColor;
     private int mentionColor;
     private ColorStateList colorStateList;
-    private boolean isMUC;
     private String messageId;
 
     private RecyclerView recyclerView;
@@ -70,7 +68,6 @@ public class ForwardedFragment extends FileInteractionFragment {
             accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
             mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
             colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
-            isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         }
     }
 
@@ -115,8 +112,8 @@ public class ForwardedFragment extends FileInteractionFragment {
         GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
-                this, getActivity(),
-                userName, colorStateList, groupchatUser, accountMainColor, mentionColor, null, isMUC, false,
+                this, getActivity(), userName, colorStateList, groupchatUser,
+                accountMainColor, mentionColor, null, false,
                 false, false, false, false);
 
         if (forwardedMessages.size() > 0) {

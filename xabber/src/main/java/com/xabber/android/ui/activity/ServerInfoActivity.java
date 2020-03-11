@@ -36,8 +36,6 @@ import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.mam.MamManager;
-import org.jivesoftware.smackx.muc.MultiUserChatManager;
-import org.jivesoftware.smackx.muclight.MultiUserChatLightManager;
 import org.jivesoftware.smackx.pep.PEPManager;
 import org.jxmpp.jid.DomainBareJid;
 
@@ -150,7 +148,6 @@ public class ServerInfoActivity extends ManagedActivity {
         }
 
         try {
-            boolean muc = !MultiUserChatManager.getInstanceFor(connection).getXMPPServiceDomains().isEmpty();
             boolean pep = PEPManager.getInstanceFor(connection).isSupported();
             boolean blockingCommand = BlockingCommandManager.getInstanceFor(connection).isSupportedByServer();
             boolean sm = connection.isSmAvailable();
@@ -160,12 +157,10 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean csi = ClientStateIndicationManager.isSupported(connection);
             boolean push = PushManager.getInstance().isSupport(connection);
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
-            boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
             boolean rewrite = RrrManager.getInstance().isSupported(connection);
             boolean reliable = ReliableMessageDeliveryManager.getInstance().isSupported(connection);
 
-            serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
             serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));
             serverInfoList.add(getString(R.string.xep_0198_sm) + " " + getCheckOrCross(sm));
@@ -175,7 +170,6 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
             serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
-            serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
             serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
             serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(rewrite));
             serverInfoList.add(getString(R.string.xep_0xxx_reliable_message_delivery) + " " + getCheckOrCross(reliable));

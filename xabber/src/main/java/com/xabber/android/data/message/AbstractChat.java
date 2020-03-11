@@ -38,7 +38,6 @@ import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
@@ -129,9 +128,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private Set<String> waitToMarkAsRead = new HashSet<>();
 
-    private boolean isPrivateMucChat;
-    private boolean isPrivateMucChatAccepted;
-
     private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
     private Date lastSyncedTime;
@@ -150,8 +146,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         active = false;
         trackStatus = false;
         firstNotification = true;
-        this.isPrivateMucChat = isPrivateMucChat;
-        isPrivateMucChatAccepted = false;
         notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -179,13 +173,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
 
-    public boolean isActive() {
-        if (isPrivateMucChat && !isPrivateMucChatAccepted) {
-            return false;
-        }
-
-        return active;
-    }
+    public boolean isActive() { return active; }
 
     public void openChat() {
         active = true;
@@ -399,12 +387,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             notify = false;
         }
 
-        if (isPrivateMucChat) {
-            if (!isPrivateMucChatAccepted) {
-                notify = false;
-            }
-        }
-
         MessageRealmObject messageRealmObject = new MessageRealmObject(uid);
 
         messageRealmObject.setAccount(account);
@@ -430,11 +412,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageRealmObject.setSent(send);
         messageRealmObject.setEncrypted(encrypted);
         messageRealmObject.setOffline(offline);
-        messageRealmObject.setFromMUC(fromMUC);
         messageRealmObject.setStanzaId(stanzaId);
         messageRealmObject.setOriginId(originId);
         if (attachmentRealmObjects != null) messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
-        FileManager.processFileMessage(messageRealmObject);
+        // FileManager.processFileMessage(messageRealmObject);
 
         // forwarding
         if (forwardIdRealmObjects != null) messageRealmObject.setForwardedIds(forwardIdRealmObjects);
@@ -888,18 +869,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         setLastMessageId(null);
     }
 
-    public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
-        this.isPrivateMucChatAccepted = isPrivateMucChatAccepted;
-    }
-
-    boolean isPrivateMucChat() {
-        return isPrivateMucChat;
-    }
-
-    boolean isPrivateMucChatAccepted() {
-        return isPrivateMucChatAccepted;
-    }
-
     @Override
     public void onChange(RealmResults<MessageRealmObject> messageRealmObjects) {
         updateLastMessage();
@@ -1046,9 +1015,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private boolean eventsOnChatGlobal() {
-        if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()))
-            return SettingsManager.eventsOnMuc();
-        else return SettingsManager.eventsOnChat();
+        return SettingsManager.eventsOnChat();
     }
 
     public int getLastPosition() {

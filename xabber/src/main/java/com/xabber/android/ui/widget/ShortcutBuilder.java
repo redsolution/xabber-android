@@ -12,7 +12,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ChatActivity;
 
@@ -65,10 +64,7 @@ public class ShortcutBuilder {
     }
 
     private static Bitmap getAvatar(AbstractContact abstractContact) {
-        Bitmap bitmap;
-        if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(), abstractContact.getUser()))
-            bitmap = AvatarManager.getInstance().getRoomBitmap(abstractContact.getUser());
-        else bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser(), abstractContact.getName());
+        Bitmap bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser(), abstractContact.getName());
         return AvatarManager.getInstance().createShortcutBitmap(bitmap);
     }
 
