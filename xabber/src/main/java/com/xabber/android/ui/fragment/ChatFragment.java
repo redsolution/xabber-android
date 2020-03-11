@@ -142,6 +142,7 @@ import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -169,6 +170,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
     public static final String VOICE_MESSAGE = "VOICE_MESSAGE";
     private static final String VOICE_MESSAGE_RECEIVER_IGNORE = "VOICE_MESSAGE_RECEIVER_IGNORE";
+    private static final String FORWARD_STATE = "FORWARD_STATE";
+    private static final String FORWARD_MESSAGES = "FORWARD_MESSAGES";
+    private static final String FORWARD_PURPOSE = "FORWARD_PURPOSE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private final long STOP_TYPING_DELAY = 2500; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
@@ -678,6 +682,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
                 setUpVoiceMessagePresenter();
             }
+            String[] ids = savedInstanceState.getStringArray(FORWARD_MESSAGES);
+            if (ids != null && ids.length != 0) {
+                bottomPanelMessagesIds.addAll(Arrays.asList(ids));
+                BottomMessagesPanel.Purposes purpose = (BottomMessagesPanel.Purposes) savedInstanceState.getSerializable(FORWARD_PURPOSE);
+                if (purpose == BottomMessagesPanel.Purposes.FORWARDING) {
+                    isReply = savedInstanceState.getBoolean(FORWARD_STATE);
+                }
+                showBottomMessagesPanel(bottomPanelMessagesIds, purpose);
+                setUpInputViewButtons();
+            }
         }
 
         if (SettingsManager.chatsShowBackground()) {
@@ -885,6 +899,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         super.onSaveInstanceState(outState);
         outState.putString(VOICE_MESSAGE, recordingPath);
         outState.putBoolean(VOICE_MESSAGE_RECEIVER_IGNORE, ignoreReceiver);
+        if (!bottomPanelMessagesIds.isEmpty()) {
+            outState.putStringArray(FORWARD_MESSAGES, bottomPanelMessagesIds.toArray(new String[0]));
+            if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
+                outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
+                outState.putBoolean(FORWARD_STATE, isReply);
+            } else {
+                outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
+            }
+        }
     }
 
     private void setUpInputView(View view) {
