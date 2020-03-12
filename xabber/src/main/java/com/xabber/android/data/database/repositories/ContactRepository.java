@@ -4,9 +4,9 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.CircleRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterContact;
 
@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class ContactRepository {
@@ -121,6 +120,17 @@ public class ContactRepository {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
+    }
+
+    public static ContactRealmObject getContactRealmObjectFromRealm(AccountJid accountJid, UserJid contactJid){
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        ContactRealmObject contactRealmObject = realm
+                .where(ContactRealmObject.class)
+                .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
+                .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
+                .findFirst();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return contactRealmObject;
     }
 
 }

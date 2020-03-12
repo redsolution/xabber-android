@@ -35,21 +35,10 @@ public class ChatRepository {
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-                String account = accountJid.toString();
-                String contact = userJid.toString();
+                ChatRealmObject chatRealmObject = getChatRealmObjectFromRealm(accountJid, userJid);
 
-                ChatRealmObject chatRealmObject = realm
-                        .where(ChatRealmObject.class)
-                        .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID, account)
-                        .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID, contact)
-                        .findFirst();
-
-                ContactRealmObject contactRealmObject = realm
-                        .where(ContactRealmObject.class)
-                        .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, account)
-                        .equalTo(ContactRealmObject.Fields.CONTACT_JID, contact)
-                        .findFirst();
-
+                ContactRealmObject contactRealmObject = ContactRepository
+                        .getContactRealmObjectFromRealm(accountJid, userJid);
 
                 if (chatRealmObject == null) {
                     ChatRealmObject newChatRealmObject = new ChatRealmObject(contactRealmObject,
@@ -90,6 +79,19 @@ public class ChatRepository {
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
         return new ArrayList<>(realmResults);
+    }
+
+    public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, UserJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        ChatRealmObject chatRealmObject = realm
+                .where(ChatRealmObject.class)
+                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                        accountJid.getFullJid().asBareJid().toString())
+                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID,
+                        contactJid.getBareJid().toString())
+                .findFirst();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return chatRealmObject;
     }
 
 }

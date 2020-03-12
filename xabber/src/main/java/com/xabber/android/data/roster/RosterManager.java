@@ -98,7 +98,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 UserJid userJid = UserJid.from(contactRealmObject.getContactJid());
                 RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealmObject.getBestName());
 
-                for (CircleRealmObject group : contactRealmObject.getGroups()) {
+                for (CircleRealmObject group : contactRealmObject.getCircles()) {
                     contact.addGroupReference(new RosterCircleReference(new RosterCircle(account, group.getCircleName())));
                 }
 
@@ -307,8 +307,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     /**
-     * Gets {@link RoomContact}, {@link RosterContact}, {@link ChatContact} or
-     * creates new {@link ChatContact}.
      *
      * @param account
      * @param user
@@ -412,9 +410,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        if (user.getBareJid() != null) {
-            roster.createEntry(user.getBareJid(), name, groups.toArray(new String[groups.size()]));
-        }
+        roster.createEntry(user.getBareJid(), name, groups.toArray(new String[groups.size()]));
+
     }
 
     /**

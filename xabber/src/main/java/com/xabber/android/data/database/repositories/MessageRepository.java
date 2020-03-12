@@ -72,7 +72,7 @@ public class MessageRepository {
     public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
         return DatabaseManager.getInstance().getDefaultRealmInstance()
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, contactRealmObject.getAccountJid())
+                //.equalTo(MessageRealmObject.Fields.ACCOUNT, contactRealmObject.getAccountJid()) //TODO REALM UPDATE change this to searching by full contact info
                 .equalTo(MessageRealmObject.Fields.USER, contactRealmObject.getContactJid())
                 .findFirst();
     }
