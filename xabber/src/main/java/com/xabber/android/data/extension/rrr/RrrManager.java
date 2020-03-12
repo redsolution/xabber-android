@@ -142,7 +142,7 @@ public class RrrManager implements OnPacketListener {
 
     public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid,
                                   final String uniqueId, final String text){
-        final Message message = new Message();
+        final Message[] message = {new Message()};
         Application.getInstance().runInBackgroundUserRequest(() ->  {
             Realm realm = null;
             try {
@@ -151,21 +151,30 @@ public class RrrManager implements OnPacketListener {
                         MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
                                 .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
                                 .findFirst();
-                        messageRealmObject.setText(text);
-                        EventBus.getDefault().post(new MessageUpdateEvent());
-                        message.setBody(messageRealmObject.getText());
-                        message.setStanzaId(messageRealmObject.getStanzaId());
-                        message.setTo(messageRealmObject.getUser().getBareJid());
-                        message.setFrom(messageRealmObject.getAccount().getFullJid());
-                        message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
+                        if (messageRealmObject != null) {
+                            try {
+                                message[0] = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            String body = message[0].getBody();
+                            message[0].removeBody("");
+                            String originalText = messageRealmObject.getText();
+                            body = body.substring(0, body.length() - originalText.length()).concat(text);
+                            message[0].setBody(body);
+                            message[0].setStanzaId(messageRealmObject.getStanzaId());
+                            messageRealmObject.setText(text);
+                            messageRealmObject.setOriginalStanza(message[0].toXML().toString());
+                            EventBus.getDefault().post(new MessageUpdateEvent());
+                        }
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
             //now try to send packet to server
             try {
-                ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(),
-                        accountJid.toString(), message);
+                ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message[0].getStanzaId(),
+                        accountJid.toString(), message[0]);
                 AccountManager.getInstance().getAccount(accountJid).getConnection()
                         .sendIqWithResponseCallback(replaceMessageIQ, packet -> {
                                 //TODO implement iq replies handler
