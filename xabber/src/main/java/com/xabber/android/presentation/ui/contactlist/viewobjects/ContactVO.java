@@ -35,7 +35,7 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;

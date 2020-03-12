@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.ui.contactlist;
+package com.xabber.android.ui.fragment.chatListFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -70,9 +70,6 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.chatListFragment.ChatItemDiffUtil;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;

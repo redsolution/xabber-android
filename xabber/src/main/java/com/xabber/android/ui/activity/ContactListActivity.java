@@ -58,7 +58,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;

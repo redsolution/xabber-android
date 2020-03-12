@@ -15,28 +15,15 @@
 package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
-import android.os.Looper;
 
-import androidx.annotation.Nullable;
-
-import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.NotificationStateRealmObject;
-import com.xabber.android.data.database.realmobjects.OldChatRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatData;
-import com.xabber.android.data.message.NotificationState;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Manage chat specific options.
@@ -73,7 +60,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     @Override
     public void onLoad() {
-        clearUnusedNotificationStateFromRealm();
+        ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
 
@@ -144,70 +131,5 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
                 chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
                 chat.isGroupchat(), chat.getUnreadMessageCount(), null);
-    }
-
-    @Nullable
-    public ChatData loadChatDataFromRealm(AbstractChat chat) {
-        String accountJid = chat.getAccount().toString();
-        String userJid = chat.getUser().toString();
-        ChatData chatData = null;
-
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        OldChatRealmObject realmChat = realm
-                .where(OldChatRealmObject.class)
-                .equalTo("accountJid", accountJid)
-                .equalTo("userJid", userJid)
-                .findFirst();
-
-        if (realmChat != null) {
-            NotificationState notificationState;
-            if (realmChat.getNotificationState() != null) {
-                 notificationState = new NotificationState(
-                        realmChat.getNotificationState().getMode(),
-                        realmChat.getNotificationState().getTimestamp()
-                );
-            } else notificationState =
-                    new NotificationState(NotificationState.NotificationMode.bydefault, 0);
-
-            chatData = new ChatData(
-                    realmChat.getAccountJid(),
-                    realmChat.getUserJid(),
-                    realmChat.isArchived(),
-                    notificationState,
-                    realmChat.getLastPosition(),
-                    realmChat.isHistoryRequestedAtStart(),
-                    realmChat.getChatstateMode(),
-                    realmChat.isGroupchat());
-        }
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        return chatData;
-    }
-
-    public void clearUnusedNotificationStateFromRealm() {
-        final long startTime = System.currentTimeMillis();
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<NotificationStateRealmObject> results = realm1
-                            .where(NotificationStateRealmObject.class)
-                            .findAll();
-
-                    for (NotificationStateRealmObject notificationState : results) {
-                        OldChatRealmObject oldChatRealmObject = realm1
-                                .where(OldChatRealmObject.class)
-                                .equalTo("notificationState.id", notificationState.getId())
-                                .findFirst();
-                        if (oldChatRealmObject == null) notificationState.deleteFromRealm();
-                    }
-                });
-            } catch (Exception e) {
-                LogManager.exception("ChatManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
-
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " clear unused notif. state: " + (System.currentTimeMillis() - startTime));
     }
 }

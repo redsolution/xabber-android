@@ -12,7 +12,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
 import com.xabber.android.ui.activity.ContactListActivity
 import com.xabber.android.ui.color.ColorManager
 

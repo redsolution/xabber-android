@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 

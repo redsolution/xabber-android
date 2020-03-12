@@ -31,7 +31,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;

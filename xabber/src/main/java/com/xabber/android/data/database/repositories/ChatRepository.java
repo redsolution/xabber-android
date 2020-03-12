@@ -5,6 +5,7 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
@@ -81,6 +82,25 @@ public class ChatRepository {
         return new ArrayList<>(realmResults);
     }
 
+    public static Collection<ChatRealmObject> getAllChatsForAccountFromRealm(AccountJid accountJid){
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<ChatRealmObject> realmResults = realm
+                .where(ChatRealmObject.class)
+                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                        accountJid.getFullJid().asBareJid().toString())
+                .findAll();
+        if (Looper.getMainLooper() != Looper.myLooper())
+            realm.close();
+        return new ArrayList<>(realmResults);
+    }
+
+    public static Collection<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
+        Collection<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            result.addAll(getAllChatsForAccountFromRealm(accountJid));
+        return result;
+    }
+
     public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, UserJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         ChatRealmObject chatRealmObject = realm
@@ -94,6 +114,33 @@ public class ChatRepository {
         return chatRealmObject;
     }
 
+    public static void clearUnusedNotificationStateFromRealm() {
+//        final long startTime = System.currentTimeMillis();   //TODO REALM UPDATE
+//        Application.getInstance().runInBackground(() -> {
+//            Realm realm = null;
+//            try {
+//                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+//                realm.executeTransaction(realm1 -> {
+//                    RealmResults<NotificationStateRealmObject> results = realm1
+//                            .where(NotificationStateRealmObject.class)
+//                            .findAll();
+//
+//                    for (NotificationStateRealmObject notificationState : results) {
+//                        ChatRealmObject chatRealmObject = realm1
+//                                .where(ChatRealmObject.class)
+//                                .equalTo(N)
+//                                .findFirst();
+//                        if (chatRealmObject == null) notificationState.deleteFromRealm();
+//                    }
+//                });
+//            } catch (Exception e) {
+//                LogManager.exception("ChatManager", e);
+//            } finally { if (realm != null) realm.close(); }
+//        });
+//
+//        LogManager.d("REALM", Thread.currentThread().getName()
+//                + " clear unused notif. state: " + (System.currentTimeMillis() - startTime));
+    }
 }
 
 

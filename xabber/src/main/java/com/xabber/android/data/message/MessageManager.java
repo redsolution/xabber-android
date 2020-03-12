@@ -38,8 +38,10 @@ import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -56,7 +58,6 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
@@ -197,14 +198,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     private RegularChat createChat(AccountJid account, UserJid user) {
         RegularChat chat = new RegularChat(account, user, false);
-        ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
+        ChatRealmObject chatData = ChatRepository.getChatRealmObjectFromRealm(account, user);
         if (chatData != null) {
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
-            chat.setNotificationState(chatData.getNotificationState(), false);
-            chat.setChatstate(chatData.getLastState());
+            //chat.setNotificationState(chatData.getNotificationState(), false);
+            //chat.setChatstate(chatData.getLastState());
             chat.setGroupchat(chatData.isGroupchat());
-            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
+            if (chatData.isHistoryRequestAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
         return chat;
