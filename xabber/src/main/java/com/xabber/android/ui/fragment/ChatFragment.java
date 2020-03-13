@@ -895,12 +895,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         outState.putString(VOICE_MESSAGE, recordingPath);
         outState.putBoolean(VOICE_MESSAGE_RECEIVER_IGNORE, ignoreReceiver);
         if (!bottomPanelMessagesIds.isEmpty()) {
-            outState.putStringArray(FORWARD_MESSAGES, bottomPanelMessagesIds.toArray(new String[0]));
-            if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
-                outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
-                outState.putBoolean(FORWARD_STATE, isReply);
-            } else {
-                outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
+            if (bottomMessagesPanel != null) {
+                outState.putStringArray(FORWARD_MESSAGES, bottomPanelMessagesIds.toArray(new String[0]));
+                if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
+                    outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
+                    outState.putBoolean(FORWARD_STATE, isReply);
+                } else {
+                    outState.putSerializable(FORWARD_PURPOSE, bottomMessagesPanel.getPurpose());
+                }
             }
         }
     }
