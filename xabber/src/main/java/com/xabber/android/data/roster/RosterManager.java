@@ -146,21 +146,23 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @Nullable
     public Presence getPresence(AccountJid account, UserJid user) {
-        final Roster roster = getRoster(account);
-        if (roster == null) {
-            return null;
-        } else {
-            return roster.getPresence(user.getJid().asBareJid());
-        }
+        return PresenceManager.getInstance().getPresence(account, user);
+        //final Roster roster = getRoster(account);
+        //if (roster == null) {
+        //    return null;
+        //} else {
+        //    return roster.getPresence(user.getJid().asBareJid());
+        //}
     }
 
     public List<Presence> getPresences(AccountJid account, Jid user) {
-        final Roster roster = getRoster(account);
-        if (roster == null) {
-            return new ArrayList<>();
-        } else {
-            return roster.getAvailablePresences(user.asBareJid());
-        }
+        return PresenceManager.getInstance().getAvailablePresences(account, user.asBareJid());
+        //final Roster roster = getRoster(account);
+        //if (roster == null) {
+        //    return new ArrayList<>();
+        //} else {
+        //    return roster.getAvailablePresences(user.asBareJid());
+        //}
     }
 
     public boolean accountIsSubscribedTo(AccountJid account, UserJid user) {
@@ -437,6 +439,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             public void run() {
                 try {
                     roster.removeEntry(entry);
+                    PresenceManager.getInstance().clearContactPresences(user.getBareJid());
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED);
                 } catch (SmackException.NoResponseException e) {

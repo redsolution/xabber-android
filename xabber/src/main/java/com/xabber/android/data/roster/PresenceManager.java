@@ -76,6 +76,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
 
     private final Map<BareJid, Map<Resourcepart, Presence>> accountsPresenceMap = new ConcurrentHashMap<>();
+    private final Map<BareJid, Map<Resourcepart, Presence>> presenceMap = new ConcurrentHashMap<>();
+
 
     public static PresenceManager getInstance() {
         if (instance == null) {
@@ -358,46 +360,44 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             LogManager.exception(this, e);
             return;
         }
-        boolean accountPresence = AccountManager.getInstance().isAccountExist(from.getBareJid().toString());
+        boolean accountPresence = isAccountPresence(connection.getAccount(), from.getBareJid());
         Map<Resourcepart, Presence> userPresences;
         switch (presence.getType()) {
             case available:
+                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences.remove(Resourcepart.EMPTY);
+                userPresences.put(fromResource, presence);
                 if (accountPresence) {
-                    userPresences = getAccountPresences(from.getBareJid());
-                    userPresences.remove(Resourcepart.EMPTY);
-                    userPresences.put(fromResource, presence);
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
+                } else {
+                    RosterManager.onContactChanged(connection.getAccount(), from);
                 }
                 break;
             case unavailable:
                 // If no resource, this is likely an offline presence as part of
                 // a roster presence flood. In that case, we store it.
+                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences.put(fromResource.equals(Resourcepart.EMPTY) ? Resourcepart.EMPTY : fromResource, presence);
                 if (accountPresence) {
-                    if (fromResource.equals(Resourcepart.EMPTY)) {
-                        // Get the user presence map
-                        userPresences = getAccountPresences(from.getBareJid());
-                        userPresences.put(Resourcepart.EMPTY, presence);
-                    } else {
-                        userPresences = getAccountPresences(from.getBareJid());
-                        userPresences.put(fromResource, presence);
-                    }
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
+                } else {
+                    RosterManager.onContactChanged(connection.getAccount(), from);
                 }
                 break;
             case error:
                 // No need to act on error presences send without from, i.e.
                 // directly send from the users XMPP service, or where the from
                 // address is not a bare JID
+                if (!fromResource.equals(Resourcepart.EMPTY)) {
+                    break;
+                }
+                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences.clear();
+                userPresences.put(Resourcepart.EMPTY, presence);
                 if (accountPresence) {
-                    if (!fromResource.equals(Resourcepart.EMPTY)) {
-                        break;
-                    }
-                    userPresences = getAccountPresences(from.getBareJid());
-                    // Any other presence data is invalidated by the error packet.
-                    userPresences.clear();
-                    // Set the new presence using the empty resource as a key.
-                    userPresences.put(Resourcepart.EMPTY, presence);
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
+                } else {
+                    RosterManager.onContactChanged(connection.getAccount(), from);
                 }
                 break;
             case subscribe:
@@ -515,6 +515,14 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
+    private Map<Resourcepart, Presence> getPresences(BareJid bareJid) {
+        Map<Resourcepart, Presence> presences = presenceMap.get(bareJid);
+        if (presences == null) {
+            presences = new ConcurrentHashMap<>();
+            presenceMap.put(bareJid, presences);
+        }
+        return presences;
+    }
     private Map<Resourcepart, Presence> getAccountPresences(BareJid bareJid) {
         Map<Resourcepart, Presence> accountPresences = accountsPresenceMap.get(bareJid);
         if (accountPresences == null) {
@@ -535,11 +543,110 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return allAccountAvailablePresences;
     }
 
+    public List<Presence> getAllPresences(AccountJid account, BareJid bareJid) {
+        Map<Resourcepart, Presence> userPresences = isAccountPresence(account, bareJid) ? getAccountPresences(bareJid) : getPresences(bareJid);
+        List<Presence> res;
+        if (userPresences.isEmpty()) {
+            // Create an unavailable presence if none was found
+            Presence unavailable = new Presence(Presence.Type.unavailable);
+            unavailable.setFrom(bareJid);
+            res = new ArrayList<>(Collections.singletonList(unavailable));
+        } else {
+            res = new ArrayList<>(userPresences.values().size());
+            for (Presence presence : userPresences.values()) {
+                res.add(presence.clone());
+            }
+        }
+        return res;
+    }
+
+    public List<Presence> getAvailablePresences(AccountJid account, BareJid bareJid) {
+        List<Presence> allPresences = getAllPresences(account, bareJid);
+        List<Presence> res = new ArrayList<>(allPresences.size());
+        for (Presence presence : allPresences) {
+            if (presence.isAvailable()) {
+                // No need to clone presence here, getAllPresences already returns clones
+                res.add(presence);
+            }
+        }
+        return res;
+    }
+
+    public Presence getPresence(AccountJid account, UserJid user) {
+        boolean isAccountPresence = isAccountPresence(account, user.getBareJid());
+        Map<Resourcepart, Presence> userPresences = isAccountPresence ? getAccountPresences(user.getBareJid()) : getPresences(user.getBareJid());
+        if (userPresences.isEmpty()) {
+            Presence presence = new Presence(Presence.Type.unavailable);
+            presence.setFrom(user.getBareJid());
+            return presence;
+        }
+        else {
+            // Find the resource with the highest priority
+            // Might be changed to use the resource with the highest availability instead.
+            Presence presence = null;
+            // This is used in case no available presence is found
+            Presence unavailable = null;
+
+            for (Resourcepart resource : userPresences.keySet()) {
+                Presence p = userPresences.get(resource);
+                if (p == null) {
+                    continue;
+                }
+                if (!p.isAvailable()) {
+                    unavailable = p;
+                    continue;
+                }
+                // Chose presence with highest priority first.
+                if (presence == null || p.getPriority() > presence.getPriority()) {
+                    presence = p;
+                }
+                // If equal priority, choose "most available" by the mode value.
+                else if (p.getPriority() == presence.getPriority()) {
+                    Presence.Mode pMode = p.getMode();
+                    // Default to presence mode of available.
+                    if (pMode == null) {
+                        pMode = Presence.Mode.available;
+                    }
+                    Presence.Mode presenceMode = presence.getMode();
+                    // Default to presence mode of available.
+                    if (presenceMode == null) {
+                        presenceMode = Presence.Mode.available;
+                    }
+                    if (pMode.compareTo(presenceMode) < 0) {
+                        presence = p;
+                    }
+                }
+            }
+            if (presence == null) {
+                if (unavailable != null) {
+                    return unavailable.clone();
+                }
+                else {
+                    presence = new Presence(Presence.Type.unavailable);
+                    presence.setFrom(user.getBareJid());
+                    return presence;
+                }
+            }
+            else {
+                return presence.clone();
+            }
+        }
+    }
+
     public void clearAccountPresences(AccountJid account) {
         getAccountPresences(account.getFullJid().asBareJid()).clear();
     }
 
+    public void clearContactPresences(BareJid bareJid) {
+        getPresences(bareJid).clear();
+    }
+
     public static void sortPresencesByPriority(List<Presence> allPresences) {
         Collections.sort(allPresences, PresenceComparatorByPriority.INSTANCE);
+    }
+
+    public static boolean isAccountPresence(AccountJid account, BareJid from) {
+        return AccountManager.getInstance().isAccountExist(from.toString())
+                && account.getFullJid().asBareJid().equals(from);
     }
 }

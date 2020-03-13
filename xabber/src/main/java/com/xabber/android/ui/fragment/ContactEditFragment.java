@@ -145,7 +145,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                 break;
 
             case SubscriptionState.TO:
-                if (pendingSubscription == SubscriptionState.PENDING_IN) {
+                if (subscriptionState.hasIncomingSubscription()) {
                     setSendSubscriptionField(false, R.string.contact_subscription_send);
                 } else {
                     setSendSubscriptionField(hasAutoAcceptSubscription, R.string.contact_subscription_accept);
@@ -155,19 +155,16 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
 
             case SubscriptionState.FROM:
                 setSendSubscriptionField(true, R.string.contact_subscription_send);
-                setReceiveSubscriptionField(pendingSubscription == SubscriptionState.PENDING_OUT,
-                        R.string.contact_subscription_ask);
+                setReceiveSubscriptionField(subscriptionState.hasOutgoingSubscription(), R.string.contact_subscription_ask);
                 break;
 
             case SubscriptionState.NONE:
-                if (pendingSubscription == SubscriptionState.PENDING_IN_OUT
-                        || pendingSubscription == SubscriptionState.PENDING_IN) {
+                if (subscriptionState.hasIncomingSubscription()) {
                     setSendSubscriptionField(false, R.string.contact_subscription_send);
                 } else {
                     setSendSubscriptionField(hasAutoAcceptSubscription, R.string.contact_subscription_accept);
                 }
-                setReceiveSubscriptionField(pendingSubscription == SubscriptionState.PENDING_IN_OUT
-                        || pendingSubscription == SubscriptionState.PENDING_OUT, R.string.contact_subscription_ask);
+                setReceiveSubscriptionField(subscriptionState.hasOutgoingSubscription(), R.string.contact_subscription_ask);
         }
     }
 

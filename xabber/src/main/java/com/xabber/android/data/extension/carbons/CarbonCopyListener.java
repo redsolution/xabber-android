@@ -26,6 +26,7 @@ class CarbonCopyListener implements CarbonCopyReceivedListener {
     @Override
     public void onCarbonCopyReceived(final CarbonExtension.Direction direction,
                                      final Message carbonCopy, final Message wrappingMessage) {
+        LogManager.d(LOG_TAG, "onCarbonCopyReceive reached, just before runOnUiThread() call. CarbonExtension.Direction: " + direction.toString() + " Message: " + carbonCopy.toString() + " Message: " + wrappingMessage);
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {

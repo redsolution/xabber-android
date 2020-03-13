@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
@@ -59,6 +60,9 @@ public class UploadService extends IntentService {
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String XABBER_COMPRESSED_DIR = "Xabber/temp";
     private static final String XABBER_DIR = "Xabber";
+    private static final String XABBER_AUDIO_DIR = "Xabber Audio";
+    private static final String XABBER_DOCUMENTS_DIR = "Xabber Documents";
+    private static final String XABBER_IMAGES_DIR = "Xabber Images";
 
     public final static String KEY_RECEIVER = "receiver";
     public final static String KEY_ACCOUNT_JID = "account_jid";
@@ -130,7 +134,7 @@ public class UploadService extends IntentService {
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists())
-            if (!directory.mkdir()) {
+            if (!directory.mkdirs()) {
                 publishError(messageId, "Directory not created");
                 return;
             }
@@ -342,13 +346,29 @@ public class UploadService extends IntentService {
     }
 
     private static String getCompressedDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        return Environment.getExternalStorageDirectory().getPath()
                 + File.separator + XABBER_COMPRESSED_DIR;
+        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        //        + File.separator + XABBER_COMPRESSED_DIR;
     }
 
     private static String getDownloadDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        return Environment.getExternalStorageDirectory().getPath()
                 + File.separator + XABBER_DIR;
+        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        //        + File.separator + XABBER_DIR;
+    }
+
+    private static String getAudioDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
+    }
+
+    private static String getDocumentsDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
+    }
+
+    private static String getImagesDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 
     private String generateErrorDescriptionForFiles(List<String> files, List<String> errors) {
@@ -366,14 +386,50 @@ public class UploadService extends IntentService {
 
     private String copyFileToLocalStorage(Uri uri) throws IOException {
         String fileName = UriUtils.getFullFileName(uri);
-        File file = new File(getDownloadDirPath(),  fileName);
+        File file;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+        String fileType = null;
+        if (extension != null) {
+            fileType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (fileType != null) {
+                int slash = fileType.indexOf("/");
+                if (slash != -1) {
+                    fileType = fileType.substring(0, slash);
+                }
+            }
+        }
+        if ("audio".equals(fileType) || (extension != null && extension.equals("ogg"))) {
+            file = new File(getAudioDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        } else if ("image".equals(fileType)) {
+            file = new File(getImagesDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        } else {
+            file = new File(getDocumentsDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        }
+
+        fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
+        file = new File(file, fileName);
 
         OutputStream os = null;
         InputStream is = null;
 
         if (file.exists()) {
-            file = new File(getDownloadDirPath(),
-                    FileManager.generateUniqueNameForFile(getDownloadDirPath(), fileName));
+            file = new File(file.getParent(),
+                    FileManager.generateUniqueNameForFile(file.getParent(), fileName));
         }
 
         if (file.createNewFile()) {
