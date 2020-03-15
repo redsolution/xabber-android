@@ -38,6 +38,7 @@
         <attr name="contact_list_contact_client_large_icon_color" format="reference" />
         <attr name="contact_list_contact_small_right_icon_alpha" format="reference" />
         <attr name="contact_list_muc_indicator_color" format="reference" />
+        <attr name="chat_list_ripple_color" format="reference" />
 
         <attr name="contact_list_active_chat_subgroup_background" format="reference" />
         <attr name="contact_list_active_chat_background" format="reference" />
@@ -82,6 +83,7 @@
         <attr name="standard_delete_icon" format="reference"/>
         <attr name="standard_sync_icon" format="reference"/>
         <attr name="standard_block_address_icon" format="reference"/>
+        <attr name="standard_divider_drawable" format="reference" />
 
         <attr name="standard_show_password_icon" format="reference"/>
         <attr name="standard_hide_password_icon" format="reference"/>

@@ -63,6 +63,7 @@
         <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
         <item name="contact_list_muc_indicator_color">@color/black</item>
+        <item name="chat_list_ripple_color">@color/grey_400</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/grey_100</item>
         <item name="contact_list_active_chat_background">@color/grey_50</item>
@@ -104,6 +105,7 @@
         <item name="standard_delete_icon">@drawable/ic_delete_grey_24dp</item>
         <item name="standard_sync_icon">@drawable/ic_sync_grey_24dp</item>
         <item name="standard_block_address_icon">@drawable/ic_block_address_grey_24dp</item>
+        <item name="standard_divider_drawable">@drawable/chatlist_divider_light</item>
 
         <item name="standard_show_password_icon">@drawable/ic_show_grey_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_grey_24dp</item>
@@ -164,6 +166,7 @@
         <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
         <item name="contact_list_muc_indicator_color">@color/grey_600</item>
+        <item name="chat_list_ripple_color">@color/grey_700</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
         <item name="contact_list_active_chat_background">@color/grey_200</item>
@@ -208,6 +211,7 @@
         <item name="standard_delete_icon">@drawable/ic_delete_white_24dp</item>
         <item name="standard_sync_icon">@drawable/ic_sync_white_24dp</item>
         <item name="standard_block_address_icon">@drawable/ic_block_address_white_24dp</item>
+        <item name="standard_divider_drawable">@drawable/chatlist_divider_dark</item>
 
         <item name="standard_show_password_icon">@drawable/ic_show_white_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_white_24dp</item>

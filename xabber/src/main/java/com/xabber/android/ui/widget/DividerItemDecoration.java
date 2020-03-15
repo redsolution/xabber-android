@@ -13,6 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xabber.android.R;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment.ChatListAvatarState;
+
 /**
  * DividerItemDecoration is a {@link RecyclerView.ItemDecoration} that can be used as a divider
  * between items of a {@link LinearLayoutManager}. It supports both {@link #HORIZONTAL} and
@@ -31,10 +35,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public static final int VERTICAL = LinearLayout.VERTICAL;
 
     private static final String TAG = "DividerItem";
-    private static final int[] ATTRS = new int[]{ android.R.attr.listDivider };
+    private static final int[] ATTRS = new int[]{ R.attr.standard_divider_drawable };
 
     private Drawable mDivider;
-    private boolean skipDividerOnLastItem = true;
+    private boolean skipDividerOnLastItem = false;
+    @ChatListAvatarState
+    private int chatListOffsetMode = 0;
 
     /**
      * Current orientation. Either {@link #HORIZONTAL} or {@link #VERTICAL}.
@@ -79,6 +85,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         skipDividerOnLastItem = skip;
     }
 
+    public void setChatListOffsetMode(@ChatListAvatarState int offsetMode) {
+        chatListOffsetMode = offsetMode;
+    }
+
     /**
      * Sets the {@link Drawable} for this divider.
      *
@@ -92,7 +102,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         if (parent.getLayoutManager() == null || mDivider == null) {
             return;
         }
@@ -108,15 +118,26 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         final int left;
         final int right;
         //noinspection AndroidLintNewApi - NewApi lint fails to handle overrides.
+        int tempLeft;
         if (parent.getClipToPadding()) {
-            left = parent.getPaddingLeft();
+            tempLeft = parent.getPaddingLeft();
             right = parent.getWidth() - parent.getPaddingRight();
-            canvas.clipRect(left, parent.getPaddingTop(), right,
+            canvas.clipRect(tempLeft, parent.getPaddingTop(), right,
                     parent.getHeight() - parent.getPaddingBottom());
         } else {
-            left = 0;
+            tempLeft = 0;
             right = parent.getWidth();
         }
+
+        if (chatListOffsetMode != ChatListFragment.NOT_SPECIFIED) {
+            if (chatListOffsetMode == ChatListFragment.SHOW_AVATARS) {
+                tempLeft += (int) (parent.getContext().getResources().getDisplayMetrics().density * 64f);
+            } else if (chatListOffsetMode == ChatListFragment.DO_NOT_SHOW_AVATARS) {
+                tempLeft += (int) (parent.getContext().getResources().getDisplayMetrics().density * 36f);
+            }
+        }
+
+        left = tempLeft;
 
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -128,7 +149,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             }
             parent.getDecoratedBoundsWithMargins(child, mBounds);
             final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
-            final int top = bottom - mDivider.getIntrinsicHeight();
+            final int top = bottom - 1;//mDivider.getIntrinsicHeight();
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
         }
@@ -180,6 +201,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
                 outRect.setEmpty();
                 return;
             }
+        }
+
+        if (chatListOffsetMode != 0) { // i.e. we have specified the offset mode, meaning this is ChatList
+            outRect.setEmpty();
+            return;
         }
 
         if (mOrientation == VERTICAL) {
