@@ -10,6 +10,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.HashMap;
@@ -41,29 +42,38 @@ public class AvatarRepository {
         return pepHashes;
     }
 
-    public static void savePepHashToRealm(final String contactJid, final String pepHash){
+    public static void savePepHashToRealm(final Jid contactJid, final String pepHash){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
+
                     ContactRealmObject contactRealmObject = realm1
                             .where(ContactRealmObject.class)
-                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.asBareJid().toString())
                             .findFirst();
-                    AvatarRealmObject avatarRealmObject = realm1
-                            .where(AvatarRealmObject.class)
-                            .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID, contactRealmObject.getAccountJid())
-                            .findFirst();
-                    if (avatarRealmObject != null)
-                        avatarRealmObject.setPepHash(pepHash);
-                    else {
-                        avatarRealmObject = new AvatarRealmObject(contactRealmObject);
-                        avatarRealmObject.setPepHash(pepHash);
+
+                    if (contactRealmObject != null && pepHash != null && !pepHash.isEmpty()){
+
+                        AvatarRealmObject avatarRealmObject = realm1
+                                .where(AvatarRealmObject.class)
+                                .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID, contactJid.asBareJid().toString())
+                                .findFirst();
+
+                        if (avatarRealmObject != null) {
+                            avatarRealmObject.setPepHash(pepHash);
+                        } else {
+                            avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                            avatarRealmObject.setPepHash(pepHash);
+                        }
+
+                        if (!contactRealmObject.getAvatars().contains(avatarRealmObject))
+                            contactRealmObject.getAvatars().add(avatarRealmObject);
+
+                        realm1.insertOrUpdate(contactRealmObject);
+                        realm1.insertOrUpdate(avatarRealmObject);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealmObject);
-                    contactRealmObject.getAvatars().add(avatarRealmObject);
-                    realm1.copyToRealmOrUpdate(contactRealmObject);
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
@@ -92,7 +102,7 @@ public class AvatarRepository {
         return pepHashes;
     }
 
-    public static void saveHashToRealm(final String contactJid, final String hash){
+    public static void saveHashToRealm(final Jid contactJid, final String hash){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
@@ -100,21 +110,30 @@ public class AvatarRepository {
                 realm.executeTransaction(realm1 -> {
                     ContactRealmObject contactRealmObject = realm1
                             .where(ContactRealmObject.class)
-                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.asBareJid().toString())
                             .findFirst();
-                    AvatarRealmObject avatarRealmObject = realm1
-                            .where(AvatarRealmObject.class)
-                            .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID , contactJid)
-                            .findFirst();
-                    if (avatarRealmObject != null) {
-                        avatarRealmObject.setVCardHash(hash);
-                    } else {
-                        avatarRealmObject = new AvatarRealmObject(contactRealmObject);
-                        avatarRealmObject.setVCardHash(hash);
+
+                    if (contactRealmObject != null && hash != null && !hash.isEmpty()){
+
+                        AvatarRealmObject avatarRealmObject = realm1
+                                .where(AvatarRealmObject.class)
+                                .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID , contactJid.asBareJid().toString())
+                                .findFirst();
+
+                        if (avatarRealmObject != null) {
+                            avatarRealmObject.setVCardHash(hash);
+                        } else {
+                            avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                            avatarRealmObject.setVCardHash(hash);
+                        }
+
+                        if (!contactRealmObject.getAvatars().contains(avatarRealmObject))
+                            contactRealmObject.getAvatars().add(avatarRealmObject);
+
+                        realm1.insertOrUpdate(contactRealmObject);
+                        realm1.insertOrUpdate(avatarRealmObject);
                     }
-                    realm1.copyToRealmOrUpdate(avatarRealmObject);
-                    contactRealmObject.getAvatars().add(avatarRealmObject);
-                    realm1.copyToRealmOrUpdate(contactRealmObject);
+
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);

@@ -5,14 +5,12 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.CircleRealmObject;
-import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.CircleConfiguration;
 import com.xabber.android.data.roster.ShowOfflineMode;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class CircleRepository {
@@ -38,20 +36,27 @@ public class CircleRepository {
         return circleConfigurationNestedMap;
     }
 
-    public static void saveGroupToRealm(final String account, final String group,
-                                        final boolean expanded, final ShowOfflineMode showOfflineMode){
+    public static void saveCircleToRealm(final String account, final String circleName,
+                                         final boolean expanded, final ShowOfflineMode showOfflineMode){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    RealmResults<ContactRealmObject> contactRealmObjectRealmResults = realm1
-                            .where(ContactRealmObject.class)
-                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, account)
-                            .findAll();
-                    RealmList<ContactRealmObject> contactRealmObjectRealmList = new RealmList<>();
-                    contactRealmObjectRealmList.addAll(contactRealmObjectRealmResults);
-                    realm1.copyToRealmOrUpdate(new CircleRealmObject(contactRealmObjectRealmList, group, expanded, showOfflineMode));
+                    CircleRealmObject circleRealmObject = realm1
+                            .where(CircleRealmObject.class)
+                            .equalTo(CircleRealmObject.Fields.CIRCLE_NAME, circleName)
+                            .findFirst();
+
+                    if (circleRealmObject == null){
+                        realm1.insertOrUpdate(new CircleRealmObject(null, circleName, expanded, showOfflineMode));
+                    } else {
+                        circleRealmObject.setExpanded(expanded);
+                        circleRealmObject.setShowOfflineMode(showOfflineMode);
+                        circleRealmObject.setCircleName(circleName);
+                        realm1.insertOrUpdate(circleRealmObject);
+                    }
+
                 });
             } catch (Exception e){
                 LogManager.exception("GroupRepository", e);

@@ -275,14 +275,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         hashes.put(jid, hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        AvatarRepository.saveHashToRealm(jid.asBareJid().toString(), hash);
+        AvatarRepository.saveHashToRealm(jid, hash);
     }
 
     private void setXEPHash(final Jid jid, final String hash) {
         XEPHashes.put(jid.asBareJid(), hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        AvatarRepository.savePepHashToRealm(jid.asBareJid().toString(), hash);
+        AvatarRepository.savePepHashToRealm(jid, hash);
     }
 
     /**

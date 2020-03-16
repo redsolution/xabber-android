@@ -144,7 +144,7 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setExpanded(expanded);
-        CircleRepository.saveGroupToRealm(account.toString(), group, expanded,
+        CircleRepository.saveCircleToRealm(account.toString(), group, expanded,
                 configuration.getShowOfflineMode());
     }
 
@@ -157,7 +157,7 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setShowOfflineMode(showOfflineMode);
-        CircleRepository.saveGroupToRealm(account.toString(), group, configuration.isExpanded(),
+        CircleRepository.saveCircleToRealm(account.toString(), group, configuration.isExpanded(),
                 showOfflineMode);
     }
 

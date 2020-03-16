@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ChatRepository {
 
@@ -35,27 +36,44 @@ public class ChatRepository {
             Realm realm = null;
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
 
-                ChatRealmObject chatRealmObject = getChatRealmObjectFromRealm(accountJid, userJid);
+                    ChatRealmObject chatRealmObject = realm1
+                            .where(ChatRealmObject.class)
+                            .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                                    accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID,
+                                    userJid.getBareJid().toString())
+                            .findFirst();
 
-                ContactRealmObject contactRealmObject = ContactRepository
-                        .getContactRealmObjectFromRealm(accountJid, userJid);
+                    ContactRealmObject contactRealmObject = realm1
+                            .where(ContactRealmObject.class)
+                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, userJid.getBareJid().toString())
+                            .findFirst();
 
-                if (chatRealmObject == null) {
-                    ChatRealmObject newChatRealmObject = new ChatRealmObject(contactRealmObject,
-                            lastMessage == null ? MessageRepository.getLastMessageForContactChat(contactRealmObject) : lastMessage,
-                            isGroupchat, isArchived, isBlocked, isHistoryRequestAtStart,
-                            unreadCount, lastPosition, notificationsPreferences ); //TODO REALM UPDATE unread!!!!11 notif prefs!!111
-                    realm.executeTransaction(realm1 -> {
-                        realm1.copyToRealm(newChatRealmObject);
-                    });
-                } else {
-                    realm.executeTransaction(realm1 -> {
+                    MessageRealmObject messageRealmObject = realm1
+                            .where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.USER, userJid.getBareJid().toString())
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().asBareJid().toString())
+                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                            .findFirst();
 
-                        if (lastMessage == null)
-                            chatRealmObject.setLastMessage(MessageRepository.getLastMessageForContactChat(contactRealmObject));
-                        else chatRealmObject.setLastMessage(lastMessage);
+                    if (chatRealmObject == null) {
 
+                        ChatRealmObject newChatRealmObject = new ChatRealmObject(contactRealmObject,
+                                lastMessage == null ? messageRealmObject : lastMessage,
+                                isGroupchat, isArchived, isBlocked, isHistoryRequestAtStart,
+                                unreadCount, lastPosition, notificationsPreferences );
+
+                        if (!contactRealmObject.getChats().contains(newChatRealmObject))
+                            contactRealmObject.getChats().add(newChatRealmObject);
+
+                        realm1.insertOrUpdate(newChatRealmObject);
+                        realm1.insertOrUpdate(contactRealmObject);
+                    } else {
+
+                        chatRealmObject.setLastMessage(lastMessage == null ? messageRealmObject : lastMessage);
                         chatRealmObject.setLastPosition(lastPosition);
                         chatRealmObject.setBlocked(isBlocked);
                         chatRealmObject.setArchived(isArchived);
@@ -63,9 +81,15 @@ public class ChatRepository {
                         chatRealmObject.setGroupchat(isGroupchat);
                         chatRealmObject.setUnreadMessagesCount(unreadCount); //TODO REALM UPDATE also unread and notif prefs!
                         chatRealmObject.setChatNotificationsPreferences(notificationsPreferences);
-                    });
 
-                }
+                        if (!contactRealmObject.getChats().contains(chatRealmObject))
+                            contactRealmObject.getChats().add(chatRealmObject);
+
+                        realm1.insertOrUpdate(chatRealmObject);
+                        realm1.insertOrUpdate(contactRealmObject);
+                    }
+                });
+
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
