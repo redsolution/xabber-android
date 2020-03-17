@@ -375,8 +375,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 showTitlePopup(toolbarTitleTv);
                 break;
             case R.id.toolbar_search_button:
-                //startActivity(SearchActivity.createSearchIntent(getActivity()));
-                testLayoutInflating();
+                startActivity(SearchActivity.createSearchIntent(getActivity()));
                 break;
         }
     }
@@ -463,6 +462,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /** Show contacts filtered by filterString */
     public void search(String filterString){
         this.filterString = filterString;
+        update();
         //TODO implement search
     }
 
