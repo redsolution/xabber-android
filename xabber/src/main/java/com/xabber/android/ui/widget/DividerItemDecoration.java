@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
-import com.xabber.android.presentation.ui.contactlist.ChatListFragment.ChatListAvatarState;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
 /**
  * DividerItemDecoration is a {@link RecyclerView.ItemDecoration} that can be used as a divider
@@ -39,7 +38,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mDivider;
     private boolean skipDividerOnLastItem = false;
-    @ChatListAvatarState
+    @ChatListFragment.ChatListAvatarState
     private int chatListOffsetMode = 0;
 
     /**
@@ -85,7 +84,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         skipDividerOnLastItem = skip;
     }
 
-    public void setChatListOffsetMode(@ChatListAvatarState int offsetMode) {
+    public void setChatListOffsetMode(@ChatListFragment.ChatListAvatarState int offsetMode) {
         chatListOffsetMode = offsetMode;
     }
 
