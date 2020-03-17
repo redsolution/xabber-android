@@ -104,7 +104,7 @@
         android:orientation="vertical"
         app:layout_behavior="com.xabber.android.ui.helper.CustomScrollingViewBehavior">
 
-        <include layout="@layout/view_contact_bar" />
+        <include layout="@layout/contact_bar_auto_sizing" />
 
         <FrameLayout
             android:id="@+id/scrollable_container"

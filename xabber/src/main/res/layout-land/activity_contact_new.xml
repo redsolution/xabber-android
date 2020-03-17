@@ -186,7 +186,7 @@
             android:orientation="vertical"
             android:paddingTop="81dp">
 
-            <include layout="@layout/view_contact_bar" />
+            <include layout="@layout/contact_bar_auto_sizing" />
 
             <FrameLayout
                 android:id="@+id/scrollable_container"

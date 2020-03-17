@@ -75,6 +75,7 @@ import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.widget.ContactBarAutoSizingLayout;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -89,6 +90,8 @@ public class ContactActivity extends ManagedActivity implements
     private AbstractChat chat;
     private Toolbar toolbar;
     private View contactTitleView;
+    private TextView contactAddress;
+    private TextView contactName;
     private AbstractContact bestContact;
     private CollapsingToolbarLayout collapsingToolbar;
     private AppBarLayout appBarLayout;
@@ -104,10 +107,7 @@ public class ContactActivity extends ManagedActivity implements
     private TextView callsButtonText;
     private TextView blockButtonText;
     private TextView notifyButtonText;
-    private LinearLayout chatButtonLayout;
-    private LinearLayout callsButtonLayout;
-    private LinearLayout blockButtonLayout;
-    private LinearLayout notifyButtonLayout;
+    private ContactBarAutoSizingLayout contactBarLayout;
 
     public int orientation;
     private boolean blocked;
@@ -195,29 +195,23 @@ public class ContactActivity extends ManagedActivity implements
             }
         });
 
+        contactBarLayout = findViewById(R.id.contact_bar_layout);
+
         chatButton = findViewById(R.id.chat_button);
         chatButtonText = findViewById(R.id.chat_button_text);
-        chatButtonLayout = findViewById(R.id.chat_button_layout);
-        chatButtonLayout.setOnClickListener(this);
-        chatButtonLayout.setOnLongClickListener(this);
+        chatButton.setOnClickListener(this);
 
         callsButton = findViewById(R.id.call_button);
         callsButtonText = findViewById(R.id.call_button_text);
-        callsButtonLayout = findViewById(R.id.call_button_layout);
-        callsButtonLayout.setOnClickListener(this);
-        callsButtonLayout.setOnLongClickListener(this);
+        callsButton.setOnClickListener(this);
 
         blockButton = findViewById(R.id.block_button);
         blockButtonText = findViewById(R.id.block_text);
-        blockButtonLayout = findViewById(R.id.block_button_layout);
-        blockButtonLayout.setOnClickListener(this);
-        blockButtonLayout.setOnLongClickListener(this);
+        blockButton.setOnClickListener(this);
 
         notifyButton = findViewById(R.id.notify_button);
         notifyButtonText = findViewById(R.id.notification_text);
-        notifyButtonLayout = findViewById(R.id.notify_button_layout);
-        notifyButtonLayout.setOnClickListener(this);
-        notifyButtonLayout.setOnLongClickListener(this);
+        notifyButton.setOnClickListener(this);
 
         int colorLevel = AccountPainter.getAccountColorLevel(account);
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
@@ -228,8 +222,9 @@ public class ContactActivity extends ManagedActivity implements
             coloredBlockText = false;
 
         contactTitleView = findViewById(R.id.contact_title_expanded_new);
-        TextView contactAddressView = (TextView) findViewById(R.id.address_text);
-        contactAddressView.setText(user.getBareJid().toString());
+        contactAddress = (TextView) findViewById(R.id.address_text);
+        contactAddress.setText(user.getBareJid().toString());
+        contactName = (TextView) findViewById(R.id.name);
 
         chat = MessageManager.getInstance().getOrCreateChat(account, user);
         checkForBlockedStatus();
@@ -280,7 +275,6 @@ public class ContactActivity extends ManagedActivity implements
 
     @Override
     protected void onDestroy() {
-        findViewById(R.id.notify_button_layout).setOnClickListener(null);
         super.onDestroy();
     }
 
@@ -325,7 +319,6 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void orientationLandscape() {
-        final TextView contactNameView = (TextView) findViewById(R.id.name);
         final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
 
         toolbar.setTitle("");
@@ -364,10 +357,10 @@ public class ContactActivity extends ManagedActivity implements
                     int i = v.getChildAt(0).getPaddingTop();
                     if (scrollY >= (v.getChildAt(0).getPaddingTop())) {
                         divider.setVisibility(View.VISIBLE);
-                        contactNameView.setMaxLines(1);
+                        contactName.setMaxLines(1);
                     } else if (divider.getVisibility() != View.INVISIBLE) {
                         divider.setVisibility(View.INVISIBLE);
-                        contactNameView.setMaxLines(2);
+                        contactName.setMaxLines(2);
                     }
                 }
             });
@@ -403,8 +396,8 @@ public class ContactActivity extends ManagedActivity implements
         notifyButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
         blockButton.setColorFilter(getResources().getColor(R.color.red_900));
 
-        callsButtonLayout.setEnabled(!blocked);
-        notifyButtonLayout.setEnabled(!blocked);
+        callsButton.setEnabled(!blocked);
+        notifyButton.setEnabled(!blocked);
 
         blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
         blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
@@ -423,6 +416,7 @@ public class ContactActivity extends ManagedActivity implements
             callsButtonText.setVisibility(View.VISIBLE);
             blockButtonText.setVisibility(View.VISIBLE);
             notifyButtonText.setVisibility(View.VISIBLE);
+            contactBarLayout.redrawText();
         }
     }
 
@@ -475,7 +469,8 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void updateName() {
-        ((TextView) findViewById(R.id.name)).setText(bestContact.getName());
+        contactName.setText(bestContact.getName());
+        contactName.setVisibility(bestContact.getName().equals(user.getBareJid().toString()) ? View.GONE : View.VISIBLE);
         /*if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
             String vCardName = VCardManager.getInstance().getName(user.getJid());
             if (!"".equals(vCardName)) {
@@ -516,20 +511,20 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.chat_button_layout:
+            case R.id.chat_button:
                 startActivity(ChatActivity.createSpecificChatIntent(this, account, user));
                 finish();
                 break;
-            case R.id.call_button_layout:
+            case R.id.call_button:
                 Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
                 break;
-            case R.id.notify_button_layout:
+            case R.id.notify_button:
                 if (chat.notifyAboutMessage())
                     showSnoozeDialog(chat);
                 else
                     removeSnooze(chat);
                 break;
-            case R.id.block_button_layout:
+            case R.id.block_button:
                 if (blocked)
                     removeBlock();
                 else
