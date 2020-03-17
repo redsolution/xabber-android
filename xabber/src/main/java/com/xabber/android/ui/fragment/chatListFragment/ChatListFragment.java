@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -71,11 +72,14 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.widget.DividerItemDecoration;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -257,6 +261,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         adapter = new ChatListAdapter(items, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
+        DividerItemDecoration divider = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
+        divider.setChatListOffsetMode(SettingsManager.contactsShowAvatars() ? SHOW_AVATARS : DO_NOT_SHOW_AVATARS);
+        recyclerView.addItemDecoration(divider);
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
 
@@ -368,11 +375,46 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 showTitlePopup(toolbarTitleTv);
                 break;
             case R.id.toolbar_search_button:
-                startActivity(SearchActivity.createSearchIntent(getActivity()));
+                //startActivity(SearchActivity.createSearchIntent(getActivity()));
+                testLayoutInflating();
                 break;
         }
     }
 
+    private void testLayoutInflating() {
+        final long optimizedDefault = getLayoutTime(R.layout.item_chat_in_contact_list);
+        final long custom = getLayoutTime(R.layout.item_chat_in_contact_list_new);
+        final long oldDefault = getLayoutTime(R.layout.item_chat_in_contact_list_old);
+
+        LogManager.i("LayoutTime", "optimized default : " + optimizedDefault);
+        LogManager.i("LayoutTime", "custom : " + custom);
+        LogManager.i("LayoutTime", "old default : " + oldDefault);
+    }
+
+    private long getLayoutTime(int layoutRes) {
+        final Context targetContext = recyclerView.getContext();
+        final LayoutInflater layoutInflater = LayoutInflater.from(targetContext);
+
+        final long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
+            final View view = layoutInflater.inflate(layoutRes, null);
+            view.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+
+            view.measure(
+                    View.MeasureSpec.makeMeasureSpec(
+                            recyclerView.getWidth(),
+                            View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(
+                            (int)(getResources().getDisplayMetrics().density * 64),
+                            View.MeasureSpec.UNSPECIFIED)
+            );
+            final int measuredHeight = view.getMeasuredHeight();
+            final int measuredWidth = view.getMeasuredWidth();
+
+            view.layout(0, 0, measuredWidth, measuredHeight);
+        }
+        return System.currentTimeMillis() - startTime;
+    }
     /** @return  Return true when first element on the top of list*/
     public boolean isOnTop(){
         return linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
@@ -754,6 +796,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         all
     }
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({NOT_SPECIFIED, SHOW_AVATARS, DO_NOT_SHOW_AVATARS})
+    public @interface ChatListAvatarState {}
+    public static final int NOT_SPECIFIED = 0;
+    public static final int SHOW_AVATARS = 1;
+    public static final int DO_NOT_SHOW_AVATARS = 2;
+
     private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
         String substring;
 
@@ -774,5 +823,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             else return (firstString.compareTo(secondString));
         }
     }
+
 
 }
