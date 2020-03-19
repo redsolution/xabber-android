@@ -11,17 +11,4 @@
 
         </shape>
     </item>
-<!--
-    <item android:minLevel="1" android:maxLevel="1">
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-
-            <corners
-                android:radius="4dp" />
-
-            <solid
-                android:color="#809E9E98"/>
-
-        </shape>
-    </item>
--->
 </level-list>

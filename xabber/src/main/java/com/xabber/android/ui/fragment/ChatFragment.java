@@ -783,25 +783,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setIntroView() {
         View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            introView.getBackground().setLevel(0);
-        } else {
-            introView.getBackground().setLevel(0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                introView.getBackground().setTint(accountColor);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            introView.getBackground().setTint(accountColor);
         }
-        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView));
+        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, account, user));
     }
 
     public void inflateIntroView(boolean show) {
         if (chatIntroLayout == null) {
             if (show){
                 chatIntroLayout = (ViewGroup) stubIntro.inflate();
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                    chatIntroLayout.getBackground().setLevel(1);
-                } else {
-                    chatIntroLayout.getBackground().setLevel(0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    chatIntroLayout.getBackground().setTint(accountColor);
                 }
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) chatIntroLayout.getLayoutParams();
                 Point size = new Point();

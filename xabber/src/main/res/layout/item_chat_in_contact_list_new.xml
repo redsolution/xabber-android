@@ -9,7 +9,6 @@
     android:paddingRight="8dp"
     android:clipToPadding="false"
     android:background="@drawable/ripple_chat_list_item"
-    android:elevation="1dp"
     >
 
     <View

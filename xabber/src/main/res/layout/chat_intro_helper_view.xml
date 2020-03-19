@@ -12,12 +12,14 @@
     app:layout_anchorGravity="center">
 
     <LinearLayout
+        android:id="@+id/layout_encryption"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:paddingBottom="4dp">
 
         <ImageButton
+            android:id="@+id/iv_encryption"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -28,7 +30,7 @@
             app:srcCompat="@drawable/ic_security_grey_24dp" />
 
         <TextView
-            android:id="@+id/point1"
+            android:id="@+id/tv_encryption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -41,6 +43,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_archive"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -48,6 +51,7 @@
         android:paddingBottom="4dp">
 
         <ImageButton
+            android:id="@+id/iv_archive"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -57,7 +61,7 @@
             app:srcCompat="@drawable/ic_server_network" />
 
         <TextView
-            android:id="@+id/point2"
+            android:id="@+id/tv_archive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -70,6 +74,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_carbons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -77,6 +82,7 @@
         android:paddingBottom="4dp">
 
         <ImageButton
+            android:id="@+id/iv_carbons"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -86,7 +92,7 @@
             app:srcCompat="@drawable/ic_sync_white_24dp" />
 
         <TextView
-            android:id="@+id/point3"
+            android:id="@+id/tv_carbons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -99,6 +105,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_server_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -106,6 +113,7 @@
         android:paddingBottom="4dp">
 
         <ImageButton
+            android:id="@+id/iv_server_search"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -115,7 +123,7 @@
             app:srcCompat="@drawable/ic_cloud_search" />
 
         <TextView
-            android:id="@+id/point4"
+            android:id="@+id/tv_server_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -128,6 +136,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_file_sharing"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -135,6 +144,7 @@
         android:paddingBottom="4dp">
 
         <ImageButton
+            android:id="@+id/iv_file_sharing"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -144,7 +154,7 @@
             app:srcCompat="@drawable/ic_image_white" />
 
         <TextView
-            android:id="@+id/point5"
+            android:id="@+id/tv_file_sharing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -157,12 +167,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_message_editing"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:paddingTop="4dp">
 
         <ImageButton
+            android:id="@+id/iv_message_editing"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -172,7 +184,7 @@
             app:srcCompat="@drawable/ic_edit_white_24dp" />
 
         <TextView
-            android:id="@+id/point6"
+            android:id="@+id/tv_message_editing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
