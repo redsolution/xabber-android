@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.utils.ExternalAPIs;
@@ -121,10 +122,14 @@ public class AuthManager {
                         }
                         XabberAccountManager.getInstance().setAccountSyncState(syncState);
 
-                        // update last synchronization time
-                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+                        if (AccountManager.getInstance().isLoaded()) {
+                            // update last synchronization time
+                            SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
 
-                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
+                            return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
+                        } else {
+                            return Single.just(xmppAccounts);
+                        }
                     }
                 });
     }
