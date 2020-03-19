@@ -12,6 +12,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -242,6 +243,10 @@ public class BlockingManager {
                             | InterruptedException | SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
                     }
+                }
+
+                if (success) {
+                    PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
                 }
 
                 final boolean finalSuccess = success;

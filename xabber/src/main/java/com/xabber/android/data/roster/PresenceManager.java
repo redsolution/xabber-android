@@ -76,7 +76,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
 
     private final Map<BareJid, Map<Resourcepart, Presence>> accountsPresenceMap = new ConcurrentHashMap<>();
-    private final Map<BareJid, Map<Resourcepart, Presence>> presenceMap = new ConcurrentHashMap<>();
+    private final Map<BareJid, Map<BareJid, Map<Resourcepart, Presence>>> presenceMap = new ConcurrentHashMap<>();
 
 
     public static PresenceManager getInstance() {
@@ -364,7 +364,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         Map<Resourcepart, Presence> userPresences;
         switch (presence.getType()) {
             case available:
-                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences = accountPresence ? getSingleAccountPresences(from.getBareJid()) : getSingleContactPresences(connection.getAccount().getFullJid().asBareJid(), from.getBareJid());
                 userPresences.remove(Resourcepart.EMPTY);
                 userPresences.put(fromResource, presence);
                 if (accountPresence) {
@@ -376,7 +376,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             case unavailable:
                 // If no resource, this is likely an offline presence as part of
                 // a roster presence flood. In that case, we store it.
-                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences = accountPresence ? getSingleAccountPresences(from.getBareJid()) : getSingleContactPresences(connection.getAccount().getFullJid().asBareJid(), from.getBareJid());
                 userPresences.put(fromResource.equals(Resourcepart.EMPTY) ? Resourcepart.EMPTY : fromResource, presence);
                 if (accountPresence) {
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
@@ -391,7 +391,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 if (!fromResource.equals(Resourcepart.EMPTY)) {
                     break;
                 }
-                userPresences = accountPresence ? getAccountPresences(from.getBareJid()) : getPresences(from.getBareJid());
+                userPresences = accountPresence ? getSingleAccountPresences(from.getBareJid()) : getSingleContactPresences(connection.getAccount().getFullJid().asBareJid(), from.getBareJid());
                 userPresences.clear();
                 userPresences.put(Resourcepart.EMPTY, presence);
                 if (accountPresence) {
@@ -515,15 +515,26 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
-    private Map<Resourcepart, Presence> getPresences(BareJid bareJid) {
-        Map<Resourcepart, Presence> presences = presenceMap.get(bareJid);
-        if (presences == null) {
-            presences = new ConcurrentHashMap<>();
-            presenceMap.put(bareJid, presences);
+    private Map<BareJid, Map<Resourcepart, Presence>> getPresencesTiedToAccount(BareJid account) {
+        Map<BareJid, Map<Resourcepart, Presence>> listOfContactsWithPresences = presenceMap.get(account);
+        if (listOfContactsWithPresences == null) {
+            listOfContactsWithPresences = new ConcurrentHashMap<>();
+            presenceMap.put(account, listOfContactsWithPresences);
         }
-        return presences;
+        return listOfContactsWithPresences;
     }
-    private Map<Resourcepart, Presence> getAccountPresences(BareJid bareJid) {
+
+    private Map<Resourcepart, Presence> getSingleContactPresences(BareJid account, BareJid contact) {
+        Map<BareJid, Map<Resourcepart, Presence>> listOfContactsWithPresences = getPresencesTiedToAccount(account);
+        Map<Resourcepart, Presence> listOfContactPresences = listOfContactsWithPresences.get(contact);
+        if (listOfContactPresences == null) {
+            listOfContactPresences = new ConcurrentHashMap<>();
+            listOfContactsWithPresences.put(contact, listOfContactPresences);
+        }
+        return listOfContactPresences;
+    }
+
+    private Map<Resourcepart, Presence> getSingleAccountPresences(BareJid bareJid) {
         Map<Resourcepart, Presence> accountPresences = accountsPresenceMap.get(bareJid);
         if (accountPresences == null) {
             accountPresences = new ConcurrentHashMap<>();
@@ -533,7 +544,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public List<Presence> getAvailableAccountPresences(AccountJid account) {
-        Map<Resourcepart, Presence> accountPresences = getAccountPresences(account.getFullJid().asBareJid());
+        Map<Resourcepart, Presence> accountPresences = getSingleAccountPresences(account.getFullJid().asBareJid());
         ArrayList<Presence> allAccountAvailablePresences = new ArrayList<>(accountPresences.values().size());
         for (Presence presence : accountPresences.values()) {
             if (presence.isAvailable()) {
@@ -543,13 +554,13 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return allAccountAvailablePresences;
     }
 
-    public List<Presence> getAllPresences(AccountJid account, BareJid bareJid) {
-        Map<Resourcepart, Presence> userPresences = isAccountPresence(account, bareJid) ? getAccountPresences(bareJid) : getPresences(bareJid);
+    public List<Presence> getAllPresences(AccountJid account, BareJid contact) {
+        Map<Resourcepart, Presence> userPresences = isAccountPresence(account, contact) ? getSingleAccountPresences(contact) : getSingleContactPresences(account.getFullJid().asBareJid(), contact);
         List<Presence> res;
         if (userPresences.isEmpty()) {
             // Create an unavailable presence if none was found
             Presence unavailable = new Presence(Presence.Type.unavailable);
-            unavailable.setFrom(bareJid);
+            unavailable.setFrom(contact);
             res = new ArrayList<>(Collections.singletonList(unavailable));
         } else {
             res = new ArrayList<>(userPresences.values().size());
@@ -560,8 +571,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return res;
     }
 
-    public List<Presence> getAvailablePresences(AccountJid account, BareJid bareJid) {
-        List<Presence> allPresences = getAllPresences(account, bareJid);
+    public List<Presence> getAvailablePresences(AccountJid account, BareJid contact) {
+        List<Presence> allPresences = getAllPresences(account, contact);
         List<Presence> res = new ArrayList<>(allPresences.size());
         for (Presence presence : allPresences) {
             if (presence.isAvailable()) {
@@ -574,7 +585,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     public Presence getPresence(AccountJid account, UserJid user) {
         boolean isAccountPresence = isAccountPresence(account, user.getBareJid());
-        Map<Resourcepart, Presence> userPresences = isAccountPresence ? getAccountPresences(user.getBareJid()) : getPresences(user.getBareJid());
+        Map<Resourcepart, Presence> userPresences = isAccountPresence ? getSingleAccountPresences(user.getBareJid()) : getSingleContactPresences(account.getFullJid().asBareJid(), user.getBareJid());
         if (userPresences.isEmpty()) {
             Presence presence = new Presence(Presence.Type.unavailable);
             presence.setFrom(user.getBareJid());
@@ -633,12 +644,34 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
+    /**
+     * clear internal presences of this account
+     * @param account account
+     */
     public void clearAccountPresences(AccountJid account) {
-        getAccountPresences(account.getFullJid().asBareJid()).clear();
+        getSingleAccountPresences(account.getFullJid().asBareJid()).clear();
     }
 
-    public void clearContactPresences(BareJid bareJid) {
-        getPresences(bareJid).clear();
+    /**
+     * clear the presences of this contact
+     * @param account account to which this contact is tied to
+     * @param contact contact
+     */
+    public void clearSingleContactPresences(AccountJid account, BareJid contact) {
+        getSingleContactPresences(account.getFullJid().asBareJid(), contact).clear();
+    }
+
+    /**
+     * clear all contact presences tied to this account
+     * @param account account
+     */
+    public void clearAllContactPresences(AccountJid account) {
+        getPresencesTiedToAccount(account.getFullJid().asBareJid()).clear();
+    }
+
+    public void clearPresencesTiedToThisAccount(AccountJid account) {
+        clearAccountPresences(account);
+        clearAllContactPresences(account);
     }
 
     public static void sortPresencesByPriority(List<Presence> allPresences) {

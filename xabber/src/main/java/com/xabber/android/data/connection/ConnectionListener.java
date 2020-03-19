@@ -85,7 +85,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosed() {
         LogManager.i(getLogTag(), "connectionClosed");
-        PresenceManager.getInstance().clearAccountPresences(connectionItem.getAccount());
+        PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -104,6 +104,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosedOnError(final Exception e) {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
+        PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
 
         if (e instanceof XMPPException.StreamErrorException) {

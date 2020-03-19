@@ -439,7 +439,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             public void run() {
                 try {
                     roster.removeEntry(entry);
-                    PresenceManager.getInstance().clearContactPresences(user.getBareJid());
+                    PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED);
                 } catch (SmackException.NoResponseException e) {
