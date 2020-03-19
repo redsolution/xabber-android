@@ -1,6 +1,7 @@
 package com.xabber.android.data.connection;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
@@ -106,9 +107,12 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         connectionItem.updateState(ConnectionState.waiting);
 
         if (e instanceof XMPPException.StreamErrorException) {
+            LogManager.e(getLogTag(), e.getMessage());
             String message = e.getMessage();
-            if (message.contains("conflict")) {
+            if (message != null && message.contains("conflict")) {
                 AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
+            } else {
+                ((AccountItem)connectionItem).setStreamError(true);
             }
         }
 

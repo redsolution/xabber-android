@@ -83,6 +83,10 @@ public class ReconnectionManager implements OnConnectedListener,
             return;
         }
 
+        if (accountItem.isEnabled() && accountItem.getStreamError()) {
+            return;
+        }
+
         if (!isAccountNeedConnection(accountItem)) {
             reconnectionInfo.reset();
             return;

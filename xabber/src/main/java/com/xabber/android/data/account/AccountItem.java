@@ -70,6 +70,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      */
     private boolean syncable;
 
+    private boolean streamError;
+
     /**
      * Whether password must be stored in database.
      */
@@ -391,6 +393,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         }
 
         this.enabled = enabled;
+    }
+
+    public void setStreamError(boolean error) {
+        streamError = error;
+    }
+
+    public boolean getStreamError() {
+        return streamError;
     }
 
     /**

@@ -212,7 +212,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     private final SynchronizationPoint<FailedNonzaException> smResumedSyncPoint = new SynchronizationPoint<>(
             this, "stream resumed element");
 
-    private final SynchronizationPoint<SmackException> smEnabledSyncPoint = new SynchronizationPoint<>(
+    private final SynchronizationPoint<Exception> smEnabledSyncPoint = new SynchronizationPoint<>(
             this, "stream enabled element");
 
     /**
@@ -369,8 +369,14 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             SmackException, IOException, InterruptedException {
         // Authenticate using SASL
         SSLSession sslSession = secureSocket != null ? secureSocket.getSession() : null;
-        saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
-
+        try {
+            saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            if (e.getCause() instanceof XMPPException.StreamErrorException){
+                throw (XMPPException.StreamErrorException) e.getCause();
+            }
+        }
         // If compression is enabled then request the server to use stream compression. XEP-170
         // recommends to perform stream compression before resource binding.
         maybeEnableCompression();
@@ -422,7 +428,16 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             serverHandledStanzasCount = 0;
             // XEP-198 3. Enabling Stream Management. If the server response to 'Enable' is 'Failed'
             // then this is a non recoverable error and we therefore throw an exception.
-            smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
+            try {
+                smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof XMPPException.StreamErrorException) {
+                    throw (XMPPException.StreamErrorException) e;
+                } else {
+                    throw (SmackException) e;
+                }
+            }
             synchronized (requestAckPredicates) {
                 if (requestAckPredicates.isEmpty()) {
                     // Assure that we have at lest one predicate set up that so that we request acks
@@ -1065,6 +1080,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                                 case "error":
                                     StreamError streamError = PacketParserUtils.parseStreamError(parser);
                                     saslFeatureReceived.reportFailure(new StreamErrorException(streamError));
+                                    saslAuthentication.authenticationFailed(new StreamErrorException(streamError));
+                                    smEnabledSyncPoint.reportFailure(new StreamErrorException(streamError));
                                     // Mark the tlsHandled sync point as success, we will use the saslFeatureReceived sync
                                     // point to report the error, which is checked immediately after tlsHandled in
                                     // connectInternal().

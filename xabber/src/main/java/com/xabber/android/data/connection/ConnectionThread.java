@@ -165,6 +165,7 @@ class ConnectionThread {
 
                 connection.login();
 
+                ((AccountItem)connectionItem).setStreamError(false);
             } else {
                 LogManager.i(this, "Already authenticated");
             }
@@ -191,11 +192,23 @@ class ConnectionThread {
             if (!((AccountItem)connectionItem).isSuccessfulConnectionHappened()) {
                 LogManager.i(this, "There was no successful connection, disabling account");
 
-                AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                        AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
+                AccountErrorEvent accountErrorEvent;
+                if (e instanceof XMPPException.StreamErrorException) {
+                    accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION, ((XMPPException.StreamErrorException)e).getStreamError().getDescriptiveText());
+                } else {
+                    accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
+                }
 
                 com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-                com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                if (e instanceof XMPPException.StreamErrorException) {
+                    ((AccountItem)connectionItem).setStreamError(true);
+                } else {
+                    if (!((AccountItem)connectionItem).getStreamError()) {
+                        com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                    }
+                }
                 EventBus.getDefault().postSticky(accountErrorEvent);
             }
         } catch (InterruptedException e) {
