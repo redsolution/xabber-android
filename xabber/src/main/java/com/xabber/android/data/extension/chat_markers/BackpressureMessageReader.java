@@ -84,9 +84,18 @@ public class BackpressureMessageReader {
                                         ids.add(mes.getUniqueId());
                                     }
                                     messages.setBoolean(MessageRealmObject.Fields.READ, true);
+                                    LogManager.d("BackpressureReader", "Finished setting the 'read' state to messages");
                                     Application.getInstance().runOnUiThread(() -> {
+                                        LogManager.d("BackpressureReader", "Started approving pending 'read' ids on UI thread");
                                         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
-                                        if (chat != null) chat.approveRead(ids);
+                                        if (chat != null) {
+                                            StringBuilder sb = new StringBuilder();
+                                            for (String id : ids) {
+                                                sb.append(id).append("\n");
+                                            }
+                                            LogManager.d("BackpressureReader", "chat != null, approved ids = " + sb.toString());
+                                            chat.approveRead(ids);
+                                        }
                                     });
                                 }
                             });

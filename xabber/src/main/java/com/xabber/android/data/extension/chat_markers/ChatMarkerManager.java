@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -123,7 +125,15 @@ public class ChatMarkerManager implements OnPacketListener {
         displayed.addExtension(displayedExtension);
         displayed.setType(Message.Type.chat);
 
-        sendMessageInBackgroundUserRequest(displayed, messageRealmObject.getAccount());
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            try {
+                StanzaSender.sendStanza(messageRealmObject.getAccount(), displayed);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sendMessageInBackgroundUserRequest(displayed, messageRealmObject.getAccount());
+        }
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
