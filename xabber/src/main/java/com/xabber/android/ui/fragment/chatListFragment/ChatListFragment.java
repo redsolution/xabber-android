@@ -162,12 +162,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
 
         mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.release();
-            }
-        });
+        mp.setOnCompletionListener(mp1 -> { mp.release(); });
     }
 
     @Override

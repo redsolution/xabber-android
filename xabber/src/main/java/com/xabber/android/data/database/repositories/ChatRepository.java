@@ -38,18 +38,21 @@ public class ChatRepository {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
 
+                    ContactRealmObject contactRealmObject = realm1
+                            .where(ContactRealmObject.class)
+                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, userJid.getBareJid().toString())
+                            .findFirst();
+
+                    if (contactRealmObject.getAccountJid() != null || contactRealmObject.getAccountJid().isEmpty())
+                        return;
+
                     ChatRealmObject chatRealmObject = realm1
                             .where(ChatRealmObject.class)
                             .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
                                     accountJid.getFullJid().asBareJid().toString())
                             .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID,
                                     userJid.getBareJid().toString())
-                            .findFirst();
-
-                    ContactRealmObject contactRealmObject = realm1
-                            .where(ContactRealmObject.class)
-                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
-                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, userJid.getBareJid().toString())
                             .findFirst();
 
                     MessageRealmObject messageRealmObject = realm1
@@ -88,6 +91,8 @@ public class ChatRepository {
                         realm1.insertOrUpdate(chatRealmObject);
                         realm1.insertOrUpdate(contactRealmObject);
                     }
+
+                    LogManager.d(LOG_TAG, "Writed or updated chatRealm" + chatRealmObject.getContact().getAccountJid());
                 });
 
             } catch (Exception e){

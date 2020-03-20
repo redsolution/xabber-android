@@ -53,15 +53,15 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
             result = realmInstanceInUI;
         } else result = Realm.getDefaultInstance();
 
-        int localInstances = Realm.getLocalInstanceCount(Realm.getDefaultConfiguration());
-        int instances = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
-        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances){
-            LogManager.e("DatabaseManager AHTUNG! Instances count was changed! ", "");
-            LogManager.exception("\t", new Exception());
-        }
-
-        prevLocalInstCount = localInstances;
-        prevGlobalInstCount = instances;
+//        int localInstances = Realm.getLocalInstanceCount(Realm.getDefaultConfiguration());
+//        int instances = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
+//        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances){
+//            LogManager.e("DatabaseManager AHTUNG! Instances count was changed! ", "");
+//            LogManager.exception("\t", new Exception());
+//        }
+//
+//        prevLocalInstCount = localInstances;
+//        prevGlobalInstCount = instances;
 
         return result;
     }

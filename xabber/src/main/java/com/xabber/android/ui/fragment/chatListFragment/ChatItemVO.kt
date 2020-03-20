@@ -57,22 +57,6 @@ data class ChatItemVO(val contact: AbstractContact){
 
     private fun getContactName() = contact.name
 
-    //backup old code
-//    private fun setupMUCIndicator(holder: ChatViewHolder, contact: AbstractContact) {
-//        val resources = holder.itemView.resources
-//        val mucIndicatorLevel = if (MUCManager.getInstance().hasRoom(contact.account, contact.user)) 1
-//        else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3
-//        else 0
-//        var mucIndicator: Drawable?
-//        if (mucIndicatorLevel != 0) {
-//            mucIndicator = resources.getDrawable(R.drawable.muc_indicator_view)
-//            mucIndicator.level = mucIndicatorLevel
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-//                mucIndicator.setTint(resources.getColor(getThemeResource(holder.itemView.context,
-//                        R.attr.contact_list_contact_name_text_color)))
-//        }
-//    }
-
     private fun getGroupchatIndicatorVisibility() : Int {
         val isServer = contact.user.jid.isDomainBareJid
         val isGroupchat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)

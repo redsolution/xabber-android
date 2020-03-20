@@ -357,7 +357,6 @@ public class Application extends android.app.Application {
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
         addManager(OTRManager.getInstance());
-        addManager(AvatarStorage.getInstance());
         addManager(ConnectionManager.getInstance());
         addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());
@@ -366,6 +365,7 @@ public class Application extends android.app.Application {
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());
+        addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
         addManager(PresenceManager.getInstance());
         addManager(RosterManager.getInstance());
