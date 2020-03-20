@@ -29,6 +29,7 @@ public class AvatarRepository {
             RealmResults<AvatarRealmObject> avatarRealmObjects = realm
                     .where(AvatarRealmObject.class)
                     .isNotNull(AvatarRealmObject.Fields.PEP_HASH)
+                    .isNotNull(AvatarRealmObject.Fields.CONTACT)
                     .findAll();
             for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
                 BareJid bareJid = JidCreate.from(avatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
@@ -89,6 +90,7 @@ public class AvatarRepository {
             RealmResults<AvatarRealmObject> avatarRealmObjects = realm
                     .where(AvatarRealmObject.class)
                     .isNotNull(AvatarRealmObject.Fields.VCARD_HASH)
+                    .isNotNull(AvatarRealmObject.Fields.CONTACT)
                     .findAll();
             for (AvatarRealmObject oldAvatarRealmObject : avatarRealmObjects) {
                 BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
