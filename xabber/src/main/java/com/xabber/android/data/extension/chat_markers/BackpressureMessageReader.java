@@ -8,7 +8,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -50,13 +50,13 @@ public class BackpressureMessageReader {
         subject.onNext(new MessageDataHolder(messageRealmObject, trySendDisplayed));
     }
 
-    public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
-        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(accountJid, userJid);
-        subject.onNext(new MessageDataHolder(messageId, null, stanzaId, accountJid, userJid, trySendDisplayed));
+    public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, ContactJid contactJid, boolean trySendDisplayed) {
+        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(accountJid, contactJid);
+        subject.onNext(new MessageDataHolder(messageId, null, stanzaId, accountJid, contactJid, trySendDisplayed));
     }
 
-    private PublishSubject<MessageDataHolder> createSubjectIfNeeded(AccountJid accountJid, UserJid userJid) {
-        AbstractContact contact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+    private PublishSubject<MessageDataHolder> createSubjectIfNeeded(AccountJid accountJid, ContactJid contactJid) {
+        AbstractContact contact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
         PublishSubject<MessageDataHolder> subject = queriesNew.get(contact);
         if (subject == null) subject = createSubject(contact);
         return subject;
@@ -169,7 +169,7 @@ public class BackpressureMessageReader {
         final String uniqueId;
         final ArrayList<String> stanzaId;
         final AccountJid account;
-        final UserJid user;
+        final ContactJid user;
         final boolean trySendDisplayed;
 
         MessageDataHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
@@ -182,7 +182,7 @@ public class BackpressureMessageReader {
         }
 
         MessageDataHolder(String messageId, @Nullable String uniqueId, @Nullable ArrayList<String> stanzaId,
-                          AccountJid account, UserJid user, boolean trySendDisplayed) {
+                          AccountJid account, ContactJid user, boolean trySendDisplayed) {
             this.messageId = messageId;
             this.uniqueId = uniqueId;
             this.stanzaId = stanzaId;

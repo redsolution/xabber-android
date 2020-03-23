@@ -6,7 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterContact;
 
@@ -122,7 +122,7 @@ public class ContactRepository {
         });
     }
 
-    public static ContactRealmObject getContactRealmObjectFromRealm(AccountJid accountJid, UserJid contactJid){
+    public static ContactRealmObject getContactRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         ContactRealmObject contactRealmObject = realm
                 .where(ContactRealmObject.class)

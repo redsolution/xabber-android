@@ -13,11 +13,9 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
@@ -49,8 +47,8 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
         TextView accountName = (TextView) view.findViewById(R.id.name);
 
         try {
-            accountName.setText(RosterManager.getInstance().getBestContact(account, UserJid.from(accountManager.getVerboseName(account))).getName());
-        } catch (UserJid.UserJidCreateException e) {
+            accountName.setText(RosterManager.getInstance().getBestContact(account, ContactJid.from(accountManager.getVerboseName(account))).getName());
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }
         accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));

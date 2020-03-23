@@ -23,7 +23,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -201,10 +201,10 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                                 text = texts.get(0);
                             }
 
-                            UserJid user = null;
+                            ContactJid user = null;
                             try {
-                                user = UserJid.from(xmppUri.getPath());
-                            } catch (UserJid.UserJidCreateException e) {
+                                user = ContactJid.from(xmppUri.getPath());
+                            } catch (ContactJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 
@@ -222,9 +222,9 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                         String path = data.getPath();
                         if (path != null && path.startsWith("/")) {
                             try {
-                                UserJid user = UserJid.from(path.substring(1));
+                                ContactJid user = ContactJid.from(path.substring(1));
                                 openChat(user, null);
-                            } catch (UserJid.UserJidCreateException e) {
+                            } catch (ContactJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
                         }
@@ -337,7 +337,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
         AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
+        ContactJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
         }
@@ -351,8 +351,8 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
      * @param user
      * @param text can be <code>null</code>.
      */
-    private void openChat(UserJid user, String text) {
-        UserJid bareAddress = user.getBareUserJid();
+    private void openChat(ContactJid user, String text) {
+        ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : MessageManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
@@ -395,7 +395,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getRoomInviteUser(Intent intent) {
+    private static ContactJid getRoomInviteUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -404,7 +404,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
      *
      * @param text       can be <code>null</code>.
      */
-    private void openChat(AccountJid account, UserJid user, String text) {
+    private void openChat(AccountJid account, ContactJid user, String text) {
         if (text == null) {
             startActivity(ChatActivity.createSendIntent(this, account, user, null));
         } else {
@@ -478,7 +478,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         return intent;
     }
 
-    public static Intent createRoomInviteIntent(Context context, AccountJid account, UserJid room) {
+    public static Intent createRoomInviteIntent(Context context, AccountJid account, ContactJid room) {
         Intent intent = new EntityIntentBuilder(context, SearchActivity.class)
                 .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);

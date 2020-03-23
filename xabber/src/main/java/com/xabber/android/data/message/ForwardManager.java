@@ -7,7 +7,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.log.LogManager;
 
@@ -27,7 +27,7 @@ public class ForwardManager {
 
     private static final String LOG_TAG = ForwardManager.class.getSimpleName();
 
-    public static void forwardMessage(List<String> messages, AccountJid account, UserJid user, String text) {
+    public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text) {
         final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
 

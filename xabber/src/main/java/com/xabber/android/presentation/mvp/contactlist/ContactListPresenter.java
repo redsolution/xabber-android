@@ -10,7 +10,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
@@ -100,9 +100,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     public void onItemClick(IFlexible item) {
         if (item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
+            ContactJid contactJid = ((ContactVO) item).getContactJid();
             if (view != null) view.onContactClick(
-                    RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+                    RosterManager.getInstance().getAbstractContact(accountJid, contactJid));
         } else if (item instanceof ButtonVO) {
             ButtonVO button = (ButtonVO) item;
             if (view != null) view.onButtonItemClick(button);
@@ -166,7 +166,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
-        Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
+        Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
         }
@@ -174,7 +174,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final Collection<RosterContact> rosterContacts = new ArrayList<>();
         for (RosterContact contact : allRosterContacts) {
             if (blockedContacts.containsKey(contact.getAccount())) {
-                Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+                Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
                 if (blockedUsers != null) {
                     if (!blockedUsers.contains(contact.getUser()))
                         rosterContacts.add(contact);
@@ -219,12 +219,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         /**
          * List of rooms and active chats grouped by users inside accounts.
          */
-        final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
+        final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
             if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
                 final AccountJid account = abstractChat.getAccount();
-                Map<UserJid, AbstractChat> users = abstractChats.get(account);
+                Map<ContactJid, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
@@ -261,7 +261,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             hasContacts = true;
             final boolean online = rosterContact.getStatusMode().isOnline();
             final AccountJid account = rosterContact.getAccount();
-            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
+            final Map<ContactJid, AbstractChat> users = abstractChats.get(account);
             final AbstractChat abstractChat;
             if (users == null) {
                 abstractChat = null;
@@ -277,7 +277,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 hasVisibleContacts = true;
             }
         }
-        for (Map<UserJid, AbstractChat> users : abstractChats.values())
+        for (Map<ContactJid, AbstractChat> users : abstractChats.values())
             for (AbstractChat abstractChat : users.values()) {
                 final AbstractContact abstractContact;
                 abstractContact = new ChatContact(abstractChat);

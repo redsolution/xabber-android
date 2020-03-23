@@ -14,7 +14,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -43,16 +43,16 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int GROUP_INVITE_SUMMARY_FOOTER = 2;
     private AccountJid account;
     @SuppressWarnings("WeakerAccess")
-    List<UserJid> blockedContacts;
+    List<ContactJid> blockedContacts;
 
     @SuppressWarnings("WeakerAccess")
-    List<UserJid> groupInvites;
+    List<ContactJid> groupInvites;
 
     @SuppressWarnings("WeakerAccess")
     @Nullable OnBlockedContactClickListener listener;
 
     @SuppressWarnings("WeakerAccess")
-    Set<UserJid> checkedContacts;
+    Set<ContactJid> checkedContacts;
 
     @BlockedListState
     private int currentBlockListState;
@@ -83,7 +83,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof BlockListItemViewHolder) {
             final BlockListItemViewHolder viewHolder = (BlockListItemViewHolder) holder;
-            final UserJid contact = blockedContacts.get(position);
+            final ContactJid contact = blockedContacts.get(position);
 
             final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
             final AbstractChat abstractChat = MessageManager.getInstance().getChat(account, contact);
@@ -150,13 +150,13 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         blockedContacts.clear();
         groupInvites.clear();
         hasGroupInvites = false;
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+        final Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts != null) {
             // list of blocked contacts after filtering out group invites.
-            Collection<UserJid> newBlockedContacts = new ArrayList<>();
+            Collection<ContactJid> newBlockedContacts = new ArrayList<>();
             // list of group invites
-            Collection<UserJid> groupInvites = new ArrayList<>();
-            for (UserJid user : blockedContacts) {
+            Collection<ContactJid> groupInvites = new ArrayList<>();
+            for (ContactJid user : blockedContacts) {
                 if (user.getJid().getResourceOrEmpty().equals(Resourcepart.EMPTY)) {
                     // Any contact with a BareJid block address is considered as a
                     // normal blocked contact, since our clients normally block with BareJids
@@ -181,9 +181,9 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         // remove checked contacts not containing in new blocked list
-        final Iterator<UserJid> iterator = checkedContacts.iterator();
+        final Iterator<ContactJid> iterator = checkedContacts.iterator();
         while (iterator.hasNext()) {
-            final UserJid next = iterator.next();
+            final ContactJid next = iterator.next();
             if (!this.blockedContacts.contains(next)) {
                 iterator.remove();
             }
@@ -239,13 +239,13 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return;
             }
 
-            UserJid userJid = blockedContacts.get(adapterPosition);
+            ContactJid contactJid = blockedContacts.get(adapterPosition);
 
-            if (checkedContacts.contains(userJid)) {
-                checkedContacts.remove(userJid);
+            if (checkedContacts.contains(contactJid)) {
+                checkedContacts.remove(contactJid);
                 checkBox.setChecked(false);
             } else {
-                checkedContacts.add(userJid);
+                checkedContacts.add(contactJid);
                 checkBox.setChecked(true);
             }
 
@@ -299,15 +299,15 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return currentBlockListState;
     }
 
-    public ArrayList<UserJid> getCheckedContacts() {
+    public ArrayList<ContactJid> getCheckedContacts() {
         return new ArrayList<>(checkedContacts);
     }
 
-    public ArrayList<UserJid> getBlockedContacts() {
+    public ArrayList<ContactJid> getBlockedContacts() {
         return new ArrayList<>(blockedContacts);
     }
 
-    public void setCheckedContacts(List<UserJid> checkedContacts) {
+    public void setCheckedContacts(List<ContactJid> checkedContacts) {
         this.checkedContacts.clear();
         this.checkedContacts.addAll(checkedContacts);
     }

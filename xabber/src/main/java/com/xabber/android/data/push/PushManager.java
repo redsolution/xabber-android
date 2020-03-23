@@ -17,7 +17,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PushLogRecordRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.http.PushApiClient;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.ExternalAPIs;
@@ -286,11 +286,11 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         String stanzaID = null;
         try {
             EnablePushNotificationsIQ enableIQ = new EnablePushNotificationsIQ(
-                    UserJid.from(pushServiceJid).getJid(), node, null);
+                    ContactJid.from(pushServiceJid).getJid(), node, null);
             stanzaID = enableIQ.getStanzaId();
             waitingIQs.put(stanzaID, true);
             accountItem.getConnection().sendStanza(enableIQ);
-        } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+        } catch (SmackException.NotConnectedException | InterruptedException | ContactJid.UserJidCreateException e) {
             Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
             waitingIQs.remove(stanzaID);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);

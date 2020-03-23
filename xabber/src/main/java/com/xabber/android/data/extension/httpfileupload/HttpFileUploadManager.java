@@ -25,7 +25,7 @@ import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.references.RefFile;
 import com.xabber.android.data.extension.references.RefMedia;
@@ -108,12 +108,12 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         // if all attachments have url that they was uploaded. just resend existing message
         if (notUploadedFilesPaths.size() == 0) {
             final AccountJid accountJid = messageRealmObject.getAccount();
-            final UserJid userJid = messageRealmObject.getUser();
+            final ContactJid contactJid = messageRealmObject.getUser();
             final String messageId = messageRealmObject.getUniqueId();
             Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
-                    MessageManager.getInstance().removeErrorAndResendMessage(accountJid, userJid, messageId);
+                    MessageManager.getInstance().removeErrorAndResendMessage(accountJid, contactJid, messageId);
                 }
             });
         }
@@ -123,31 +123,31 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 notUploadedFilesPaths, null, messageRealmObject.getUniqueId(), context);
     }
 
-    public void uploadFile(final AccountJid account, final UserJid user,
+    public void uploadFile(final AccountJid account, final ContactJid user,
                            final List<String> filePaths, Context context) {
         uploadFile(account, user, filePaths, null, null, context);
     }
 
-    public void uploadFileViaUri(final AccountJid account, final UserJid user,
+    public void uploadFileViaUri(final AccountJid account, final ContactJid user,
                                  final List<Uri> fileUris, Context context) {
         uploadFile(account, user, null, fileUris,null, context);
     }
 
-    public void uploadFile(final AccountJid account, final UserJid user,
+    public void uploadFile(final AccountJid account, final ContactJid user,
                            final List<String> filePaths, final List<Uri> fileUris,
                            String existMessageId, Context context) {
         uploadFile(account, user, filePaths, fileUris, existMessageId, null, context);
     }
 
 
-    public void uploadFile(final AccountJid account, final UserJid user,
+    public void uploadFile(final AccountJid account, final ContactJid user,
                            final List<String> filePaths, final List<Uri> fileUris,
                            String existMessageId, String element, Context context) {
 
         uploadFile(account, user, filePaths, fileUris, null, existMessageId, null, context);
     }
 
-    public void uploadFile(final AccountJid account, final UserJid user,
+    public void uploadFile(final AccountJid account, final ContactJid user,
                            final List<String> filePaths, final List<Uri> fileUris,
                            List<String> forwardIds,
                            String existMessageId, String element, Context context) {

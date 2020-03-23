@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.blocking;
 
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.blocking.JidsBlockedListener;
@@ -22,8 +22,8 @@ class BlockedListener implements JidsBlockedListener {
     public void onJidsBlocked(List<Jid> blockedJids) {
         for (Jid jid : blockedJids) {
             try {
-                BlockingManager.blockContactLocally(account, UserJid.from(jid));
-            } catch (UserJid.UserJidCreateException e) {
+                BlockingManager.blockContactLocally(account, ContactJid.from(jid));
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }

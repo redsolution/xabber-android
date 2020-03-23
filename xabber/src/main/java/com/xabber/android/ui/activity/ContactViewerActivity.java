@@ -24,7 +24,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -49,7 +49,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
     private ProgressBar progressBar;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactViewerActivity.class)
                 .setAccount(account).setUser(user).build();
     }

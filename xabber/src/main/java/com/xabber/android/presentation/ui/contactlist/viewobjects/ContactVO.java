@@ -26,7 +26,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -66,7 +66,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final int statusLevel;
     private final Drawable avatar;
     private final int mucIndicatorLevel;
-    private final UserJid userJid;
+    private final ContactJid contactJid;
     private final AccountJid accountJid;
     private final int unreadCount;
     private final boolean mute;
@@ -94,7 +94,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
                         String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
-                        int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
+                        int mucIndicatorLevel, ContactJid contactJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener,
@@ -108,7 +108,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.statusLevel = statusLevel;
         this.avatar = avatar;
         this.mucIndicatorLevel = mucIndicatorLevel;
-        this.userJid = userJid;
+        this.contactJid = contactJid;
         this.accountJid = accountJid;
         this.unreadCount = unreadCount;
         this.mute = mute;
@@ -316,7 +316,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
                 && viewHolder.tvStatus != null){
             viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
-            viewHolder.tvStatus.setText(userJid.toString());
+            viewHolder.tvStatus.setText(contactJid.toString());
         }
 
         /** set up CONTACT/MUC NAME */
@@ -411,8 +411,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return mucIndicatorLevel;
     }
 
-    public UserJid getUserJid() {
-        return userJid;
+    public ContactJid getContactJid() {
+        return contactJid;
     }
 
     public AccountJid getAccountJid() {

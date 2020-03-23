@@ -11,7 +11,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
 
@@ -23,7 +23,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
     public static final String ARGUMENT_BLOCKED_CONTACT_LIST = "com.xabber.android.ui.dialog.UnblockAllContactsDialog.ARGUMENT_BLOCKED_CONTACT_LIST";
 
     private AccountJid account;
-    private ArrayList<UserJid> blockedContacts;
+    private ArrayList<ContactJid> blockedContacts;
 
     public static UnblockAllContactsDialog newInstance(AccountJid account) {
         UnblockAllContactsDialog fragment = new UnblockAllContactsDialog();
@@ -34,7 +34,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
         return fragment;
     }
 
-    public static UnblockAllContactsDialog newInstance(AccountJid account, ArrayList<UserJid> contacts) {
+    public static UnblockAllContactsDialog newInstance(AccountJid account, ArrayList<ContactJid> contacts) {
         UnblockAllContactsDialog fragment = new UnblockAllContactsDialog();
 
         Bundle arguments = new Bundle();

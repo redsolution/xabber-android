@@ -12,7 +12,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
@@ -141,10 +141,10 @@ public class ChatMarkerManager implements OnPacketListener {
             ChatMarkersElements.DisplayedExtension extension =
                     ChatMarkersElements.DisplayedExtension.from(message);
             if (extension != null) {
-                UserJid companion;
+                ContactJid companion;
                 try {
-                    companion = UserJid.from(message.getTo()).getBareUserJid();
-                } catch (UserJid.UserJidCreateException e) {
+                    companion = ContactJid.from(message.getTo()).getBareUserJid();
+                } catch (ContactJid.UserJidCreateException e) {
                     return;
                 }
                 AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
@@ -173,7 +173,7 @@ public class ChatMarkerManager implements OnPacketListener {
         }
     }
 
-    private boolean isClientSupportChatMarkers(AccountJid account, UserJid user) {
+    private boolean isClientSupportChatMarkers(AccountJid account, ContactJid user) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) return false;
 

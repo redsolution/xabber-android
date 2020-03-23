@@ -1,24 +1,24 @@
 package com.xabber.android.data.notification;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 public class FullAction extends Action {
 
     private AccountJid accountJid;
-    private UserJid userJid;
+    private ContactJid contactJid;
 
-    public FullAction(Action action, AccountJid accountJid, UserJid userJid) {
+    public FullAction(Action action, AccountJid accountJid, ContactJid contactJid) {
         super(action.getNotificationID(), action.getReplyText(), action.getActionType());
         this.accountJid = accountJid;
-        this.userJid = userJid;
+        this.contactJid = contactJid;
     }
 
     public AccountJid getAccountJid() {
         return accountJid;
     }
 
-    public UserJid getUserJid() {
-        return userJid;
+    public ContactJid getContactJid() {
+        return contactJid;
     }
 }

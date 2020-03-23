@@ -16,7 +16,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
 
@@ -43,7 +43,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
     private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
 
     private RecyclerView rvContactCircles;
     private ContactCircleEditorAdapter contactCircleEditorAdapter;
@@ -58,7 +58,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
     public GroupEditorFragment() {
     }
 
-    public static GroupEditorFragment newInstance(AccountJid account, UserJid user) {
+    public static GroupEditorFragment newInstance(AccountJid account, ContactJid user) {
         GroupEditorFragment fragment = new GroupEditorFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
@@ -203,11 +203,11 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
         this.account = account;
     }
 
-    protected UserJid getUser() {
+    protected ContactJid getUser() {
         return user;
     }
 
-    protected void setUser(UserJid user) {
+    protected void setUser(ContactJid user) {
         this.user = user;
     }
 }

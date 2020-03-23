@@ -23,7 +23,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -62,7 +62,7 @@ public class ContactAddFragment extends GroupEditorFragment
     private ImageView clearText;
 
 
-    public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
+    public static ContactAddFragment newInstance(AccountJid account, ContactJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
@@ -97,7 +97,7 @@ public class ContactAddFragment extends GroupEditorFragment
             name = savedInstanceState.getString(SAVED_NAME);
             error = savedInstanceState.getString(SAVED_ERROR);
             setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
-            setUser((UserJid) savedInstanceState.getParcelable(SAVED_USER));
+            setUser((ContactJid) savedInstanceState.getParcelable(SAVED_USER));
         } else {
             if (getAccount() == null || getUser() == null) {
                 name = null;
@@ -323,11 +323,11 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }*/
 
-        final UserJid user;
+        final ContactJid user;
         try {
             BareJid jid = JidCreate.bareFrom(contactString);
-            user = UserJid.from(jid);
-        } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
+            user = ContactJid.from(jid);
+        } catch (XmppStringprepException | ContactJid.UserJidCreateException  e) {
             e.printStackTrace();
             setError(getString(R.string.INCORRECT_USER_NAME));
             return;

@@ -18,7 +18,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -31,12 +31,12 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ContactDeleteDialog.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ContactDeleteDialog.ARGUMENT_USER";
 
-    private UserJid user;
+    private ContactJid user;
     private AccountJid account;
 
     private CheckBox deleteHistory;
 
-    public static ContactDeleteDialog newInstance(AccountJid account, UserJid user) {
+    public static ContactDeleteDialog newInstance(AccountJid account, ContactJid user) {
         ContactDeleteDialog fragment = new ContactDeleteDialog();
 
         Bundle arguments = new Bundle();

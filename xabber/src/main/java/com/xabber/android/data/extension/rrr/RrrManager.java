@@ -11,10 +11,9 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
@@ -140,7 +139,7 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid,
+    public void sendEditedMessage(final AccountJid accountJid, final ContactJid contactJid,
                                   final String uniqueId, final String text){
         final Message[] message = {new Message()};
         Application.getInstance().runInBackgroundUserRequest(() ->  {
@@ -183,12 +182,12 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid,
+    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final ContactJid contactJid,
                                               final boolean symmetric){
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(),
+                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(contactJid.toString(),
                         symmetric);
                 try {
                     AccountManager.getInstance().getAccount(accountJid).getConnection()
@@ -209,7 +208,7 @@ public class RrrManager implements OnPacketListener {
             }
         });
         //TODO ALSO AWFUL PLACE FOR DELETING!
-        MessageManager.getInstance().clearHistory(accountJid, userJid);
+        MessageManager.getInstance().clearHistory(accountJid, contactJid);
     }
 
     private void handleIncomingRetractMessage(final String id, final String by,
@@ -281,7 +280,7 @@ public class RrrManager implements OnPacketListener {
                     String conversation = retractElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
                     String id = retractElement.getAttributeValue(ID_ATTRIBUTE);
                     String to = packet.getTo().toString();
-                    MessageNotificationManager.getInstance().removeChat(AccountJid.from(to), UserJid.from(conversation));
+                    MessageNotificationManager.getInstance().removeChat(AccountJid.from(to), ContactJid.from(conversation));
                     handleIncomingRetractMessage(id, by, conversation);
                     return;
                 }

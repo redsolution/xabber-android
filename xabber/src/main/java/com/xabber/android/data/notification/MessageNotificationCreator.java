@@ -24,7 +24,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -229,8 +229,8 @@ public class MessageNotificationCreator {
     }
 
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
-        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getUserJid());
-        return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
+        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
+        return AvatarManager.getInstance().getUserBitmap(chat.getContactJid(), name);
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
@@ -274,7 +274,7 @@ public class MessageNotificationCreator {
                                   MessageNotificationManager.Chat notifChat, Context context) {
 
         AccountJid account = notifChat.getAccountJid();
-        UserJid user = notifChat.getUserJid();
+        ContactJid user = notifChat.getContactJid();
         boolean isMUC = notifChat.isGroupChat();
 
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
@@ -387,7 +387,7 @@ public class MessageNotificationCreator {
         Intent backIntent = ContactListActivity.createIntent(Application.getInstance());
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getUserJid());
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getContactJid());
         intent.putExtra(ChatActivity.EXTRA_NEED_SCROLL_TO_UNREAD, true);
         return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
@@ -400,11 +400,11 @@ public class MessageNotificationCreator {
     }
 
     private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getUserJid());
-        Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getUserJid(),
+        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getContactJid());
+        Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getContactJid(),
                 chat.getLastMessage().getMessageText().toString());
         return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(chat.getAccountJid(),
-                chat.getUserJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "", phraseID);
+                chat.getContactJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "", phraseID);
     }
 
     public class SortByLastMessage implements Comparator<MessageNotificationManager.Chat> {

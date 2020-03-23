@@ -22,7 +22,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.AbstractChat;
 
 /**
@@ -74,7 +74,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @param user
      * @return typed but not sent message.
      */
-    public String getTypedMessage(AccountJid account, UserJid user) {
+    public String getTypedMessage(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
         if (chat == null) {
             return "";
@@ -87,7 +87,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @param user
      * @return Start selection position.
      */
-    public int getSelectionStart(AccountJid account, UserJid user) {
+    public int getSelectionStart(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
         if (chat == null) {
             return 0;
@@ -100,7 +100,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @param user
      * @return End selection position.
      */
-    public int getSelectionEnd(AccountJid account, UserJid user) {
+    public int getSelectionEnd(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
         if (chat == null) {
             return 0;
@@ -117,7 +117,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @param selectionStart
      * @param selectionEnd
      */
-    public void setTyped(AccountJid account, UserJid user, String typedMessage,
+    public void setTyped(AccountJid account, ContactJid user, String typedMessage,
                          int selectionStart, int selectionEnd) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
         if (chat == null) {

@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.otr;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 /**
  * Created by valery.miller on 04.07.17.
@@ -10,9 +10,9 @@ import com.xabber.android.data.entity.UserJid;
 public class AuthAskEvent {
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
 
-    public AuthAskEvent(AccountJid account, UserJid user) {
+    public AuthAskEvent(AccountJid account, ContactJid user) {
         this.account = account;
         this.user = user;
     }
@@ -21,7 +21,7 @@ public class AuthAskEvent {
         return account;
     }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         return user;
     }
 }

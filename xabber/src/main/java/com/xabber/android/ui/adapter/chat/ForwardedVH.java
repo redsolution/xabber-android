@@ -12,7 +12,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
@@ -35,10 +35,10 @@ public class ForwardedVH extends FileMessageVH {
         statusIcon.setVisibility(View.GONE);
 
         // setup MESSAGE AUTHOR
-        UserJid jid = null;
+        ContactJid jid = null;
         try {
-            jid = UserJid.from(messageRealmObject.getOriginalFrom());
-        } catch (UserJid.UserJidCreateException e) {
+            jid = ContactJid.from(messageRealmObject.getOriginalFrom());
+        } catch (ContactJid.UserJidCreateException e) {
             e.printStackTrace();
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);

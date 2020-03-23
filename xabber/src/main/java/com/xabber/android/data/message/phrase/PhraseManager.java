@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.repositories.PhraseNotificationRepository;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class PhraseManager implements OnLoadListener {
         this.phrases.addAll(PhraseNotificationRepository.getAllPhrases());
     }
 
-    public long getPhraseID(AccountJid account, UserJid user, String text) {
+    public long getPhraseID(AccountJid account, ContactJid user, String text) {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases) {

@@ -5,7 +5,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class LastActivityInteractor implements OnPacketListener {
 
     private static LastActivityInteractor instance;
-    private HashMap<UserJid, Long> lastActivities = new HashMap<>();
+    private HashMap<ContactJid, Long> lastActivities = new HashMap<>();
 
     public static LastActivityInteractor getInstance() {
         if (instance == null) instance = new LastActivityInteractor();
@@ -34,26 +34,26 @@ public class LastActivityInteractor implements OnPacketListener {
                 long result = ((LastActivity) packet).lastActivity;
                 if (result > 0) {
                     result = System.currentTimeMillis() / 1000 - result;
-                    setLastActivity(connection.getAccount(), UserJid.from(jid), result);
+                    setLastActivity(connection.getAccount(), ContactJid.from(jid), result);
                 }
-            } catch (UserJid.UserJidCreateException e) {
+            } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void setLastActivityTimeNow(AccountJid account, UserJid user) {
+    public void setLastActivityTimeNow(AccountJid account, ContactJid user) {
         long time = System.currentTimeMillis()/1000;
         setLastActivity(account, user, time);
     }
 
-    public long getLastActivity(UserJid user) {
+    public long getLastActivity(ContactJid user) {
         Long lastActivity = lastActivities.get(user);
         if (lastActivity != null) return lastActivity;
         else return 0;
     }
 
-    public void requestLastActivityAsync(AccountJid account, UserJid user) {
+    public void requestLastActivityAsync(AccountJid account, ContactJid user) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem != null) {
             LastActivity activity = new LastActivity(user.getJid());
@@ -65,7 +65,7 @@ public class LastActivityInteractor implements OnPacketListener {
         }
     }
 
-    private void setLastActivity(AccountJid account, UserJid user, long time) {
+    private void setLastActivity(AccountJid account, ContactJid user, long time) {
         lastActivities.put(user, time);
         RosterManager.onContactChanged(account, user);
     }

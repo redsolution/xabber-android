@@ -17,7 +17,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -44,7 +44,7 @@ public class ForwardedFragment extends FileInteractionFragment {
     private RecyclerView recyclerView;
     private View backgroundView;
 
-    public static ForwardedFragment newInstance(AccountJid account, UserJid user, String messageId) {
+    public static ForwardedFragment newInstance(AccountJid account, ContactJid user, String messageId) {
         ForwardedFragment fragment = new ForwardedFragment();
 
         Bundle arguments = new Bundle();

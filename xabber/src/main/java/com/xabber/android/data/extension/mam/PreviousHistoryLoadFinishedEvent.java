@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.mam;
 import com.xabber.android.data.BaseChatEvent;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 public class PreviousHistoryLoadFinishedEvent extends BaseChatEvent {
     public PreviousHistoryLoadFinishedEvent(BaseEntity entity) {
@@ -14,7 +14,7 @@ public class PreviousHistoryLoadFinishedEvent extends BaseChatEvent {
         return getEntity().getAccount();
     }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         return getEntity().getUser();
     }
 }

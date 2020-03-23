@@ -21,7 +21,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -37,10 +37,10 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ContactBlocker.ARGUMENT_USER";
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private boolean andDelete = false;
 
-    public static BlockContactDialog newInstance(AccountJid account, UserJid user) {
+    public static BlockContactDialog newInstance(AccountJid account, ContactJid user) {
         BlockContactDialog fragment = new BlockContactDialog();
 
         Bundle arguments = new Bundle();

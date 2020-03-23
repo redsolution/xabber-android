@@ -1,7 +1,7 @@
 package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -60,16 +60,16 @@ public class NotificationChatRealmObject extends RealmObject {
         this.account = account.toString();
     }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         try {
-            return UserJid.from(user);
-        } catch (UserJid.UserJidCreateException e) {
+            return ContactJid.from(user);
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }
     }
 
-    public void setUser(UserJid user) {
+    public void setUser(ContactJid user) {
         this.user = user.toString();
     }
 

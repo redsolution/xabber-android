@@ -11,7 +11,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
@@ -26,12 +26,12 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
     private View introView;
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private int distanceFromMessage = 60;
     private int offsetFromTop = 10;
 
 
-    public IntroViewDecoration(View introView, AccountJid account, UserJid user) {
+    public IntroViewDecoration(View introView, AccountJid account, ContactJid user) {
         this.introView = introView;
         this.account = account;
         this.user = user;

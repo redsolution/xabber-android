@@ -31,7 +31,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -140,7 +140,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean historyRequestedAtStart = false;
     protected boolean isGroupchat = false;
 
-    protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
+    protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
         threadId = StringUtils.randomString(12);
         active = false;
@@ -546,7 +546,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * @return Whether chat accepts packets from specified user.
      */
-    private boolean accept(UserJid jid) {
+    private boolean accept(ContactJid jid) {
         return this.user.equals(jid);
     }
 
@@ -848,12 +848,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * Processes incoming packet.
      *
-     * @param userJid
+     * @param contactJid
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(UserJid userJid, Stanza packet, boolean isCarbons) {
-        return accept(userJid);
+    protected boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
+        return accept(contactJid);
     }
 
     /**

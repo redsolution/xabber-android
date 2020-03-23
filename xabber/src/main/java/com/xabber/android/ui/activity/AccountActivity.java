@@ -57,7 +57,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
@@ -108,7 +108,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public static int FINAL_IMAGE_SIZE;
 
     private AccountJid account;
-    private UserJid fakeAccountUser;
+    private ContactJid fakeAccountUser;
     private AbstractContact bestContact;
     private AccountItem accountItem;
 
@@ -215,8 +215,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         });
 
         try {
-            fakeAccountUser = UserJid.from(account.getFullJid().asBareJid());
-        } catch (UserJid.UserJidCreateException e) {
+            fakeAccountUser = ContactJid.from(account.getFullJid().asBareJid());
+        } catch (ContactJid.UserJidCreateException e) {
             throw new IllegalStateException();
         }
 

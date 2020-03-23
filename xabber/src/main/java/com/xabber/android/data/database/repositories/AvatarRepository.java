@@ -29,10 +29,9 @@ public class AvatarRepository {
             RealmResults<AvatarRealmObject> avatarRealmObjects = realm
                     .where(AvatarRealmObject.class)
                     .isNotNull(AvatarRealmObject.Fields.PEP_HASH)
-                    .isNotNull(AvatarRealmObject.Fields.CONTACT)
                     .findAll();
             for (AvatarRealmObject avatarRealmObject : avatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(avatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
+                BareJid bareJid = JidCreate.from(avatarRealmObject.getContactJid()).asBareJid();
                 String pepHash = avatarRealmObject.getPepHash();
                 pepHashes.put(bareJid, pepHash.isEmpty() ? AvatarManager.EMPTY_HASH : pepHash);
             }
@@ -59,13 +58,13 @@ public class AvatarRepository {
 
                         AvatarRealmObject avatarRealmObject = realm1
                                 .where(AvatarRealmObject.class)
-                                .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID, contactJid.asBareJid().toString())
+                                .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.asBareJid().toString())
                                 .findFirst();
 
                         if (avatarRealmObject != null) {
                             avatarRealmObject.setPepHash(pepHash);
                         } else {
-                            avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                            avatarRealmObject = new AvatarRealmObject(contactJid);
                             avatarRealmObject.setPepHash(pepHash);
                         }
 
@@ -90,10 +89,9 @@ public class AvatarRepository {
             RealmResults<AvatarRealmObject> avatarRealmObjects = realm
                     .where(AvatarRealmObject.class)
                     .isNotNull(AvatarRealmObject.Fields.VCARD_HASH)
-                    .isNotNull(AvatarRealmObject.Fields.CONTACT)
                     .findAll();
             for (AvatarRealmObject oldAvatarRealmObject : avatarRealmObjects) {
-                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getContactRealmObject().getContactJid()).asBareJid();
+                BareJid bareJid = JidCreate.from(oldAvatarRealmObject.getContactJid()).asBareJid();
                 String hash = oldAvatarRealmObject.getVCardHash();
                 pepHashes.put(bareJid, hash.isEmpty() ? AvatarManager.EMPTY_HASH : hash);
             }
@@ -119,13 +117,13 @@ public class AvatarRepository {
 
                         AvatarRealmObject avatarRealmObject = realm1
                                 .where(AvatarRealmObject.class)
-                                .equalTo(AvatarRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID , contactJid.asBareJid().toString())
+                                .equalTo(ContactRealmObject.Fields.CONTACT_JID , contactJid.asBareJid().toString())
                                 .findFirst();
 
                         if (avatarRealmObject != null) {
                             avatarRealmObject.setVCardHash(hash);
                         } else {
-                            avatarRealmObject = new AvatarRealmObject(contactRealmObject);
+                            avatarRealmObject = new AvatarRealmObject(contactJid);
                             avatarRealmObject.setVCardHash(hash);
                         }
 

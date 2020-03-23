@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -31,9 +31,9 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
     //public static final String ARGUMENT_CHAT = "com.xabber.android.ui.dialog.ChatDeleteDialog.ARGUMENT_CHAT";
 
     AccountJid account;
-    UserJid user;
+    ContactJid user;
 
-    public static ChatDeleteDialog newInstance(AccountJid account, UserJid user) {
+    public static ChatDeleteDialog newInstance(AccountJid account, ContactJid user) {
         ChatDeleteDialog dialog = new ChatDeleteDialog();
 
         Bundle arguments = new Bundle();

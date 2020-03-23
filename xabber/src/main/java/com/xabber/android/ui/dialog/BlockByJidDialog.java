@@ -20,7 +20,7 @@ import androidx.fragment.app.DialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -97,8 +97,8 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
             case R.id.block:
                 if (validationIsSuccess()) {
                     try {
-                        BlockingManager.getInstance().blockContact(account, UserJid.from(blockJid.getText().toString()), this);
-                    } catch (UserJid.UserJidCreateException e) {
+                        BlockingManager.getInstance().blockContact(account, ContactJid.from(blockJid.getText().toString()), this);
+                    } catch (ContactJid.UserJidCreateException e) {
                         e.printStackTrace();
                     }
                 }

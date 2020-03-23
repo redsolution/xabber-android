@@ -14,7 +14,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
@@ -93,7 +93,7 @@ public class UploadService extends IntentService {
         if (intent == null) return;
         this.receiver = intent.getParcelableExtra(KEY_RECEIVER);
         AccountJid account = intent.getParcelableExtra(KEY_ACCOUNT_JID);
-        UserJid user = intent.getParcelableExtra(KEY_USER_JID);
+        ContactJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
         List<String> forwardIds = intent.getStringArrayListExtra(KEY_FORWARD_IDS);
         String referenceElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
@@ -111,8 +111,8 @@ public class UploadService extends IntentService {
         needStop = true;
     }
 
-    private void startWorkWithUris(AccountJid account, UserJid user, List<Uri> fileUris, List<String> forwardIds,
-                           CharSequence uploadServerUrl) {
+    private void startWorkWithUris(AccountJid account, ContactJid user, List<Uri> fileUris, List<String> forwardIds,
+                                   CharSequence uploadServerUrl) {
 
         // determine which files are local or remote
         List<File> files = new ArrayList<>();
@@ -169,12 +169,12 @@ public class UploadService extends IntentService {
         startWork(account, user, filePaths, uploadServerUrl, messageId);
     }
 
-    private void startWork(AccountJid account, UserJid user, List<String> filePaths,
+    private void startWork(AccountJid account, ContactJid user, List<String> filePaths,
                            CharSequence uploadServerUrl, String existMessageId) {
         startWork(account, user, filePaths, null, uploadServerUrl, existMessageId, null);
     }
 
-    private void startWork(AccountJid account, UserJid user, List<String> filePaths, List<String> forwardIds,
+    private void startWork(AccountJid account, ContactJid user, List<String> filePaths, List<String> forwardIds,
                            CharSequence uploadServerUrl, String existMessageId, String referenceElement) {
 
         // get account item

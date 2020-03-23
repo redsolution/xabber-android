@@ -56,7 +56,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
@@ -152,7 +152,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private Sensor mSensor;
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private boolean exitOnSend = false;
 
     private Animation shakeAnimation = null;
@@ -206,8 +206,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Nullable
-    private static UserJid getUser(Intent intent) {
-        UserJid value = EntityIntentBuilder.getUser(intent);
+    private static ContactJid getUser(Intent intent) {
+        ContactJid value = EntityIntentBuilder.getUser(intent);
         if (value != null)
             return value;
         // Backward compatibility.
@@ -218,8 +218,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         try {
-            return UserJid.from(stringExtra);
-        } catch (UserJid.UserJidCreateException e) {
+            return ContactJid.from(stringExtra);
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }
@@ -229,7 +229,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         return ACTION_ATTENTION.equals(intent.getAction());
     }
 
-    public static Intent createSpecificChatIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createSpecificChatIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
@@ -237,13 +237,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         return intent;
     }
 
-    public static Intent createClearTopIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createClearTopIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = createSpecificChatIntent(context, account, user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
     }
 
-    public static Intent createForwardIntent(Context context, AccountJid account, UserJid user,
+    public static Intent createForwardIntent(Context context, AccountJid account, ContactJid user,
                                              ArrayList<String> messagesIds) {
         Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_FORWARD);
@@ -258,7 +258,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
      * @param text    if <code>null</code> then user will be able to send a number
      *                of messages. Else only one message can be send.
      */
-    public static Intent createSendIntent(Context context, AccountJid account, UserJid user, String text) {
+    public static Intent createSendIntent(Context context, AccountJid account, ContactJid user, String text) {
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
@@ -269,7 +269,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public static Intent createSendUriIntent(Context context, AccountJid account,
-                                             UserJid user, Uri uri) {
+                                             ContactJid user, Uri uri) {
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -277,14 +277,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public static Intent createSendUrisIntent(Context context, AccountJid account,
-                                             UserJid user, ArrayList<Uri> uris) {
+                                              ContactJid user, ArrayList<Uri> uris) {
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
         return intent;
     }
 
-    public static Intent createAttentionRequestIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createAttentionRequestIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = ChatActivity.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
         return intent;
@@ -478,20 +478,20 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (account != null && user != null) {
             try {
                 AccountJid accountJid = AccountJid.from(account);
-                UserJid userJid = UserJid.from(user);
-                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+                ContactJid contactJid = ContactJid.from(user);
+                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, contactJid);
 
                 if (chat instanceof RegularChat) {
                     if (intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
                         ((RegularChat) chat).setIntent(QuestionActivity.createCancelIntent(
-                                Application.getInstance(), accountJid, userJid));
+                                Application.getInstance(), accountJid, contactJid));
                     } else {
                         ((RegularChat)chat).setIntent(QuestionActivity.createIntent(
                                 Application.getInstance(),
-                                accountJid, userJid, question != null, true, question));
+                                accountJid, contactJid, question != null, true, question));
                     }
                 }
-            } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
                 e.printStackTrace();
             }
         }
@@ -535,7 +535,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private void getInitialChatFromIntent() {
         Intent intent = getIntent();
         AccountJid newAccount = getAccount(intent);
-        UserJid newUser = getUser(intent);
+        ContactJid newUser = getUser(intent);
 
         if (newAccount != null) {
             this.account = newAccount;
@@ -694,8 +694,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
     }
 
-    private void selectChat(AccountJid accountJid, UserJid userJid) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+    private void selectChat(AccountJid accountJid, ContactJid contactJid) {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, contactJid);
         //selectChatPage(chat, true);
     }
 
@@ -735,7 +735,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+        final Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts.contains(user)) {
             close();
         }

@@ -10,7 +10,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -196,17 +196,17 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     private void addContactToRoster(String apiJid, String clientJid) {
-        UserJid user;
+        ContactJid user;
         AccountJid account;
         try {
-            user = UserJid.from(apiJid);
+            user = ContactJid.from(apiJid);
             account = AccountJid.from(clientJid);
 
             RosterManager.getInstance().createContact(account, user,
                     "xabber", Collections.EMPTY_LIST);
             PresenceManager.getInstance().requestSubscription(account, user, false);
 
-        } catch (UserJid.UserJidCreateException | XmppStringprepException | InterruptedException |
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {
             LogManager.exception(this, e);
             return;

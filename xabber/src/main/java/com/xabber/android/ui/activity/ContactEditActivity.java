@@ -30,7 +30,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -45,11 +45,11 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
         OnAccountChangedListener, Toolbar.OnMenuItemClickListener {
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private Toolbar toolbar;
     private BarPainter barPainter;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactEditActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -60,7 +60,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

@@ -47,7 +47,7 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
@@ -544,8 +544,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onChatAvatarClick(AbstractContact item) {
         Intent intent;
         AccountJid accountJid = item.getAccount();
-        UserJid userJid = item.getUser();
-        intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
+        ContactJid contactJid = item.getUser();
+        intent = ContactViewerActivity.createIntent(getActivity(), accountJid, contactJid);
         getActivity().startActivity(intent);
     }
 
@@ -556,8 +556,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     public void onChatItemContextMenu(ContextMenu menu, AbstractContact contact){
         AccountJid accountJid = contact.getAccount();
-        UserJid userJid = contact.getUser();
-        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+        ContactJid contactJid = contact.getUser();
+        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
     }
 
@@ -579,8 +579,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onChatItemClick(AbstractContact item) {
         AccountJid accountJid = item.getAccount();
-        UserJid userJid = item.getUser();
-        chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+        ContactJid contactJid = item.getUser();
+        chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, contactJid));
     }
 
     public void update(){
@@ -606,11 +606,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             /* If filterString not empty, perform a search */
 
             /*  Make list of rooms and active chats grouped by users inside accounts */
-            final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
+            final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
             for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
                 if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
                     final AccountJid account = abstractChat.getAccount();
-                    Map<UserJid, AbstractChat> users = abstractChats.get(account);
+                    Map<ContactJid, AbstractChat> users = abstractChats.get(account);
                     if (users == null) {
                         users = new TreeMap<>();
                         abstractChats.put(account, users);
@@ -621,7 +621,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             /* All roster contact collection */
             final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
             /* Map with blocked contacts for accounts */
-            Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
+            Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
             for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
                 blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
             }
@@ -629,7 +629,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             final Collection<RosterContact> rosterContacts = new ArrayList<>();
             for (RosterContact contact : allRosterContacts) {
                 if (blockedContacts.containsKey(contact.getAccount())) {
-                    Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+                    Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
                     if (blockedUsers != null) {
                         if (!blockedUsers.contains(contact.getUser()))
                             rosterContacts.add(contact);
@@ -711,7 +711,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     /** Returns an ArrayList of Contacts filtered by filterString **/
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
-                                                        Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
+                                                        Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats) {
         final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
         String transliterated = StringUtils.translitirateToLatin(filterString);
         // Build structure.
@@ -720,7 +720,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 continue;
             }
             final AccountJid account = rosterContact.getAccount();
-            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
+            final Map<ContactJid, AbstractChat> users = abstractChats.get(account);
             if (users != null) {
                 users.remove(rosterContact.getUser());
             }
@@ -731,7 +731,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 baseEntities.add(rosterContact);
             }
         }
-        for (Map<UserJid, AbstractChat> users : abstractChats.values()) {
+        for (Map<ContactJid, AbstractChat> users : abstractChats.values()) {
             for (AbstractChat abstractChat : users.values()) {
                 final AbstractContact abstractContact;
                 abstractContact = new ChatContact(abstractChat);

@@ -42,7 +42,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -410,7 +410,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /** Gets and caches drawable with avatar for regular user.
      * Or generate and caches text-based avatar. */
-    public Drawable getUserAvatarForContactList(UserJid user, String name) {
+    public Drawable getUserAvatarForContactList(ContactJid user, String name) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = getUserAvatar(user);
@@ -425,7 +425,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    public Drawable getUserAvatarForVcard(UserJid user) {
+    public Drawable getUserAvatarForVcard(ContactJid user) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if(drawable == null) {
             drawable = getUserAvatar(user);
@@ -440,7 +440,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /** Gets and caches drawable with room's avatar.
      * Or generate and caches text-based avatar. */
-    public Drawable getRoomAvatarForContactList(UserJid user) {
+    public Drawable getRoomAvatarForContactList(ContactJid user) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = getRoomAvatar(user);
@@ -456,12 +456,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /** Gets bitmap with avatar for regular user. */
-    public Bitmap getUserBitmap(UserJid user, String name) {
+    public Bitmap getUserBitmap(ContactJid user, String name) {
         return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
     }
 
     /** Gets bitmap with avatar for room. */
-    public Bitmap getRoomBitmap(UserJid user) {
+    public Bitmap getRoomBitmap(ContactJid user) {
         return getCircleBitmap(drawableToBitmap(getRoomAvatarForContactList(user)));
     }
 
@@ -473,7 +473,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /** PRIVATE */
 
     /** Gets avatar drawable for regular user from bitmap. */
-    private Drawable getUserAvatar(UserJid user) {
+    private Drawable getUserAvatar(ContactJid user) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
@@ -482,7 +482,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /** Gets avatar drawable for room from bitmap. */
-    private Drawable getRoomAvatar(UserJid user) {
+    private Drawable getRoomAvatar(ContactJid user) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
@@ -491,7 +491,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /** Gets and caches text-base avatar for regular user from cached drawables. */
-    private Drawable getDefaultAvatar(UserJid user, String name) {
+    private Drawable getDefaultAvatar(ContactJid user, String name) {
         Drawable drawable = contactListDefaultDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = generateDefaultAvatar(user.getBareJid().toString(), name);
@@ -501,7 +501,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /** Gets and caches text-base avatar for room from cached drawables. */
-    private Drawable getDefaultRoomAvatar(UserJid user) {
+    private Drawable getDefaultRoomAvatar(ContactJid user) {
         Drawable drawable = contactListDefaultDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = generateDefaultRoomAvatar(user.getBareJid().toString());
@@ -544,7 +544,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getOccupantAvatar(UserJid user, String nick) {
+    public Drawable getOccupantAvatar(ContactJid user, String nick) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
@@ -605,8 +605,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
                     try {
-                        onPhotoReady(account, UserJid.from(stanza.getFrom()), vCardUpdate);
-                    } catch (UserJid.UserJidCreateException e) {
+                        onPhotoReady(account, ContactJid.from(stanza.getFrom()), vCardUpdate);
+                    } catch (ContactJid.UserJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }
@@ -614,7 +614,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
-    private void onPhotoReady(final AccountJid account, final UserJid user, VCardUpdate vCardUpdate) {
+    private void onPhotoReady(final AccountJid account, final ContactJid user, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
             setHash(user.getJid().asBareJid(), EMPTY_HASH);
             return;

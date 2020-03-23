@@ -21,7 +21,7 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
@@ -223,16 +223,16 @@ public class MessageRealmObject extends RealmObject {
 
     public void setAccount(AccountJid account) { this.account = account.toString(); }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         try {
-            return UserJid.from(user);
-        } catch (UserJid.UserJidCreateException e) {
+            return ContactJid.from(user);
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }
     }
 
-    public void setUser(UserJid user) { this.user = user.toString(); }
+    public void setUser(ContactJid user) { this.user = user.toString(); }
 
     public Resourcepart getResource() {
         if (TextUtils.isEmpty(resource)) {

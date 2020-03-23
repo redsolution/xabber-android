@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ForwardedFragment;
@@ -24,7 +24,7 @@ import com.xabber.android.ui.fragment.ForwardedFragment;
 public class ForwardedActivity extends ManagedActivity {
 
     private String messageId;
-    private UserJid user;
+    private ContactJid user;
     private AccountJid account;
 
     private Toolbar toolbar;
@@ -36,7 +36,7 @@ public class ForwardedActivity extends ManagedActivity {
     private final static String KEY_ACCOUNT = "account";
     private final static String KEY_USER = "user";
 
-    public static Intent createIntent(Context context, String messageId, UserJid user, AccountJid account) {
+    public static Intent createIntent(Context context, String messageId, ContactJid user, AccountJid account) {
         Intent intent = new Intent(context, ForwardedActivity.class);
         intent.putExtra(KEY_MESSAGE_ID, messageId);
         intent.putExtra(KEY_ACCOUNT, (Parcelable) account);
@@ -80,7 +80,7 @@ public class ForwardedActivity extends ManagedActivity {
         initFragment(account, user);
     }
 
-    private void initFragment(AccountJid account, UserJid user) {
+    private void initFragment(AccountJid account, ContactJid user) {
         if (fragment == null)
             fragment = ForwardedFragment.newInstance(account, user, messageId);
 

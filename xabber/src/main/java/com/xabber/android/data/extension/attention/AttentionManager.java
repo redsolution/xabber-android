@@ -28,7 +28,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -159,10 +159,10 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         }
         final AccountJid account = connection.getAccount();
 
-        UserJid from;
+        ContactJid from;
         try {
-            from = UserJid.from(stanza.getFrom());
-        } catch (UserJid.UserJidCreateException e) {
+            from = ContactJid.from(stanza.getFrom());
+        } catch (ContactJid.UserJidCreateException e) {
             e.printStackTrace();
             return;
         }
@@ -179,7 +179,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         }
     }
 
-    public void sendAttention(AccountJid account, UserJid user) throws NetworkException {
+    public void sendAttention(AccountJid account, ContactJid user) throws NetworkException {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
@@ -210,8 +210,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         chat.newAction(null, null, ChatAction.attention_called, false);
     }
 
-    public void removeAccountNotifications(AccountJid accountJid, UserJid userJid) {
-        LogManager.i(this, "removeAccountNotifications " + userJid);
-        attentionRequestProvider.remove(accountJid, userJid.getBareUserJid());
+    public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {
+        LogManager.i(this, "removeAccountNotifications " + contactJid);
+        attentionRequestProvider.remove(accountJid, contactJid.getBareUserJid());
     }
 }

@@ -15,7 +15,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
@@ -60,7 +60,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private int mentionColor;
     private String userName;
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private Long mainMessageTimestamp;
     private int prevItemCount;
     private String prevFirstItemId;

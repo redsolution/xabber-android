@@ -46,7 +46,7 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
@@ -137,7 +137,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
         for (MessageRealmObject messageRealmObject : messagesToSend) {
             AccountJid account = messageRealmObject.getAccount();
-            UserJid user = messageRealmObject.getUser();
+            ContactJid user = messageRealmObject.getUser();
 
             if (account != null && user != null) {
                 if (getChat(account, user) == null) {
@@ -154,7 +154,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
 
     @Nullable
-    public AbstractChat getChat(AccountJid account, UserJid user) {
+    public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
             return chats.get(account.toString(), user.getBareJid().toString());
         } else {
@@ -196,7 +196,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param user
      * @return
      */
-    private RegularChat createChat(AccountJid account, UserJid user) {
+    private RegularChat createChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user, false);
         ChatRealmObject chatData = ChatRepository.getChatRealmObjectFromRealm(account, user);
         if (chatData != null) {
@@ -241,7 +241,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param user
      * @param text
      */
-    public void sendMessage(AccountJid account, UserJid user, String text) {
+    public void sendMessage(AccountJid account, ContactJid user, String text) {
         AbstractChat chat = getOrCreateChat(account, user);
         sendMessage(text, chat);
 
@@ -262,37 +262,37 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.markAsReadAll(true);
     }
 
-    public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
+    public String createFileMessage(AccountJid account, ContactJid user, List<File> files) {
         return createFileMessageWithForwards(account, user, files, null);
     }
 
-    public String createFileMessageWithForwards(AccountJid account, UserJid user, List<File> files, List<String> forwardIds) {
+    public String createFileMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, null, forwardIds);
     }
 
-    public String createVoiceMessageWithForwards(AccountJid account, UserJid user, List<File> files, List<String> forwardIds) {
+    public String createVoiceMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, ReferenceElement.Type.voice.name(), forwardIds);
     }
 
-    public String createVoiceMessage(AccountJid account, UserJid user, List<File> files) {
+    public String createVoiceMessage(AccountJid account, ContactJid user, List<File> files) {
         return createVoiceMessageWithForwards(account, user, files, null);
     }
 
-    public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {
+    public String createFileMessageFromUris(AccountJid account, ContactJid user, List<Uri> uris) {
         return createFileMessageFromUrisWithForwards(account, user, uris, null);
     }
 
-    public String createFileMessageFromUrisWithForwards(AccountJid account, UserJid user, List<Uri> uris, List<String> forwardIds) {
+    public String createFileMessageFromUrisWithForwards(AccountJid account, ContactJid user, List<Uri> uris, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(null, uris, null, forwardIds);
     }
 
-    public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
+    public void updateFileMessage(AccountJid account, ContactJid user, final String messageId,
                                   final HashMap<String, String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
@@ -400,7 +400,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
-    public void removeErrorAndResendMessage(AccountJid account, UserJid user, final String messageId) {
+    public void removeErrorAndResendMessage(AccountJid account, ContactJid user, final String messageId) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -428,7 +428,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param user
      * @return Where there is active chat.
      */
-    public boolean hasActiveChat(AccountJid account, UserJid user) {
+    public boolean hasActiveChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
         return chat != null && chat.isActive();
     }
@@ -446,7 +446,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return Collections.unmodifiableCollection(collection);
     }
 
-    public AbstractChat getOrCreateChat(AccountJid account, UserJid user, MessageRealmObject lastMessage) {
+    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user, MessageRealmObject lastMessage) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.setLastMessage(lastMessage);
         return chat;
@@ -456,7 +456,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * Returns existed chat or create new one.
      *
      */
-    public AbstractChat getOrCreateChat(AccountJid account, UserJid user) {
+    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
         if (chat == null) {
             chat = createChat(account, user);
@@ -470,7 +470,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param account
      * @param user
      */
-    public void openChat(AccountJid account, UserJid user) {
+    public void openChat(AccountJid account, ContactJid user) {
         getOrCreateChat(account, user).openChat();
     }
 
@@ -480,7 +480,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param account
      * @param user
      */
-    public void closeChat(AccountJid account, UserJid user) {
+    public void closeChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -519,7 +519,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param account
      * @param user
      */
-    public void clearHistory(final AccountJid account, final UserJid user) {
+    public void clearHistory(final AccountJid account, final ContactJid user) {
         final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
@@ -595,10 +595,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
         AccountJid account = connection.getAccount();
 
-        final UserJid user;
+        final ContactJid user;
         try {
-            user = UserJid.from(stanza.getFrom()).getBareUserJid();
-        } catch (UserJid.UserJidCreateException e) {
+            user = ContactJid.from(stanza.getFrom()).getBareUserJid();
+        } catch (ContactJid.UserJidCreateException e) {
             return;
         }
         boolean processed = false;
@@ -711,10 +711,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
         LogManager.d(LOG_TAG, "invoked processCarbonsMessage");
         if (direction == CarbonExtension.Direction.sent) {
-            UserJid companion;
+            ContactJid companion;
             try {
-                companion = UserJid.from(message.getTo()).getBareUserJid();
-            } catch (UserJid.UserJidCreateException e) {
+                companion = ContactJid.from(message.getTo()).getBareUserJid();
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
                 return;
             }
@@ -781,10 +781,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        UserJid companion = null;
+        ContactJid companion = null;
         try {
-            companion = UserJid.from(message.getFrom()).getBareUserJid();
-        } catch (UserJid.UserJidCreateException e) {
+            companion = ContactJid.from(message.getFrom()).getBareUserJid();
+        } catch (ContactJid.UserJidCreateException e) {
             return;
         }
 
@@ -851,7 +851,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param fileName
      * @throws NetworkException
      */
-    public File exportChat(AccountJid account, UserJid user, String fileName) throws NetworkException {
+    public File exportChat(AccountJid account, ContactJid user, String fileName) throws NetworkException {
         final File file = new File(Environment.getExternalStorageDirectory(), fileName);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
@@ -895,7 +895,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return file;
     }
 
-    private boolean isStatusTrackingEnabled(AccountJid account, UserJid user) {
+    private boolean isStatusTrackingEnabled(AccountJid account, ContactJid user) {
         if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always) {
             return false;
         }
@@ -904,7 +904,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, final UserJid user, final String statusText) {
+    public void onStatusChanged(AccountJid account, final ContactJid user, final String statusText) {
         // temporary disabled
 //        if (isStatusTrackingEnabled(account, user)) {
 //            final AbstractChat chat = getChat(account, user);
@@ -927,7 +927,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, final UserJid user, final StatusMode statusMode, final String statusText) {
+    public void onStatusChanged(AccountJid account, final ContactJid user, final StatusMode statusMode, final String statusText) {
         // temporary disabled
 //        if (isStatusTrackingEnabled(account, user)) {
 //            final AbstractChat chat = getChat(account, user);

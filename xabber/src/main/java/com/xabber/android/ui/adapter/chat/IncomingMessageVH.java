@@ -16,7 +16,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
@@ -188,9 +188,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         if (groupchatUser != null) {
             Drawable placeholder;
             try {
-                UserJid userJid = UserJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
-                placeholder = AvatarManager.getInstance().getOccupantAvatar(userJid, groupchatUser.getNickname());
-            } catch (UserJid.UserJidCreateException e) {
+                ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupchatUser.getNickname());
+            } catch (ContactJid.UserJidCreateException e) {
                placeholder = AvatarManager.getInstance()
                        .generateDefaultAvatar(groupchatUser.getNickname(), groupchatUser.getNickname());
             }
@@ -203,7 +203,7 @@ public class IncomingMessageVH  extends FileMessageVH {
             return;
         }
 
-        final UserJid user = messageRealmObject.getUser();
+        final ContactJid user = messageRealmObject.getUser();
         final AccountJid account = messageRealmObject.getAccount();
         final Resourcepart resource = messageRealmObject.getResource();
 
@@ -212,14 +212,14 @@ public class IncomingMessageVH  extends FileMessageVH {
         } else {
 
             String nick = resource.toString();
-            UserJid userJid = null;
+            ContactJid contactJid = null;
 
             try {
-                userJid = UserJid.from(user.getJid().toString() + "/" + resource.toString());
+                contactJid = ContactJid.from(user.getJid().toString() + "/" + resource.toString());
                 avatar.setImageDrawable(AvatarManager.getInstance()
-                        .getOccupantAvatar(userJid, nick));
+                        .getOccupantAvatar(contactJid, nick));
 
-            } catch (UserJid.UserJidCreateException e) {
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
                 avatar.setImageDrawable(AvatarManager.getInstance()
                         .generateDefaultAvatar(nick, nick));

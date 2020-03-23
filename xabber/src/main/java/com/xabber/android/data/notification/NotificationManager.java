@@ -38,7 +38,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
@@ -411,7 +411,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         MessageNotificationManager.getInstance().rebuildAllNotifications();
     }
 
-    public void removeMessageNotification(final AccountJid account, final UserJid user) {
+    public void removeMessageNotification(final AccountJid account, final ContactJid user) {
         MessageNotificationManager.getInstance().removeChat(account, user);
     }
 

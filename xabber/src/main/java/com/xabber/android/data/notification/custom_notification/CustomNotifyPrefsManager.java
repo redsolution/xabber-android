@@ -10,7 +10,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.MessageNotificationCreator;
 import com.xabber.android.data.notification.NotificationChannelUtils;
@@ -84,7 +84,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         return null;
     }
 
-    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, UserJid user, String group, Long phraseID) {
+    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, ContactJid user, String group, Long phraseID) {
         NotifyPrefs prefs = findPrefs(Key.createKey(phraseID));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, user));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, group));

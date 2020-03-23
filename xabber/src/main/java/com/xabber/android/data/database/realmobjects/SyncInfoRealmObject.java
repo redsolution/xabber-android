@@ -1,7 +1,7 @@
 package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -38,7 +38,7 @@ public class SyncInfoRealmObject extends RealmObject {
         return user;
     }
 
-    public void setUser(UserJid user) {
+    public void setUser(ContactJid user) {
         this.user = user.toString();
     }
 

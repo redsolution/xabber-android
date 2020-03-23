@@ -33,7 +33,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -46,12 +46,12 @@ public class ChatExportDialogFragment extends DialogFragment implements View.OnC
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
 
     AccountJid account;
-    UserJid user;
+    ContactJid user;
 
     private EditText nameView;
     CheckBox sendView;
 
-    public static ChatExportDialogFragment newInstance(AccountJid account, UserJid user) {
+    public static ChatExportDialogFragment newInstance(AccountJid account, ContactJid user) {
         ChatExportDialogFragment fragment = new ChatExportDialogFragment();
 
         Bundle arguments = new Bundle();

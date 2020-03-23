@@ -7,7 +7,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -43,7 +43,7 @@ public class BlockingManager {
     @SuppressWarnings("WeakerAccess")
     Map<AccountJid, UnblockedAllListener> unblockedAllListeners;
 
-    private Map<AccountJid, List<UserJid>> cachedBlockedContacts;
+    private Map<AccountJid, List<ContactJid>> cachedBlockedContacts;
 
     public static BlockingManager getInstance() {
         if (instance == null) {
@@ -72,15 +72,15 @@ public class BlockingManager {
 
             if (supportedByServer) {
                 // cache block list inside
-                List<UserJid> blockedContacts = new ArrayList<>();
+                List<ContactJid> blockedContacts = new ArrayList<>();
                 try {
                     List<Jid> blockedJids = blockingCommandManager.getBlockList();
                     for (Jid jid : blockedJids) {
-                        blockedContacts.add(UserJid.from(jid));
+                        blockedContacts.add(ContactJid.from(jid));
                     }
 
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                        | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
                     LogManager.exception(LOG_TAG, e);
                 }
                 // Cache block inside manager
@@ -171,21 +171,21 @@ public class BlockingManager {
         return supportForAccounts.get(account);
     }
 
-    public List<UserJid> getCachedBlockedContacts(AccountJid account) {
+    public List<ContactJid> getCachedBlockedContacts(AccountJid account) {
         if (cachedBlockedContacts.get(account) == null)
             return new ArrayList<>();
         else return cachedBlockedContacts.get(account);
     }
 
-    private void updateCachedBlockedContacts(AccountJid account, List<UserJid> blockedContacts) {
+    private void updateCachedBlockedContacts(AccountJid account, List<ContactJid> blockedContacts) {
         cachedBlockedContacts.remove(account);
         cachedBlockedContacts.put(account, blockedContacts);
     }
 
 
-    public boolean contactIsBlocked(AccountJid account, UserJid user) {
-        Collection<UserJid> blockedContacts = getBlockedContacts(account);
-        for (UserJid blockedContact : blockedContacts) {
+    public boolean contactIsBlocked(AccountJid account, ContactJid user) {
+        Collection<ContactJid> blockedContacts = getBlockedContacts(account);
+        for (ContactJid blockedContact : blockedContacts) {
             // we specifically check for the blocked contact's full jid
             // to filter out jids blocked as a group-invite.
             if (blockedContact.getJid().equals(user.getBareJid())) {
@@ -195,8 +195,8 @@ public class BlockingManager {
         return  false;
     }
 
-    public List<UserJid> getBlockedContacts(AccountJid account) {
-        List<UserJid> blockedContacts = new ArrayList<>();
+    public List<ContactJid> getBlockedContacts(AccountJid account) {
+        List<ContactJid> blockedContacts = new ArrayList<>();
 
         Boolean supported = isSupported(account);
 
@@ -206,11 +206,11 @@ public class BlockingManager {
             try {
                 List<Jid> blockedJids = blockingCommandManager.getBlockList();
                 for (Jid jid : blockedJids) {
-                    blockedContacts.add(UserJid.from(jid));
+                    blockedContacts.add(ContactJid.from(jid));
                 }
 
             } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                    | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                    | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
@@ -224,7 +224,7 @@ public class BlockingManager {
         void onErrorBlock();
     }
 
-    public void blockContact(final AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
+    public void blockContact(final AccountJid account, final ContactJid contactJid, final BlockContactListener listener) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -283,7 +283,7 @@ public class BlockingManager {
         return BlockingCommandManager.getInstanceFor(connection);
     }
 
-    static void blockContactLocally(AccountJid account, UserJid contactJid) {
+    static void blockContactLocally(AccountJid account, ContactJid contactJid) {
         MessageManager.getInstance().closeChat(account, contactJid);
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
@@ -293,7 +293,7 @@ public class BlockingManager {
         void onErrorUnblock();
     }
 
-    public void unblockContacts(final AccountJid account, final List<UserJid> contacts, final UnblockContactListener listener) {
+    public void unblockContacts(final AccountJid account, final List<ContactJid> contacts, final UnblockContactListener listener) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -303,8 +303,8 @@ public class BlockingManager {
 
                 if (blockingCommandManager != null) {
                     List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
-                    for (UserJid userJid : contacts) {
-                        jidsToUnblock.add(userJid.getJid());
+                    for (ContactJid contactJid : contacts) {
+                        jidsToUnblock.add(contactJid.getJid());
                     }
 
 

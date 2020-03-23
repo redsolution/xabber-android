@@ -22,19 +22,17 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
@@ -76,7 +74,7 @@ public class RegularChat extends AbstractChat {
     private Intent intent;
 
 
-    RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
+    RegularChat(AccountJid account, ContactJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
     }
@@ -158,7 +156,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(UserJid bareAddress, Stanza packet, boolean isCarbons) {
+    protected boolean onPacket(ContactJid bareAddress, Stanza packet, boolean isCarbons) {
 
         if (!super.onPacket(bareAddress, packet, isCarbons))
             return false;

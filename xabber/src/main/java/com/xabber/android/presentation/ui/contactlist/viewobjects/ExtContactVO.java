@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
@@ -33,7 +33,7 @@ public class ExtContactVO extends ContactVO {
     public ExtContactVO(int accountColorIndicator, int accountColorIndicatorBack,
                         String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
-                        int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
+                        int mucIndicatorLevel, ContactJid contactJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
@@ -41,7 +41,7 @@ public class ExtContactVO extends ContactVO {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar,
-                mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
+                mucIndicatorLevel, contactJid, accountJid, unreadCount, mute, notificationMode, messageText,
                 isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount,
                 isCustomNotification, isGroupchat, isServer);
     }
@@ -52,7 +52,7 @@ public class ExtContactVO extends ContactVO {
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
-                contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
+                contactVO.getContactJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),

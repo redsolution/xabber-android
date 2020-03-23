@@ -1,5 +1,8 @@
 package com.xabber.android.data.database.realmobjects;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
+
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -9,7 +12,8 @@ public class ChatRealmObject extends RealmObject {
 
     public static final class Fields{
         public static final String ID = "id";
-        public static final String CONTACT = "contact";
+        public static final String ACCOUNT_JID = "accountJid";
+        public static final String CONTACT_JID = "contactJid";
         public static final String LAST_MESSAGE = "lastMessage";
         public static final String IS_GROUPCHAT = "isGroupchat";
         public static final String IS_ARCHIVED = "isArchived";
@@ -23,7 +27,8 @@ public class ChatRealmObject extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private ContactRealmObject contact;
+    private String accountJid;
+    private String contactJid;
     private MessageRealmObject lastMessage;
     private boolean isGroupchat;
     private boolean isArchived;
@@ -37,17 +42,19 @@ public class ChatRealmObject extends RealmObject {
         this.id = UUID.randomUUID().toString();
     }
 
-    public ChatRealmObject(ContactRealmObject contactRealmObject){
+    public ChatRealmObject(AccountJid accountJid, ContactJid contactJid){
         this.id = UUID.randomUUID().toString();
-        this.contact = contactRealmObject;
+        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.contactJid = contactJid.getBareJid().toString();
     }
 
-    public ChatRealmObject(ContactRealmObject contactRealmObject, MessageRealmObject lastMessage,
+    public ChatRealmObject(AccountJid accountJid, ContactJid contactJid, MessageRealmObject lastMessage,
                            boolean isGroupchat, boolean isArchived, boolean isBlocked,
                            boolean isHistoryRequestAtStart, int unreadMessagesCount, int lastPosition,
                            ChatNotificationsPreferencesRealmObject chatNotificationsPreferencesRealmObject){
         this.id = UUID.randomUUID().toString();
-        this.contact = contactRealmObject;
+        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.contactJid = contactJid.getBareJid().toString();
         this.lastMessage = lastMessage;
         this.isGroupchat = isGroupchat;
         this.isArchived = isArchived;
@@ -58,8 +65,9 @@ public class ChatRealmObject extends RealmObject {
         this.chatNotificationsPreferences = chatNotificationsPreferencesRealmObject;
     }
 
-    public ContactRealmObject getContact() { return contact; }
-    public void setContact(ContactRealmObject contact) { this.contact = contact; }
+    public String getAccountJid() { return accountJid; }
+
+    public String getContactJid() { return contactJid; }
 
     public void setLastPosition(int lastPosition) { this.lastPosition = lastPosition; }
     public int getLastPosition() { return lastPosition; }

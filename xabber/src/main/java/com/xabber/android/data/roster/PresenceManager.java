@@ -27,7 +27,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
@@ -73,7 +73,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * List of account with requested subscriptions for auto accept incoming
      * subscription request.
      */
-    private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
+    private final HashMap<AccountJid, Set<ContactJid>> requestedSubscriptions;
 
     private final Map<BareJid, Map<Resourcepart, Presence>> accountsPresenceMap = new ConcurrentHashMap<>();
     private final Map<BareJid, Map<BareJid, Map<Resourcepart, Presence>>> presenceMap = new ConcurrentHashMap<>();
@@ -109,7 +109,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * @return <code>null</code> can be returned.
      */
-    public SubscriptionRequest getSubscriptionRequest(AccountJid account, UserJid user) {
+    public SubscriptionRequest getSubscriptionRequest(AccountJid account, ContactJid user) {
         return subscriptionRequestProvider.get(account, user);
     }
 
@@ -118,7 +118,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      *
      * @throws NetworkException
      */
-    public void requestSubscription(AccountJid account, UserJid user) throws NetworkException {
+    public void requestSubscription(AccountJid account, ContactJid user) throws NetworkException {
         requestSubscription(account, user, true);
     }
 
@@ -127,7 +127,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * Create chat with new contact if need.
      * @throws NetworkException
      */
-    public void requestSubscription(AccountJid account, UserJid user, boolean createChat) throws NetworkException {
+    public void requestSubscription(AccountJid account, ContactJid user, boolean createChat) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
@@ -135,15 +135,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (createChat) createChatForNewContact(account, user);
     }
 
-    private void removeRequestedSubscription(AccountJid account, UserJid user) {
-        Set<UserJid> set = requestedSubscriptions.get(account);
+    private void removeRequestedSubscription(AccountJid account, ContactJid user) {
+        Set<ContactJid> set = requestedSubscriptions.get(account);
         if (set != null) {
             set.remove(user);
         }
     }
 
-    private void addRequestedSubscription(AccountJid account, UserJid user) {
-        Set<UserJid> set = requestedSubscriptions.get(account);
+    private void addRequestedSubscription(AccountJid account, ContactJid user) {
+        Set<ContactJid> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<>();
             requestedSubscriptions.put(account, set);
@@ -158,7 +158,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      *               request with a new Action message in the chat.
      *               Mainly just to avoid Action message spam when adding new contacts.
      */
-    public void acceptSubscription(AccountJid account, UserJid user, boolean notify) throws NetworkException {
+    public void acceptSubscription(AccountJid account, ContactJid user, boolean notify) throws NetworkException {
         if (notify) createChatForAcceptingIncomingRequest(account, user);
         Presence packet = new Presence(Presence.Type.subscribed);
         packet.setTo(user.getJid());
@@ -167,31 +167,31 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         removeRequestedSubscription(account, user);
     }
 
-    public void acceptSubscription(AccountJid account, UserJid user) throws NetworkException {
+    public void acceptSubscription(AccountJid account, ContactJid user) throws NetworkException {
         acceptSubscription(account, user, true);
     }
 
     /** Added available action to chat, to show chat in recent chats */
-    private void createChatForNewContact(AccountJid account, UserJid user) {
+    private void createChatForNewContact(AccountJid account, ContactJid user) {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent),
                 ChatAction.subscription_sent, false);
     }
 
-    private void createChatForIncomingRequest(AccountJid account, UserJid user) {
+    private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received),
                 ChatAction.subscription_received, false);
     }
 
-    private void createChatForAcceptingIncomingRequest(AccountJid account, UserJid user) {
+    private void createChatForAcceptingIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name),
                 ChatAction.subscription_received_accepted, false);
     }
 
-    private void createChatForAcceptingOutgoingRequest(AccountJid account, UserJid user) {
+    private void createChatForAcceptingOutgoingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name),
@@ -202,7 +202,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * Discards subscription request from the entity (deny own presence
      * sharing).
      */
-    public void discardSubscription(AccountJid account, UserJid user) throws NetworkException {
+    public void discardSubscription(AccountJid account, ContactJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribed);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
@@ -213,7 +213,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Subscribe for contact's presence (has no bearing on own presence sharing)
      */
-    public void subscribeForPresence(AccountJid account, UserJid user) throws NetworkException {
+    public void subscribeForPresence(AccountJid account, ContactJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
@@ -222,7 +222,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Unsubscribe from contact's presence (has no bearing on own presence sharing)
      */
-    public void unsubscribeFromPresence(AccountJid account, UserJid user) throws NetworkException {
+    public void unsubscribeFromPresence(AccountJid account, ContactJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
@@ -232,7 +232,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * Either accepts the current subscription request from the contact(if present), or adds
      * an automatic acceptance of the incoming request
      */
-    public void addAutoAcceptSubscription(AccountJid account, UserJid user) throws NetworkException {
+    public void addAutoAcceptSubscription(AccountJid account, ContactJid user) throws NetworkException {
         if(subscriptionRequestProvider.get(account, user) != null) {
             acceptSubscription(account, user);
         } else {
@@ -240,7 +240,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
-    public void removeAutoAcceptSubscription(AccountJid account, UserJid user) {
+    public void removeAutoAcceptSubscription(AccountJid account, ContactJid user) {
         removeRequestedSubscription(account, user);
     }
 
@@ -248,8 +248,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     //    addRequestedSubscription(account, user);
     //}
 
-    public boolean hasAutoAcceptSubscription(AccountJid account, UserJid user) {
-        Set<UserJid> set = requestedSubscriptions.get(account);
+    public boolean hasAutoAcceptSubscription(AccountJid account, ContactJid user) {
+        Set<ContactJid> set = requestedSubscriptions.get(account);
         if (set == null) {
             return false;
         }
@@ -259,15 +259,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      *  Check if we have an incoming subscription request
      */
-    public boolean hasSubscriptionRequest(AccountJid account, UserJid bareAddress) {
+    public boolean hasSubscriptionRequest(AccountJid account, ContactJid bareAddress) {
         return getSubscriptionRequest(account, bareAddress) != null;
     }
 
-    public StatusMode getStatusMode(AccountJid account, UserJid user) {
+    public StatusMode getStatusMode(AccountJid account, ContactJid user) {
         return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
-    public String getStatusText(AccountJid account, UserJid bareAddress) {
+    public String getStatusText(AccountJid account, ContactJid bareAddress) {
         final Presence presence = RosterManager.getInstance().getPresence(account, bareAddress);
         if (presence == null) {
             return null;
@@ -277,10 +277,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public void onPresenceChanged(AccountJid account, Presence presence) {
-        UserJid from;
+        ContactJid from;
         try {
-            from = UserJid.from(presence.getFrom());
-        } catch (UserJid.UserJidCreateException e) {
+            from = ContactJid.from(presence.getFrom());
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             return;
         }
@@ -351,12 +351,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
         Presence presence = (Presence) stanza;
 
-        UserJid from;
+        ContactJid from;
         Resourcepart fromResource;
         try {
-            from = UserJid.from(stanza.getFrom());
+            from = ContactJid.from(stanza.getFrom());
             fromResource = stanza.getFrom().getResourceOrEmpty();
-        } catch (UserJid.UserJidCreateException e) {
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             return;
         }
@@ -414,8 +414,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                             Application.getInstance().getResources().getString(R.string.spam_filter_ban_subscription));
                     // and discard subscription
                     try {
-                        discardSubscription(account, UserJid.from(from.toString()));
-                    } catch (NetworkException | UserJid.UserJidCreateException e) {
+                        discardSubscription(account, ContactJid.from(from.toString()));
+                    } catch (NetworkException | ContactJid.UserJidCreateException e) {
                         e.printStackTrace();
                     }
 
@@ -433,8 +433,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                         if (captcha.getExpiresDate() < System.currentTimeMillis()) {
                             // discard subscription
                             try {
-                                discardSubscription(account, UserJid.from(from.toString()));
-                            } catch (NetworkException | UserJid.UserJidCreateException e) {
+                                discardSubscription(account, ContactJid.from(from.toString()));
+                            } catch (NetworkException | ContactJid.UserJidCreateException e) {
                                 e.printStackTrace();
                             }
                             return;
@@ -466,8 +466,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
-    public void handleSubscriptionRequest(AccountJid account, UserJid from) {
-        Set<UserJid> set = requestedSubscriptions.get(account);
+    public void handleSubscriptionRequest(AccountJid account, ContactJid from) {
+        Set<ContactJid> set = requestedSubscriptions.get(account);
         if (set != null && set.contains(from)) {
             try {
                 acceptSubscription(account, from, false);
@@ -483,11 +483,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
-    public void handleSubscriptionAccept(AccountJid account, UserJid from) {
+    public void handleSubscriptionAccept(AccountJid account, ContactJid from) {
         createChatForAcceptingOutgoingRequest(account, from);
     }
 
-    public void clearSubscriptionRequestNotification(AccountJid account, UserJid from) {
+    public void clearSubscriptionRequestNotification(AccountJid account, ContactJid from) {
         if (subscriptionRequestProvider.get(account, from) != null) {
             subscriptionRequestProvider.remove(account, from);
         }
@@ -504,12 +504,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void onRosterEntriesUpdated(AccountJid account, Collection<Jid> entries) {
         for (Jid entry : entries) {
             try {
-                UserJid user = UserJid.from(entry);
+                ContactJid user = ContactJid.from(entry);
                 if(subscriptionRequestProvider.get(account, user) != null) {
                     subscriptionRequestProvider.remove(account, user);
                     createChatForNewContact(account, user);
                 }
-            } catch (UserJid.UserJidCreateException e) {
+            } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();
             }
         }
@@ -583,7 +583,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return res;
     }
 
-    public Presence getPresence(AccountJid account, UserJid user) {
+    public Presence getPresence(AccountJid account, ContactJid user) {
         boolean isAccountPresence = isAccountPresence(account, user.getBareJid());
         Map<Resourcepart, Presence> userPresences = isAccountPresence ? getSingleAccountPresences(user.getBareJid()) : getSingleContactPresences(account.getFullJid().asBareJid(), user.getBareJid());
         if (userPresences.isEmpty()) {

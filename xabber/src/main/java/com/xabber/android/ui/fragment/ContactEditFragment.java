@@ -16,7 +16,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -53,7 +53,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     private SubscriptionState subscriptionState;
     private ArrayList<String> contactGroups = new ArrayList<>();
 
-    public static ContactEditFragment newInstance(AccountJid account, UserJid user) {
+    public static ContactEditFragment newInstance(AccountJid account, ContactJid user) {
         ContactEditFragment fragment = new ContactEditFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);

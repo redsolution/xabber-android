@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -29,9 +29,9 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
     private CheckBox checkBox;
 
     AccountJid account;
-    UserJid user;
+    ContactJid user;
 
-    public static ChatHistoryClearDialog newInstance(AccountJid account, UserJid user) {
+    public static ChatHistoryClearDialog newInstance(AccountJid account, ContactJid user) {
         ChatHistoryClearDialog fragment = new ChatHistoryClearDialog();
 
         Bundle arguments = new Bundle();

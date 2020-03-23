@@ -8,7 +8,7 @@ import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.Realm;
@@ -19,12 +19,12 @@ public class MessageRepository {
 
     private static final String LOG_TAG = MessageRepository.class.getSimpleName();
 
-    public static RealmResults<MessageRealmObject> getChatMessages(AccountJid accountJid, UserJid userJid) {
+    public static RealmResults<MessageRealmObject> getChatMessages(AccountJid accountJid, ContactJid contactJid) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageRealmObject> results = realm
                 .where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                .equalTo(MessageRealmObject.Fields.USER, userJid.toString())
+                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.TEXT)
                 .findAll()

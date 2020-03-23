@@ -19,7 +19,7 @@ import android.text.TextUtils;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public class RosterContact extends AbstractContact {
 
     private static final  NestedMap<WeakReference<RosterContact>> instances = new NestedMap<>();
 
-    static RosterContact getRosterContact(AccountJid account, UserJid user, String name) {
+    static RosterContact getRosterContact(AccountJid account, ContactJid user, String name) {
         WeakReference<RosterContact> contactWeakReference = instances.get(account.toString(), user.toString());
         if (contactWeakReference != null && contactWeakReference.get() != null) {
                 contactWeakReference.get().setName(name);
@@ -70,7 +70,7 @@ public class RosterContact extends AbstractContact {
         return rosterContact;
     }
 
-    private RosterContact(AccountJid account, UserJid user, String name) {
+    private RosterContact(AccountJid account, ContactJid user, String name) {
         super(account, user);
 
         if (name == null) {

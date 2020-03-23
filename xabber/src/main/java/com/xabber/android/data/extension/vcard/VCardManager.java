@@ -25,7 +25,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
@@ -218,8 +218,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             AccountManager.getInstance().onAccountChanged(account);
         } else {
             try {
-                RosterManager.onContactChanged(account, UserJid.from(bareAddress));
-            } catch (UserJid.UserJidCreateException e) {
+                RosterManager.onContactChanged(account, ContactJid.from(bareAddress));
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }
@@ -294,8 +294,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
-        for (UserJid blockedContact : blockedContacts) {
+        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        for (ContactJid blockedContact : blockedContacts) {
             if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
                 onVCardFailed(account, srcUser);
                 return;

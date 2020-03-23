@@ -29,7 +29,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ContactAddFragment;
@@ -50,7 +50,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         return createIntent(context, account, null);
     }
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactAddActivity.class).setAccount(account).setUser(user).build();
     }
 
@@ -58,7 +58,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

@@ -12,7 +12,7 @@ import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class ChatRepository {
 
     private static final String LOG_TAG = ChatRepository.class.getSimpleName();
 
-    public static void saveOrUpdateChatRealmObject(AccountJid accountJid, UserJid userJid,
+    public static void saveOrUpdateChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                    @Nullable MessageRealmObject lastMessage,
                                                    int lastPosition, boolean isBlocked,
                                                    boolean isArchived, boolean isHistoryRequestAtStart,
@@ -41,30 +41,27 @@ public class ChatRepository {
                     ContactRealmObject contactRealmObject = realm1
                             .where(ContactRealmObject.class)
                             .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
-                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, userJid.getBareJid().toString())
+                            .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
                             .findFirst();
-
-                    if (contactRealmObject.getAccountJid() != null || contactRealmObject.getAccountJid().isEmpty())
-                        return;
 
                     ChatRealmObject chatRealmObject = realm1
                             .where(ChatRealmObject.class)
-                            .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                            .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
                                     accountJid.getFullJid().asBareJid().toString())
-                            .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID,
-                                    userJid.getBareJid().toString())
+                            .equalTo(ChatRealmObject.Fields.CONTACT_JID,
+                                    contactJid.getBareJid().toString())
                             .findFirst();
 
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.USER, userJid.getBareJid().toString())
+                            .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
                             .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().asBareJid().toString())
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
                             .findFirst();
 
                     if (chatRealmObject == null) {
 
-                        ChatRealmObject newChatRealmObject = new ChatRealmObject(contactRealmObject,
+                        ChatRealmObject newChatRealmObject = new ChatRealmObject(accountJid, contactJid,
                                 lastMessage == null ? messageRealmObject : lastMessage,
                                 isGroupchat, isArchived, isBlocked, isHistoryRequestAtStart,
                                 unreadCount, lastPosition, notificationsPreferences );
@@ -92,7 +89,6 @@ public class ChatRepository {
                         realm1.insertOrUpdate(contactRealmObject);
                     }
 
-                    LogManager.d(LOG_TAG, "Writed or updated chatRealm" + chatRealmObject.getContact().getAccountJid());
                 });
 
             } catch (Exception e){
@@ -115,7 +111,7 @@ public class ChatRepository {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<ChatRealmObject> realmResults = realm
                 .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
                         accountJid.getFullJid().asBareJid().toString())
                 .findAll();
         if (Looper.getMainLooper() != Looper.myLooper())
@@ -130,13 +126,13 @@ public class ChatRepository {
         return result;
     }
 
-    public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, UserJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
+    public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         ChatRealmObject chatRealmObject = realm
                 .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.ACCOUNT_JID,
+                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
                         accountJid.getFullJid().asBareJid().toString())
-                .equalTo(ChatRealmObject.Fields.CONTACT + "." + ContactRealmObject.Fields.CONTACT_JID,
+                .equalTo(ChatRealmObject.Fields.CONTACT_JID,
                         contactJid.getBareJid().toString())
                 .findFirst();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();

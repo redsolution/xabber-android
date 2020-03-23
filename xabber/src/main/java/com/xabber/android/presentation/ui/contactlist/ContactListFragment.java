@@ -30,7 +30,7 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
@@ -274,8 +274,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         IFlexible item = adapter.getItem(adapterPosition);
         if (item != null && item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
-            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+            ContactJid contactJid = ((ContactVO) item).getContactJid();
+            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
             ContextMenuHelper.createContactContextMenu(getActivity(), presenter, abstractContact, menu);
             return;
         }
@@ -294,8 +294,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (item != null && item instanceof ContactVO) {
             Intent intent;
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
-            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
+            ContactJid contactJid = ((ContactVO) item).getContactJid();
+            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, contactJid);
             getActivity().startActivity(intent);
         }
     }

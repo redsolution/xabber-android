@@ -55,7 +55,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -86,7 +86,7 @@ public class ContactActivity extends ManagedActivity implements
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private AbstractChat chat;
     private Toolbar toolbar;
     private View contactTitleView;
@@ -112,7 +112,7 @@ public class ContactActivity extends ManagedActivity implements
     public int orientation;
     private boolean blocked;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactActivity.class)
                 .setAccount(account).setUser(user).build();
     }
@@ -121,7 +121,7 @@ public class ContactActivity extends ManagedActivity implements
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -145,8 +145,8 @@ public class ContactActivity extends ManagedActivity implements
 
         if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
             try {
-                user = UserJid.from(accountItem.getRealJid().asBareJid());
-            } catch (UserJid.UserJidCreateException e) {
+                user = ContactJid.from(accountItem.getRealJid().asBareJid());
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }
@@ -495,7 +495,7 @@ public class ContactActivity extends ManagedActivity implements
         return account;
     }
 
-    protected UserJid getUser() {
+    protected ContactJid getUser() {
         return user;
     }
 

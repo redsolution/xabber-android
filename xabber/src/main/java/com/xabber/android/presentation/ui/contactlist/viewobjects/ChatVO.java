@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
@@ -37,7 +37,7 @@ public class ChatVO extends ExtContactVO {
 
     public ChatVO(int accountColorIndicator, int accountColorIndicatorBack,
                   String name, String status, int statusId, int statusLevel, Drawable avatar,
-                  int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
+                  int mucIndicatorLevel, ContactJid contactJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                   boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                   boolean archived, String lastActivity, ContactClickListener listener,
@@ -45,7 +45,7 @@ public class ChatVO extends ExtContactVO {
                   boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
-                statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
+                statusId, statusLevel, avatar, mucIndicatorLevel, contactJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
                 messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer);
 
@@ -67,7 +67,7 @@ public class ChatVO extends ExtContactVO {
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
-                contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
+                contactVO.getContactJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
                 contactVO.isMute(), contactVO.getNotificationMode(), messageText,
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
@@ -105,7 +105,7 @@ public class ChatVO extends ExtContactVO {
 
         /** set up BACKGROUND for CURRENT CHAT */
         if (currentChatListener != null && currentChatListener.isCurrentChat(getAccountJid().toString(),
-                getUserJid().toString())) {
+                getContactJid().toString())) {
 
             final int[] accountGroupColors = context.getResources().getIntArray(
                     getThemeResource(context, R.attr.current_chat_background));

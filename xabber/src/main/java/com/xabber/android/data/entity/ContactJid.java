@@ -3,9 +3,10 @@ package com.xabber.android.data.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.xabber.android.data.log.LogManager;
 
@@ -19,9 +20,9 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserJid implements Comparable<UserJid>, Parcelable {
+public class ContactJid implements Comparable<ContactJid>, Parcelable {
 
-    private static final String LOG_TAG = UserJid.class.getSimpleName();
+    private static final String LOG_TAG = ContactJid.class.getSimpleName();
 
     public static class UserJidCreateException extends IOException {
 
@@ -29,10 +30,11 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
 
     private final @NonNull Jid jid;
     private static int counter = 0;
-    private static Map<Jid, WeakReference<UserJid>> instances = new ConcurrentHashMap<>();
+    private static Map<Jid, WeakReference<ContactJid>> instances = new ConcurrentHashMap<>();
 
 
-    public static @NonNull UserJid from(@Nullable String string) throws UserJidCreateException {
+    public static @NonNull
+    ContactJid from(@Nullable String string) throws UserJidCreateException {
         if (TextUtils.isEmpty(string)) {
             throw new UserJidCreateException();
         }
@@ -47,7 +49,8 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         return from(jid);
     }
 
-    public static @NonNull UserJid from(@Nullable Jid jid) throws UserJidCreateException {
+    public static @NonNull
+    ContactJid from(@Nullable Jid jid) throws UserJidCreateException {
         if (jid == null || jid.asBareJid() == null) {
             throw new UserJidCreateException();
         }
@@ -55,19 +58,19 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         return getUserJid(jid);
     }
 
-    private static UserJid getUserJid(@NonNull Jid jid) {
-        WeakReference<UserJid> userJidWeakReference = instances.get(jid);
+    private static ContactJid getUserJid(@NonNull Jid jid) {
+        WeakReference<ContactJid> userJidWeakReference = instances.get(jid);
 
         if (userJidWeakReference != null && userJidWeakReference.get() != null) {
             return userJidWeakReference.get();
         } else {
-            UserJid newUserJid = new UserJid(jid);
-            instances.put(jid, new WeakReference<>(newUserJid));
-            return newUserJid;
+            ContactJid newContactJid = new ContactJid(jid);
+            instances.put(jid, new WeakReference<>(newContactJid));
+            return newContactJid;
         }
     }
 
-    private UserJid(@NonNull Jid jid) {
+    private ContactJid(@NonNull Jid jid) {
         this.jid = jid;
         counter++;
     }
@@ -80,19 +83,20 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         return jid.asBareJid();
     }
 
-    public @NonNull UserJid getBareUserJid() {
+    public @NonNull
+    ContactJid getBareUserJid() {
         return getUserJid(jid.asBareJid());
     }
 
     @Override
-    public int compareTo(@NonNull UserJid another) {
+    public int compareTo(@NonNull ContactJid another) {
         return this.getJid().compareTo(another.getJid());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof UserJid) {
-            return getJid().equals(((UserJid) o).getJid());
+        if (o != null && o instanceof ContactJid) {
+            return getJid().equals(((ContactJid) o).getJid());
         } else {
             return false;
         }
@@ -122,11 +126,11 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         dest.writeString(jid.toString());
     }
 
-    public static final Parcelable.Creator<UserJid> CREATOR = new Parcelable.Creator<UserJid>() {
+    public static final Parcelable.Creator<ContactJid> CREATOR = new Parcelable.Creator<ContactJid>() {
         @Override
-        public UserJid createFromParcel(Parcel parcel) {
+        public ContactJid createFromParcel(Parcel parcel) {
             try {
-                return UserJid.from(parcel.readString());
+                return ContactJid.from(parcel.readString());
             } catch (UserJidCreateException e) {
                 LogManager.exception(this, e);
                 return null;
@@ -134,8 +138,8 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         }
 
         @Override
-        public UserJid[] newArray(int size) {
-            return new UserJid[size];
+        public ContactJid[] newArray(int size) {
+            return new ContactJid[size];
         }
     };
 }

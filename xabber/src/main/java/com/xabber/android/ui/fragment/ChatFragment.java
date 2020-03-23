@@ -72,7 +72,7 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -276,7 +276,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private BottomMessagesPanel bottomMessagesPanel;
     private List<String> bottomPanelMessagesIds = new ArrayList<>();
 
-    public static ChatFragment newInstance(AccountJid account, UserJid user) {
+    public static ChatFragment newInstance(AccountJid account, ContactJid user) {
         ChatFragment fragment = new ChatFragment();
 
         Bundle arguments = new Bundle();
@@ -723,9 +723,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         return view;
     }
 
-    public void setChat(AccountJid accountJid, UserJid userJid) {
+    public void setChat(AccountJid accountJid, ContactJid contactJid) {
         this.account = accountJid;
-        this.user = userJid;
+        this.user = contactJid;
 
         AbstractChat abstractChat = getChat();
         showSecurityButton(true);
@@ -1354,7 +1354,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         return account;
     }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         return user;
     }
 
@@ -1380,7 +1380,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
     }
 
-    public void stopEncryption(AccountJid account, UserJid user) {
+    public void stopEncryption(AccountJid account, ContactJid user) {
         try {
             OTRManager.getInstance().endSession(account, user);
         } catch (NetworkException e) {
@@ -1388,7 +1388,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void restartEncryption(AccountJid account, UserJid user) {
+    private void restartEncryption(AccountJid account, ContactJid user) {
         try {
             OTRManager.getInstance().refreshSession(account, user);
         } catch (NetworkException e) {
@@ -1396,7 +1396,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void startEncryption(AccountJid account, UserJid user) {
+    private void startEncryption(AccountJid account, ContactJid user) {
         try {
             OTRManager.getInstance().startSession(account, user);
         } catch (NetworkException e) {
@@ -1463,7 +1463,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         setInputText(messageRealmObject.getText());
     }
 
-    public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
+    public void showResourceChoiceAlert(final AccountJid account, final ContactJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
 
         final List<Map<String, String>> items = new ArrayList<>();
@@ -1561,13 +1561,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         startActivity(intent);
     }
 
-    public void closeChat(AccountJid account, UserJid user) {
+    public void closeChat(AccountJid account, ContactJid user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         listener.onCloseChat();
     }
 
-    public void clearHistory(AccountJid account, UserJid user) {
+    public void clearHistory(AccountJid account, ContactJid user) {
         ChatHistoryClearDialog.newInstance(account, user).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
     }
 

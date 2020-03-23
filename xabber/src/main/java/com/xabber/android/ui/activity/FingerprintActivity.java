@@ -34,7 +34,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -57,7 +57,7 @@ public class FingerprintActivity extends ManagedActivity implements
     private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.activity.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private String remoteFingerprint;
     private String localFingerprint;
     /**
@@ -73,7 +73,7 @@ public class FingerprintActivity extends ManagedActivity implements
      */
     private IntentIntegrator integrator;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, FingerprintActivity.class)
                 .setAccount(account).setUser(user).build();
     }
@@ -82,7 +82,7 @@ public class FingerprintActivity extends ManagedActivity implements
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

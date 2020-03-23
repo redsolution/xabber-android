@@ -34,7 +34,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -73,7 +73,7 @@ public class ContextMenuHelper {
     public static void createContactContextMenu(final FragmentActivity activity, ListPresenter presenter,
                                                 AbstractContact abstractContact, ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
-        final UserJid user = abstractContact.getUser();
+        final ContactJid user = abstractContact.getUser();
         //menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
         inflater.inflate(R.menu.item_contact, menu);
@@ -88,7 +88,7 @@ public class ContextMenuHelper {
 
     private static void setContactContextMenuActions(final FragmentActivity activity,
                                                      final ListPresenter presenter, ContextMenu menu,
-                                                     final AccountJid account, final UserJid user) {
+                                                     final AccountJid account, final ContactJid user) {
 
         menu.findItem(R.id.action_contact_info).setOnMenuItemClickListener(item -> {
             activity.startActivity(ContactViewerActivity.createIntent(activity, account, user));
@@ -200,7 +200,7 @@ public class ContextMenuHelper {
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
                                                             ContactListActivity.ActiveFragment fragment,
                                                             ContextMenu menu,
-                                                            AccountJid account, UserJid user) {
+                                                            AccountJid account, ContactJid user) {
         // all menu items are visible by default
         // it allows to hide items in xml file without touching code
 

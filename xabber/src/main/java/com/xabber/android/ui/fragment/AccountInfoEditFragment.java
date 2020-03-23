@@ -39,7 +39,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
@@ -376,8 +376,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     public void requestVCard() {
         enableProgressMode("Requesting vcard");
         try {
-            VCardManager.getInstance().requestByUser(account, UserJid.from(account.getFullJid().asBareJid()).getJid());
-        } catch (UserJid.UserJidCreateException e) {
+            VCardManager.getInstance().requestByUser(account, ContactJid.from(account.getFullJid().asBareJid()).getJid());
+        } catch (ContactJid.UserJidCreateException e) {
             e.printStackTrace();
         }
     }

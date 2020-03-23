@@ -46,7 +46,7 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -222,8 +222,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      * @param user
      * @param text can be <code>null</code>.
      */
-    private void openChat(UserJid user, String text) {
-        UserJid bareAddress = user.getBareUserJid();
+    private void openChat(ContactJid user, String text) {
+        ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : MessageManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
@@ -267,7 +267,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      *
      * @param text       can be <code>null</code>.
      */
-    private void openChat(AccountJid account, UserJid user, String text) {
+    private void openChat(AccountJid account, ContactJid user, String text) {
         if (text == null) {
             startActivity(ChatActivity.createSendIntent(this, account, user, null));
         } else {
@@ -311,10 +311,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                                 text = texts.get(0);
                             }
 
-                            UserJid user = null;
+                            ContactJid user = null;
                             try {
-                                user = UserJid.from(xmppUri.getPath());
-                            } catch (UserJid.UserJidCreateException e) {
+                                user = ContactJid.from(xmppUri.getPath());
+                            } catch (ContactJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 
@@ -540,7 +540,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onChoose(AccountJid account, UserJid user, String text) {
+    public void onChoose(AccountJid account, ContactJid user, String text) {
         openChat(account, user, text);
     }
 
@@ -744,7 +744,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         return intent;
     }
 
-    public static Intent createContactSubscriptionIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createContactSubscriptionIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
@@ -754,7 +754,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
         AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
+        ContactJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
         }
@@ -764,7 +764,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getRoomInviteUser(Intent intent) {
+    private static ContactJid getRoomInviteUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

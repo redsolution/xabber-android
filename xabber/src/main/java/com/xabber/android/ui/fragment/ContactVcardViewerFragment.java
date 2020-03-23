@@ -26,7 +26,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
@@ -66,7 +66,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static final int REQUEST_CODE_EDIT_VCARD = 1;
 
     AccountJid account;
-    UserJid user;
+    ContactJid user;
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
     private VCard vCard;
@@ -81,7 +81,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         void registerVCardFragment(ContactVcardViewerFragment fragment);
     }
 
-    public static ContactVcardViewerFragment newInstance(AccountJid account, UserJid user) {
+    public static ContactVcardViewerFragment newInstance(AccountJid account, ContactJid user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
 
         Bundle arguments = new Bundle();
@@ -93,8 +93,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     public static ContactVcardViewerFragment newInstance(AccountJid account) {
         try {
-            return newInstance(account, UserJid.from(account.getFullJid().asBareJid()));
-        } catch (UserJid.UserJidCreateException e) {
+            return newInstance(account, ContactJid.from(account.getFullJid().asBareJid()));
+        } catch (ContactJid.UserJidCreateException e) {
             throw new IllegalStateException("Cannot convert account to user. Account: " + account, e);
         }
     }
@@ -294,7 +294,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return source + splitter + value;
     }
 
-    public void updateContact(AccountJid account, UserJid bareAddress) {
+    public void updateContact(AccountJid account, ContactJid bareAddress) {
         this.account = account;
         this.user = bareAddress;
 

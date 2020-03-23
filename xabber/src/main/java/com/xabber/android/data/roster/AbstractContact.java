@@ -19,7 +19,7 @@ import android.graphics.drawable.Drawable;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
@@ -40,7 +40,7 @@ import java.util.Collections;
 public class AbstractContact extends BaseEntity {
 
 
-    protected AbstractContact(AccountJid account, UserJid user) {
+    protected AbstractContact(AccountJid account, ContactJid user) {
         super(account, user);
     }
 

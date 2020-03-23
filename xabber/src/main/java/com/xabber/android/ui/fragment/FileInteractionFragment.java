@@ -31,7 +31,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
@@ -95,7 +95,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private Subscription voiceDownloadSubscription;
 
     protected AccountJid account;
-    protected UserJid user;
+    protected ContactJid user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
