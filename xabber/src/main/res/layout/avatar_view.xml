@@ -29,22 +29,19 @@
 
     <ImageView
         android:id="@+id/ivStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/ic_status"
+        android:src="@drawable/ic_status_combined"
         />
 
     <ImageView
         android:id="@+id/ivOnlyStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:src="@drawable/ic_status"
+        android:src="@drawable/ic_status_combined"
         android:visibility="gone"
         />
 

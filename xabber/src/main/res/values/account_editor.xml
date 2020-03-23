@@ -93,6 +93,7 @@
     <string name="blocked_group">Blocked group</string>
     <string name="blocked_domain">Blocked domain</string>
     <string name="blocked_contacts">Blocked contacts</string>
+    <string name="blocked_contact_status">Blocked</string>
     <string name="blocked_contacts_unknown">Could not determine support for blocking contacts.</string>
     <string name="blocked_contacts_not_supported">Blocking is not supported by server.</string>
     <string name="blocked_contacts_empty">No blocked contacts.</string>

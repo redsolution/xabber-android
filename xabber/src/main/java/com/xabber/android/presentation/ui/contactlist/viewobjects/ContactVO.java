@@ -7,6 +7,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -27,6 +28,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -82,6 +84,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     protected int forwardedCount;
     private boolean isGroupchat;
     private boolean isServer;
+    private boolean isBlocked;
 
     protected final ContactClickListener listener;
 
@@ -98,7 +101,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
+                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat, boolean isServer, boolean isBlocked) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -125,6 +128,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.isCustomNotification = isCustomNotification;
         this.isGroupchat = isGroupchat;
         this.isServer = isServer;
+        this.isBlocked = isBlocked;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -231,12 +235,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
                 isPrefsExist(Key.createKey(contact.getAccount(), contact.getUser()));
 
+        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getUser());
+
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
                 name, statusText, statusId,
                 statusLevel, avatar, 0, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid());
+                isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid(), isBlocked);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -291,26 +297,42 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
 
-        /** set up ROSTER STATUS */
-        if ((getStatusLevel() == 6 && !isServer) ||
-                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
-            if (viewHolder.tvStatus != null)
-                viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
-            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        } else {
-            if (showAvatars) viewHolder.ivStatus.setVisibility(View.VISIBLE);
-            if (viewHolder.tvStatus != null)
-                viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
-        }
-        viewHolder.ivStatus.setImageLevel(getStatusLevel());
-        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
-        if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
-                ? context.getString(getStatusId()) : getStatus());
+        int displayedStatus = getStatusLevel();
+        if (isBlocked) displayedStatus = 11;
+        else if (isServer) displayedStatus = 10;
+        else if (isGroupchat) displayedStatus = 9;
 
-        if ((getStatusLevel() == 6 || (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
-                && !getLastActivity().isEmpty())
-            if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getLastActivity());
-        if (viewHolder.tvStatus != null && isServer) viewHolder.tvStatus.setText("Server");
+        viewHolder.ivStatus.setImageLevel(displayedStatus);
+        viewHolder.ivOnlyStatus.setImageLevel(displayedStatus);
+
+        if (viewHolder.tvStatus != null) {
+            if (displayedStatus == 6) {
+                viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
+                viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+            } else {
+                if (showAvatars) viewHolder.ivStatus.setVisibility(View.VISIBLE);
+                viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
+            }
+
+            viewHolder.tvStatus.setText(getStatus().isEmpty() ?
+                    context.getString(getStatusId()) : getStatus());
+
+            switch (displayedStatus) {
+                case 6:
+                    if (!getLastActivity().isEmpty()) {
+                        viewHolder.tvStatus.setText(getLastActivity());
+                    }
+                    break;
+                case 10:
+                    viewHolder.tvStatus.setText("Server");
+                    break;
+                case 11:
+                    viewHolder.tvStatus.setText(R.string.blocked_contact_status);
+                    viewHolder.tvStatus.setTextColor(Color.RED);
+                    break;
+            }
+        }
+
         /* Show grey jid instead of status in SearchActivity */
         if (listener instanceof ChatListFragment
                 && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
@@ -322,17 +344,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
 
-        /** set up MUC indicator */
-        Drawable mucIndicator = null;
-
-        /** set up GROUPCHAT indicator */
-        if (viewHolder.ivStatus.getVisibility() == View.VISIBLE) {
-            viewHolder.ivStatus.setVisibility(isGroupchat || isServer ? View.INVISIBLE : View.VISIBLE);
-            viewHolder.ivStatusGroupchat.setVisibility(isGroupchat || isServer ? View.VISIBLE : View.GONE);
-            if (isServer) viewHolder.ivStatusGroupchat.setImageResource(R.drawable.ic_server_14_border);
-            else viewHolder.ivStatusGroupchat.setImageResource(R.drawable.ic_groupchat_14_border);
-        } else viewHolder.ivStatusGroupchat.setVisibility(View.GONE);
-
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
         int resID = 0;
@@ -340,13 +351,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
         else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_mini;
-        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 resID != 0 ? resources.getDrawable(resID) : null, null);
 
         /** set up CUSTOM NOTIFICATION */
         if (isCustomNotification() && (mode == NotificationState.NotificationMode.enabled
                 || mode == NotificationState.NotificationMode.bydefault))
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null);
 
         //if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
@@ -479,6 +490,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return isServer;
     }
 
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
     private int getThemeResource(Context context, int themeResourceId) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
@@ -496,7 +511,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final ImageView ivAvatar;
         final ImageView ivStatus;
         final ImageView ivOnlyStatus;
-        final ImageView ivStatusGroupchat;
+        //final ImageView ivStatusGroupchat;
         final TextView tvStatus;
         final TextView tvContactName;
         final TextView tvOutgoingMessage;
@@ -522,7 +537,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             ivAvatar.setOnClickListener(this);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
-            ivStatusGroupchat = (ImageView) view.findViewById(R.id.ivStatusGroupchat);
+            //ivStatusGroupchat = (ImageView) view.findViewById(R.id.ivStatusGroupchat);
             tvStatus = (TextView) view.findViewById(R.id.tvStatus);
             tvContactName = (TextView) view.findViewById(R.id.tvContactName);
             tvOutgoingMessage = (TextView) view.findViewById(R.id.tvOutgoingMessage);

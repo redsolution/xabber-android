@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:minLevel="0" android:maxLevel="0"
+        android:drawable="@drawable/ic_status_chat"/>
+    <item android:minLevel="1" android:maxLevel="1"
+        android:drawable="@drawable/ic_status_online"/>
+    <item android:minLevel="2" android:maxLevel="2"
+        android:drawable="@drawable/ic_status_away"/>
+    <item android:minLevel="3" android:maxLevel="3"
+        android:drawable="@drawable/ic_status_xa"/>
+    <item android:minLevel="4" android:maxLevel="4"
+        android:drawable="@drawable/ic_status_dnd"/>
+    <item android:minLevel="5" android:maxLevel="5"
+        android:drawable="@drawable/ic_status_invisible_18dp"/>
+    <item android:minLevel="6" android:maxLevel="6"
+        android:drawable="@drawable/ic_status_unavailable"/>
+    <item android:minLevel="8" android:maxLevel="8"
+        android:drawable="@drawable/ic_status_unsubscribed_18dp"/>
+    <item android:minLevel="9" android:maxLevel="9"
+        android:drawable="@drawable/ic_groupchat_14_border"/>
+    <item android:minLevel="10" android:maxLevel="10"
+        android:drawable="@drawable/ic_server_14_border"/>
+    <item android:minLevel="11" android:maxLevel="11"
+        android:drawable="@drawable/ic_blocked_border"/>
+</level-list>

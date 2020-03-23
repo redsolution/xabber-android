@@ -10,7 +10,9 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.log.LogManager
@@ -33,7 +35,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)
         setupContactName(holder, contact)
-        setupGroupchatIndicator(holder, contact)
+        // setupGroupchatIndicator(holder, contact)
         setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
         setupTime(holder, contact)
@@ -59,43 +61,51 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupContactAvatar(holder: ChatViewHolder, contact: AbstractContact) {
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
-            holder.onlyStatusIV.visibility = View.GONE
             holder.avatarIV.setImageDrawable(contact.getAvatar(true))
         } else {
             holder.avatarIV.visibility = View.GONE
-            holder.statusIV.visibility = View.GONE
-            holder.onlyStatusIV.visibility = View.VISIBLE
         }
     }
 
     private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractContact) {
-        val statusLevel = contact.statusMode.statusLevel
+        var statusLevel = contact.statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        if ((statusLevel == 6 || contact.user.jid.isDomainBareJid) || statusLevel != 1)
-            holder.statusIV.visibility = View.INVISIBLE
-        else if (SettingsManager.contactsShowAvatars()) holder.statusIV.visibility = View.VISIBLE
+        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+        val isServer = contact.user.jid.isDomainBareJid
+        val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.account, contact.user)
 
+        when {
+            isBlocked -> statusLevel = 11
+            isServer -> statusLevel = 10
+            chat.isGroupchat -> statusLevel = 9
+        }
         holder.statusIV.setImageLevel(statusLevel)
-        holder.onlyStatusIV.setImageLevel(statusLevel)
+        holder.statusIV.visibility = if (statusLevel == StatusMode.unavailable.ordinal && holder.avatarIV.visibility == View.VISIBLE)
+            View.INVISIBLE else View.VISIBLE
+        // holder.onlyStatusIV.setImageLevel(statusLevel)
     }
 
     private fun setupContactName(holder: ChatViewHolder, contact: AbstractContact) {
         holder.contactNameTV.text = contact.name
     }
 
-    private fun setupGroupchatIndicator(holder: ChatViewHolder, contact: AbstractContact) {
-        val isServer = contact.user.jid.isDomainBareJid
-        if (holder.statusIV.visibility.equals(View.VISIBLE)) {
-            val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-            holder.statusIV.visibility = if (chat.isGroupchat || isServer)
-                View.INVISIBLE else View.VISIBLE
-            holder.statusGroupchatIV.visibility = if (chat.isGroupchat || isServer)
-                View.VISIBLE else View.INVISIBLE
-            if (isServer) holder.statusGroupchatIV.setImageResource(R.drawable.ic_server_14_border)
-            else holder.statusGroupchatIV.setImageResource(R.drawable.ic_groupchat_14_border)
-        } else holder.statusGroupchatIV.visibility = View.GONE
-    }
+    // private fun setupGroupchatIndicator(holder: ChatViewHolder, contact: AbstractContact) {
+    //     val isServer = contact.user.jid.isDomainBareJid
+    //     val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.account, contact.user)
+    //     if (holder.statusIV.visibility.equals(View.VISIBLE)) {
+    //         val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+    //         holder.statusIV.visibility = if (chat.isGroupchat || isServer || isBlocked)
+    //             View.INVISIBLE else View.VISIBLE
+    //         holder.statusGroupchatIV.visibility = if (chat.isGroupchat || isServer || isBlocked)
+    //             View.VISIBLE else View.INVISIBLE
+    //         when {
+    //             isBlocked -> holder.statusGroupchatIV.setImageResource(R.drawable.ic_blocked_border)
+    //             isServer -> holder.statusGroupchatIV.setImageResource(R.drawable.ic_server_14_border)
+    //             else -> holder.statusGroupchatIV.setImageResource(R.drawable.ic_groupchat_14_border)
+    //         }
+    //     } else holder.statusGroupchatIV.visibility = View.GONE
+    // }
 
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, contact: AbstractContact) {
         val resources = holder.itemView.context.resources
