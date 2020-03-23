@@ -14,6 +14,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
@@ -85,52 +86,53 @@ public class NewContactTitleInflater {
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
-        final ImageView groupchatStatusView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
 
         boolean isGroupchat = false;
         boolean isServer = false;
+        boolean isBlocked = false;
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
         if (chat != null) {
             isGroupchat = chat.isGroupchat();
             isServer = abstractContact.getUser().getJid().isDomainBareJid();
+            isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getUser());
         }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
-        statusModeView.setVisibility(View.GONE);
-        if (isServer) {
-            groupchatStatusView.setImageResource(R.drawable.ic_server_14_border);
-            groupchatStatusView.setVisibility(View.VISIBLE);
-        } else if (isContactOffline(statusLevel)) {
+
+        if (isBlocked) statusLevel = 11;
+        else if (isServer) statusLevel = 10;
+        else if (isGroupchat) statusLevel = 9;
+
+        statusModeView.setImageLevel(statusLevel);
+
+        if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);
-            groupchatStatusView.setVisibility(View.GONE);
-        } else {
-            if (isGroupchat) {
-                statusModeView.setVisibility(View.GONE);
-                groupchatStatusView.setVisibility(View.VISIBLE);
-            } else {
-                statusModeView.setVisibility(View.VISIBLE);
-                statusModeView.setImageLevel(statusLevel);
-                groupchatStatusView.setVisibility(View.GONE);
-            }
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
             statusTextView.setAlpha(1);
-            if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4)
-                statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800));
-            else statusTextView.setTextColor(context.getResources().getColor(R.color.contact_item_text_second_dark));
+            switch (statusLevel) {
+                case 6:
+                    statusTextView.setTextColor(context.getResources().getColor(R.color.contact_item_text_second_dark));
+                    break;
+                case 11:
+                    statusTextView.setTextColor(Color.RED);
+                    break;
+                default:
+                    statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800));
+            }
         } else {
             statusTextView.setTextColor(context.getResources().getColor(R.color.grey_800));
-            if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4){
-                statusTextView.setAlpha(0.9f);
-            }
-            else {
+            if (isContactOffline(statusLevel)) {
                 statusTextView.setAlpha(0.5f);
+            } else {
+                statusTextView.setAlpha(0.9f);
             }
         }
 
         CharSequence statusText;
-        if (isServer) statusText = "Server";
+        if (isBlocked) statusText = "Blocked";
+        else if (isServer) statusText = "Server";
         else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
                     abstractContact.getAccount(), abstractContact.getUser());

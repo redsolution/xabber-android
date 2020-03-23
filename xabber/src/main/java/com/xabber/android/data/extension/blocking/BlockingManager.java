@@ -182,6 +182,15 @@ public class BlockingManager {
         cachedBlockedContacts.put(account, blockedContacts);
     }
 
+    public boolean contactIsBlockedLocally(AccountJid account, ContactJid contactJid) {
+        Collection<ContactJid> cachedBlockedContacts = getCachedBlockedContacts(account);
+        for (ContactJid blockedContact : cachedBlockedContacts) {
+            if (blockedContact.getJid().equals(contactJid.getBareJid())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean contactIsBlocked(AccountJid account, ContactJid user) {
         Collection<ContactJid> blockedContacts = getBlockedContacts(account);

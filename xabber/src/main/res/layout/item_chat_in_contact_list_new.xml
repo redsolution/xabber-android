@@ -37,28 +37,11 @@
         />
 
     <ImageView
-        android:id="@+id/ivStatusGroupchat"
+        android:id="@+id/ivStatus"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/ic_groupchat_14_border"
-        android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/ivStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:src="@drawable/ic_status"
+        android:src="@drawable/ic_status_combined"
         android:visibility="visible"
-        />
-
-    <ImageView
-        android:id="@+id/ivOnlyStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="12dp"
-        android:src="@drawable/ic_status"
-        android:visibility="gone"
         />
 
     <TextView

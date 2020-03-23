@@ -23,8 +23,6 @@ public class ChatListItemLayout extends ViewGroup {
     // Avatar
     private ImageView avatar;
     private ImageView status;
-    private ImageView groupStatus;
-    private ImageView onlyStatus;
 
     // Misc
     private View colorLine;
@@ -67,13 +65,12 @@ public class ChatListItemLayout extends ViewGroup {
             if (status.getVisibility() != GONE) {
                 measureChildWithMargins(status, widthMeasureSpec, 0, heightMeasureSpec, 0);
             }
-            if (groupStatus.getVisibility() != GONE) {
-                measureChildWithMargins(groupStatus, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            }
 
         } else {
-            measureChildWithMargins(onlyStatus, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            widthUsedTopLine = widthUsedBottomLine = getMeasuredWidthWithMargins(onlyStatus);
+            if (status.getVisibility() != GONE) {
+                measureChildWithMargins(status, widthMeasureSpec, 0, heightMeasureSpec, 0);
+            }
+            widthUsedTopLine = widthUsedBottomLine = getMeasuredWidthWithMargins(status) + (int)(getResources().getDisplayMetrics().density * 12);
         }
 
         // general layout look:
@@ -120,7 +117,13 @@ public class ChatListItemLayout extends ViewGroup {
         if (avatar.getVisibility() != GONE) {
             variableLeftPos = layoutAvatarElements(strictLeftPos, height, density);
         } else {
-            variableLeftPos = layoutViewCenterVertical(onlyStatus, strictLeftPos, onlyStatus.getMeasuredWidth(), onlyStatus.getMeasuredHeight(), height);
+            variableLeftPos = layoutViewCenterVertical(status,
+                    strictLeftPos + (int)(getResources().getDisplayMetrics().density * 2),
+                    status.getMeasuredWidth(),
+                    status.getMeasuredHeight(),
+                    height
+            );
+            variableLeftPos += (int)(getResources().getDisplayMetrics().density * 10);
         }
 
         // time
@@ -181,16 +184,8 @@ public class ChatListItemLayout extends ViewGroup {
 
         if (status.getVisibility() != GONE) {
             layoutView(status,
-                    leftWithMargins + avatarWidth - (int)(density * 2) - status.getMeasuredWidth(),
-                    topWithMargins + avatarHeight - (int)(density * 2) - status.getMeasuredHeight(),
-                    leftWithMargins + avatarWidth - (int)(density * 2),
-                    topWithMargins + avatarHeight - (int)(density * 2)
-            );
-        }
-        if (groupStatus.getVisibility() != GONE) {
-            layoutView(groupStatus,
-                    leftWithMargins + avatarWidth - groupStatus.getMeasuredWidth(),
-                    topWithMargins + avatarHeight - groupStatus.getMeasuredHeight(),
+                    leftWithMargins + avatarWidth - status.getMeasuredWidth(),
+                    topWithMargins + avatarHeight - status.getMeasuredHeight(),
                     leftWithMargins + avatarWidth,
                     topWithMargins + avatarHeight
             );
@@ -208,14 +203,8 @@ public class ChatListItemLayout extends ViewGroup {
     }
 
     private void cacheLayoutViews() {
-        // final int count = getChildCount();
-        // for (int i = 0; i < count; i++) {
-        //     assignViewById(getChildAt(i));
-        // }
         avatar = (ImageView) findViewById(R.id.ivAvatar);
         status = (ImageView) findViewById(R.id.ivStatus);
-        groupStatus = (ImageView) findViewById(R.id.ivStatusGroupchat);
-        onlyStatus = (ImageView) findViewById(R.id.ivOnlyStatus);
         title = (TextView) findViewById(R.id.tvContactName);
         message = (TextView) findViewById(R.id.tvMessageText);
         time = (TextView) findViewById(R.id.tvTime);
@@ -224,44 +213,6 @@ public class ChatListItemLayout extends ViewGroup {
         colorLine = findViewById(R.id.accountColorIndicator);
         colorLineBack = findViewById(R.id.accountColorIndicatorBack);
     }
-
-    // private void assignViewById(View view) {
-    //     switch (view.getId()) {
-    //         case R.id.ivAvatar:
-    //             avatar = (ImageView) view;
-    //             break;
-    //         case R.id.ivStatus:
-    //             status = (ImageView) view;
-    //             break;
-    //         case R.id.ivStatusGroupchat:
-    //             groupStatus = (ImageView) view;
-    //             break;
-    //         case R.id.ivOnlyStatus:
-    //             onlyStatus = (ImageView) view;
-    //             break;
-    //         case R.id.tvContactName:
-    //             title = (TextView) view;
-    //             break;
-    //         case R.id.tvMessageText:
-    //             message = (TextView) view;
-    //             break;
-    //         case R.id.tvTime:
-    //             time = (TextView) view;
-    //             break;
-    //         case R.id.tvUnreadCount:
-    //             counter = (TextView) view;
-    //             break;
-    //         case R.id.ivMessageStatus:
-    //             messageMarker = (ImageView) view;
-    //             break;
-    //         case R.id.accountColorIndicator:
-    //             colorLine = view;
-    //             break;
-    //         case R.id.accountColorIndicatorBack:
-    //             colorLineBack = view;
-    //             break;
-    //     }
-    // }
 
     private int getMeasuredWidthWithMargins(View view) {
         final MarginLayoutParams lp = (MarginLayoutParams) view.getLayoutParams();

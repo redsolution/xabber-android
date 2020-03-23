@@ -166,21 +166,38 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
-        Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-        }
+//<<<<<<< HEAD
+//        Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
+//        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+//            blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
+//        }
+//
+//        final Collection<RosterContact> rosterContacts = new ArrayList<>();
+//        for (RosterContact contact : allRosterContacts) {
+//            if (blockedContacts.containsKey(contact.getAccount())) {
+//                Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
+//                if (blockedUsers != null) {
+//                    if (!blockedUsers.contains(contact.getUser()))
+//                        rosterContacts.add(contact);
+//                } else rosterContacts.add(contact);
+//            } else rosterContacts.add(contact);
+//        }
+//=======
+        // Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
+        // for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+        //     blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
+        // }
 
-        final Collection<RosterContact> rosterContacts = new ArrayList<>();
-        for (RosterContact contact : allRosterContacts) {
-            if (blockedContacts.containsKey(contact.getAccount())) {
-                Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
-                if (blockedUsers != null) {
-                    if (!blockedUsers.contains(contact.getUser()))
-                        rosterContacts.add(contact);
-                } else rosterContacts.add(contact);
-            } else rosterContacts.add(contact);
-        }
+        // final Collection<RosterContact> rosterContacts = new ArrayList<>();
+        // for (RosterContact contact : allRosterContacts) {
+        //     if (blockedContacts.containsKey(contact.getAccount())) {
+        //         Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+        //         if (blockedUsers != null) {
+        //             if (!blockedUsers.contains(contact.getUser()))
+        //                 rosterContacts.add(contact);
+        //         } else rosterContacts.add(contact);
+        //     } else rosterContacts.add(contact);
+        // }
 
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
@@ -254,7 +271,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         }
 
         // Build structure.
-        for (RosterContact rosterContact : rosterContacts) {
+        for (RosterContact rosterContact : allRosterContacts) {
             if (!rosterContact.isEnabled()) {
                 continue;
             }

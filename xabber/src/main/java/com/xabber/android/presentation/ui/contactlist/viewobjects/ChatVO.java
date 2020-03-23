@@ -42,13 +42,12 @@ public class ChatVO extends ExtContactVO {
                   boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                   boolean archived, String lastActivity, ContactClickListener listener,
                   @Nullable IsCurrentChatListener currentChatListener, int forwardedCount,
-                  boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
+                  boolean isCustomNotification, boolean isGroupchat, boolean isServer, boolean isBlocked) {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, contactJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
-                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer);
-
+                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer, isBlocked);
         this.currentChatListener = currentChatListener;
     }
 
@@ -72,7 +71,7 @@ public class ChatVO extends ExtContactVO {
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
                 contactVO.listener, currentChatListener, contactVO.forwardedCount,
-                contactVO.isCustomNotification(), contactVO.isGroupchat(), contactVO.isServer());
+                contactVO.isCustomNotification(), contactVO.isGroupchat(), contactVO.isServer(), contactVO.isBlocked());
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts,

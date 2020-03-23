@@ -22,12 +22,12 @@ public class ChatWithButtonVO extends ExtContactVO {
                             boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                             boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                             boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
-                            boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
+                            boolean isCustomNotification, boolean isGroupchat, boolean isServer, boolean isBlocked) {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, contactJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
-                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer);
+                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer, isBlocked);
     }
 
     public static ChatWithButtonVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -40,7 +40,8 @@ public class ChatWithButtonVO extends ExtContactVO {
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
-                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification(), contactVO.isGroupchat(), contactVO.isServer());
+                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification(),
+                contactVO.isGroupchat(), contactVO.isServer(), contactVO.isBlocked());
     }
 
     public static ChatWithButtonVO convert(ChatVO chat) {
@@ -52,7 +53,7 @@ public class ChatWithButtonVO extends ExtContactVO {
                 chat.isMute(), chat.getNotificationMode(), chat.getMessageText(),
                 chat.isOutgoing(), chat.getTime(), chat.getMessageStatus(),
                 chat.getMessageOwner(), chat.isArchived(), chat.getLastActivity(), chat.listener,
-                chat.forwardedCount, chat.isCustomNotification(), chat.isGroupchat(), chat.isServer());
+                chat.forwardedCount, chat.isCustomNotification(), chat.isGroupchat(), chat.isServer(), chat.isBlocked());
     }
 
     @Override
