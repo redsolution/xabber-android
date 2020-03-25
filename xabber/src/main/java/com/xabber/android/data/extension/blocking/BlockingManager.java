@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.blocking;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -9,6 +10,8 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -256,6 +259,10 @@ public class BlockingManager {
 
                 if (success) {
                     PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
+                    AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
+                    if (chat != null) {
+                        chat.newAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
+                    }
                 }
 
                 final boolean finalSuccess = success;
@@ -323,6 +330,15 @@ public class BlockingManager {
                     } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                             | SmackException.NotConnectedException | InterruptedException e) {
                         LogManager.exception(LOG_TAG, e);
+                    }
+                }
+
+                if (success) {
+                    for (ContactJid contactJid : contacts) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
+                        if (chat != null) {
+                            chat.newAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
+                        }
                     }
                 }
 

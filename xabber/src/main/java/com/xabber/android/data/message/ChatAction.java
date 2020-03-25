@@ -178,7 +178,9 @@ public enum ChatAction {
     subscription_sent,
     subscription_received,
     subscription_sent_accepted,
-    subscription_received_accepted;
+    subscription_received_accepted,
+    contact_blocked,
+    contact_unblocked;
 
     public static ChatAction getChatAction(StatusMode statusMode) {
         if (statusMode == StatusMode.unavailable)
@@ -307,6 +309,10 @@ public enum ChatAction {
             return context.getString(R.string.action_attention_called);
         else if (this == ChatAction.attention_requested)
             return context.getString(R.string.action_attention_requested);
+        else if (this == ChatAction.contact_blocked)
+            return context.getString(R.string.action_contact_blocked);
+        else if (this == ChatAction.contact_unblocked)
+            return context.getString(R.string.action_contact_unblocked);
         else
             throw new IllegalStateException();
     }
