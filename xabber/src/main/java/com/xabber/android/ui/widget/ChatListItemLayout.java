@@ -46,6 +46,18 @@ public class ChatListItemLayout extends ViewGroup {
         cacheLayoutViews();
     }
 
+    private void cacheLayoutViews() {
+        avatar = (ImageView) findViewById(R.id.ivAvatar);
+        status = (ImageView) findViewById(R.id.ivStatus);
+        title = (TextView) findViewById(R.id.tvContactName);
+        message = (TextView) findViewById(R.id.tvMessageText);
+        time = (TextView) findViewById(R.id.tvTime);
+        counter = (TextView) findViewById(R.id.tvUnreadCount);
+        messageMarker = (ImageView) findViewById(R.id.ivMessageStatus);
+        colorLine = findViewById(R.id.accountColorIndicator);
+        colorLineBack = findViewById(R.id.accountColorIndicatorBack);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthUsedTopLine;
@@ -200,18 +212,6 @@ public class ChatListItemLayout extends ViewGroup {
 
         view.layout(leftWithMargins, topWithMargins, leftWithMargins + width, topWithMargins + height);
         return leftWithMargins + width + margins.rightMargin;
-    }
-
-    private void cacheLayoutViews() {
-        avatar = (ImageView) findViewById(R.id.ivAvatar);
-        status = (ImageView) findViewById(R.id.ivStatus);
-        title = (TextView) findViewById(R.id.tvContactName);
-        message = (TextView) findViewById(R.id.tvMessageText);
-        time = (TextView) findViewById(R.id.tvTime);
-        counter = (TextView) findViewById(R.id.tvUnreadCount);
-        messageMarker = (ImageView) findViewById(R.id.ivMessageStatus);
-        colorLine = findViewById(R.id.accountColorIndicator);
-        colorLineBack = findViewById(R.id.accountColorIndicatorBack);
     }
 
     private int getMeasuredWidthWithMargins(View view) {

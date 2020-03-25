@@ -40,6 +40,8 @@
     <string name="save_history">Save local history\nStore message history locally</string>
     <string name="action_attention_called">Call attention was sent</string>
     <string name="action_attention_requested">Attention was requested</string>
+    <string name="action_contact_blocked">Contact blocked</string>
+    <string name="action_contact_unblocked">Contact unblocked</string>
     <string name="action_ban">%1$s was banned</string>
     <string name="action_ban_by">%1$s was banned by %2$s</string>
     <string name="action_invite_error">Invitation was not received by %s</string>

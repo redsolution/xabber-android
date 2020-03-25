@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Build
@@ -23,6 +24,7 @@ import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.AbstractContact
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
+import com.xabber.android.utils.Utils
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -79,6 +81,17 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 10
             chat.isGroupchat -> statusLevel = 9
+        }
+        if (statusLevel == 11) {
+            if (holder.avatarIV.visibility == View.VISIBLE) {
+                holder.avatarIV.setColorFilter(Color.argb(200, 68, 68, 68), PorterDuff.Mode.SRC_ATOP)
+            }
+            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context, R.attr.contact_list_contact_second_line_text_color))
+        } else {
+            if (holder.avatarIV.visibility == View.VISIBLE) {
+                holder.avatarIV.clearColorFilter()
+            }
+            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context, R.attr.contact_list_contact_name_text_color))
         }
         holder.statusIV.setImageLevel(statusLevel)
         holder.statusIV.visibility = if (statusLevel == StatusMode.unavailable.ordinal && holder.avatarIV.visibility == View.VISIBLE)

@@ -41,6 +41,7 @@ import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -329,7 +330,15 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 case 11:
                     viewHolder.tvStatus.setText(R.string.blocked_contact_status);
                     viewHolder.tvStatus.setTextColor(Color.RED);
+                    if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
+                        viewHolder.ivAvatar.setColorFilter(Color.argb(200, 91, 91, 91), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_second_line_text_color));
                     break;
+            }
+            if (displayedStatus != 11) {
+                viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_name_text_color));
+                viewHolder.ivAvatar.clearColorFilter();
             }
         }
 
