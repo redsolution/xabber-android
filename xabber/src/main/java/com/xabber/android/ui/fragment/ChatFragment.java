@@ -2142,7 +2142,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onBind(MessageRealmObject message) {
         if (message != null && message.isValid() && !message.isRead()) {
             AbstractChat chat = getChat();
-            if (chat != null) chat.markAsRead(message, true);
+            if (chat != null) {
+                chat.markAsRead(message, true);
+                updateUnread();
+            }
         }
     }
 

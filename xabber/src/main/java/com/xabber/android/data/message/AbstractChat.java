@@ -67,6 +67,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -896,13 +897,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return unread;
     }
 
-    public int getwaitToMarkAsReadCount(){ return waitToMarkAsRead.size(); }
-
-    public void approveRead(List<String> ids) {
-        for (String id : ids) {
-            waitToMarkAsRead.remove(id);
-        }
-        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
+    private void addUnreadListener() {
+        unreadMessages.addChangeListener(messageRealmObjects -> {
+            for (Iterator<String> iterator = waitToMarkAsRead.iterator(); iterator.hasNext();) {
+                String id = iterator.next();
+                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.UNIQUE_ID, id).findFirst() == null) {
+                    iterator.remove();
+                }
+            }
+            EventBus.getDefault().post(new MessageUpdateEvent(account, user));
+        });
     }
 
     //public void markAsRead(String messageId, boolean trySendDisplay) {
@@ -964,6 +968,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         .equalTo(MessageRealmObject.Fields.READ, false)
                         .findAll();
             }
+            addUnreadListener();
         }
         return unreadMessages;
     }
