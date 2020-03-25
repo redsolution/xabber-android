@@ -106,6 +106,8 @@ public class NewContactTitleInflater {
 
         if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);
+        } else {
+            statusModeView.setVisibility(View.VISIBLE);
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
