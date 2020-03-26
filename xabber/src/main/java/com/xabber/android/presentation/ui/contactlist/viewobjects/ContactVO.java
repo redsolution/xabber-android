@@ -315,7 +315,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
             }
 
-            viewHolder.tvStatus.setText(getStatus().isEmpty() ?
+            viewHolder.tvStatus.setText(getStatus().isEmpty() || displayedStatus == 6 ?
                     context.getString(getStatusId()) : getStatus());
 
             switch (displayedStatus) {
