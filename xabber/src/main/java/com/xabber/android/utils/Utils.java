@@ -7,6 +7,12 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Build;
+import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.HapticFeedbackConstants;
@@ -14,11 +20,16 @@ import android.view.Surface;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -108,6 +119,52 @@ public class Utils {
         return sb.toString();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static Spannable getDecodedSpannable(String text) {
+        Editable.Factory factory = Editable.Factory.getInstance();
+        SpannableStringBuilder originalSpannable = (SpannableStringBuilder) factory.newEditable(text);
+        if (Linkify.addLinks(originalSpannable, Linkify.WEB_URLS)) {
+            // get all url spans if addLinks() returned true, meaning that it found web urls
+            URLSpan[] originalURLSpans = originalSpannable.getSpans(0, originalSpannable.length(), URLSpan.class);
+            ArrayList<URLSpanContainer> urlSpanContainers = new ArrayList<URLSpanContainer>(originalURLSpans.length);
+            for (URLSpan originalUrl : originalURLSpans) {
+                // save the original url span data
+                urlSpanContainers.add(new URLSpanContainer(originalUrl, originalSpannable.getSpanStart(originalUrl), originalSpannable.getSpanEnd(originalUrl)));
+                // remove original url span from spannable
+                originalSpannable.removeSpan(originalUrl);
+            }
+            // iterate over each available url span from last to first, to properly
+            // manage start positions in cases when the size of the text changes on decoding
+            for (int i = urlSpanContainers.size() - 1; i >= 0; i--) {
+                URLSpanContainer spanContainer = urlSpanContainers.get(i);
+                try {
+                    String originalURL = spanContainer.span.getURL();
+                    String decodedURL = URLDecoder.decode(originalURL, StandardCharsets.UTF_8.name());
+                    URLSpan decodedSpan = new URLSpan(decodedURL);
+                    if (decodedURL.length() < originalURL.length()) {
+                        // replace the text with the decoded url
+                        originalSpannable.replace(spanContainer.start,
+                                spanContainer.end,
+                                decodedURL,
+                                0,
+                                decodedURL.length());
+                        // set a new span range
+                        originalSpannable.setSpan(decodedSpan, spanContainer.start, decodedSpan.getURL().length() + spanContainer.start, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    } else {
+                        // restore the old span range
+                        originalSpannable.setSpan(spanContainer.span, spanContainer.start, spanContainer.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    originalSpannable.setSpan(spanContainer.span, spanContainer.start, spanContainer.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    e.printStackTrace();
+                }
+            }
+            return originalSpannable;
+        } else {
+            return originalSpannable;
+        }
+    }
+
     public static void lockScreenRotation(Activity activity, boolean lockOrientation) {
         int lock = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         if (lockOrientation) {
@@ -185,4 +242,15 @@ public class Utils {
         theme.resolveAttribute(attrId, value, true);
         return value.data;
     }
+}
+
+class URLSpanContainer {
+    public URLSpanContainer(URLSpan span, int start, int end) {
+        this.span = span;
+        this.start = start;
+        this.end = end;
+    }
+    int start;
+    int end;
+    URLSpan span;
 }

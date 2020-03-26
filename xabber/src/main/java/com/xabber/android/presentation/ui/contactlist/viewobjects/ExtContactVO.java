@@ -19,9 +19,8 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -110,7 +109,7 @@ public class ExtContactVO extends ContactVO {
                 try{
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
                         try {
-                            viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
+                            viewHolder.tvMessageText.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
                         } catch (Exception e){
                             viewHolder.tvMessageText.setText(Html.fromHtml(text));
                         }

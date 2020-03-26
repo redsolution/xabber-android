@@ -27,9 +27,8 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -120,17 +119,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                             .replace("\n", "<br/>").concat("&zwj;"), null,
                     new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount()));
             messageText.setText(markupText, TextView.BufferType.SPANNABLE);
-        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
-            try{
-                messageText.setText(URLDecoder.decode(messageRealmObject.getText().trim()
-                        .concat(String.valueOf(Character.MIN_VALUE)), StandardCharsets.UTF_8.name()));
-            } catch (Exception e) {
-                LogManager.e(this, e.getMessage());
-                messageText.setText(messageRealmObject.getText().trim()
-                        .concat(String.valueOf(Character.MIN_VALUE)));
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                messageText.setText(Utils.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
+                        TextView.BufferType.SPANNABLE);
+            } else {
+                messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
             }
-        } else messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
-
+        }
 
         if (OTRManager.getInstance().isEncrypted(messageRealmObject.getText())) {
             if (extraData.isShowOriginalOTR())

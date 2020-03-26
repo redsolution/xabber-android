@@ -268,7 +268,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public String getStatusText(AccountJid account, ContactJid bareAddress) {
-        final Presence presence = RosterManager.getInstance().getPresence(account, bareAddress);
+        final Presence presence = getPresence(account, bareAddress);
         if (presence == null) {
             return null;
         } else {
