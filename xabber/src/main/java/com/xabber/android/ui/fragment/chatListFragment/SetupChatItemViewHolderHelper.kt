@@ -25,8 +25,6 @@ import com.xabber.android.data.roster.AbstractContact
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
@@ -198,7 +196,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                         try {
                             holder.messageTextTV.text = Html
-                                    .fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name()))
+                                    .fromHtml(Utils.getDecodedSpannable(text).toString())
                         } catch (e: Exception) {
                             holder.messageTextTV.text = Html.fromHtml(text)
                         }
