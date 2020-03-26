@@ -19,11 +19,18 @@ import android.net.Uri;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Manage chat specific options.
@@ -60,6 +67,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     @Override
     public void onLoad() {
+        DatabaseManager.getInstance().getObservableListener()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
+                .subscribe(realm -> {
+                    try {
+                        ChatRepository.updateChatsInRealm();
+                    } catch (Exception e) {
+                        LogManager.exception("ChatList", e);
+                    }
+                });
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
