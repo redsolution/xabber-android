@@ -71,6 +71,9 @@ public class ReconnectionManager implements OnConnectedListener,
 
     private void checkConnection(AccountItem accountItem, ReconnectionInfo reconnectionInfo) {
         if (!accountItem.isEnabled()) {
+            if (accountItem.getState() == ConnectionState.disconnecting) {
+                return;
+            }
             if (accountItem.getState() != ConnectionState.offline) {
                 ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
             }
