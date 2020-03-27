@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
@@ -49,37 +48,29 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final File file = files[position];
 
         fileHolder.fileName.setText(file.getName());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            fileHolder.fileName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
         TypedValue typedValue = new TypedValue();
         holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
         holder.itemView.setBackgroundColor(typedValue.data);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(holder.itemView.getContext(), holder.itemView);
-                popup.inflate(R.menu.item_log_file);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_log_file_open:
-                                viewFile(file, holder.itemView.getContext());
-                                return true;
+        holder.itemView.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(holder.itemView.getContext(), holder.itemView);
+            popup.inflate(R.menu.item_log_file);
+            popup.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.action_log_file_open:
+                        viewFile(file, holder.itemView.getContext());
+                        return true;
 
-                            case R.id.action_log_file_send:
-                                sendFile(file, holder.itemView.getContext());
-                                return true;
-                        }
+                    case R.id.action_log_file_send:
+                        sendFile(file, holder.itemView.getContext());
+                        return true;
+                }
 
-                        return false;
-                    }
-                });
-                popup.show();
+                return false;
+            });
+            popup.show();
 
-            }
         });
     }
 
@@ -118,6 +109,11 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         FileViewHolder(View itemView) {
             super(itemView);
             fileName = (TextView) itemView.findViewById(android.R.id.text1);
+
+            fileName.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            fileName.setHeight(28);
+            fileName.setMaxLines(1);
+            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,14);
         }
     }
 }
