@@ -155,7 +155,6 @@ public abstract class ConnectionItem {
             // need to make sure our connection settings aren't outdated.
             checkIfConnectionIsOutdated();
         }
-        updateState(ConnectionState.connecting);
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
         }
@@ -184,7 +183,7 @@ public abstract class ConnectionItem {
         connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
         connection.addConnectionListener(connectionListener);
 
-        PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+        refreshPingFailedListener(true);
     }
 
     /**
@@ -263,7 +262,7 @@ public abstract class ConnectionItem {
     void createNewConnection() {
         LogManager.i(logTag, "createNewConnection");
 
-        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        refreshPingFailedListener(false);
 
         connection.removeConnectionListener(connectionListener);
         connection.removeAsyncStanzaListener(everyStanzaListener);
@@ -312,6 +311,10 @@ public abstract class ConnectionItem {
         }
     }
 
+    public void refreshPingFailedListener(boolean register) {
+        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        if (register) PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+    }
 
     private StanzaListener everyStanzaListener = new StanzaListener() {
         @Override

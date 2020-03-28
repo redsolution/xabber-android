@@ -62,6 +62,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void authenticated(XMPPConnection connection, final boolean resumed) {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
         connectionItem.updateState(ConnectionState.connected);
+        connectionItem.refreshPingFailedListener(true);
 
         // just to see the order of call
         CarbonManager.getInstance().onAuthorized(connectionItem);
@@ -106,6 +107,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
+        connectionItem.refreshPingFailedListener(false);
 
         if (e instanceof XMPPException.StreamErrorException) {
             LogManager.e(getLogTag(), e.getMessage());
