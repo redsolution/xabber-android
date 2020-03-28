@@ -1,13 +1,14 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
 import androidx.recyclerview.widget.DiffUtil
+import com.xabber.android.data.database.realmobjects.ChatRealmObject
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.roster.AbstractContact
 import com.xabber.android.ui.color.ColorManager
 
-class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
-                       private val newList: List<AbstractContact>,
+class ChatItemDiffUtil(private val oldList: List<ChatRealmObject>,
+                       private val newList: List<ChatRealmObject>,
                        val adapter: ChatListAdapter) :DiffUtil.Callback(){
 
     override fun getOldListSize(): Int = oldList.size
@@ -20,23 +21,27 @@ class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItemHolder = adapter.holdersMap[oldItemPosition]
         val newAbstractContact = newList[newItemPosition]
-        val newMessageItem = MessageManager.getInstance()
-                .getOrCreateChat(newAbstractContact.account, newAbstractContact.user).lastMessage
+//        val newMessageItem = MessageManager.getInstance()
+//                .getOrCreateChat(newAbstractContact.accountJid, newAbstractContact.contactJid).lastMessage
+//
+//        if (oldItemHolder == null || newMessageItem == null) return false
+//
+//        var isMessagesAreEqual = false
+//        try {
+//            val isMessagesAreEqual = oldItemHolder.messageRealmObject?.isUiEqual(newMessageItem)
+//        } catch (e: Exception) { LogManager.exception("ChatItemViewHolder", e)}
+//
+//        //val isStatusesAreEqual = oldItemHolder.rosterStatus == newAbstractContact.statusMode.statusLevel
+//        val isAvatarsAreEqual = oldItemHolder.avatarIV.drawable == newAbstractContact.avatar
+//        val isColorIndicatorsAreEqual = oldItemHolder.accountColorIndicator == ColorManager
+//                .getInstance().accountPainter.getAccountMainColor(newAbstractContact.account)
+//        val isTextEqual = oldItemHolder.messageTextTV.text == newMessageItem.text
+//
+//        return isMessagesAreEqual && isAvatarsAreEqual
+//                && isColorIndicatorsAreEqual && isTextEqual
+        return false;
 
-        if (oldItemHolder == null || newMessageItem == null) return false
-
-        var isMessagesAreEqual = false
-        try {
-            val isMessagesAreEqual = oldItemHolder.messageRealmObject?.isUiEqual(newMessageItem)
-        } catch (e: Exception) { LogManager.exception("ChatItemViewHolder", e)}
-
-        val isStatusesAreEqual = oldItemHolder.rosterStatus == newAbstractContact.statusMode.statusLevel
-        val isAvatarsAreEqual = oldItemHolder.avatarIV.drawable == newAbstractContact.avatar
-        val isColorIndicatorsAreEqual = oldItemHolder.accountColorIndicator == ColorManager
-                .getInstance().accountPainter.getAccountMainColor(newAbstractContact.account)
-        val isTextEqual = oldItemHolder.messageTextTV.text == newMessageItem.text
-
-        return isMessagesAreEqual && isStatusesAreEqual && isAvatarsAreEqual
-                && isColorIndicatorsAreEqual && isTextEqual
+//        return isMessagesAreEqual && isStatusesAreEqual && isAvatarsAreEqual
+//                && isColorIndicatorsAreEqual && isTextEqual
     }
 }

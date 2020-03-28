@@ -12,6 +12,7 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
+import com.xabber.android.data.database.realmobjects.ChatRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
@@ -22,31 +23,32 @@ import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.AbstractContact
+import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
+import java.util.*
 
-class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
+class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: ChatRealmObject){
 
     fun setup(){
-        holder.messageRealmObject = MessageManager.getInstance()
-                .getOrCreateChat(contact.account, contact.user).lastMessage
+        holder.messageRealmObject = contact.lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)
         setupContactName(holder, contact)
         // setupGroupchatIndicator(holder, contact)
-        setupNotificationMuteIcon(holder, contact)
+//        setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
         setupTime(holder, contact)
         setupMessageText(holder, contact)
         setupMessageStatus(holder, contact)
     }
 
-    private fun setupAccountColorIndicator(holder: ChatViewHolder, contact: AbstractContact) {
+    private fun setupAccountColorIndicator(holder: ChatViewHolder, contact: ChatRealmObject) {
         if (AccountManager.getInstance().enabledAccounts.size > 1) {
             val color: Int = ColorManager.getInstance().accountPainter
-                    .getAccountMainColor(contact.account)
+                    .getAccountMainColor(contact.accountJid)
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
             holder.accountColorIndicator = color
@@ -58,22 +60,26 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupContactAvatar(holder: ChatViewHolder, contact: AbstractContact) {
+    private fun setupContactAvatar(holder: ChatViewHolder, contact: ChatRealmObject) {
+
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
-            holder.avatarIV.setImageDrawable(contact.getAvatar(true))
+            holder.avatarIV.setImageDrawable(RosterManager.getInstance()
+                    .getAbstractContact(contact.accountJid, contact.contactJid)
+                    .getAvatar(true))
         } else {
             holder.avatarIV.visibility = View.GONE
         }
     }
 
-    private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractContact) {
-        var statusLevel = contact.statusMode.statusLevel
+    private fun setupRosterStatus(holder: ChatViewHolder, contact: ChatRealmObject) {
+        var statusLevel = RosterManager.getInstance()
+                .getAbstractContact(contact.accountJid, contact.contactJid).statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-        val isServer = contact.user.jid.isDomainBareJid
-        val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.account, contact.user)
+        val chat = MessageManager.getInstance().getOrCreateChat(contact.accountJid, contact.contactJid)
+        val isServer = contact.contactJid.jid.isDomainBareJid
+        val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.accountJid, contact.contactJid)
 
         when {
             isBlocked -> statusLevel = 11
@@ -97,8 +103,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         // holder.onlyStatusIV.setImageLevel(statusLevel)
     }
 
-    private fun setupContactName(holder: ChatViewHolder, contact: AbstractContact) {
-        holder.contactNameTV.text = contact.name
+    private fun setupContactName(holder: ChatViewHolder, contact: ChatRealmObject) {
+        holder.contactNameTV.text = RosterManager.getInstance()
+                .getAbstractContact(contact.accountJid, contact.contactJid).name
     }
 
     // private fun setupGroupchatIndicator(holder: ChatViewHolder, contact: AbstractContact) {
@@ -138,8 +145,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.unreadCountTV.setTextColor(resources.getColor(R.color.white))
     }
 
-    private fun setupUnreadCount(holder: ChatViewHolder, contact: AbstractContact) {
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+    private fun setupUnreadCount(holder: ChatViewHolder, contact: ChatRealmObject) {
+        val chat = MessageManager.getInstance().getOrCreateChat(contact.accountJid, contact.contactJid)
         val unreadCount = chat.unreadMessageCount
         val resources = holder.itemView.resources
         if (unreadCount > 0) {
@@ -164,22 +171,20 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             holder.unreadCountTV.setTextColor(resources.getColor(R.color.grey_200))
     }
 
-    private fun setupTime(holder: ChatViewHolder, contact: AbstractContact) {
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context, chat.lastTime)
+    private fun setupTime(holder: ChatViewHolder, contact: ChatRealmObject) {
+        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context, Date(contact.lastMessage.timestamp))
         holder.timeTV.visibility = View.VISIBLE
     }
 
-    private fun setupMessageText(holder: ChatViewHolder, contact: AbstractContact) {
-        val lastMessage = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-                .lastMessage
+    private fun setupMessageText(holder: ChatViewHolder, contact: ChatRealmObject) {
+        val lastMessage = contact.lastMessage
         val context = holder.itemView.context
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text.isNullOrEmpty()) {
-            if (ChatStateManager.getInstance().getFullChatStateString(contact.account, contact.user) != null)
+            if (ChatStateManager.getInstance().getFullChatStateString(contact.accountJid, contact.contactJid) != null)
                 holder.messageTextTV.text = ChatStateManager.getInstance()
-                        .getFullChatStateString(contact.account, contact.user)
+                        .getFullChatStateString(contact.accountJid, contact.contactJid)
             else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
             else if (lastMessage != null && lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachmentRealmObjects[0]?.title
@@ -210,10 +215,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupMessageStatus(holder: ChatViewHolder, contact: AbstractContact) {
+    private fun setupMessageStatus(holder: ChatViewHolder, contact: ChatRealmObject) {
 
-        val lastMessage = MessageManager.getInstance()
-                .getOrCreateChat(contact.account, contact.user).lastMessage
+        val lastMessage = contact.lastMessage
         holder.messageStatusTV.visibility = if (lastMessage?.text == null || lastMessage.isIncoming)
             View.INVISIBLE else View.VISIBLE
         if (lastMessage != null) {

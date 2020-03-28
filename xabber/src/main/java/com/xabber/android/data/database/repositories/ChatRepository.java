@@ -17,6 +17,7 @@ import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -40,8 +41,9 @@ public class ChatRepository {
 
                         MessageRealmObject messageRealmObject = realm1
                                 .where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.USER, chatRealmObject.getContactJid())
-                                .equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, chatRealmObject.getAccountJid())
+                                .equalTo(MessageRealmObject.Fields.USER, chatRealmObject.getStringContactJid())
+                                .equalTo(MessageRealmObject.Fields.ACCOUNT, chatRealmObject.getStringAccountJid())
+                                //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, chatRealmObject.getAccountJid())
                                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
                                 .findFirst();
 
@@ -75,7 +77,7 @@ public class ChatRepository {
                     ChatRealmObject chatRealmObject = realm1
                             .where(ChatRealmObject.class)
                             .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                                    accountJid.getFullJid().asBareJid().toString())
+                                    accountJid.toString())
                             .equalTo(ChatRealmObject.Fields.CONTACT_JID,
                                     contactJid.getBareJid().toString())
                             .findFirst();
@@ -83,7 +85,8 @@ public class ChatRepository {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
-                            .equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                            //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
                             .findFirst();
 
@@ -140,17 +143,26 @@ public class ChatRepository {
         RealmResults<ChatRealmObject> realmResults = realm
                 .where(ChatRealmObject.class)
                 .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.getFullJid().asBareJid().toString())
+                        accountJid.toString())
+                .isNotNull(ChatRealmObject.Fields.LAST_MESSAGE)
                 .findAll();
+
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
         return new ArrayList<>(realmResults);
     }
 
-    public static Collection<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
-        Collection<ChatRealmObject> result = new ArrayList<>();
+    public static ArrayList<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
             result.addAll(getAllChatsForAccountFromRealm(accountJid));
+        result.sort((o1, o2) -> {
+            if (o1.getLastMessage().getTimestamp() == o2.getLastMessage().getTimestamp())
+                return 0;
+            if (o1.getLastMessage().getTimestamp() > o2.getLastMessage().getTimestamp())
+                return -1;
+            else return 1;
+        });
         return result;
     }
 

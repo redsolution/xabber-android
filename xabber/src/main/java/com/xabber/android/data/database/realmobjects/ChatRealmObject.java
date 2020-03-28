@@ -2,6 +2,9 @@ package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.UUID;
 
@@ -44,7 +47,7 @@ public class ChatRealmObject extends RealmObject {
 
     public ChatRealmObject(AccountJid accountJid, ContactJid contactJid){
         this.id = UUID.randomUUID().toString();
-        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.accountJid = accountJid.toString();
         this.contactJid = contactJid.getBareJid().toString();
     }
 
@@ -53,7 +56,7 @@ public class ChatRealmObject extends RealmObject {
                            boolean isHistoryRequestAtStart, int unreadMessagesCount, int lastPosition,
                            ChatNotificationsPreferencesRealmObject chatNotificationsPreferencesRealmObject){
         this.id = UUID.randomUUID().toString();
-        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.accountJid = accountJid.toString();
         this.contactJid = contactJid.getBareJid().toString();
         this.lastMessage = lastMessage;
         this.isGroupchat = isGroupchat;
@@ -65,9 +68,25 @@ public class ChatRealmObject extends RealmObject {
         this.chatNotificationsPreferences = chatNotificationsPreferencesRealmObject;
     }
 
-    public String getAccountJid() { return accountJid; }
+    public String getStringAccountJid() { return accountJid; }
+    public AccountJid getAccountJid(){
+        try {
+            return AccountJid.from(accountJid);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
 
-    public String getContactJid() { return contactJid; }
+    public String getStringContactJid() { return contactJid; }
+    public ContactJid getContactJid(){
+        try {
+            return ContactJid.from(contactJid);
+        } catch (ContactJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
 
     public void setLastPosition(int lastPosition) { this.lastPosition = lastPosition; }
     public int getLastPosition() { return lastPosition; }

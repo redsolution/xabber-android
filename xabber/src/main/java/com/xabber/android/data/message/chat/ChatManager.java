@@ -20,6 +20,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -27,6 +28,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -65,6 +67,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs = new NestedMap<>();
     }
 
+    public Collection<ChatRealmObject> getAllChats(){
+        return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
+    }
+
     @Override
     public void onLoad() {
         DatabaseManager.getInstance().getObservableListener()
@@ -81,7 +87,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 });
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
-
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {

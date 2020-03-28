@@ -45,15 +45,16 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
@@ -67,7 +68,6 @@ import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
-import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
@@ -87,7 +87,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import rx.Subscription;
@@ -98,7 +97,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private ChatListAdapter adapter;
-    private List<AbstractContact> items;
+    private List<ChatRealmObject> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
@@ -464,7 +463,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /**
     Update chat items in adapter
      */
-    private void updateItems(List<AbstractContact> newItems){
+    private void updateItems(List<ChatRealmObject> newItems){
         boolean tempIsOnTop = isOnTop();
          if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
@@ -541,12 +540,15 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatAvatarClick(AbstractContact item) {
+    public void onChatAvatarClick(ChatRealmObject item) {
         Intent intent;
-        AccountJid accountJid = item.getAccount();
-        ContactJid contactJid = item.getUser();
-        intent = ContactViewerActivity.createIntent(getActivity(), accountJid, contactJid);
-        getActivity().startActivity(intent);
+        try {
+            AccountJid accountJid = AccountJid.from(item.getStringAccountJid());
+            ContactJid contactJid = ContactJid.from(item.getStringContactJid());
+            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, contactJid);
+            getActivity().startActivity(intent);
+        } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
+
     }
 
     @Override
@@ -554,11 +556,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    public void onChatItemContextMenu(ContextMenu menu, AbstractContact contact){
-        AccountJid accountJid = contact.getAccount();
-        ContactJid contactJid = contact.getUser();
-        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
-        ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
+    public void onChatItemContextMenu(ContextMenu menu, ChatRealmObject contact){
+        try {
+            AccountJid accountJid = AccountJid.from(contact.getStringAccountJid());
+            ContactJid contactJid = ContactJid.from(contact.getStringContactJid());
+            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
+            ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
+        } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
     }
 
     @Override
@@ -577,68 +581,66 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemClick(AbstractContact item) {
-        AccountJid accountJid = item.getAccount();
-        ContactJid contactJid = item.getUser();
-        chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, contactJid));
+    public void onChatItemClick(ChatRealmObject item) {
+        try {
+            AccountJid accountJid = AccountJid.from(item.getStringAccountJid());
+            ContactJid contactJid = ContactJid.from(item.getStringContactJid());
+            chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, contactJid));
+        } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
     }
 
     public void update(){
 
         /* List for store final method result */
-        List<AbstractContact> newList = new ArrayList<>();
+        List<ChatRealmObject> newList = new ArrayList<>();
         showPlaceholders++;
         /* Map of accounts*/
-        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            accounts.put(account, null);
-        }
+//        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
+//        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+//            accounts.put(account, null);
+//        }
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
-            final GroupConfiguration chatsGroup = getChatsGroup(currentChatsState);
-            newList.clear();
-            if (!chatsGroup.isEmpty()) {
-                newList.addAll(chatsGroup.getAbstractContacts());
+            newList.addAll(ChatManager.getInstance().getAllChats());
 
-            }
         } else {
             /* If filterString not empty, perform a search */
 
             /*  Make list of rooms and active chats grouped by users inside accounts */
-            final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
-            for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
-                if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
-                    final AccountJid account = abstractChat.getAccount();
-                    Map<ContactJid, AbstractChat> users = abstractChats.get(account);
-                    if (users == null) {
-                        users = new TreeMap<>();
-                        abstractChats.put(account, users);
-                    }
-                    users.put(abstractChat.getUser(), abstractChat);
-                }
-            }
-            /* All roster contact collection */
-            final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
-            /* Map with blocked contacts for accounts */
-            Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
-            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-                blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-            }
-            /* Filter all blocked contacts from allRosterContacts and save result to rosterContacts*/
-            final Collection<RosterContact> rosterContacts = new ArrayList<>();
-            for (RosterContact contact : allRosterContacts) {
-                if (blockedContacts.containsKey(contact.getAccount())) {
-                    Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
-                    if (blockedUsers != null) {
-                        if (!blockedUsers.contains(contact.getUser()))
-                            rosterContacts.add(contact);
-                    } else rosterContacts.add(contact);
-                } else rosterContacts.add(contact);
-            }
-            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
-            newList.clear();
-            newList.addAll(baseEntities);
+//            final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
+//            for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
+//                if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
+//                    final AccountJid account = abstractChat.getAccount();
+//                    Map<ContactJid, AbstractChat> users = abstractChats.get(account);
+//                    if (users == null) {
+//                        users = new TreeMap<>();
+//                        abstractChats.put(account, users);
+//                    }
+//                    users.put(abstractChat.getUser(), abstractChat);
+//                }
+//            }
+//            /* All roster contact collection */
+//            final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
+//            /* Map with blocked contacts for accounts */
+//            Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
+//            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+//                blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
+//            }
+//            /* Filter all blocked contacts from allRosterContacts and save result to rosterContacts*/
+//            final Collection<RosterContact> rosterContacts = new ArrayList<>();
+//            for (RosterContact contact : allRosterContacts) {
+//                if (blockedContacts.containsKey(contact.getAccount())) {
+//                    Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
+//                    if (blockedUsers != null) {
+//                        if (!blockedUsers.contains(contact.getUser()))
+//                            rosterContacts.add(contact);
+//                    } else rosterContacts.add(contact);
+//                } else rosterContacts.add(contact);
+//            }
+//            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
+//            newList.clear();
+//            newList.addAll(baseEntities);
         }
 
         setupMarkAllTheReadButton(newList.size());
