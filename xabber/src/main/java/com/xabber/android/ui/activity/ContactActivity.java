@@ -261,7 +261,6 @@ public class ContactActivity extends ManagedActivity implements
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
-        updateName();
         appBarResize();
     }
 
@@ -458,7 +457,7 @@ public class ContactActivity extends ManagedActivity implements
     public void onContactsChanged(Collection<RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
-                updateName();
+                ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
                 break;
             }
         }
@@ -468,26 +467,10 @@ public class ContactActivity extends ManagedActivity implements
         return contactTitleView;
     }
 
-    private void updateName() {
-        contactName.setText(bestContact.getName());
-        contactName.setVisibility(bestContact.getName().equals(user.getBareJid().toString()) ? View.GONE : View.VISIBLE);
-        /*if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            String vCardName = VCardManager.getInstance().getName(user.getJid());
-            if (!"".equals(vCardName)) {
-                collapsingToolbar.setTitle(vCardName);
-            } else {
-                collapsingToolbar.setTitle(user.getJid().getResourceOrNull().toString());
-            }
-
-        } else {
-            collapsingToolbar.setTitle(RosterManager.getInstance().getBestContact(account, user).getName());
-        }*/
-    }
-
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
-            updateName();
+            ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
         }
     }
 

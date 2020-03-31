@@ -23,6 +23,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:gravity="center_vertical"
+        android:minHeight="?attr/actionBarSize"
         android:orientation="vertical"
         android:paddingTop="5dp">
 
@@ -104,7 +105,9 @@
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
             android:gravity="center_vertical"
+            android:ellipsize="marquee"
             android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
             android:text="Lorem ipsum dolor sit amet"
             android:textColor="@color/grey_200"
             android:textSize="16sp" />
