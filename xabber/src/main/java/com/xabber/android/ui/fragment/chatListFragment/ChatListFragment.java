@@ -47,6 +47,7 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -89,12 +90,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
-        OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
+        OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
+        RealmChangeListener {
 
     private ChatListAdapter adapter;
     private List<ChatRealmObject> items;
@@ -129,6 +133,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private ImageView toolbarSearchIv;
 
     private int unreadCount;
+
+    private RealmResults<MessageRealmObject> chatRealmObjects;
 
     private Subscription realmChangeListenerSubscription;
 
@@ -172,9 +178,16 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStop() {
-        if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
+        //if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
+
+        chatRealmObjects.removeChangeListener(this);
+    }
+
+    @Override
+    public void onChange(Object o) {
+        update();
     }
 
     @Override
@@ -185,15 +198,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (unreadCount == 0){
             onStateSelected(ChatListState.recent);
         }
+        chatRealmObjects = DatabaseManager.getInstance().getDefaultRealmInstance()
+                .where(MessageRealmObject.class)
+                .findAll();
+        chatRealmObjects.addChangeListener(this);
 
-        realmChangeListenerSubscription = DatabaseManager.getInstance().getObservableListener()
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.trampoline())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-                .subscribe(realm -> {
-                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
-                });
+//        realmChangeListenerSubscription = DatabaseManager.getInstance().getObservableListener()
+//                .debounce(500, TimeUnit.MILLISECONDS)
+//                .subscribeOn(Schedulers.trampoline())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
+//                .subscribe(realm -> {
+//                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
+//                });
 
         update();
 
@@ -592,8 +609,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void update(){
 
         /* List for store final method result */
+        ChatRepository.updateChatsInRealm();
         List<ChatRealmObject> newList = new ArrayList<>();
-        showPlaceholders++;
+        //showPlaceholders++;
         /* Map of accounts*/
 //        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 //        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
@@ -602,8 +620,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
-            newList.addAll(ChatManager.getInstance().getAllChats());
-
+            if (currentChatsState == ChatListState.recent)
+                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.recent));
+            if (currentChatsState == ChatListState.unread)
+                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.unread));
         } else {
             /* If filterString not empty, perform a search */
 

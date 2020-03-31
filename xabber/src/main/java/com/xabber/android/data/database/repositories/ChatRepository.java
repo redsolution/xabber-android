@@ -156,14 +156,18 @@ public class ChatRepository {
         ArrayList<ChatRealmObject> result = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
             result.addAll(getAllChatsForAccountFromRealm(accountJid));
-        result.sort((o1, o2) -> {
-            if (o1.getLastMessage().getTimestamp() == o2.getLastMessage().getTimestamp())
-                return 0;
-            if (o1.getLastMessage().getTimestamp() > o2.getLastMessage().getTimestamp())
-                return -1;
-            else return 1;
-        });
-        return result;
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllUnreadChatsForEnabledAccount(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (!chatRealmObject.getLastMessage().isRead())
+                    result.add(chatRealmObject);
+
+        return sortChatList(result);
     }
 
     public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
@@ -177,6 +181,17 @@ public class ChatRepository {
                 .findFirst();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return chatRealmObject;
+    }
+
+    private static ArrayList<ChatRealmObject> sortChatList(ArrayList<ChatRealmObject> list){
+        list.sort((o1, o2) -> {
+            if (o1.getLastMessage().getTimestamp() == o2.getLastMessage().getTimestamp())
+                return 0;
+            if (o1.getLastMessage().getTimestamp() > o2.getLastMessage().getTimestamp())
+                return -1;
+            else return 1;
+        });
+        return list;
     }
 
     public static void clearUnusedNotificationStateFromRealm() {

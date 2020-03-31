@@ -27,6 +27,7 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -67,24 +68,28 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs = new NestedMap<>();
     }
 
-    public Collection<ChatRealmObject> getAllChats(){
+    public Collection<ChatRealmObject> getAllChats(ChatListFragment.ChatListState chatListState){
+        if (chatListState == ChatListFragment.ChatListState.recent)
+            return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
+        if (chatListState == ChatListFragment.ChatListState.unread)
+            return ChatRepository.getAllUnreadChatsForEnabledAccount();
         return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
     }
 
     @Override
     public void onLoad() {
-        DatabaseManager.getInstance().getObservableListener()
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-                .subscribe(realm -> {
-                    try {
-                        ChatRepository.updateChatsInRealm();
-                    } catch (Exception e) {
-                        LogManager.exception("ChatList", e);
-                    }
-                });
+//        DatabaseManager.getInstance().getObservableListener()
+//                .debounce(500, TimeUnit.MILLISECONDS)
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
+//                .subscribe(realm -> {
+//                    try {
+//                        ChatRepository.updateChatsInRealm();
+//                    } catch (Exception e) {
+//                        LogManager.exception("ChatList", e);
+//                    }
+//                });
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
