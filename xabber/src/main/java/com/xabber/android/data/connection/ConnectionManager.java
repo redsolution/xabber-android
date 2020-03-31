@@ -92,5 +92,15 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             ReconnectionManager.getInstance().requestReconnect(account);
         }
     }
+
+    public void shutdownAll() {
+        LogManager.i(LOG_TAG, "shutdownAll");
+        AccountManager accountManager = AccountManager.getInstance();
+        for (AccountItem account : accountManager.getAllAccountItems()) {
+            if (account.isEnabled() && account.getConnection().isConnected()) {
+                account.getConnection().instantShutdown();
+            }
+        }
+    }
 }
 
