@@ -93,6 +93,8 @@
             android:id="@+id/name_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="?attr/actionBarSize"
             android:orientation="vertical">
 
             <LinearLayout
@@ -163,46 +165,47 @@
             <TextView
                 android:id="@+id/address_text"
                 android:layout_width="wrap_content"
-                android:layout_height="21dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginRight="50dp"
                 android:gravity="center_vertical"
+                android:paddingTop="3dp"
+                android:paddingBottom="9dp"
                 android:singleLine="false"
                 android:text="Lorem ipsum dolor sit amet"
                 android:textSize="16sp" />
         </LinearLayout>
 
-    <com.xabber.android.ui.widget.CustomNestedScrollView
-        android:id="@+id/scroll_v_card"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:id="@+id/scroll_v_card_child"
+        <com.xabber.android.ui.widget.CustomNestedScrollView
+            android:id="@+id/scroll_v_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="81dp">
+            android:fillViewport="true">
 
-            <include layout="@layout/contact_bar_auto_sizing" />
-
-            <FrameLayout
-                android:id="@+id/scrollable_container"
+            <LinearLayout
+                android:id="@+id/scroll_v_card_child"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?attr/contact_list_background">
+                android:orientation="vertical"
+                android:paddingTop="81dp">
 
-            </FrameLayout>
+                <include layout="@layout/contact_bar_auto_sizing" />
 
-        </LinearLayout>
-    </com.xabber.android.ui.widget.CustomNestedScrollView>
+                <FrameLayout
+                    android:id="@+id/scrollable_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/contact_list_background">
 
-    <!--<View
-        android:id="@+id/divider"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:visibility="invisible" />-->
+                </FrameLayout>
+
+            </LinearLayout>
+        </com.xabber.android.ui.widget.CustomNestedScrollView>
+
+        <!--<View
+            android:id="@+id/divider"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:visibility="invisible" />-->
     </RelativeLayout>
 
 

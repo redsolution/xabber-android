@@ -51,10 +51,23 @@ public class ContactTitleInflater {
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard, boolean qrAvatarNeeded) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
+        final TextView addressTextView = (TextView) titleView.findViewById(R.id.address_text);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
         if (isForVcard){
+            nameView.setVisibility(
+                    abstractContact.getUser().getBareJid().toString().equals(abstractContact.getName()) ?
+                            View.GONE : View.VISIBLE
+            );
+            if (addressTextView != null) {
+                addressTextView.setPadding(
+                        addressTextView.getPaddingLeft(),
+                        nameView.getVisibility() == View.VISIBLE ? addressTextView.getPaddingBottom() / 3 : addressTextView.getPaddingBottom(),
+                        addressTextView.getPaddingRight(),
+                        addressTextView.getPaddingBottom()
+                );
+            }
             // if it is account, not simple user contact
             if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
                 avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatarNoDefault(abstractContact.getAccount()));
