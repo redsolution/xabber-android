@@ -184,7 +184,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public RosterPacket.ItemType getSubscriptionType(AccountJid account, ContactJid user) {
-        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        Roster roster = getRoster(account);
+        if (roster == null) {
+            return null;
+        }
+        RosterEntry entry = roster.getEntry(user.getJid().asBareJid());
         if (entry == null) {
             return null;
         }
@@ -195,7 +199,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      *  Check if we have an outgoing subscription request
      */
     public boolean hasSubscriptionPending(AccountJid account, ContactJid user) {
-        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        }
+        RosterEntry entry = roster.getEntry(user.getJid().asBareJid());
         if (entry == null) {
             return false;
         }
