@@ -67,6 +67,7 @@ public class ContactTitleInflater {
                         addressTextView.getPaddingRight(),
                         addressTextView.getPaddingBottom()
                 );
+                addressTextView.setSelected(true);
             }
             // if it is account, not simple user contact
             if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
