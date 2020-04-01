@@ -543,7 +543,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void checkForBlockedStatus() {
-        blocked = BlockingManager.getInstance().contactIsBlocked(account, user);
+        blocked = BlockingManager.getInstance().contactIsBlockedLocally(account, user);
     }
 
     @Override
