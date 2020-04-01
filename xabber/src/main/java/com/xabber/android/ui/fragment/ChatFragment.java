@@ -1860,7 +1860,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void updateBlockedState() {
-        userIsBlocked = BlockingManager.getInstance().contactIsBlocked(account, user);
+        userIsBlocked = BlockingManager.getInstance().contactIsBlockedLocally(account, user);
         if (userIsBlocked) {
             showBlockedBar();
         } else {
