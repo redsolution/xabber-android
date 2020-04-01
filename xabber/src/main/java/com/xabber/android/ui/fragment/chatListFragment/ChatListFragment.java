@@ -548,12 +548,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
+    public void onChatItemSwiped(@NotNull ChatRealmObject abstractContact) {
         AbstractChat abstractChat = MessageManager.getInstance()
-                .getChat(abstractContact.getAccount(), abstractContact.getUser());
-        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+                .getChat(abstractContact.getAccountJid(), abstractContact.getContactJid());
+        MessageManager.getInstance().getChat(abstractContact.getAccountJid(), abstractContact.getContactJid())
                 .setArchived(!abstractChat.isArchived(), true);
         showSnackbar(abstractContact, currentChatsState);
+        update();
     }
 
     @Override
@@ -624,6 +625,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.recent));
             if (currentChatsState == ChatListState.unread)
                 newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.unread));
+            if (currentChatsState == ChatListState.archived)
+                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.archived));
         } else {
             /* If filterString not empty, perform a search */
 
@@ -784,9 +787,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton.setVisibility(View.GONE);
     }
 
-    private void showSnackbar(final AbstractContact deletedItem, final ChatListState previousState){
+    private void showSnackbar(final ChatRealmObject deletedItem, final ChatListState previousState){
         if (snackbar != null) snackbar.dismiss();
-        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
+        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccountJid(), deletedItem.getContactJid());
         final boolean archived = abstractChat.isArchived();
         snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
                 : R.string.chat_was_archived, Snackbar.LENGTH_LONG);

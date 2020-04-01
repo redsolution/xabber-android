@@ -70,9 +70,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public Collection<ChatRealmObject> getAllChats(ChatListFragment.ChatListState chatListState){
         if (chatListState == ChatListFragment.ChatListState.recent)
-            return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
+            return ChatRepository.getAllRecentChatsForEnabledAccountsFromRealm();
         if (chatListState == ChatListFragment.ChatListState.unread)
             return ChatRepository.getAllUnreadChatsForEnabledAccount();
+        if (chatListState == ChatListFragment.ChatListState.archived)
+            return ChatRepository.getAllArchivedChatsForEnabledAccount();
         return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
     }
 

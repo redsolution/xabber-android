@@ -45,10 +45,10 @@ class ChatListAdapter(val list: MutableList<ChatRealmObject>, val listener: Chat
             deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder){
-//        val swipedContact = getAbstractContactFromView(holder.itemView)
-//        deleteItemByAbstractContact(swipedContact)
-//        listener.onChatItemSwiped(swipedContact)
-//        if (itemCount == 0) listener.onListBecomeEmpty()
+        val swipedContact = getAbstractContactFromView(holder.itemView)
+        deleteItemByAbstractContact(swipedContact)
+        listener.onChatItemSwiped(swipedContact)
+        if (itemCount == 0) listener.onListBecomeEmpty()
     }
 
     override fun onClick(v: View?) {

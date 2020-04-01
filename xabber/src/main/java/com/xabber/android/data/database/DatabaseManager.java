@@ -43,7 +43,6 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
 
     public static DatabaseManager getInstance(){
         if ( instance == null) instance = new DatabaseManager();
-        LogManager.exception(LOG_TAG, new Exception());
         return instance;
     }
 

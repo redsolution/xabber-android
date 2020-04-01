@@ -9,6 +9,6 @@ interface ChatListItemListener: View.OnCreateContextMenuListener{
     fun onChatItemClick(contact: ChatRealmObject)
     fun onChatAvatarClick(contact: ChatRealmObject)
     fun onChatItemContextMenu(menu: ContextMenu, contact: ChatRealmObject)
-    fun onChatItemSwiped(abstractContact: AbstractContact)
+    fun onChatItemSwiped(abstractContact: ChatRealmObject)
     fun onListBecomeEmpty()
 }

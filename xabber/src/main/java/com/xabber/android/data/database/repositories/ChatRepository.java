@@ -17,7 +17,6 @@ import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -156,6 +155,26 @@ public class ChatRepository {
         ArrayList<ChatRealmObject> result = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
             result.addAll(getAllChatsForAccountFromRealm(accountJid));
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllRecentChatsForEnabledAccountsFromRealm(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (!chatRealmObject.isArchived())
+                    result.add(chatRealmObject);
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllArchivedChatsForEnabledAccount(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (chatRealmObject.isArchived())
+                    result.add(chatRealmObject);
 
         return sortChatList(result);
     }
