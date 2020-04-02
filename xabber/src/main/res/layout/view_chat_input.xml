@@ -28,7 +28,7 @@
         android:filterTouchesWhenObscured="false"
         android:gravity="center_vertical"
         android:hint="@string/chat_input_hint"
-        android:imeOptions="flagNoExtractUi"
+        android:imeOptions="actionSend|flagNoExtractUi"
         android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
         android:maxLines="4"
         android:minHeight="40dp"

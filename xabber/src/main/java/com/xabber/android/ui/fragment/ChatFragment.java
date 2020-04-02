@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -35,6 +36,7 @@ import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -273,6 +275,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private Intent notifyIntent;
 
+    private boolean sendByEnter;
     private BottomMessagesPanel bottomMessagesPanel;
     private List<String> bottomPanelMessagesIds = new ArrayList<>();
 
@@ -576,6 +579,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         // to avoid strange bug on some 4.x androids
         inputLayout = (LinearLayout) view.findViewById(R.id.input_layout);
         inputLayout.setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
+        sendByEnter = SettingsManager.chatsSendByEnter();
 
         // interaction view
         interactionView = view.findViewById(R.id.interactionView);
@@ -902,18 +906,26 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setUpInputView(View view) {
         inputView = (EditText) view.findViewById(R.id.chat_input);
+        setUpIme();
 
-        inputView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if (SettingsManager.chatsSendByEnter()
-                        && event.getAction() == KeyEvent.ACTION_DOWN
-                        && keyCode == KeyEvent.KEYCODE_ENTER) {
+        inputView.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEND) {
+                sendMessage();
+                return true;
+            } else if (event != null && actionId == EditorInfo.IME_NULL) {
+                if (sendByEnter && event.getAction() == KeyEvent.ACTION_DOWN) {
                     sendMessage();
                     return true;
                 }
-                return false;
             }
+            return false;
+        });
+        inputView.setOnKeyListener((view1, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && sendByEnter && event.getAction() == KeyEvent.ACTION_DOWN) {
+                sendMessage();
+                return true;
+            }
+            return false;
         });
 
         inputView.addTextChangedListener(new TextWatcher() {
@@ -959,6 +971,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
 
         }, STOP_TYPING_DELAY);
+    }
+
+    private void setUpIme() {
+        if (sendByEnter) {
+            inputView.setInputType(inputView.getInputType() & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
+        } else {
+            inputView.setInputType(inputView.getInputType() | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        }
     }
 
     private void setUpEmoji(View view) {
@@ -1239,7 +1259,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         String text = inputView.getText().toString().trim();
         clearInputText();
         scrollDown();
-        playMessageSound();
 
         if (bottomPanelMessagesIds != null
                 && !bottomPanelMessagesIds.isEmpty()
@@ -1257,6 +1276,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return;
         }
 
+        playMessageSound();
         listener.onMessageSent();
         ChatStateManager.getInstance().cancelComposingSender();
 
