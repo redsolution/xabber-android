@@ -183,7 +183,8 @@ public class ChatRepository {
         ArrayList<ChatRealmObject> result = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
             for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
-                if (!chatRealmObject.getLastMessage().isRead())
+                if (!chatRealmObject.getLastMessage().isRead()
+                        && chatRealmObject.getLastMessage().isIncoming())
                     result.add(chatRealmObject);
 
         return sortChatList(result);
