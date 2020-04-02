@@ -10,6 +10,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.View;
@@ -331,14 +332,24 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     viewHolder.tvStatus.setText(R.string.blocked_contact_status);
                     viewHolder.tvStatus.setTextColor(Color.RED);
                     if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
-                        viewHolder.ivAvatar.setColorFilter(Color.argb(200, 91, 91, 91), PorterDuff.Mode.SRC_ATOP);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            viewHolder.ivAvatar.setImageAlpha(128);
+                        } else {
+                            viewHolder.ivAvatar.setAlpha(0.5f);
+                        }
                     }
                     viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_second_line_text_color));
                     break;
             }
             if (displayedStatus != 11) {
                 viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_name_text_color));
-                viewHolder.ivAvatar.clearColorFilter();
+                if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        viewHolder.ivAvatar.setImageAlpha(128);
+                    } else {
+                        viewHolder.ivAvatar.setAlpha(0.5f);
+                    }
+                }
             }
         }
 

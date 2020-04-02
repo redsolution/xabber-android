@@ -26,7 +26,7 @@ public class ReconnectionManager implements OnConnectedListener,
      * fails. Last value will be used if there is no more values in array.
      */
     private final static int RECONNECT_AFTER[] = new int[]{0, 5, 10, 30, 60};
-    private final static int RECONNECT_AFTER_ERROR_MULTIPLIER = 3;
+    private final static int RECONNECT_AFTER_ERROR_MULTIPLIER = 1;
     private int tenSecondsCounter = 0;
     private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 

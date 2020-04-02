@@ -88,12 +88,18 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Cha
         }
         if (statusLevel == 11) {
             if (holder.avatarIV.visibility == View.VISIBLE) {
-                holder.avatarIV.setColorFilter(Color.argb(200, 68, 68, 68), PorterDuff.Mode.SRC_ATOP)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    holder.avatarIV.imageAlpha = 128
+                } else {
+                    holder.avatarIV.alpha = 0.5f
+                }
             }
             holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context, R.attr.contact_list_contact_second_line_text_color))
         } else {
-            if (holder.avatarIV.visibility == View.VISIBLE) {
-                holder.avatarIV.clearColorFilter()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                holder.avatarIV.imageAlpha = 255
+            } else {
+                holder.avatarIV.alpha = 1.0f
             }
             holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context, R.attr.contact_list_contact_name_text_color))
         }
