@@ -909,6 +909,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         setUpIme();
 
         inputView.setOnEditorActionListener((v, actionId, event) -> {
+            LogManager.d("InputViewDebug", "editorActionListener called, actionId = " + actionId + ", event != null ? " + (event != null) + ", ");
+            if (event != null) {
+                LogManager.d("InputViewDebug", "event.getAction() = " + event.getAction() + ", event.getKeyCode() = " + event.getKeyCode());
+            }
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 sendMessage();
                 return true;
@@ -921,6 +925,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return false;
         });
         inputView.setOnKeyListener((view1, keyCode, event) -> {
+            if (sendByEnter) {
+                if (keyCode < 29 || keyCode > 54 || event.getKeyCode() < 29 || event.getKeyCode() > 54) {
+                    LogManager.d("InputViewDebug", "onKeyListener called, keyCode = " + keyCode +
+                            ", event.getAction() = " + event.getAction() +
+                            ", event.getKeyCode() = " + event.getKeyCode());
+                }
+            }
             if (keyCode == KeyEvent.KEYCODE_ENTER && sendByEnter && event.getAction() == KeyEvent.ACTION_DOWN) {
                 sendMessage();
                 return true;
