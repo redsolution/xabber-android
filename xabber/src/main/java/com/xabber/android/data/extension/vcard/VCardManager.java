@@ -24,6 +24,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -160,7 +161,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     public String getName(Jid jid) {
         StructuredName name = names.get(jid);
         if (name == null)
-            return "";
+            if (ContactRepository.getBestNameFromRealm(jid) == null)
+                return "";
+            else
+                return ContactRepository.getBestNameFromRealm(jid);
         return name.getBestName();
     }
 
