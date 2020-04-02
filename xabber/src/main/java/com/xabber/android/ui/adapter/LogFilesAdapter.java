@@ -2,7 +2,6 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,7 +112,7 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             fileName.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
             fileName.setHeight(28);
             fileName.setMaxLines(1);
-            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,14);
+            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,16);
         }
     }
 }

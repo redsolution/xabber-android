@@ -67,7 +67,7 @@ public class LogManager {
             System.setProperty("smack.debugEnabled", "false");
             SmackConfiguration.DEBUG = false;
         }
-        if (fileLog) FileLog.getInstance().createNewFiles();;
+        if (fileLog) FileLog.getInstance().createNewFilesIfNeed();;
     }
 
     private static void dString(String tag, String msg) {
