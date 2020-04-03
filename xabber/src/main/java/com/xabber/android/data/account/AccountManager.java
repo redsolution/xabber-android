@@ -386,6 +386,14 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return false;
     }
 
+    public static boolean checkIfSuccessfulConnectionHappened(AccountJid account) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem != null) {
+            return accountItem.isSuccessfulConnectionHappened();
+        }
+        return false;
+    }
+
     /**
      * Creates new account and starts connection.
      */

@@ -64,6 +64,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
     private static HttpFileUploadManager instance;
+    private Map<BareJid, Thread> supportDiscoveryThreads = new ConcurrentHashMap<>();
     private Map<BareJid, Jid> uploadServers = new ConcurrentHashMap<>();
     private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isUploading;
@@ -90,10 +91,19 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public boolean isFileUploadSupported(AccountJid account) {
-        if (AccountManager.getInstance().getAccount(account).isSuccessfulConnectionHappened())
+        if (AccountManager.checkIfSuccessfulConnectionHappened(account)) {
             try {
                 return uploadServers.containsKey(account.getFullJid().asBareJid());
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        }
+        return false;
+    }
+
+    public boolean isFileUploadDiscoveryInProgress(AccountJid account) {
+        if (AccountManager.checkIfSuccessfulConnectionHappened(account)) {
+            Thread discoThread = supportDiscoveryThreads.get(account.getBareJid());
+            return discoThread != null && discoThread.getState() != Thread.State.TERMINATED;
+        }
         return false;
     }
 
@@ -207,6 +217,29 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public void onAuthorized(final ConnectionItem connectionItem) {
+        Thread httpSupportThread;
+        if (supportDiscoveryThreads.get(connectionItem.getAccount().getBareJid()) != null) {
+            httpSupportThread = supportDiscoveryThreads.remove(connectionItem.getAccount().getBareJid());
+            if (httpSupportThread.getState() != Thread.State.TERMINATED) {
+                return;
+            } else {
+                httpSupportThread = createDiscoveryThread(connectionItem);
+            }
+        } else {
+            httpSupportThread = createDiscoveryThread(connectionItem);
+        }
+        supportDiscoveryThreads.put(connectionItem.getAccount().getBareJid(), httpSupportThread);
+        httpSupportThread.start();
+    }
+
+    private Thread createDiscoveryThread(ConnectionItem connectionItem) {
+        Thread thread = new Thread(() -> startDiscoverProcess(connectionItem));
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        return thread;
+    }
+
+    private void startDiscoverProcess(ConnectionItem connectionItem) {
         try {
             connectionItem.getConnection().setReplyTimeout(120000);
             discoverSupport(connectionItem.getAccount(), connectionItem.getConnection());

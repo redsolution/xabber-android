@@ -359,14 +359,13 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             // show notification
             String serverName = account.getFullJid().getDomain().toString();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName))
-                    .setTitle(getString(R.string.error_sending_file, ""))
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+            builder.setTitle(getString(R.string.error_sending_file, ""))
+                   .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+            if (HttpFileUploadManager.getInstance().isFileUploadDiscoveryInProgress(account)) {
+                builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_disco_in_progress, serverName));
+            } else {
+                builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName));
+            }
             AlertDialog dialog = builder.create();
             dialog.show();
             return;
