@@ -150,6 +150,7 @@
 
     <string name="chat_notification_settings_title">Notification for this chat</string>
     <string name="error_file_upload_not_support">%1$s server does not seem to support file transfer. This may happen because Xabber didn\'t yet receive server capabilities, or because of some glitch.\n\nRefresh server info in Account settings → Server info. If that does not help, consider using a server that definitely does support file transfer. One such server is xabber.org</string>
+    <string name="error_file_upload_disco_in_progress">We\'re still determining whether or not %1$s server supports file transfer.</string>
     <string name="button_join_conference">Join conference</string>
 
     <string name="showcase_chat_text_1">Swipe right to open recent chats</string>

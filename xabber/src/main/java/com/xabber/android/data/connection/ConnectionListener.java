@@ -66,11 +66,17 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
         // just to see the order of call
         CarbonManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished carbonManger onAuthorized");
         BlockingManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished blockingManager onAuthorized");
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished httpFile onAuthorized");
         PresenceManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished presenceManager onAuthorized");
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
+        LogManager.i(getLogTag(), "finished bookmarksManager onAuthorized");
         RrrManager.getInstance().subscribeForUpdates();
+        LogManager.i(getLogTag(), "finished rrrManager onAuthorized");
         //UserAvatarManager.getInstanceFor(connection).onAuthorized();
         //
         //
