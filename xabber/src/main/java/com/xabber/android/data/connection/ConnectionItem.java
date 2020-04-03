@@ -27,6 +27,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Stanza;
@@ -278,6 +279,7 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
+            EventBus.getDefault().post(new ConnectionStateChangedEvent(newState));
             if (newState == ConnectionState.connected) {
                 AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
             }
@@ -338,5 +340,13 @@ public abstract class ConnectionItem {
             disconnect();
         }
     };
+
+    public static class ConnectionStateChangedEvent {
+        ConnectionState connectionState;
+
+        ConnectionStateChangedEvent(ConnectionState connectionState){
+            this.connectionState = connectionState;
+        }
+    }
 
 }

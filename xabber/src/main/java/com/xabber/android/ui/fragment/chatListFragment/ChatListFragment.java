@@ -44,6 +44,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -77,6 +78,9 @@ import com.xabber.android.ui.widget.DividerItemDecoration;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Retention;
@@ -134,7 +138,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     private int unreadCount;
 
-    private RealmResults<MessageRealmObject> chatRealmObjects;
+    private RealmResults<ChatRealmObject> chatRealmObjects;
 
     private Subscription realmChangeListenerSubscription;
 
@@ -181,7 +185,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         //if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
-
+        EventBus.getDefault().unregister(this);
         chatRealmObjects.removeChangeListener(this);
     }
 
@@ -199,7 +203,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             onStateSelected(ChatListState.recent);
         }
         chatRealmObjects = DatabaseManager.getInstance().getDefaultRealmInstance()
-                .where(MessageRealmObject.class)
+                .where(ChatRealmObject.class)
                 .findAll();
         chatRealmObjects.addChangeListener(this);
 
@@ -211,10 +215,15 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 //                .subscribe(realm -> {
 //                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
 //                });
-
+        EventBus.getDefault().register(this);
         update();
 
         super.onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnectionStatechanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
+        update();
     }
 
     public static ChatListFragment newInstance(@Nullable AccountJid account){
@@ -610,7 +619,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void update(){
 
         /* List for store final method result */
-        ChatRepository.updateChatsInRealm();
+        //ChatRepository.updateChatsInRealm();
         List<ChatRealmObject> newList = new ArrayList<>();
         //showPlaceholders++;
         /* Map of accounts*/
