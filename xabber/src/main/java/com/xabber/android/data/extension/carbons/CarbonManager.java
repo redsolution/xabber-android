@@ -74,7 +74,8 @@ public class CarbonManager {
                     // state check and "forcefully" send the correct carbons state IQ
                     changeCarbonsStateAsync(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
                 } else {
-                    changeCarbonsState(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
+                    changeCarbonsStateAsync(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
+                    //changeCarbonsState(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
                 }
             }
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
