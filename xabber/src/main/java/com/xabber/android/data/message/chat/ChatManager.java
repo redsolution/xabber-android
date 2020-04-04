@@ -16,28 +16,18 @@ package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
-import io.realm.RealmResults;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Manage chat specific options.
@@ -96,21 +86,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 //                        LogManager.exception("ChatList", e);
 //                    }
 //                });
-        setupLastMessageUpdating();
         ChatRepository.clearUnusedNotificationStateFromRealm();
-    }
-
-    private void setupLastMessageUpdating(){
-        Application.getInstance().runOnUiThread(() -> {
-            RealmResults<MessageRealmObject> messageRealmObjects;
-            messageRealmObjects = DatabaseManager.getInstance().getDefaultRealmInstance()
-                    .where(MessageRealmObject.class)
-                    .findAll();
-            messageRealmObjects.addChangeListener(messageRealmObjects1 -> {
-                for (MessageRealmObject messageRealmObject : messageRealmObjects1)
-                    ChatRepository.updateLastMessageInRealm(messageRealmObject.getAccount(), messageRealmObject.getUser());
-            });
-        });
     }
 
     @Override

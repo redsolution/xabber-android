@@ -56,6 +56,8 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -226,6 +228,16 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         update();
 
         super.onResume();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent newMessageEvent){
+        ChatRepository.updateChatsInRealm();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
+        ChatRepository.updateChatsInRealm();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
