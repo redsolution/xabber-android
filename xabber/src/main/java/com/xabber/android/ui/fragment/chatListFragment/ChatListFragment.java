@@ -185,8 +185,14 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         //if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
-        EventBus.getDefault().unregister(this);
         chatRealmObjects.removeChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -215,7 +221,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 //                .subscribe(realm -> {
 //                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
 //                });
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         update();
 
         super.onResume();
