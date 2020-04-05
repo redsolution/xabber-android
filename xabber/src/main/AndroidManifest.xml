@@ -54,6 +54,10 @@
         android:hardwareAccelerated="true">
 
         <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
+
+        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${crashlytics}"
             />
