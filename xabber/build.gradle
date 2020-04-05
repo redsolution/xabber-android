@@ -3,17 +3,16 @@ apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.frogermcs.androiddevmetrics'
-apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.1'
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 29
-        versionCode 778
-        versionName '2.6.6.778'
+        versionCode 777
+        versionName '2.6.6.777'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
         vectorDrawables.useSupportLibrary = true
     }
@@ -152,8 +151,6 @@ dependencies {
 
     // firebase
     storeImplementation "com.google.firebase:firebase-messaging:17.3.4"
-    implementation 'com.google.firebase:firebase-perf:19.0.5'
-
 
     // otr
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
