@@ -233,9 +233,9 @@ public class ChatRepository {
 
     private static ArrayList<ChatRealmObject> sortChatList(ArrayList<ChatRealmObject> list){
         list.sort((o1, o2) -> {
-            if (o1.getLastMessage().getTimestamp() == o2.getLastMessage().getTimestamp())
+            if (o1.getLastMessageTimestamp() == o2.getLastMessageTimestamp())
                 return 0;
-            if (o1.getLastMessage().getTimestamp() > o2.getLastMessage().getTimestamp())
+            if (o1.getLastMessageTimestamp() > o2.getLastMessageTimestamp())
                 return -1;
             else return 1;
         });
