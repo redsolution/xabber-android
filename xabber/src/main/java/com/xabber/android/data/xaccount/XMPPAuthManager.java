@@ -45,6 +45,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     public void addRequest(String requestId, String apiJid, String clientJid) {
+        Log.d(LOG_TAG, "http auth request received");
         onRequestReceived(new Request(requestId, clientJid, apiJid));
         addContactToRoster(apiJid, clientJid);
     }
@@ -65,6 +66,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             String clientJid = packet.getTo().toString();
             String requestId = packet.getStanzaId();
             String code = httpConfirmIq.getId();
+            Log.d(LOG_TAG, "stanza auth request received");
 
             if (requestId != null && code != null)
                 onRequestReceived(new Request(requestId, clientJid, apiJid, code));
@@ -112,13 +114,13 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             .subscribe(new Action1<AuthManager.XMPPCode>() {
                 @Override
                 public void call(AuthManager.XMPPCode code) {
-                    Log.d(XMPPAuthManager.class.toString(), "xmpp auth code requested successfully");
+                    Log.d(LOG_TAG, "xmpp auth code requested successfully");
                     addRequest(code.getRequestId(), code.getApiJid(), accountJid.getFullJid().toString());
                 }
             }, new Action1<Throwable>() {
                 @Override
                 public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(), "request XMPP code failed: " + throwable.toString());
+                    Log.d(LOG_TAG, "request XMPP code failed: " + throwable.toString());
                 }
             });
     }
@@ -131,7 +133,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             .subscribe(new Action1<XabberAccount>() {
                 @Override
                 public void call(XabberAccount account) {
-                    Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
+                    Log.d(LOG_TAG, "xabber account authorized successfully");
                     //updateRemoteSettings();
                     updateLocalSettings();
                     AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
@@ -139,7 +141,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             }, new Action1<Throwable>() {
                 @Override
                 public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(), "XMPP authorization failed: " + throwable.toString());
+                    Log.d(LOG_TAG, "XMPP authorization failed: " + throwable.toString());
                 }
             });
     }
@@ -155,14 +157,14 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
-                        Log.d(XMPPAuthManager.class.toString(),
+                        Log.d(LOG_TAG,
                                 "xabber account settings updated successfully");
                         XabberAccountManager.getInstance().registerEndpoint();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Log.d(XMPPAuthManager.class.toString(),
+                        Log.d(LOG_TAG,
                                 "xabber account settings update failed: " + throwable.toString());
                     }
                 });
