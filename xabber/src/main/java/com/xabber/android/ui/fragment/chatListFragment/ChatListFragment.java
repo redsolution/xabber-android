@@ -231,16 +231,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent newMessageEvent){
-        ChatRepository.updateChatsInRealm();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
-        ChatRepository.updateChatsInRealm();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectionStatechanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
         update();
     }

@@ -25,7 +25,13 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collection;
 
@@ -86,7 +92,19 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 //                        LogManager.exception("ChatList", e);
 //                    }
 //                });
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         ChatRepository.clearUnusedNotificationStateFromRealm();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent newMessageEvent){
+        ChatRepository.updateChatsInRealm();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
+        ChatRepository.updateChatsInRealm();
     }
 
     @Override
