@@ -1,7 +1,10 @@
 package com.xabber.android.data.extension.privatestorage;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -48,7 +51,7 @@ public class PrivateStorageManager {
     public void setXabberAccountBinding(AccountJid accountJid, boolean bind) {
         XabberOptionsPrivateData privateData = new XabberOptionsPrivateData(ELEMENT_NAME, NAMESPACE);
         privateData.setValue(TYPE_BIND, bind ? BIND_TRUE : BIND_FALSE);
-        setPrivateData(accountJid, privateData);
+        Application.getInstance().runInBackgroundUserRequest(() -> setPrivateData(accountJid, privateData));
     }
 
     @Nullable private PrivateData getPrivateData(AccountJid accountJid, String namespace, String elementName) {
@@ -78,10 +81,12 @@ public class PrivateStorageManager {
         try {
             if (!privateDataManager.isSupported()) return;
             privateDataManager.setPrivateData(privateData);
+            Log.d("AuthManager", "finished setXabberAccountBinding...");
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                 | SmackException.NotConnectedException | InterruptedException
                 | IllegalArgumentException e) {
             e.printStackTrace();
+            Log.d("AuthManager", "failed setXabberAccountBinding...");
         }
     }
 

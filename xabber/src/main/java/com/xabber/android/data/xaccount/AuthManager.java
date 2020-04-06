@@ -1,6 +1,7 @@
 package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
+import android.util.Log;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
@@ -26,6 +27,8 @@ import rx.functions.Func1;
  */
 
 public class AuthManager {
+
+    private static final String LOG_TAG = AuthManager.class.getSimpleName();
 
     public static final String PROVIDER_FACEBOOK = "facebook";
     public static final String PROVIDER_TWITTER = "twitter";
@@ -265,6 +268,7 @@ public class AuthManager {
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        Log.d(LOG_TAG, "started setXabberAccountBinding...");
                         try {
                             PrivateStorageManager.getInstance().setXabberAccountBinding(AccountJid.from(jid), true);
                         } catch (XmppStringprepException e) {
