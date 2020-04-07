@@ -26,6 +26,63 @@ public class ChatRepository {
 
     private static final String LOG_TAG = ChatRepository.class.getSimpleName();
 
+    public static void updateChatsInRealm(){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    RealmResults<ChatRealmObject> realmResults = realm1
+                            .where(ChatRealmObject.class)
+                            .findAll();
+
+                    for (ChatRealmObject chatRealmObject : realmResults){
+
+                        MessageRealmObject messageRealmObject = realm1
+                                .where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.USER, chatRealmObject.getStringContactJid())
+                                .equalTo(MessageRealmObject.Fields.ACCOUNT, chatRealmObject.getStringAccountJid())
+                                //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, chatRealmObject.getAccountJid())
+                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                                .findFirst();
+
+                        chatRealmObject.setLastMessage(messageRealmObject);
+                    }
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+        });
+    }
+
+    public static void updateLastMessageInRealm(AccountJid accountJid, ContactJid contactJid){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+
+                    MessageRealmObject messageRealmObject = realm1
+                            .where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                            .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
+                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                            .findFirst();
+
+                    ChatRealmObject chatRealmObject = realm1
+                            .where(ChatRealmObject.class)
+                            .equalTo(ChatRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
+                            .equalTo(ChatRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
+                            .findFirst();
+
+                    chatRealmObject.setLastMessage(messageRealmObject);
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+        });
+    }
+
     public static void saveOrUpdateChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                    @Nullable MessageRealmObject lastMessage,
                                                    int lastPosition, boolean isBlocked,
@@ -47,7 +104,7 @@ public class ChatRepository {
                     ChatRealmObject chatRealmObject = realm1
                             .where(ChatRealmObject.class)
                             .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                                    accountJid.getFullJid().asBareJid().toString())
+                                    accountJid.toString())
                             .equalTo(ChatRealmObject.Fields.CONTACT_JID,
                                     contactJid.getBareJid().toString())
                             .findFirst();
@@ -55,7 +112,8 @@ public class ChatRepository {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
-                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                            //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
                             .findFirst();
 
@@ -112,18 +170,52 @@ public class ChatRepository {
         RealmResults<ChatRealmObject> realmResults = realm
                 .where(ChatRealmObject.class)
                 .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.getFullJid().asBareJid().toString())
+                        accountJid.toString())
+                .isNotNull(ChatRealmObject.Fields.LAST_MESSAGE)
                 .findAll();
+
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
         return new ArrayList<>(realmResults);
     }
 
-    public static Collection<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
-        Collection<ChatRealmObject> result = new ArrayList<>();
+    public static ArrayList<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
             result.addAll(getAllChatsForAccountFromRealm(accountJid));
-        return result;
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllRecentChatsForEnabledAccountsFromRealm(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (!chatRealmObject.isArchived())
+                    result.add(chatRealmObject);
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllArchivedChatsForEnabledAccount(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (chatRealmObject.isArchived())
+                    result.add(chatRealmObject);
+
+        return sortChatList(result);
+    }
+
+    public static ArrayList<ChatRealmObject> getAllUnreadChatsForEnabledAccount(){
+        ArrayList<ChatRealmObject> result = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+                if (!chatRealmObject.getLastMessage().isRead()
+                        && chatRealmObject.getLastMessage().isIncoming())
+                    result.add(chatRealmObject);
+
+        return sortChatList(result);
     }
 
     public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
@@ -137,6 +229,17 @@ public class ChatRepository {
                 .findFirst();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return chatRealmObject;
+    }
+
+    private static ArrayList<ChatRealmObject> sortChatList(ArrayList<ChatRealmObject> list){
+        list.sort((o1, o2) -> {
+            if (o1.getLastMessageTimestamp() == o2.getLastMessageTimestamp())
+                return 0;
+            if (o1.getLastMessageTimestamp() > o2.getLastMessageTimestamp())
+                return -1;
+            else return 1;
+        });
+        return list;
     }
 
     public static void clearUnusedNotificationStateFromRealm() {

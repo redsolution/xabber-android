@@ -2,6 +2,9 @@ package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.UUID;
 
@@ -22,6 +25,7 @@ public class ChatRealmObject extends RealmObject {
         public static final String LAST_POSITION = "lastPosition";
         public static final String CHAT_NOTIFICATIONS_PREFERENCES = "chatNotificationsPreferences";
         public static final String IS_HISTORY_REQUEST_AT_START = "isHistoryRequestAtStart"; //TODO REALM UPDATE is this important?
+        public static final String LAST_MESSAGE_TIMESTAMP = "lastMessageTimestamp";
     }
 
     @PrimaryKey
@@ -30,6 +34,7 @@ public class ChatRealmObject extends RealmObject {
     private String accountJid;
     private String contactJid;
     private MessageRealmObject lastMessage;
+    private Long lastMessageTimestamp;
     private boolean isGroupchat;
     private boolean isArchived;
     private boolean isBlocked;
@@ -44,7 +49,7 @@ public class ChatRealmObject extends RealmObject {
 
     public ChatRealmObject(AccountJid accountJid, ContactJid contactJid){
         this.id = UUID.randomUUID().toString();
-        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.accountJid = accountJid.toString();
         this.contactJid = contactJid.getBareJid().toString();
     }
 
@@ -53,9 +58,10 @@ public class ChatRealmObject extends RealmObject {
                            boolean isHistoryRequestAtStart, int unreadMessagesCount, int lastPosition,
                            ChatNotificationsPreferencesRealmObject chatNotificationsPreferencesRealmObject){
         this.id = UUID.randomUUID().toString();
-        this.accountJid = accountJid.getFullJid().asBareJid().toString();
+        this.accountJid = accountJid.toString();
         this.contactJid = contactJid.getBareJid().toString();
         this.lastMessage = lastMessage;
+        this.lastMessageTimestamp = lastMessage.getTimestamp();
         this.isGroupchat = isGroupchat;
         this.isArchived = isArchived;
         this.isBlocked = isBlocked;
@@ -65,15 +71,37 @@ public class ChatRealmObject extends RealmObject {
         this.chatNotificationsPreferences = chatNotificationsPreferencesRealmObject;
     }
 
-    public String getAccountJid() { return accountJid; }
+    public String getStringAccountJid() { return accountJid; }
+    public AccountJid getAccountJid(){
+        try {
+            return AccountJid.from(accountJid);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
 
-    public String getContactJid() { return contactJid; }
+    public String getStringContactJid() { return contactJid; }
+    public ContactJid getContactJid(){
+        try {
+            return ContactJid.from(contactJid);
+        } catch (ContactJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
+    }
 
     public void setLastPosition(int lastPosition) { this.lastPosition = lastPosition; }
     public int getLastPosition() { return lastPosition; }
 
     public MessageRealmObject getLastMessage() { return lastMessage; }
-    public void setLastMessage(MessageRealmObject lastMessage) { this.lastMessage = lastMessage; }
+    public void setLastMessage(MessageRealmObject lastMessage) {
+        this.lastMessage = lastMessage;
+        this.lastMessageTimestamp = lastMessage.getTimestamp();
+    }
+
+    public Long getLastMessageTimestamp() { return lastMessageTimestamp; }
+    public void setLastMessageTimestamp(Long lastMessageTimestamp) { this.lastMessageTimestamp = lastMessageTimestamp; }
 
     public boolean isGroupchat() { return isGroupchat; }
     public void setGroupchat(boolean groupchat) { isGroupchat = groupchat; }

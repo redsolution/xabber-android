@@ -25,8 +25,8 @@ import java.util.Comparator;
 import java.util.Locale;
 
 class FileLog {
-    private final String REGULAR_LOG_FILE_NAME_PERFIX = Application.getInstance().getString(R.string.application_title_full).replaceAll("\\s+","");
-    private final String XMPP_LOG_FILE_NAME_PERFIX = "XMPP";
+    private final String REGULAR_LOG_FILE_NAME_PERFIX = Application.getInstance().getString(R.string.application_title_prefix).replaceAll("\\s+","") + "_ALL";
+    private final String XMPP_LOG_FILE_NAME_PERFIX = Application.getInstance().getString(R.string.application_title_prefix).replaceAll("\\s+","") + "_XMPP";
     private FastDateFormat dateFormat;
 
     private OutputStreamWriter streamWriter = null;
@@ -56,7 +56,7 @@ class FileLog {
     }
 
     public FileLog() {
-        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss.SSS", Locale.US);
+        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH:mm:ss:SSS", Locale.US);
         try {
             logQueue = new DispatchQueue("logQueue");
             currentFile = createLogFile();
@@ -67,9 +67,12 @@ class FileLog {
         }
     }
 
-    void createNewFiles(){
-        createLogFile();
-        createXmppLogFile();
+    void createNewFilesIfNeed(){
+        if (currentFile == null)
+            createLogFile();
+
+        if (xmppCurrentFile == null)
+            createXmppLogFile();
     }
 
     private File createXmppLogFile(){
@@ -82,7 +85,7 @@ class FileLog {
             }
             File dir = new File(sdCard.getAbsolutePath() + "/logs");
             dir.mkdirs();
-            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_NAME
+            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_CODE
                     + "_" + dateFormat.format(System.currentTimeMillis()) + ".txt");
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,7 +125,7 @@ class FileLog {
             }
             File dir = new File(sdCard.getAbsolutePath() + "/logs");
             dir.mkdirs();
-            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_NAME
+            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_CODE
                     + "_" + dateFormat.format(System.currentTimeMillis()) + ".txt");
         } catch (Exception e) {
             e.printStackTrace();
@@ -180,7 +183,14 @@ class FileLog {
         File dir = new File(sdCard.getAbsolutePath() + "/logs");
         File[] files = dir.listFiles();
 
-        if (files != null && files.length > LOG_FILE_MAX_COUNT) {
+        if (files == null) return;
+
+//        for (File file : files) {
+//            if (file.length() < 150)
+//                file.delete();
+//        }
+
+        if (files.length > LOG_FILE_MAX_COUNT) {
             Arrays.sort(files, new Comparator<File>(){
                 public int compare(File f1, File f2) {
                     return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
