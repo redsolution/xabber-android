@@ -46,6 +46,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Localpart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -479,9 +480,12 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
+                    Localpart username = account.getLocalpartOrNull();
+                    if (username == null) return;
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
-                            .equalTo(AccountRealmObject.Fields.USERNAME, account.toString())
+                            .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
                             .findFirst();
+                    if (item == null) return;
                     item.setUploadServer(server);
                     realm1.copyToRealmOrUpdate(item);
                 });
@@ -497,8 +501,10 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
+                    Localpart username = account.getLocalpartOrNull();
+                    if (username == null) return;
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
-                            .equalTo(AccountRealmObject.Fields.USERNAME, account.toString())
+                            .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
                             .findFirst();
                     if (item != null) item.setUploadServer("");
                 });
