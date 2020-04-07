@@ -985,7 +985,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setArchived(boolean archived, boolean needSaveToRealm) {
         this.archived = archived;
-        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
     public void setAddContactSuggested(boolean suggested) {
@@ -1004,7 +1004,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         this.notificationState = notificationState;
         if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm)
             NotificationManager.getInstance().removeMessageNotification(account, user);
-        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
     public void setNotificationStateOrDefault(NotificationState notificationState, boolean needSaveToRealm) {
@@ -1077,7 +1077,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setHistoryRequestedAtStart(boolean needSaveToRealm) {
         this.historyRequestedAtStart = true;
-        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
     public static String getStanzaId(Message message) {
