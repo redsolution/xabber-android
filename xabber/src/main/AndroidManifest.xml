@@ -16,7 +16,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.xabber.android">
 
-    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="true" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"

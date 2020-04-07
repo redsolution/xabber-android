@@ -24,6 +24,7 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
 
     private static DatabaseManager instance;
     private Observable<Realm> observableListenerInstance;
+    private Observable<Realm> observableChatListenerInstance;
     private RealmConfiguration realmConfiguration;
 
     private Realm realmInstanceInUI;
@@ -67,14 +68,27 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
     }
 
     public Observable<Realm> getObservableListener(){ //TODO pay attention!
-        if (observableListenerInstance == null) observableListenerInstance = Observable.create(realmEmitter -> {
-            final Realm observableRealm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            final RealmChangeListener<Realm> listener = realmEmitter::onNext;
-            observableRealm.addChangeListener(listener);
-            realmEmitter.onNext(observableRealm);
-            if (Looper.myLooper() != Looper.getMainLooper()) observableRealm.close();
-        }, Emitter.BackpressureMode.LATEST);
+        if (observableListenerInstance == null)
+            observableListenerInstance = Observable.create(realmEmitter -> {
+                final Realm observableRealm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                final RealmChangeListener<Realm> listener = realmEmitter::onNext;
+                observableRealm.addChangeListener(listener);
+                realmEmitter.onNext(observableRealm);
+                if (Looper.myLooper() != Looper.getMainLooper()) observableRealm.close();
+            }, Emitter.BackpressureMode.LATEST);
         return observableListenerInstance;
+    }
+
+    public Observable<Realm> getObservableChatListener(){ //TODO pay attention!
+        if (observableChatListenerInstance == null)
+            observableChatListenerInstance = Observable.create(realmEmitter -> {
+                final Realm observableRealm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                final RealmChangeListener<Realm> listener = realmEmitter::onNext;
+                observableRealm.addChangeListener(listener);
+                realmEmitter.onNext(observableRealm);
+                if (Looper.myLooper() != Looper.getMainLooper()) observableRealm.close();
+            }, Emitter.BackpressureMode.LATEST);
+        return observableChatListenerInstance;
     }
 
     @Override

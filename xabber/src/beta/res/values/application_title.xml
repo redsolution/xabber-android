@@ -14,5 +14,6 @@
 <resources>
     <string name="application_title_short">Xabber</string>
     <string name="application_title_full">Xabber Beta</string>
+    <string name="application_title_prefix">Beta</string>
     <string name="caps_entity_node">https://www.xabber.com/</string>
 </resources>

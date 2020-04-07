@@ -19,11 +19,21 @@ import android.net.Uri;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Collection;
 
 /**
  * Manage chat specific options.
@@ -58,11 +68,44 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs = new NestedMap<>();
     }
 
+    public Collection<ChatRealmObject> getAllChats(ChatListFragment.ChatListState chatListState){
+        if (chatListState == ChatListFragment.ChatListState.recent)
+            return ChatRepository.getAllRecentChatsForEnabledAccountsFromRealm();
+        if (chatListState == ChatListFragment.ChatListState.unread)
+            return ChatRepository.getAllUnreadChatsForEnabledAccount();
+        if (chatListState == ChatListFragment.ChatListState.archived)
+            return ChatRepository.getAllArchivedChatsForEnabledAccount();
+        return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
+    }
+
     @Override
     public void onLoad() {
+//        DatabaseManager.getInstance().getObservableListener()
+//                .debounce(500, TimeUnit.MILLISECONDS)
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
+//                .subscribe(realm -> {
+//                    try {
+//                        ChatRepository.updateChatsInRealm();
+//                    } catch (Exception e) {
+//                        LogManager.exception("ChatList", e);
+//                    }
+//                });
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent newMessageEvent){
+        ChatRepository.updateChatsInRealm();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
+        ChatRepository.updateChatsInRealm();
+    }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
