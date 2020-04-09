@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
@@ -189,8 +190,8 @@ public class ChatRepository {
 
     public static ArrayList<ChatRealmObject> getAllRecentChatsForEnabledAccountsFromRealm(){
         ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
                 if (!chatRealmObject.isArchived())
                     result.add(chatRealmObject);
 
@@ -199,8 +200,8 @@ public class ChatRepository {
 
     public static ArrayList<ChatRealmObject> getAllArchivedChatsForEnabledAccount(){
         ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
                 if (chatRealmObject.isArchived())
                     result.add(chatRealmObject);
 
@@ -209,8 +210,8 @@ public class ChatRepository {
 
     public static ArrayList<ChatRealmObject> getAllUnreadChatsForEnabledAccount(){
         ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
+        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
+            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
                 if (!chatRealmObject.getLastMessage().isRead()
                         && chatRealmObject.getLastMessage().isIncoming())
                     result.add(chatRealmObject);

@@ -10,9 +10,26 @@ import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class AccountRepository {
+
+    public static ArrayList<AccountRealmObject> getEnabledAccountsFromRealm(){
+        ArrayList<AccountRealmObject> accounts = new ArrayList<>();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<AccountRealmObject> results = realm
+                .where(AccountRealmObject.class)
+                .findAll();
+        for (AccountRealmObject accountRealmObject : results)
+            if (accountRealmObject.isEnabled())
+                accounts.add(accountRealmObject);
+        if (Looper.getMainLooper() != Looper.myLooper())
+            realm.close();
+        return accounts;
+    }
 
     public static void saveAccountToRealm(AccountItem accountItem){
 

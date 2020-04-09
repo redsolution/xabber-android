@@ -523,7 +523,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                     .where(AccountRealmObject.class)
                     .findAll();
             for (AccountRealmObject item : items) {
-                uploadServers.put(item.getAccount(), item.getUploadServer());
+                uploadServers.put(item.getAccountJid().getBareJid(), item.getUploadServer());
             }
         } catch (Exception e) {
             LogManager.exception(HttpFileUploadManager.class.getName(), e);

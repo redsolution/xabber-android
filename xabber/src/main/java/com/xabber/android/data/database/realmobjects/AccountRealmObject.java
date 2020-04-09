@@ -6,11 +6,11 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
-import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -477,11 +477,10 @@ public class AccountRealmObject extends RealmObject {
 
     public void setUploadServer(String uploadServer) { this.uploadServer = uploadServer; }
 
-    //TODO maybe not username
-    public BareJid getAccount() {
+    public AccountJid getAccountJid(){
         if (userName == null) return null;
         try {
-            return JidCreate.bareFrom(userName);
+            return AccountJid.from(userName + "@" + serverName + "/" + resource);
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
