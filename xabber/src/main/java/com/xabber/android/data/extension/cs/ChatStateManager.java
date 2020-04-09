@@ -203,23 +203,6 @@ public class ChatStateManager implements OnDisconnectListener,
                         break;
                 }
             }
-            //} else if (chatState == ChatState.paused) {
-            //    if (type == null) {
-            //        statusText = context.getString(R.string.chat_state_paused);
-            //    } else {
-            //        switch (type) {
-            //            case voice:
-            //            case video:
-            //                statusText = context.getString(R.string.chat_state_paused_voice_and_video);
-            //                break;
-            //            case upload:
-            //                statusText = context.getString(R.string.chat_state_composing_upload);
-            //                break;
-            //            default:
-            //                statusText = context.getString(R.string.chat_state_paused);
-            //                break;
-            //        }
-            //    }
         }
         return chatStateString;
     }
@@ -288,16 +271,16 @@ public class ChatStateManager implements OnDisconnectListener,
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState, type));
-        try {
-            StanzaSender.sendStanza(account, message);
-            if (chatState == ChatState.composing) {
-                setComposingSender(chat, chatState, type);
-            } else {
-                cancelComposingSender();
-            }
-        } catch (NetworkException e) {
-            sent.remove(chat.getAccount().toString(), chat.getUser().toString());
+        //try {
+        StanzaSender.sendStanzaAsync(account, message);
+        if (chatState == ChatState.composing) {
+            setComposingSender(chat, chatState, type);
+        } else {
+            cancelComposingSender();
         }
+        //} catch (NetworkException e) {
+        //    sent.remove(chat.getAccount().toString(), chat.getUser().toString());
+        //}
     }
 
     private void setComposingSender(final AbstractChat chat, final ChatState chatState, final ChatStateSubtype type) {
@@ -308,11 +291,11 @@ public class ChatStateManager implements OnDisconnectListener,
                 message.setType(chat.getType());
                 message.setTo(chat.getTo());
                 message.addExtension(new ChatStateExtension(chatState, type));
-                try {
-                    StanzaSender.sendStanza(chat.getAccount(), message);
-                } catch (NetworkException e) {
-                    // Just ignore it.
-                }
+                //try {
+                StanzaSender.sendStanzaAsync(chat.getAccount(), message);
+                //} catch (NetworkException e) {
+                //    // Just ignore it.
+                //}
                 stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
             }
         };
@@ -349,12 +332,12 @@ public class ChatStateManager implements OnDisconnectListener,
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(ChatState.active));
-        try {
-            StanzaSender.sendStanza(account, message);
-            sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
-        } catch (NetworkException e) {
-            // Just ignore it.
-        }
+        //try {
+        StanzaSender.sendStanzaAsync(account, message);
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
+        //} catch (NetworkException e) {
+        //    // Just ignore it.
+        //}
     }
 
     /**
