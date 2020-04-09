@@ -110,10 +110,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Cha
     }
 
     private fun setupContactName(holder: ChatViewHolder, contact: ChatRealmObject) {
-        val vcardName = VCardManager.getInstance().getName(contact.contactJid.bareJid)
-        if (!vcardName.equals(""))
-            holder.contactNameTV.text = vcardName
-        else holder.contactNameTV.text = contact.stringContactJid
+        holder.contactNameTV.text = RosterManager.getInstance()
+                .getBestContact(contact.accountJid, contact.contactJid).name
+
     }
 
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, contact: AbstractContact) {
