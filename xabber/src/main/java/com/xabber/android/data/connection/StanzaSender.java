@@ -7,7 +7,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -56,6 +55,17 @@ public class StanzaSender {
         } catch (InterruptedException e) {
             LogManager.exception(LOG_TAG, e);
         }
+    }
+
+    public static void sendStanzaAsync(AccountJid account, Stanza stanza) {
+        Thread bgThread = new Thread(() -> {
+            try {
+                sendStanza(account, stanza);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        });
+        bgThread.start();
     }
 
     private static @NonNull XMPPTCPConnection getXmppTcpConnection(AccountJid account) throws NetworkException {

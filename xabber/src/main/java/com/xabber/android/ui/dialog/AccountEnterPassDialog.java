@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountSettingsActivity;
 
@@ -104,17 +105,32 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
     }
 
     @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        LogManager.d("AccountEnterPassDialog", "dialog dismissed for " + accountErrorEvent.getAccount().toString());
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        LogManager.d("AccountEnterPassDialog", "dialog cancelled for " + accountErrorEvent.getAccount().toString());
+    }
+
+    @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
+            LogManager.d("AccountEnterPassDialog", "pressed positive button");
             if (edtPass != null) {
                 String password = edtPass.getText().toString();
                 AccountManager.getInstance().updateAccountPassword(accountErrorEvent.getAccount(), password);
             }
         }
         if (which == Dialog.BUTTON_NEGATIVE) {
+            LogManager.d("AccountEnterPassDialog", "pressed negative button, dialog to be dismissed");
             dialog.dismiss();
         }
         if (which == Dialog.BUTTON_NEUTRAL) {
+            LogManager.d("AccountEnterPassDialog", "pressed neutral button");
             Activity activity = getActivity();
 
             if (activity instanceof AccountActivity) {

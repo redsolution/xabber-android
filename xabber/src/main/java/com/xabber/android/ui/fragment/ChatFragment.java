@@ -967,7 +967,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return;
         }
 
+        long start = System.currentTimeMillis();
         ChatStateManager.getInstance().onComposing(account, user, text);
+        LogManager.d("ChatStateComposingDebug", "time spent on finishing onComposing call = " + (System.currentTimeMillis() - start) + " ms");
 
         stopTypingTimer = new Timer();
         stopTypingTimer.schedule(new TimerTask() {
