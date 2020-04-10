@@ -275,6 +275,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     /**
+     * Creates new action with the same timestamp as the last message,
+     * as not to disturb the order of chatList elements.
+     *
+     * If there are no messages in the chat, then it's the
+     * same as {@link #newAction(Resourcepart, String, ChatAction, boolean)}
+     *
+     * @param resource can be <code>null</code>.
+     * @param text     can be <code>null</code>.
+     */
+    public void newSilentAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
+        Long lastMessageTimestamp = getLastTimestampFromBackground();
+        Date silentTimestamp = null;
+        if (lastMessageTimestamp != null) {
+            silentTimestamp = new Date(lastMessageTimestamp + 1);
+        }
+        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
+                action, silentTimestamp, null, true, false, false, false,
+                null, null, null, null, null, false, null,
+                fromMUC, false, null);
+    }
+
+    /**
      * Creates new message.
      * <p/>
      * Any parameter can be <code>null</code> (except boolean values).
@@ -577,6 +599,29 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
             return null;
         }
+    }
+
+    public Long getLastTimestampFromBackground() {
+        Long timestamp = null;
+        Realm bgRealm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageRealmObject lastMessage = bgRealm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, user.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.TEXT)
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+                .findAll()
+                .last(null);
+        if (lastMessage != null && lastMessage.getTimestamp() != null) {
+            timestamp = lastMessage.getTimestamp();
+        } else if (lastActionTimestamp != null) {
+            timestamp = lastActionTimestamp;
+        } else {
+            return null;
+        }
+        if (Looper.myLooper() != Looper.getMainLooper()) bgRealm.close();
+        return timestamp;
     }
 
     public Long getLastActionTimestamp() {
@@ -932,6 +977,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsReadAll(boolean trySendDisplay) {
+        LogManager.d(LOG_TAG, "executing markAsReadAll");
         RealmResults<MessageRealmObject> results = getAllUnreadAscending();
         if (results != null && !results.isEmpty()) {
             for (MessageRealmObject message : results) {
