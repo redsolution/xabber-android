@@ -603,7 +603,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean debugLog() {
-        return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
+        return BuildConfig.FLAVOR_build.equals("dev") || getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
     public static boolean fileLog() {

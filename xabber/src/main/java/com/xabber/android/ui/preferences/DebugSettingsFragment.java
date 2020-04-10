@@ -28,7 +28,8 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        //preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
+        if (BuildConfig.FLAVOR_build.equals("dev"))
+            preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.cache_clear_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
