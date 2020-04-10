@@ -67,8 +67,6 @@ public class BackpressureMessageReader {
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(holder -> {
-                    final List<String> ids = new ArrayList<>();
-
                     Application.getInstance().runInBackground(() -> {
                         Realm realm = null;
                         try {
@@ -80,9 +78,6 @@ public class BackpressureMessageReader {
                                         ChatMarkerManager.getInstance().sendDisplayed(message);
 
                                     RealmResults<MessageRealmObject> messages = getPreviousUnreadMessages(realm1, message);
-                                    for (MessageRealmObject mes : messages) {
-                                        ids.add(mes.getUniqueId());
-                                    }
                                     messages.setBoolean(MessageRealmObject.Fields.READ, true);
                                     LogManager.d("BackpressureReader", "Finished setting the 'read' state to messages");
                                 }
@@ -112,34 +107,28 @@ public class BackpressureMessageReader {
         MessageRealmObject message;
         RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
         realmQuery.equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString());
-        if (stanzaIds != null && stanzaIds.size()>0) {
-            realmQuery.beginGroup();
-            if (uniqueId != null && !uniqueId.isEmpty()) {
-                realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
-                realmQuery.or();
-            }
-            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
-            realmQuery.or();
-            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
-            for (String stanzaId : stanzaIds) {
-                realmQuery.or();
-                realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
-            }
-            realmQuery.endGroup();
-            message = realmQuery.findFirst();
-
-        } else {
-            realmQuery.beginGroup();
-            if (uniqueId != null && !uniqueId.isEmpty()) {
-                realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
-                realmQuery.or();
-            }
-            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
-            realmQuery.or();
-            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
-            realmQuery.endGroup();
-            message = realmQuery.findFirst();
+        int queryFieldCounter = 0;
+        realmQuery.beginGroup();
+        if (uniqueId != null && !uniqueId.isEmpty()) {
+            realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
+            queryFieldCounter++;
         }
+        if (id != null && !id.isEmpty()) {
+            if (queryFieldCounter > 0) realmQuery.or();
+            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
+            realmQuery.or();
+            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
+            queryFieldCounter++;
+        }
+        if (stanzaIds != null && stanzaIds.size() > 0) {
+            for (String stanzaId : stanzaIds) {
+                if (queryFieldCounter > 0) realmQuery.or();
+                realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
+                queryFieldCounter++;
+            }
+        }
+        realmQuery.endGroup();
+        message = realmQuery.findFirst();
         return message;
     }
 
