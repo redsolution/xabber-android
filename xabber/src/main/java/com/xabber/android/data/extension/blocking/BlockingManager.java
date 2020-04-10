@@ -261,7 +261,7 @@ public class BlockingManager {
                     PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
                     AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
                     if (chat != null) {
-                        chat.newAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
+                        chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
                     }
                 }
 
@@ -337,7 +337,7 @@ public class BlockingManager {
                     for (ContactJid contactJid : contacts) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
                         if (chat != null) {
-                            chat.newAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
+                            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
                         }
                     }
                 }
