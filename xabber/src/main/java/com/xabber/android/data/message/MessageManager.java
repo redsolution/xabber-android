@@ -45,8 +45,8 @@ import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
@@ -602,13 +602,16 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
         boolean processed = false;
-        List<AbstractChat> chatsCopy = new ArrayList<>(chats.getNested(account.toString()).values());
-        for (AbstractChat chat : chatsCopy) {
-            if (chat.onPacket(user, stanza, false)) {
-                processed = true;
-                break;
+
+        try {
+            List<AbstractChat> chatsCopy = new ArrayList<>(chats.getNested(account.toString()).values());
+            for (AbstractChat chat : chatsCopy) {
+                if (chat.onPacket(user, stanza, false)) {
+                    processed = true;
+                    break;
+                }
             }
-        }
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
 
         final AbstractChat chat = getChat(account, user);
 
