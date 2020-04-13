@@ -10,14 +10,18 @@ import com.xabber.android.data.log.LogManager;
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.StanzaFilter;
+import org.jivesoftware.smack.filter.jidtype.AbstractJidTypeFilter;
+import org.jivesoftware.smack.filter.jidtype.FromJidTypeFilter;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.pep.PEPListener;
-import org.jivesoftware.smackx.pep.PEPManager;
 import org.jivesoftware.smackx.pubsub.EventElement;
 import org.jivesoftware.smackx.pubsub.EventElementType;
 import org.jivesoftware.smackx.pubsub.Item;
@@ -26,9 +30,12 @@ import org.jivesoftware.smackx.pubsub.LeafNode;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubElementType;
 import org.jivesoftware.smackx.pubsub.PubSubException;
+import org.jivesoftware.smackx.pubsub.PubSubFeature;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.pubsub.PublishItem;
+import org.jivesoftware.smackx.pubsub.filter.EventExtensionFilter;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 
 import java.io.BufferedInputStream;
@@ -55,8 +62,10 @@ public final class UserAvatarManager extends Manager {
 
     private static final Map<XMPPConnection, UserAvatarManager> INSTANCES = new WeakHashMap<>();
 
-    private final PEPManager pepManager;
     private final ServiceDiscoveryManager serviceDiscoveryManager;
+    private static final StanzaFilter FROM_BARE_JID_WITH_EVENT_EXTENSION_FILTER = new AndFilter(
+            new FromJidTypeFilter(AbstractJidTypeFilter.JidType.BareJid),
+            EventExtensionFilter.INSTANCE);
 
     private AvatarMetadataStore metadataStore = new AvatarMetadataStore();
     private final Set<AvatarListener> avatarListeners = new HashSet<>();
@@ -81,8 +90,17 @@ public final class UserAvatarManager extends Manager {
 
     private UserAvatarManager(XMPPConnection connection) {
         super(connection);
-        this.pepManager = PEPManager.getInstanceFor(connection);
         this.serviceDiscoveryManager = ServiceDiscoveryManager.getInstanceFor(connection);
+
+        StanzaListener packetListener = stanza -> {
+            Message message = (Message) stanza;
+            EventElement event = EventElement.from(stanza);
+            assert (event != null);
+            EntityBareJid from = message.getFrom().asEntityBareJidIfPossible();
+            assert (from != null);
+            metadataExtensionListener.eventReceived(from, event, message);
+        };
+        connection.addAsyncStanzaListener(packetListener, FROM_BARE_JID_WITH_EVENT_EXTENSION_FILTER);
     }
 
     /**
@@ -100,8 +118,20 @@ public final class UserAvatarManager extends Manager {
      */
     public boolean isSupportedByServer()
             throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-        return pepManager.isSupported();
+        BareJid localBareJid = connection().getUser().asBareJid();
+        return serviceDiscoveryManager.supportsFeatures(localBareJid, REQUIRED_FEATURES);
     }
+
+    /**
+     * XEP-163 5.
+     */
+    private static final PubSubFeature[] REQUIRED_FEATURES = new PubSubFeature[] {
+            // @formatter:off
+            PubSubFeature.auto_create,
+            PubSubFeature.auto_subscribe,
+            PubSubFeature.filtered_notifications,
+            // @formatter:on
+    };
 
     public void onAuthorized() {
         try {
@@ -122,8 +152,8 @@ public final class UserAvatarManager extends Manager {
      * Announce support for User Avatars and start receiving avatar updates.
      */
     public void enable() {
-        pepManager.addPEPListener(metadataExtensionListener);
         serviceDiscoveryManager.addFeature(FEATURE_METADATA);
+        LogManager.d(LOG_TAG, "added +notify feature && avatar pep listener");
     }
 
     /**
@@ -131,17 +161,7 @@ public final class UserAvatarManager extends Manager {
      */
     public void disable() {
         serviceDiscoveryManager.removeFeature(FEATURE_METADATA);
-        pepManager.addPEPListener(metadataExtensionListener);
     }
-
-    public void refreshCaps() {
-        disableNotification();
-        enableNotification();
-    }
-
-    public void enableNotification() {serviceDiscoveryManager.addFeature(FEATURE_METADATA);}
-
-    public void disableNotification() {serviceDiscoveryManager.removeFeature(FEATURE_METADATA);}
 
     /**
      * Set an {@link AvatarMetadataStore} which is used to store information about the local availability of avatar
@@ -493,66 +513,4 @@ public final class UserAvatarManager extends Manager {
             }
         }
     };
-
-
-    /*private final PEPListener metadataExtensionListener = new PEPListener() {
-        @Override
-        public void eventReceived(EntityBareJid from, EventElement event, Message message) {
-            if (!MetadataExtension.NAMESPACE.equals(event.getNamespace())) {
-                // Totally not of interest for us.
-                return;
-            }
-
-            if (!MetadataExtension.ELEMENT.equals(event.getElementName())) {
-                return;
-            }
-
-            for (ExtensionElement items : event.getExtensions()) {
-                if (!(items instanceof ItemsExtension)) {
-                    continue;
-                }
-
-                for (ExtensionElement item : ((ItemsExtension) items).getExtensions()) {
-                    if (!(item instanceof PayloadItem<?>)) {
-                        continue;
-                    }
-
-                    PayloadItem<?> payloadItem = (PayloadItem<?>) item;
-
-                    if (!(payloadItem.getPayload() instanceof MetadataExtension)) {
-                        continue;
-                    }
-
-                    MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
-                    if (metadataStore != null && metadataStore.hasAvatarAvailable(from, ((PayloadItem<?>) item).getId())) {
-                        // The metadata store implies that we have a local copy of the published image already. Skip.
-                        continue;
-                    }
-
-                    for (AvatarListener listener : avatarListeners) {
-                        listener.onAvatarUpdateReceived(from, metadataExtension);
-                    }
-
-                    for (MetadataInfo info : metadataExtension.getInfoElements()){
-                        try {
-                            byte[] avatar = fetchAvatarFromPubSub(from, info);
-                            String sh1 = AvatarManager.getAvatarHash(avatar);
-                            AvatarManager.getInstance().onAvatarReceived(from,sh1,avatar, "xep");
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (PubSubException.NotALeafNodeException e) {
-                            e.printStackTrace();
-                        } catch (NoResponseException e) {
-                            e.printStackTrace();
-                        } catch (NotConnectedException e) {
-                            e.printStackTrace();
-                        } catch (XMPPErrorException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-    };*/
-
 }
