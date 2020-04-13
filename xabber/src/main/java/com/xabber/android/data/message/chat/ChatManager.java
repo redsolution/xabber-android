@@ -97,12 +97,12 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe
     public void onNewMessageEvent(NewMessageEvent newMessageEvent){
         ChatRepository.updateChatsInRealm();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe
     public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
         ChatRepository.updateChatsInRealm();
     }

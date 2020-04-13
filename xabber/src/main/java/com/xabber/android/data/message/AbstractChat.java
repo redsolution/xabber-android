@@ -323,7 +323,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
-        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
@@ -339,10 +338,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
-        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(boolean ui, final MessageRealmObject messageRealmObject) {
+        EventBus.getDefault().post(new NewMessageEvent());
         if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
         else {
             final long startTime = System.currentTimeMillis();
@@ -353,7 +352,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     realm1.copyToRealm(messageRealmObject);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save message item: " + (System.currentTimeMillis() - startTime));
-                    EventBus.getDefault().post(new NewMessageEvent());
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
