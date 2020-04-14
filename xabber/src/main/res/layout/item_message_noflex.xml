@@ -24,8 +24,9 @@
             android:id="@+id/message_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="nickname@example.com"
-            android:textSize="12sp" />
+            android:includeFontPadding="false"
+            android:textSize="12sp"
+            tools:text="nickname@example.com" />
 
         <FrameLayout
             android:id="@+id/imageGridContainer"
