@@ -48,7 +48,6 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -56,8 +55,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -94,13 +91,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
@@ -141,8 +134,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private int unreadCount;
 
     private RealmResults<ChatRealmObject> chatRealmObjects;
-
-    private Subscription realmChangeListenerSubscription;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
@@ -684,6 +675,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 //            newList.addAll(baseEntities);
         }
 
+        LogManager.d("ChatListFragment", "Invoked chatlist update. Chat list count: " + Integer.toString(newList.size()));
         setupMarkAllTheReadButton(newList.size());
 
         /* Update another elements */

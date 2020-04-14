@@ -207,7 +207,9 @@ public class MessageRealmObject extends RealmObject {
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
-    public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId; }
+    public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId;
+        LogManager.d("ChatListFragment", "Saved message to realm ");
+    }
 
     public MessageRealmObject() { this.uniqueId = UUID.randomUUID().toString(); }
 
