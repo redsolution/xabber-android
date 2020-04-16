@@ -112,6 +112,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
                     abstractChat.getUser().toString(),
                     abstractChat);
 
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
@@ -125,6 +127,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     @Override
     public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     @Override
@@ -151,6 +154,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     /**
@@ -212,6 +216,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
+        EventBus.getDefault().post(new ChatUpdatedEvent());
         ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
                 chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
                 chat.isGroupchat(), chat.getUnreadMessageCount(), null);
@@ -288,6 +293,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     private RegularChat createChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
+
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+
         return chat;
     }
 
