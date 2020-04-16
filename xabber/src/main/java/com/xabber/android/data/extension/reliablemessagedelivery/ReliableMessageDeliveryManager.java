@@ -61,7 +61,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 realm.executeTransaction(realm1 -> {
                     for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                        if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
+                        if (accountItem != null && accountItem.isSuccessfulConnectionHappened() && isSupported(accountItem)){
                             RealmResults<MessageRealmObject> messagesUndelivered = realm1.where(MessageRealmObject.class)
                                     .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
                                     .equalTo(MessageRealmObject.Fields.SENT, true)
