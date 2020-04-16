@@ -5,9 +5,7 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
@@ -168,83 +166,6 @@ public class ChatRepository {
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
         return new ArrayList<>(realmResults);
-    }
-
-    public static Collection<ChatRealmObject> getAllChatsForAccountFromRealm(AccountJid accountJid){
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<ChatRealmObject> realmResults = realm
-                .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.toString())
-                .isNotNull(ChatRealmObject.Fields.LAST_MESSAGE)
-                .findAll();
-
-        if (Looper.getMainLooper() != Looper.myLooper())
-            realm.close();
-        return new ArrayList<>(realmResults);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            result.addAll(getAllChatsForAccountFromRealm(accountJid));
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllRecentChatsForEnabledAccountsFromRealm(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
-                if (!chatRealmObject.isArchived())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllArchivedChatsForEnabledAccount(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
-                if (chatRealmObject.isArchived())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllUnreadChatsForEnabledAccount(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountRealmObject account : AccountRepository.getEnabledAccountsFromRealm())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(account.getAccountJid()))
-                if (!chatRealmObject.getLastMessage().isRead()
-                        && chatRealmObject.getLastMessage().isIncoming())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        ChatRealmObject chatRealmObject = realm
-                .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.getFullJid().asBareJid().toString())
-                .equalTo(ChatRealmObject.Fields.CONTACT_JID,
-                        contactJid.getBareJid().toString())
-                .findFirst();
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        return chatRealmObject;
-    }
-
-    private static ArrayList<ChatRealmObject> sortChatList(ArrayList<ChatRealmObject> list){
-        list.sort((o1, o2) -> {
-            if (o1.getLastMessageTimestamp() == o2.getLastMessageTimestamp())
-                return 0;
-            if (o1.getLastMessageTimestamp() > o2.getLastMessageTimestamp())
-                return -1;
-            else return 1;
-        });
-        return list;
     }
 
     public static void clearUnusedNotificationStateFromRealm() {

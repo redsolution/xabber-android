@@ -28,7 +28,6 @@ import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.database.realmobjects.ChatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -215,10 +214,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
      * Sets currently visible chat.
      */
     public void setVisibleChat(BaseEntity visibleChat) {
-        AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
-        if (chat == null)
-            chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
-        this.visibleChat = chat;
+        this.visibleChat = getOrCreateChat(visibleChat.getAccount(), visibleChat.getUser());
     }
 
     /**
@@ -236,11 +232,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         return visibleChat == chat;
     }
 
-
     /**
      * @return <code>null</code> if there is no such chat.
      */
-
     @Nullable
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
@@ -250,8 +244,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         }
     }
 
-
-    public Collection<AbstractChat> getChatsOfEnabledAccount() {
+    public Collection<AbstractChat> getChatsOfEnabledAccounts() {
         List<AbstractChat> chats = new ArrayList<>();
 
         HashSet<AccountJid> enabledAccounts = new HashSet<>();
@@ -287,15 +280,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
      */
     private RegularChat createChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user, false);
-        ChatRealmObject chatData = ChatRepository.getChatRealmObjectFromRealm(account, user);
-        if (chatData != null) {
-            chat.setLastPosition(chatData.getLastPosition());
-            chat.setArchived(chatData.isArchived(), false);
-            //chat.setNotificationState(chatData.getNotificationState(), false);
-            //chat.setChatstate(chatData.getLastState());
-            chat.setGroupchat(chatData.isGroupchat());
-            if (chatData.isHistoryRequestAtStart()) chat.setHistoryRequestedAtStart(false);
-        }
         addChat(chat);
         return chat;
     }

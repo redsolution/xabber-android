@@ -416,7 +416,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     public void updateUnreadCount() {
         int unreadCount = 0;
-        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccount())
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadCount += abstractChat.getUnreadMessageCount();
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadCount));
