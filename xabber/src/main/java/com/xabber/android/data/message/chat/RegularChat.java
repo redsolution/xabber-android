@@ -76,8 +76,8 @@ public class RegularChat extends AbstractChat {
     private Intent intent;
 
 
-    RegularChat(AccountJid account, ContactJid user, boolean isPrivateMucChat) {
-        super(account, user, isPrivateMucChat);
+    RegularChat(AccountJid account, ContactJid user) {
+        super(account, user);
         resource = null;
     }
 

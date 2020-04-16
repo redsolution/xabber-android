@@ -146,8 +146,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean historyRequestedAtStart = false;
     protected boolean isGroupchat = false;
 
-    protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user, boolean isPrivateMucChat) {
-        super(account, isPrivateMucChat ? user : user.getBareUserJid());
+    protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
+        super(account, user);
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;

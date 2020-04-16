@@ -103,8 +103,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
 
     @Override
     public void onLoad() {
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+
+//        for (ChatRealmObject chatRealmObject : ChatRepository.getAllChatsFromRealm())
+//            RegularChat regularChat = new RegularChat()
+
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
@@ -279,7 +284,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
      * @return
      */
     private RegularChat createChat(AccountJid account, ContactJid user) {
-        RegularChat chat = new RegularChat(account, user, false);
+        RegularChat chat = new RegularChat(account, user);
         addChat(chat);
         return chat;
     }
