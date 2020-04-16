@@ -103,7 +103,7 @@ public class RrrManager implements OnPacketListener {
     }
 
     public void tryToRetractMessage(final AccountJid accountJid, final String id, final boolean symmetrically) {
-        Application.getInstance().runInBackgroundUserRequest(() ->  {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -142,7 +142,7 @@ public class RrrManager implements OnPacketListener {
     public void sendEditedMessage(final AccountJid accountJid, final ContactJid contactJid,
                                   final String uniqueId, final String text){
         final Message[] message = {new Message()};
-        Application.getInstance().runInBackgroundUserRequest(() ->  {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -184,7 +184,7 @@ public class RrrManager implements OnPacketListener {
 
     public void sendRetractAllMessagesRequest(final AccountJid accountJid, final ContactJid contactJid,
                                               final boolean symmetric){
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(contactJid.toString(),

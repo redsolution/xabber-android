@@ -128,7 +128,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     public void requestByUser(final AccountJid account, final Jid jid) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 getVCard(account, jid);
@@ -140,7 +140,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      * Requests vCard.
      */
     public void request(final AccountJid account, final Jid jid) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 getVCard(account, jid);
@@ -298,7 +298,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         for (ContactJid blockedContact : blockedContacts) {
             if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
                 onVCardFailed(account, srcUser);
@@ -341,7 +341,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final AbstractXMPPConnection xmppConnection = accountItem.getConnection();
         final CustomVCardManager vCardManager = CustomVCardManager.getInstanceFor(xmppConnection);
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
 

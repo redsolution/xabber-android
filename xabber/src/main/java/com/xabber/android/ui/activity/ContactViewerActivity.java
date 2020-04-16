@@ -208,7 +208,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
         progressBar.setPadding(0,0,Utils.dipToPx(24f, this), 0);
         progressBar.requestLayout();
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());

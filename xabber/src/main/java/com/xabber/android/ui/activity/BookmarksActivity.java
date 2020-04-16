@@ -138,7 +138,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         progressBar.setVisibility(View.VISIBLE);
         tvNotSupport.setVisibility(View.GONE);
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean support = false;

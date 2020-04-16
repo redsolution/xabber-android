@@ -20,6 +20,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
@@ -87,7 +88,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Base entry point.
@@ -103,7 +109,12 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
+    private static ThreadPoolExecutor fallbackNetworkExecutor;
+    private final ExecutorService backgroundNetworkExecutor;
     private final ExecutorService backgroundExecutorForUserActions;
+    private final ExecutorService backgroundNetworkExecutorForUserActions;
+
+    private static final long backgroundTaskTimeout = 1000;
     /**
      * Handler to execute runnable in UI thread.
      */
@@ -149,6 +160,25 @@ public class Application extends android.app.Application {
         }
 
     };
+
+    private final RejectedExecutionHandler onExecutionReject =
+            new RejectedExecutionHandler() {
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+                    if (fallbackNetworkExecutor == null) {
+                        fallbackNetworkExecutor = createFallbackExecutor();
+                    }
+                    fallbackNetworkExecutor.execute(r);
+                    // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
+                }
+            };
+
+    private static final ThreadFactory backgroundThreadFactory = r -> {
+        Thread thread = new Thread(r);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        return thread;
+    };
+
     /**
      * Future for loading process.
      */
@@ -167,17 +197,9 @@ public class Application extends android.app.Application {
 
         handler = new Handler();
         backgroundExecutor = createSingleThreadExecutor("Background executor service");
-        backgroundExecutorForUserActions = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(),
-                new ThreadFactory() {
-            @Override
-            public Thread newThread(@NonNull Runnable runnable) {
-                Thread thread = new Thread(runnable);
-                thread.setPriority(Thread.MIN_PRIORITY);
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        backgroundNetworkExecutor = createFlexibleCacheExecutor();
+        backgroundExecutorForUserActions = createMultiThreadFixedPoolExecutor();
+        backgroundNetworkExecutorForUserActions = createFixedThreadPoolWithTimeout();
     }
 
     @Override
@@ -188,15 +210,52 @@ public class Application extends android.app.Application {
 
     @NonNull
     private ExecutorService createSingleThreadExecutor(final String threadName) {
-        return Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(@NonNull Runnable runnable) {
-                Thread thread = new Thread(runnable, threadName);
-                thread.setPriority(Thread.MIN_PRIORITY);
-                thread.setDaemon(true);
-                return thread;
-                }
+        return Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, threadName);
+            thread.setPriority(Thread.MIN_PRIORITY);
+            thread.setDaemon(true);
+            return thread;
             });
+    }
+
+    private ExecutorService createMultiThreadCacheExecutor() {
+        return new ThreadPoolExecutor(1, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(),
+                backgroundThreadFactory);
+    }
+
+    private ThreadPoolExecutor createFallbackExecutor() {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                5, 5,
+                10L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                backgroundThreadFactory);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        return threadPoolExecutor;
+    }
+
+    private ExecutorService createFlexibleCacheExecutor() {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                1, 20,
+                30L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(),
+                backgroundThreadFactory);
+        threadPoolExecutor.setRejectedExecutionHandler(onExecutionReject);
+        return threadPoolExecutor;
+    }
+
+    private ExecutorService createFixedThreadPoolWithTimeout() {
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) createMultiThreadFixedPoolExecutor();
+        executor.setKeepAliveTime(60L, TimeUnit.SECONDS);
+        executor.allowCoreThreadTimeOut(true);
+        return executor;
+    }
+
+    private ExecutorService createMultiThreadFixedPoolExecutor() {
+        return Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(),
+                backgroundThreadFactory);
     }
 
     public static Application getInstance() {
@@ -589,29 +648,106 @@ public class Application extends android.app.Application {
      * Submits request to be executed in background.
      */
     public void runInBackground(final Runnable runnable) {
-        backgroundExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    runnable.run();
-                } catch (Exception e) {
-                    LogManager.exception(runnable, e);
-                }
+        // long start = System.currentTimeMillis();
+        // Throwable testThrowable = new Throwable();
+        backgroundExecutor.submit(() -> {
+            try {
+                // long qTime = System.currentTimeMillis() - start;
+                // LogManager.d("BackgroundTest/bg", "time in q = " + qTime + " ms");
+                runnable.run();
+                // long taskTime = System.currentTimeMillis() - start - qTime;
+                // LogManager.d("BackgroundTest/bg", "time on run() = " + taskTime + " ms");
+                // if (taskTime > backgroundTaskTimeout) {
+                //     LogManager.d("BackgroundTest/bg_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // } else if (qTime > backgroundTaskTimeout){
+                //     LogManager.d("BackgroundTest/bg_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // }
+            } catch (Exception e) {
+                LogManager.exception(runnable, e);
             }
         });
     }
 
-    public void runInBackgroundUserRequest(final Runnable runnable) {
-        backgroundExecutorForUserActions.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    runnable.run();
-                } catch (Exception e) {
-                    LogManager.exception(runnable, e);
-                }
+    /**
+     * Submits a request that contains a stanza request with the wait for reply,
+     * or some other longer network calls that may block a
+     * background thread for a significant period of time
+     *
+     * @param runnable request
+     */
+    public void runInBackgroundNetwork(final Runnable runnable) {
+        // long start = System.currentTimeMillis();
+        // Throwable testThrowable = new Throwable();
+        backgroundNetworkExecutor.submit(() -> {
+            try {
+                // long qTime = System.currentTimeMillis() - start;
+                // LogManager.d("BackgroundTest/Net", "time in q = " + qTime + " ms");
+                runnable.run();
+                // long taskTime = System.currentTimeMillis() - start - qTime;
+                // LogManager.d("BackgroundTest/Net", "time on run() = " + taskTime + " ms");
+                // if (taskTime > backgroundTaskTimeout) {
+                //     LogManager.d("BackgroundTest/Net_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // } else if (qTime > backgroundTaskTimeout){
+                //     LogManager.d("BackgroundTest/Net_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // }
+                // LogManager.d("BackgroundTest/Net_ExecutorInfo_completedTask", backgroundNetworkExecutor.toString());
+            } catch (Exception e) {
+                LogManager.exception(runnable, e);
             }
         });
+        // LogManager.d("BackgroundTest/Net_ExecutorInfo_queuedTask", backgroundNetworkExecutor.toString());
+    }
+
+    public void runInBackgroundUserRequest(final Runnable runnable) {
+        // long start = System.currentTimeMillis();
+        // Throwable testThrowable = new Throwable();
+        backgroundExecutorForUserActions.submit(() -> {
+            try {
+                // long qTime = System.currentTimeMillis() - start;
+                // LogManager.d("BackgroundTest/UserAction", "time in q = " + qTime + " ms");
+                runnable.run();
+                // long taskTime = System.currentTimeMillis() - start - qTime;
+                // LogManager.d("BackgroundTest/UserAction", "time on run() = " + taskTime + " ms");
+                // if (taskTime > backgroundTaskTimeout) {
+                //     LogManager.d("BackgroundTest/UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // } else if (qTime > backgroundTaskTimeout){
+                //     LogManager.d("BackgroundTest/UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // }
+                // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_completedTask", backgroundExecutorForUserActions.toString());
+            } catch (Exception e) {
+                LogManager.exception(runnable, e);
+            }
+        });
+        // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_queuedTask", backgroundExecutorForUserActions.toString());
+    }
+
+    /**
+     * Submits a network request from background that was created directly by the actions of the user.
+     * Should be used for (multiple) short requests, or singular longer requests that need to be completed as fast as possible.
+     *
+     * @param runnable
+     */
+    public void runInBackgroundNetworkUserRequest(final Runnable runnable) {
+        // long start = System.currentTimeMillis();
+        // Throwable testThrowable = new Throwable();
+        backgroundNetworkExecutorForUserActions.submit(() -> {
+            try {
+                // long qTime = System.currentTimeMillis() - start;
+                // LogManager.d("BackgroundTest/Net-UserAction", "time in q = " + qTime + " ms");
+                runnable.run();
+                // long taskTime = System.currentTimeMillis() - start - qTime;
+                // LogManager.d("BackgroundTest/Net-UserAction", "time on run() = " + taskTime + " ms");
+                // if (taskTime > backgroundTaskTimeout) {
+                //     LogManager.d("BackgroundTest/Net-UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // } else if (qTime > backgroundTaskTimeout){
+                //     LogManager.d("BackgroundTest/Net-UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
+                // }
+                // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_completedTask", backgroundNetworkExecutorForUserActions.toString());
+            } catch (Exception e) {
+                LogManager.exception(runnable, e);
+            }
+        });
+        // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_queuedTask", backgroundNetworkExecutorForUserActions.toString());
     }
 
     /**

@@ -110,7 +110,7 @@ public class ServerInfoActivity extends ManagedActivity {
     private void requestServerInfo() {
         progressBar.setVisibility(View.VISIBLE);
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 final ServiceDiscoveryManager serviceDiscoveryManager

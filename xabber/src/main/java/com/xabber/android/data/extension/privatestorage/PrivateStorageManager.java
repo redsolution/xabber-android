@@ -13,8 +13,11 @@ import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
+
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqprivate.packet.PrivateData;
+import org.jivesoftware.smackx.iqprivate.packet.PrivateDataIQ;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +54,7 @@ public class PrivateStorageManager {
     public void setXabberAccountBinding(AccountJid accountJid, boolean bind) {
         XabberOptionsPrivateData privateData = new XabberOptionsPrivateData(ELEMENT_NAME, NAMESPACE);
         privateData.setValue(TYPE_BIND, bind ? BIND_TRUE : BIND_FALSE);
-        Application.getInstance().runInBackgroundUserRequest(() -> setPrivateData(accountJid, privateData));
+        Application.getInstance().runInBackgroundNetwork(() -> setPrivateData(accountJid, privateData));
     }
 
     @Nullable private PrivateData getPrivateData(AccountJid accountJid, String namespace, String elementName) {
@@ -76,17 +79,16 @@ public class PrivateStorageManager {
         if (accountItem == null || !accountItem.isEnabled()) return;
 
         XMPPTCPConnection connection = accountItem.getConnection();
-        PrivateDataManager privateDataManager = PrivateDataManager.getInstanceFor(connection);
+        // PrivateDataManager privateDataManager = PrivateDataManager.getInstanceFor(connection);
 
         try {
-            if (!privateDataManager.isSupported()) return;
-            privateDataManager.setPrivateData(privateData);
-            Log.d("AuthManager", "finished setXabberAccountBinding...");
-        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | SmackException.NotConnectedException | InterruptedException
+            // if (!privateDataManager.isSupported()) return;
+            // privateDataManager.setPrivateData(privateData);
+            IQ privateDataSet = new PrivateDataIQ(privateData);
+            connection.sendStanza(privateDataSet);
+        } catch (SmackException.NotConnectedException | InterruptedException
                 | IllegalArgumentException e) {
             e.printStackTrace();
-            Log.d("AuthManager", "failed setXabberAccountBinding...");
         }
     }
 

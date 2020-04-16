@@ -83,7 +83,7 @@ public class XTokenManager implements OnPacketListener {
 
     public void requestSessions(final String currentTokenUID, final XMPPTCPConnection connection,
                                 final SessionsListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 sendSessionsRequestIQ(currentTokenUID, connection, new WeakReference<>(listener));

@@ -75,36 +75,36 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
+        Thread authThread = new Thread(() -> startAuth(connection), "Auth Thread");
+        authThread.setPriority(Thread.MIN_PRIORITY);
+        authThread.setDaemon(true);
+        authThread.start();
+    }
 
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
-                AccountJid accountJid = connection.getAccount();
-                if (xabberAccount == null) {
-                    AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                    if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
-                            requestXMPPAuthCode(accountJid);
-                    }
-
-                } else if (xabberAccount.getFullUsername()
-                        .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
+    private void startAuth(ConnectionItem connection) {
+        XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
+        AccountJid accountJid = connection.getAccount();
+        if (xabberAccount == null) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
+                    requestXMPPAuthCode(accountJid);
             }
-        });
+
+        } else if (xabberAccount.getFullUsername()
+                .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
+        }
     }
 
     private void requestXMPPAuthCode(final AccountJid accountJid) {

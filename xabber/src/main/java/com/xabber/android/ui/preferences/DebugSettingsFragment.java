@@ -83,7 +83,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
     }
 
     private void startMessageArchiveDownload() {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 Collection<AbstractChat> chats = MessageManager.getInstance().getChats();

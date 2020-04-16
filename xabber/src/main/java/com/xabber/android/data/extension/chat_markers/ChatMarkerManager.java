@@ -209,7 +209,7 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void sendMessageInBackgroundUserRequest(final Message message, final AccountJid account) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
