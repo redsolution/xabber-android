@@ -338,7 +338,7 @@ public class ContactAddFragment extends GroupEditorFragment
         final String name = nameView.getText().toString();
         final ArrayList<String> groups = getSelected();
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {

@@ -30,7 +30,7 @@ public class GoXaReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 AccountManager.getInstance().goXa();

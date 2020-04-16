@@ -122,21 +122,11 @@ public class CapabilitiesManager {
             return;
         }
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                updateClientInfo(accountJid, from);
-            }
-        });
+        Application.getInstance().runInBackgroundNetwork(() -> updateClientInfo(accountJid, from));
     }
 
     public void requestClientInfoByUser(final AccountJid account, final Jid jid) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                updateClientInfo(account, jid);
-            }
-        });
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> updateClientInfo(account, jid));
     }
 
     @SuppressWarnings("WeakerAccess")

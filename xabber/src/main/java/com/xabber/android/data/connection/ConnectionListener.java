@@ -15,9 +15,11 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.sasl.SASLErrorException;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
@@ -63,6 +65,16 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
         connectionItem.updateState(ConnectionState.connected);
         connectionItem.refreshPingFailedListener(true);
+
+        try {
+            ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(connection.getXMPPServiceDomain());
+        } catch (SmackException.NoResponseException |
+                XMPPException.XMPPErrorException |
+                SmackException.NotConnectedException |
+                InterruptedException e) {
+            e.printStackTrace();
+        }
+        LogManager.i(getLogTag(), "finished discovering and saving server info");
 
         // just to see the order of call
         CarbonManager.getInstance().onAuthorized(connectionItem);

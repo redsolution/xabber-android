@@ -153,7 +153,7 @@ public class CarbonManager {
      * when this setting has been changed
      */
     public void onUseCarbonsSettingsChanged() {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();

@@ -237,7 +237,7 @@ public class BlockingManager {
     }
 
     public void blockContact(final AccountJid account, final ContactJid contactJid, final BlockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
@@ -310,7 +310,7 @@ public class BlockingManager {
     }
 
     public void unblockContacts(final AccountJid account, final List<ContactJid> contacts, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
@@ -362,7 +362,7 @@ public class BlockingManager {
     }
 
     public void unblockAll(final AccountJid account, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;

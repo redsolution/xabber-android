@@ -127,40 +127,37 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none
                 || !isSupported(accountItem.getAccount())) return;
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-                // if history is empty - load last message
-                MessageRealmObject firstMessage = getFirstMessage(chat, realm);
-                if (firstMessage == null) loadLastMessage(realm, accountItem, chat);
+            // if history is empty - load last message
+            MessageRealmObject firstMessage = getFirstMessage(chat, realm);
+            if (firstMessage == null) loadLastMessage(realm, accountItem, chat);
 
-                synchronized (lock) {
-                    if (isRequested) return;
-                    else isRequested = true;
-                }
-
-                // load prev page if history is not enough
-                if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
-                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
-                    loadNextHistory(realm, accountItem, chat);
-                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-                }
-
-                // load missed messages if need
-                List<MessageRealmObject> messages = findMissedMessages(realm, chat);
-                if (messages != null && !messages.isEmpty() && accountItem != null) {
-                    for (MessageRealmObject message : messages) {
-                        loadMissedMessages(realm, accountItem, chat, message);
-                    }
-                }
-
-                synchronized (lock) {
-                    isRequested = false;
-                }
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+            synchronized (lock) {
+                if (isRequested) return;
+                else isRequested = true;
             }
+
+            // load prev page if history is not enough
+            if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
+                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+                loadNextHistory(realm, accountItem, chat);
+                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+            }
+
+            // load missed messages if need
+            List<MessageRealmObject> messages = findMissedMessages(realm, chat);
+            if (messages != null && !messages.isEmpty() && accountItem != null) {
+                for (MessageRealmObject message : messages) {
+                    loadMissedMessages(realm, accountItem, chat, message);
+                }
+            }
+
+            synchronized (lock) {
+                isRequested = false;
+            }
+            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         });
     }
 
@@ -170,21 +167,18 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 || !isSupported(accountItem.getAccount())) return;
 
         if (chat.historyIsFull()) return;
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    if (isRequested) return;
-                    else isRequested = true;
-                }
-                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
-                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                loadNextHistory(realm, accountItem, chat);
-                if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-                synchronized (lock) {
-                    isRequested = false;
-                }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            synchronized (lock) {
+                if (isRequested) return;
+                else isRequested = true;
+            }
+            EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            loadNextHistory(realm, accountItem, chat);
+            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+            EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+            synchronized (lock) {
+                isRequested = false;
             }
         });
     }
@@ -211,7 +205,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         final AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         if (accountItem == null || !isSupported(accountJid)) return;
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 requestUpdatePreferences(accountItem);

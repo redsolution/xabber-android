@@ -2046,7 +2046,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         addContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
                     @Override
                     public void run() {
                         try {

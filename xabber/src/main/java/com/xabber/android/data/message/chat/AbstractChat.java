@@ -757,7 +757,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
 
     public void sendMessages() {
-        Application.getInstance().runInBackgroundUserRequest(() ->  {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
             try{
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -766,8 +766,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                 .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
                                 .equalTo(MessageRealmObject.Fields.USER, user.toString())
                                 .equalTo(MessageRealmObject.Fields.SENT, false)
-                                .findAll()
-                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+                                .findAll();
 
                         for (final MessageRealmObject messageRealmObject : messagesToSend) {
                             if (messageRealmObject.isInProgress()) continue;

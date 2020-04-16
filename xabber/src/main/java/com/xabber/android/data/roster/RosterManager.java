@@ -442,7 +442,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -527,7 +527,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 for (RosterEntry entry : group.getEntries()) {
@@ -575,7 +575,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         if (TextUtils.isEmpty(oldGroup)) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
                 @Override
                 public void run() {
                     createGroupForUnfiledEntries(newGroup, roster);
@@ -589,7 +589,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {

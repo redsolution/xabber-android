@@ -973,7 +973,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 e.printStackTrace();
             }
         }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
 

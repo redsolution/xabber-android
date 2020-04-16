@@ -799,7 +799,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return !accountItems.isEmpty();
     }
 
-    public boolean checkAccounts() {
+    public boolean hasAccountsInRealm() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         boolean result = !realm.where(AccountRealmObject.class).findAll().isEmpty();
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
