@@ -16,8 +16,8 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.NotificationState
+import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
@@ -35,7 +35,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)
         setupContactName(holder, contact)
-//        setupNotificationMuteIcon(holder, contact)
+        setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
         setupTime(holder, contact)
         setupMessageText(holder, contact)
