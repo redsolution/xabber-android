@@ -214,22 +214,29 @@ public class ActivityManager implements OnUnloadListener {
             }
             AccountManager.getInstance().onPreInitialize();
             RosterManager.getInstance().onPreInitialize();
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(START_SERVICE_DELAY);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            activity.startService(XabberService.createIntent(activity));
-                        }
-                    });
-                }
-            });
+            // TODO
+            //  check if we need to do the convoluted
+            //  backgroundThread -> sleep -> uiThread before starting service
+            //  or if simple uiThreadDelay is sufficient
+            Application.getInstance().runOnUiThreadDelay(() ->
+                    activity.startService(XabberService.createIntent(activity)),
+                    START_SERVICE_DELAY);
+            // Application.getInstance().runInBackground(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         try {
+            //             Thread.sleep(START_SERVICE_DELAY);
+            //         } catch (InterruptedException e) {
+            //             e.printStackTrace();
+            //         }
+            //         Application.getInstance().runOnUiThread(new Runnable() {
+            //             @Override
+            //             public void run() {
+            //                 activity.startService(XabberService.createIntent(activity));
+            //             }
+            //         });
+            //     }
+            // });
         }
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);

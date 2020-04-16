@@ -70,19 +70,38 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                AccountJid accountJid = connection.getAccount();
-                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                enablePushNotificationsIfNeed(accountItem);
+        Thread pushThread = new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            pushThread(connection);
         });
+        pushThread.setPriority(Thread.MIN_PRIORITY);
+        pushThread.setDaemon(true);
+        pushThread.start();
+        // Application.getInstance().runInBackground(new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         long start = System.currentTimeMillis();
+        //         try {
+        //             Thread.sleep(500);
+        //         } catch (InterruptedException e) {
+        //             e.printStackTrace();
+        //         }
+        //         AccountJid accountJid = connection.getAccount();
+        //         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        //         enablePushNotificationsIfNeed(accountItem);
+        //         LogManager.d("PushLogTiming", "time taken = " + (System.currentTimeMillis() - start) + " ms");
+        //     }
+        // });
+    }
+
+    public void pushThread(ConnectionItem connection) {
+        AccountJid accountJid = connection.getAccount();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        enablePushNotificationsIfNeed(accountItem);
     }
 
     public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
