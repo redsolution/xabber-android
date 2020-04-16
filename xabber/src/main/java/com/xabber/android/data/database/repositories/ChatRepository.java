@@ -90,7 +90,7 @@ public class ChatRepository {
                                                    boolean isArchived, boolean isHistoryRequestAtStart,
                                                    boolean isGroupchat, int unreadCount,
                                               ChatNotificationsPreferencesRealmObject notificationsPreferences){
-        Application.getInstance().runOnUiThread(() -> {
+        Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
                 LogManager.d("ChatListFragment", "Start to save chat");

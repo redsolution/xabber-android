@@ -31,7 +31,6 @@ import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collection;
 
@@ -175,4 +174,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
                 chat.isGroupchat(), chat.getUnreadMessageCount(), null);
     }
+
+    public static class ChatUpdatedEvent {}
 }

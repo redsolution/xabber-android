@@ -58,6 +58,7 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
@@ -222,6 +223,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
         chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
+
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     /**
@@ -233,6 +236,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.closeChat();
         LogManager.i(this, "removeChat " + chat.getUser());
         chats.remove(chat.getAccount().toString(), chat.getUser().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     /**
@@ -264,6 +268,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         // mark incoming messages as read
         chat.markAsReadAll(true);
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     public String createFileMessage(AccountJid account, ContactJid user, List<File> files) {
@@ -843,11 +848,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     @Override
     public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     /**

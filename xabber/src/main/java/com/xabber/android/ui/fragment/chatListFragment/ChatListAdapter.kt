@@ -8,10 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.database.realmobjects.ChatRealmObject
-import com.xabber.android.data.roster.AbstractContact
+import com.xabber.android.data.message.AbstractChat
 
-class ChatListAdapter(val list: MutableList<ChatRealmObject>, val listener: ChatListItemListener) :
+class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener) :
         RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
 
     lateinit var recyclerView: RecyclerView
@@ -25,12 +24,12 @@ class ChatListAdapter(val list: MutableList<ChatRealmObject>, val listener: Chat
     fun getAbstractContactFromView(v: View?) =
             getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v!!))
 
-    fun addItem(index: Int, item: ChatRealmObject) {
+    fun addItem(index: Int, item: AbstractChat) {
         this.list.add(index, item)
         notifyItemChanged(index)
     }
 
-    fun addItems(newItemsList: MutableList<ChatRealmObject>){
+    fun addItems(newItemsList: MutableList<AbstractChat>){
         this.list.clear()
         this.list.addAll(newItemsList)
     }
@@ -41,7 +40,7 @@ class ChatListAdapter(val list: MutableList<ChatRealmObject>, val listener: Chat
         notifyDataSetChanged()
     }
 
-    fun deleteItemByAbstractContact(contact: ChatRealmObject) =
+    fun deleteItemByAbstractContact(contact: AbstractChat) =
             deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder){
