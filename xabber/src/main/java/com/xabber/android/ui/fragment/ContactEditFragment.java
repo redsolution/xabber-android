@@ -17,8 +17,8 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -305,7 +305,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     }
                     if (!chkReceivePresence.isChecked()) {
                         PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
@@ -321,7 +321,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     }
                     if (!chkReceivePresence.isChecked()) {
                         PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
@@ -340,7 +340,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT) {
                             PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                            AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }
@@ -364,7 +364,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT)  {
                             PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                            AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }

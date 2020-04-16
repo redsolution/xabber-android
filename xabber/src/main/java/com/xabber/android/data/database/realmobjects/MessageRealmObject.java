@@ -23,7 +23,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 

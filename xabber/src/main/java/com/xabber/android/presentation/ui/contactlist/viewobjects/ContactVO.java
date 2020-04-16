@@ -31,10 +31,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
@@ -166,8 +166,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 //        if (contact instanceof RosterContact)
 //             lastActivity = ((RosterContact) contact).getLastActivity(); //TODO REALM UPDATE
 
-        MessageManager messageManager = MessageManager.getInstance();
-        AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {

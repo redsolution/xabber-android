@@ -31,10 +31,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.RegularChat;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationChannelUtils;
 import com.xabber.android.data.notification.NotificationManager;
@@ -170,8 +170,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
                 boolean fromMUC = ((Message) stanza).getType().equals(Message.Type.groupchat);
-                MessageManager.getInstance().openChat(account, from);
-                MessageManager.getInstance()
+                ChatManager.getInstance().openChat(account, from);
+                ChatManager.getInstance()
                         .getOrCreateChat(account, from)
                         .newAction(null, null, ChatAction.attention_requested, fromMUC);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
@@ -180,7 +180,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     public void sendAttention(AccountJid account, ContactJid user) throws NetworkException {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
         }

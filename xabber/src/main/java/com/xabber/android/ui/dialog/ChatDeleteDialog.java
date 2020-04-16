@@ -15,9 +15,10 @@ import androidx.fragment.app.DialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -74,10 +75,10 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.delete) {
-            AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+            AbstractChat chat = ChatManager.getInstance().getChat(account, user);
             if (chat != null) {
                 MessageManager.getInstance().clearHistory(account, user);
-                MessageManager.getInstance().removeChat(chat);
+                ChatManager.getInstance().removeChat(chat);
                 if (getActivity() instanceof ChatActivity) {
                     getActivity().finish();
                 }

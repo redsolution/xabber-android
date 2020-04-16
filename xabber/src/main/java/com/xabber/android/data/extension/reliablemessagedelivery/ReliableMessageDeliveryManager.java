@@ -9,8 +9,8 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -77,7 +77,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     if (messageRealmObject != null
                                             && !messageRealmObject.getStanzaId().equals(messageRealmObject.getOriginId())
                                             && messageRealmObject.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
-                                        MessageManager.getInstance().getChat(messageRealmObject.getAccount(), messageRealmObject.getUser()).sendMessage(messageRealmObject);
+                                        ChatManager.getInstance().getChat(messageRealmObject.getAccount(), messageRealmObject.getUser()).sendMessage(messageRealmObject);
                                         LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageRealmObject.getOriginalStanza());
                                     }
                                 }

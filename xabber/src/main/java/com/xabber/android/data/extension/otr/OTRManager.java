@@ -35,17 +35,17 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.database.repositories.OtrRepository;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;
-import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.RegularChat;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -205,7 +205,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Nullable
     private AbstractChat getChat(String account, String user) {
         try {
-            return MessageManager.getInstance().getChat(AccountJid.from(account), ContactJid.from(user));
+            return ChatManager.getInstance().getChat(AccountJid.from(account), ContactJid.from(user));
         } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
             return null;
@@ -798,7 +798,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private void setNotifyIntentToChat(Intent intent, AccountJid accountJid, ContactJid contactJid) {
-        RegularChat chat = (RegularChat) MessageManager.getInstance().getOrCreateChat(accountJid, contactJid);
+        RegularChat chat = (RegularChat) ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
         chat.setIntent(intent);
     }
 }

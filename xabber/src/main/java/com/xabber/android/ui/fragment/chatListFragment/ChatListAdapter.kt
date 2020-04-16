@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.message.AbstractChat
+import com.xabber.android.data.message.chat.AbstractChat
 
 class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener) :
         RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{

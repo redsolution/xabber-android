@@ -1,7 +1,7 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
 import androidx.recyclerview.widget.DiffUtil
-import com.xabber.android.data.message.AbstractChat
+import com.xabber.android.data.message.chat.AbstractChat
 
 class ChatItemDiffUtil(private val oldList: List<AbstractChat>,
                        private val newList: List<AbstractChat>,

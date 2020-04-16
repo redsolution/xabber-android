@@ -50,9 +50,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -553,9 +552,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatItemSwiped(@NotNull AbstractChat abstractContact) {
-        AbstractChat abstractChat = MessageManager.getInstance()
+        AbstractChat abstractChat = ChatManager.getInstance()
                 .getChat(abstractContact.getAccount(), abstractContact.getUser());
-        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+        ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
                 .setArchived(!abstractChat.isArchived(), true);
         showSnackbar(abstractContact, currentChatsState);
         update();
@@ -593,7 +592,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     public void updateUnreadCount() {
         unreadCount = 0;
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccount())
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadCount += abstractChat.getUnreadMessageCount();
         if (chatListFragmentListener != null)
@@ -622,7 +621,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
             if (currentChatsState == ChatListState.recent)
-                for (AbstractChat abstractChat : MessageManager.getInstance().getChats())
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChats())
                     if (abstractChat.getLastMessage() != null)
                         newList.add(abstractChat);
 //            if (currentChatsState == ChatListState.unread)
@@ -691,7 +690,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             markAllAsReadButton.setVisibility(View.VISIBLE);
             markAllAsReadButton.setOnClickListener(v -> {
                 for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
-                    MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
+                    ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
                     MessageNotificationManager.getInstance().removeAllMessageNotifications();
                 }
                 onStateSelected(ChatListFragment.ChatListState.recent);
@@ -704,7 +703,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     private GroupConfiguration getChatsGroup(ChatListState state) {
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+        Collection<AbstractChat> chats = ChatManager.getInstance().getChatsOfEnabledAccount();
         GroupConfiguration chatsGroup = new GroupConfiguration(CircleManager.NO_ACCOUNT,
                 GroupVO.RECENT_CHATS_TITLE, CircleManager.getInstance());
         List<AbstractChat> newChats = new ArrayList<>();
@@ -792,7 +791,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     private void showSnackbar(final AbstractChat deletedItem, final ChatListState previousState){
         if (snackbar != null) snackbar.dismiss();
-        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
+        final AbstractChat abstractChat = ChatManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
         final boolean archived = abstractChat.isArchived();
         snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
                 : R.string.chat_was_archived, Snackbar.LENGTH_LONG);

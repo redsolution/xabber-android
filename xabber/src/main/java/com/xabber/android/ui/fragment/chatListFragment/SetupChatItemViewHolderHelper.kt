@@ -16,9 +16,9 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.AbstractChat
-import com.xabber.android.data.message.MessageManager
+import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.NotificationState
+import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
@@ -74,7 +74,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 .getAbstractContact(contact.account, contact.user).statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
         val isServer = contact.user.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.account, contact.user)
 
@@ -114,7 +114,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, contact: AbstractChat) {
         val resources = holder.itemView.context.resources
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
                 .isPrefsExist(Key.createKey(contact.account, contact.user))
         var iconId = 0
@@ -133,7 +133,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupUnreadCount(holder: ChatViewHolder, contact: AbstractChat) {
-        val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
         val unreadCount = chat.unreadMessageCount
         val resources = holder.itemView.resources
         if (unreadCount > 0) {

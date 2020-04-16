@@ -34,13 +34,13 @@ import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -105,7 +105,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
-                MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+                ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
 
             } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();
@@ -323,7 +323,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @return
      */
     public AbstractContact getBestContact(AccountJid account, ContactJid user) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
 
         RosterContact rosterContact = getRosterContact(account, user);
         if (rosterContact != null) {

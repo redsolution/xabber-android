@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.xabber.android.R;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.NotificationState;
 
 public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnClickListener {

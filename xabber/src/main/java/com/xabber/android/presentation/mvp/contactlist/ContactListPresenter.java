@@ -11,12 +11,11 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -238,7 +237,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
          */
         final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
 
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChats()) {
             if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
                 final AccountJid account = abstractChat.getAccount();
                 Map<ContactJid, AbstractChat> users = abstractChats.get(account);
@@ -417,7 +416,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     public void updateUnreadCount() {
         int unreadCount = 0;
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccount())
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadCount += abstractChat.getUnreadMessageCount();
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadCount));

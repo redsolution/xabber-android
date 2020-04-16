@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message;
+package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
 import android.os.Looper;
@@ -46,7 +46,12 @@ import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestE
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.BackpressureMessageSaver;
+import com.xabber.android.data.message.ClipManager;
+import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
@@ -181,7 +186,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         trackStatus = true;
     }
 
-    void closeChat() {
+    public void closeChat() {
         active = false;
         firstNotification = true;
     }
@@ -259,7 +264,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
-    abstract protected MessageRealmObject createNewMessageItem(String text);
+    abstract public MessageRealmObject createNewMessageItem(String text);
 
     /**
      * Creates new action.
@@ -380,7 +385,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                                    String originalStanza, String parentMessageId, String originalFrom, boolean isForwarded,
                                                    RealmList<ForwardIdRealmObject> forwardIdRealmObjects, boolean fromMUC, boolean fromMAM, String groupchatUserId) {
 
-        final boolean visible = MessageManager.getInstance().isVisibleChat(this);
+        final boolean visible = ChatManager.getInstance().isVisibleChat(this);
         boolean read = !incoming;
         boolean send = incoming;
         if (action == null && text == null) {
@@ -785,7 +790,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
     }
 
-    protected boolean canSendMessage() {
+    public boolean canSendMessage() {
         return true;
     }
 
@@ -896,7 +901,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
+    public boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
         return accept(contactJid);
     }
 

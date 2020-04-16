@@ -11,7 +11,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 
@@ -137,7 +137,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
                   Send to chats action of disconnect
                   Then RoomChat set state in "waiting" which need for rejoin to room
                  */
-                MessageManager.getInstance().onDisconnect(connectionItem);
+                ChatManager.getInstance().onDisconnect(connectionItem);
             }
         });
     }

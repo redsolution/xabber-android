@@ -7,8 +7,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -22,7 +20,6 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -193,8 +190,6 @@ public class BookmarksManager {
 
         // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
         if (!isBookmarkCheckedByXabber(account)) {
-            // add conferences from phone to bookmarks
-            Collection<AbstractChat> chats = MessageManager.getInstance().getChats(account);
             // add url about check to bookmarks
             addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
         }

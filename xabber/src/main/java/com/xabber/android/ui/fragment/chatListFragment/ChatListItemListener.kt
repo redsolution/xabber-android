@@ -2,7 +2,7 @@ package com.xabber.android.ui.fragment.chatListFragment
 
 import android.view.ContextMenu
 import android.view.View
-import com.xabber.android.data.message.AbstractChat
+import com.xabber.android.data.message.chat.AbstractChat
 
 interface ChatListItemListener: View.OnCreateContextMenuListener{
     fun onChatItemClick(contact: AbstractChat)

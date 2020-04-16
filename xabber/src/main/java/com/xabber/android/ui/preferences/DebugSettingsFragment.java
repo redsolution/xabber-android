@@ -10,8 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 import java.util.Collection;
@@ -87,7 +87,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+                Collection<AbstractChat> chats = ChatManager.getInstance().getChats();
 
                 if (chats == null || chats.size() == 0) {
                     closeDownloadArchiveDialog();

@@ -16,9 +16,9 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -147,7 +147,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 } catch (ContactJid.UserJidCreateException e) {
                     return;
                 }
-                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
+                AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
                     chat.markAsRead(extension.getId(), extension.getStanzaId(), false);
                     //chat.markAsRead(extension.getId(), false);

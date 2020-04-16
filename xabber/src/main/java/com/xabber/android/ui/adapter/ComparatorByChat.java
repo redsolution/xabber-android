@@ -14,8 +14,8 @@
  */
 package com.xabber.android.ui.adapter;
 
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 
 public class ComparatorByChat extends ComparatorByName {
@@ -24,9 +24,9 @@ public class ComparatorByChat extends ComparatorByName {
 
     @Override
     public int compare(AbstractContact contact1, AbstractContact contact2) {
-        final MessageManager messageManager = MessageManager.getInstance();
-        final AbstractChat abstractChat1 = messageManager.getChat(contact1.getAccount(), contact1.getUser());
-        final AbstractChat abstractChat2 = messageManager.getChat(contact2.getAccount(), contact2.getUser());
+        final ChatManager chatManager = ChatManager.getInstance();
+        final AbstractChat abstractChat1 = chatManager.getChat(contact1.getAccount(), contact1.getUser());
+        final AbstractChat abstractChat2 = chatManager.getChat(contact2.getAccount(), contact2.getUser());
 
         final boolean hasActiveChat1 = abstractChat1 != null && abstractChat1.isActive();
         final boolean hasActiveChat2 = abstractChat2 != null && abstractChat2.isActive();

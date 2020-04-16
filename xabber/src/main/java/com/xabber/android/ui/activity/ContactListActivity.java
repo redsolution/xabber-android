@@ -49,8 +49,8 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
@@ -58,7 +58,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
@@ -70,6 +69,7 @@ import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.CallsFragment;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.DiscoverFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
@@ -225,7 +225,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void openChat(ContactJid user, String text) {
         ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
-        for (AbstractChat check : MessageManager.getInstance().getChats()) {
+        for (AbstractChat check : ChatManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
                 entities.add(check);
             }

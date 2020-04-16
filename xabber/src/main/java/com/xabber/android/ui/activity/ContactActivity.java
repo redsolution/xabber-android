@@ -61,9 +61,9 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -226,7 +226,7 @@ public class ContactActivity extends ManagedActivity implements
         contactAddress.setText(user.getBareJid().toString());
         contactName = (TextView) findViewById(R.id.name);
 
-        chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        chat = ChatManager.getInstance().getOrCreateChat(account, user);
         checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;

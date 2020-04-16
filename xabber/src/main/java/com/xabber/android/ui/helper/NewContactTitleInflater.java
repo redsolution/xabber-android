@@ -16,10 +16,10 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
@@ -90,7 +90,7 @@ public class NewContactTitleInflater {
         boolean isGroupchat = false;
         boolean isServer = false;
         boolean isBlocked = false;
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
         if (chat != null) {
             isGroupchat = chat.isGroupchat();
             isServer = abstractContact.getUser().getJid().isDomainBareJid();

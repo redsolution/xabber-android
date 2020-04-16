@@ -15,31 +15,56 @@
 package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
+import android.os.Environment;
 
+import androidx.annotation.Nullable;
+
+import com.xabber.android.R;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.ChatRepository;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
+import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import io.realm.RealmResults;
 
 /**
  * Manage chat specific options.
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
+public class ChatManager implements OnLoadListener, OnAccountRemovedListener, OnRosterReceivedListener,
+        OnAccountDisabledListener, OnDisconnectListener {
 
     public static final Uri EMPTY_SOUND = Uri
             .parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
@@ -48,12 +73,21 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     private static ChatManager instance;
 
     /**
+     * Registered chats for bareAddresses in accounts.
+     */
+    private final NestedMap<AbstractChat> chats;
+
+    /**
      * Stored input for user in account.
      */
     private final NestedMap<ChatInput> chatInputs;
+
     /**
-     * chat scroll states - position of message list
+     * Visible chat.
+     * <p/>
+     * Will be <code>null</code> if there is no one.
      */
+    private AbstractChat visibleChat;
 
     public static ChatManager getInstance() {
         if (instance == null) {
@@ -64,36 +98,38 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     }
 
     private ChatManager() {
+        chats = new NestedMap<>();
         chatInputs = new NestedMap<>();
-    }
-
-    public Collection<ChatRealmObject> getAllChats(ChatListFragment.ChatListState chatListState){
-        if (chatListState == ChatListFragment.ChatListState.recent)
-            return ChatRepository.getAllRecentChatsForEnabledAccountsFromRealm();
-        if (chatListState == ChatListFragment.ChatListState.unread)
-            return ChatRepository.getAllUnreadChatsForEnabledAccount();
-        if (chatListState == ChatListFragment.ChatListState.archived)
-            return ChatRepository.getAllArchivedChatsForEnabledAccount();
-        return ChatRepository.getAllChatsForEnabledAccountsFromRealm();
     }
 
     @Override
     public void onLoad() {
-//        DatabaseManager.getInstance().getObservableListener()
-//                .debounce(500, TimeUnit.MILLISECONDS)
-//                .subscribeOn(AndroidSchedulers.mainThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-//                .subscribe(realm -> {
-//                    try {
-//                        ChatRepository.updateChatsInRealm();
-//                    } catch (Exception e) {
-//                        LogManager.exception("ChatList", e);
-//                    }
-//                });
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         ChatRepository.clearUnusedNotificationStateFromRealm();
+    }
+
+    @Override
+    public void onRosterReceived(AccountItem accountItem) {
+        for (AbstractChat chat : chats.getNested(accountItem.getAccount().toString()).values()) {
+            chat.onComplete();
+        }
+    }
+
+    @Override
+    public void onAccountDisabled(AccountItem accountItem) {
+        chats.clear(accountItem.getAccount().toString());
+    }
+
+    @Override
+    public void onDisconnect(ConnectionItem connection) {
+        if (!(connection instanceof AccountItem)) {
+            return;
+        }
+        AccountJid account = connection.getAccount();
+        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
+            chat.onDisconnect();
+        }
     }
 
     @Subscribe
@@ -173,6 +209,215 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
                 chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
                 chat.isGroupchat(), chat.getUnreadMessageCount(), null);
+    }
+
+    /**
+     * Sets currently visible chat.
+     */
+    public void setVisibleChat(BaseEntity visibleChat) {
+        AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
+        if (chat == null)
+            chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
+        this.visibleChat = chat;
+    }
+
+    /**
+     * All chats become invisible.
+     */
+    public void removeVisibleChat() {
+        visibleChat = null;
+    }
+
+    /**
+     * @param chat
+     * @return Whether specified chat is currently visible.
+     */
+    public boolean isVisibleChat(AbstractChat chat) {
+        return visibleChat == chat;
+    }
+
+
+    /**
+     * @return <code>null</code> if there is no such chat.
+     */
+
+    @Nullable
+    public AbstractChat getChat(AccountJid account, ContactJid user) {
+        if (account != null && user != null) {
+            return chats.get(account.toString(), user.getBareJid().toString());
+        } else {
+            return null;
+        }
+    }
+
+
+    public Collection<AbstractChat> getChatsOfEnabledAccount() {
+        List<AbstractChat> chats = new ArrayList<>();
+
+        HashSet<AccountJid> enabledAccounts = new HashSet<>();
+        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
+        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
+
+        for (AccountJid accountJid : enabledAccounts) {
+            chats.addAll(this.chats.getNested(accountJid.toString()).values());
+        }
+        return chats;
+    }
+
+    public Collection<AbstractChat> getChats() {
+        List<AbstractChat> chats = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
+            chats.addAll(this.chats.getNested(accountJid.toString()).values());
+        }
+        return chats;
+    }
+
+    public Collection<AbstractChat> getChats(AccountJid account) {
+        List<AbstractChat> chats = new ArrayList<>();
+        chats.addAll(this.chats.getNested(account.toString()).values());
+        return chats;
+    }
+
+    /**
+     * Creates and adds new regular chat to be managed.
+     *
+     * @param account
+     * @param user
+     * @return
+     */
+    private RegularChat createChat(AccountJid account, ContactJid user) {
+        RegularChat chat = new RegularChat(account, user, false);
+        ChatRealmObject chatData = ChatRepository.getChatRealmObjectFromRealm(account, user);
+        if (chatData != null) {
+            chat.setLastPosition(chatData.getLastPosition());
+            chat.setArchived(chatData.isArchived(), false);
+            //chat.setNotificationState(chatData.getNotificationState(), false);
+            //chat.setChatstate(chatData.getLastState());
+            chat.setGroupchat(chatData.isGroupchat());
+            if (chatData.isHistoryRequestAtStart()) chat.setHistoryRequestedAtStart(false);
+        }
+        addChat(chat);
+        return chat;
+    }
+
+    /**
+     * Adds chat to be managed.
+     *
+     * @param chat
+     */
+    public void addChat(AbstractChat chat) {
+        if (getChat(chat.getAccount(), chat.getUser()) != null) {
+            return;
+        }
+        chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
+
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+    }
+
+    /**
+     * Removes chat from managed.
+     *
+     * @param chat
+     */
+    public void removeChat(AbstractChat chat) {
+        chat.closeChat();
+        LogManager.i(this, "removeChat " + chat.getUser());
+        chats.remove(chat.getAccount().toString(), chat.getUser().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+    }
+
+    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user, MessageRealmObject lastMessage) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.setLastMessage(lastMessage);
+        return chat;
+    }
+
+    /**
+     * Returns existed chat or create new one.
+     *
+     */
+    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            chat = createChat(account, user);
+        }
+        return chat;
+    }
+
+    /**
+     * Force open chat (make it active).
+     *
+     * @param account
+     * @param user
+     */
+    public void openChat(AccountJid account, ContactJid user) {
+        getOrCreateChat(account, user).openChat();
+    }
+
+    /**
+     * Closes specified chat (make it inactive).
+     *
+     * @param account
+     * @param user
+     */
+    public void closeChat(AccountJid account, ContactJid user) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+        chat.closeChat();
+    }
+
+    /**
+     * Export chat to file with specified name.
+     *
+     * @param account
+     * @param user
+     * @param fileName
+     * @throws NetworkException
+     */
+    public File exportChat(AccountJid account, ContactJid user, String fileName) throws NetworkException {
+        final File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(file));
+            final String titleName = RosterManager.getInstance().getName(account, user) + " (" + user + ")";
+            out.write("<html><head><title>");
+            out.write(StringUtils.escapeHtml(titleName));
+            out.write("</title></head><body>");
+            final AbstractChat abstractChat = getChat(account, user);
+            if (abstractChat != null) {
+                final String accountName = AccountManager.getInstance().getNickName(account);
+                final String userName = RosterManager.getInstance().getName(account, user);
+
+                RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository.getChatMessages(account, user);
+
+                for (MessageRealmObject messageRealmObject : messageRealmObjects) {
+                    if (messageRealmObject.getAction() != null) {
+                        continue;
+                    }
+                    final String name;
+                    if (messageRealmObject.isIncoming()) {
+                        name = userName;
+                    } else {
+                        name = accountName;
+                    }
+
+                    out.write("<b>");
+                    out.write(StringUtils.escapeHtml(name));
+                    out.write("</b>&nbsp;(");
+                    out.write(StringUtils.getDateTimeText(new Date(messageRealmObject.getTimestamp())));
+                    out.write(")<br />\n<p>");
+                    out.write(StringUtils.escapeHtml(messageRealmObject.getText()));
+                    out.write("</p><hr />\n");
+                }
+
+            }
+            out.write("</body></html>");
+            out.close();
+        } catch (IOException e) {
+            throw new NetworkException(R.string.FILE_NOT_FOUND);
+        }
+        return file;
     }
 
     public static class ChatUpdatedEvent {}
