@@ -24,9 +24,9 @@ import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
@@ -233,7 +233,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         ContactJid contactJid = waitingRequests.get(resultID);
                         AbstractChat chat = ChatManager.getInstance().getChat(connection.getAccount(), contactJid);
                         if (chat != null && !chat.isHistoryRequestedAtStart())
-                            chat.setHistoryRequestedAtStart(true);
+                            chat.setHistoryRequestedAtStart();
                         waitingRequests.remove(resultID);
                         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                     }
@@ -247,7 +247,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 AbstractChat chat = ChatManager.getInstance().getChat(connection.getAccount(), contactJid);
                 if (chat != null) {
                     if (!chat.isHistoryRequestedAtStart())
-                        chat.setHistoryRequestedAtStart(true);
+                        chat.setHistoryRequestedAtStart();
                 }
             }
         }

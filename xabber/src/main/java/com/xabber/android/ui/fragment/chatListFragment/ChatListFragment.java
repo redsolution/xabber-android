@@ -541,7 +541,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         AbstractChat abstractChat = ChatManager.getInstance()
                 .getChat(abstractContact.getAccount(), abstractContact.getUser());
         ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
-                .setArchived(!abstractChat.isArchived(), true);
+                .setArchived(!abstractChat.isArchived());
         showSnackbar(abstractContact, currentChatsState);
         update();
     }
@@ -750,7 +750,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                abstractChat.setArchived(!archived, true);
+                abstractChat.setArchived(!archived);
                 onStateSelected(previousState);
                 update();
             }

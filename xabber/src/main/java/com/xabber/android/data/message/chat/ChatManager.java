@@ -107,8 +107,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
 
-//        for (ChatRealmObject chatRealmObject : ChatRepository.getAllChatsFromRealm())
-//            RegularChat regularChat = new RegularChat()
+        for (AbstractChat abstractChat : ChatRepository.getAllChatsFromRealm())
+            chats.put(abstractChat.getAccount().toString(),
+                    abstractChat.getUser().toString(),
+                    abstractChat);
 
         ChatRepository.clearUnusedNotificationStateFromRealm();
     }

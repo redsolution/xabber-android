@@ -134,9 +134,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private Set<String> waitToMarkAsRead = new HashSet<>();
 
-    private boolean isRemotePreviousHistoryCompletelyLoaded = false;
-
-    private Date lastSyncedTime;
     private MessageRealmObject lastMessage;
     private RealmResults<MessageRealmObject> messages;
     private RealmResults<MessageRealmObject> unreadMessages;
@@ -162,22 +159,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
     }
 
-    public boolean isRemotePreviousHistoryCompletelyLoaded() {
-        return isRemotePreviousHistoryCompletelyLoaded;
-    }
-
-    public void setRemotePreviousHistoryCompletelyLoaded(boolean remotePreviousHistoryCompletelyLoaded) {
-        isRemotePreviousHistoryCompletelyLoaded = remotePreviousHistoryCompletelyLoaded;
-    }
-
-    public Date getLastSyncedTime() {
-        return lastSyncedTime;
-    }
-
-    public void setLastSyncedTime(Date lastSyncedTime) {
-        this.lastSyncedTime = lastSyncedTime;
-    }
-
+//    public AbstractChat(@NonNull final AccountJid accountJid, @NonNull final ContactJid contactJid,
+//                        final boolean isArchived, final int lastPos,
+//                        final boolean requestedHistory, final Long lastActionTime,
+//                        final boolean isGroup){
+//        super(accountJid, contactJid);
+//        archived = isArchived;
+//        lastPosition = lastPos;
+//        historyRequestedAtStart = requestedHistory;
+//        lastActionTimestamp = lastActionTime;
+//        isGroupchat = isGroup;
+//    }
 
     public boolean isActive() { return active; }
 
@@ -1032,10 +1024,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return archived;
     }
 
-    public void setArchived(boolean archived, boolean needSaveToRealm) {
+    public void setArchived(boolean archived) {
         this.archived = archived;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
+
+    public void setArchivedWithoutRealm(boolean archived){ this.archived = archived; }
 
     public void setAddContactSuggested(boolean suggested) {
         addContactSuggested = suggested;
@@ -1124,9 +1118,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return historyRequestedAtStart;
     }
 
-    public void setHistoryRequestedAtStart(boolean needSaveToRealm) {
+    public void setHistoryRequestedAtStart() {
         this.historyRequestedAtStart = true;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setHistoryRequestedWithoutRealm(boolean isHistoryRequested){
+        this.historyRequestedAtStart = isHistoryRequested;
     }
 
     public static String getStanzaId(Message message) {

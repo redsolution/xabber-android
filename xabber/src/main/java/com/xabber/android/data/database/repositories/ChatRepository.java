@@ -13,6 +13,8 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.RegularChat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,14 +160,28 @@ public class ChatRepository {
         });
     }
 
-    public static Collection<ChatRealmObject> getAllChatsFromRealm(){
+    public static Collection<AbstractChat> getAllChatsFromRealm(){
+        Collection<AbstractChat> result = new ArrayList<>();
+
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<ChatRealmObject> realmResults = realm
                 .where(ChatRealmObject.class)
                 .findAll();
+
+        for (ChatRealmObject chatRealmObject : realmResults){
+            RegularChat regularChat = new RegularChat(chatRealmObject.getAccountJid(), chatRealmObject.getContactJid());
+            regularChat.setArchivedWithoutRealm(chatRealmObject.isArchived());
+            regularChat.setLastPosition(chatRealmObject.getLastPosition());
+            regularChat.setHistoryRequestedWithoutRealm(chatRealmObject.isHistoryRequestAtStart());
+            regularChat.setLastActionTimestamp(chatRealmObject.getLastMessageTimestamp());
+            regularChat.setGroupchat(chatRealmObject.isGroupchat());
+            result.add(regularChat);
+        }
+
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
-        return new ArrayList<>(realmResults);
+
+        return result;
     }
 
     public static void clearUnusedNotificationStateFromRealm() {

@@ -134,7 +134,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         // delete chat
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat != null) {
-            chat.setArchived(true, true);
+            chat.setArchived(true);
         }
 
         // remove roster contact
