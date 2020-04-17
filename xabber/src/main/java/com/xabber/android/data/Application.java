@@ -109,7 +109,7 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
-    private static ThreadPoolExecutor fallbackNetworkExecutor;
+    //private static ThreadPoolExecutor fallbackNetworkExecutor;
     private final ExecutorService backgroundNetworkExecutor;
     private final ExecutorService backgroundExecutorForUserActions;
     private final ExecutorService backgroundNetworkExecutorForUserActions;
@@ -161,6 +161,7 @@ public class Application extends android.app.Application {
 
     };
 
+    /*
     private final RejectedExecutionHandler onExecutionReject =
             new RejectedExecutionHandler() {
                 public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
@@ -171,6 +172,7 @@ public class Application extends android.app.Application {
                     // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
                 }
             };
+            */
 
     private static final ThreadFactory backgroundThreadFactory = r -> {
         Thread thread = new Thread(r);
@@ -197,9 +199,9 @@ public class Application extends android.app.Application {
 
         handler = new Handler();
         backgroundExecutor = createSingleThreadExecutor("Background executor service");
-        backgroundNetworkExecutor = createFlexibleCacheExecutor();
+        backgroundNetworkExecutor = createSingleThreadExecutor("Background network executor service");
         backgroundExecutorForUserActions = createMultiThreadFixedPoolExecutor();
-        backgroundNetworkExecutorForUserActions = createFixedThreadPoolWithTimeout();
+        backgroundNetworkExecutorForUserActions = createMultiThreadFixedPoolExecutor();
     }
 
     @Override
@@ -235,7 +237,7 @@ public class Application extends android.app.Application {
         return threadPoolExecutor;
     }
 
-    private ExecutorService createFlexibleCacheExecutor() {
+    /*private ExecutorService createFlexibleCacheExecutor() {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 1, 20,
                 30L, TimeUnit.SECONDS,
@@ -243,7 +245,7 @@ public class Application extends android.app.Application {
                 backgroundThreadFactory);
         threadPoolExecutor.setRejectedExecutionHandler(onExecutionReject);
         return threadPoolExecutor;
-    }
+    }*/
 
     private ExecutorService createFixedThreadPoolWithTimeout() {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) createMultiThreadFixedPoolExecutor();
@@ -254,7 +256,7 @@ public class Application extends android.app.Application {
 
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(),
+                Math.max(2, Runtime.getRuntime().availableProcessors()/2),
                 backgroundThreadFactory);
     }
 
@@ -644,9 +646,6 @@ public class Application extends android.app.Application {
         onError(networkException.getResourceId());
     }
 
-    /**
-     * Submits request to be executed in background.
-     */
     public void runInBackground(final Runnable runnable) {
         // long start = System.currentTimeMillis();
         // Throwable testThrowable = new Throwable();
@@ -668,13 +667,6 @@ public class Application extends android.app.Application {
         });
     }
 
-    /**
-     * Submits a request that contains a stanza request with the wait for reply,
-     * or some other longer network calls that may block a
-     * background thread for a significant period of time
-     *
-     * @param runnable request
-     */
     public void runInBackgroundNetwork(final Runnable runnable) {
         // long start = System.currentTimeMillis();
         // Throwable testThrowable = new Throwable();
@@ -721,12 +713,6 @@ public class Application extends android.app.Application {
         // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_queuedTask", backgroundExecutorForUserActions.toString());
     }
 
-    /**
-     * Submits a network request from background that was created directly by the actions of the user.
-     * Should be used for (multiple) short requests, or singular longer requests that need to be completed as fast as possible.
-     *
-     * @param runnable
-     */
     public void runInBackgroundNetworkUserRequest(final Runnable runnable) {
         // long start = System.currentTimeMillis();
         // Throwable testThrowable = new Throwable();
