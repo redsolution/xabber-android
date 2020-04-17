@@ -44,6 +44,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
@@ -57,6 +58,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
+import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactAddActivity;
@@ -85,11 +87,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import io.realm.RealmChangeListener;
-
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
-        RealmChangeListener {
+        OnStatusChangeListener {
 
     private ChatListAdapter adapter;
     private List<AbstractChat> items;
@@ -177,11 +177,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChange(Object o) { update(); }
-
-    @Override
     public void onResume() {
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
+        Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
 
         updateUnreadCount();
         if (unreadCount == 0){
@@ -195,10 +193,23 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         super.onResume();
     }
 
+    @Override
+    public void onStatusChanged(AccountJid account, ContactJid user, String statusText) {
+        update();
+    }
+
+    @Override
+    public void onStatusChanged(AccountJid account, ContactJid user, StatusMode statusMode, String statusText) {
+        update();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectionStateChanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
-        if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected)
+        if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected
+                || connectionStateChangedEvent.getConnectionState() == ConnectionState.disconnecting)
             update();
+        else
+            updateToolbar();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

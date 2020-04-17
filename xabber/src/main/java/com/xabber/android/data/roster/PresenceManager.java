@@ -34,9 +34,9 @@ import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -292,11 +292,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
         if (presence.getType() == Presence.Type.unavailable)
             LastActivityInteractor.getInstance().setLastActivityTimeNow(account, from.getBareUserJid());
-
-        for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnStatusChangeListener listener : Application.getInstance().getUIListeners(OnStatusChangeListener.class)) {
                 listener.onStatusChanged(account, from,
                         StatusMode.createStatusMode(presence), presence.getStatus());
-        }
+            }
+        });
 
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, from.getBareJid());
         if (rosterContact != null) {
