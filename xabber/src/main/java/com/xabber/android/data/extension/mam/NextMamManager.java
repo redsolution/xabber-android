@@ -523,6 +523,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         }
         supportedByAccount.put(accountItem.getAccount(), isSupported);
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
+        if (!isSupported) {
+            // no history support = no history to load = history is loaded
+            VCardManager.getInstance().onHistoryLoaded(accountItem);
+        }
     }
 
     private void updatePreferencesFromServer(@NonNull AccountItem accountItem) {
