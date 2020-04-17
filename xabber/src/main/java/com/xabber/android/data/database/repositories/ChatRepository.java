@@ -27,63 +27,6 @@ public class ChatRepository {
 
     private static final String LOG_TAG = ChatRepository.class.getSimpleName();
 
-    public static void updateChatsInRealm(){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<ChatRealmObject> realmResults = realm1
-                            .where(ChatRealmObject.class)
-                            .findAll();
-
-                    for (ChatRealmObject chatRealmObject : realmResults){
-
-                        MessageRealmObject messageRealmObject = realm1
-                                .where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.USER, chatRealmObject.getStringContactJid())
-                                .equalTo(MessageRealmObject.Fields.ACCOUNT, chatRealmObject.getStringAccountJid())
-                                //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, chatRealmObject.getAccountJid())
-                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                                .findFirst();
-
-                        chatRealmObject.setLastMessage(messageRealmObject);
-                    }
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    public static void updateLastMessageInRealm(AccountJid accountJid, ContactJid contactJid){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-
-                    MessageRealmObject messageRealmObject = realm1
-                            .where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                            .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
-                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                            .findFirst();
-
-                    ChatRealmObject chatRealmObject = realm1
-                            .where(ChatRealmObject.class)
-                            .equalTo(ChatRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
-                            .equalTo(ChatRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
-                            .findFirst();
-
-                    chatRealmObject.setLastMessage(messageRealmObject);
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
     public static void saveOrUpdateChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                    @Nullable MessageRealmObject lastMessage,
                                                    int lastPosition, boolean isBlocked,

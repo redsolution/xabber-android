@@ -36,14 +36,11 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -104,9 +101,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     @Override
     public void onLoad() {
 
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
-
         for (AbstractChat abstractChat : ChatRepository.getAllChatsFromRealm())
             chats.put(abstractChat.getAccount().toString(),
                     abstractChat.getUser().toString(),
@@ -139,16 +133,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
             chat.onDisconnect();
         }
-    }
-
-    @Subscribe
-    public void onNewMessageEvent(NewMessageEvent newMessageEvent){
-        ChatRepository.updateChatsInRealm();
-    }
-
-    @Subscribe
-    public void onMessageUpdateEvent(MessageUpdateEvent messageUpdateEvent){
-        ChatRepository.updateChatsInRealm();
     }
 
     @Override
