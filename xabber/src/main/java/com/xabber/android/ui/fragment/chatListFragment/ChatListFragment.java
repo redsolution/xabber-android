@@ -45,13 +45,13 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -165,7 +165,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStop() {
-        //if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
     }
@@ -178,9 +177,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChange(Object o) {
-        update();
-    }
+    public void onChange(Object o) { update(); }
 
     @Override
     public void onResume() {
@@ -200,7 +197,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectionStateChanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
-        update();
+        if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected)
+            update();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -209,14 +207,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewmessage(NewMessageEvent chatUpdatedEvent) {
-        update();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
-        update();
-    }
+    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) { update(); }
 
     public static ChatListFragment newInstance(@Nullable AccountJid account){
         ChatListFragment fragment = new ChatListFragment();
@@ -514,9 +505,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatStateChanged(Collection<RosterContact> entities) {
-        update();
-    }
+    public void onChatStateChanged(Collection<RosterContact> entities) { update(); }
 
     /**
      * Setup Toolbar scroll behavior according to count of visible chat items
@@ -665,6 +654,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
         LogManager.d("ChatListFragment", "Invoked chatList update. Chat list count: " + Integer.toString(newList.size()));
+
 
         setupMarkAllTheReadButton(newList.size());
 

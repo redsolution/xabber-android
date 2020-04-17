@@ -338,8 +338,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void saveMessageItem(boolean ui, final MessageRealmObject messageRealmObject) {
-        EventBus.getDefault().post(new NewMessageEvent());
-        if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
+        if (ui)
+            BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
         else {
             final long startTime = System.currentTimeMillis();
             Realm realm = null;
@@ -352,9 +352,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) realm.close();
-            }
+            } finally { if (realm != null) realm.close(); }
+
+            EventBus.getDefault().post(new NewMessageEvent());
         }
     }
 

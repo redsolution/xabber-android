@@ -36,11 +36,9 @@ public class ChatRepository {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{
-                LogManager.d("ChatListFragment", "Start to save chat");
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
 
-                    LogManager.d("ChatListFragment", "Continue to save chat");
                     ContactRealmObject contactRealmObject = realm1
                             .where(ContactRealmObject.class)
                             .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
@@ -73,7 +71,6 @@ public class ChatRepository {
                         if (!contactRealmObject.getChats().contains(newChatRealmObject))
                             contactRealmObject.getChats().add(newChatRealmObject);
 
-                        LogManager.d("ChatListFragment", "Performing chat saving");
                         realm1.insertOrUpdate(newChatRealmObject);
                         realm1.insertOrUpdate(contactRealmObject);
                     } else {
@@ -90,7 +87,6 @@ public class ChatRepository {
                         if (!contactRealmObject.getChats().contains(chatRealmObject))
                             contactRealmObject.getChats().add(chatRealmObject);
 
-                        LogManager.d("ChatListFragment", "Performing chat saving");
                         realm1.insertOrUpdate(chatRealmObject);
                         realm1.insertOrUpdate(contactRealmObject);
                     }
