@@ -61,6 +61,7 @@ import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
@@ -89,8 +90,9 @@ import java.util.Map;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
-        OnStatusChangeListener {
+        OnStatusChangeListener, UpdateBackpressure.UpdatableObject {
 
+    private UpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
     private List<AbstractChat> items;
     private Snackbar snackbar;
@@ -135,6 +137,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onAttach(Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
+        updateBackpressure = new UpdateBackpressure(this);
         super.onAttach(context);
     }
 
@@ -172,12 +175,18 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onPause() {
         super.onPause();
+
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
+
+        updateBackpressure.removeRefreshRequests();
     }
 
     @Override
     public void onResume() {
+
+        updateBackpressure.build();
+
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
 
@@ -188,37 +197,38 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        update();
 
         super.onResume();
     }
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, String statusText) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, StatusMode statusMode, String statusText) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectionStateChanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
         if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected
                 || connectionStateChangedEvent.getConnectionState() == ConnectionState.disconnecting)
-            update();
+            updateBackpressure.refreshRequest();
         else
             updateToolbar();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChatsChanged(ChatManager.ChatUpdatedEvent chatUpdatedEvent) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) { update(); }
+    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
+        updateBackpressure.refreshRequest();
+    }
 
     public static ChatListFragment newInstance(@Nullable AccountJid account){
         ChatListFragment fragment = new ChatListFragment();
@@ -311,7 +321,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void updateContactList() {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     /** Update toolbarRelativeLayout via current state */
