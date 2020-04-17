@@ -54,7 +54,7 @@ public class PrivateStorageManager {
     public void setXabberAccountBinding(AccountJid accountJid, boolean bind) {
         XabberOptionsPrivateData privateData = new XabberOptionsPrivateData(ELEMENT_NAME, NAMESPACE);
         privateData.setValue(TYPE_BIND, bind ? BIND_TRUE : BIND_FALSE);
-        Application.getInstance().runInBackgroundNetwork(() -> setPrivateData(accountJid, privateData));
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> setPrivateData(accountJid, privateData));
     }
 
     @Nullable private PrivateData getPrivateData(AccountJid accountJid, String namespace, String elementName) {

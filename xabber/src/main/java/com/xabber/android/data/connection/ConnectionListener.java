@@ -10,6 +10,7 @@ import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -105,6 +106,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void connectionClosed() {
         LogManager.i(getLogTag(), "connectionClosed");
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
+        VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -124,6 +126,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void connectionClosedOnError(final Exception e) {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
+        VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
         connectionItem.refreshPingFailedListener(false);
 
