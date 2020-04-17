@@ -22,6 +22,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -87,6 +88,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private boolean isRequested = false;
     private final Object lock = new Object();
     private Map<String, ContactJid> waitingRequests = new HashMap<>();
+    private Map<AccountItem, Iterator<RosterContact>> rosterItemIterators = new HashMap<>();
 
     public static NextMamManager getInstance() {
         if (instance == null)
@@ -106,7 +108,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
             initializeStartTimestamp(realm, accountItem);
-            loadLastMessagesAsync(accountItem);
+            loadNextLastMessageAsync(accountItem);
+            //loadLastMessagesAsync(accountItem);
         } else {
             if (isNeedMigration(accountItem, realm)) {
                 runMigrationToNewArchive(accountItem, realm);
@@ -114,10 +117,16 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             String lastArchivedId = getLastMessageArchivedId(accountItem, realm);
             if (lastArchivedId != null) {
                 boolean historyCompleted = loadAllNewMessages(realm, accountItem, lastArchivedId);
-                if (!historyCompleted) loadLastMessagesAsync(accountItem);
-            } else loadLastMessagesAsync(accountItem);
+                // if (!historyCompleted) loadLastMessagesAsync(accountItem);
+                if (!historyCompleted) {
+                    loadNextLastMessageAsync(accountItem);
+                } else {
+                    VCardManager.getInstance().onHistoryLoaded(accountItem);
+                }
+            // } else loadLastMessagesAsync(accountItem);
+            } else loadNextLastMessageAsync(accountItem);
 
-            loadLastMessagesInMissedChatsAsync(realm, accountItem);
+            //loadLastMessagesInMissedChatsAsync(realm, accountItem);
         }
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
      }
@@ -229,6 +238,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         if (chat != null && !chat.isHistoryRequestedAtStart())
                             chat.setHistoryRequestedAtStart(true);
                         waitingRequests.remove(resultID);
+                        loadNextLastMessageAsync(connection.getAccount());
                         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
                     }
                 }
@@ -243,6 +253,14 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     if (!chat.isHistoryRequestedAtStart())
                         chat.setHistoryRequestedAtStart(true);
                 }
+                waitingRequests.remove(finIQ.getQueryId());
+                loadNextLastMessageAsync(connection.getAccount());
+            }
+        } else if (packet instanceof MamQueryIQ) {
+            MamQueryIQ queryIQ = (MamQueryIQ) packet;
+            if (queryIQ.getError() != null && waitingRequests.containsKey(queryIQ.getQueryId())) {
+                waitingRequests.remove(queryIQ.getQueryId());
+                loadNextLastMessageAsync(connection.getAccount());
             }
         }
     }
@@ -271,6 +289,36 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 requestLastMessageAsync(accountItem, chat);
             }
         }
+    }
+
+    private void loadNextLastMessageAsync(AccountJid accountJid) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            loadNextLastMessageAsync(accountItem);
+        }
+    }
+    private void loadNextLastMessageAsync(AccountItem accountItem) {
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
+                || !isSupported(accountItem.getAccount())) return;
+
+        if (rosterItemIterators.get(accountItem) == null) {
+            Collection<RosterContact> contacts = RosterManager.getInstance()
+                    .getAccountRosterContacts(accountItem.getAccount());
+            rosterItemIterators.put(accountItem, contacts.iterator());
+        }
+        Iterator<RosterContact> iterator = rosterItemIterators.get(accountItem);
+        if (iterator != null && iterator.hasNext()) {
+            RosterContact contact = iterator.next();
+            LogManager.d(LOG_TAG, "load last message in " + contact + " chat");
+            AbstractChat chat = MessageManager.getInstance()
+                    .getOrCreateChat(contact.getAccount(), contact.getUser());
+            requestLastMessageAsync(accountItem, chat);
+        } else {
+            LogManager.d(LOG_TAG, "finished loading first messages of " + accountItem.getAccount());
+            VCardManager.getInstance().onHistoryLoaded(accountItem);
+            rosterItemIterators.remove(accountItem);
+        }
+
     }
 
     private void loadLastMessagesAsync(AccountItem accountItem) {

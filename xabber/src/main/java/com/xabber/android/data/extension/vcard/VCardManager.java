@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -84,6 +85,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     @SuppressWarnings("WeakerAccess")
     Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
+    private Map<AccountItem, Boolean> rosterOrHistoryIsLoaded = new ConcurrentHashMap<>();
+
     public static VCardManager getInstance() {
         if (instance == null) {
             instance = new VCardManager();
@@ -101,8 +104,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     public void onLoad() {
     }
 
-    @Override
-    public void onRosterReceived(AccountItem accountItem) {
+    private void requestRosterVCards(AccountItem accountItem) {
         AccountJid account = accountItem.getAccount();
         if (!accountRequested.contains(account) && SettingsManager.connectionLoadVCard()) {
             BareJid bareAddress = accountItem.getRealJid().asBareJid();
@@ -123,29 +125,50 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     @Override
+    public void onRosterReceived(AccountItem accountItem) {
+        LogManager.d("VCardManager", "roster received");
+        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
+        if (loaded != null && loaded) {
+            requestRosterVCards(accountItem);
+        } else {
+            rosterOrHistoryIsLoaded.put(accountItem, true);
+        }
+    }
+
+    public void onHistoryLoaded(AccountItem accountItem) {
+        LogManager.d("VCardManager", "historyLoaded");
+        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
+        if (loaded != null && loaded) {
+            requestRosterVCards(accountItem);
+        } else {
+            rosterOrHistoryIsLoaded.put(accountItem, true);
+        }
+    }
+
+    // TODO
+    //  make sure this will not be called after reconnecting and getting full roster.
+    //  (if the connection listener is calling this method too late)
+    public void resetLoadedState(AccountJid accountJid) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            rosterOrHistoryIsLoaded.remove(accountItem);
+        }
+    }
+
+    @Override
     public void onAccountRemoved(AccountItem accountItem) {
         accountRequested.remove(accountItem.getAccount());
     }
 
     public void requestByUser(final AccountJid account, final Jid jid) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                getVCard(account, jid);
-            }
-        });
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> getVCard(account, jid));
     }
 
     /**
      * Requests vCard.
      */
     public void request(final AccountJid account, final Jid jid) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                getVCard(account, jid);
-            }
-        });
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> getVCard(account, jid));
     }
 
     /**
