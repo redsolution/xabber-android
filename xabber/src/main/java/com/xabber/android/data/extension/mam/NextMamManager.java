@@ -310,7 +310,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (iterator != null && iterator.hasNext()) {
             RosterContact contact = iterator.next();
             LogManager.d(LOG_TAG, "load last message in " + contact + " chat");
-            AbstractChat chat = MessageManager.getInstance()
+            AbstractChat chat = ChatManager.getInstance()
                     .getOrCreateChat(contact.getAccount(), contact.getUser());
             requestLastMessageAsync(accountItem, chat);
         } else {

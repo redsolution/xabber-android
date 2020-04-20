@@ -61,7 +61,6 @@ import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
@@ -90,9 +89,9 @@ import java.util.Map;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
-        OnStatusChangeListener, UpdateBackpressure.UpdatableObject {
+        OnStatusChangeListener, ChatListUpdateBackpressure.UpdatableObject {
 
-    private UpdateBackpressure updateBackpressure;
+    private ChatListUpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
     private List<AbstractChat> items;
     private Snackbar snackbar;
@@ -137,7 +136,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onAttach(Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
-        updateBackpressure = new UpdateBackpressure(this);
+        updateBackpressure = new ChatListUpdateBackpressure(this);
         super.onAttach(context);
     }
 
@@ -222,12 +221,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChatsChanged(ChatManager.ChatUpdatedEvent chatUpdatedEvent) {
-        updateBackpressure.refreshRequest();
+        update();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
-        updateBackpressure.refreshRequest();
+        update();
     }
 
     public static ChatListFragment newInstance(@Nullable AccountJid account){
@@ -614,6 +613,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
     }
 
+    @Override
     public void update(){
 
         List<AbstractChat> newList = new ArrayList<>();
