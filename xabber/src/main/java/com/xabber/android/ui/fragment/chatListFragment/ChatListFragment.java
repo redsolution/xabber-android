@@ -197,6 +197,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
 
+        update();
+
         super.onResume();
     }
 

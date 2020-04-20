@@ -96,15 +96,16 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     private ChatManager() {
         chats = new NestedMap<>();
         chatInputs = new NestedMap<>();
-    }
-
-    @Override
-    public void onLoad() {
 
         for (AbstractChat abstractChat : ChatRepository.getAllChatsFromRealm())
             chats.put(abstractChat.getAccount().toString(),
                     abstractChat.getUser().toString(),
                     abstractChat);
+
+    }
+
+    @Override
+    public void onLoad() {
 
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
 
