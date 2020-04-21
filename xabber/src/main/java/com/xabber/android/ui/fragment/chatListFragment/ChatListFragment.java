@@ -365,7 +365,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
                 AccountPainter.getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountPainter.getFirstAccount()));
+                    getDefaultRippleColor());
         else if (getContext() != null){
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();

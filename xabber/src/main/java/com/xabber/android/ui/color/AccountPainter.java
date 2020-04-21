@@ -157,7 +157,7 @@ public class AccountPainter {
      * @param tint may be 50, 100, 200.. 900; else will return 0
      * @return default standartColor with tint
      */
-    public int getDeafultColorWithTint(int tint){
+    public int getDefaultColorWithTint(int tint){
         return getAccountColorWithTint(getFirstAccount(), tint);
     }
     public int getDefaultMainColor() {
@@ -166,6 +166,15 @@ public class AccountPainter {
             return themeMainColor;
         } else {
             return getAccountMainColor(firstAccount);
+        }
+    }
+
+    public int getDefaultRippleColor() {
+        AccountJid firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeMainColor;
+        } else {
+            return getAccountRippleColor(firstAccount);
         }
     }
 
