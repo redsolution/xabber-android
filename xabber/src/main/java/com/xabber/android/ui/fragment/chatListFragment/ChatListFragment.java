@@ -303,11 +303,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
+        toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
-        toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
@@ -328,8 +328,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
         /* Update ChatState TextView display via current chat and connection state */
-        if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
-            toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
+        if (AccountManager.getInstance().getCommonState() == CommonState.online)
+            toolbarTitleTv.setText(R.string.application_title_full);
         else switch (currentChatsState) {
             case unread:
                 toolbarTitleTv.setText(R.string.unread_chats);
@@ -341,7 +341,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 toolbarTitleTv.setText(R.string.all_chats);
                 break;
             default:
-                toolbarTitleTv.setText("Xabber");
+                toolbarTitleTv.setText(R.string.account_state_connecting);
                 break;
         }
 
