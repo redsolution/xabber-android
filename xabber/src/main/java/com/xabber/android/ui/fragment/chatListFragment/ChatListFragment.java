@@ -216,9 +216,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onConnectionStateChanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
         if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected
                 || connectionStateChangedEvent.getConnectionState() == ConnectionState.disconnecting)
-            updateBackpressure.refreshRequest();
+            update();
         else
-            updateToolbar();
+            update();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
