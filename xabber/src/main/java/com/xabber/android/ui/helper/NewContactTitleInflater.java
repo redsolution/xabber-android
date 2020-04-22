@@ -3,6 +3,8 @@ package com.xabber.android.ui.helper;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -11,14 +13,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
@@ -90,11 +94,15 @@ public class NewContactTitleInflater {
         boolean isGroupchat = false;
         boolean isServer = false;
         boolean isBlocked = false;
+        boolean isConnected = false;
         AbstractChat chat = ChatManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
         if (chat != null) {
             isGroupchat = chat.isGroupchat();
             isServer = abstractContact.getUser().getJid().isDomainBareJid();
-            isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getUser());
+            isBlocked = BlockingManager.getInstance()
+                    .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getUser());
+            isConnected = AccountManager.getInstance().getConnectedAccounts()
+                    .contains(abstractContact.getAccount());
         }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
 
@@ -109,6 +117,14 @@ public class NewContactTitleInflater {
         } else {
             statusModeView.setVisibility(View.VISIBLE);
         }
+
+        if ((isServer || isGroupchat) && !isConnected){
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(0f);
+            ColorMatrixColorFilter colorFilter = new ColorMatrixColorFilter(colorMatrix);
+            statusModeView.setColorFilter(colorFilter);
+        } else
+            statusModeView.setColorFilter(0);
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
@@ -185,12 +201,16 @@ public class NewContactTitleInflater {
                         }
                     }
 
-                    if (statusText == null) {
+                    if (statusText == null)
                         statusText = getNormalStatus(abstractContact);
-                    }
+
 
                     if (statusText.toString().isEmpty())
                         statusText = context.getString(abstractContact.getStatusMode().getStringID());
+
+                    if (!isConnected)
+                        statusText = Application.getInstance().getResources()
+                                .getText(R.string.waiting_to_network);
                 }
             }
         }
