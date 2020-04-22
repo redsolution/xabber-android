@@ -27,11 +27,11 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
@@ -169,7 +169,7 @@ public class RegularChat extends AbstractChat {
                 this.resource = null;
             }
 
-            if (packet.hasExtension(RefUser.NAMESPACE)) {
+            if (packet.hasExtension(GroupchatUserExtension.NAMESPACE)) {
                 this.isGroupchat = true;
             }
 
@@ -226,7 +226,7 @@ public class RegularChat extends AbstractChat {
 
             // groupchat
             String gropchatUserId = null;
-            RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
+            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
                 GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
@@ -302,7 +302,7 @@ public class RegularChat extends AbstractChat {
 
         // groupchat
         String gropchatUserId = null;
-        RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
             GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser, timestamp.getTime());

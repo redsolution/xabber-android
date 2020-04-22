@@ -45,15 +45,14 @@ import com.xabber.android.data.database.repositories.ChatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.RefUser;
-import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
@@ -275,7 +274,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public String createVoiceMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
-        return chat.newFileMessageWithFwr(files, null, ReferenceElement.Type.voice.name(), forwardIds);
+        return chat.newFileMessageWithFwr(files, null, "voice", forwardIds);
     }
 
     public String createVoiceMessage(AccountJid account, ContactJid user, List<File> files) {
@@ -765,7 +764,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 newMessageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
 
             // groupchat
-            RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
                 GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());

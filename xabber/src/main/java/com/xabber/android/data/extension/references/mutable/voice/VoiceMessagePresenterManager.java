@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.references.voice;
+package com.xabber.android.data.extension.references.mutable.voice;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecList;

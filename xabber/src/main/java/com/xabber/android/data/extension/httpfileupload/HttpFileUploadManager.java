@@ -27,10 +27,10 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.references.RefFile;
-import com.xabber.android.data.extension.references.RefMedia;
-import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.references.mutable.filesharing.FileInfo;
+import com.xabber.android.data.extension.references.mutable.filesharing.FileSharingExtension;
+import com.xabber.android.data.extension.references.mutable.filesharing.FileSources;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.service.UploadService;
@@ -161,7 +161,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void uploadFile(final AccountJid account, final ContactJid user,
                            final List<String> filePaths, final List<Uri> fileUris,
                            List<String> forwardIds,
-                           String existMessageId, String element, Context context) {
+                           String existMessageId, String messageAttachmentType, Context context) {
         if (isUploading) {
             progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
                     false, null));
@@ -182,7 +182,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         intent.putExtra(UploadService.KEY_RECEIVER, new UploadReceiver(new Handler()));
         intent.putExtra(UploadService.KEY_ACCOUNT_JID, (Parcelable) account);
         intent.putExtra(UploadService.KEY_USER_JID, user);
-        intent.putExtra(UploadService.KEY_REFERENCE_ELEMENT, element);
+        intent.putExtra(UploadService.KEY_ATTACHMENT_TYPE, messageAttachmentType);
         intent.putStringArrayListExtra(UploadService.KEY_FILE_PATHS, (ArrayList<String>) filePaths);
         intent.putParcelableArrayListExtra(UploadService.KEY_FILE_URIS, (ArrayList<Uri>) fileUris);
         intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
@@ -309,17 +309,17 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public static RealmList<AttachmentRealmObject> parseFileMessage(Stanza packet) {
         RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
 
-        // parsing data references
-        List<RefMedia> refMediaList = ReferencesManager.getMediaFromReferences(packet);
-        List<RefMedia> refVoiceList = ReferencesManager.getVoiceFromReferences(packet);
+        // parsing file references
+        List<FileSharingExtension> refMediaList = ReferencesManager.getMediaFromReferences(packet);
+        List<FileSharingExtension> refVoiceList = ReferencesManager.getVoiceFromReferences(packet);
         if (!refMediaList.isEmpty()) {
-            for (RefMedia media : refMediaList) {
-                attachmentRealmObjects.add(refMediaToAttachment(media, ReferenceElement.Type.media.name()));
+            for (FileSharingExtension media : refMediaList) {
+                attachmentRealmObjects.add(refMediaToAttachment(media, false));
             }
         }
         if (!refVoiceList.isEmpty()) {
-            for (RefMedia voice : refVoiceList) {
-                attachmentRealmObjects.add(refMediaToAttachment(voice, ReferenceElement.Type.voice.name()));
+            for (FileSharingExtension voice : refVoiceList) {
+                attachmentRealmObjects.add(refMediaToAttachment(voice, true));
             }
         }
 
@@ -345,22 +345,24 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         return attachmentRealmObjects;
     }
 
-    private static AttachmentRealmObject refMediaToAttachment(RefMedia media, String referenceType) {
+    private static AttachmentRealmObject refMediaToAttachment(FileSharingExtension sharedFile, boolean isVoice) {
         AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
-        attachmentRealmObject.setFileUrl(media.getUri());
-        attachmentRealmObject.setIsImage(FileManager.isImageUrl(media.getUri()));
-        if (ReferenceElement.Type.voice.name().equals(referenceType))
-            attachmentRealmObject.setIsVoice(true);
-        attachmentRealmObject.setRefType(referenceType);
+        FileSources fileSources = sharedFile.getFileSources();
 
-        RefFile file = media.getFile();
-        if (file != null) {
-            attachmentRealmObject.setTitle(file.getName());
-            attachmentRealmObject.setMimeType(file.getMediaType());
-            attachmentRealmObject.setDuration(file.getDuration());
-            attachmentRealmObject.setFileSize(file.getSize());
-            if (file.getHeight() > 0) attachmentRealmObject.setImageHeight(file.getHeight());
-            if (file.getWidth() > 0) attachmentRealmObject.setImageWidth(file.getWidth());
+        String url = fileSources.getSources().get(0);
+        attachmentRealmObject.setFileUrl(url);
+        attachmentRealmObject.setIsImage(FileManager.isImageUrl(url));
+        attachmentRealmObject.setIsVoice(isVoice);
+        //attachmentRealmObject.setRefType(referenceType);
+
+        FileInfo fileInfo = sharedFile.getFileInfo();
+        if (fileInfo != null) {
+            attachmentRealmObject.setTitle(fileInfo.getName());
+            attachmentRealmObject.setMimeType(fileInfo.getMediaType());
+            attachmentRealmObject.setDuration(fileInfo.getDuration());
+            attachmentRealmObject.setFileSize(fileInfo.getSize());
+            if (fileInfo.getHeight() > 0) attachmentRealmObject.setImageHeight(fileInfo.getHeight());
+            if (fileInfo.getWidth() > 0) attachmentRealmObject.setImageWidth(fileInfo.getWidth());
         }
         return attachmentRealmObject;
     }
@@ -399,7 +401,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             bodyAttachment.setFileUrl(message.getBody());
             bodyAttachment.setIsImage(true);
             bodyAttachment.setMimeType(getMimeType(message.getBody()));
-            bodyAttachment.setRefType(ReferenceElement.Type.media.name());
+            //bodyAttachment.setRefType(ReferenceElement.Type.media.name());
             return bodyAttachment;
         } else return null;
     }

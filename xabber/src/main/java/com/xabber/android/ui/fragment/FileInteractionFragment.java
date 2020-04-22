@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -34,9 +33,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.ReferenceElement;
-import com.xabber.android.data.extension.references.voice.VoiceManager;
-import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -534,7 +532,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void uploadVoiceFile(String path, List<String> forwardIds) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, ReferenceElement.Type.voice.name(), getActivity());
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, "voice", getActivity());
         if (forwardIds != null && forwardIds.size() != 0) {
             forwardIds.clear();
             if (getActivity() != null)
@@ -610,16 +608,13 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                if ("voice".equals(attachmentRealmObject.getRefType())
-                        || attachmentRealmObject.isVoice()) {
-                    //VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
-                } else {
+                if (!attachmentRealmObject.isVoice()) {
                     manageOpeningFile(attachmentRealmObject);
                 }
             } else {
                 LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachmentRealmObject.getUniqueId());
                 DownloadManager.getInstance().downloadFile(attachmentRealmObject, account, getActivity());
-                if ("voice".equals(attachmentRealmObject.getRefType()) || attachmentRealmObject.isVoice()) {
+                if (attachmentRealmObject.isVoice()) {
                     showAutoDownloadDialog();
                 }
             }

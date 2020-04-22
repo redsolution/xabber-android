@@ -1,10 +1,10 @@
-package com.xabber.android.data.extension.references;
+package com.xabber.android.data.extension.references.mutable.filesharing;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class RefFile {
+public class FileInfo {
 
-    public static final String ELEMENT = "file";
+    public static final String FILE_ELEMENT = "file";
 
     public static final String ELEMENT_MEDIA_TYPE = "media-type";
     public static final String ELEMENT_NAME = "name";
@@ -21,6 +21,8 @@ public class RefFile {
     private int width;
     private long size;
     private long duration;
+
+    public FileInfo() {}
 
     public String getMediaType() {
         return mediaType;
@@ -50,9 +52,37 @@ public class RefFile {
         return duration;
     }
 
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     public CharSequence toXML() {
         XmlStringBuilder xml = new XmlStringBuilder();
-        xml.openElement(ELEMENT);
+        xml.openElement(FILE_ELEMENT);
         if (getMediaType() != null && !getMediaType().isEmpty()) {
             xml.openElement(ELEMENT_MEDIA_TYPE);
             xml.append(getMediaType());
@@ -88,55 +118,7 @@ public class RefFile {
             xml.append(String.valueOf(getDuration()));
             xml.closeElement(ELEMENT_DURATION);
         }
-        xml.closeElement(ELEMENT);
+        xml.closeElement(FILE_ELEMENT);
         return xml;
     }
-
-    public static Builder newBuilder() {
-        return new RefFile().new Builder();
-    }
-
-    public class Builder {
-        private Builder() {}
-
-        public RefFile build() {
-            return RefFile.this;
-        }
-
-        public Builder setMediaType(String mediaType) {
-            RefFile.this.mediaType = mediaType;
-            return this;
-        }
-
-        public Builder setName(String name) {
-            RefFile.this.name = name;
-            return this;
-        }
-
-        public Builder setDesc(String desc) {
-            RefFile.this.desc = desc;
-            return this;
-        }
-
-        public Builder setHeight(int height) {
-            RefFile.this.height = height;
-            return this;
-        }
-
-        public Builder setWidth(int width) {
-            RefFile.this.width = width;
-            return this;
-        }
-
-        public Builder setSize(long size) {
-            RefFile.this.size = size;
-            return this;
-        }
-
-        public Builder setDuration(long duration) {
-            RefFile.this.duration = duration;
-            return this;
-        }
-    }
-
 }

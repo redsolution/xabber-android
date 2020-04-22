@@ -18,9 +18,9 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
@@ -102,10 +102,15 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     public void onAccountConnected(AccountItem accountItem) {
+        LogManager.d("AccountRosterListener", "onAccountConnectedStarted");
         updateIsSupported(accountItem);
+        LogManager.d("AccountRosterListener", "finished checking support");
         updatePreferencesFromServer(accountItem);
+        LogManager.d("AccountRosterListener", "finished updating preferences");
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        LogManager.d("AccountRosterListener", "finished getting realm instance");
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
+        LogManager.d("AccountRosterListener", "finished setting start history");
         if (accountItem.getStartHistoryTimestamp() == 0) {
             initializeStartTimestamp(realm, accountItem);
             loadNextLastMessageAsync(accountItem);
@@ -789,7 +794,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setOriginalFrom(message.getFrom().toString());
 
         // groupchat
-        RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser, timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());

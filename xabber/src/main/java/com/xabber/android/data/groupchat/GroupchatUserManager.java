@@ -6,7 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
-import com.xabber.android.data.extension.references.RefUser;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.HashMap;
@@ -41,11 +41,11 @@ public class GroupchatUserManager implements OnLoadListener {
         return users.get(id);
     }
 
-    public void saveGroupchatUser(RefUser user) {
+    public void saveGroupchatUser(GroupchatUserExtension user) {
         saveGroupchatUser(user, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(RefUser user, long timestamp) {
+    public void saveGroupchatUser(GroupchatUserExtension user, long timestamp) {
         if (!users.containsKey(user.getId())) {
             saveUser(user, timestamp);
         } else if (timestamp > users.get(user.getId()).getTimestamp()) {
@@ -53,7 +53,7 @@ public class GroupchatUserManager implements OnLoadListener {
         }
     }
 
-    private void saveUser(RefUser user, long timestamp) {
+    private void saveUser(GroupchatUserExtension user, long timestamp) {
         users.put(user.getId(), refUserToUser(user));
         saveGroupchatUserToRealm(refUserToRealm(user), timestamp);
     }
@@ -73,7 +73,7 @@ public class GroupchatUserManager implements OnLoadListener {
         });
     }
 
-    private GroupchatUserRealmObject refUserToRealm(RefUser user) {
+    private GroupchatUserRealmObject refUserToRealm(GroupchatUserExtension user) {
         GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
@@ -83,13 +83,13 @@ public class GroupchatUserManager implements OnLoadListener {
         return realmUser;
     }
 
-    private GroupchatUser refUserToUser(RefUser refUser) {
-        GroupchatUser user = new GroupchatUser(refUser.getId());
-        user.setAvatar(refUser.getAvatar());
-        user.setBadge(refUser.getBadge());
-        user.setJid(refUser.getJid());
-        user.setNickname(refUser.getNickname());
-        user.setRole(refUser.getRole());
+    private GroupchatUser refUserToUser(GroupchatUserExtension groupchatUserExtension) {
+        GroupchatUser user = new GroupchatUser(groupchatUserExtension.getId());
+        user.setAvatar(groupchatUserExtension.getAvatar());
+        user.setBadge(groupchatUserExtension.getBadge());
+        user.setJid(groupchatUserExtension.getJid());
+        user.setNickname(groupchatUserExtension.getNickname());
+        user.setRole(groupchatUserExtension.getRole());
         return user;
     }
 

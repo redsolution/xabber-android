@@ -1,6 +1,13 @@
 package com.xabber.android.data.extension.references;
 
 import com.xabber.android.data.TestApplication;
+import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatPresence;
+import com.xabber.android.data.extension.groupchat.GroupchatProvider;
+import com.xabber.android.data.extension.groupchat.GroupchatUserContainer;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.references.decoration.Markup;
+import com.xabber.android.data.extension.references.mutable.Forward;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +31,15 @@ import static org.junit.Assert.fail;
 public class ReferencesProviderTest {
 
     private ReferencesProvider provider;
+    private GroupchatProvider groupchatProvider;
     private XmlPullParserFactory factory;
     private String stringForward, stringMedia, stringMarkup1,
-            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown, stringGroupchat;
+            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown, stringGroupchat, stringGroupPresence;
 
     @Before
     public void setUp() throws Exception {
         provider = new ReferencesProvider();
+        groupchatProvider = new GroupchatProvider();
         factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
 
@@ -67,7 +76,8 @@ public class ReferencesProviderTest {
         stringUnknown = "<reference xmlns='urn:xmpp:reference:0' end='17' begin='0' type='unknown'></reference>";
         stringNull = "<reference xmlns='https://xabber.com/protocol/reference' end='17' begin='0'></reference>";
 
-        stringGroupchat = "<reference xmlns='urn:xmpp:reference:0' end='16' begin='0' type='groupchat'>" +
+        stringGroupchat = "<x xmlns='http://xabber.com/protocol/groupchat'>" +
+                "<reference xmlns='urn:xmpp:reference:0' end='16' begin='0' type='groupchat'>" +
                 "<user xmlns='http://xabber.com/protocol/groupchat' id='kubsgzldk3csvtez'>" +
                 "<role>member</role>" +
                 "<nickname>john.doe</nickname>" +
@@ -78,8 +88,19 @@ public class ReferencesProviderTest {
                 "type='image/jpeg' id='d7072b2bc4652580911649870699787b18' bytes='9145' />" +
                 "</metadata>'" +
                 "</user>'" +
-                "</reference>";
+                "</reference>" +
+                "</x>";
 
+        stringGroupPresence = "<x xmlns='http://xabber.com/protocol/groupchat'>" +
+                "<name>My Chat</name>" +
+                "<privacy>public</privacy>" +
+                "<pinned-message>1464523434</pinned-message>" +
+                "<collect>no</collect>" +
+                "<peer-to-peer>true</peer-to-peer>" +
+                "<status>chat</status>" +
+                "<present>78</present>" +
+                "<members>225</members>" +
+                "</x>";
     }
 
     @Test
@@ -92,6 +113,7 @@ public class ReferencesProviderTest {
         assertEquals(1, element.getForwarded().size());
     }
 
+/*
     @Test
     public void parse2() {
         Media element = (Media) parseString(stringMedia);
@@ -106,7 +128,7 @@ public class ReferencesProviderTest {
         assertEquals("https://upload02.xabber.org/5f70e738285c44c82039a73" +
                 "d42eccf2744e91/lQk6DkRJ/Android-Architecture_1-1.pdf", media1.getUri());
 
-        RefFile file1 = media1.getFile();
+        FileSharingExtension file1 = media1.getFile();
         assertNotNull(file1);
         assertEquals("application/pdf", file1.getMediaType());
         assertEquals("Android-Architecture_1-1.pdf", file1.getName());
@@ -117,7 +139,7 @@ public class ReferencesProviderTest {
         assertEquals("https://upload02.xabber.org/5f70e738285c44c82039a73d42eccf274" +
                 "4e91/rUdy3rHt/Screenshot_20190414-194652.png", media2.getUri());
 
-        RefFile file2 = media2.getFile();
+        FileSharingExtension file2 = media2.getFile();
         assertNotNull(file2);
         assertEquals("image/png", file2.getMediaType());
         assertEquals("Screenshot_20190414-194652.png", file2.getName());
@@ -125,6 +147,7 @@ public class ReferencesProviderTest {
         assertEquals(1280, file2.getHeight());
         assertEquals(720, file2.getWidth());
     }
+*/
 
     @Test
     public void parse3() {
@@ -137,7 +160,7 @@ public class ReferencesProviderTest {
         assertTrue(element.isItalic());
         assertFalse(element.isStrike());
         assertFalse(element.isUnderline());
-        assertNull(element.getUri());
+        assertNull(element.getLink());
     }
 
     @Test
@@ -151,9 +174,10 @@ public class ReferencesProviderTest {
         assertFalse(element.isItalic());
         assertFalse(element.isStrike());
         assertFalse(element.isUnderline());
-        assertEquals("https://www.xabber.com", element.getUri());
+        assertEquals("https://www.xabber.com", element.getLink());
     }
 
+/*
     @Test
     public void parse5() {
         Mention element = (Mention) parseString(stringMention);
@@ -163,7 +187,9 @@ public class ReferencesProviderTest {
         assertEquals(22, element.getEnd());
         assertEquals("xmpp:juliet@capulet.lit", element.getUri());
     }
+*/
 
+/*
     @Test
     public void parse6() {
         Quote element = (Quote) parseString(stringQuote);
@@ -173,6 +199,7 @@ public class ReferencesProviderTest {
         assertEquals(31, element.getEnd());
         assertEquals("> ", element.getMarker());
     }
+*/
 
     @Test
     public void parse7() {
@@ -185,13 +212,10 @@ public class ReferencesProviderTest {
 
     @Test
     public void parse8() {
-        Groupchat element = (Groupchat) parseString(stringGroupchat);
+        Groupchat element = (Groupchat) parseGroupString(stringGroupchat);
         assertNotNull(element);
-        assertEquals("groupchat", element.getType().toString());
-        assertEquals(0, element.getBegin());
-        assertEquals(16, element.getEnd());
-
-        RefUser user = element.getUser();
+        assert (element instanceof GroupchatUserContainer);
+        GroupchatUserExtension user = ((GroupchatUserContainer)element).getUser();
         assertNotNull(user);
         assertEquals("", user.getBadge());
         assertEquals("kubsgzldk3csvtez", user.getId());
@@ -199,6 +223,34 @@ public class ReferencesProviderTest {
         assertEquals("john.doe", user.getNickname());
         assertEquals("member", user.getRole());
         assertEquals("http://xabber.org/images/d7072b2bc4652580911649870699787b18.jpeg", user.getAvatar());
+    }
+
+    @Test
+    public void parse9() {
+        Groupchat element = (Groupchat) parseGroupString(stringGroupPresence);
+        assertNotNull(element);
+        assert (element instanceof GroupchatPresence);
+        GroupchatPresence presence = (GroupchatPresence)element;
+
+        assertEquals("My Chat", presence.getName());
+        assertEquals("public", presence.getPrivacy());
+        assertEquals("1464523434", presence.getPinnedMessageId());
+        assertFalse(presence.isCollect());
+        assertTrue(presence.isP2p());
+        assertEquals(78, presence.getPresentMembers());
+        assertEquals(225, presence.getAllMembers());
+    }
+
+    private Groupchat parseGroupString(String source) {
+        Groupchat result = null;
+        try {
+            XmlPullParser parser = factory.newPullParser();
+            parser.setInput(new StringReader(source));
+            result = groupchatProvider.parse(parser, 0);
+        } catch (Exception e) {
+            fail("Exception while parsing: " + e.toString());
+        }
+        return result;
     }
 
     private ReferenceElement parseString(String source) {
