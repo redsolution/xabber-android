@@ -20,7 +20,6 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
-import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
@@ -75,7 +74,7 @@ public class UploadService extends IntentService {
     public final static String KEY_PROGRESS = "progress";
     public final static String KEY_ERROR = "error";
     public final static String KEY_MESSAGE_ID = "message_id";
-    public final static String KEY_REFERENCE_ELEMENT = "ref_element";
+    public final static String KEY_ATTACHMENT_TYPE = "attachment_type";
 
     public static final int UPDATE_PROGRESS_CODE = 2232;
     public static final int ERROR_CODE = 2233;
@@ -96,12 +95,12 @@ public class UploadService extends IntentService {
         ContactJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
         List<String> forwardIds = intent.getStringArrayListExtra(KEY_FORWARD_IDS);
-        String referenceElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
+        String messageAttachmentType = intent.getStringExtra(KEY_ATTACHMENT_TYPE);
         List<Uri> fileUris = intent.getParcelableArrayListExtra(KEY_FILE_URIS);
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
         String existMessageId = intent.getStringExtra(KEY_MESSAGE_ID);
 
-        if (filePaths != null) startWork(account, user, filePaths, forwardIds, uploadServerUrl, existMessageId, referenceElement);
+        if (filePaths != null) startWork(account, user, filePaths, forwardIds, uploadServerUrl, existMessageId, messageAttachmentType);
         else if (fileUris != null) startWorkWithUris(account, user, fileUris, forwardIds, uploadServerUrl);
     }
 
@@ -175,7 +174,7 @@ public class UploadService extends IntentService {
     }
 
     private void startWork(AccountJid account, ContactJid user, List<String> filePaths, List<String> forwardIds,
-                           CharSequence uploadServerUrl, String existMessageId, String referenceElement) {
+                           CharSequence uploadServerUrl, String existMessageId, String messageAttachmentType) {
 
         // get account item
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -199,10 +198,9 @@ public class UploadService extends IntentService {
             for (String filePath : filePaths) {
                 files.add(new File(filePath));
             }
-            if (ReferenceElement.Type.voice.name().equals(referenceElement)) {
+            if ("voice".equals(messageAttachmentType)) {
                 fileMessageId = MessageManager.getInstance().createVoiceMessageWithForwards(account, user, files, forwardIds);
-            }
-            else {
+            } else {
                 fileMessageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
                 ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.upload);
             }
