@@ -41,7 +41,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     public boolean isSupported(XMPPTCPConnection xmpptcpConnection) {
-        if (xmpptcpConnection.isConnected())
+        if (xmpptcpConnection.isAuthenticated())
             try {
                 return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }

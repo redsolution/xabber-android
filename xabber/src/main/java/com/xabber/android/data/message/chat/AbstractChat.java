@@ -470,17 +470,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return newFileMessage(files, uris, null);
     }
 
-    public String newFileMessage(final List<File> files, final List<Uri> uris, final String referenceType) {
-        return newFileMessageWithFwr(files, uris, referenceType, null);
+    public String newFileMessage(final List<File> files, final List<Uri> uris, final String messageAttachmentType) {
+        return newFileMessageWithFwr(files, uris, messageAttachmentType, null);
     }
 
-    public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
+    public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String messageAttachmentType, final List<String> forwards) {
         final String messageId = UUID.randomUUID().toString();
 
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(realm1 -> {
             RealmList<AttachmentRealmObject> attachmentRealmObjects;
-            if (files != null) attachmentRealmObjects = attachmentsFromFiles(files, referenceType);
+            if (files != null) attachmentRealmObjects = attachmentsFromFiles(files, messageAttachmentType);
             else attachmentRealmObjects = attachmentsFromUris(uris);
             String initialID = UUID.randomUUID().toString();
 
@@ -518,7 +518,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return attachmentsFromFiles(files, null);
     }
 
-    public RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files, String refElement) {
+    public RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files, String messageAttachmentType) {
         RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
         for (File file : files) {
             boolean isImage = FileManager.fileIsImage(file);
@@ -528,12 +528,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             attachmentRealmObject.setTitle(file.getName());
             attachmentRealmObject.setIsImage(isImage);
             attachmentRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-            if (ReferenceElement.Type.voice.name().equals(refElement)) {
+            if ("voice".equals(messageAttachmentType)) {
                 attachmentRealmObject.setIsVoice(true);
-                attachmentRealmObject.setRefType(ReferenceElement.Type.voice.name());
+                //attachmentRealmObject.setRefType(ReferenceElement.Type.voice.name());
                 attachmentRealmObject.setDuration(HttpFileUploadManager.getVoiceLength(file.getPath()));
             } else {
-                attachmentRealmObject.setRefType(ReferenceElement.Type.media.name());
+                //attachmentRealmObject.setRefType(ReferenceElement.Type.media.name());
                 attachmentRealmObject.setDuration((long) 0);
             }
 
@@ -713,10 +713,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             ReferenceElement reference;
             if (attachmentRealmObject.isVoice()) {
                 reference = ReferencesManager.createVoiceReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
             } else {
                 reference = ReferencesManager.createMediaReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
             }
             message.addExtension(reference);
         }
@@ -735,7 +735,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 int begin = getSizeOfEncodedChars(builder.toString());
                 builder.append(forward);
                 ReferenceElement reference = ReferencesManager.createForwardReference(item,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
                 message.addExtension(reference);
             }
         }

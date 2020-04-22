@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.references.voice;
+package com.xabber.android.data.extension.references.mutable.voice;
 
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -562,7 +562,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 mmr.setDataSource(path);
 
                 final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                voiceFileDuration = Integer.valueOf(dur);
+                voiceFileDuration = Integer.parseInt(dur);
                 if (voiceFileDuration != 0) {
                     Realm realm = null;
                     try {
@@ -573,7 +573,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                                         .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, id)
                                         .findFirst();
                                 if (backgroundAttachmentRealmObject != null)
-                                    backgroundAttachmentRealmObject.setDuration(Long.valueOf(dur) / 1000);
+                                    backgroundAttachmentRealmObject.setDuration(Long.parseLong(dur) / 1000);
                         });
                     } catch (Exception e) {
                         LogManager.exception(LOG_TAG, e);

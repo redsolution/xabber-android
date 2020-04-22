@@ -34,7 +34,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.voice.VoiceManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
 import com.xabber.android.ui.helper.RoundedBorders;

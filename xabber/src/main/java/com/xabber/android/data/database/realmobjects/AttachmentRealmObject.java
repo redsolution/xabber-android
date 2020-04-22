@@ -154,11 +154,13 @@ public class AttachmentRealmObject extends RealmObject {
         this.duration = duration;
     }
 
+    @Deprecated
     @Nullable
     public String getRefType() {
         return refType;
     }
 
+    @Deprecated
     public void setRefType(String refType) {
         this.refType = refType;
     }

@@ -1,9 +1,9 @@
-package com.xabber.android.data.extension.references;
+package com.xabber.android.data.extension.groupchat;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class RefUser implements ExtensionElement {
+public class GroupchatUserExtension implements ExtensionElement {
 
     public static final String ELEMENT            = "user";
     public static final String NAMESPACE          = "http://xabber.com/protocol/groupchat";
@@ -25,7 +25,7 @@ public class RefUser implements ExtensionElement {
     private String badge;
     private String avatar;
 
-    public RefUser(String id, String nickname, String role) {
+    public GroupchatUserExtension(String id, String nickname, String role) {
         this.id = id;
         this.nickname = nickname;
         this.role = role;
