@@ -1,13 +1,13 @@
 package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.ExternalAPIs;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -268,7 +268,7 @@ public class AuthManager {
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
-                        Log.d(LOG_TAG, "started setXabberAccountBinding...");
+                        LogManager.d(LOG_TAG, "started setXabberAccountBinding...");
                         try {
                             PrivateStorageManager.getInstance().setXabberAccountBinding(AccountJid.from(jid), true);
                         } catch (XmppStringprepException e) {

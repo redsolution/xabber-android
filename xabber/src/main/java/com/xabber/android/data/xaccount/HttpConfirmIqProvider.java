@@ -1,6 +1,6 @@
 package com.xabber.android.data.xaccount;
 
-import android.util.Log;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -24,7 +24,7 @@ public class HttpConfirmIqProvider extends IQProvider<HttpConfirmIq> {
                             httpConfirmIq.setMethod(parser.getAttributeValue("", HttpConfirmIq.PROP_METHOD));
                             break outerloop;
                         } catch (Exception e) {
-                            Log.d("HttpConfirmIqProvider", "error in parsing: " + e.toString());
+                            LogManager.d("HttpConfirmIqProvider", "error in parsing: " + e.toString());
                             break outerloop;
                         }
                     } else parser.next();
