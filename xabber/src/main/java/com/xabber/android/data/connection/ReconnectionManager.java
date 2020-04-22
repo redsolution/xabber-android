@@ -177,7 +177,7 @@ public class ReconnectionManager implements OnConnectedListener,
     public void onConnected(ConnectionItem connection) {
         LogManager.i(LOG_TAG, "onConnected " + connection.getAccount());
         resetReconnectionInfo(connection.getAccount());
-        ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
+        //ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
     }
 
     @Override
