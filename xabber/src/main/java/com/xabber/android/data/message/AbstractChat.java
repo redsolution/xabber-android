@@ -718,10 +718,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             ReferenceElement reference;
             if (attachmentRealmObject.isVoice()) {
                 reference = ReferencesManager.createVoiceReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
             } else {
                 reference = ReferencesManager.createMediaReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
             }
             message.addExtension(reference);
         }
@@ -740,7 +740,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 int begin = getSizeOfEncodedChars(builder.toString());
                 builder.append(forward);
                 ReferenceElement reference = ReferencesManager.createForwardReference(item,
-                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                        begin, getSizeOfEncodedChars(builder.toString()));
                 message.addExtension(reference);
             }
         }
