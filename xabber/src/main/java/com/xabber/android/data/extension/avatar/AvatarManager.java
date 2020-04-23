@@ -82,6 +82,8 @@ import java.util.Map;
  */
 public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener {
 
+    public static final String LOG_TAG = AvatarManager.class.getSimpleName();
+
     /**
      * Maximum image width / height to be loaded.
      */
@@ -240,15 +242,19 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         Map<String, Bitmap> bitmaps = new HashMap<>();
         Map<BareJid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
 
+        LogManager.d(LOG_TAG, "Hashes loaded from realm");
+
         for (String hash : new HashSet<>(hashes.values()))
             if (!hash.equals(EMPTY_HASH)) {
                 Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
                 bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
+                LogManager.d(LOG_TAG, "Loaded from realm vcard hash " + hash);
             }
         for (String hash : new HashSet<>(XEPHashes.values()))
             if (!hash.equals(EMPTY_HASH)) {
                 Bitmap bitmap = makeXEPBitmap(AvatarStorage.getInstance().read(hash));
                 bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
+                LogManager.d(LOG_TAG, "Loaded from realm pep hash " + hash);
             }
         Application.getInstance().runOnUiThread(() ->
             onLoaded(XEPHashes, hashes, bitmaps)
@@ -276,6 +282,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
         AvatarRepository.saveHashToRealm(jid, hash);
+        LogManager.d(LOG_TAG, "saved vcard hash to realm " + hash + " " + jid.toString());
     }
 
     private void setXEPHash(final Jid jid, final String hash) {
@@ -283,6 +290,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
         AvatarRepository.savePepHashToRealm(jid, hash);
+        LogManager.d(LOG_TAG, "saved pep hash to realm " + hash + " " + jid.toString());
     }
 
     /**
@@ -297,13 +305,17 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         String hash = getHash(jid);
         Bitmap bitmap;
 
+        LogManager.d(LOG_TAG, "Invoked getBitmap to " + jid.toString());
+
         if (xepHash == null || xepHash.equals(EMPTY_HASH)) {
             if (hash == null || hash.equals(EMPTY_HASH)) {
+                LogManager.d(LOG_TAG, "All hashes are null");
                 return null;
             } else bitmap = bitmaps.get(hash);
         } else bitmap = bitmaps.get(xepHash);
 
         if (bitmap == EMPTY_BITMAP) {
+            LogManager.d(LOG_TAG, "Bitmap is null");
             return null;
         } else {
             return bitmap;
@@ -370,10 +382,13 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * </ul>
      */
     public Drawable getAccountAvatar(AccountJid account) {
+        LogManager.d(LOG_TAG, "invoke getaccount avatar for account " + account.toString());
         Bitmap value = getBitmap(account.getFullJid().asBareJid());
         if (value != null) {
+            LogManager.d(LOG_TAG, "Avatar is not null");
             return new BitmapDrawable(application.getResources(), value);
         } else {
+            LogManager.d(LOG_TAG, "Avatar is null, generated default");
             return getDefaultAccountAvatar(account);
         }
     }
