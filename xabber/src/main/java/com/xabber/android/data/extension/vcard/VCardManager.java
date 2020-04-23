@@ -335,7 +335,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (bareJid != null) {
             vCardRequests.add(srcUser);
             try {
-                vCardManager.sendVCardRequest(srcUser);
+                vCardManager.sendVCardRequest(bareJid);
             } catch (SmackException.NotConnectedException e) {
                 LogManager.exception(this, e);
                 LogManager.w(this, "Error getting vCard: " + e.getMessage());
