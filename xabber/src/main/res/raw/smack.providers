@@ -9,6 +9,13 @@
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
+    <!-- XEP-0GGG Group Chat -->
+    <extensionProvider>
+        <elementName>x</elementName>
+        <namespace>http://xabber.com/protocol/groupchat</namespace>
+        <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
+    </extensionProvider>
+
     <!-- Stanza Session Negotiation -->
     <extensionProvider>
         <elementName>feature</elementName>
