@@ -113,6 +113,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         LogManager.d("AccountRosterListener", "finished setting start history");
         if (accountItem.getStartHistoryTimestamp() == 0) {
             initializeStartTimestamp(realm, accountItem);
+            LogManager.d("AccountRosterListener", "finished init start timestamp");
+            LogManager.d("timeCount", "started loading message from archive, time since connected = "
+                    + (System.currentTimeMillis() - VCardManager.getInstance().getStart()) + " ms");
             loadNextLastMessageAsync(accountItem);
             //loadLastMessagesAsync(accountItem);
         } else {

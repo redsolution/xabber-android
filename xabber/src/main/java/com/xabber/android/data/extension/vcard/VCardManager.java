@@ -29,6 +29,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -124,9 +125,36 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
+    private void requestRosterLastActivity(AccountItem accountItem) {
+        AccountJid account = accountItem.getAccount();
+        Collection<RosterContact> accountRosterContacts = RosterManager.getInstance().getAccountRosterContacts(account);
+        LastActivityInteractor.getInstance().requestRosterLastActivity(account, accountRosterContacts);
+    }
+
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         LogManager.d("VCardManager", "roster received");
+        LogManager.d("timeCount", "roster received, time since connected = "
+                + (System.currentTimeMillis() - start) + " ms");
+        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
+        if (loaded != null && loaded) {
+            requestRosterVCards(accountItem);
+        } else {
+            requestRosterLastActivity(accountItem);
+            rosterOrHistoryIsLoaded.put(accountItem, true);
+        }
+    }
+
+    private Long start;
+    public void setStart(long start) {
+        if (this.start == null) this.start = start;
+    }
+    public Long getStart() {
+        return start;
+    }
+    public void onHistoryLoaded(AccountItem accountItem) {
+        LogManager.d("VCardManager", "historyLoaded");
+        LogManager.d("timeCount", "history loaded, time since connected = " + (System.currentTimeMillis() - start) + " ms");
         Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
         if (loaded != null && loaded) {
             requestRosterVCards(accountItem);
@@ -135,14 +163,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    public void onHistoryLoaded(AccountItem accountItem) {
-        LogManager.d("VCardManager", "historyLoaded");
-        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
-        if (loaded != null && loaded) {
-            requestRosterVCards(accountItem);
-        } else {
-            rosterOrHistoryIsLoaded.put(accountItem, true);
-        }
+    public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
+        AccountItem account = AccountManager.getInstance().getAccount(accountJid);
+        Boolean loaded = rosterOrHistoryIsLoaded.get(account);
+        return account != null && loaded != null && loaded;
     }
 
     // TODO
@@ -152,6 +176,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         if (accountItem != null) {
             rosterOrHistoryIsLoaded.remove(accountItem);
+            LastActivityInteractor.getInstance().interruptLastActivityRequest(accountJid);
         }
     }
 

@@ -45,6 +45,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connected(XMPPConnection connection) {
         LogManager.i(getLogTag(), "connected");
+        VCardManager.getInstance().setStart(System.currentTimeMillis());
+
         connectionItem.updateState(ConnectionState.authentication);
 
         //

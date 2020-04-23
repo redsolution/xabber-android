@@ -37,6 +37,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
@@ -245,7 +246,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                         contact.getUser().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
-                LastActivityInteractor.getInstance().requestLastActivityAsync(account, ContactJid.from(jid));
+                if (VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
+                    LastActivityInteractor.getInstance().requestLastActivityAsync(account, ContactJid.from(jid));
+                }
             } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
