@@ -253,10 +253,9 @@ public class ChatStateManager implements OnDisconnectListener,
 
     private void updateChatState(final AccountJid account, final ContactJid user,
                                  final ChatState chatState, final ChatStateSubtype type) {
-        if (!SettingsManager.chatsStateNotification()
-                || sent.get(account.toString(), user.toString()) == chatState) {
-            return;
-        }
+        if (checkIfChatStateProhibited()) return;
+        if (checkIfLastChatStateIs(chatState, account, user)) return;
+
         final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null || !isSupported(chat, false)) {
             return;
@@ -321,24 +320,23 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public void onChatOpening(AccountJid account, ContactJid user) {
-        if (!SettingsManager.chatsStateNotification()
-                || sent.get(account.toString(), user.toString()) == ChatState.active) {
-            return;
-        }
+        setActiveChatState(account, user);
+    }
+
+    private void setActiveChatState(AccountJid account, ContactJid user) {
+        if (checkIfChatStateProhibited()) return;
+        if (checkIfLastChatStateIs(ChatState.active, account, user)) return;
         final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+        if (chat == null) return;
 
         Message message = new Message();
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(ChatState.active));
-        //try {
+
         StanzaSender.sendStanzaAsync(account, message);
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
-        //} catch (NetworkException e) {
-        //    // Just ignore it.
-        //}
     }
-
     /**
      * Must be call each time user change text message.
      */
@@ -369,14 +367,11 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public void onPaused(AccountJid account, ContactJid user) {
-        if (account == null || user == null)
-            return;
-        if (sent.get(account.toString(), user.toString()) != ChatState.composing) {
-            return;
+        if (account == null || user == null) return;
+        if (checkIfLastChatStateIs(ChatState.composing, account, user)) {
+            updateChatState(account, user, ChatState.paused);
+            pauseIntents.remove(account.toString(), user.toString());
         }
-
-        updateChatState(account, user, ChatState.paused);
-        pauseIntents.remove(account.toString(), user.toString());
     }
 
     @Override
@@ -438,7 +433,7 @@ public class ChatStateManager implements OnDisconnectListener,
             supports.remove(account.toString(), bareContactJid.toString(), resource);
         } else if (stanza instanceof Message) {
             boolean support = false;
-            for (ExtensionElement extension : stanza.getExtensions())
+            for (ExtensionElement extension : stanza.getExtensions()) {
                 if (extension instanceof ChatStateExtension) {
                     removeCallback(account, bareContactJid.getBareJid(), resource);
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
@@ -471,6 +466,7 @@ public class ChatStateManager implements OnDisconnectListener,
                     support = true;
                     break;
                 }
+            }
             Message message = (Message) stanza;
             if (message.getType() != Message.Type.chat
                     && message.getType() != Message.Type.groupchat) {
@@ -478,11 +474,10 @@ public class ChatStateManager implements OnDisconnectListener,
             }
             if (support) {
                 supports.put(account.toString(), bareContactJid.toString(), resource, true);
-                if (!SettingsManager.chatsStateNotification()
-                        || sent.get(account.toString(), bareContactJid.toString()) != null) {
-                    return;
+                if (checkIfChatStateProhibited()) return;
+                if (checkIfLastChatStateIs(null, account, bareContactJid)) {
+                    setActiveChatState(account, bareContactJid);
                 }
-                onChatOpening(account, bareContactJid);
             } else if (supports.get(account.toString(), bareContactJid.toString(), resource) == null) {
                 // Disable only if there no information about support.
                 supports.put(account.toString(), bareContactJid.toString(), resource, false);
@@ -496,6 +491,14 @@ public class ChatStateManager implements OnDisconnectListener,
             alarmManager.cancel(pendingIntent);
         }
         pauseIntents.clear();
+    }
+
+    private boolean checkIfChatStateProhibited() {
+        return !SettingsManager.chatsStateNotification();
+    }
+
+    private boolean checkIfLastChatStateIs(ChatState state, AccountJid account, ContactJid contact) {
+        return sent.get(account.toString(), contact.toString()) == state;
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
