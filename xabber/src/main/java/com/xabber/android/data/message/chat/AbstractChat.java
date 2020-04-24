@@ -42,7 +42,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
@@ -823,9 +822,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getStanzaId()));
             if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
-                if (!messageRealmObject.isDelivered() && messageRealmObject.isSent())
+                if (!messageRealmObject.isDelivered() && messageRealmObject.isSent() && !isGroupchat()) {
                     message.addExtension(new RetryReceiptRequestElement());
-                else message.addExtension(new ReceiptRequestElement());
+                }
             if (delayTimestamp != null) {
                 message.addExtension(new DelayInformation(delayTimestamp));
             }
