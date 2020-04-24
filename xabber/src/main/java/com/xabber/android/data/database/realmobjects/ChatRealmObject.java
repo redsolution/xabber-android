@@ -71,7 +71,6 @@ public class ChatRealmObject extends RealmObject {
         this.chatNotificationsPreferences = chatNotificationsPreferencesRealmObject;
     }
 
-    public String getStringAccountJid() { return accountJid; }
     public AccountJid getAccountJid(){
         try {
             return AccountJid.from(accountJid);
@@ -81,7 +80,6 @@ public class ChatRealmObject extends RealmObject {
         }
     }
 
-    public String getStringContactJid() { return contactJid; }
     public ContactJid getContactJid(){
         try {
             return ContactJid.from(contactJid);

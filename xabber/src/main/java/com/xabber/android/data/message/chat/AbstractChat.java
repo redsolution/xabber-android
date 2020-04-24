@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message;
+package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
 import android.os.Looper;
@@ -46,7 +46,12 @@ import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestE
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.BackpressureMessageSaver;
+import com.xabber.android.data.message.ClipManager;
+import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
@@ -129,9 +134,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private Set<String> waitToMarkAsRead = new HashSet<>();
 
-    private boolean isRemotePreviousHistoryCompletelyLoaded = false;
-
-    private Date lastSyncedTime;
     private MessageRealmObject lastMessage;
     private RealmResults<MessageRealmObject> messages;
     private RealmResults<MessageRealmObject> unreadMessages;
@@ -141,8 +143,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean historyRequestedAtStart = false;
     protected boolean isGroupchat = false;
 
-    protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user, boolean isPrivateMucChat) {
-        super(account, isPrivateMucChat ? user : user.getBareUserJid());
+    protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
+        super(account, user);
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;
@@ -157,22 +159,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
     }
 
-    public boolean isRemotePreviousHistoryCompletelyLoaded() {
-        return isRemotePreviousHistoryCompletelyLoaded;
-    }
-
-    public void setRemotePreviousHistoryCompletelyLoaded(boolean remotePreviousHistoryCompletelyLoaded) {
-        isRemotePreviousHistoryCompletelyLoaded = remotePreviousHistoryCompletelyLoaded;
-    }
-
-    public Date getLastSyncedTime() {
-        return lastSyncedTime;
-    }
-
-    public void setLastSyncedTime(Date lastSyncedTime) {
-        this.lastSyncedTime = lastSyncedTime;
-    }
-
+//    public AbstractChat(@NonNull final AccountJid accountJid, @NonNull final ContactJid contactJid,
+//                        final boolean isArchived, final int lastPos,
+//                        final boolean requestedHistory, final Long lastActionTime,
+//                        final boolean isGroup){
+//        super(accountJid, contactJid);
+//        archived = isArchived;
+//        lastPosition = lastPos;
+//        historyRequestedAtStart = requestedHistory;
+//        lastActionTimestamp = lastActionTime;
+//        isGroupchat = isGroup;
+//    }
 
     public boolean isActive() { return active; }
 
@@ -181,7 +178,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         trackStatus = true;
     }
 
-    void closeChat() {
+    public void closeChat() {
         active = false;
         firstNotification = true;
     }
@@ -259,7 +256,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
-    abstract protected MessageRealmObject createNewMessageItem(String text);
+    abstract public MessageRealmObject createNewMessageItem(String text);
 
     /**
      * Creates new action.
@@ -323,7 +320,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
-        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
@@ -339,11 +335,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
-        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(boolean ui, final MessageRealmObject messageRealmObject) {
-        if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
+        if (ui)
+            BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
         else {
             final long startTime = System.currentTimeMillis();
             Realm realm = null;
@@ -353,13 +349,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     realm1.copyToRealm(messageRealmObject);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save message item: " + (System.currentTimeMillis() - startTime));
-                    EventBus.getDefault().post(new NewMessageEvent());
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) realm.close();
-            }
+            } finally { if (realm != null) realm.close(); }
+
+            EventBus.getDefault().post(new NewMessageEvent());
         }
     }
 
@@ -382,7 +377,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                                    String originalStanza, String parentMessageId, String originalFrom, boolean isForwarded,
                                                    RealmList<ForwardIdRealmObject> forwardIdRealmObjects, boolean fromMUC, boolean fromMAM, String groupchatUserId) {
 
-        final boolean visible = MessageManager.getInstance().isVisibleChat(this);
+        final boolean visible = ChatManager.getInstance().isVisibleChat(this);
         boolean read = !incoming;
         boolean send = incoming;
         if (action == null && text == null) {
@@ -787,7 +782,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
     }
 
-    protected boolean canSendMessage() {
+    public boolean canSendMessage() {
         return true;
     }
 
@@ -898,7 +893,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
+    public boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
         return accept(contactJid);
     }
 
@@ -1029,10 +1024,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return archived;
     }
 
-    public void setArchived(boolean archived, boolean needSaveToRealm) {
+    public void setArchived(boolean archived) {
         this.archived = archived;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
+
+    public void setArchivedWithoutRealm(boolean archived){ this.archived = archived; }
 
     public void setAddContactSuggested(boolean suggested) {
         addContactSuggested = suggested;
@@ -1107,6 +1104,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setLastMessageId(String lastMessageId) {
         this.lastMessageId = lastMessageId;
+        //ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
     public boolean historyIsFull() {
@@ -1121,9 +1119,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return historyRequestedAtStart;
     }
 
-    public void setHistoryRequestedAtStart(boolean needSaveToRealm) {
+    public void setHistoryRequestedAtStart() {
         this.historyRequestedAtStart = true;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setHistoryRequestedWithoutRealm(boolean isHistoryRequested){
+        this.historyRequestedAtStart = isHistoryRequested;
     }
 
     public static String getStanzaId(Message message) {

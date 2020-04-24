@@ -23,8 +23,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -129,12 +129,12 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
     }
 
     private void deleteContact() {
-        MessageManager.getInstance().closeChat(account, user);
+        ChatManager.getInstance().closeChat(account, user);
 
         // delete chat
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat != null) {
-            chat.setArchived(true, true);
+            chat.setArchived(true);
         }
 
         // remove roster contact

@@ -44,40 +44,32 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ChatRealmObject;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.repositories.ChatRepository;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnChatStateListener;
+import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.adapter.ChatComparator;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
-import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -94,20 +86,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
-        RealmChangeListener {
+        OnStatusChangeListener, ChatListUpdateBackpressure.UpdatableObject {
 
+    private ChatListUpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
-    private List<ChatRealmObject> items;
+    private List<AbstractChat> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
@@ -140,10 +126,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     private int unreadCount;
 
-    private RealmResults<ChatRealmObject> chatRealmObjects;
-
-    private Subscription realmChangeListenerSubscription;
-
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
@@ -154,6 +136,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onAttach(Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
+        updateBackpressure = new ChatListUpdateBackpressure(this);
         super.onAttach(context);
     }
 
@@ -184,54 +167,67 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStop() {
-        //if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
-        chatRealmObjects.removeChangeListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
-    }
 
-    @Override
-    public void onChange(Object o) {
-        update();
+        updateBackpressure.removeRefreshRequests();
     }
 
     @Override
     public void onResume() {
+
+        updateBackpressure.build();
+
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
+        Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
 
         updateUnreadCount();
         if (unreadCount == 0){
             onStateSelected(ChatListState.recent);
         }
-        chatRealmObjects = DatabaseManager.getInstance().getDefaultRealmInstance()
-                .where(ChatRealmObject.class)
-                .findAll();
-        chatRealmObjects.addChangeListener(this);
 
-//        realmChangeListenerSubscription = DatabaseManager.getInstance().getObservableListener()
-//                .debounce(500, TimeUnit.MILLISECONDS)
-//                .subscribeOn(Schedulers.trampoline())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-//                .subscribe(realm -> {
-//                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
-//                });
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+
         update();
 
         super.onResume();
     }
 
+    @Override
+    public void onStatusChanged(AccountJid account, ContactJid user, String statusText) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onStatusChanged(AccountJid account, ContactJid user, StatusMode statusMode, String statusText) {
+        updateBackpressure.refreshRequest();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectionStatechanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
+    public void onConnectionStateChanged(ConnectionItem.ConnectionStateChangedEvent connectionStateChangedEvent) {
+        if (connectionStateChangedEvent.getConnectionState() == ConnectionState.connected
+                || connectionStateChangedEvent.getConnectionState() == ConnectionState.disconnecting)
+            update();
+        else
+            update();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChatsChanged(ChatManager.ChatUpdatedEvent chatUpdatedEvent) {
+        update();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
         update();
     }
 
@@ -307,11 +303,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
+        toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
-        toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
@@ -326,14 +322,14 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void updateContactList() {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
         /* Update ChatState TextView display via current chat and connection state */
-        if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
-            toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
+        if (AccountManager.getInstance().getCommonState() == CommonState.online)
+            toolbarTitleTv.setText(R.string.application_title_full);
         else switch (currentChatsState) {
             case unread:
                 toolbarTitleTv.setText(R.string.unread_chats);
@@ -345,7 +341,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 toolbarTitleTv.setText(R.string.all_chats);
                 break;
             default:
-                toolbarTitleTv.setText("Xabber");
+                toolbarTitleTv.setText(R.string.account_state_connecting);
                 break;
         }
 
@@ -369,7 +365,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
                 AccountPainter.getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountPainter.getFirstAccount()));
+                    getDefaultRippleColor());
         else if (getContext() != null){
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
@@ -498,7 +494,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /**
     Update chat items in adapter
      */
-    private void updateItems(List<ChatRealmObject> newItems){
+    private void updateItems(List<AbstractChat> newItems){
         boolean tempIsOnTop = isOnTop();
          if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
@@ -531,9 +527,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatStateChanged(Collection<RosterContact> entities) {
-        update();
-    }
+    public void onChatStateChanged(Collection<RosterContact> entities) { update(); }
 
     /**
      * Setup Toolbar scroll behavior according to count of visible chat items
@@ -566,22 +560,20 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemSwiped(@NotNull ChatRealmObject abstractContact) {
-        AbstractChat abstractChat = MessageManager.getInstance()
-                .getChat(abstractContact.getAccountJid(), abstractContact.getContactJid());
-        MessageManager.getInstance().getChat(abstractContact.getAccountJid(), abstractContact.getContactJid())
-                .setArchived(!abstractChat.isArchived(), true);
+    public void onChatItemSwiped(@NotNull AbstractChat abstractContact) {
+        AbstractChat abstractChat = ChatManager.getInstance()
+                .getChat(abstractContact.getAccount(), abstractContact.getUser());
+        ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+                .setArchived(!abstractChat.isArchived());
         showSnackbar(abstractContact, currentChatsState);
         update();
     }
 
     @Override
-    public void onChatAvatarClick(ChatRealmObject item) {
+    public void onChatAvatarClick(AbstractChat item) {
         Intent intent;
         try {
-            AccountJid accountJid = AccountJid.from(item.getStringAccountJid());
-            ContactJid contactJid = ContactJid.from(item.getStringContactJid());
-            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, contactJid);
+            intent = ContactViewerActivity.createIntent(getActivity(), item.getAccount(), item.getUser());
             getActivity().startActivity(intent);
         } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
 
@@ -592,11 +584,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    public void onChatItemContextMenu(ContextMenu menu, ChatRealmObject contact){
+    @Override
+    public void onChatItemContextMenu(ContextMenu menu, AbstractChat contact){
         try {
-            AccountJid accountJid = AccountJid.from(contact.getStringAccountJid());
-            ContactJid contactJid = ContactJid.from(contact.getStringContactJid());
-            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
+            AbstractContact abstractContact = RosterManager.getInstance()
+                    .getAbstractContact(contact.getAccount(), contact.getUser());
             ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
         } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
     }
@@ -609,7 +601,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     public void updateUnreadCount() {
         unreadCount = 0;
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadCount += abstractChat.getUnreadMessageCount();
         if (chatListFragmentListener != null)
@@ -617,34 +609,32 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemClick(ChatRealmObject item) {
+    public void onChatItemClick(AbstractChat item) {
         try {
-            AccountJid accountJid = AccountJid.from(item.getStringAccountJid());
-            ContactJid contactJid = ContactJid.from(item.getStringContactJid());
-            chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, contactJid));
+            chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(item.getAccount(), item.getUser()));
         } catch (Exception e) { LogManager.exception(ChatListFragment.class.toString(), e); }
     }
 
+    @Override
     public void update(){
 
-        /* List for store final method result */
-        //ChatRepository.updateChatsInRealm();
-        List<ChatRealmObject> newList = new ArrayList<>();
+        List<AbstractChat> newList = new ArrayList<>();
         //showPlaceholders++;
-        /* Map of accounts*/
-//        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
-//        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-//            accounts.put(account, null);
-//        }
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
             if (currentChatsState == ChatListState.recent)
-                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.recent));
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                    if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
+                        newList.add(abstractChat);
             if (currentChatsState == ChatListState.unread)
-                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.unread));
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                    if (abstractChat.getLastMessage() != null && abstractChat.getUnreadMessageCount() != 0)
+                        newList.add(abstractChat);
             if (currentChatsState == ChatListState.archived)
-                newList.addAll(ChatManager.getInstance().getAllChats(ChatListState.archived));
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                    if (abstractChat.getLastMessage() != null && abstractChat.isArchived())
+                        newList.add(abstractChat);
         } else {
             /* If filterString not empty, perform a search */
 
@@ -684,6 +674,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 //            newList.addAll(baseEntities);
         }
 
+        Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
+
+        LogManager.d("ChatListFragment", "Invoked chatList update. Chat list count: " + Integer.toString(newList.size()));
+
+
         setupMarkAllTheReadButton(newList.size());
 
         /* Update another elements */
@@ -705,8 +700,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
             markAllAsReadButton.setVisibility(View.VISIBLE);
             markAllAsReadButton.setOnClickListener(v -> {
-                for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
-                    MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
+                for (AbstractChat chat : ChatManager.getInstance().getChatsOfEnabledAccounts()){
+                    chat.markAsReadAll(true);
                     MessageNotificationManager.getInstance().removeAllMessageNotifications();
                 }
                 onStateSelected(ChatListFragment.ChatListState.recent);
@@ -716,40 +711,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             });
         }
         else markAllAsReadButton.setVisibility(View.GONE);
-    }
-
-    private GroupConfiguration getChatsGroup(ChatListState state) {
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-        GroupConfiguration chatsGroup = new GroupConfiguration(CircleManager.NO_ACCOUNT,
-                GroupVO.RECENT_CHATS_TITLE, CircleManager.getInstance());
-        List<AbstractChat> newChats = new ArrayList<>();
-        for (AbstractChat abstractChat : chats) {
-            MessageRealmObject lastMessage = abstractChat.getLastMessage();
-            if (lastMessage != null || abstractChat.getChatstateMode() == AbstractChat.ChatstateType.CLEARED_HISTORY) {
-                switch (state) {
-                    case unread:
-                        if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)
-                            newChats.add(abstractChat);
-                        break;
-                    case archived:
-                        if (abstractChat.isArchived()) newChats.add(abstractChat);
-                        break;
-                    default:
-                        // recent
-                        if (!abstractChat.isArchived()) newChats.add(abstractChat);
-                        break;
-                }
-            }
-        }
-        Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
-        chatsGroup.setNotEmpty();
-        for (AbstractChat chat : newChats) {
-            chatsGroup.addAbstractContact(RosterManager.getInstance() .getBestContact(chat.getAccount(), chat.getUser()));
-            chatsGroup.increment(true);
-        }
-        Application.getInstance().runInBackground(() -> {ShortcutBuilder.updateShortcuts(Application.getInstance(),
-                new ArrayList<>(chatsGroup.getAbstractContacts()));});
-        return chatsGroup;
     }
 
     /** Returns an ArrayList of Contacts filtered by filterString **/
@@ -805,16 +766,16 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton.setVisibility(View.GONE);
     }
 
-    private void showSnackbar(final ChatRealmObject deletedItem, final ChatListState previousState){
+    private void showSnackbar(final AbstractChat deletedItem, final ChatListState previousState){
         if (snackbar != null) snackbar.dismiss();
-        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccountJid(), deletedItem.getContactJid());
+        final AbstractChat abstractChat = ChatManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
         final boolean archived = abstractChat.isArchived();
         snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
                 : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                abstractChat.setArchived(!archived, true);
+                abstractChat.setArchived(!archived);
                 onStateSelected(previousState);
                 update();
             }

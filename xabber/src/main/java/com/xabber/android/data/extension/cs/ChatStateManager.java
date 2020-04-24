@@ -22,7 +22,6 @@ import android.os.Handler;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -32,11 +31,11 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedNestedMaps;
-import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
 import com.xabber.xmpp.uuu.ChatState;
@@ -258,7 +257,7 @@ public class ChatStateManager implements OnDisconnectListener,
                 || sent.get(account.toString(), user.toString()) == chatState) {
             return;
         }
-        final AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null || !isSupported(chat, false)) {
             return;
         }
@@ -326,7 +325,7 @@ public class ChatStateManager implements OnDisconnectListener,
                 || sent.get(account.toString(), user.toString()) == ChatState.active) {
             return;
         }
-        final AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
 
         Message message = new Message();
         message.setType(chat.getType());

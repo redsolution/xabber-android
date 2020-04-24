@@ -10,9 +10,9 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -259,7 +259,7 @@ public class BlockingManager {
 
                 if (success) {
                     PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
-                    AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
+                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
                     if (chat != null) {
                         chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
                     }
@@ -300,7 +300,7 @@ public class BlockingManager {
     }
 
     static void blockContactLocally(AccountJid account, ContactJid contactJid) {
-        MessageManager.getInstance().closeChat(account, contactJid);
+        ChatManager.getInstance().closeChat(account, contactJid);
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
 
@@ -335,7 +335,7 @@ public class BlockingManager {
 
                 if (success) {
                     for (ContactJid contactJid : contacts) {
-                        AbstractChat chat = MessageManager.getInstance().getChat(account, contactJid);
+                        AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
                         if (chat != null) {
                             chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
                         }

@@ -5,7 +5,6 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ChatRealmObject;
@@ -14,6 +13,8 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.RegularChat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,63 +26,6 @@ import io.realm.Sort;
 public class ChatRepository {
 
     private static final String LOG_TAG = ChatRepository.class.getSimpleName();
-
-    public static void updateChatsInRealm(){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<ChatRealmObject> realmResults = realm1
-                            .where(ChatRealmObject.class)
-                            .findAll();
-
-                    for (ChatRealmObject chatRealmObject : realmResults){
-
-                        MessageRealmObject messageRealmObject = realm1
-                                .where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.USER, chatRealmObject.getStringContactJid())
-                                .equalTo(MessageRealmObject.Fields.ACCOUNT, chatRealmObject.getStringAccountJid())
-                                //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, chatRealmObject.getAccountJid())
-                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                                .findFirst();
-
-                        chatRealmObject.setLastMessage(messageRealmObject);
-                    }
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    public static void updateLastMessageInRealm(AccountJid accountJid, ContactJid contactJid){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-
-                    MessageRealmObject messageRealmObject = realm1
-                            .where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                            .equalTo(MessageRealmObject.Fields.USER, contactJid.getBareJid().toString())
-                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                            .findFirst();
-
-                    ChatRealmObject chatRealmObject = realm1
-                            .where(ChatRealmObject.class)
-                            .equalTo(ChatRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
-                            .equalTo(ChatRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
-                            .findFirst();
-
-                    chatRealmObject.setLastMessage(messageRealmObject);
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
 
     public static void saveOrUpdateChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                    @Nullable MessageRealmObject lastMessage,
@@ -151,95 +95,32 @@ public class ChatRepository {
 
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
 
-    public static Collection<ChatRealmObject> getAllChatsFromRealm(){
+    public static Collection<AbstractChat> getAllChatsFromRealm(){
+        Collection<AbstractChat> result = new ArrayList<>();
+
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<ChatRealmObject> realmResults = realm
                 .where(ChatRealmObject.class)
                 .findAll();
-        if (Looper.getMainLooper() != Looper.myLooper())
-            realm.close();
-        return new ArrayList<>(realmResults);
-    }
 
-    public static Collection<ChatRealmObject> getAllChatsForAccountFromRealm(AccountJid accountJid){
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<ChatRealmObject> realmResults = realm
-                .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.toString())
-                .isNotNull(ChatRealmObject.Fields.LAST_MESSAGE)
-                .findAll();
+        for (ChatRealmObject chatRealmObject : realmResults){
+            RegularChat regularChat = new RegularChat(chatRealmObject.getAccountJid(), chatRealmObject.getContactJid());
+            regularChat.setArchivedWithoutRealm(chatRealmObject.isArchived());
+            regularChat.setLastPosition(chatRealmObject.getLastPosition());
+            regularChat.setHistoryRequestedWithoutRealm(chatRealmObject.isHistoryRequestAtStart());
+            regularChat.setLastActionTimestamp(chatRealmObject.getLastMessageTimestamp());
+            regularChat.setGroupchat(chatRealmObject.isGroupchat());
+            result.add(regularChat);
+        }
 
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
-        return new ArrayList<>(realmResults);
-    }
 
-    public static ArrayList<ChatRealmObject> getAllChatsForEnabledAccountsFromRealm(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            result.addAll(getAllChatsForAccountFromRealm(accountJid));
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllRecentChatsForEnabledAccountsFromRealm(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
-                if (!chatRealmObject.isArchived())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllArchivedChatsForEnabledAccount(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
-                if (chatRealmObject.isArchived())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ArrayList<ChatRealmObject> getAllUnreadChatsForEnabledAccount(){
-        ArrayList<ChatRealmObject> result = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
-            for (ChatRealmObject chatRealmObject: getAllChatsForAccountFromRealm(accountJid))
-                if (!chatRealmObject.getLastMessage().isRead()
-                        && chatRealmObject.getLastMessage().isIncoming())
-                    result.add(chatRealmObject);
-
-        return sortChatList(result);
-    }
-
-    public static ChatRealmObject getChatRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){ //TODO REALM UPDATE should be multiply count of chats per contact
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        ChatRealmObject chatRealmObject = realm
-                .where(ChatRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.ACCOUNT_JID,
-                        accountJid.getFullJid().asBareJid().toString())
-                .equalTo(ChatRealmObject.Fields.CONTACT_JID,
-                        contactJid.getBareJid().toString())
-                .findFirst();
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        return chatRealmObject;
-    }
-
-    private static ArrayList<ChatRealmObject> sortChatList(ArrayList<ChatRealmObject> list){
-        list.sort((o1, o2) -> {
-            if (o1.getLastMessageTimestamp() == o2.getLastMessageTimestamp())
-                return 0;
-            if (o1.getLastMessageTimestamp() > o2.getLastMessageTimestamp())
-                return -1;
-            else return 1;
-        });
-        return list;
+        return result;
     }
 
     public static void clearUnusedNotificationStateFromRealm() {

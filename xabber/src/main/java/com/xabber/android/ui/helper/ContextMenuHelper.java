@@ -35,9 +35,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -167,7 +167,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
                         showSnoozeDialog((AppCompatActivity) activity, chat, presenter);
                         return true;
                     }
@@ -177,7 +177,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
                         if (chat != null) chat.setNotificationStateOrDefault(
                                 new NotificationState(NotificationState.NotificationMode.enabled,
                                         0), true);
@@ -210,7 +210,7 @@ public class ContextMenuHelper {
         }
 
         // archive/unarchive chat
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
 
         // mute chat
         menu.findItem(R.id.action_mute_chat).setVisible(chat != null && chat.notifyAboutMessage());

@@ -417,19 +417,18 @@ public class Application extends android.app.Application {
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
-        addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());
-        addManager(PatreonManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
+        addManager(ScreenManager.getInstance());
         addManager(PresenceManager.getInstance());
         addManager(RosterManager.getInstance());
+        addManager(OTRManager.getInstance());
         addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());
         addManager(NotificationManager.getInstance());
@@ -456,6 +455,7 @@ public class Application extends android.app.Application {
         addManager(GroupchatUserManager.getInstance());
         addManager(RrrManager.getInstance());
         addManager(ReliableMessageDeliveryManager.getInstance());
+        addManager(PatreonManager.getInstance());
     }
 
     /**

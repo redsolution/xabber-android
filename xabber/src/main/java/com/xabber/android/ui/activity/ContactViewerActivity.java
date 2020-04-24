@@ -26,8 +26,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -77,7 +75,6 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
         menu.clear();
         getMenuInflater().inflate(R.menu.toolbar_contact, menu);
 
@@ -104,7 +101,6 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
         setUpContactInfoMenu(menu, rosterContact);
         return true;
     }

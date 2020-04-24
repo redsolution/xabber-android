@@ -19,7 +19,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;

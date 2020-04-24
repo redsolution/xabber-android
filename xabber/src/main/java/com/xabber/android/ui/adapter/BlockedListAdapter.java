@@ -17,8 +17,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
@@ -86,7 +86,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             final ContactJid contact = blockedContacts.get(position);
 
             final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
-            final AbstractChat abstractChat = MessageManager.getInstance().getChat(account, contact);
+            final AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contact);
             String name;
 
             if (viewHolder.avatar != null) {

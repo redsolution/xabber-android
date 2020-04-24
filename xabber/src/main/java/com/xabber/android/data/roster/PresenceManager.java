@@ -34,9 +34,10 @@ import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
@@ -173,26 +174,26 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     /** Added available action to chat, to show chat in recent chats */
     private void createChatForNewContact(AccountJid account, ContactJid user) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent),
                 ChatAction.subscription_sent, false);
     }
 
     private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received),
                 ChatAction.subscription_received, false);
     }
 
     private void createChatForAcceptingIncomingRequest(AccountJid account, ContactJid user) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name),
                 ChatAction.subscription_received_accepted, false);
     }
 
     private void createChatForAcceptingOutgoingRequest(AccountJid account, ContactJid user) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name),
                 ChatAction.subscription_sent_accepted, false);
@@ -291,11 +292,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
         if (presence.getType() == Presence.Type.unavailable)
             LastActivityInteractor.getInstance().setLastActivityTimeNow(account, from.getBareUserJid());
-
-        for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnStatusChangeListener listener : Application.getInstance().getUIListeners(OnStatusChangeListener.class)) {
                 listener.onStatusChanged(account, from,
                         StatusMode.createStatusMode(presence), presence.getStatus());
-        }
+            }
+        });
 
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, from.getBareJid());
         if (rosterContact != null) {

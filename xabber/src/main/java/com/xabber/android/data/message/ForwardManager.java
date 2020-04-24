@@ -10,6 +10,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -28,7 +30,7 @@ public class ForwardManager {
     private static final String LOG_TAG = ForwardManager.class.getSimpleName();
 
     public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text) {
-        final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        final AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
 
         RealmList<ForwardIdRealmObject> ids = new RealmList<>();

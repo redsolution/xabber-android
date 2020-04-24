@@ -25,10 +25,10 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -242,9 +242,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         parseAndSaveMessageFromMamResult(realm, connection.getAccount(), resultExtension.getForwarded());
                         ContactJid contactJid = waitingRequests.get(resultID);
-                        AbstractChat chat = MessageManager.getInstance().getChat(connection.getAccount(), contactJid);
+                        AbstractChat chat = ChatManager.getInstance().getChat(connection.getAccount(), contactJid);
                         if (chat != null && !chat.isHistoryRequestedAtStart())
-                            chat.setHistoryRequestedAtStart(true);
+                            chat.setHistoryRequestedAtStart();
                         waitingRequests.remove(resultID);
                         loadNextLastMessageAsync(connection.getAccount());
                         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -256,10 +256,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             MamFinIQ finIQ = (MamFinIQ) packet;
             if (finIQ.isComplete() && waitingRequests.containsKey(finIQ.getQueryId())) {
                 ContactJid contactJid = waitingRequests.get(finIQ.getQueryId());
-                AbstractChat chat = MessageManager.getInstance().getChat(connection.getAccount(), contactJid);
+                AbstractChat chat = ChatManager.getInstance().getChat(connection.getAccount(), contactJid);
                 if (chat != null) {
                     if (!chat.isHistoryRequestedAtStart())
-                        chat.setHistoryRequestedAtStart(true);
+                        chat.setHistoryRequestedAtStart();
                 }
                 waitingRequests.remove(finIQ.getQueryId());
                 loadNextLastMessageAsync(connection.getAccount());
@@ -290,7 +290,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .getAccountRosterContacts(accountItem.getAccount());
 
         for (RosterContact contact : contacts) {
-            AbstractChat chat = MessageManager.getInstance()
+            AbstractChat chat = ChatManager.getInstance()
                     .getOrCreateChat(contact.getAccount(), contact.getUser());
             if (getFirstMessage(chat, realm) == null && !chat.isHistoryRequestedAtStart()) {
                 LogManager.d(LOG_TAG, "load missed messages in: " + contact.getUser());
@@ -318,7 +318,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (iterator != null && iterator.hasNext()) {
             RosterContact contact = iterator.next();
             LogManager.d(LOG_TAG, "load last message in " + contact + " chat");
-            AbstractChat chat = MessageManager.getInstance()
+            AbstractChat chat = ChatManager.getInstance()
                     .getOrCreateChat(contact.getAccount(), contact.getUser());
             requestLastMessageAsync(accountItem, chat);
         } else {
@@ -338,7 +338,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .getAccountRosterContacts(accountItem.getAccount());
 
         for (RosterContact contact : contacts) {
-            AbstractChat chat = MessageManager.getInstance()
+            AbstractChat chat = ChatManager.getInstance()
                     .getOrCreateChat(contact.getAccount(), contact.getUser());
             requestLastMessageAsync(accountItem, chat);
         }
@@ -398,7 +398,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 ArrayList<Forwarded> list = entry.getValue();
                 if (list != null) {
                     try {
-                        AbstractChat chat = MessageManager.getInstance()
+                        AbstractChat chat = ChatManager.getInstance()
                                 .getOrCreateChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
 
                         // sort messages in list by timestamp
@@ -674,7 +674,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             user = stanza.getTo().asBareJid();
 
         try {
-            AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, ContactJid.from(user));
+            AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, ContactJid.from(user));
             MessageRealmObject messageRealmObject = parseMessage(accountItem, account, chat.getUser(), forwarded, null);
             if (messageRealmObject != null) {
                 saveOrUpdateMessages(realm, Collections.singletonList(messageRealmObject), true);
@@ -838,7 +838,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             e.printStackTrace();
         }
 
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
         if (chat == null) return null;
 
         MessageRealmObject localMessage = findSameLocalMessage(realm, chat, message);
@@ -856,7 +856,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             chat.enableNotificationsIfNeed();
             boolean notify = !message.isRead() && (message.getText() != null && !message.getText().trim().isEmpty())
                     && message.isIncoming() && chat.notifyAboutMessage();
-            boolean visible = MessageManager.getInstance().isVisibleChat(chat);
+            boolean visible = ChatManager.getInstance().isVisibleChat(chat);
             if (notify && !visible)
                 NotificationManager.getInstance().onMessageNotification(message);
             //
@@ -1057,7 +1057,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .getAccountRosterContacts(accountItem.getAccount());
 
         for (RosterContact contact : contacts) {
-            AbstractChat chat = MessageManager.getInstance()
+            AbstractChat chat = ChatManager.getInstance()
                     .getOrCreateChat(contact.getAccount(), contact.getUser());
 
             MessageRealmObject firstMessage = getFirstMessageForMigration(chat, realm);

@@ -790,6 +790,19 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return Collections.unmodifiableCollection(enabledAccounts);
     }
 
+    public Collection<AccountJid> getConnectedAccounts() {
+        Map<AccountJid, AccountItem> accountsCopy = new HashMap<>(accountItems);
+        List<AccountJid> connectedAccounts = new ArrayList<>();
+        for (AccountItem accountItem : accountsCopy.values()) {
+            if (accountItem.getConnection().isConnected()) {
+                AccountJid accountJid = accountItem.getAccount();
+                accountJid.setOrder(accountItem.getOrder());
+                connectedAccounts.add(accountJid);
+            }
+        }
+        return Collections.unmodifiableCollection(connectedAccounts);
+    }
+
     public Collection<AccountJid> getCachedEnabledAccounts() {
         List<AccountJid> copyCachedEnabledAccounts = new ArrayList<>(cachedEnabledAccounts);
         return Collections.unmodifiableCollection(copyCachedEnabledAccounts);

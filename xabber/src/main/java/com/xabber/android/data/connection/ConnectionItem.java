@@ -347,6 +347,8 @@ public abstract class ConnectionItem {
         ConnectionStateChangedEvent(ConnectionState connectionState){
             this.connectionState = connectionState;
         }
+
+        public ConnectionState getConnectionState() { return connectionState; }
     }
 
 }

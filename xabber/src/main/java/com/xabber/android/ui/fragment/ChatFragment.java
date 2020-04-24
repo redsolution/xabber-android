@@ -93,14 +93,14 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NewMessageEvent;
-import com.xabber.android.data.message.RegularChat;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -839,6 +839,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         showJoinButtonIfNeed();
 
+        ChatManager.getInstance().setVisibleChat(getChat());
+
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -854,6 +856,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 || currentVoiceRecordingState == VoiceRecordState.TouchRecording)
             stopRecording();
 
+        ChatManager.getInstance().removeVisibleChat();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -1107,7 +1110,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Nullable
     private AbstractChat getChat() {
-        return MessageManager.getInstance().getOrCreateChat(account, user);
+        return ChatManager.getInstance().getOrCreateChat(account, user);
     }
 
 
@@ -1594,8 +1597,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         startActivity(intent);
     }
 
-    public void closeChat(AccountJid account, ContactJid user) {
-        MessageManager.getInstance().closeChat(account, user);
+    public void closeChat(AccountJid account, ContactJid user) { //TODO pay attention. Do we need this?
+        ChatManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         listener.onCloseChat();
     }

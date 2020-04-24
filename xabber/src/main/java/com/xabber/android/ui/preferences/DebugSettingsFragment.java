@@ -10,8 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 import java.util.Collection;
@@ -28,7 +28,8 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        //preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
+        if (BuildConfig.FLAVOR_build.equals("dev"))
+            preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.cache_clear_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
@@ -86,7 +87,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
         Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
-                Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+                Collection<AbstractChat> chats = ChatManager.getInstance().getChats();
 
                 if (chats == null || chats.size() == 0) {
                     closeDownloadArchiveDialog();

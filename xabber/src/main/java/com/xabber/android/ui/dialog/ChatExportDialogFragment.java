@@ -34,7 +34,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -105,7 +105,7 @@ public class ChatExportDialogFragment extends DialogFragment implements View.OnC
             @Override
             public void run() {
                 try {
-                    final File file = MessageManager.getInstance().exportChat(account, user, name);
+                    final File file = ChatManager.getInstance().exportChat(account, user, name);
 
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override

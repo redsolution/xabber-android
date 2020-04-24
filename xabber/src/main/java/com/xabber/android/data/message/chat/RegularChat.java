@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message;
+package com.xabber.android.data.message.chat;
 
 import android.content.Intent;
 import android.text.TextUtils;
@@ -36,6 +36,8 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
@@ -74,8 +76,8 @@ public class RegularChat extends AbstractChat {
     private Intent intent;
 
 
-    RegularChat(AccountJid account, ContactJid user, boolean isPrivateMucChat) {
-        super(account, user, isPrivateMucChat);
+    public RegularChat(AccountJid account, ContactJid user) {
+        super(account, user);
         resource = null;
     }
 
@@ -119,7 +121,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean canSendMessage() {
+    public boolean canSendMessage() {
         if (super.canSendMessage()) {
             if (SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.required)
                 return true;
@@ -147,7 +149,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected MessageRealmObject createNewMessageItem(String text) {
+    public MessageRealmObject createNewMessageItem(String text) {
         String id = UUID.randomUUID().toString();
         return createMessageItem(null, text, null, null, null, false,
                 false, false, false, id,
@@ -156,7 +158,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(ContactJid bareAddress, Stanza packet, boolean isCarbons) {
+    public boolean onPacket(ContactJid bareAddress, Stanza packet, boolean isCarbons) {
 
         if (!super.onPacket(bareAddress, packet, isCarbons))
             return false;

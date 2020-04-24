@@ -63,12 +63,12 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.RegularChat;
+import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -232,7 +232,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static Intent createSpecificChatIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
         return intent;
     }
@@ -262,7 +262,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
         //LogManager.i(LOG_TAG, "Intent created:" + intent.c);
         return intent;
@@ -479,7 +479,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             try {
                 AccountJid accountJid = AccountJid.from(account);
                 ContactJid contactJid = ContactJid.from(user);
-                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, contactJid);
+                AbstractChat chat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
 
                 if (chat instanceof RegularChat) {
                     if (intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
@@ -570,7 +570,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
-        MessageManager.getInstance().removeVisibleChat();
+
         if (exitOnSend) ActivityManager.getInstance().cancelTask(this);
     }
 
@@ -694,8 +694,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
     }
 
-    private void selectChat(AccountJid accountJid, ContactJid contactJid) {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, contactJid);
+    private void selectChat(AccountJid accountJid, ContactJid contactJid) { //TODO pay attention. Do we need this?
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
         //selectChatPage(chat, true);
     }
 
@@ -779,7 +779,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void setUpOptionsMenu(Menu menu) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
         if (abstractChat != null) {
             menu.clear();
             MenuInflater inflater = getMenuInflater();
@@ -804,7 +804,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
 
         switch (item.getItemId()) {
             /* security menu */
@@ -885,14 +885,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             case R.id.action_archive_chat:
                 if (abstractChat != null) {
-                    abstractChat.setArchived(true, true);
+                    abstractChat.setArchived(true);
                     setUpOptionsMenu(toolbar.getMenu());
                 }
                 return true;
 
             case R.id.action_unarchive_chat:
                 if (abstractChat != null) {
-                    abstractChat.setArchived(false, true);
+                    abstractChat.setArchived(false);
                     setUpOptionsMenu(toolbar.getMenu());
                 }
                 return true;
@@ -939,7 +939,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private NotificationState.NotificationMode getNotifMode() {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         if (chat != null)
             return chat.getNotificationState().determineModeByGlobalSettings();
         else return NotificationState.NotificationMode.bydefault;

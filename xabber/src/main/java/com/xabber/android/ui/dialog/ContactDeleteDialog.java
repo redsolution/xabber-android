@@ -20,6 +20,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -99,7 +100,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 }
 
                 if (deleteHistory.isChecked()) {
-                    MessageManager.getInstance().closeChat(account, user);
+                    ChatManager.getInstance().closeChat(account, user);
                     MessageManager.getInstance().clearHistory(account, user);
                     //AbstractChat chat = MessageManager.getInstance().getChat(account, user);
                     //if (chat != null) {

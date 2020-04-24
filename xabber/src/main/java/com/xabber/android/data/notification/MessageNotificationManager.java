@@ -19,9 +19,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -212,7 +213,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
         switch (action.getActionType()) {
             case read:
-                AbstractChat chat = MessageManager.getInstance().getChat(accountJid, contactJid);
+                AbstractChat chat = ChatManager.getInstance().getChat(accountJid, contactJid);
                 if (chat != null) {
                     AccountManager.getInstance().stopGracePeriod(chat.getAccount());
                     chat.markAsReadAll(true);
@@ -220,7 +221,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 }
                 break;
             case snooze:
-                AbstractChat chat1 = MessageManager.getInstance().getChat(accountJid, contactJid);
+                AbstractChat chat1 = ChatManager.getInstance().getChat(accountJid, contactJid);
                 if (chat1 != null) {
                     chat1.setNotificationState(new NotificationState(NotificationState.NotificationMode.snooze2h,
                             (int) (System.currentTimeMillis() / 1000L)), true);

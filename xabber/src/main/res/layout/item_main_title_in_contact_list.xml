@@ -24,7 +24,7 @@
         android:layout_centerVertical="true"
         android:fontFamily="sans-serif-medium"
         android:textSize="18sp"
-        android:text="@string/recent_chats"
+        android:text="@string/application_state_connecting"
         android:textColor="?attr/contact_list_contact_name_text_color"
         android:clickable="true"
         android:layout_toRightOf="@+id/avatarView"

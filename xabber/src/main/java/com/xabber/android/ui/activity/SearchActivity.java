@@ -26,16 +26,16 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -354,7 +354,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     private void openChat(ContactJid user, String text) {
         ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
-        for (AbstractChat check : MessageManager.getInstance().getChats()) {
+        for (AbstractChat check : ChatManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
                 entities.add(check);
             }

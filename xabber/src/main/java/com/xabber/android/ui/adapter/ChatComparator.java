@@ -17,7 +17,7 @@ package com.xabber.android.ui.adapter;
 import java.util.Comparator;
 import java.util.Date;
 
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 public class ChatComparator implements Comparator<AbstractChat> {
 

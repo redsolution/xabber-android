@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.roster;
 
-import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.BaseUIListener;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -24,7 +24,7 @@ import com.xabber.android.data.entity.ContactJid;
  *
  * @author alexander.ivanov
  */
-public interface OnStatusChangeListener extends BaseManagerInterface {
+public interface OnStatusChangeListener extends BaseUIListener {
 
     /**
      * Notify when only status text changed.
