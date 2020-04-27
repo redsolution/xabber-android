@@ -189,6 +189,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (vCard == null && !vCardError) {
+//            vCard = VCardManager.getInstance().getSavedVCard(account, user);
+//            updateVCard();
             requestVCard();
         } else {
             updateVCard();

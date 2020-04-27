@@ -228,6 +228,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         return name.getBestName();
     }
 
+    public VCard getSavedVCard(AccountJid accountJid, ContactJid contactJid){
+        return VCardRepository.getVCardForContactFromRealm(contactJid).getVCard();
+    }
+
     @SuppressWarnings("WeakerAccess")
     void onVCardReceived(final AccountJid account, final Jid bareAddress, final VCard vCard) {
         final StructuredName name;
