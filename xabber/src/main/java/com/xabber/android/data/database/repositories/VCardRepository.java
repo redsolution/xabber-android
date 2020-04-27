@@ -71,7 +71,7 @@ public class VCardRepository {
                             .where(VCardRealmObject.class)
                             .equalTo(VCardRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
                             .findFirst();
-                    if (vCardRealmObject == null && vCardRealmObject.getVCard() == null){
+                    if (vCardRealmObject == null ){
                         vCardRealmObject = new VCardRealmObject(contactJid, vCard);
                     } else {
                         vCardRealmObject.setVCard(vCard);

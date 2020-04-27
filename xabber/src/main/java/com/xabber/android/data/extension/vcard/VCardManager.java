@@ -24,7 +24,9 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.realmobjects.VCardRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
+import com.xabber.android.data.database.repositories.VCardRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -68,6 +70,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class VCardManager implements OnLoadListener, OnPacketListener,
         OnRosterReceivedListener, OnAccountRemovedListener {
 
+    private static final String LOG_TAG = VCardManager.class.getSimpleName();
+
     private static final StructuredName EMPTY_STRUCTURED_NAME = new StructuredName(
             null, null, null, null, null);
 
@@ -102,11 +106,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     private VCardManager() {
         names = new HashMap<>();
         accountRequested = new ArrayList<>();
+        for (VCardRealmObject vCardRealmObject : VCardRepository.getAllVCardsFromRealm()){
+            names.put(vCardRealmObject.getContactJid().getJid(), vCardRealmObject.getStructuredName());
+        }
     }
 
     @Override
-    public void onLoad() {
-    }
+    public void onLoad() { }
 
     private void requestRosterVCards(AccountItem accountItem) {
         AccountJid account = accountItem.getAccount();
@@ -222,15 +228,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         return name.getBestName();
     }
 
-    /**
-     * Get uses's name information.
-     *
-     * @return <code>null</code> if there is no info.
-     */
-    public StructuredName getStructuredName(Jid jid) {
-        return names.get(jid);
-    }
-
     @SuppressWarnings("WeakerAccess")
     void onVCardReceived(final AccountJid account, final Jid bareAddress, final VCard vCard) {
         final StructuredName name;
@@ -253,16 +250,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
                     vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
 
-//            try {
-//                if (account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-//                    PresenceManager.getInstance().resendPresence(account);
-//                }
-//            } catch (NetworkException e) {
-//                LogManager.exception(this, e);
-//            }
-
         }
+
         names.put(bareAddress, name);
+
+        try {
+            VCardRepository.saveOrUpdateVCardToRealm(ContactJid.from(bareAddress), vCard);
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+
 
         RosterContact rosterContact = RosterManager.getInstance()
                 .getRosterContact(account, bareAddress.asBareJid());
