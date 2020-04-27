@@ -146,12 +146,15 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     private Long start;
+
     public void setStart(long start) {
         if (this.start == null) this.start = start;
     }
+
     public Long getStart() {
         return start;
     }
+
     public void onHistoryLoaded(AccountItem accountItem) {
         LogManager.d("VCardManager", "historyLoaded");
         LogManager.d("timeCount", "history loaded, time since connected = " + (System.currentTimeMillis() - start) + " ms");
