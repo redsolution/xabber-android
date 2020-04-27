@@ -209,7 +209,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
             else if (lastMessage != null && lastMessage.haveAttachments())
-                holder.messageTextTV.text = lastMessage.attachmentRealmObjects[0]?.title
+                holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
             else
                 holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
 
