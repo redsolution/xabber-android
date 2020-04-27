@@ -40,18 +40,16 @@ public class VCardRepository {
         return vCardRealmObject;
     }
 
-    public static Collection<VCardRealmObject> getAllVCardsFromRealm(ContactJid contactJid){
+    public static Collection<VCardRealmObject> getAllVCardsFromRealm(){
         Collection<VCardRealmObject> vCardRealmObjects = null;
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             if (Looper.myLooper() == Looper.getMainLooper())
                 vCardRealmObjects = realm.where(VCardRealmObject.class)
-                        .equalTo(VCardRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
                         .findAll();
             else {
                 Collection<VCardRealmObject> tmpCollection = realm.where(VCardRealmObject.class)
-                        .equalTo(VCardRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
                         .findAll();
                 vCardRealmObjects = realm.copyFromRealm(tmpCollection);
             }
