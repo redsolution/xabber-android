@@ -44,10 +44,10 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupMessageStatus(holder, contact)
     }
 
-    private fun setupAccountColorIndicator(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupAccountColorIndicator(holder: ChatViewHolder, chat: AbstractChat) {
         if (AccountManager.getInstance().enabledAccounts.size > 1) {
             val color: Int = ColorManager.getInstance().accountPainter
-                    .getAccountMainColor(contact.account)
+                    .getAccountMainColor(chat.account)
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
             holder.accountColorIndicator = color
@@ -59,27 +59,27 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupContactAvatar(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupContactAvatar(holder: ChatViewHolder, chat: AbstractChat) {
 
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
             holder.avatarIV.setImageDrawable(RosterManager.getInstance()
-                    .getAbstractContact(contact.account, contact.user)
+                    .getAbstractContact(chat.account, chat.user)
                     .getAvatar(true))
         } else {
             holder.avatarIV.visibility = View.GONE
         }
     }
 
-    private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupRosterStatus(holder: ChatViewHolder, chat: AbstractChat) {
         var statusLevel = RosterManager.getInstance()
-                .getAbstractContact(contact.account, contact.user).statusMode.statusLevel
+                .getAbstractContact(chat.account, chat.user).statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
-        val isServer = contact.user.jid.isDomainBareJid
+        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
+        val isServer = chat.user.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(contact.account, contact.user)
+                .contactIsBlockedLocally(chat.account, chat.user)
         val isVisible = holder.avatarIV.visibility == View.VISIBLE
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
@@ -131,17 +131,17 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         // holder.onlyStatusIV.setImageLevel(statusLevel)
     }
 
-    private fun setupContactName(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         holder.contactNameTV.text = RosterManager.getInstance()
-                .getBestContact(contact.account, contact.user).name
+                .getBestContact(chat.account, chat.user).name
     }
 
-    private fun setupNotificationMuteIcon(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupNotificationMuteIcon(holder: ChatViewHolder, chat: AbstractChat) {
 
         val resources = holder.itemView.context.resources
-        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
+        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
-                .isPrefsExist(Key.createKey(contact.account, contact.user))
+                .isPrefsExist(Key.createKey(chat.account, chat.user))
         var iconId = 0
         val mode = chat.notificationState.determineModeByGlobalSettings()
 
@@ -164,8 +164,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.unreadCountTV.setTextColor(resources.getColor(R.color.white))
     }
 
-    private fun setupUnreadCount(holder: ChatViewHolder, contact: AbstractChat) {
-        val chat = ChatManager.getInstance().getOrCreateChat(contact.account, contact.user)
+    private fun setupUnreadCount(holder: ChatViewHolder, chat: AbstractChat) {
+        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
         val unreadCount = chat.unreadMessageCount
         val resources = holder.itemView.resources
         if (unreadCount > 0) {
@@ -190,22 +190,24 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             holder.unreadCountTV.setTextColor(resources.getColor(R.color.grey_200))
     }
 
-    private fun setupTime(holder: ChatViewHolder, contact: AbstractChat) {
-        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                Date(contact.lastMessage!!.timestamp))
-        holder.timeTV.visibility = View.VISIBLE
+    private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
+        if (chat.lastMessage != null){
+            holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
+                    Date(chat.lastMessage!!.timestamp))
+            holder.timeTV.visibility = View.VISIBLE
+        } else holder.timeTV.visibility = View.INVISIBLE
     }
 
-    private fun setupMessageText(holder: ChatViewHolder, contact: AbstractChat) {
-        val lastMessage = contact.lastMessage
+    private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
+        val lastMessage = chat.lastMessage
         val context = holder.itemView.context
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text.isNullOrEmpty()) {
 
-            if (ChatStateManager.getInstance().getFullChatStateString(contact.account, contact.user) != null)
+            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null)
                 holder.messageTextTV.text = ChatStateManager.getInstance()
-                        .getFullChatStateString(contact.account, contact.user)
+                        .getFullChatStateString(chat.account, chat.user)
             else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
             else if (lastMessage != null && lastMessage.haveAttachments())
@@ -239,9 +241,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupMessageStatus(holder: ChatViewHolder, contact: AbstractChat) {
+    private fun setupMessageStatus(holder: ChatViewHolder, chat: AbstractChat) {
 
-        val lastMessage = contact.lastMessage
+        val lastMessage = chat.lastMessage
         holder.messageStatusTV.visibility = if (lastMessage?.text == null || lastMessage.isIncoming)
             View.INVISIBLE else View.VISIBLE
         if (lastMessage != null) {

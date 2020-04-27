@@ -55,6 +55,7 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
@@ -635,50 +636,17 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if (abstractChat.getLastMessage() != null && abstractChat.isArchived())
                         newList.add(abstractChat);
-        } else {
-            /* If filterString not empty, perform a search */
 
-            /*  Make list of rooms and active chats grouped by users inside accounts */
-//            final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
-//            for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
-//                if ((abstractChat.isActive()) && accounts.containsKey(abstractChat.getAccount())) {
-//                    final AccountJid account = abstractChat.getAccount();
-//                    Map<ContactJid, AbstractChat> users = abstractChats.get(account);
-//                    if (users == null) {
-//                        users = new TreeMap<>();
-//                        abstractChats.put(account, users);
-//                    }
-//                    users.put(abstractChat.getUser(), abstractChat);
-//                }
-//            }
-//            /* All roster contact collection */
-//            final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
-//            /* Map with blocked contacts for accounts */
-//            Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
-//            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-//                blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-//            }
-//            /* Filter all blocked contacts from allRosterContacts and save result to rosterContacts*/
-//            final Collection<RosterContact> rosterContacts = new ArrayList<>();
-//            for (RosterContact contact : allRosterContacts) {
-//                if (blockedContacts.containsKey(contact.getAccount())) {
-//                    Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
-//                    if (blockedUsers != null) {
-//                        if (!blockedUsers.contains(contact.getUser()))
-//                            rosterContacts.add(contact);
-//                    } else rosterContacts.add(contact);
-//                } else rosterContacts.add(contact);
-//            }
-//            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
+            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
+
+        } else {
             newList.clear();
+
             newList.addAll(getFilteredChatsOfEnabledAccountsByString(ChatManager.getInstance().getChatsOfEnabledAccounts(),
                     filterString));
+            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
+            newList.addAll(getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance().getAllContactsForEnabledAccounts(), filterString));
         }
-
-        Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
-
-        LogManager.d("ChatListFragment", "Invoked chatList update. Chat list count: " + Integer.toString(newList.size()));
-
 
         setupMarkAllTheReadButton(newList.size());
 
@@ -731,6 +699,23 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
         return resultCollection;
     }
+
+    private Collection<AbstractChat> getFilteredContactsOfEnabledAccountsByString(
+            Collection<AbstractContact> abstractContacts, String filterString){
+        String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
+        Collection<AbstractChat> resultCollection = new ArrayList<>();
+        for (AbstractContact abstractContact : abstractContacts){
+
+            if (abstractContact.getUser().toString().contains(filterString)
+                    || abstractContact.getUser().toString().contains(transliteratedFilterString)
+                    || abstractContact.getName().contains(filterString)
+                    || abstractContact.getName().contains(transliteratedFilterString))
+                resultCollection.add(new RegularChat(abstractContact.getAccount(), abstractContact.getUser()));
+        }
+        return resultCollection;
+    }
+
+
 
     /** Returns an ArrayList of Contacts filtered by filterString **/
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
