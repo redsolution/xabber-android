@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.ui.contactlist;
+package com.xabber.android.ui.fragment.contactListFragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,12 +33,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
-import com.xabber.android.presentation.mvp.contactlist.ContactListView;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountVO;
+import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
+import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
+import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;

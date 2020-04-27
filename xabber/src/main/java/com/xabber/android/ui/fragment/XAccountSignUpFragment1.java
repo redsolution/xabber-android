@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.presentation.mvp.signup.SignUpRepo;
+import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.ui.adapter.HostSpinnerAdapter;
 
 import java.util.ArrayList;

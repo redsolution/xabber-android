@@ -1,11 +1,11 @@
-package com.xabber.android.presentation.mvp.contactlist;
+package com.xabber.android.ui.fragment.contactListFragment;
 
 import android.view.ContextMenu;
 import android.view.View;
 
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
+import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
 
 import java.util.List;
 
