@@ -21,7 +21,7 @@ import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.presentation.mvp.signup.SignUpRepo;
+import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountEmailLoginFragment;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;

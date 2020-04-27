@@ -20,7 +20,9 @@ import android.icu.text.Transliterator;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.StringReader;
@@ -350,6 +352,42 @@ public class StringUtils {
     public static String getColoredText(String text, int color) {
         String hexColor = String.format("#%06X", 0xFFFFFF & color);
         return getColoredText(text, hexColor);
+    }
+
+    public static String getAttachmentDisplayName(Context context, AttachmentRealmObject attachment) {
+        return getColoredAttachmentDisplayName(context, attachment, -1);
+    }
+
+    public static String getColoredAttachmentDisplayName(Context context, AttachmentRealmObject attachment, int accountColorIndicator) {
+        if (attachment != null) {
+            String attachmentName;
+            StringBuilder attachmentBuilder = new StringBuilder();
+
+            if (attachment.isVoice()) {
+                attachmentBuilder.append(context.getResources().getString(R.string.voice_message));
+                if (attachment.getDuration() != null && attachment.getDuration() != 0) {
+                    attachmentBuilder.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+                }
+            } else {
+                if (attachment.isImage()) {
+                    attachmentBuilder.append(context.getResources().getString(R.string.image_message));
+                } else {
+                    attachmentBuilder.append(context.getResources().getString(R.string.file_message));
+                }
+                if (attachment.getTitle() != null) {
+                    attachmentBuilder.append(String.format(Locale.getDefault(), ": %s", attachment.getTitle()));
+                }
+            }
+
+            attachmentName = attachmentBuilder.toString();
+            if (accountColorIndicator != -1) {
+                return StringUtils.getColoredText(attachmentName, accountColorIndicator);
+            } else {
+                return attachmentName;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**

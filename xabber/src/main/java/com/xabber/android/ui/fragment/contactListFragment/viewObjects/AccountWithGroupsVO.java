@@ -1,7 +1,6 @@
-package com.xabber.android.presentation.ui.contactlist.viewobjects;
+package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 
 import com.xabber.android.data.entity.AccountJid;
@@ -19,20 +18,19 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  * Created by valery.miller on 07.02.18.
  */
 
-public class AccountWithContactsVO extends AccountVO implements IExpandable<AccountVO.ViewHolder, ContactVO> {
+public class AccountWithGroupsVO extends AccountVO implements IExpandable<AccountVO.ViewHolder, GroupVO> {
 
     private boolean mExpanded = true;
-    private List<ContactVO> mSubItems;
+    private List<GroupVO> mSubItems;
 
-    public AccountWithContactsVO(int accountColorIndicator, int accountColorIndicatorBack,
-                                 String name,
-                                 String jid, String status, int statusLevel, int statusId, Drawable avatar,
-                                 int offlineModeLevel, String contactCount, AccountJid accountJid,
-                                 boolean isExpand, String groupName, boolean isCustomNotification,
-                                 AccountClickListener listener) {
+    public AccountWithGroupsVO(int accountColorIndicator, int accountColorIndicatorBack,
+                               String name,
+                               String jid, String status, int statusLevel, int statusId, Drawable avatar,
+                               int offlineModeLevel, String contactCount, AccountJid accountJid,
+                               boolean isExpand, String groupName, boolean isCustomNotification,
+                               AccountClickListener listener) {
 
-        super(accountColorIndicator, accountColorIndicatorBack, name, jid,
-                status, statusLevel, statusId,
+        super(accountColorIndicator, accountColorIndicatorBack, name, jid, status, statusLevel, statusId,
                 avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName,
                 isCustomNotification, listener);
 
@@ -45,8 +43,6 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
 
         /** bind EXPAND state */
         viewHolder.bottomView.setVisibility(mExpanded ? View.GONE : View.VISIBLE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            viewHolder.itemView.setElevation(mExpanded ? 2 : 0);
     }
 
     @Override
@@ -66,19 +62,19 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
     }
 
     @Override
-    public List<ContactVO> getSubItems() {
+    public List<GroupVO> getSubItems() {
         return mSubItems;
     }
 
-    public void addSubItem(ContactVO subItem) {
+    public void addSubItem(GroupVO subItem) {
         if (mSubItems == null)
             mSubItems = new ArrayList<>();
         mSubItems.add(subItem);
     }
 
-    public static AccountWithContactsVO convert(AccountConfiguration configuration, AccountClickListener listener) {
+    public static AccountWithGroupsVO convert(AccountConfiguration configuration, AccountClickListener listener) {
         AccountVO contactVO = AccountVO.convert(configuration, listener);
-        return new AccountWithContactsVO(
+        return new AccountWithGroupsVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
                 contactVO.getName(), contactVO.getJid(), contactVO.getStatus(),
                 contactVO.getStatusLevel(), contactVO.getStatusId(), contactVO.getAvatar(),

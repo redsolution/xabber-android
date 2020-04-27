@@ -39,8 +39,8 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 
 import org.jivesoftware.smack.SmackException;
@@ -233,6 +233,14 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             contactsCopy.addAll(rosterContacts.getNested(key).values());
         }
         return Collections.unmodifiableCollection(contactsCopy);
+    }
+
+    public Collection<AbstractContact> getAllContactsForEnabledAccounts(){
+        List<RosterContact> result = new ArrayList<>();
+        for (RosterContact rosterContact : getAllContacts())
+            if (AccountManager.getInstance().getEnabledAccounts().contains(rosterContact.getAccount()))
+                result.add(rosterContact);
+        return Collections.unmodifiableCollection(result);
     }
 
     void onContactsAdded(final AccountJid account, Collection<Jid> addresses) {

@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.ui.contactlist.viewobjects;
+package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -15,22 +15,22 @@ import eu.davidea.flexibleadapter.items.IExpandable;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 /**
- * Created by valery.miller on 07.02.18.
+ * Created by valery.miller on 13.02.18.
  */
 
-public class AccountWithGroupsVO extends AccountVO implements IExpandable<AccountVO.ViewHolder, GroupVO> {
+public class AccountWithButtonsVO extends AccountVO implements IExpandable<AccountVO.ViewHolder, ButtonVO> {
 
     private boolean mExpanded = true;
-    private List<GroupVO> mSubItems;
+    private List<ButtonVO> mSubItems;
 
-    public AccountWithGroupsVO(int accountColorIndicator, int accountColorIndicatorBack,
-                               String name,
+    public AccountWithButtonsVO(int accountColorIndicator, int accountColorIndicatorBack, String name,
                                String jid, String status, int statusLevel, int statusId, Drawable avatar,
                                int offlineModeLevel, String contactCount, AccountJid accountJid,
                                boolean isExpand, String groupName, boolean isCustomNotification,
-                               AccountClickListener listener) {
+                                AccountClickListener listener) {
 
-        super(accountColorIndicator, accountColorIndicatorBack, name, jid, status, statusLevel, statusId,
+        super(accountColorIndicator, accountColorIndicatorBack, name, jid,
+                status, statusLevel, statusId,
                 avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName,
                 isCustomNotification, listener);
 
@@ -62,19 +62,19 @@ public class AccountWithGroupsVO extends AccountVO implements IExpandable<Accoun
     }
 
     @Override
-    public List<GroupVO> getSubItems() {
+    public List<ButtonVO> getSubItems() {
         return mSubItems;
     }
 
-    public void addSubItem(GroupVO subItem) {
+    public void addSubItem(ButtonVO subItem) {
         if (mSubItems == null)
             mSubItems = new ArrayList<>();
         mSubItems.add(subItem);
     }
 
-    public static AccountWithGroupsVO convert(AccountConfiguration configuration, AccountClickListener listener) {
+    public static AccountWithButtonsVO convert(AccountConfiguration configuration, AccountClickListener listener) {
         AccountVO contactVO = AccountVO.convert(configuration, listener);
-        return new AccountWithGroupsVO(
+        return new AccountWithButtonsVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
                 contactVO.getName(), contactVO.getJid(), contactVO.getStatus(),
                 contactVO.getStatusLevel(), contactVO.getStatusId(), contactVO.getAvatar(),
@@ -82,4 +82,5 @@ public class AccountWithGroupsVO extends AccountVO implements IExpandable<Accoun
                 contactVO.getAccountJid(), contactVO.isExpand(), contactVO.getGroupName(),
                 contactVO.isCustomNotification(), contactVO.listener);
     }
+
 }
