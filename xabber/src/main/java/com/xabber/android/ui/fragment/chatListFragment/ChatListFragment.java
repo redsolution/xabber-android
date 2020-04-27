@@ -670,8 +670,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 //                } else rosterContacts.add(contact);
 //            }
 //            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
-//            newList.clear();
-//            newList.addAll(baseEntities);
+            newList.clear();
+            newList.addAll(getFilteredChatsOfEnabledAccountsByString(ChatManager.getInstance().getChatsOfEnabledAccounts(),
+                    filterString));
         }
 
         Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
@@ -711,6 +712,24 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             });
         }
         else markAllAsReadButton.setVisibility(View.GONE);
+    }
+
+    private Collection<AbstractChat> getFilteredChatsOfEnabledAccountsByString(
+            Collection<AbstractChat> abstractChats, String filterString){
+        String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
+        Collection<AbstractChat> resultCollection = new ArrayList<>();
+        for (AbstractChat abstractChat : abstractChats){
+            AbstractContact abstractContact = RosterManager.getInstance()
+                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
+            if (abstractChat.getLastMessage() == null)
+                continue;
+            if (abstractChat.getUser().toString().contains(filterString)
+                || abstractChat.getUser().toString().contains(transliteratedFilterString)
+                || abstractContact.getName().contains(filterString)
+                || abstractContact.getName().contains(transliteratedFilterString))
+                resultCollection.add(abstractChat);
+        }
+        return resultCollection;
     }
 
     /** Returns an ArrayList of Contacts filtered by filterString **/
