@@ -27,7 +27,6 @@ import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountEmailLoginFragment;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
@@ -35,6 +34,7 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
+import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.net.SocketTimeoutException;

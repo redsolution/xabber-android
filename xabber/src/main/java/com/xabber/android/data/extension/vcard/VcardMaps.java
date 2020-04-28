@@ -1,4 +1,4 @@
-package com.xabber.android.data;
+package com.xabber.android.data.extension.vcard;
 
 import com.xabber.android.R;
 import com.xabber.xmpp.vcard.AddressProperty;
