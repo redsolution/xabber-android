@@ -139,7 +139,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         final boolean checkContactsIsEmpty = adapter.getCheckedContacts().isEmpty();
         menu.findItem(R.id.action_unblock_all).setVisible(adapter.getItemCount() > 0 && checkContactsIsEmpty);
         menu.findItem(R.id.action_unblock_selected).setVisible(!checkContactsIsEmpty);
-        menu.findItem(R.id.action_block_manual).setVisible(adapter.getItemCount() > 0 && checkContactsIsEmpty && adapter.getCurrentBlockListState() == BLOCKED_LIST);
+        menu.findItem(R.id.action_block_manual).setVisible(checkContactsIsEmpty && adapter.getCurrentBlockListState() == BLOCKED_LIST);
         return true;
     }
 
