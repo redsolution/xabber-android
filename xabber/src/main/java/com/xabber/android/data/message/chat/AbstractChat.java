@@ -1127,6 +1127,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         this.historyRequestedAtStart = isHistoryRequested;
     }
 
+    public void requestSaveToRealm() {
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
     public static String getStanzaId(Message message) {
         String stanzaId = null;
 
