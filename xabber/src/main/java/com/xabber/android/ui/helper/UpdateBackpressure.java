@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.mvp.contactlist;
+package com.xabber.android.ui.helper;
 
 import android.os.Handler;
 

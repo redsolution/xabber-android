@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.mvp.signup;
+package com.xabber.android.ui.helper;
 
 public class SignUpRepo {
 

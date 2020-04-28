@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
@@ -31,6 +30,7 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.extension.vcard.VcardMaps;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -189,6 +189,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (vCard == null && !vCardError) {
+//            vCard = VCardManager.getInstance().getSavedVCard(account, user);
+//            updateVCard();
             requestVCard();
         } else {
             updateVCard();

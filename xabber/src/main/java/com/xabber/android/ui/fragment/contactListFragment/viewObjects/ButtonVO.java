@@ -1,4 +1,4 @@
-package com.xabber.android.presentation.ui.contactlist.viewobjects;
+package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
 
 import androidx.annotation.Nullable;
 import android.view.View;
