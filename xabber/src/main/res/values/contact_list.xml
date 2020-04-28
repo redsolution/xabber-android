@@ -118,6 +118,8 @@
     <string name="show_all_chats">Show all chats</string>
     <string name="category_title_contacts">Contacts</string>
     <string name="voice_message">Voice message</string>
+    <string name="image_message">Image</string>
+    <string name="file_message">File</string>
 
     <string name="showcase_contact_list_text_1">Swipe chat left or right to archive it</string>
 
