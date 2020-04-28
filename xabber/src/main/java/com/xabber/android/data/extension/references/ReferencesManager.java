@@ -129,6 +129,26 @@ public class ReferencesManager {
         return voiceFileExtensions;
     }
 
+    public static boolean messageHasMutableReferences(Message message) {
+        if (message == null) return false;
+
+        List<ExtensionElement> referenceElements = message.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
+        for (ExtensionElement element : referenceElements) {
+            if (element instanceof Mutable) {
+                return true;
+            }
+        }
+
+        List<ExtensionElement> groupchatElements = message.getExtensions(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        for (ExtensionElement groupchatElement : groupchatElements) {
+            if (groupchatElement instanceof GroupchatUserContainer) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //@NonNull
     //public static List<RefMedia> getMediaFromReferences(Stanza packet) {
     //    List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);

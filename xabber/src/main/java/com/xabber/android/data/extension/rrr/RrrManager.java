@@ -141,9 +141,9 @@ public class RrrManager implements OnPacketListener {
 
     public void sendEditedMessage(final AccountJid accountJid, final ContactJid contactJid,
                                   final String uniqueId, final String text){
-        final Message[] message = {new Message()};
         Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
+            final Message[] message = {new Message()};
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
@@ -156,11 +156,21 @@ public class RrrManager implements OnPacketListener {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            String body = message[0].getBody();
-                            message[0].removeBody("");
-                            String originalText = messageRealmObject.getText();
-                            body = body.substring(0, body.length() - originalText.length()).concat(text);
-                            message[0].setBody(body);
+                            if (ReferencesManager.messageHasMutableReferences(message[0])) {
+                                String body = message[0].getBody();
+                                message[0].removeBody("");
+                                String originalText = messageRealmObject.getText();
+                                int lastMutable = body.length() - originalText.length();
+                                if (lastMutable < 0) {
+                                    lastMutable = 0;
+                                    LogManager.exception("RrrManager", new Throwable("error in counting the end of the mutable reference"));
+                                }
+                                body = body.substring(0, lastMutable).concat(text);
+                                message[0].setBody(body);
+                            } else {
+                                message[0].removeBody("");
+                                message[0].setBody(text);
+                            }
                             message[0].setStanzaId(messageRealmObject.getStanzaId());
                             messageRealmObject.setText(text);
                             messageRealmObject.setOriginalStanza(message[0].toXML().toString());
@@ -294,7 +304,7 @@ public class RrrManager implements OnPacketListener {
                     String stanzaId = rewriteElement.getAttributeValue(ID_ATTRIBUTE);
                     String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
                             .getAttributeValue(STAMP_ATTRIBUTE);
-                    String originalStanza = newMessage.getText();
+                    String originalStanza = newMessage.toXML().toString();
                     Message message = (Message) PacketParserUtils.parseStanza(newMessage.toXML().toString());
                     String text = message.getBody();
                     Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
