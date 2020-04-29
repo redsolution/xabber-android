@@ -35,7 +35,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.Collection;
@@ -159,7 +158,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
         if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
+            AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
             AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
             Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
@@ -172,9 +171,9 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
 
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountPainter.getFirstAccount() != null)
+                AccountManager.getInstance().getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountPainter.getFirstAccount()));
+                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
         else {
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();

@@ -31,7 +31,6 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
@@ -139,7 +138,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             final int accountGroupColorsResourceId = a.getResourceId(0, 0);
             a.recycle();
             final int[] accountGroupColors = this.getResources().getIntArray(accountGroupColorsResourceId);
-            final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+            final int level = AccountManager.getInstance().getColorLevel(AccountManager.getInstance().getFirstAccount());
             toolbarLayout.setBackgroundColor(accountGroupColors[level]);
             StatusBarPainter.instanceUpdateWithDefaultColor(this);
         } else {

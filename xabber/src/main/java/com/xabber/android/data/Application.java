@@ -20,7 +20,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
@@ -72,6 +71,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.AppBlockCanaryContext;
 import com.xabber.android.utils.ExternalAPIs;
 
@@ -89,7 +89,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -423,6 +422,7 @@ public class Application extends android.app.Application {
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());
+        addManager(ColorManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
         addManager(ScreenManager.getInstance());

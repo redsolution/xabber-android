@@ -8,10 +8,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class AccountPainter {
     private final int themeMainColor;
     private final int themeDarkColor;
@@ -69,24 +65,12 @@ public class AccountPainter {
         greyDark = context.getResources().getColor(R.color.grey_700);
     }
 
-    public static AccountJid getFirstAccount() {
-        List<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getEnabledAccounts());
-        Collections.sort(list);
-
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return list.get(0);
-        }
-    }
-
     public static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 
     public static int getDefaultAccountColorLevel() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return 5;
         } else {
@@ -131,7 +115,7 @@ public class AccountPainter {
     }
 
     /**
-     * Returns the specified tint of the standartColor of the account.
+     * Returns the specified tint of the standardColor of the account.
      * @param account
      * @param tint may be 50, 100, 200.. 900; else will return 0
      * @return account standartColor with tint
@@ -158,28 +142,28 @@ public class AccountPainter {
      * @return default standartColor with tint
      */
     public int getDefaultColorWithTint(int tint){
-        return getAccountColorWithTint(getFirstAccount(), tint);
+        return getAccountColorWithTint(AccountManager.getInstance().getFirstAccount(), tint);
     }
     public int getDefaultMainColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
-            return themeMainColor;
+            return accountMainColors[SettingsManager.getMainAccountColorLevel()];
         } else {
             return getAccountMainColor(firstAccount);
         }
     }
 
     public int getDefaultRippleColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
-            return themeMainColor;
+            return accountRippleColors[SettingsManager.getMainAccountColorLevel()];
         } else {
             return getAccountRippleColor(firstAccount);
         }
     }
 
     public int getDefaultIndicatorBackColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeMainColor;
         } else {
@@ -204,7 +188,7 @@ public class AccountPainter {
     }
 
     public int getDefaultTextColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeTextColor;
         } else {
@@ -213,7 +197,7 @@ public class AccountPainter {
     }
 
     public int getDefaultDarkColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeDarkColor;
         } else {

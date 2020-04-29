@@ -370,9 +370,9 @@ public class StringUtils {
                 }
             } else {
                 if (attachment.isImage()) {
-                    attachmentBuilder.append(context.getResources().getString(R.string.image_message));
+                    attachmentBuilder.append("image mes");
                 } else {
-                    attachmentBuilder.append(context.getResources().getString(R.string.file_message));
+                    attachmentBuilder.append("file mes");
                 }
                 if (attachment.getTitle() != null) {
                     attachmentBuilder.append(String.format(Locale.getDefault(), ": %s", attachment.getTitle()));

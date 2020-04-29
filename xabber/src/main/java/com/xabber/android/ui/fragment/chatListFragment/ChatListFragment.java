@@ -67,7 +67,6 @@ import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
@@ -350,7 +349,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
+            AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
             AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
             Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
@@ -363,11 +362,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         /* Update background color via current main user and theme; */
 
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountPainter.getFirstAccount() != null)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getDefaultRippleColor());
-        else if (getContext() != null){
+                        getDefaultRippleColor());
+        } else if (getContext() != null){
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
             theme.resolveAttribute(R.attr.bars_color, typedValue, true);

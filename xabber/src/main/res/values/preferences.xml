@@ -88,6 +88,12 @@
     </string-array>
     <string name="interface_smiles_default">@string/interface_smiles_android_value</string>
 
+    <string name="main_account_color_level">main_account_color_level</string>
+    <string name="main_account_color_level_default">0</string>
+
+    <string name="base_avatar_hash">default_hash_avatar</string>
+    <string name="base_avatar_hash_default">default_hash_avatar</string>
+
 <!-- preference_contacts -->
 
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>

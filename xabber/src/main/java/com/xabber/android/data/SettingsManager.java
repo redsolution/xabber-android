@@ -176,6 +176,14 @@ public class SettingsManager implements OnInitializedListener,
         return Uri.parse(value);
     }
 
+    public static int getMainAccountColorLevel(){
+        return getInt(R.string.main_account_color_level, R.string.main_account_color_level_default);
+    }
+
+    public static void setMainAccountColorLevel(int colorLevel){
+        setString(R.string.main_account_color_level, String.valueOf(colorLevel));
+    }
+
     public static boolean contactsShowAvatars() {
         return getBoolean(R.string.contacts_show_avatars_key,
                 R.bool.contacts_show_avatars_default);

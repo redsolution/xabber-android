@@ -1045,6 +1045,19 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItem.setColorIndex(colorIndex);
             AccountRepository.saveAccountToRealm(accountItem);
         }
+        if (getFirstAccount().equals(accountJid))
+            SettingsManager.setMainAccountColorLevel(colorIndex);
+    }
+
+    public AccountJid getFirstAccount() {
+        List<AccountJid> list = new ArrayList<>(getEnabledAccounts());
+        Collections.sort(list);
+
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
     }
 
     public void setOrder(AccountJid accountJid, int order) {
