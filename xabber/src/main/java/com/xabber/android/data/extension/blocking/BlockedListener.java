@@ -20,14 +20,17 @@ class BlockedListener implements JidsBlockedListener {
 
     @Override
     public void onJidsBlocked(List<Jid> blockedJids) {
+        List<ContactJid> blockedList = BlockingManager.getInstance().getCachedBlockedContacts(account);
+
         for (Jid jid : blockedJids) {
             try {
-                BlockingManager.blockContactLocally(account, ContactJid.from(jid));
+                ContactJid contactJid = ContactJid.from(jid);
+                blockedList.add(contactJid);
+                BlockingManager.blockContactLocally(account, contactJid);
             } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
-
 
         BlockingManager.notify(account);
     }

@@ -13,6 +13,7 @@ public class UnblockedAllListener implements AllJidsUnblockedListener {
 
     @Override
     public void onAllJidsUnblocked() {
+        BlockingManager.getInstance().getCachedBlockedContacts(account).clear();
         BlockingManager.notify(account);
     }
 }
