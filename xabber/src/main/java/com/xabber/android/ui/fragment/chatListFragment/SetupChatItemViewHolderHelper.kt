@@ -89,7 +89,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 10
-            chat.isGroupchat -> statusLevel = 9
+            isGroupchat -> statusLevel = 9
         }
 
         if (statusLevel == 11) {
@@ -115,7 +115,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.statusIV.setImageLevel(statusLevel)
 
         holder.statusIV.visibility =
-                if (!isServer && !isGroupchat && isVisible && (isUnavailable || !isAccountConnected))
+                if (!isServer && !isGroupchat && !isBlocked && isVisible && (isUnavailable || !isAccountConnected))
                     View.INVISIBLE
                 else
                     View.VISIBLE
