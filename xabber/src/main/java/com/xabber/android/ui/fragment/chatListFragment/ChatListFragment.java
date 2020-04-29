@@ -641,12 +641,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
         } else {
-            newList.clear();
 
-            newList.addAll(getFilteredChatsOfEnabledAccountsByString(ChatManager.getInstance().getChatsOfEnabledAccounts(),
-                    filterString));
-            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
-            newList.addAll(getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance().getAllContactsForEnabledAccounts(), filterString));
+            ArrayList<AbstractChat> chatsList = new ArrayList<>(
+                    getFilteredChatsOfEnabledAccountsByString(ChatManager.getInstance()
+                                    .getChatsOfEnabledAccounts(), filterString));
+
+            Collections.sort(chatsList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
+
+            ArrayList<AbstractChat> contactList = new ArrayList<>(
+                    getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance()
+                            .getAllContactsForEnabledAccounts(), filterString));
+
+            newList.clear();
+            newList.addAll(concatLists(chatsList, contactList));
         }
 
         setupMarkAllTheReadButton(newList.size());
@@ -655,6 +662,22 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         updateUnreadCount();
         updateToolbar();
         updateItems(newList);
+    }
+
+    private ArrayList<AbstractChat> concatLists(ArrayList<AbstractChat> chatList,
+                                                ArrayList<AbstractChat> contactsList){
+        ArrayList<AbstractChat> result = new ArrayList<>(chatList);
+        for (AbstractChat abstractChat : contactsList){
+            boolean isDuplicating = false;
+            for (AbstractChat abstractChat1 : chatList)
+                if (abstractChat.getUser() == abstractChat1.getUser()){
+                    isDuplicating = true;
+                    break;
+                }
+            if (!isDuplicating) result.add(abstractChat);
+        }
+
+        return result;
     }
 
     private void setupMarkAllTheReadButton(int listSize){
