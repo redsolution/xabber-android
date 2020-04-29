@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 
 import org.jivesoftware.smackx.blocking.JidsUnblockedListener;
 import org.jxmpp.jid.Jid;
@@ -16,6 +17,16 @@ public class UnblockedListener implements JidsUnblockedListener {
 
     @Override
     public void onJidsUnblocked(List<Jid> unblockedJids) {
+        List<ContactJid> blockedList = BlockingManager.getInstance().getCachedBlockedContacts(account);
+
+        for (Jid jid : unblockedJids) {
+            try {
+                blockedList.remove(ContactJid.from(jid));
+            } catch (ContactJid.UserJidCreateException e) {
+                e.printStackTrace();
+            }
+        }
+
         BlockingManager.notify(account);
     }
 }

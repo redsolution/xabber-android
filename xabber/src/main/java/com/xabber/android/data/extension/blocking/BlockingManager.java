@@ -26,7 +26,6 @@ import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +61,7 @@ public class BlockingManager {
         blockedListeners = new ConcurrentHashMap<>();
         unblockedListeners = new ConcurrentHashMap<>();
         unblockedAllListeners = new ConcurrentHashMap<>();
-        cachedBlockedContacts = new HashMap<>();
+        cachedBlockedContacts = new ConcurrentHashMap<>();
     }
 
     public void onAuthorized(final ConnectionItem connection) {
@@ -270,7 +269,6 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            cachedBlockedContacts.get(account).add(contactJid);
                             listener.onSuccessBlock();
                         } else {
                             listener.onErrorBlock();
@@ -347,9 +345,6 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            if (cachedBlockedContacts.get(account) != null) {
-                                cachedBlockedContacts.get(account).removeAll(contacts);
-                            }
                             listener.onSuccessUnblock();
                         } else {
                             listener.onErrorUnblock();
@@ -384,9 +379,6 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            if (cachedBlockedContacts.get(account) != null) {
-                                cachedBlockedContacts.get(account).clear();
-                            }
                             listener.onSuccessUnblock();
                         } else {
                             listener.onErrorUnblock();
