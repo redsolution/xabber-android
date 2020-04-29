@@ -184,6 +184,13 @@ public class SettingsManager implements OnInitializedListener,
         setString(R.string.main_account_color_level, String.valueOf(colorLevel));
     }
 
+    public static String getMainAvatarHash(){
+        return getString(R.string.main_account_avatar_hash, "0");
+    }
+    public static void setMainAvatarHash(String avatarHash){
+        setString(R.string.main_account_avatar_hash, avatarHash);
+    }
+
     public static boolean contactsShowAvatars() {
         return getBoolean(R.string.contacts_show_avatars_key,
                 R.bool.contacts_show_avatars_default);
