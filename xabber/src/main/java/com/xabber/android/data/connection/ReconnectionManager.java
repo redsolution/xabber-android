@@ -25,8 +25,8 @@ public class ReconnectionManager implements OnConnectedListener,
      * will be used on first attempt. Next value will be used if reconnection
      * fails. Last value will be used if there is no more values in array.
      */
-    private final static int RECONNECT_AFTER[] = new int[]{0, 5, 10, 30, 60};
-    private final static int RECONNECT_AFTER_ERROR_MULTIPLIER = 1;
+    private final static int[] RECONNECT_AFTER = new int[]{0, 5, 10, 30, 60};
+    private final static int[] ERROR_RECONNECT_AFTER = new int[]{15, 30, 60, 120, 240};
     private int tenSecondsCounter = 0;
     private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 
@@ -132,7 +132,13 @@ public class ReconnectionManager implements OnConnectedListener,
      * @return if we should reconnect
      */
     private boolean isTimeToReconnectAfterError(ReconnectionInfo reconnectionInfo) {
-        return getTimeSinceLastReconnectionSeconds(reconnectionInfo) >= RECONNECT_AFTER[4] * RECONNECT_AFTER_ERROR_MULTIPLIER;
+        int reconnectAfter;
+        if (reconnectionInfo.getReconnectAttempts() < ERROR_RECONNECT_AFTER.length) {
+            reconnectAfter = ERROR_RECONNECT_AFTER[reconnectionInfo.getReconnectAttempts()];
+        } else {
+            reconnectAfter = ERROR_RECONNECT_AFTER[ERROR_RECONNECT_AFTER.length - 1];
+        }
+        return getTimeSinceLastReconnectionSeconds(reconnectionInfo) >= reconnectAfter;
     }
 
     private boolean isTimeToReconnect(ReconnectionInfo reconnectionInfo) {
