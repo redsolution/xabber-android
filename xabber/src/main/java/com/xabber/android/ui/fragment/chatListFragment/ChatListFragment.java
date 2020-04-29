@@ -177,6 +177,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
 
+        MessageNotificationManager.getInstance().setShowBanners(true);
+
         updateBackpressure.removeRefreshRequests();
     }
 
@@ -187,6 +189,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
+
+        MessageNotificationManager.getInstance().setShowBanners(false);
 
         updateUnreadCount();
         if (unreadCount == 0){

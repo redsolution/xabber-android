@@ -16,12 +16,15 @@ import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.UpdateBackpressure;
+import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
+import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
+import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountWithButtonsVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountWithContactsVO;
@@ -30,10 +33,8 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
-import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
-import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.helper.UpdateBackpressure;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -75,6 +76,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     public void bindView(ContactListView view) {
         this.view = view;
+        MessageNotificationManager.getInstance().setShowBanners(false);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         if (!EventBus.getDefault().isRegistered(this))
@@ -90,6 +92,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().unregister(this);
+        MessageNotificationManager.getInstance().setShowBanners(true);
         updateBackpressure.removeRefreshRequests();
     }
 

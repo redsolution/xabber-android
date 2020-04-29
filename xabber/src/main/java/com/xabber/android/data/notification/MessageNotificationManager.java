@@ -19,9 +19,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -51,6 +51,8 @@ public class MessageNotificationManager implements OnLoadListener {
     private Message lastMessage = null;
     private HashMap<Integer, Action> delayedActions = new HashMap<>();
     private long lastNotificationTime = 0;
+
+    private boolean isShowBanners;
 
     private MessageNotificationManager() {
         context = Application.getInstance();
@@ -85,6 +87,9 @@ public class MessageNotificationManager implements OnLoadListener {
     public void setLastNotificationTime() {
         this.lastNotificationTime = System.currentTimeMillis();
     }
+
+    public boolean isShowBanners() { return isShowBanners; }
+    public void setShowBanners(boolean showBanners) { isShowBanners = showBanners; }
 
     /** LISTENER */
 
@@ -135,6 +140,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     getNextChatNotificationId(), chatTitle, false);
             chats.add(chat);
         }
+
         addMessage(chat, chatTitle, getNotificationText(messageRealmObject), true);
         saveNotifChatToRealm(chat);
     }
@@ -282,14 +288,20 @@ public class MessageNotificationManager implements OnLoadListener {
     private void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
-            creator.createNotification(chat, alert);
+            if (isShowBanners)
+                creator.createNotification(chat, alert);
+            else
+                creator.createNotificationWithoutBannerJustSound();
         } else {
             if (chats.size() > 1) {
                 if (chats.size() == 2) {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                creator.createBundleNotification(chats, true);
+                if (isShowBanners)
+                    creator.createNotification(chat, alert);
+                else
+                    creator.createNotificationWithoutBannerJustSound();
             }
             else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }

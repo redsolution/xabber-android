@@ -7,8 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -62,6 +66,8 @@ public class MessageNotificationCreator {
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
 
+
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                 .setWhen(chat.getLastMessageTimestamp())
@@ -93,6 +99,21 @@ public class MessageNotificationCreator {
         builder.addAction(createMarkAsReadAction(chat.getNotificationId(), chat.getAccountJid()))
                 .addAction(createMuteAction(chat.getNotificationId(), chat.getAccountJid()));
         sendNotification(builder, chat.getNotificationId());
+    }
+
+    public void createNotificationWithoutBannerJustSound(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
+                RingtoneManager.getActualDefaultRingtoneUri(
+                        Application.getInstance().getApplicationContext(),
+                        RingtoneManager.TYPE_NOTIFICATION));
+        mediaPlayer.start();
+
+        Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(750, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(750);
+        }
     }
 
     public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
