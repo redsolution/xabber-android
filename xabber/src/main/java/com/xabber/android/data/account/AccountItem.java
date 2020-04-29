@@ -317,8 +317,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         ConnectionState state = getState();
         if (state.isConnected()) {
             return statusMode;
-        } else if (state.isConnectable()) {
-            return StatusMode.connection;
         } else {
             return StatusMode.unavailable;
         }

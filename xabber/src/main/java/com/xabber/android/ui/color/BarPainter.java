@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 
 public class BarPainter {
@@ -46,7 +47,7 @@ public class BarPainter {
 
     public void setDefaultColor() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(accountPainter.getFirstAccount()));
+            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithDefaultColor();
         } else {

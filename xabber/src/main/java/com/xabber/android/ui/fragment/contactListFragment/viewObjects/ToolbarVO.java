@@ -13,9 +13,8 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
 import java.util.List;
 import java.util.UUID;
@@ -102,7 +101,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         /** set up BACKGROUND COLOR */
         final int[] accountGroupColors = context.getResources().getIntArray(
                 getThemeResource(context, R.attr.contact_list_account_group_background));
-        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        final int level = AccountManager.getInstance().getColorLevel(AccountManager.getInstance().getFirstAccount());
         holder.itemView.setBackgroundColor(accountGroupColors[level]);
 
         /** set up STATE TITLE */

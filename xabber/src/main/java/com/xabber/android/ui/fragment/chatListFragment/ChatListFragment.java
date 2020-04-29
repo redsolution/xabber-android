@@ -41,7 +41,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.StatusMode;
@@ -67,7 +66,6 @@ import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
@@ -347,15 +345,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
 
         /* Update avatar and status ImageViews via current settings and main user */
-        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
+        if (SettingsManager.contactsShowAvatars()){
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
-            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
-            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
-            toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
-            toolbarStatusIv.setImageLevel(mainAccountStatusMode);
+            toolbarAvatarIv.setImageDrawable(AvatarManager.getInstance().getMainAccountAvatar());
+            if (AccountManager.getInstance().getEnabledAccounts().size() > 0){
+                int mainAccountStatusMode = AccountManager.getInstance()
+                        .getAccount(AccountManager.getInstance().getFirstAccount())
+                        .getDisplayStatusMode()
+                        .getStatusLevel();
+                toolbarStatusIv.setImageLevel(mainAccountStatusMode);
+            } else {
+                toolbarStatusIv.setImageLevel(StatusMode.unavailable.ordinal());
+            }
         } else {
             toolbarAvatarIv.setVisibility(View.GONE);
             toolbarStatusIv.setVisibility(View.GONE);
@@ -363,11 +365,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         /* Update background color via current main user and theme; */
 
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountPainter.getFirstAccount() != null)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getDefaultRippleColor());
-        else if (getContext() != null){
+                        getDefaultRippleColor());
+        } else if (getContext() != null){
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
             theme.resolveAttribute(R.attr.bars_color, typedValue, true);
@@ -652,8 +653,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         /* Update another elements */
         updateUnreadCount();
-        updateItems(newList);
         updateToolbar();
+        updateItems(newList);
     }
 
     private void setupMarkAllTheReadButton(int listSize){

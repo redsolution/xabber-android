@@ -322,6 +322,22 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
+    private Bitmap getBitmapByHash(String hash){
+        Bitmap bitmap = EMPTY_BITMAP;
+
+        if (!hash.equals(EMPTY_HASH))
+            bitmap = bitmaps.get(hash);
+
+        LogManager.d(LOG_TAG, "Invoked getBitmap with hash " + hash);
+
+        if (bitmap == EMPTY_BITMAP) {
+            LogManager.d(LOG_TAG, "Bitmap is null");
+            return null;
+        } else {
+            return bitmap;
+        }
+    }
+
     public String getCurrentXEPHash(Jid jid) {
         return getXEPHash(jid);
     }
@@ -373,14 +389,31 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /**
-     * Gets account's avatar.
+     * Gets main account's avatar.
      *
-     * @param account
      * @return Avatar or default avatar if:
      * <ul>
      * <li>account has no avatar.</li>
      * </ul>
      */
+
+    public Drawable getMainAccountAvatar(){
+        LogManager.d(LOG_TAG, "invoke get main account avatar for account");
+        if (AccountManager.getInstance().getFirstAccount() == null || bitmaps.isEmpty()){
+            Bitmap value = makeBitmap(AvatarStorage.getInstance().read(SettingsManager.getMainAvatarHash()));
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            AccountJid account = AccountManager.getInstance().getFirstAccount();
+            Bitmap value = getBitmap(account.getFullJid().asBareJid());
+            if (value != null) {
+                LogManager.d(LOG_TAG, "Avatar is not null");
+                return new BitmapDrawable(application.getResources(), value);
+            } else {
+                LogManager.d(LOG_TAG, "Avatar is null, generated default");
+                return getDefaultAccountAvatar(account);
+            }
+        }
+    }
     public Drawable getAccountAvatar(AccountJid account) {
         LogManager.d(LOG_TAG, "invoke getaccount avatar for account " + account.toString());
         Bitmap value = getBitmap(account.getFullJid().asBareJid());
@@ -576,13 +609,17 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param value
      */
     public void onAvatarReceived(Jid jid, String hash, byte[] value, String type) {
-        if(type.equals("vcard")){
-            setValue(hash, value, type);
-            setHash(jid.asBareJid(), hash);
-        }else{
-            //XEP-0084-avi
-            setValue(hash, value, type);
-            setXEPHash(jid, hash);
+        if (hash != null){
+            if(type.equals("vcard")){
+                setValue(hash, value, type);
+                setHash(jid.asBareJid(), hash);
+            }else{
+                //XEP-0084-avi
+                setValue(hash, value, type);
+                setXEPHash(jid, hash);
+            }
+            if (AccountManager.getInstance().getFirstAccount().getBareJid().toString().equals(jid.toString()))
+                SettingsManager.setMainAvatarHash(hash);
         }
     }
 
