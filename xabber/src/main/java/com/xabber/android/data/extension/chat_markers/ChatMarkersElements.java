@@ -61,8 +61,6 @@ public class ChatMarkersElements {
         protected ArrayList<ExtensionElement> stanzaIdExtensions = new ArrayList<>();
 
         protected ChatMarkerExtensionWithId(String id) {
-            if (id == null)
-                id = "";
             this.id = id;
         }
 
@@ -96,7 +94,7 @@ public class ChatMarkersElements {
         @Override
         public final XmlStringBuilder toXML() {
             XmlStringBuilder xml = new XmlStringBuilder(this);
-            xml.attribute("id", id);
+            xml.optAttribute("id", id);
             if (stanzaIdExtensions.isEmpty())
                 xml.closeEmptyElement();
             else {

@@ -111,8 +111,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         LogManager.d("AccountRosterListener", "onAccountConnectedStarted");
         updateIsSupported(accountItem);
         LogManager.d("AccountRosterListener", "finished checking support");
-        updatePreferencesFromServer(accountItem);
-        LogManager.d("AccountRosterListener", "finished updating preferences");
+        //updatePreferencesFromServer(accountItem);
+        //LogManager.d("AccountRosterListener", "finished updating preferences");
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
@@ -134,6 +134,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 }
             } else startLoadingLastMessageInAllChats(accountItem);
         }
+        updatePreferencesFromServer(accountItem);
+        LogManager.d("AccountRosterListener", "finished updating preferences");
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
      }
 
