@@ -89,11 +89,15 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     private static VCardManager instance;
 
     @SuppressWarnings("WeakerAccess")
-    Set<Jid> vCardRequests = new ConcurrentSkipListSet<>();
+    Map<AccountJid, Set<Jid>> vCardRequests = new ConcurrentHashMap<>();
     @SuppressWarnings("WeakerAccess")
     Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
-    private Map<AccountItem, Boolean> rosterOrHistoryIsLoaded = new ConcurrentHashMap<>();
+    private Map<AccountItem, RosterAndHistoryLoadState> rosterOrHistoryIsLoaded = new ConcurrentHashMap<>();
+
+    enum RosterAndHistoryLoadState {
+        ROSTER, HISTORY, BOTH
+    }
 
     public static VCardManager getInstance() {
         if (instance == null) {
@@ -145,12 +149,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         LogManager.d("VCardManager", "roster received");
         LogManager.d("timeCount", "roster received, time since connected = "
                 + (System.currentTimeMillis() - start) + " ms");
-        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
-        if (loaded != null && loaded) {
+        RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
+        if (loaded == RosterAndHistoryLoadState.HISTORY) {
+            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
             requestRosterVCards(accountItem);
         } else {
+            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.ROSTER);
             requestRosterLastActivity(accountItem);
-            rosterOrHistoryIsLoaded.put(accountItem, true);
         }
     }
 
@@ -167,18 +172,19 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     public void onHistoryLoaded(AccountItem accountItem) {
         LogManager.d("VCardManager", "historyLoaded");
         LogManager.d("timeCount", "history loaded, time since connected = " + (System.currentTimeMillis() - start) + " ms");
-        Boolean loaded = rosterOrHistoryIsLoaded.get(accountItem);
-        if (loaded != null && loaded) {
+        RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
+        if (loaded == RosterAndHistoryLoadState.ROSTER) {
+            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
             requestRosterVCards(accountItem);
         } else {
-            rosterOrHistoryIsLoaded.put(accountItem, true);
+            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.HISTORY);
         }
     }
 
     public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
         AccountItem account = AccountManager.getInstance().getAccount(accountJid);
-        Boolean loaded = rosterOrHistoryIsLoaded.get(account);
-        return account != null && loaded != null && loaded;
+        RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(account);
+        return account != null && loaded != null;
     }
 
     // TODO
@@ -188,6 +194,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         if (accountItem != null) {
             rosterOrHistoryIsLoaded.remove(accountItem);
+            vCardRequests.remove(accountJid);
             LastActivityInteractor.getInstance().interruptLastActivityRequest(accountJid);
         }
     }
@@ -237,6 +244,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final StructuredName name;
         if (vCard.getType() == Type.error) {
             onVCardFailed(account, bareAddress);
+            removeVCardRequest(account, bareAddress.asBareJid());
             if (names.containsKey(bareAddress)) {
                 return;
             }
@@ -257,6 +265,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
 
         names.put(bareAddress, name);
+        removeVCardRequest(account, bareAddress.asBareJid());
 
         try {
             VCardRepository.saveOrUpdateVCardToRealm(ContactJid.from(bareAddress), vCard);
@@ -313,17 +322,22 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
         AccountJid account = connection.getAccount();
-        if (stanza instanceof Presence && ((Presence) stanza).getType() != Presence.Type.error) {
-            Jid from = stanza.getFrom();
+        if (stanza instanceof Presence) {
+            Presence presence = (Presence) stanza;
+            if (presence.getType() == Presence.Type.error) return;
+            RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(connection);
+            if (presence.isAvailable() || presence.getType().equals(Presence.Type.subscribe) || loaded == RosterAndHistoryLoadState.BOTH) {
+                Jid from = stanza.getFrom();
 
-            if (from == null) {
-                return;
-            }
+                if (from == null) {
+                    return;
+                }
 
-            // Request vCard for new users
-            if (!names.containsKey(from)) {
-                if (SettingsManager.connectionLoadVCard()) {
-                    request(account, from);
+                // Request vCard for new users
+                if (!names.containsKey(from)) {
+                    if (SettingsManager.connectionLoadVCard()) {
+                        request(account, from);
+                    }
                 }
             }
         }
@@ -360,24 +374,30 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final BareJid bareJid = srcUser.asBareJid();
 
         if (bareJid != null) {
-            vCardRequests.add(srcUser);
+            if (isVCardRequested(account, bareJid)) {
+                return;
+            } else {
+                addVCardRequest(account, bareJid);
+            }
             try {
                 sendVCardRequest(accountItem.getConnection(), bareJid);
             } catch (SmackException.NotConnectedException e) {
                 LogManager.exception(this, e);
                 LogManager.w(this, "Error getting vCard: " + e.getMessage());
                 onVCardFailed(account, srcUser);
+                removeVCardRequest(account, bareJid);
             } catch (ClassCastException e) {
                 LogManager.exception(this, e);
                 // http://stackoverflow.com/questions/31498721/error-loading-vcard-information-using-smack-emptyresultiq-cannot-be-cast-to-or
                 LogManager.w(this, "ClassCastException: " + e.getMessage());
                 //vCard = new VCard();
                 onVCardFailed(account, srcUser);
+                removeVCardRequest(account, bareJid);
             } catch (InterruptedException e) {
                 LogManager.exception(this, e);
                 onVCardFailed(account, srcUser);
+                removeVCardRequest(account, bareJid);
             }
-            vCardRequests.remove(srcUser);
         }
     }
 
@@ -462,13 +482,34 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         connection.createStanzaCollectorAndSend(vcard).nextResultOrThrow();
     }
 
+    private void addVCardRequest(AccountJid accountJid, Jid user) {
+        Set<Jid> requests = vCardRequests.get(accountJid);
+        if (requests == null) {
+            requests = new ConcurrentSkipListSet<>();
+            vCardRequests.put(accountJid, requests);
+        }
+        requests.add(user);
+    }
 
-    public boolean isVCardRequested(Jid user) {
-        return vCardRequests.contains(user.asBareJid());
+    private void removeVCardRequest(AccountJid accountJid, Jid user) {
+        Set<Jid> requests = vCardRequests.get(accountJid);
+        if (requests == null) {
+            requests = new ConcurrentSkipListSet<>();
+            vCardRequests.put(accountJid, requests);
+        }
+        requests.remove(user);
+    }
+
+    public boolean isVCardRequested(AccountJid accountJid, Jid user) {
+        Set<Jid> requests = vCardRequests.get(accountJid);
+        if (requests == null) {
+            requests = new ConcurrentSkipListSet<>();
+            vCardRequests.put(accountJid, requests);
+        }
+        return requests.contains(user.asBareJid());
     }
 
     public boolean isVCardSaveRequested(AccountJid account) {
         return vCardSaveRequests.contains(account);
     }
-
 }
