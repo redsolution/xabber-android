@@ -124,9 +124,13 @@ public class BackpressureMessageReader {
                 queryFieldCounter++;
             }
         }
-        realmQuery.endGroup();
-        message = realmQuery.findFirst();
-        return message;
+        if (queryFieldCounter == 0) {
+            return null;
+        } else {
+            realmQuery.endGroup();
+            message = realmQuery.findFirst();
+            return message;
+        }
     }
 
     private RealmResults<MessageRealmObject> getPreviousUnreadMessages(Realm realm, MessageRealmObject messageRealmObject) {

@@ -121,34 +121,39 @@ public class BackpressureMessageMarker {
     }
 
     private MessageRealmObject getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
-        MessageRealmObject message;
+        int idFieldCounter = 0;
 
         RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
-
         realmQuery.equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString());
-        if (stanzaIds != null && stanzaIds.size()>0) {
-            realmQuery.beginGroup();
+        realmQuery.beginGroup();
+        if (id != null && !id.isEmpty()) {
             realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
-            for (String stanzaId : stanzaIds) {
-                realmQuery.or();
-                realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
-            }
-            realmQuery.endGroup();
-            message = realmQuery.findFirst();
-        } else {
-            realmQuery.equalTo(MessageRealmObject.Fields.ORIGIN_ID, id);
-            message = realmQuery.findFirst();
+            realmQuery.or();
+            realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, id);
+            idFieldCounter++;
         }
-        return message;
+        if (stanzaIds != null && stanzaIds.size() > 0) {
+            for (String stanzaId : stanzaIds) {
+                if (idFieldCounter > 0) realmQuery.or();
+                realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
+                idFieldCounter++;
+            }
+        }
+        if (idFieldCounter == 0) {
+            return null;
+        } else {
+            realmQuery.endGroup();
+            return realmQuery.findFirst();
+        }
     }
 
-    private class MessageIdAndMarker {
+    private static class MessageIdAndMarker {
         final String messageId;
         final ArrayList<String> stanzaId;
         final ChatMarkersState marker;
         final AccountJid accountJid;
 
-        public MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
+        MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
             this.messageId = messageId;
             this.stanzaId = stanzaId;
             this.marker = marker;

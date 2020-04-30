@@ -16,8 +16,8 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -34,6 +34,7 @@ import org.jivesoftware.smack.filter.MessageTypeFilter;
 import org.jivesoftware.smack.filter.MessageWithBodiesFilter;
 import org.jivesoftware.smack.filter.NotFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
@@ -43,6 +44,7 @@ import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.jid.Jid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -91,10 +93,10 @@ public class ChatMarkerManager implements OnPacketListener {
                 sendReceived(message, connection.getAccount());
             } else if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
                 // received
-                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message).getId());
+                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message));
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
                 // displayed
-                markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message).getId());
+                markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message));
             } else if (ChatMarkersElements.AcknowledgedExtension.from(message) != null) {
                 // acknowledged
             }
@@ -104,11 +106,7 @@ public class ChatMarkerManager implements OnPacketListener {
     public void sendDisplayed(MessageRealmObject messageRealmObject) {
         if (messageRealmObject.getStanzaId() == null && messageRealmObject.getOriginId() == null) return;
 
-        String id = messageRealmObject.getOriginId() != null ?
-                messageRealmObject.getOriginId() : messageRealmObject.getStanzaId();
-        if (id == null || id.isEmpty()) return;
-
-        Message displayed = new Message(messageRealmObject.getUser().getJid());
+        Message displayedNotification = new Message(messageRealmObject.getUser().getJid());
         Message originalMessage = null;
         try {
             originalMessage = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
@@ -116,23 +114,27 @@ public class ChatMarkerManager implements OnPacketListener {
             e.printStackTrace();
         }
 
-        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(id);
-
+        String originId = messageRealmObject.getOriginId();
+        List<ExtensionElement> stanzaIds = new ArrayList<>();
         if (originalMessage != null) {
-            displayedExtension.setStanzaIdExtensions(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+            stanzaIds.addAll(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
         }
 
-        displayed.addExtension(displayedExtension);
-        displayed.setType(Message.Type.chat);
+        if ((originId == null || originId.isEmpty()) && stanzaIds.isEmpty()) return;
+
+        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(originId);
+        displayedExtension.setStanzaIdExtensions(stanzaIds);
+        displayedNotification.addExtension(displayedExtension);
+        displayedNotification.setType(Message.Type.chat);
 
         if (Looper.myLooper() != Looper.getMainLooper()) {
             try {
-                StanzaSender.sendStanza(messageRealmObject.getAccount(), displayed);
+                StanzaSender.sendStanza(messageRealmObject.getAccount(), displayedNotification);
             } catch (NetworkException e) {
                 e.printStackTrace();
             }
         } else {
-            sendMessageInBackgroundUserRequest(displayed, messageRealmObject.getAccount());
+            sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.getAccount());
         }
     }
 
@@ -221,6 +223,13 @@ public class ChatMarkerManager implements OnPacketListener {
         });
     }
 
+    private void markAsDisplayed(ChatMarkersElements.DisplayedExtension displayedExtension) {
+        if (displayedExtension.getId() == null || displayedExtension.getId().isEmpty()) {
+            if (!displayedExtension.getStanzaId().isEmpty()) {
+                markAsDisplayed(displayedExtension.getStanzaId().get(0));
+            }
+        } else markAsDisplayed(displayedExtension.getId());
+    }
     private void markAsDisplayed(final String messageID) {
         Application.getInstance().runInBackground(() ->  {
                 Realm realm = null;
@@ -252,6 +261,13 @@ public class ChatMarkerManager implements OnPacketListener {
         });
     }
 
+    private void markAsDelivered(ChatMarkersElements.ReceivedExtension receivedExtension) {
+        if (receivedExtension.getId() == null || receivedExtension.getId().isEmpty()) {
+            if (!receivedExtension.getStanzaId().isEmpty()) {
+                markAsDelivered(receivedExtension.getStanzaId().get(0));
+            }
+        } else markAsDelivered(receivedExtension.getId());
+    }
     private void markAsDelivered(final String stanzaID) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
