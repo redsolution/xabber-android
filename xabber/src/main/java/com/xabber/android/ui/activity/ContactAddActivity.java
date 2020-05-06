@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -51,7 +51,8 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     }
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ContactAddActivity.class).setAccount(account).setUser(user).build();
+        return new EntityIntentBuilder(context, ContactAddActivity.class)
+                .setAccount(account).setUser(user).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -62,15 +63,6 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         return EntityIntentBuilder.getUser(intent);
     }
 
-/*
-    private static String getContact(Intent intent){
-        String contact;
-        Bundle bundle = intent.getExtras();
-        contact = bundle.get("contact").toString();
-        return contact;
-    }
-*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +70,10 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         setContentView(R.layout.activity_with_toolbar_progress_and_container);
 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
-        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+            toolbar = ToolbarHelper
+                    .setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper
+                .setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.toolbar_add_contact);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         View view = findViewById(R.id.action_add_contact);
@@ -88,12 +82,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
                 ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(getResources().getColor(R.color.white));
         toolbarSetEnabled(false);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item);
-            }
-        });
+        toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
 
         progressBar = findViewById(R.id.toolbarProgress);
         barPainter = new BarPainter(this, toolbar);
@@ -101,20 +90,11 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
         Intent intent = getIntent();
 
-        /*
-        if(intent.hasExtra("contact")) {
-            if (savedInstanceState == null) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent), getContact(intent)))
-                        .commit();
-            }
-        }else
-        */
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
+                    .add(R.id.fragment_container, ContactAddFragment
+                            .newInstance(getAccount(intent), getUser(intent)))
                     .commit();
         }
 
@@ -126,7 +106,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater=getMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_add_contact, menu);
         toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(false);
         return true;
@@ -138,7 +118,6 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
             case R.id.action_add_contact:
                 addContact();
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -157,10 +136,11 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         }
     }
 
-    public void toolbarSetEnabled(boolean active){
-            toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active);
-            View view = findViewById(R.id.action_add_contact);
-            if (view instanceof TextView)
-                ((TextView) view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));
+    public void toolbarSetEnabled(boolean active) {
+        toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active);
+        View view = findViewById(R.id.action_add_contact);
+        if (view instanceof TextView)
+            ((TextView) view).setTextColor(((TextView) view).getTextColors()
+                    .withAlpha(active ? 255 : 127));
     }
 }
