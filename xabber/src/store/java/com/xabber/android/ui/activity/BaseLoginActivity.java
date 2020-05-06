@@ -359,7 +359,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     protected void updateLastSyncTime() {}
 
     protected void goToMainActivity() {
-        Intent intent = ContactListActivity.createIntent(BaseLoginActivity.this);
+        Intent intent = MainActivity.createIntent(BaseLoginActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         finish();
         startActivity(intent);
