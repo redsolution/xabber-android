@@ -39,7 +39,7 @@ import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -405,7 +405,7 @@ public class MessageNotificationCreator {
     }
 
     private PendingIntent createContentIntent(MessageNotificationManager.Chat chat) {
-        Intent backIntent = ContactListActivity.createIntent(Application.getInstance());
+        Intent backIntent = MainActivity.createIntent(Application.getInstance());
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getContactJid());
@@ -416,7 +416,7 @@ public class MessageNotificationCreator {
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
-                ContactListActivity.createClearStackIntent(context),
+                MainActivity.createClearStackIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

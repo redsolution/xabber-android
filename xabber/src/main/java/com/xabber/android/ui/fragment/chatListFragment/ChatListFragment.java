@@ -6,9 +6,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -50,7 +47,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -62,8 +58,8 @@ import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -81,10 +77,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
@@ -123,12 +116,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private ImageView toolbarStatusIv;
     private ImageView toolbarSearchIv;
 
-    private int unreadCount;
-
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
-        void onUnreadChanged(int unread);
     }
 
     @Override
@@ -137,25 +127,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         updateBackpressure = new ChatListUpdateBackpressure(this);
         super.onAttach(context);
-    }
-
-    public void playMessageSound() {
-        if (!SettingsManager.eventsInChatSounds()) return;
-
-        final MediaPlayer mp;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes attr = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
-            mp = MediaPlayer.create(getActivity(), R.raw.message_alert,
-                    attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
-        } else {
-            mp = MediaPlayer.create(getActivity(), R.raw.message_alert);
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-        }
-
-        mp.start();
-        mp.setOnCompletionListener(mp1 -> { mp.release(); });
     }
 
     @Override
@@ -191,11 +162,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
 
         MessageNotificationManager.getInstance().setShowBanners(false);
-
-        updateUnreadCount();
-        if (unreadCount == 0){
-            onStateSelected(ChatListState.recent);
-        }
 
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
@@ -311,7 +277,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
-        if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
+        if (!getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
         /* Find possible max recycler items*/
@@ -339,9 +305,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 break;
             case archived:
                 toolbarTitleTv.setText(R.string.archived_chats);
-                break;
-            case all:
-                toolbarTitleTv.setText(R.string.all_chats);
                 break;
             default:
                 toolbarTitleTv.setText(R.string.account_state_connecting);
@@ -445,12 +408,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
         return System.currentTimeMillis() - startTime;
     }
-    /** @return  Return true when first element on the top of list*/
+    /** @return  Return true when first element of chat list is on the top of the screen*/
     public boolean isOnTop(){
         return linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
     }
 
-    /** @return Size of list */
+    /** @return Size of chat list */
     public int getListSize(){ return items.size(); }
 
     /** Show menu Add contact / Add conference */
@@ -605,15 +568,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             update();
     }
 
-    public void updateUnreadCount() {
-        unreadCount = 0;
-        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
-                unreadCount += abstractChat.getUnreadMessageCount();
-        if (chatListFragmentListener != null)
-            chatListFragmentListener.onUnreadChanged(unreadCount);
-    }
-
     @Override
     public void onChatItemClick(AbstractChat item) {
         try {
@@ -625,7 +579,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void update(){
 
         List<AbstractChat> newList = new ArrayList<>();
-        //showPlaceholders++;
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
@@ -658,12 +611,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
             newList.clear();
             newList.addAll(concatLists(chatsList, contactList));
+
         }
 
         setupMarkAllTheReadButton(newList.size());
 
         /* Update another elements */
-        updateUnreadCount();
         updateToolbar();
         updateItems(newList);
     }
@@ -743,46 +696,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         return resultCollection;
     }
 
-
-
-    /** Returns an ArrayList of Contacts filtered by filterString **/
-    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
-                                                        Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats) {
-        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
-        String transliterated = StringUtils.translitirateToLatin(filterString);
-        // Build structure.
-        for (RosterContact rosterContact : rosterContacts) {
-            if (!rosterContact.isEnabled()) {
-                continue;
-            }
-            final AccountJid account = rosterContact.getAccount();
-            final Map<ContactJid, AbstractChat> users = abstractChats.get(account);
-            if (users != null) {
-                users.remove(rosterContact.getUser());
-            }
-            if (rosterContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
-                    || rosterContact.getName().toString().toLowerCase(Locale.getDefault()).contains(transliterated)
-                    || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
-                    || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated)) {
-                baseEntities.add(rosterContact);
-            }
-        }
-        for (Map<ContactJid, AbstractChat> users : abstractChats.values()) {
-            for (AbstractChat abstractChat : users.values()) {
-                final AbstractContact abstractContact;
-                abstractContact = new ChatContact(abstractChat);
-                if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
-                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
-                        || abstractContact.getName().toLowerCase(Locale.getDefault()).contains(transliterated)
-                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated)){
-                    baseEntities.add(abstractContact);
-                }
-            }
-        }
-        Collections.sort(baseEntities, new ComparatorBySubstringPosition(filterString));
-        return baseEntities;
-    }
-
     private void showPlaceholder(String message, @Nullable String buttonMessage){
         placeholderMessage.setText(message);
         if (buttonMessage != null){
@@ -802,15 +715,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (snackbar != null) snackbar.dismiss();
         final AbstractChat abstractChat = ChatManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
         final boolean archived = abstractChat.isArchived();
-        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
-                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                abstractChat.setArchived(!archived);
-                onStateSelected(previousState);
-                update();
-            }
+        snackbar = Snackbar.make(coordinatorLayout,
+                !archived ? R.string.chat_was_unarchived : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, view -> {
+            abstractChat.setArchived(!archived);
+            onStateSelected(previousState);
+            update();
         });
         snackbar.setActionTextColor(Color.YELLOW);
         snackbar.show();
@@ -823,8 +733,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public enum ChatListState {
         recent,
         unread,
-        archived,
-        all
+        archived
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -833,27 +742,5 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public static final int NOT_SPECIFIED = 0;
     public static final int SHOW_AVATARS = 1;
     public static final int DO_NOT_SHOW_AVATARS = 2;
-
-    private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
-        String substring;
-
-        ComparatorBySubstringPosition(String substring){ this.substring = substring; }
-
-        ComparatorBySubstringPosition(){ this.substring = null; }
-
-        @Override
-        public int compare(AbstractContact o1, AbstractContact o2) {
-            String firstString = (o1.getName() + o1.getUser().toString()).toLowerCase();
-            String secondString = (o2.getName() + o2.getUser().toString()).toLowerCase();
-            int statusComparing = o1.getStatusMode().compareTo(o2.getStatusMode());
-            int firstPosintion = firstString.indexOf(substring);
-            int secondPosition = secondString.indexOf(substring);
-            if (firstPosintion > secondPosition) return 1;
-            if (firstPosintion < secondPosition) return -1;
-            else if (statusComparing != 0) return statusComparing;
-            else return (firstString.compareTo(secondString));
-        }
-    }
-
 
 }

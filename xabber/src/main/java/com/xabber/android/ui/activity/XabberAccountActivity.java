@@ -342,7 +342,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         XabberAccountManager.getInstance().removeAccount();
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
-        Intent intent = ContactListActivity.createIntent(XabberAccountActivity.this);
+        Intent intent = MainActivity.createIntent(XabberAccountActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

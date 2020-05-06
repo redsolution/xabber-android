@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
-import com.xabber.android.ui.activity.ContactListActivity
+import com.xabber.android.ui.activity.MainActivity
 import com.xabber.android.ui.color.ColorManager
 
 class BottomBar : Fragment(), View.OnClickListener {
@@ -98,7 +98,7 @@ class BottomBar : Fragment(), View.OnClickListener {
         }
     }
 
-    fun setColoredButton(activeFragment : ContactListActivity.ActiveFragment){
+    fun setColoredButton(activeFragmentType : MainActivity.ActiveFragmentType){
         val colorBasic = Color.parseColor("#757575")
         val colorActive = ColorManager.getInstance().accountPainter.defaultMainColor
         callsButton?.setColorFilter(colorBasic)
@@ -106,12 +106,12 @@ class BottomBar : Fragment(), View.OnClickListener {
         contactsButton?.setColorFilter(colorBasic)
         discoverButton?.setColorFilter(colorBasic)
         settingsButton?.setColorFilter(colorBasic)
-        when (activeFragment){
-            ContactListActivity.ActiveFragment.CHATS -> chatsImage?.setColorFilter(colorActive)
-            ContactListActivity.ActiveFragment.CALLS -> callsButton?.setColorFilter(colorActive)
-            ContactListActivity.ActiveFragment.CONTACTS -> contactsButton?.setColorFilter(colorActive)
-            ContactListActivity.ActiveFragment.DISCOVER -> discoverButton?.setColorFilter(colorActive)
-            ContactListActivity.ActiveFragment.SETTINGS -> settingsButton?.setColorFilter(colorActive)
+        when (activeFragmentType){
+            MainActivity.ActiveFragmentType.CHATS -> chatsImage?.setColorFilter(colorActive)
+            MainActivity.ActiveFragmentType.CALLS -> callsButton?.setColorFilter(colorActive)
+            MainActivity.ActiveFragmentType.CONTACTS -> contactsButton?.setColorFilter(colorActive)
+            MainActivity.ActiveFragmentType.DISCOVER -> discoverButton?.setColorFilter(colorActive)
+            MainActivity.ActiveFragmentType.SETTINGS -> settingsButton?.setColorFilter(colorActive)
         }
     }
 }

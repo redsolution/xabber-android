@@ -23,13 +23,12 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.AboutActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.LoadActivity;
 import com.xabber.android.ui.activity.TutorialActivity;
 
@@ -102,11 +101,11 @@ public class ActivityManager implements OnUnloadListener {
      * @param finishRoot also finish root contact list.
      */
     public void clearStack(boolean finishRoot) {
-        ContactListActivity root = null;
+        MainActivity root = null;
         rebuildStack();
         for (Activity activity : activities) {
-            if (!finishRoot && root == null && activity instanceof ContactListActivity) {
-                root = (ContactListActivity) activity;
+            if (!finishRoot && root == null && activity instanceof MainActivity) {
+                root = (MainActivity) activity;
             } else {
                 activity.finish();
             }
@@ -120,7 +119,7 @@ public class ActivityManager implements OnUnloadListener {
     public boolean hasContactList(Context context) {
         rebuildStack();
         for (Activity activity : activities)
-            if (activity instanceof ContactListActivity)
+            if (activity instanceof MainActivity)
                 return true;
         return false;
     }

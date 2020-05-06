@@ -30,7 +30,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
@@ -119,7 +119,7 @@ public class PreferenceEditor extends ManagedActivity
     @Override
     public void onThemeChanged() {
         ActivityManager.getInstance().clearStack(true);
-        startActivity(ContactListActivity.createIntent(this));
+        startActivity(MainActivity.createIntent(this));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
