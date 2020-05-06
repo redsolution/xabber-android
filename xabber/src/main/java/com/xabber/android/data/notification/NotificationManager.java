@@ -43,7 +43,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -318,7 +318,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         final Intent persistentIntent;
 
-        persistentIntent = ContactListActivity.createPersistentIntent(application);
+        persistentIntent = MainActivity.createPersistentIntent(application);
 
         if (SyncManager.getInstance().isSyncMode()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);

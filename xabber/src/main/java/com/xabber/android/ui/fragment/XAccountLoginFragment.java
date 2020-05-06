@@ -29,7 +29,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.QRCodeScannerActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OnSocialBindListener;
@@ -256,7 +256,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             return;
         }
 
-        startActivity(ContactListActivity.createIntent(getActivity()));
+        startActivity(MainActivity.createIntent(getActivity()));
         getActivity().finish();
     }
 

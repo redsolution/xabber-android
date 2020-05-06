@@ -7,8 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -35,7 +39,7 @@ import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -61,6 +65,8 @@ public class MessageNotificationCreator {
 
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
+
+
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))
@@ -93,6 +99,21 @@ public class MessageNotificationCreator {
         builder.addAction(createMarkAsReadAction(chat.getNotificationId(), chat.getAccountJid()))
                 .addAction(createMuteAction(chat.getNotificationId(), chat.getAccountJid()));
         sendNotification(builder, chat.getNotificationId());
+    }
+
+    public void createNotificationWithoutBannerJustSound(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
+                RingtoneManager.getActualDefaultRingtoneUri(
+                        Application.getInstance().getApplicationContext(),
+                        RingtoneManager.TYPE_NOTIFICATION));
+        mediaPlayer.start();
+
+        Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(750, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(750);
+        }
     }
 
     public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
@@ -384,7 +405,7 @@ public class MessageNotificationCreator {
     }
 
     private PendingIntent createContentIntent(MessageNotificationManager.Chat chat) {
-        Intent backIntent = ContactListActivity.createIntent(Application.getInstance());
+        Intent backIntent = MainActivity.createIntent(Application.getInstance());
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getContactJid());
@@ -395,7 +416,7 @@ public class MessageNotificationCreator {
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
-                ContactListActivity.createClearStackIntent(context),
+                MainActivity.createClearStackIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

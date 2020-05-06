@@ -529,10 +529,6 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     public void onChatListStateChanged(ChatListFragment.ChatListState chatListState) {
     }
 
-    @Override
-    public void onUnreadChanged(int unread) {
-    }
-
     private boolean isSharedText(String type) {
         return type.contains("text/plain");
     }

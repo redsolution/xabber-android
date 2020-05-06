@@ -24,7 +24,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 
 public class ContactDeleteDialog extends DialogFragment implements View.OnClickListener {
@@ -113,7 +113,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
 
                 dismiss();
                 if (getActivity() instanceof ContactActivity) {
-                    startActivity(ContactListActivity.createIntent(getActivity()));
+                    startActivity(MainActivity.createIntent(getActivity()));
                 }
         }
     }

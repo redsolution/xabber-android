@@ -59,7 +59,7 @@
             />
 
         <activity
-            android:name=".ui.activity.ContactListActivity"
+            android:name=".ui.activity.MainActivity"
             android:label="@string/application_title_full"
             android:launchMode="singleTop">
             <intent-filter>
@@ -150,7 +150,7 @@
             android:name=".ui.activity.ChatActivity"
             android:label="@string/chat_viewer"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.activity.ContactListActivity"
+            android:parentActivityName=".ui.activity.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -159,7 +159,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactEditActivity"
@@ -198,22 +198,22 @@
         <activity
             android:name=".ui.activity.StatusEditActivity"
             android:label="@string/status_editor"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.PreferenceEditor"
             android:label="@string/preference_editor"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactActivity"
@@ -247,7 +247,7 @@
         </activity>
         <activity
             android:name=".ui.activity.AccountActivity"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -393,12 +393,12 @@
         </activity>
         <activity
             android:name=".ui.activity.ConferenceSelectActivity"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity android:name=".ui.activity.ConferenceFilterActivity" />
         <activity
@@ -527,7 +527,7 @@
             android:theme="@style/ThemeDark">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
 
         <activity android:name=".ui.activity.DeepLinkActivity" >

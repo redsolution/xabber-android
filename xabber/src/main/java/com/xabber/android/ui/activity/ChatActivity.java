@@ -727,7 +727,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         finish();
         ActivityManager.getInstance().clearStack(false);
         //if (!ActivityManager.getInstance().hasContactList(this)) {
-        startActivity(ContactListActivity.createIntent(this));
+        startActivity(MainActivity.createIntent(this));
         //}
 
     }
@@ -1085,7 +1085,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     //ChatActivity.this.initChats(true);
                 }
                 else{
-                    startActivity(new Intent(ChatActivity.this, ContactListActivity.class));
+                    startActivity(new Intent(ChatActivity.this, MainActivity.class));
                     ChatActivity.this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                     finish();
                 }

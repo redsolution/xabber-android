@@ -18,13 +18,21 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 public interface ContactListView {
 
     void updateItems(List<IFlexible> items);
+
     void onContactClick(AbstractContact contact);
+
     void onItemContextMenu(int adapterPosition, ContextMenu menu);
+
     void onContactAvatarClick(int adapterPosition);
+
     void onAccountAvatarClick(int adapterPosition);
+
     void onAccountMenuClick(int adapterPosition, View view);
+
     void onButtonItemClick(ButtonVO buttonVO);
+
     void onContactListChanged(CommonState commonState, boolean hasContacts,
-                              boolean hasVisibleContacts, boolean isFilterEnabled);
+                              boolean hasVisibleContacts);
+
     void updateAccountsList();
 }

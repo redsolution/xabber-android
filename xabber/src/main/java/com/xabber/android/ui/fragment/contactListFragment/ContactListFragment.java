@@ -33,16 +33,16 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
+import com.xabber.android.ui.activity.MainActivity;
+import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
-import com.xabber.android.ui.activity.AccountActivity;
-import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.ContactViewerActivity;
-import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutAdapter;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutVO;
@@ -106,12 +106,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
      */
     private Animation animation;
 
-    public interface ContactListFragmentListener {
-        void onContactClick(AbstractContact contact);
-        void onContactListChange(CommonState commonState);
-        void onManageAccountsClick();
-    }
-
     public static ContactListFragment newInstance(@Nullable AccountJid account) {
         ContactListFragment fragment = new ContactListFragment();
         Bundle args = new Bundle();
@@ -144,17 +138,17 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list_new, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+        coordinatorLayout = view.findViewById(R.id.coordinatorLayout);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
         //ColorManager.setGrayScaleFilter(disconnectedView);
-        textView = (TextView) infoView.findViewById(R.id.text);
-        buttonView = (Button) infoView.findViewById(R.id.button);
+        textView = infoView.findViewById(R.id.text);
+        buttonView = infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
         items = new ArrayList<>();
@@ -179,32 +173,31 @@ public class ContactListFragment extends Fragment implements ContactListView,
         return view;
     }
 
-    public void scrollToTop(){
+    public void scrollToTop() {
         recyclerView.smoothScrollToPosition(0);
     }
 
     /**
-    Setup bottom accounts list with avatars.
+     * Setup bottom accounts list with avatars.
      */
-    public void updateAccountsList(){
+    public void updateAccountsList() {
         accountsJidList = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(accountsJidList);
-        if (accountsJidList.size() > 1){
+        if (accountsJidList.size() > 1) {
             accountShortcutVOArrayList.clear();
             accountShortcutVOArrayList.addAll(AccountShortcutVO.convert(accountsJidList));
             accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
             accountsRecyclerView.setAdapter(accountShortcutAdapter);
             accountsRecyclerView.setVisibility(View.VISIBLE);
             accountsRecyclerView.setOnClickListener(this);
-        }
-        else accountsRecyclerView.setVisibility(View.GONE);
+        } else accountsRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenter = ContactListPresenter.getInstance();
-        ((ContactListActivity)getActivity()).setStatusBarColor();
+        ((MainActivity) getActivity()).setStatusBarColor();
     }
 
     @Override
@@ -233,10 +226,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onStickyHeaderChange(int newPosition, int oldPosition) {
         if (newPosition > -1 && adapter.getItemCount() > newPosition) {
             IFlexible item = adapter.getItem(newPosition);
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 if (item instanceof AccountVO)
-                    ((ContactListActivity)getActivity()).setStatusBarColor(((AccountVO)item).getAccountJid()); // account color
-                else ((ContactListActivity)getActivity()).setStatusBarColor(); // main color
+                    ((MainActivity) getActivity()).setStatusBarColor(((AccountVO) item).getAccountJid()); // account color
+                else ((MainActivity) getActivity()).setStatusBarColor(); // main color
             }
 
         }
@@ -251,13 +244,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.avatarView){
+        if (v.getId() == R.id.avatarView) {
             int position = accountsRecyclerView.getChildLayoutPosition(v);
             AccountJid clickedAccountJid = accountsJidList.get(position);
             scrollToAccount(clickedAccountJid);
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 if (Build.VERSION.SDK_INT > 20)
-                    ((ContactListActivity)getActivity()).setStatusBarColor(clickedAccountJid);
+                    ((MainActivity) getActivity()).setStatusBarColor(clickedAccountJid);
             }
         }
     }
@@ -327,7 +320,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
-                                     boolean hasVisibleContacts, boolean isFilterEnabled) {
+                                     boolean hasVisibleContacts) {
 
         if (contactListFragmentListener != null)
             contactListFragmentListener.onContactListChange(commonState);
@@ -342,18 +335,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         final int button;
         final ContactListState state;
         final View.OnClickListener listener;
-        if (isFilterEnabled) {
-            if (commonState == CommonState.online) {
-                state = ContactListState.online;
-            } else if (commonState == CommonState.roster || commonState == CommonState.connecting) {
-                state = ContactListState.connecting;
-            } else {
-                state = ContactListState.offline;
-            }
-            text = R.string.application_state_nobody_by_filter;
-            button = 0;
-            listener = null;
-        } else if (hasContacts) {
+        if (hasContacts) {
             state = ContactListState.online;
             text = R.string.application_state_no_online;
             button = R.string.application_action_no_online;
@@ -470,7 +452,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         for (int position = 0; position < (int) count; position++) {
             Object itemAtPosition = adapter.getItem(position);
             if (itemAtPosition != null && itemAtPosition instanceof AccountVO
-                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+                    && ((AccountVO) itemAtPosition).getAccountJid().equals(account)) {
                 scrollTo(position);
                 break;
             }
@@ -483,5 +465,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void scrollTo(int position) {
         if (linearLayoutManager != null)
             linearLayoutManager.scrollToPositionWithOffset(position, 0);
+    }
+
+    public interface ContactListFragmentListener {
+        void onContactClick(AbstractContact contact);
+
+        void onContactListChange(CommonState commonState);
+
+        void onManageAccountsClick();
     }
 }

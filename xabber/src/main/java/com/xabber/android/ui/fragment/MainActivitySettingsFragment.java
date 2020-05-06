@@ -37,7 +37,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.color.AccountPainter;
@@ -54,7 +54,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class ContactListDrawerFragment extends Fragment implements View.OnClickListener,
+public class MainActivitySettingsFragment extends Fragment implements View.OnClickListener,
         OnAccountChangedListener, AdapterView.OnItemClickListener, AccountListPreferenceAdapter.Listener {
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -76,8 +76,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private ImageView ivReorder;
     private Button btnAddAccount;
 
-    public static ContactListDrawerFragment newInstance() {
-        return new ContactListDrawerFragment();
+    public static MainActivitySettingsFragment newInstance() {
+        return new MainActivitySettingsFragment();
     }
 
     @Override
@@ -315,7 +315,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         ActivityManager.getInstance().clearStack(true);
         Activity activity = getActivity();
         if (activity != null) {
-            Intent intent = ContactListActivity.createFragmentIntent(activity, ContactListActivity.ActiveFragment.SETTINGS);
+            Intent intent = MainActivity.createFragmentIntent(activity, MainActivity.ActiveFragmentType.SETTINGS);
             startActivity(intent);
             activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }

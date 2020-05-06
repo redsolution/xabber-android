@@ -21,7 +21,9 @@ import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.UpdateBackpressure;
+import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
+import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
+import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountWithButtonsVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountWithContactsVO;
@@ -30,10 +32,8 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
-import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
-import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.helper.UpdateBackpressure;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,15 +62,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     private UpdateBackpressure updateBackpressure;
 
-    private String filterString = null;
+    public ContactListPresenter() {
+        updateBackpressure = new UpdateBackpressure(this);
+    }
 
     public static ContactListPresenter getInstance() {
         if (instance == null) instance = new ContactListPresenter();
         return instance;
-    }
-
-    public ContactListPresenter() {
-        updateBackpressure = new UpdateBackpressure(this);
     }
 
     public void bindView(ContactListView view) {
@@ -160,44 +158,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void update() {
-//        listener.hidePlaceholder();
 
         List<IFlexible> items = new ArrayList<>();
 
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
-
-//<<<<<<< HEAD
-//        Map<AccountJid, Collection<ContactJid>> blockedContacts = new TreeMap<>();
-//        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-//            blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-//        }
-//
-//        final Collection<RosterContact> rosterContacts = new ArrayList<>();
-//        for (RosterContact contact : allRosterContacts) {
-//            if (blockedContacts.containsKey(contact.getAccount())) {
-//                Collection<ContactJid> blockedUsers = blockedContacts.get(contact.getAccount());
-//                if (blockedUsers != null) {
-//                    if (!blockedUsers.contains(contact.getUser()))
-//                        rosterContacts.add(contact);
-//                } else rosterContacts.add(contact);
-//            } else rosterContacts.add(contact);
-//        }
-//=======
-        // Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
-        // for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-        //     blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-        // }
-
-        // final Collection<RosterContact> rosterContacts = new ArrayList<>();
-        // for (RosterContact contact : allRosterContacts) {
-        //     if (blockedContacts.containsKey(contact.getAccount())) {
-        //         Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
-        //         if (blockedUsers != null) {
-        //             if (!blockedUsers.contains(contact.getUser()))
-        //                 rosterContacts.add(contact);
-        //         } else rosterContacts.add(contact);
-        //     } else rosterContacts.add(contact);
-        // }
 
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
@@ -279,12 +243,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             final boolean online = rosterContact.getStatusMode().isOnline();
             final AccountJid account = rosterContact.getAccount();
             final Map<ContactJid, AbstractChat> users = abstractChats.get(account);
-            final AbstractChat abstractChat;
-            if (users == null) {
-                abstractChat = null;
-            } else {
-                abstractChat = users.remove(rosterContact.getUser());
-            }
 
             if (selectedAccount != null && !selectedAccount.equals(account)) {
                 continue;
@@ -315,10 +273,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         // Remove empty groups, sort and apply structure.
         items.clear();
 
-        // set hasVisibleContacts as true if have crowdfunding message
-//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-//        if (message != null) hasVisibleContacts = true;
-
         if (hasVisibleContacts) {
             if (showAccounts) {
                 for (AccountConfiguration rosterAccount : accounts.values()) {
@@ -345,12 +299,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             }
         }
 
-        if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
-                    filterString != null);
+        if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts);
 
         view.updateItems(items);
         view.updateAccountsList();
-        updateUnreadCount();
     }
 
     private void createContactListWithAccountsAndGroups(List<IFlexible> items, AccountConfiguration rosterAccount,
@@ -358,7 +310,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         AccountWithGroupsVO account = AccountWithGroupsVO.convert(rosterAccount, this);
         boolean firstGroupInAccount = true;
         for (GroupConfiguration rosterConfiguration : rosterAccount
-                //.getSortedGroupConfigurations()) {
                 .getNotSortedGroupConfigurations()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
                 GroupVO group = GroupVO.convert(rosterConfiguration, firstGroupInAccount, this);
@@ -415,23 +366,4 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 : ContactVO.convert(contacts, this));
     }
 
-    public void updateUnreadCount() {
-        int unreadCount = 0;
-        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
-                unreadCount += abstractChat.getUnreadMessageCount();
-        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadCount));
-    }
-
-    public static class UpdateUnreadCountEvent {
-        private int count;
-
-        public UpdateUnreadCountEvent(int count) {
-            this.count = count;
-        }
-
-        public int getCount() {
-            return count;
-        }
-    }
 }

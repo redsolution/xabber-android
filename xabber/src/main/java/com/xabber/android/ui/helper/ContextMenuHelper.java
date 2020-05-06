@@ -45,7 +45,7 @@ import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
@@ -79,10 +79,10 @@ public class ContextMenuHelper {
         inflater.inflate(R.menu.item_contact, menu);
 
         setContactContextMenuActions(activity, presenter, menu, account, user);
-        if (activity instanceof ContactListActivity) {
-            setContactContextMenuItemsVisibilty(abstractContact, ((ContactListActivity) activity).currentActiveFragment, menu, account, user);
+        if (activity instanceof MainActivity) {
+            setContactContextMenuItemsVisibilty(abstractContact, ((MainActivity) activity).currentActiveFragmentType, menu, account, user);
         } else {
-            setContactContextMenuItemsVisibilty(abstractContact, ContactListActivity.ActiveFragment.CHATS, menu, account, user);
+            setContactContextMenuItemsVisibilty(abstractContact, MainActivity.ActiveFragmentType.CHATS, menu, account, user);
         }
     }
 
@@ -198,7 +198,7 @@ public class ContextMenuHelper {
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
-                                                            ContactListActivity.ActiveFragment fragment,
+                                                            MainActivity.ActiveFragmentType fragment,
                                                             ContextMenu menu,
                                                             AccountJid account, ContactJid user) {
         // all menu items are visible by default
