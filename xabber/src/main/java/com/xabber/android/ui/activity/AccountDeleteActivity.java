@@ -25,7 +25,8 @@ import com.xabber.android.ui.fragment.AccountDeleteFragment;
 
 import java.util.Collection;
 
-public class AccountDeleteActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, OnAccountChangedListener {
+public class AccountDeleteActivity extends ManagedActivity implements
+        Toolbar.OnMenuItemClickListener, OnAccountChangedListener {
 
     private static final String LOG_TAG = AccountDeleteActivity.class.getSimpleName();
     private AccountJid account;
@@ -36,7 +37,8 @@ public class AccountDeleteActivity extends ManagedActivity implements Toolbar.On
 
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountDeleteActivity.class).setAccount(account).build();
+        return new AccountIntentBuilder(context, AccountDeleteActivity.class)
+                .setAccount(account).build();
     }
 
     @Override
@@ -52,26 +54,22 @@ public class AccountDeleteActivity extends ManagedActivity implements Toolbar.On
             return;
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        //toolbar.setTitle(R.string.account_delete);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         toolbar.inflateMenu(R.menu.toolbar_account_connection_settings);
         toolbar.getMenu().findItem(R.id.action_remove_account).setIcon(null);
+        //toolbar.getMenu().get
         toolbar.setOnMenuItemClickListener(this);
 
         View view = toolbar.findViewById(R.id.action_remove_account);
         if (view != null && view instanceof TextView) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(Color.WHITE);
         }
         BarPainter barPainter = new BarPainter(this, toolbar);
@@ -101,14 +99,12 @@ public class AccountDeleteActivity extends ManagedActivity implements Toolbar.On
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_remove_account:
-                AccountDeleteFragment f = ((AccountDeleteFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container));
-                if (f != null) f.deleteAccount();
-                return true;
-            default:
-                return true;
+        if (item.getItemId() == R.id.action_remove_account) {
+            AccountDeleteFragment f = ((AccountDeleteFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_container));
+            if (f != null) f.deleteAccount();
         }
+        return true;
     }
 
     @Override
@@ -116,7 +112,6 @@ public class AccountDeleteActivity extends ManagedActivity implements Toolbar.On
         if (accounts.contains(account)) {
             AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
             if (accountItem == null) {
-                // in case if account was removed
                 finish();
             }
         }
