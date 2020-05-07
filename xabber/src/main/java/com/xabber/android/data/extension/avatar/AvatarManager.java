@@ -36,7 +36,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -46,7 +45,6 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
@@ -289,7 +287,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * Sets avatar's hash for user.
      *
      * @param jid
-     * @param hash        can be <code>null</code>.
+     * @param hash can be <code>null</code>.
      */
     private void setHash(final BareJid jid, final String hash) {
         hashes.put(jid, hash == null ? EMPTY_HASH : hash);
@@ -415,8 +413,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (AccountManager.getInstance().getFirstAccount() == null || (bitmaps.isEmpty()
                 || !hashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid())
                 || !XEPHashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid()))) {
-            Bitmap value = makeBitmap(AvatarStorage.getInstance().read(SettingsManager.getMainAvatarHash()));
-            return new BitmapDrawable(application.getResources(), value);
+            if (SettingsManager.getMainAvatarHash().equals("0"))
+                return getDefaultAccountAvatar(AccountManager.getInstance().getFirstAccount());
+            else {
+                Bitmap value = makeBitmap(AvatarStorage.getInstance().read(SettingsManager.getMainAvatarHash()));
+                return new BitmapDrawable(application.getResources(), value);
+            }
         } else {
             AccountJid account = AccountManager.getInstance().getFirstAccount();
             Bitmap value = getBitmap(account.getFullJid().asBareJid());
@@ -472,8 +474,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
     }
 
-    /** Gets and caches drawable with avatar for regular user.
-     * Or generate and caches text-based avatar. */
+    /**
+     * Gets and caches drawable with avatar for regular user.
+     * Or generate and caches text-based avatar.
+     */
     public Drawable getUserAvatarForContactList(ContactJid user, String name) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
@@ -502,8 +506,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    /** Gets and caches drawable with room's avatar.
-     * Or generate and caches text-based avatar. */
+    /**
+     * Gets and caches drawable with room's avatar.
+     * Or generate and caches text-based avatar.
+     */
     public Drawable getRoomAvatarForContactList(ContactJid user) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
@@ -519,24 +525,32 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    /** Gets bitmap with avatar for regular user. */
+    /**
+     * Gets bitmap with avatar for regular user.
+     */
     public Bitmap getUserBitmap(ContactJid user, String name) {
         return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
     }
 
-    /** Gets bitmap with avatar for room. */
+    /**
+     * Gets bitmap with avatar for room.
+     */
     public Bitmap getRoomBitmap(ContactJid user) {
         return getCircleBitmap(drawableToBitmap(getRoomAvatarForContactList(user)));
     }
 
     /** PRIVATE */
 
-    /** Generate text-based avatar for regular user. */
+    /**
+     * Generate text-based avatar for regular user.
+     */
     public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name) {
         return generateDefaultAvatar(jid, name, ColorGenerator.MATERIAL.getColor(jid));
     }
 
-    /** Gets avatar drawable for regular user from bitmap. */
+    /**
+     * Gets avatar drawable for regular user from bitmap.
+     */
     private Drawable getUserAvatar(ContactJid user) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
@@ -545,7 +559,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return null;
     }
 
-    /** Gets avatar drawable for room from bitmap. */
+    /**
+     * Gets avatar drawable for room from bitmap.
+     */
     private Drawable getRoomAvatar(ContactJid user) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
@@ -554,7 +570,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return null;
     }
 
-    /** Gets and caches text-base avatar for regular user from cached drawables. */
+    /**
+     * Gets and caches text-base avatar for regular user from cached drawables.
+     */
     private Drawable getDefaultAvatar(ContactJid user, String name) {
         Drawable drawable = contactListDefaultDrawables.get(user.getJid());
         if (drawable == null) {
@@ -564,7 +582,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    /** Gets and caches text-base avatar for room from cached drawables. */
+    /**
+     * Gets and caches text-base avatar for room from cached drawables.
+     */
     private Drawable getDefaultRoomAvatar(ContactJid user) {
         Drawable drawable = contactListDefaultDrawables.get(user.getJid());
         if (drawable == null) {
@@ -574,7 +594,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    /** Generate text-based avatar for regular user. */
+    /**
+     * Generate text-based avatar for regular user.
+     */
     private Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
         String[] words = name.split("\\s+");
         String chars = "";
@@ -590,7 +612,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 .buildRound(chars.toUpperCase(), color);
     }
 
-    /** Generate text-based avatar for room. */
+    /**
+     * Generate text-based avatar for room.
+     */
     private Drawable generateDefaultRoomAvatar(@NonNull String jid) {
         Drawable[] layers = new Drawable[2];
         layers[0] = new ColorDrawable(ColorGenerator.MATERIAL.getColor(jid));
@@ -684,7 +708,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /**
      * Read bitmap in background.
-     *
      */
     private void loadBitmap(final AccountJid account, final Jid jid, final String hash) {
         final byte[] value = AvatarStorage.getInstance().read(hash);
