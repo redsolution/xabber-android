@@ -114,16 +114,29 @@ public class ChatMarkerManager implements OnPacketListener {
             e.printStackTrace();
         }
 
-        String originId = messageRealmObject.getOriginId();
-        List<ExtensionElement> stanzaIds = new ArrayList<>();
-        if (originalMessage != null) {
-            stanzaIds.addAll(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+        if (originalMessage == null) return;
+
+        String messageId = originalMessage.getStanzaId();
+        List<ExtensionElement> stanzaIds = new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+
+        if (messageId == null || messageId.isEmpty()) {
+            if (stanzaIds.isEmpty()) return;
+            for (ExtensionElement stanzaIdElement : stanzaIds) {
+                if (stanzaIdElement instanceof StanzaIdElement) {
+                    String idBy = ((StanzaIdElement) stanzaIdElement).getBy();
+                    if (idBy != null && idBy.equals(messageRealmObject.getUser().getBareJid().toString())) {
+                        messageId = ((StanzaIdElement) stanzaIdElement).getId();
+                        break;
+                    } else {
+                        messageId = ((StanzaIdElement) stanzaIdElement).getId();
+                    }
+                }
+            }
         }
 
-        if ((originId == null || originId.isEmpty()) && stanzaIds.isEmpty()) return;
-
-        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(originId);
+        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(messageId);
         displayedExtension.setStanzaIdExtensions(stanzaIds);
+
         displayedNotification.addExtension(displayedExtension);
         displayedNotification.setType(Message.Type.chat);
 
