@@ -587,8 +587,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
 
         /* Scroll to top if has no unread */
-        if (!getChatListFragment().isOnTop()
-                && getChatListFragment().getListSize() != 0
+        if (!getChatListFragment().isOnTop() && getChatListFragment().getListSize() != 0
                 && unreadMessagesCount == 0) {
             return;
         }
@@ -752,7 +751,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             case "ChatListFragment":
                 currentActiveFragmentType = ActiveFragmentType.CHATS;
                 break;
-            case "ContactListDrawerFragment":
+            case "MainActivitySettingsFragment":
                 currentActiveFragmentType = ActiveFragmentType.SETTINGS;
                 break;
             case "DiscoverFragment":
