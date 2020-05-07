@@ -17,7 +17,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/contact_list_background">
+    android:background="?attr/contact_list_contact_background">
 
     <include layout="@layout/toolbar_default"
         android:layout_height="wrap_content"
