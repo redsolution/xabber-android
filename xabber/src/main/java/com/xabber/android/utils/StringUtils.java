@@ -370,9 +370,9 @@ public class StringUtils {
                 }
             } else {
                 if (attachment.isImage()) {
-                    attachmentBuilder.append("image mes");
+                    attachmentBuilder.append(context.getResources().getString(R.string.image_message));
                 } else {
-                    attachmentBuilder.append("file mes");
+                    attachmentBuilder.append(context.getResources().getString(R.string.file_message));
                 }
                 if (attachment.getTitle() != null) {
                     attachmentBuilder.append(String.format(Locale.getDefault(), ": %s", attachment.getTitle()));
@@ -381,7 +381,7 @@ public class StringUtils {
 
             attachmentName = attachmentBuilder.toString();
             if (accountColorIndicator != -1) {
-                return StringUtils.getColoredText(attachmentName, accountColorIndicator);
+                return getColoredText(attachmentName, accountColorIndicator);
             } else {
                 return attachmentName;
             }

@@ -45,15 +45,16 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupAccountColorIndicator(holder: ChatViewHolder, chat: AbstractChat) {
+        val color: Int = ColorManager.getInstance().accountPainter
+                .getAccountMainColor(chat.account)
         if (AccountManager.getInstance().enabledAccounts.size > 1) {
-            val color: Int = ColorManager.getInstance().accountPainter
-                    .getAccountMainColor(chat.account)
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
             holder.accountColorIndicator = color
             holder.accountColorIndicatorView.visibility = View.VISIBLE
             holder.accountColorIndicatorBackView.visibility = View.VISIBLE
         } else {
+            holder.accountColorIndicator = color
             holder.accountColorIndicatorView.visibility = View.INVISIBLE
             holder.accountColorIndicatorBackView.visibility = View.INVISIBLE
         }
@@ -210,9 +211,13 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                         .getFullChatStateString(chat.account, chat.user)
             else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            else if (lastMessage != null && lastMessage.haveAttachments())
-                holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
-            else
+            else if (lastMessage != null && lastMessage.haveAttachments()) {
+                holder.messageTextTV.text = if (holder.accountColorIndicator != null)
+                    Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0], holder.accountColorIndicator!!))
+                else
+                    StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
+                return
+            } else
                 holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
 
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
