@@ -110,7 +110,7 @@ public class MessageNotificationCreator {
 
         Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.EFFECT_CLICK));
+            v.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             v.vibrate(250);
         }
