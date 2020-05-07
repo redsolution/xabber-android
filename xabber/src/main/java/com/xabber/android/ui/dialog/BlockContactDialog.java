@@ -31,6 +31,8 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class BlockContactDialog extends DialogFragment implements BlockingManager.BlockContactListener, View.OnClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ContactBlocker.ARGUMENT_ACCOUNT";
@@ -111,6 +113,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         if (andDelete){
             deleteContact();
         }
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
 
     @Override

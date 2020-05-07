@@ -43,6 +43,7 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
@@ -459,6 +460,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 try {
                     roster.removeEntry(entry);
                     PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
+                    EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED);
                 } catch (SmackException.NoResponseException e) {
