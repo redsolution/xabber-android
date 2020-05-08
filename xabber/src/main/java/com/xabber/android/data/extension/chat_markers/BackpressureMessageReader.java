@@ -32,7 +32,6 @@ import rx.subjects.PublishSubject;
 public class BackpressureMessageReader {
 
     private static BackpressureMessageReader instance;
-    private Map<AbstractContact, PublishSubject<MessageHolder>> queries = new HashMap<>();
     private Map<AbstractContact, PublishSubject<MessageDataHolder>> queriesNew = new HashMap<>();
 
     public static BackpressureMessageReader getInstance() {
@@ -75,8 +74,9 @@ public class BackpressureMessageReader {
                                         ChatMarkerManager.getInstance().sendDisplayed(message);
 
                                     RealmResults<MessageRealmObject> messages = getPreviousUnreadMessages(realm1, message);
+                                    int debugSize = messages.size();
                                     messages.setBoolean(MessageRealmObject.Fields.READ, true);
-                                    LogManager.d("BackpressureReader", "Finished setting the 'read' state to messages");
+                                    LogManager.d("BackpressureReader", "Finished setting the 'read' state to " + debugSize + " messages");
                                 }
                             });
                         } catch (Exception e) {
@@ -180,15 +180,4 @@ public class BackpressureMessageReader {
             return stanzaIds;
         }
     }
-
-    private static class MessageHolder {
-        final MessageRealmObject messageRealmObject;
-        final boolean trySendDisplayed;
-
-        public MessageHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
-            this.messageRealmObject = messageRealmObject;
-            this.trySendDisplayed = trySendDisplayed;
-        }
-    }
-
 }
