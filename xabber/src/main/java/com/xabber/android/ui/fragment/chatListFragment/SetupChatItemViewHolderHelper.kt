@@ -216,6 +216,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0], holder.accountColorIndicator!!))
                 else
                     StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
+                holder.messageTextTV.typeface = Typeface.DEFAULT
                 return
             } else
                 holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
