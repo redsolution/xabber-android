@@ -24,6 +24,7 @@ import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
@@ -229,18 +230,27 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
-                try {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        try {
-                            holder.messageTextTV.text = Html
-                                    .fromHtml(Utils.getDecodedSpannable(text).toString())
-                        } catch (e: Exception) {
-                            holder.messageTextTV.text = Html.fromHtml(text)
-                        }
-                    } else holder.messageTextTV.text = text
-                } catch (e: Throwable) {
-                    LogManager.exception(this.javaClass.simpleName, e)
-                    holder.messageTextTV.text = text
+                if (lastMessage.resource.equals("Groupchat")){
+                    if (holder.accountColorIndicator != null){
+                        holder.messageTextTV.text = Html.fromHtml(StringUtils
+                                .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
+                        holder.messageTextTV.alpha = 0.6f
+                    }
+                    return
+                } else {
+                    try {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                            try {
+                                holder.messageTextTV.text = Html
+                                        .fromHtml(Utils.getDecodedSpannable(text).toString())
+                            } catch (e: Exception) {
+                                holder.messageTextTV.text = Html.fromHtml(text)
+                            }
+                        } else holder.messageTextTV.text = text
+                    } catch (e: Throwable) {
+                        LogManager.exception(this.javaClass.simpleName, e)
+                        holder.messageTextTV.text = text
+                    }
                 }
                 holder.messageTextTV.typeface = Typeface.DEFAULT
             }
