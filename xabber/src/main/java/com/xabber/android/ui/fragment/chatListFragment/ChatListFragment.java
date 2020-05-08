@@ -170,6 +170,14 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
 
+        int unreadCount = 0;
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                unreadCount += abstractChat.getUnreadMessageCount();
+        if (unreadCount == 0) {
+            currentChatsState = ChatListState.recent;
+            chatListFragmentListener.onChatListStateChanged(ChatListState.recent);
+        }
         update();
 
         super.onResume();

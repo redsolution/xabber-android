@@ -578,7 +578,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     /** Bottom Bar Chats click handler */
     @Override
     public void onChatsClick() {
-        getChatListFragment().scrollToTop();
 
         /* Show ChatsList fragment if another fragment on top */
         if (currentActiveFragmentType != ActiveFragmentType.CHATS) {
@@ -589,6 +588,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         /* Scroll to top if has no unread */
         if (!getChatListFragment().isOnTop() && getChatListFragment().getListSize() != 0
                 && unreadMessagesCount == 0) {
+            getChatListFragment().scrollToTop();
             return;
         }
 
