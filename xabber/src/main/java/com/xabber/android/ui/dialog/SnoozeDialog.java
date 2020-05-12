@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.xabber.android.R;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
@@ -27,13 +27,10 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
         return dialog;
     }
 
-    public interface OnSnoozeListener {
-        void onSnoozed();
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.snooze_dialog, container, false);
 
         view.findViewById(R.id.itemDisable).setOnClickListener(this);
@@ -89,5 +86,9 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
 
     private int getCurrentTime() {
         return (int) (System.currentTimeMillis() / 1000L);
+    }
+
+    public interface OnSnoozeListener {
+        void onSnoozed();
     }
 }

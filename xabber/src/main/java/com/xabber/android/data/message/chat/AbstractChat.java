@@ -150,25 +150,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         firstNotification = true;
         notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                getMessages();
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> getMessages());
     }
-
-//    public AbstractChat(@NonNull final AccountJid accountJid, @NonNull final ContactJid contactJid,
-//                        final boolean isArchived, final int lastPos,
-//                        final boolean requestedHistory, final Long lastActionTime,
-//                        final boolean isGroup){
-//        super(accountJid, contactJid);
-//        archived = isArchived;
-//        lastPosition = lastPos;
-//        historyRequestedAtStart = requestedHistory;
-//        lastActionTimestamp = lastActionTime;
-//        isGroupchat = isGroup;
-//    }
 
     public boolean isActive() { return active; }
 
@@ -177,7 +160,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         trackStatus = true;
     }
 
-    public void closeChat() {
+    void closeChat() {
         active = false;
         firstNotification = true;
     }
@@ -232,9 +215,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public boolean notifyAboutMessage() {
         if (notificationState.getMode().equals(NotificationState.NotificationMode.bydefault))
             return SettingsManager.eventsOnChat();
-        if (notificationState.getMode().equals(NotificationState.NotificationMode.enabled))
-            return true;
-        else return false;
+        return notificationState.getMode().equals(NotificationState.NotificationMode.enabled);
     }
 
     public void enableNotificationsIfNeed() {
@@ -651,7 +632,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-    public Message createFileAndForwardMessagePacket(String stanzaId, RealmList<AttachmentRealmObject> attachmentRealmObjects, String[] forwardIds, String text) {
+    public Message createFileAndForwardMessagePacket(String stanzaId,
+                                                     RealmList<AttachmentRealmObject> attachmentRealmObjects,
+                                                     String[] forwardIds,
+                                                     String text) {
 
         Message message = new Message();
         message.setTo(getTo());
@@ -671,7 +655,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * Send stanza with data-references.
      */
-    public Message createFileMessagePacket(String stanzaId, RealmList<AttachmentRealmObject> attachmentRealmObjects, String body) {
+    public Message createFileMessagePacket(String stanzaId,
+                                           RealmList<AttachmentRealmObject> attachmentRealmObjects,
+                                           String body) {
 
         Message message = new Message();
         message.setTo(getTo());
@@ -701,7 +687,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-    private void createFileMessageReferences(Message message, RealmList<AttachmentRealmObject> attachmentRealmObjects, StringBuilder builder) {
+    private void createFileMessageReferences(Message message,
+                                             RealmList<AttachmentRealmObject> attachmentRealmObjects,
+                                             StringBuilder builder) {
         for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
             StringBuilder rowBuilder = new StringBuilder();
             if (builder.length() > 0) rowBuilder.append("\n");
@@ -721,7 +709,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
-    private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
+    private void createForwardMessageReferences(Message message, String[] forwardedIds,
+                                                StringBuilder builder) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageRealmObject> items = realm
                 .where(MessageRealmObject.class)
@@ -1039,6 +1028,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public NotificationState getNotificationState() {
+        enableNotificationsIfNeed();
         return notificationState;
     }
 

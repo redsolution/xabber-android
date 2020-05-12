@@ -36,12 +36,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
     @Override
     public void onLoad() {
         final List<NotifyPrefs> prefs = findAllFromRealm();
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(prefs);
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> onLoaded(prefs));
     }
 
     public void onLoaded(List<NotifyPrefs> prefs) {
@@ -66,7 +61,8 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
             prefs.setVibro(vibro);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-                prefs.setChannelID(NotificationChannelUtils.updateCustomChannel(notificationManager, prefs.getChannelID(), Uri.parse(sound),
+                prefs.setChannelID(NotificationChannelUtils.updateCustomChannel(notificationManager,
+                        prefs.getChannelID(), Uri.parse(sound),
                         MessageNotificationCreator.getVibroValue(vibro, context), null));
         }
         saveOrUpdateToRealm(prefs);
@@ -84,7 +80,8 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         return null;
     }
 
-    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, ContactJid user, String group, Long phraseID) {
+    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, ContactJid user, String group,
+                                             Long phraseID) {
         NotifyPrefs prefs = findPrefs(Key.createKey(phraseID));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, user));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, group));
@@ -97,7 +94,8 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         while (it.hasNext()) {
             NotifyPrefs item = (NotifyPrefs) it.next();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                NotificationChannelUtils.removeCustomChannel(notificationManager, item.getChannelID());
+                NotificationChannelUtils.removeCustomChannel(notificationManager,
+                        item.getChannelID());
             it.remove();
         }
         removeAllFromRealm();
@@ -109,7 +107,8 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
             NotifyPrefs item = (NotifyPrefs) it.next();
             if (item.getId().equals(id)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    NotificationChannelUtils.removeCustomChannel(notificationManager, item.getChannelID());
+                    NotificationChannelUtils.removeCustomChannel(notificationManager,
+                            item.getChannelID());
                 it.remove();
                 break;
             }
@@ -148,7 +147,9 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                 });
             } catch (Exception e) {
                 LogManager.exception("CustomNotifyPrefsManager", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
@@ -164,7 +165,9 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                 });
             } catch (Exception e) {
                 LogManager.exception("CustomNotifyPrefsManager", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
@@ -177,8 +180,10 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                     NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
 
                     prefsRealm.setType(prefs.getKey().getType().toString());
-                    if (prefs.getKey().getAccount() != null) prefsRealm.setAccount(prefs.getKey().getAccount());
-                    if (prefs.getKey().getUser() != null) prefsRealm.setUser(prefs.getKey().getUser());
+                    if (prefs.getKey().getAccount() != null)
+                        prefsRealm.setAccount(prefs.getKey().getAccount());
+                    if (prefs.getKey().getUser() != null)
+                        prefsRealm.setUser(prefs.getKey().getUser());
                     prefsRealm.setGroup(prefs.getKey().getGroup());
                     prefsRealm.setPhraseID(prefs.getKey().getPhraseID());
                     prefsRealm.setChannelID(prefs.getChannelID());
@@ -190,7 +195,9 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                 });
             } catch (Exception e) {
                 LogManager.exception("CustomNotifyPrefsManager", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 

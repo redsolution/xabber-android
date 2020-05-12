@@ -20,11 +20,9 @@ import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
-import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
@@ -78,7 +76,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 .getAbstractContact(chat.account, chat.user).statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
         val isServer = chat.user.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
                 .contactIsBlockedLocally(chat.account, chat.user)
@@ -141,24 +138,23 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, chat: AbstractChat) {
 
         val resources = holder.itemView.context.resources
-        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
                 .isPrefsExist(Key.createKey(chat.account, chat.user))
-        var iconId = 0
+        var iconId: Int
         val mode = chat.notificationState.determineModeByGlobalSettings()
 
-        if (mode == NotificationState.NotificationMode.enabled)
-            iconId = R.drawable.ic_unmute
-        else if (mode == NotificationState.NotificationMode.disabled)
-            iconId = R.drawable.ic_mute
-        else if (mode != NotificationState.NotificationMode.bydefault)
-            iconId = R.drawable.ic_snooze_mini
+        when (mode){
+            NotificationState.NotificationMode.enabled -> iconId = R.drawable.ic_unmute
+            NotificationState.NotificationMode.disabled -> iconId = R.drawable.ic_mute
+            NotificationState.NotificationMode.bydefault -> iconId = 0
+            else -> iconId = R.drawable.ic_snooze_mini
+        }
 
         holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 if (iconId != 0) resources.getDrawable(iconId) else null, null)
 
-        if (isCustomNotification && (mode.equals(NotificationState.NotificationMode.enabled)
-                        || mode.equals(NotificationState.NotificationMode.bydefault)))
+        if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
+                        || mode == NotificationState.NotificationMode.bydefault))
             holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null)
 
@@ -167,7 +163,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupUnreadCount(holder: ChatViewHolder, chat: AbstractChat) {
-        val chat = ChatManager.getInstance().getOrCreateChat(chat.account, chat.user)
         val unreadCount = chat.unreadMessageCount
         val resources = holder.itemView.resources
         if (unreadCount > 0) {
@@ -258,7 +253,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupMessageStatus(holder: ChatViewHolder, chat: AbstractChat) {
-
         val lastMessage = chat.lastMessage
         holder.messageStatusTV.visibility = if (lastMessage?.text == null || lastMessage.isIncoming)
             View.INVISIBLE else View.VISIBLE
