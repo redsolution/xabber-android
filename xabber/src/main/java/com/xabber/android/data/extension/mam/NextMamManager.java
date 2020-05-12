@@ -49,6 +49,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.mam.element.MamElements;
@@ -620,10 +621,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private void updateIsSupported(AccountItem accountItem) {
-        MamManager mamManager = MamManager.getInstanceFor(accountItem.getConnection());
         boolean isSupported;
         try {
-            isSupported = mamManager.isSupportedByServer();
+            isSupported = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection())
+                    .supportsFeature(accountItem.getConnection().getUser().asBareJid(),
+                            MamElements.NAMESPACE);
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                 | InterruptedException | SmackException.NotConnectedException | ClassCastException e) {
             LogManager.exception(this, e);
