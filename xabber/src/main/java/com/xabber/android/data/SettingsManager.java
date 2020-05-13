@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -176,18 +176,23 @@ public class SettingsManager implements OnInitializedListener,
         return Uri.parse(value);
     }
 
-    public static int getMainAccountColorLevel(){
+    public static void resetCustomPrefs() {
+        getSharedPreferences().edit().clear().commit();
+    }
+
+    public static int getMainAccountColorLevel() {
         return getInt(R.string.main_account_color_level, R.string.main_account_color_level_default);
     }
 
-    public static void setMainAccountColorLevel(int colorLevel){
+    public static void setMainAccountColorLevel(int colorLevel) {
         setString(R.string.main_account_color_level, String.valueOf(colorLevel));
     }
 
-    public static String getMainAvatarHash(){
+    public static String getMainAvatarHash() {
         return getString(R.string.main_account_avatar_hash, "0");
     }
-    public static void setMainAvatarHash(String avatarHash){
+
+    public static void setMainAvatarHash(String avatarHash) {
         setString(R.string.main_account_avatar_hash, avatarHash);
     }
 
@@ -730,7 +735,7 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.security_otr_history_default);
     }
 
-    public static int bootCount() {
+    public static int getBootCount() {
         return getSharedPreferences()
                 .getInt(Application.getInstance().getString(
                         R.string.boot_count_key), 0);
@@ -740,7 +745,7 @@ public class SettingsManager implements OnInitializedListener,
         Editor editor = getSharedPreferences().edit();
         editor.putInt(
                 Application.getInstance().getString(R.string.boot_count_key),
-                bootCount() + 1);
+                getBootCount() + 1);
         editor.commit();
     }
 
@@ -834,17 +839,12 @@ public class SettingsManager implements OnInitializedListener,
         setString(R.string.status_text_key, statusText);
     }
 
-    public static void setLastSyncDate(String lastSyncDate) {
-        setString(R.string.last_sync_date_key, lastSyncDate);
-    }
-
     public static String getLastSyncDate() {
         return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
     }
 
-    public static void setSyncAllAccounts(boolean syncAll) {
-        setBoolean(R.string.sync_all_key, syncAll);
-        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
+    public static void setLastSyncDate(String lastSyncDate) {
+        setString(R.string.last_sync_date_key, lastSyncDate);
     }
 
     public static boolean isSyncAllAccounts() {
@@ -852,60 +852,65 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.sync_all_key, true);
     }
 
-    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
-        setInt(R.string.order_last_timestamp_key, lastOrderChange);
+    public static void setSyncAllAccounts(boolean syncAll) {
+        setBoolean(R.string.sync_all_key, syncAll);
+        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
     }
 
     public static int getLastOrderChangeTimestamp() {
         return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
-    public static void setLastPatreonLoadTimestamp(int timestamp) {
-        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
+    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
+        setInt(R.string.order_last_timestamp_key, lastOrderChange);
     }
 
     public static int getLastPatreonLoadTimestamp() {
         return getInteger(R.string.patreon_last_load_timestamp_key, 1);
     }
 
-    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
+    public static void setLastPatreonLoadTimestamp(int timestamp) {
+        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
     }
 
     public static int getLastCrowdfundingLoadTimestamp() {
         return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
     }
 
-    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
+    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
     }
 
     public static int getLastLeaderCrowdfundingLoadTimestamp() {
         return getInteger(R.string.crowdfunding_leader_last_load_timestamp_key, 1);
     }
 
-    public static void setFirstAppRunTimestamp(int timestamp) {
-        setInt(R.string.first_app_run_timestamp_key, timestamp);
+    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
     }
 
     public static int getFirstAppRunTimestamp() {
         return getInteger(R.string.first_app_run_timestamp_key, 0);
     }
 
-    public static void setLastCrowdfundingPosition(int position) {
-        setInt(R.string.crowdfunding_last_position_key, position);
+    public static void setFirstAppRunTimestamp(int timestamp) {
+        setInt(R.string.first_app_run_timestamp_key, timestamp);
     }
 
     public static int getLastCrowdfundingPosition() {
         return getInteger(R.string.crowdfunding_last_position_key, 0);
     }
 
-    public static void setEnabledPushNodes(String enabledPushNodes) {
-        setString(R.string.enabled_push_nodes, enabledPushNodes);
+    public static void setLastCrowdfundingPosition(int position) {
+        setInt(R.string.crowdfunding_last_position_key, position);
     }
 
     public static String getEnabledPushNodes() {
         return getString(R.string.enabled_push_nodes, "");
+    }
+
+    public static void setEnabledPushNodes(String enabledPushNodes) {
+        setString(R.string.enabled_push_nodes, enabledPushNodes);
     }
 
     public static void resetPreferences(Context context, String preferencesName) {
@@ -993,7 +998,7 @@ public class SettingsManager implements OnInitializedListener,
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
                 SettingsManager.setDarkThemeSuggested();
             }
-        } else if(key.equals(Application.getInstance().getString(
+        } else if (key.equals(Application.getInstance().getString(
                 R.string.debug_file_log_key))) {
             LogManager.getInstance().onSettingsChanged();
         }
