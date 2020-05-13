@@ -37,6 +37,7 @@ import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
@@ -187,7 +188,7 @@ public class RegularChat extends AbstractChat {
             if (mucUser != null && mucUser.getInvite() != null)
                 return true;
 
-            String text = message.getBody();
+            String text = MessageUtils.getOptimalTextBody(message);
             if (text == null)
                 return true;
 
