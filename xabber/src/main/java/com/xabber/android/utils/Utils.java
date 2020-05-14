@@ -218,6 +218,7 @@ public class Utils {
 
                     if (current == '>') {
                         spannable.delete(j, j + 1);
+                        j--;
                         waitForNewLine = true;
                     }
                 }
