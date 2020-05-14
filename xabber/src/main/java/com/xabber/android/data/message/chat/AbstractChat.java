@@ -142,6 +142,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean addContactSuggested = false;
     private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
+    private boolean historyIsBeingLoaded = false;
     protected boolean isGroupchat = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
@@ -1188,6 +1189,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setHistoryRequestedWithoutRealm(boolean isHistoryRequested){
         this.historyRequestedAtStart = isHistoryRequested;
+    }
+
+    public boolean isHistoryBeingLoaded() {
+        return historyIsBeingLoaded;
+    }
+
+    public void setHistoryIsBeingLoaded(boolean loading) {
+        historyIsBeingLoaded = loading;
     }
 
     public void requestSaveToRealm() {
