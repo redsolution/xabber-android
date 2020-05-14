@@ -22,6 +22,8 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -93,15 +95,15 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NewMessageEvent;
-import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -119,6 +121,7 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.ui.text.CustomQuoteSpan;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.IntroViewDecoration;
@@ -1272,14 +1275,68 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void sendMessage() {
-        String text = inputView.getText().toString().trim();
+        Editable editable = inputView.getEditableText();
+        String text = null;
+        String markupText = null;
+        if (editable == null) {
+            text = inputView.getText().toString().trim();
+        } else {
+            SpannableStringBuilder spannable = new SpannableStringBuilder(editable);
+            StringBuilder htmlMarkupBuilder = new StringBuilder(spannable.toString());
+            int htmlMarkupOffset = 0; // the offset of the html string compared to the normal string without <tags>
+            CustomQuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), CustomQuoteSpan.class);
+            if (quoteSpans.length > 0) {
+                int len = spannable.length();
+                for (CustomQuoteSpan span : quoteSpans) {
+                    int startSpan = spannable.getSpanStart(span);
+                    int endSpan = spannable.getSpanEnd(span);
+                    int spanLength = endSpan - startSpan;
+                    spannable.removeSpan(span);
+
+                    if (startSpan < 0 || endSpan < 0) continue;
+                    if (startSpan >= len || endSpan > len || startSpan > endSpan) continue;
+
+                    // make sure it's a paragraph
+                    // check top paragraph boundary
+                    if (startSpan != 0 && (spannable.charAt(startSpan - 1) != '\n')) continue;
+                    // check bottom paragraph boundary
+                    if (endSpan != spannable.length() && spannable.charAt(endSpan - 1) != '\n') continue;
+
+                    // split the quotespan into 1-line strings
+                    String originalQuoteString = spannable.subSequence(startSpan, endSpan).toString();
+                    String[] quoteLines = originalQuoteString.split("\n");
+
+                    spannable.delete(startSpan, endSpan);
+                    htmlMarkupBuilder.delete(startSpan + htmlMarkupOffset, endSpan + htmlMarkupOffset);
+
+                    int variableStartSpan = startSpan;
+
+                    // open the quote tag for the markup text
+                    htmlMarkupBuilder.insert(startSpan + htmlMarkupOffset, "<blockquote>");
+                    htmlMarkupOffset += "<blockquote>".length();
+                    for (int i = 0; i < quoteLines.length; i++) {
+                        // add > at the start of each line
+                        quoteLines[i] = '>' + quoteLines[i] + '\n';
+                        // add modified line back to the spannable and markup text
+                        spannable.insert(variableStartSpan, quoteLines[i]);
+                        htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, quoteLines[i]);
+                        variableStartSpan += quoteLines[i].length();
+                    }
+                    htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, "</blockquote>");
+                    htmlMarkupOffset += "</blockquote>".length();
+                }
+            }
+
+            text = spannable.toString();
+            markupText = htmlMarkupBuilder.toString();
+        }
         clearInputText();
         scrollDown();
 
         if (bottomPanelMessagesIds != null
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
-            sendForwardMessage(bottomPanelMessagesIds, text);
+            sendForwardMessage(bottomPanelMessagesIds, text, markupText);
         } else if (bottomPanelMessagesIds != null
                 && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
@@ -1287,7 +1344,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             RrrManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
             hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
-            sendMessage(text);
+            sendMessage(text, markupText);
         } else {
             return;
         }
@@ -1304,7 +1361,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void sendMessage(String text) {
-        MessageManager.getInstance().sendMessage(account, user, text);
+        sendMessage(text, null);
+    }
+
+    private void sendMessage(String text, String markupText) {
+        MessageManager.getInstance().sendMessage(account, user, text, markupText);
         setFirstUnreadMessageId(null);
     }
 
@@ -1383,6 +1444,39 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inputView.setText(first.concat(additional).concat(second));
             inputView.setSelection(first.length() + additional.length());
         }
+        skipOnTextChanges = false;
+    }
+
+    public void setQuote(String quote) {
+        skipOnTextChanges = true;
+        int spanStart;
+        int spanEnd;
+        String inputText;
+        if (bottomMessagesPanel != null && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
+            setInputTextAtCursor(quote);
+            return;
+        }
+        String currentText = inputView.getText().toString();
+        if (currentText.isEmpty()) {
+            spanStart = 0;
+            spanEnd = quote.length();
+            inputText = quote;
+        } else {
+            int cursorPosition = inputView.getSelectionStart();
+            String first = currentText.substring(0, cursorPosition);
+            String second = currentText.substring(cursorPosition);
+            spanStart = first.length();
+            if (!first.isEmpty() && first.charAt(first.length() - 1) != '\n') {
+                first = first + '\n';
+                spanStart++;
+            }
+            spanEnd = spanStart + quote.length();
+            inputText = first + quote + second;
+        }
+        SpannableStringBuilder ssb = new SpannableStringBuilder(inputText);
+        ssb.setSpan(new CustomQuoteSpan(accountColor, getContext().getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        inputView.setText(ssb, TextView.BufferType.EDITABLE);
+        inputView.setSelection(quote.length());
         skipOnTextChanges = false;
     }
 
@@ -1714,7 +1808,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     mentionUser(clickedMessageRealmObject.getResource().toString());
                     break;
                 case "action_message_quote":
-                    setInputTextAtCursor("> " + clickedMessageRealmObject.getText() + "\n");
+                    setQuote(clickedMessageRealmObject.getText() + "\n");
                     break;
                 case "action_message_remove":
                     ArrayList<MessageRealmObject> arrayList = new ArrayList<>();
@@ -2492,8 +2586,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void sendForwardMessage(List<String> messages, String text) {
-        ForwardManager.forwardMessage(messages, account, user, text);
+    private void sendForwardMessage(List<String> messages, String text, String markup) {
+        ForwardManager.forwardMessage(messages, account, user, text, markup);
         hideBottomMessagePanel();
         setFirstUnreadMessageId(null);
     }

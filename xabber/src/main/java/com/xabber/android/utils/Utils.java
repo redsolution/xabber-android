@@ -11,8 +11,10 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.QuoteSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.HapticFeedbackConstants;
@@ -25,6 +27,7 @@ import androidx.annotation.RequiresApi;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.text.CustomQuoteSpan;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -162,6 +165,63 @@ public class Utils {
             return originalSpannable;
         } else {
             return originalSpannable;
+        }
+    }
+
+    public static void modifySpannableWithCustomQuotes(SpannableStringBuilder spannable, DisplayMetrics displayMetrics, int color) {
+        QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
+        if (quoteSpans.length > 0) {
+            for (int i = quoteSpans.length - 1; i >= 0; i--) {
+                QuoteSpan span = quoteSpans[i];
+                int spanEnd = spannable.getSpanEnd(span);
+                int spanStart = spannable.getSpanStart(span);
+                spannable.removeSpan(span);
+                if (spanEnd < 0 || spanStart < 0) break;
+
+                int newlineCount = 0;
+                if ('\n' == spannable.charAt(spanEnd)) {
+                    newlineCount++;
+                    if (spanEnd + 1 < spannable.length() && '\n' == spannable.charAt(spanEnd + 1)) {
+                        newlineCount++;
+                    }
+                    if ('\n' == spannable.charAt(spanEnd - 1)) {
+                        newlineCount++;
+                    }
+                }
+                switch (newlineCount) {
+                    case 3:
+                        spannable.delete(spanEnd - 1, spanEnd + 1);
+                        spanEnd = spanEnd - 2;
+                        break;
+                    case 2:
+                        spannable.delete(spanEnd, spanEnd + 1);
+                        spanEnd--;
+                }
+
+                if (spanStart > 1 && '\n' == spannable.charAt(spanStart - 1)) {
+                    if ('\n' == spannable.charAt(spanStart - 2)) {
+                        spannable.delete(spanStart - 2, spanStart - 1);
+                        spanStart--;
+                    }
+                }
+
+                spannable.setSpan(new CustomQuoteSpan(color, displayMetrics), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                char current;
+                boolean waitForNewLine = false;
+                for (int j = spanStart; j < spanEnd; j++) {
+                    if (j >= spannable.length()) break;
+                    current = spannable.charAt(j);
+
+                    if (waitForNewLine && current != '\n') continue;
+                    else waitForNewLine = false;
+
+                    if (current == '>') {
+                        spannable.delete(j, j + 1);
+                        waitForNewLine = true;
+                    }
+                }
+            }
         }
     }
 

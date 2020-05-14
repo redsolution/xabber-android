@@ -730,7 +730,47 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
-    private int getSizeOfEncodedChars(String str) {
+    // TODO make a proper html-markup parsing(or implement Html.fromHtml() and
+    //  check for unnecessary newlines for paragraph-type tags newlines)
+    //  This method only works with quotes.
+    private void createMarkupReferences(Message message, String markupText, StringBuilder originalBuilder) {
+        if (!markupText.contains("<blockquote>")) return;
+
+        int begin = getSizeOfEncodedChars(originalBuilder.toString());
+        StringBuilder markupBuilder = new StringBuilder(markupText);
+        List<Pair<Integer, Integer>> spans = new ArrayList<>();
+
+        while (true) {
+            int startIndex = markupBuilder.indexOf("<blockquote>");
+            if (startIndex < 0) break;
+            int encodedStartIndex = getSizeOfEncodedChars(markupBuilder.substring(0, startIndex));
+            markupBuilder.delete(startIndex, startIndex + "<blockquote>".length());
+
+            int endIndex = markupBuilder.indexOf("</blockquote>");
+            if (endIndex < 0) break;
+            int encodedEndIndex = getSizeOfEncodedChars(markupBuilder.substring(0, endIndex));
+            markupBuilder.delete(endIndex, endIndex + "</blockquote>".length());
+
+            if (startIndex > endIndex) continue;
+
+            spans.add(new Pair<>(encodedStartIndex, encodedEndIndex));
+        }
+
+        for (Pair span : spans) {
+            message.addExtension(new Markup(
+                    begin + (int) span.first,
+                    begin + (int) span.second,
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    null)
+            );
+        }
+    }
+
+    private static int getSizeOfEncodedChars(String str) {
         return Utils.xmlEncode(str).toCharArray().length;
     }
 
@@ -800,9 +840,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         messageRealmObject.getAttachmentRealmObjects(), text);
             }
         } else if (messageRealmObject.haveForwardedMessages()) {
-            message = createForwardMessagePacket(messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text);
+            if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {
+                message = createForwardMessageWithMarkupPacket(messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text, messageRealmObject.getMarkupText());
+            } else {
+                message = createForwardMessagePacket(messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text);
+            }
         } else if (text != null) {
-            message = createMessagePacket(text, messageRealmObject.getStanzaId());
+            if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {
+                message = createMessageWithMarkupPacket(text, messageRealmObject.getMarkupText(), messageRealmObject.getStanzaId());
+            } else {
+                message = createMessagePacket(text, messageRealmObject.getStanzaId());
+            }
         }
 
         if (message != null) {

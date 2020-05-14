@@ -117,20 +117,24 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
      * @param text
      */
     public void sendMessage(AccountJid account, ContactJid user, String text) {
+        sendMessage(account, user, text, null);
+    }
 
+    public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
         EventBus.getDefault().post(new NewMessageEvent());
 
         AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
-        sendMessage(text, chat);
+        sendMessage(text, markupText, chat);
 
         // stop grace period
         AccountManager.getInstance().stopGracePeriod(account);
     }
 
-    private void sendMessage(final String text, final AbstractChat chat) {
+    private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransactionAsync(realm1 -> {
             MessageRealmObject newMessageRealmObject = chat.createNewMessageItem(text);
+            if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
             realm1.copyToRealm(newMessageRealmObject);
             if (chat.canSendMessage())
                 chat.sendMessages();

@@ -5,7 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Looper;
 import android.text.Html;
-import android.text.Spanned;
+import android.text.SpannableStringBuilder;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -115,10 +116,23 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
         if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()){
-            Spanned markupText = Html.fromHtml(messageRealmObject.getMarkupText().trim()
-                            .replace("\n", "<br/>").concat("&zwj;"), null,
-                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount()));
-            messageText.setText(markupText, TextView.BufferType.SPANNABLE);
+            SpannableStringBuilder spannable = (SpannableStringBuilder) Html.fromHtml(
+                    messageRealmObject.getMarkupText()
+                            .trim().replace("\n", "<br/>").concat("&zwj;"),
+                    null,
+                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount())
+            );
+
+            int color;
+            DisplayMetrics displayMetrics = itemView.getContext().getResources().getDisplayMetrics();
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(messageRealmObject.getAccount());
+            } else {
+                color = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(messageRealmObject.getAccount());
+            }
+
+            Utils.modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
+            messageText.setText(spannable, TextView.BufferType.SPANNABLE);
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 messageText.setText(Utils.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),

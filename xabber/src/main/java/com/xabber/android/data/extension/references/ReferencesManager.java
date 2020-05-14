@@ -293,21 +293,21 @@ public class ReferencesManager {
 
     private static void decorate(int begin, int end, String[] source, Markup reference) {
         markup(begin, end, source, reference);
-        //if (reference.isQuote()) {
-        //    quote(begin, end, source); TODO make proper quote logic
-        //}
+        if (reference.isQuote()) {
+            quote(begin, end, source);
+        }
     }
 
     private static void quote(int begin, int end, String[] source) {
-        int del = end - begin;
-        int removed = 0;
-        for (int i = begin; i < end; i++) {
-            if (removed < del) {
-                if (removed == 0) source[i] = "<font color='#9e9e9e'>\u2503</font> ";
-                else source[i] = String.valueOf(Character.MIN_VALUE);
-                removed++;
-            }
-            if (source[i].equals("\n")) removed = 0;
+        if (begin + 3 >= source.length) return;
+        if (source[begin].equals("&")
+                && source[begin + 1].equals("g")
+                && source[begin + 2].equals("t")
+                && source[begin + 3].equals(";")) {
+            //remove(begin, begin + 4, source);
+
+            source[begin] = "<blockquote>" + source[begin];
+            source[end - 1] = source[end - 1] + "</blockquote>";
         }
     }
 

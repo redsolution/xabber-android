@@ -1,6 +1,7 @@
 package com.xabber.android.data.message;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
@@ -29,9 +30,11 @@ public class ForwardManager {
 
     private static final String LOG_TAG = ForwardManager.class.getSimpleName();
 
-    public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text) {
+    public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text, @Nullable String markupText) {
         final AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
+
+        if (markupText != null) messageRealmObject.setMarkupText(markupText);
 
         RealmList<ForwardIdRealmObject> ids = new RealmList<>();
 
