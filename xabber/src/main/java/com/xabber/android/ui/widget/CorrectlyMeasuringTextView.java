@@ -2,7 +2,10 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.text.Layout;
+import android.text.Spannable;
 import android.util.AttributeSet;
+
+import com.xabber.android.ui.text.CustomQuoteSpan;
 
 public class CorrectlyMeasuringTextView extends CorrectlyTouchEventTextView {
 
@@ -22,17 +25,29 @@ public class CorrectlyMeasuringTextView extends CorrectlyTouchEventTextView {
         super.onMeasure(wms, hms);
         try {
             Layout l = getLayout();
+            CharSequence text = getText();
             if (l.getLineCount() <= 1) {
                 return;
             }
+            int quoteOffset = checkForQuoteSpans(text);
             int maxw = 0;
             for (int i = l.getLineCount() - 1; i >= 0; --i) {
-                maxw = Math.max(maxw, Math.round(l.getPaint().measureText(getText(), l.getLineStart(i), l.getLineEnd(i))));
+                maxw = Math.max(maxw, Math.round(l.getPaint().measureText(text, l.getLineStart(i), l.getLineEnd(i))) + quoteOffset);
             }
             super.onMeasure(Math.min(maxw + getPaddingLeft() + getPaddingRight(), getMeasuredWidth()) | MeasureSpec.EXACTLY, getMeasuredHeight() | MeasureSpec.EXACTLY);
         } catch (Exception ignore) {
 
         }
+    }
+
+    private int checkForQuoteSpans(CharSequence text) {
+        if (text instanceof Spannable) {
+            CustomQuoteSpan[] spans = ((Spannable) text).getSpans(0, text.length(), CustomQuoteSpan.class);
+            if (spans.length > 0) {
+                return spans[0].getLeadingMargin(false);
+            }
+        }
+        return 0;
     }
 
 }
