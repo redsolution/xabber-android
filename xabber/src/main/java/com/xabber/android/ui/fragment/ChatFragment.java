@@ -1450,34 +1450,25 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void setQuote(String quote) {
         skipOnTextChanges = true;
-        int spanStart;
+        int spanStart = 0;
         int spanEnd;
-        String inputText;
         if (bottomMessagesPanel != null && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
             setInputTextAtCursor(quote);
             return;
         }
-        String currentText = inputView.getText().toString();
-        if (currentText.isEmpty()) {
-            spanStart = 0;
-            spanEnd = quote.length();
-            inputText = quote;
-        } else {
+        Editable currentText = inputView.getEditableText();
+        if (currentText.length() != 0) {
             int cursorPosition = inputView.getSelectionStart();
-            String first = currentText.substring(0, cursorPosition);
-            String second = currentText.substring(cursorPosition);
-            spanStart = first.length();
-            if (!first.isEmpty() && first.charAt(first.length() - 1) != '\n') {
-                first = first + '\n';
+            spanStart = cursorPosition;
+            if (cursorPosition != 0 && currentText.charAt(cursorPosition - 1) != '\n') {
+                currentText.insert(cursorPosition, "\n");
                 spanStart++;
             }
-            spanEnd = spanStart + quote.length();
-            inputText = first + quote + second;
         }
-        SpannableStringBuilder ssb = new SpannableStringBuilder(inputText);
-        ssb.setSpan(new CustomQuoteSpan(accountColor, getContext().getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        inputView.setText(ssb, TextView.BufferType.EDITABLE);
-        inputView.setSelection(quote.length());
+        spanEnd = spanStart + quote.length();
+        currentText.insert(spanStart, quote);
+        currentText.setSpan(new CustomQuoteSpan(accountColor, getContext().getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        inputView.setSelection(spanEnd);
         skipOnTextChanges = false;
     }
 
