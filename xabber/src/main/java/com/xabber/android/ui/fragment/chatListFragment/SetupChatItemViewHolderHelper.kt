@@ -225,7 +225,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
-                if (lastMessage.resource.equals("Groupchat")){
+                if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null && lastMessage.action.isNotEmpty()) ){
                     if (holder.accountColorIndicator != null){
                         holder.messageTextTV.text = Html.fromHtml(StringUtils
                                 .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
@@ -245,6 +245,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     } catch (e: Throwable) {
                         LogManager.exception(this.javaClass.simpleName, e)
                         holder.messageTextTV.text = text
+                    } finally {
+                        holder.messageTextTV.alpha = 1f
                     }
                 }
                 holder.messageTextTV.typeface = Typeface.DEFAULT

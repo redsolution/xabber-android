@@ -1,21 +1,24 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -44,6 +47,7 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
@@ -78,6 +82,7 @@ import com.xabber.android.utils.ExternalAPIs;
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,6 +107,13 @@ import java.util.concurrent.TimeUnit;
 public class Application extends android.app.Application {
 
     private static final String LOG_TAG = Application.class.getSimpleName();
+    private static final long backgroundTaskTimeout = 1000;
+    private static final ThreadFactory backgroundThreadFactory = r -> {
+        Thread thread = new Thread(r);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        return thread;
+    };
     private static Application instance;
     private final ArrayList<Object> registeredManagers;
     /**
@@ -112,8 +124,6 @@ public class Application extends android.app.Application {
     private final ExecutorService backgroundNetworkExecutor;
     private final ExecutorService backgroundExecutorForUserActions;
     private final ExecutorService backgroundNetworkExecutorForUserActions;
-
-    private static final long backgroundTaskTimeout = 1000;
     /**
      * Handler to execute runnable in UI thread.
      */
@@ -146,6 +156,18 @@ public class Application extends android.app.Application {
      */
     private boolean closed;
 
+    /*
+    private final RejectedExecutionHandler onExecutionReject =
+            new RejectedExecutionHandler() {
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+                    if (fallbackNetworkExecutor == null) {
+                        fallbackNetworkExecutor = createFallbackExecutor();
+                    }
+                    fallbackNetworkExecutor.execute(r);
+                    // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
+                }
+            };
+            */
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
@@ -159,27 +181,6 @@ public class Application extends android.app.Application {
         }
 
     };
-
-    /*
-    private final RejectedExecutionHandler onExecutionReject =
-            new RejectedExecutionHandler() {
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                    if (fallbackNetworkExecutor == null) {
-                        fallbackNetworkExecutor = createFallbackExecutor();
-                    }
-                    fallbackNetworkExecutor.execute(r);
-                    // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
-                }
-            };
-            */
-
-    private static final ThreadFactory backgroundThreadFactory = r -> {
-        Thread thread = new Thread(r);
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        return thread;
-    };
-
     /**
      * Future for loading process.
      */
@@ -203,6 +204,13 @@ public class Application extends android.app.Application {
         backgroundNetworkExecutorForUserActions = createMultiThreadFixedPoolExecutor();
     }
 
+    public static Application getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException();
+        }
+        return instance;
+    }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -216,7 +224,7 @@ public class Application extends android.app.Application {
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.setDaemon(true);
             return thread;
-            });
+        });
     }
 
     private ExecutorService createMultiThreadCacheExecutor() {
@@ -224,16 +232,6 @@ public class Application extends android.app.Application {
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(),
                 backgroundThreadFactory);
-    }
-
-    private ThreadPoolExecutor createFallbackExecutor() {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                5, 5,
-                10L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(),
-                backgroundThreadFactory);
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-        return threadPoolExecutor;
     }
 
     /*private ExecutorService createFlexibleCacheExecutor() {
@@ -246,6 +244,16 @@ public class Application extends android.app.Application {
         return threadPoolExecutor;
     }*/
 
+    private ThreadPoolExecutor createFallbackExecutor() {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                5, 5,
+                10L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                backgroundThreadFactory);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        return threadPoolExecutor;
+    }
+
     private ExecutorService createFixedThreadPoolWithTimeout() {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) createMultiThreadFixedPoolExecutor();
         executor.setKeepAliveTime(60L, TimeUnit.SECONDS);
@@ -255,15 +263,8 @@ public class Application extends android.app.Application {
 
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
-                Math.max(2, Runtime.getRuntime().availableProcessors()/2),
+                Math.max(2, Runtime.getRuntime().availableProcessors() / 2),
                 backgroundThreadFactory);
-    }
-
-    public static Application getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException();
-        }
-        return instance;
     }
 
     /**
@@ -504,7 +505,7 @@ public class Application extends android.app.Application {
         super.onTerminate();
     }
 
-    public void onScreenPowerOn(){
+    public void onScreenPowerOn() {
         for (Object manager : registeredManagers) {
             if (manager instanceof OnScreenListener) {
                 ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.ON);
@@ -512,7 +513,7 @@ public class Application extends android.app.Application {
         }
     }
 
-    public void onScreenPowerOff(){
+    public void onScreenPowerOff() {
         for (Object manager : registeredManagers) {
             if (manager instanceof OnScreenListener) {
                 ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.OFF);
@@ -574,14 +575,11 @@ public class Application extends android.app.Application {
      * Request to wipe all sensitive application data.
      */
     public void requestToWipe() {
-        runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                clear();
-                for (Object manager : registeredManagers)
-                    if (manager instanceof OnWipeListener)
-                        ((OnWipeListener) manager).onWipe();
-            }
+        runInBackground(() -> {
+            clear();
+            for (Object manager : registeredManagers)
+                if (manager instanceof OnWipeListener)
+                    ((OnWipeListener) manager).onWipe();
         });
     }
 
@@ -763,4 +761,53 @@ public class Application extends android.app.Application {
         }
         return "";
     }
+
+    public void resetApplication() {
+
+        try {
+
+            requestToWipe();
+            //Deleting all user files
+            File cacheDirectory = getCacheDir();
+            if (cacheDirectory.getParent() != null) {
+                File applicationDirectory = new File(cacheDirectory.getParent());
+                if (applicationDirectory.exists() && applicationDirectory.list() != null) {
+                    String[] fileNames = applicationDirectory.list();
+                    for (String fileName : fileNames) {
+                        if (!fileName.equals("lib")) {
+                            FileManager.getInstance()
+                                    .deleteFile(new File(applicationDirectory, fileName));
+                        }
+                    }
+                }
+            }
+
+            //Deleting all custom prefs
+            SettingsManager.resetCustomPrefs();
+
+            //Restart app
+            Context c = getApplicationContext();
+            if (c != null) {
+                PackageManager pm = c.getPackageManager();
+                if (pm != null) {
+                    Intent mStartActivity = pm.getLaunchIntentForPackage(c.getPackageName());
+                    if (mStartActivity != null) {
+                        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        int mPendingIntentId = 223344;
+                        PendingIntent mPendingIntent = PendingIntent
+                                .getActivity(c, mPendingIntentId, mStartActivity,
+                                        PendingIntent.FLAG_CANCEL_CURRENT);
+                        AlarmManager mgr = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000,
+                                mPendingIntent);
+                        System.exit(0);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            LogManager.e(LOG_TAG, "Was not able to reset application");
+        }
+    }
+
+
 }

@@ -39,11 +39,9 @@ import java.util.Map;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import okhttp3.ResponseBody;
 import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -71,383 +69,22 @@ public class XabberAccountManager implements OnLoadListener {
     private CompositeSubscription updateSettingsSubscriptions = new CompositeSubscription();
     private CompositeSubscription updateLocalSettingsSubscriptions = new CompositeSubscription();
 
-    public static XabberAccountManager getInstance() {
-        if (instance == null)
-            instance = new XabberAccountManager();
-        return instance;
-    }
-
     private XabberAccountManager() {
         accountsSyncState = new HashMap<>();
         xmppAccountsForSync = new ArrayList<>();
         xmppAccountsForCreate = new ArrayList<>();
     }
 
-    /**
-     * Add or update synchronization values
-     * @param accountsSyncState
-     */
-    public void setAccountSyncState(Map<String, Boolean> accountsSyncState) {
-        this.accountsSyncState.putAll(accountsSyncState);
-        saveSyncStatesToRealm(this.accountsSyncState);
-    }
-
-    /**
-     * Set synchronization for jid, if jid exist in map
-     * @param jid
-     * @param sync
-     */
-    public void setAccountSyncState(String jid, boolean sync) {
-        if (this.accountsSyncState.containsKey(jid)) {
-            this.accountsSyncState.put(jid, sync);
-            saveSyncStatesToRealm(this.accountsSyncState);
-        }
-    }
-
-    /**
-     * Add or update synchronization value to map
-     * @param jid
-     * @param sync
-     */
-    public void addAccountSyncState(String jid, boolean sync) {
-        this.accountsSyncState.put(jid, sync);
-        saveSyncStatesToRealm(this.accountsSyncState);
-    }
-
-    public void setAllExistingAccountSync(boolean sync) {
-        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
-            entry.setValue(sync);
-        }
-        saveSyncStatesToRealm(this.accountsSyncState);
-    }
-
-    public boolean isAccountSynchronize(String jid) {
-        boolean syncNotAllowed = false;
-        AccountJid accountJid = getExistingAccount(jid);
-        if (accountJid != null) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-            if (accountItem != null) syncNotAllowed = accountItem.isSyncNotAllowed();
-        }
-
-        if (accountsSyncState.containsKey(jid) && !syncNotAllowed)
-            return accountsSyncState.get(jid);
-        else return false;
-    }
-
-    @Nullable
-    public Boolean getAccountSyncState(String jid) {
-        if (accountsSyncState.containsKey(jid))
-            return accountsSyncState.get(jid);
-        else return null;
-    }
-
-    public List<XMPPAccountSettings> getXmppAccountsForSync() {
-        return xmppAccountsForSync;
-    }
-
-    public void setXmppAccountsForSync(List<XMPPAccountSettings> items) {
-        this.xmppAccountsForSync.clear();
-        this.xmppAccountsForSync.addAll(items);
-    }
-
-    public void setXmppAccountsForCreate(List<XMPPAccountSettings> items) {
-        this.xmppAccountsForCreate.clear();
-        this.xmppAccountsForCreate.addAll(items);
-    }
-
-    @Nullable
-    public List<XMPPAccountSettings> getXmppAccountsForCreate() {
-        Collections.sort(xmppAccountsForCreate, Collections.reverseOrder());
-        return xmppAccountsForCreate;
-    }
-
-    public void clearXmppAccountsForCreate() {
-        this.xmppAccountsForCreate.clear();
-    }
-
-    public int getLastOrderChangeTimestamp() {
-        return lastOrderChangeTimestamp;
-    }
-
-    public void setLastOrderChangeTimestampIsNow() {
-        this.lastOrderChangeTimestamp = getCurrentTime();
-        SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
-    }
-
-    /**
-     * Update account settings
-     * If catches Invalid Token error disable sync in last account before logout
-     * Calls only in Add Account function
-     */
-    public void updateSettingsWithSaveLastAccount(final AccountJid jid) {
-        Subscription updateSettingsSubscription = AuthManager.patchClientSettings(createSettingsList())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-
-                        // invalid token
-                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                        if (message != null && message.equals("Invalid token")) {
-                            // save last account
-                            setAccountSyncState(jid.getFullJid().asBareJid().toString(), false);
-                            // logout from deleted account
-                            onInvalidToken();
-                        }
-                    }
-                });
-        compositeSubscription.add(updateSettingsSubscription);
-    }
-
-    @Override
-    public void onLoad() {
-        XabberAccount account = loadXabberAccountFromRealm();
-        setAccount(account);
-
-        this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
-
-        // load sync state from realmobjects
-        this.accountsSyncState = loadSyncStatesFromRealm();
-
-        if (account != null) {
-            getAccountFromNet(account.getToken(), true);
-        }
-    }
-
-    private void getAccountFromNet(String token, final boolean needUpdateSettings) {
-        Subscription getAccountSubscription = AuthManager.getAccount(token)
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount xabberAccount) {
-                        handleSuccessGetAccount(xabberAccount, needUpdateSettings);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorGetAccount(throwable);
-                    }
-                });
-        compositeSubscription.add(getAccountSubscription);
-    }
-
-    public void updateAccountInfo() {
-        getAccountFromNet(account.getToken(), false);
-    }
-
-    /**
-     * Send local Xabber account settings updates to the server.
-     */
-    public void updateRemoteAccountSettings() {
-        List<XMPPAccountSettings> list = createSettingsList();
-        if (list != null && list.size() > 0) {
-            // prevents simultaneous calls
-            if (!updateSettingsSubscriptions.hasSubscriptions()) {
-                Subscription updateSettingsSubscription = AuthManager.patchClientSettings(list)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                            @Override
-                            public void call(List<XMPPAccountSettings> s) {
-                                Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                                updateSettingsSubscriptions.clear();
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-
-                                // invalid token
-                                String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                                if (message != null && message.equals("Invalid token")) {
-                                    // logout from deleted account
-                                    onInvalidToken();
-                                }
-                                updateSettingsSubscriptions.clear();
-                            }
-                        });
-                updateSettingsSubscriptions.add(updateSettingsSubscription);
-            }
-        }
-    }
-
-    /**
-     * Get Xabber account settings from the server and save them locally
-     */
-    public void updateLocalAccountSettings() {
-        if (!updateLocalSettingsSubscriptions.hasSubscriptions()) {
-            Subscription getSettingsSubscription = AuthManager.getClientSettings()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                        @Override
-                        public void call(List<XMPPAccountSettings> list) {
-                            Log.d(LOG_TAG, "Account settings loaded successfully");
-                            updateLocalSettingsSubscriptions.clear();
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-
-                            // invalid token
-                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                            if (message != null && message.equals("Invalid token")) {
-                                // logout from deleted account
-                                onInvalidToken();
-                            }
-                            updateLocalSettingsSubscriptions.clear();
-                        }
-                    });
-            updateLocalSettingsSubscriptions.add(getSettingsSubscription);
-        }
-    }
-
-
-    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount, boolean needUpdateSettings) {
-        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-        setAccount(xabberAccount);
-        //if (needUpdateSettings) updateRemoteAccountSettings();
-        if (needUpdateSettings) {
-            if (AccountManager.getInstance().isLoaded()) {
-                updateLocalAccountSettings();
-            } else {
-                AccountManager.getInstance().setCallAccountUpdate(true);
-            }
-        }
-    }
-
-    private void handleErrorGetAccount(Throwable throwable) {
-        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
-
-        // invalid token
-        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (message != null && message.equals("Invalid token")) {
-            onInvalidToken();
-        }
-    }
-
-    public void deleteAccountSettings(String jid) {
-        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null) {
-
-            Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                        @Override
-                        public void call(List<XMPPAccountSettings> settings) {
-                            handleSuccessDelete(settings);
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            handleErrorDelete(throwable);
-                        }
-                    });
-            compositeSubscription.add(deleteSubscription);
-        }
-    }
-
-    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
-        Log.d(LOG_TAG, "Settings deleted successfuly");
-    }
-
-    private void handleErrorDelete(Throwable throwable) {
-        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (message != null) {
-            if (message.equals("Invalid token"))
-                XabberAccountManager.getInstance().onInvalidToken();
-            else Log.d(LOG_TAG, "Error while deleting settings: " + message);
-        } else Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
-    }
-
-    @Nullable
-    public XabberAccount getAccount() {
-        return account;
-    }
-
-    public BehaviorSubject<XabberAccount> subscribeForAccount() {
-        return accountSubject;
-    }
-
-    private void setAccount(XabberAccount account) {
-        this.account = account;
-        accountSubject.onNext(this.account);
-    }
-
-    public void removeAccount() {
-        setAccount(null);
-        this.accountsSyncState.clear();
-    }
-
-    public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
-        XabberAccount account;
-        XabberAccountRealmObject xabberAccountRealmObject = new XabberAccountRealmObject(String.valueOf(xabberAccount.getId()));
-
-        xabberAccountRealmObject.setToken(token);
-        xabberAccountRealmObject.setAccountStatus(xabberAccount.getAccountStatus());
-        xabberAccountRealmObject.setUsername(xabberAccount.getUsername());
-        xabberAccountRealmObject.setDomain(xabberAccount.getDomain());
-        xabberAccountRealmObject.setFirstName(xabberAccount.getFirstName());
-        xabberAccountRealmObject.setLastName(xabberAccount.getLastName());
-        xabberAccountRealmObject.setLanguage(xabberAccount.getLanguage());
-        xabberAccountRealmObject.setRegisterDate(xabberAccount.getRegistrationDate());
-        xabberAccountRealmObject.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
-        xabberAccountRealmObject.setPhone(xabberAccount.getPhone());
-        xabberAccountRealmObject.setHasPassword(xabberAccount.hasPassword());
-
-        RealmList<XMPPUserRealmObject> realmUsers = new RealmList<>();
-        for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
-            XMPPUserRealmObject realmUser = new XMPPUserRealmObject(String.valueOf(user.getId()));
-            realmUser.setUsername(user.getUsername());
-            realmUser.setHost(user.getHost());
-            realmUser.setRegistration_date(user.getRegistrationDate());
-            realmUsers.add(realmUser);
-        }
-        xabberAccountRealmObject.setXmppUsers(realmUsers);
-
-        RealmList<EmailRealmObject> realmEmails = new RealmList<>();
-        for (EmailDTO email : xabberAccount.getEmails()) {
-            EmailRealmObject realmEmail = new EmailRealmObject(String.valueOf(email.getId()));
-            realmEmail.setEmail(email.getEmail());
-            realmEmail.setPrimary(email.isPrimary());
-            realmEmail.setVerified(email.isVerified());
-            realmEmails.add(realmEmail);
-        }
-        xabberAccountRealmObject.setEmails(realmEmails);
-
-        RealmList<SocialBindingRealmObject> realmSocials = new RealmList<>();
-        for (SocialBindingDTO social : xabberAccount.getSocialBindings()) {
-            SocialBindingRealmObject realmSocial = new SocialBindingRealmObject(String.valueOf(social.getId()));
-            realmSocial.setProvider(social.getProvider());
-            realmSocial.setUid(social.getUid());
-            realmSocial.setFirstName(social.getFirstName());
-            realmSocial.setLastName(social.getLastName());
-            realmSocials.add(realmSocial);
-        }
-        xabberAccountRealmObject.setSocialBindings(realmSocials);
-
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        realm.beginTransaction();
-        XabberAccountRealmObject accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealmObject);
-        account = xabberAccountRealmToPOJO(accountRealm);
-        realm.commitTransaction();
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-
-        setAccount(account);
-        return Single.just(account);
+    public static XabberAccountManager getInstance() {
+        if (instance == null)
+            instance = new XabberAccountManager();
+        return instance;
     }
 
     public static XabberAccount xabberAccountRealmToPOJO(XabberAccountRealmObject accountRealm) {
         if (accountRealm == null) return null;
 
-        XabberAccount xabberAccount = null;
+        XabberAccount xabberAccount;
 
         List<XMPPUser> xmppUsers = new ArrayList<>();
         for (XMPPUserRealmObject xmppUserRealmObject : accountRealm.getXmppUsers()) {
@@ -504,14 +141,354 @@ public class XabberAccountManager implements OnLoadListener {
         return xabberAccount;
     }
 
+    public static String getCurrentTimeString() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        Date now = new Date();
+        return sdfDate.format(now);
+    }
+
+    /**
+     * Add or update synchronization values
+     *
+     * @param accountsSyncState
+     */
+    public void setAccountSyncState(Map<String, Boolean> accountsSyncState) {
+        this.accountsSyncState.putAll(accountsSyncState);
+        saveSyncStatesToRealm(this.accountsSyncState);
+    }
+
+    /**
+     * Set synchronization for jid, if jid exist in map
+     *
+     * @param jid
+     * @param sync
+     */
+    public void setAccountSyncState(String jid, boolean sync) {
+        if (this.accountsSyncState.containsKey(jid)) {
+            this.accountsSyncState.put(jid, sync);
+            saveSyncStatesToRealm(this.accountsSyncState);
+        }
+    }
+
+    /**
+     * Add or update synchronization value to map
+     *
+     * @param jid
+     * @param sync
+     */
+    public void addAccountSyncState(String jid, boolean sync) {
+        this.accountsSyncState.put(jid, sync);
+        saveSyncStatesToRealm(this.accountsSyncState);
+    }
+
+    public void setAllExistingAccountSync(boolean sync) {
+        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
+            entry.setValue(sync);
+        }
+        saveSyncStatesToRealm(this.accountsSyncState);
+    }
+
+    public boolean isAccountSynchronize(String jid) {
+        boolean syncNotAllowed = false;
+        AccountJid accountJid = getExistingAccount(jid);
+        if (accountJid != null) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null) syncNotAllowed = accountItem.isSyncNotAllowed();
+        }
+
+        if (accountsSyncState.containsKey(jid) && !syncNotAllowed)
+            return accountsSyncState.get(jid);
+        else return false;
+    }
+
+    @Nullable
+    public Boolean getAccountSyncState(String jid) {
+        if (accountsSyncState.containsKey(jid))
+            return accountsSyncState.get(jid);
+        else return null;
+    }
+
+    public List<XMPPAccountSettings> getXmppAccountsForSync() {
+        return xmppAccountsForSync;
+    }
+
+    public void setXmppAccountsForSync(List<XMPPAccountSettings> items) {
+        this.xmppAccountsForSync.clear();
+        this.xmppAccountsForSync.addAll(items);
+    }
+
+    @Nullable
+    public List<XMPPAccountSettings> getXmppAccountsForCreate() {
+        Collections.sort(xmppAccountsForCreate, Collections.reverseOrder());
+        return xmppAccountsForCreate;
+    }
+
+    public void setXmppAccountsForCreate(List<XMPPAccountSettings> items) {
+        this.xmppAccountsForCreate.clear();
+        this.xmppAccountsForCreate.addAll(items);
+    }
+
+    public void clearXmppAccountsForCreate() {
+        this.xmppAccountsForCreate.clear();
+    }
+
+    public int getLastOrderChangeTimestamp() {
+        return lastOrderChangeTimestamp;
+    }
+
+    public void setLastOrderChangeTimestampIsNow() {
+        this.lastOrderChangeTimestamp = getCurrentTime();
+        SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
+    }
+
+    /**
+     * Update account settings
+     * If catches Invalid Token error disable sync in last account before logout
+     * Calls only in Add Account function
+     */
+    public void updateSettingsWithSaveLastAccount(final AccountJid jid) {
+        Subscription updateSettingsSubscription = AuthManager.patchClientSettings(createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> Log.d(LOG_TAG, "XMPP accounts loading from net: successfully"),
+                        throwable -> {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: "
+                                    + throwable.toString());
+
+                            // invalid token
+                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                            if (message != null && message.equals("Invalid token")) {
+                                // save last account
+                                setAccountSyncState(jid.getFullJid().asBareJid().toString(), false);
+                                // logout from deleted account
+                                onInvalidToken();
+                            }
+                        });
+        compositeSubscription.add(updateSettingsSubscription);
+    }
+
+    @Override
+    public void onLoad() {
+        XabberAccount account = loadXabberAccountFromRealm();
+        setAccount(account);
+
+        this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
+
+        // load sync state from realmobjects
+        this.accountsSyncState = loadSyncStatesFromRealm();
+
+        if (account != null) {
+            getAccountFromNet(account.getToken(), true);
+        }
+    }
+
+    private void getAccountFromNet(String token, final boolean needUpdateSettings) {
+        Subscription getAccountSubscription = AuthManager.getAccount(token)
+                .subscribe(xabberAccount -> handleSuccessGetAccount(xabberAccount,
+                        needUpdateSettings),
+                        throwable -> handleErrorGetAccount(throwable));
+        compositeSubscription.add(getAccountSubscription);
+    }
+
+    public void updateAccountInfo() {
+        getAccountFromNet(account.getToken(), false);
+    }
+
+    /**
+     * Send local Xabber account settings updates to the server.
+     */
+    public void updateRemoteAccountSettings() {
+        List<XMPPAccountSettings> list = createSettingsList();
+        if (list != null && list.size() > 0) {
+            // prevents simultaneous calls
+            if (!updateSettingsSubscriptions.hasSubscriptions()) {
+                Subscription updateSettingsSubscription = AuthManager.patchClientSettings(list)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                            updateSettingsSubscriptions.clear();
+                        }, throwable -> {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: "
+                                    + throwable.toString());
+
+                            // invalid token
+                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                            if (message != null && message.equals("Invalid token")) {
+                                // logout from deleted account
+                                onInvalidToken();
+                            }
+                            updateSettingsSubscriptions.clear();
+                        });
+                updateSettingsSubscriptions.add(updateSettingsSubscription);
+            }
+        }
+    }
+
+    /**
+     * Get Xabber account settings from the server and save them locally
+     */
+    public void updateLocalAccountSettings() {
+        if (!updateLocalSettingsSubscriptions.hasSubscriptions()) {
+            Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(list -> {
+                        Log.d(LOG_TAG, "Account settings loaded successfully");
+                        updateLocalSettingsSubscriptions.clear();
+                    }, throwable -> {
+
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: "
+                                + throwable.toString());
+
+                        // invalid token
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            // logout from deleted account
+                            onInvalidToken();
+                        }
+                        updateLocalSettingsSubscriptions.clear();
+                    });
+            updateLocalSettingsSubscriptions.add(getSettingsSubscription);
+        }
+    }
+
+    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount,
+                                         boolean needUpdateSettings) {
+        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+        setAccount(xabberAccount);
+        //if (needUpdateSettings) updateRemoteAccountSettings();
+        if (needUpdateSettings) {
+            if (AccountManager.getInstance().isLoaded()) {
+                updateLocalAccountSettings();
+            } else {
+                AccountManager.getInstance().setCallAccountUpdate(true);
+            }
+        }
+    }
+
+    private void handleErrorGetAccount(Throwable throwable) {
+        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+
+        // invalid token
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null && message.equals("Invalid token")) {
+            onInvalidToken();
+        }
+    }
+
+    public void deleteAccountSettings(String jid) {
+        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null) {
+
+            Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::handleSuccessDelete, this::handleErrorDelete);
+            compositeSubscription.add(deleteSubscription);
+        }
+    }
+
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+        Log.d(LOG_TAG, "Settings deleted successfuly");
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token"))
+                XabberAccountManager.getInstance().onInvalidToken();
+            else Log.d(LOG_TAG, "Error while deleting settings: " + message);
+        } else Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
+    }
+
+    @Nullable
+    public XabberAccount getAccount() {
+        return account;
+    }
+
+    private void setAccount(XabberAccount account) {
+        this.account = account;
+        accountSubject.onNext(this.account);
+    }
+
+    public BehaviorSubject<XabberAccount> subscribeForAccount() {
+        return accountSubject;
+    }
+
+    public void removeAccount() {
+        setAccount(null);
+        this.accountsSyncState.clear();
+    }
+
+    public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount,
+                                                                  String token) {
+        XabberAccount account;
+        XabberAccountRealmObject xabberAccountRealmObject =
+                new XabberAccountRealmObject(String.valueOf(xabberAccount.getId()));
+
+        xabberAccountRealmObject.setToken(token);
+        xabberAccountRealmObject.setAccountStatus(xabberAccount.getAccountStatus());
+        xabberAccountRealmObject.setUsername(xabberAccount.getUsername());
+        xabberAccountRealmObject.setDomain(xabberAccount.getDomain());
+        xabberAccountRealmObject.setFirstName(xabberAccount.getFirstName());
+        xabberAccountRealmObject.setLastName(xabberAccount.getLastName());
+        xabberAccountRealmObject.setLanguage(xabberAccount.getLanguage());
+        xabberAccountRealmObject.setRegisterDate(xabberAccount.getRegistrationDate());
+        xabberAccountRealmObject.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
+        xabberAccountRealmObject.setPhone(xabberAccount.getPhone());
+        xabberAccountRealmObject.setHasPassword(xabberAccount.hasPassword());
+
+        RealmList<XMPPUserRealmObject> realmUsers = new RealmList<>();
+        for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
+            XMPPUserRealmObject realmUser = new XMPPUserRealmObject(String.valueOf(user.getId()));
+            realmUser.setUsername(user.getUsername());
+            realmUser.setHost(user.getHost());
+            realmUser.setRegistration_date(user.getRegistrationDate());
+            realmUsers.add(realmUser);
+        }
+        xabberAccountRealmObject.setXmppUsers(realmUsers);
+
+        RealmList<EmailRealmObject> realmEmails = new RealmList<>();
+        for (EmailDTO email : xabberAccount.getEmails()) {
+            EmailRealmObject realmEmail = new EmailRealmObject(String.valueOf(email.getId()));
+            realmEmail.setEmail(email.getEmail());
+            realmEmail.setPrimary(email.isPrimary());
+            realmEmail.setVerified(email.isVerified());
+            realmEmails.add(realmEmail);
+        }
+        xabberAccountRealmObject.setEmails(realmEmails);
+
+        RealmList<SocialBindingRealmObject> realmSocials = new RealmList<>();
+        for (SocialBindingDTO social : xabberAccount.getSocialBindings()) {
+            SocialBindingRealmObject realmSocial =
+                    new SocialBindingRealmObject(String.valueOf(social.getId()));
+            realmSocial.setProvider(social.getProvider());
+            realmSocial.setUid(social.getUid());
+            realmSocial.setFirstName(social.getFirstName());
+            realmSocial.setLastName(social.getLastName());
+            realmSocials.add(realmSocial);
+        }
+        xabberAccountRealmObject.setSocialBindings(realmSocials);
+
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        realm.beginTransaction();
+        XabberAccountRealmObject accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealmObject);
+        account = xabberAccountRealmToPOJO(accountRealm);
+        realm.commitTransaction();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
+        setAccount(account);
+        return Single.just(account);
+    }
+
     @Nullable
     public XabberAccount loadXabberAccountFromRealm() {
         XabberAccount xabberAccount = null;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
         RealmResults<XabberAccountRealmObject> xabberAccounts = realm
-                    .where(XabberAccountRealmObject.class)
-                    .findAll();
+                .where(XabberAccountRealmObject.class)
+                .findAll();
 
         for (XabberAccountRealmObject xabberAccountRealmObject : xabberAccounts)
             xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealmObject);
@@ -522,24 +499,25 @@ public class XabberAccountManager implements OnLoadListener {
 
     public boolean deleteXabberAccountFromRealm() {
         final boolean[] success = new boolean[1];
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    success[0] = realm1.where(XabberAccountRealmObject.class)
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
-            } catch (Exception e) {
-                LogManager.exception("XabberAccountManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                success[0] = realm1.where(XabberAccountRealmObject.class)
+                        .findAll()
+                        .deleteAllFromRealm();
+            });
+        } catch (Exception e) {
+            LogManager.exception("XabberAccountManager", e);
+        } finally {
+            if (realm != null) realm.close();
+        }
         return success[0];
     }
 
     @Nullable
-    public Single<List<XMPPAccountSettings>> updateLocalAccounts(@Nullable List<XMPPAccountSettings> accounts) {
+    public Single<List<XMPPAccountSettings>> updateLocalAccounts(
+            @Nullable List<XMPPAccountSettings> accounts) {
         if (accounts != null) {
             for (XMPPAccountSettings account : accounts) {
                 updateLocalAccount(account);
@@ -559,7 +537,8 @@ public class XabberAccountManager implements OnLoadListener {
                     AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(),
                             "", account.getToken(), false, true,
                             true, false, false, true, false);
-                    AccountManager.getInstance().setColor(jid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                    AccountManager.getInstance().setColor(jid,
+                            ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                     AccountManager.getInstance().setOrder(jid, account.getOrder());
                     AccountManager.getInstance().setTimestamp(jid, account.getTimestamp());
                     AccountManager.getInstance().onAccountChanged(jid);
@@ -586,35 +565,35 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void createLocalAccountIfNotExist() {
         Collections.sort(xmppAccountsForCreate, Collections.reverseOrder());
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (xmppAccountsForCreate != null) {
-                    for (XMPPAccountSettings account : xmppAccountsForCreate) {
-                        updateLocalAccount(account);
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+        Application.getInstance().runInBackground(() -> {
+            if (xmppAccountsForCreate != null) {
+                for (XMPPAccountSettings account : xmppAccountsForCreate) {
+                    updateLocalAccount(account);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-                xmppAccountsForCreate.clear();
             }
+            xmppAccountsForCreate.clear();
         });
     }
 
     public void deleteSyncedLocalAccounts() {
         for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
             AccountJid accountJid = getExistingAccount(entry.getKey());
-            if (accountJid != null && entry.getValue()) AccountManager.getInstance().removeAccount(accountJid);
+            if (accountJid != null && entry.getValue())
+                AccountManager.getInstance().removeAccount(accountJid);
         }
     }
 
     public AccountJid getExistingAccount(String jid) {
         int slash = jid.indexOf('/');
         if (slash != -1) {
-            LogManager.d(LOG_TAG, "Got FullJid instead of BareJid to check if account already exists, possibly from the server. Jid = " + jid);
+            LogManager.d(LOG_TAG,
+                    "Got FullJid instead of BareJid to check if account already exists, " +
+                            "possibly from the server. Jid = " + jid);
             LogManager.d(LOG_TAG, Log.getStackTraceString(new Throwable()));
             jid = jid.substring(0, slash); // make sure we compare barejids
         }
@@ -637,29 +616,19 @@ public class XabberAccountManager implements OnLoadListener {
         return (int) (System.currentTimeMillis() / 1000L);
     }
 
-    public static String getCurrentTimeString() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-        Date now = new Date();
-        return sdfDate.format(now);
-    }
-
     public void onInvalidToken() {
         EventBus.getDefault().postSticky(new XabberAccountDeletedEvent());
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                deleteSyncedLocalAccounts();
-                deleteSyncStatesFromRealm();
-                deleteXabberAccountFromRealm();
-                removeAccount();
-            }
+        Application.getInstance().runInBackground(() -> {
+            deleteSyncedLocalAccounts();
+            deleteSyncStatesFromRealm();
+            deleteXabberAccountFromRealm();
+            removeAccount();
         });
         unregisterEndpoint();
     }
 
-    public static class XabberAccountDeletedEvent {}
-
-    public Single<List<XMPPAccountSettings>> clientSettingsDTOListToPOJO(AuthManager.ListClientSettingsDTO list) {
+    public Single<List<XMPPAccountSettings>> clientSettingsDTOListToPOJO(
+            AuthManager.ListClientSettingsDTO list) {
         List<XMPPAccountSettings> result = new ArrayList<>();
 
         for (AuthManager.ClientSettingsDTO dtoItem : list.getSettings()) {
@@ -680,7 +649,8 @@ public class XabberAccountManager implements OnLoadListener {
 
         // add deleted items to list
         for (AuthManager.DeletedDTO deletedDTO : list.getDeleted()) {
-            XMPPAccountSettings accountSettings = new XMPPAccountSettings(deletedDTO.getJid(), true, deletedDTO.getTimestamp());
+            XMPPAccountSettings accountSettings =
+                    new XMPPAccountSettings(deletedDTO.getJid(), true, deletedDTO.getTimestamp());
             accountSettings.setDeleted(true);
             accountSettings.setOrder(result.size() + 1);
             result.add(accountSettings);
@@ -707,10 +677,10 @@ public class XabberAccountManager implements OnLoadListener {
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<SyncStateRealmObject> realmItems = realm.where(SyncStateRealmObject.class)
-                    .findAll();
+                .findAll();
 
         for (SyncStateRealmObject realmItem : realmItems)
-                resultMap.put(realmItem.getJid(), realmItem.isSync());
+            resultMap.put(realmItem.getJid(), realmItem.isSync());
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return resultMap;
@@ -718,19 +688,19 @@ public class XabberAccountManager implements OnLoadListener {
 
     public boolean deleteSyncStatesFromRealm() {
         final boolean[] success = new boolean[1];
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    success[0] = realm1.where(SyncStateRealmObject.class)
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
-            } catch (Exception e) {
-                LogManager.exception("XabberAccountManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                success[0] = realm1.where(SyncStateRealmObject.class)
+                        .findAll()
+                        .deleteAllFromRealm();
+            });
+        } catch (Exception e) {
+            LogManager.exception("XabberAccountManager", e);
+        } finally {
+            if (realm != null) realm.close();
+        }
         return success[0];
     }
 
@@ -762,9 +732,11 @@ public class XabberAccountManager implements OnLoadListener {
                     List<SyncStateRealmObject> resultRealm = realm1.copyToRealmOrUpdate(realmItems);
                     LogManager.d(LOG_TAG, resultRealm.size() + " syncState items was saved to Realm");
                 });
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception("XabberAccountManager", e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
 
         LogManager.d("REALM", Thread.currentThread().getName()
@@ -781,9 +753,11 @@ public class XabberAccountManager implements OnLoadListener {
         for (AccountItem localAccount : localAccounts) {
             String localJid = localAccount.getAccount().getFullJid().asBareJid().toString();
             if (SettingsManager.isSyncAllAccounts() || isAccountSynchronize(localJid)) {
-                XMPPAccountSettings item = new XMPPAccountSettings(localJid, true, localAccount.getTimestamp());
+                XMPPAccountSettings item =
+                        new XMPPAccountSettings(localJid, true, localAccount.getTimestamp());
                 item.setOrder(localAccount.getOrder());
-                item.setColor(ColorManager.getInstance().convertIndexToColorName(localAccount.getColorIndex()));
+                item.setColor(ColorManager.getInstance()
+                        .convertIndexToColorName(localAccount.getColorIndex()));
                 item.setTimestamp(localAccount.getTimestamp());
                 resultList.add(item);
             }
@@ -823,7 +797,7 @@ public class XabberAccountManager implements OnLoadListener {
                 remoteItem.setSynchronization(isAccountSynchronize(remoteItem.getJid()));
                 resultList.add(remoteItem);
 
-            } else if (!remoteItem.isDeleted()){
+            } else if (!remoteItem.isDeleted()) {
                 remoteItem.setStatus(status);
                 remoteItem.setSynchronization(isAccountSynchronize(remoteItem.getJid()));
                 resultList.add(remoteItem);
@@ -845,7 +819,8 @@ public class XabberAccountManager implements OnLoadListener {
             if (!exist) {
                 XMPPAccountSettings localItem = new XMPPAccountSettings(localJid, false, localAccount.getTimestamp());
                 localItem.setOrder(remoteList.size() + localAccount.getOrder());
-                localItem.setColor(ColorManager.getInstance().convertIndexToColorName(localAccount.getColorIndex()));
+                localItem.setColor(ColorManager.getInstance()
+                        .convertIndexToColorName(localAccount.getColorIndex()));
                 localItem.setStatus(XMPPAccountSettings.SyncStatus.local);
                 localItem.setSynchronization(isAccountSynchronize(localItem.getJid()));
                 localItem.setSyncNotAllowed(localAccount.isSyncNotAllowed());
@@ -862,20 +837,13 @@ public class XabberAccountManager implements OnLoadListener {
         if (token == null) return;
 
         compositeSubscription.add(
-            AuthManager.registerFCMEndpoint(token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        Log.d(LOG_TAG, "Endpoint successfully registered");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
-                    }
-                }));
+                AuthManager.registerFCMEndpoint(token)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                responseBody -> Log.d(LOG_TAG, "Endpoint successfully registered"),
+                                throwable -> Log.d(LOG_TAG, "Endpoint register failed: "
+                                        + throwable.toString())));
     }
 
     public void unregisterEndpoint() {
@@ -883,20 +851,16 @@ public class XabberAccountManager implements OnLoadListener {
         if (token == null) return;
 
         compositeSubscription.add(
-            AuthManager.unregisterFCMEndpoint(token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        Log.d(LOG_TAG, "Endpoint successfully unregistered");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
-                    }
-                }));
+                AuthManager.unregisterFCMEndpoint(token)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(responseBody ->
+                                        Log.d(LOG_TAG, "Endpoint successfully unregistered"),
+                                throwable -> Log.d(LOG_TAG, "Endpoint unregister failed: "
+                                        + throwable.toString())));
+    }
+
+    public static class XabberAccountDeletedEvent {
     }
 }
 

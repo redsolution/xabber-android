@@ -11,8 +11,8 @@ class ChatItemDiffUtil(private val oldList: List<AbstractChat>,
 
     override fun getNewListSize(): Int = newList.size
 
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = false
-            //oldList[oldItemPosition] == newList[newItemPosition]
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldList[oldItemPosition] == newList[newItemPosition]
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
 //        try {

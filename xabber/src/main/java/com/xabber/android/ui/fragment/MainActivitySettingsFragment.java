@@ -50,22 +50,21 @@ import java.util.Collection;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class MainActivitySettingsFragment extends Fragment implements View.OnClickListener,
-        OnAccountChangedListener, AdapterView.OnItemClickListener, AccountListPreferenceAdapter.Listener {
+        OnAccountChangedListener, AdapterView.OnItemClickListener,
+        AccountListPreferenceAdapter.Listener {
 
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
     ContactListDrawerListener listener;
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
 
     private TextView tvAccountName;
     private TextView tvAccountEmail;
     private ImageView ivSync;
-    private ImageView ivTheme;
 
     private TextView tvPatreonTitle;
     private ProgressBar pbPatreon;
@@ -74,7 +73,6 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     private AccountListPreferenceAdapter accountListAdapter;
     private ImageView ivReorder;
-    private Button btnAddAccount;
 
     public static MainActivitySettingsFragment newInstance() {
         return new MainActivitySettingsFragment();
@@ -105,43 +103,46 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_drawer, container, false);
 
         // to avoid strange bug on some 4.x androids
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
+            view.setBackgroundColor(ColorManager.getInstance()
+                    .getNavigationDrawerBackgroundColor());
         }
 
         try {
-            ((TextView)view.findViewById(R.id.version))
-                    .setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0)
-                            .versionName);
+            ((TextView) view.findViewById(R.id.version)).setText(getActivity().getPackageManager()
+                    .getPackageInfo(getActivity().getPackageName(), 0).versionName);
         } catch (PackageManager.NameNotFoundException e) {
             LogManager.exception(this, e);
         }
 
         View drawerHeader = view.findViewById(R.id.drawer_header);
-        drawerHeaderImage = (ImageView) drawerHeader.findViewById(R.id.drawer_header_image);
-        drawerHeaderImage.setImageResource(headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
+        drawerHeaderImage = drawerHeader.findViewById(R.id.drawer_header_image);
+        drawerHeaderImage.setImageResource(
+                headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
 
         view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
         ivSync = view.findViewById(R.id.ivSync);
-        ivTheme = view.findViewById(R.id.ivThemeChange);
+        ImageView ivTheme = view.findViewById(R.id.ivThemeChange);
         ivTheme.setOnClickListener(this);
-        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
-        tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+        tvAccountName = view.findViewById(R.id.tvAccountName);
+        tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
 
-        tvPatreonTitle = (TextView) view.findViewById(R.id.tvPatreonTitle);
-        pbPatreon = (ProgressBar) view.findViewById(R.id.pbPatreon);
+        tvPatreonTitle = view.findViewById(R.id.tvPatreonTitle);
+        pbPatreon = view.findViewById(R.id.pbPatreon);
         view.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
 
         view.findViewById(R.id.drawer_action_settings).setOnClickListener(this);
         view.findViewById(R.id.drawer_action_about).setOnClickListener(this);
         view.findViewById(R.id.drawer_action_exit).setOnClickListener(this);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.account_list_recycler_view);
+        RecyclerView recyclerView = view
+                .findViewById(R.id.account_list_recycler_view);
 
         accountListAdapter = new AccountListPreferenceAdapter(getActivity(), this);
 
@@ -149,9 +150,9 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         recyclerView.setAdapter(accountListAdapter);
         recyclerView.setNestedScrollingEnabled(false);
 
-        ivReorder = (ImageView) view.findViewById(R.id.ivReorder);
+        ivReorder = view.findViewById(R.id.ivReorder);
         ivReorder.setOnClickListener(this);
-        btnAddAccount = (Button) view.findViewById(R.id.btnAddAccount);
+        Button btnAddAccount = view.findViewById(R.id.btnAddAccount);
         btnAddAccount.setOnClickListener(this);
 
         return view;
@@ -203,25 +204,22 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
     }
 
     private void update() {
-        drawerHeaderImage.setImageResource(headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
+        drawerHeaderImage.setImageResource(
+                headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
 
         setupPatreonView();
         setupAccountList();
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
-
-    public interface ContactListDrawerListener {
-        void onContactListDrawerListener(int viewId);
-
-        void onAccountSelected(AccountJid account);
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     }
 
     private void setupXabberAccountView(XabberAccount account) {
         if (account != null) {
             String accountName = account.getFirstName() + " " + account.getLastName();
-            if (accountName.trim().isEmpty()) accountName = getActivity().getString(R.string.title_xabber_account);
+            if (accountName.trim().isEmpty())
+                accountName = getActivity().getString(R.string.title_xabber_account);
             tvAccountName.setText(accountName);
             tvAccountEmail.setText(account.getFullUsername());
             ivSync.setImageResource(R.drawable.ic_sync_done);
@@ -237,7 +235,7 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         XabberComClient.Patreon patreon = PatreonManager.getInstance().getPatreon();
         if (patreon != null) {
             XabberComClient.PatreonGoal currentGoal = null;
-            for (XabberComClient.PatreonGoal goal: patreon.getGoals()) {
+            for (XabberComClient.PatreonGoal goal : patreon.getGoals()) {
                 if (goal.getGoal() > patreon.getPledged()) {
                     currentGoal = goal;
                     break;
@@ -315,7 +313,8 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         ActivityManager.getInstance().clearStack(true);
         Activity activity = getActivity();
         if (activity != null) {
-            Intent intent = MainActivity.createFragmentIntent(activity, MainActivity.ActiveFragmentType.SETTINGS);
+            Intent intent = MainActivity.createFragmentIntent(activity,
+                    MainActivity.ActiveFragmentType.SETTINGS);
             startActivity(intent);
             activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
@@ -323,13 +322,14 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     private void subscribeForXabberAccount() {
         compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(new Action1<XabberAccount>() {
-                @Override
-                public void call(XabberAccount account) {
-                    setupXabberAccountView(account);
-                }
-            }).subscribe());
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(account -> setupXabberAccountView(account)).subscribe());
+    }
+
+    public interface ContactListDrawerListener {
+        void onContactListDrawerListener(int viewId);
+
+        void onAccountSelected(AccountJid account);
     }
 }

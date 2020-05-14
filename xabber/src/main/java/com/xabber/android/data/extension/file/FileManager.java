@@ -72,7 +72,7 @@ public class FileManager {
         return instance;
     }
 
-    public static void processFileMessage (final MessageRealmObject messageRealmObject) {
+    public static void processFileMessage(final MessageRealmObject messageRealmObject) {
         boolean isImage = isImageUrl(messageRealmObject.getText());
         if (messageRealmObject.getAttachmentRealmObjects() != null)
             messageRealmObject.getAttachmentRealmObjects().get(0).setIsImage(isImage);
@@ -94,7 +94,7 @@ public class FileManager {
         BitmapFactory.decodeFile(path, options);
 
         ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
+        if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
             scaleImage(layoutParams, options.outWidth, options.outHeight);
         } else
             scaleImage(layoutParams, options.outHeight, options.outWidth);
@@ -112,7 +112,8 @@ public class FileManager {
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
-                .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                        new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
                 .into(imageView);
 
         return true;
@@ -128,7 +129,8 @@ public class FileManager {
         }
         try {
             URL url = new URL(text);
-            if (!url.getProtocol().equalsIgnoreCase("http") && !url.getProtocol().equalsIgnoreCase("https")) {
+            if (!url.getProtocol().equalsIgnoreCase("http")
+                    && !url.getProtocol().equalsIgnoreCase("https")) {
                 return false;
             }
             String extension = extractRelevantExtension(url);
@@ -247,7 +249,8 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif
+                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
         switch (orientation) {
             case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
@@ -280,7 +283,8 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif
+                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
         switch (orientation) {
             case ExifInterface.ORIENTATION_TRANSPOSE:
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -351,7 +355,8 @@ public class FileManager {
     }
 
     public static Uri getFileUri(File file) {
-        return FileProvider.getUriForFile(Application.getInstance(), BuildConfig.APPLICATION_ID + ".provider", file);
+        return FileProvider.getUriForFile(Application.getInstance(),
+                BuildConfig.APPLICATION_ID + ".provider", file);
     }
 
     public static File createTempImageFile(String name) throws IOException {
@@ -367,7 +372,7 @@ public class FileManager {
         return File.createTempFile(name, ".opus", Application.getInstance().getCacheDir());
     }
 
-    public static File createAudioFile(String name) throws IOException {
+    public static File createAudioFile(String name) {
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists()) {
@@ -386,8 +391,10 @@ public class FileManager {
 
         // create file
 
-        String filePath = directory.getPath() + File.separator +
-                FilenameUtils.getBaseName(name) + "_" + System.currentTimeMillis()/1000 + "." + FilenameUtils.getExtension(name);
+        String filePath = directory.getPath() + File.separator
+                + FilenameUtils.getBaseName(name) + "_"
+                + System.currentTimeMillis() / 1000 + "."
+                + FilenameUtils.getExtension(name);
         File file = new File(filePath);
 
         if (file.exists()) {
@@ -404,7 +411,7 @@ public class FileManager {
      * Makes a copy of the source file and then deletes it.
      *
      * @param source file that will be copied and subsequently deleted
-     * @param dest file the data will be copied to
+     * @param dest   file the data will be copied to
      * @return success of copying
      */
     public static boolean copy(File source, File dest) {
@@ -472,7 +479,9 @@ public class FileManager {
         return intent;
     }
 
-    /** For java 6 */
+    /**
+     * For java 6
+     */
     public static void deleteDirectoryRecursion(File file) {
         if (file.isDirectory()) {
             File[] entries = file.listFiles();
@@ -489,7 +498,7 @@ public class FileManager {
 
     public static String generateUniqueNameForFile(String path, String sourceName) {
         String extension = FilenameUtils.getExtension(sourceName);
-        String baseName =  FilenameUtils.getBaseName(sourceName);
+        String baseName = FilenameUtils.getBaseName(sourceName);
         int i = 0;
         String newName;
         File file;
@@ -501,6 +510,22 @@ public class FileManager {
             file = new File(path + newName);
         } while (file.exists());
         return newName;
+    }
+
+    public boolean deleteFile(File file) {
+        boolean deletedAll = true;
+        if (file != null) {
+            if (file.isDirectory()) {
+                String[] children = file.list();
+                for (int i = 0; i < children.length; i++) {
+                    deletedAll = deleteFile(new File(file, children[i])) && deletedAll;
+                }
+            } else {
+                deletedAll = file.delete();
+            }
+        }
+
+        return deletedAll;
     }
 
 }
