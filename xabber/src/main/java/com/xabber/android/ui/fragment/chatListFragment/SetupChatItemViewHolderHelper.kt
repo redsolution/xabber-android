@@ -84,6 +84,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
         val isGroupchat = chat.isGroupchat
+        val isRoster = RosterManager.getInstance()
+                .getRosterContact(chat.account, chat.user) != null
 
         when {
             isBlocked -> statusLevel = 11
@@ -91,8 +93,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             isGroupchat -> statusLevel = 9
         }
 
-        if (statusLevel == 11) {
-            if (holder.avatarIV.visibility == View.VISIBLE) {
+        if (isBlocked || (!isRoster && statusLevel < 8)) {
+            if (holder.avatarIV.visibility == View.VISIBLE && isBlocked) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     holder.avatarIV.imageAlpha = 128
                 } else {
