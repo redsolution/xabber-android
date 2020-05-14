@@ -17,6 +17,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
+import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
@@ -84,8 +85,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
         val isGroupchat = chat.isGroupchat
-        val isRoster = RosterManager.getInstance()
-                .getRosterContact(chat.account, chat.user) != null
+        val isRoster = RosterManager.getInstance().getRosterContact(chat.account, chat.user) != null
+                || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)
 
         when {
             isBlocked -> statusLevel = 11

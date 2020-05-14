@@ -183,8 +183,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
         AccountItem account = AccountManager.getInstance().getAccount(accountJid);
+        if (account == null) return false;
         RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(account);
-        return account != null && loaded != null;
+        return loaded != null;
     }
 
     // TODO
@@ -362,14 +363,18 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+        /*Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         for (ContactJid blockedContact : blockedContacts) {
             if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
                 onVCardFailed(account, srcUser);
                 return;
             }
-        }
+        }*/
 
+        if (BlockingManager.getInstance().jidIsBlockedLocally(account, srcUser)) {
+            onVCardFailed(account, srcUser);
+            return;
+        }
         //final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
         final BareJid bareJid = srcUser.asBareJid();
 

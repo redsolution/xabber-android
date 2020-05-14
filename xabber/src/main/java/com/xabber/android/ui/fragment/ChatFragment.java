@@ -94,6 +94,7 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
@@ -2037,6 +2038,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         //}
         if (userIsBlocked) {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        if (!VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
             return;
         }
 
