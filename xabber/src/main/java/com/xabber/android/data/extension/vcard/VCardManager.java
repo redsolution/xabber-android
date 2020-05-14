@@ -363,18 +363,18 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        /*Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         for (ContactJid blockedContact : blockedContacts) {
             if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
                 onVCardFailed(account, srcUser);
                 return;
             }
-        }*/
-
-        if (BlockingManager.getInstance().jidIsBlockedLocally(account, srcUser)) {
-            onVCardFailed(account, srcUser);
-            return;
         }
+
+        //if (BlockingManager.getInstance().jidIsBlockedLocally(account, srcUser)) {
+        //    onVCardFailed(account, srcUser);
+        //    return;
+        //}
         //final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
         final BareJid bareJid = srcUser.asBareJid();
 

@@ -18,6 +18,7 @@ import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -27,19 +28,23 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     private View introView;
     private AccountJid account;
     private ContactJid user;
+    private AbstractChat chat;
     private int distanceFromMessage = 60;
     private int offsetFromTop = 10;
 
 
-    public IntroViewDecoration(View introView, AccountJid account, ContactJid user) {
+    public IntroViewDecoration(View introView, AccountJid account, ContactJid user, AbstractChat chat) {
         this.introView = introView;
         this.account = account;
         this.user = user;
+        this.chat = chat;
     }
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDraw(c, parent, state);
+
+        if (chat != null && chat.isHistoryBeingLoaded()) return;
 
         int dx = parent.getMeasuredWidth() / 14;
 

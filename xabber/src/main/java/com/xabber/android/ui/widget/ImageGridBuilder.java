@@ -126,6 +126,8 @@ public class ImageGridBuilder {
                         .transform(new MultiTransformation<>(new CenterInside(),
                                 new RoundedCorners(IMAGE_ROUNDED_CORNERS),
                                 new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .placeholder(R.drawable.ic_recent_image_placeholder)
+                        .error(R.drawable.ic_recent_image_placeholder)
                         .into(imageView);
             } else {
 
@@ -134,7 +136,23 @@ public class ImageGridBuilder {
                         .load(imageUrl)
                         .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS),
                                 new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                        .placeholder(R.drawable.ic_recent_image_placeholder)
+                        .error(R.drawable.ic_recent_image_placeholder)
                         .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onLoadStarted(@Nullable Drawable placeholder) {
+                                super.onLoadStarted(placeholder);
+                                imageView.setImageDrawable(placeholder);
+                                imageView.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                super.onLoadFailed(errorDrawable);
+                                imageView.setImageDrawable(errorDrawable);
+                                imageView.setVisibility(View.VISIBLE);
+                            }
+
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 final int width = resource.getWidth();

@@ -794,7 +794,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             introView.getBackground().setTint(accountColor);
         }
-        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, account, user));
+        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, account, user, getChat()));
     }
 
     public void inflateIntroView(boolean show) {
