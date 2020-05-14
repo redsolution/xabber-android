@@ -19,6 +19,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -41,6 +42,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
@@ -620,6 +622,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
+    public Message createMessageWithMarkupPacket(String body, String markup, String stanzaId) {
+        Message message = createMessagePacket(body);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+        createMarkupReferences(message, markup, new StringBuilder());
+        return message;
+    }
+
     /**
      * @return New message packet to be sent.
      */
@@ -681,6 +690,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         StringBuilder builder = new StringBuilder();
         createForwardMessageReferences(message, forwardIds, builder);
+        builder.append(text);
+
+        message.setBody(builder);
+        return message;
+    }
+
+    public Message createForwardMessageWithMarkupPacket(String stanzaId, String[] forwardIds, String text, String markupText) {
+        Message message = new Message();
+        message.setTo(getTo());
+        message.setType(getType());
+        message.setThread(threadId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+
+        StringBuilder builder = new StringBuilder();
+        createForwardMessageReferences(message, forwardIds, builder);
+        createMarkupReferences(message, markupText, builder);
         builder.append(text);
 
         message.setBody(builder);
