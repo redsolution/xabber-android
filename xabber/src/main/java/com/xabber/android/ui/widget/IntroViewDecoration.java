@@ -44,7 +44,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDraw(c, parent, state);
 
-        if (chat != null && chat.isHistoryBeingLoaded()) return;
+        if (chat != null && !chat.historyIsFull()) return;
 
         int dx = parent.getMeasuredWidth() / 14;
 

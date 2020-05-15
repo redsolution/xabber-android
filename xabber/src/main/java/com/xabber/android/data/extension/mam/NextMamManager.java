@@ -145,8 +145,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none
                 || !isSupported(accountItem.getAccount())) return;
 
-        chat.setHistoryIsBeingLoaded(true);
-
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
@@ -165,7 +163,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 loadNextHistory(realm, accountItem, chat);
                 EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
             }
-            chat.setHistoryIsBeingLoaded(false);
 
             // load missed messages if need
             List<MessageRealmObject> messages = findMissedMessages(realm, chat);
@@ -188,7 +185,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 || !isSupported(accountItem.getAccount())) return;
 
         if (chat.historyIsFull()) return;
-        chat.setHistoryIsBeingLoaded(true);
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             synchronized (lock) {
                 if (isRequested) return;
@@ -199,7 +195,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             loadNextHistory(realm, accountItem, chat);
             if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
             EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-            chat.setHistoryIsBeingLoaded(false);
             synchronized (lock) {
                 isRequested = false;
             }
