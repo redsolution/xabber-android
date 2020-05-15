@@ -21,6 +21,7 @@ import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
+import com.xabber.android.data.message.chat.ChatAction
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
@@ -85,7 +86,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
         val isGroupchat = chat.isGroupchat
-        val isRoster = RosterManager.getInstance().getRosterContact(chat.account, chat.user) != null
+        val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.user)
+        val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)
 
         when {
@@ -229,11 +231,14 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
                 if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null && lastMessage.action.isNotEmpty()) ){
-                    if (holder.accountColorIndicator != null){
+                    if (holder.accountColorIndicator != null
+                            && (lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString())){
                         holder.messageTextTV.text = Html.fromHtml(StringUtils
                                 .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
-                        holder.messageTextTV.alpha = 0.6f
+                    } else {
+                        holder.messageTextTV.text = lastMessage.text
                     }
+                    holder.messageTextTV.alpha = 0.6f
                     return
                 } else {
                     try {

@@ -302,7 +302,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
         contact.setEnabled(true);
         contact.setConnected(true);
-
+        contact.setDirtyRemoved(false);
 
         return contact;
     }
@@ -452,6 +452,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         if (entry == null) {
             return;
+        }
+
+        RosterContact contact = getRosterContact(account, user);
+        if (contact != null) {
+            contact.setDirtyRemoved(true);
+            EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         }
 
         Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
