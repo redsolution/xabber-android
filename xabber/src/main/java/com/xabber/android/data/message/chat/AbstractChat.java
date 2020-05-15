@@ -1191,14 +1191,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         this.historyRequestedAtStart = isHistoryRequested;
     }
 
-    public boolean isHistoryBeingLoaded() {
-        return historyIsBeingLoaded;
-    }
-
-    public void setHistoryIsBeingLoaded(boolean loading) {
-        historyIsBeingLoaded = loading;
-    }
-
     public void requestSaveToRealm() {
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
