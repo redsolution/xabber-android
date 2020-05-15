@@ -18,8 +18,8 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -55,6 +55,11 @@ public class RosterContact extends AbstractContact {
      * Whether contact`s account is enabled.
      */
     protected boolean enabled;
+
+    /**
+     * Whether contact is in the process of being removed
+     */
+    private boolean dirtyRemoved;
 
     private static final  NestedMap<WeakReference<RosterContact>> instances = new NestedMap<>();
 
@@ -142,6 +147,14 @@ public class RosterContact extends AbstractContact {
 
     void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isDirtyRemoved() {
+        return dirtyRemoved;
+    }
+
+    void setDirtyRemoved(boolean removed) {
+        this.dirtyRemoved = removed;
     }
 
 //    public String getLastActivity() {

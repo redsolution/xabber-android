@@ -85,7 +85,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
         val isGroupchat = chat.isGroupchat
-        val isRoster = RosterManager.getInstance().getRosterContact(chat.account, chat.user) != null
+        val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.user)
+        val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)
 
         when {
