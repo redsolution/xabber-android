@@ -3,11 +3,7 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +11,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.EmailDTO;
 import com.xabber.android.data.xaccount.SocialBindingDTO;
-import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
@@ -29,7 +28,6 @@ import com.xabber.android.ui.helper.OnSocialBindListener;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -39,21 +37,16 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     private TextView tvNameGoogle;
     private TextView tvStatusGoogle;
     private TextView tvActionGoogle;
-    private LinearLayout itemGoogle;
     private ImageView ivFacebook;
     private TextView tvNameFacebook;
     private TextView tvStatusFacebook;
     private TextView tvActionFacebook;
-    private LinearLayout itemFacebook;
     private ImageView ivTwitter;
     private TextView tvNameTwitter;
     private TextView tvStatusTwitter;
     private TextView tvActionTwitter;
-    private LinearLayout itemTwitter;
 
-    private RecyclerView rvEmails;
     private EmailAdapter emailAdapter;
-    private View viewAddEmail;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Listener listener;
@@ -65,13 +58,13 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     }
 
     public static XAccountLinksFragment newInstance() {
-        XAccountLinksFragment fragment = new XAccountLinksFragment();
-        return fragment;
+        return new XAccountLinksFragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_xaccount_links, container, false);
     }
 
@@ -83,56 +76,42 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         ivGoogle = view.findViewById(R.id.ivGoogle);
         tvNameGoogle = view.findViewById(R.id.tvNameGoogle);
         tvActionGoogle = view.findViewById(R.id.tvActionGoogle);
-        itemGoogle = view.findViewById(R.id.itemGoogle);
-        itemGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
-                    bindListener.onBindClick(AuthManager.PROVIDER_GOOGLE);
-                else onSocialUnlinkClick(AuthManager.PROVIDER_GOOGLE);
-            }
+        LinearLayout itemGoogle = view.findViewById(R.id.itemGoogle);
+        itemGoogle.setOnClickListener(v -> {
+            if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                bindListener.onBindClick(AuthManager.PROVIDER_GOOGLE);
+            else onSocialUnlinkClick(AuthManager.PROVIDER_GOOGLE);
         });
 
         tvStatusFacebook = view.findViewById(R.id.tvStatusFacebook);
         ivFacebook = view.findViewById(R.id.ivFacebook);
         tvNameFacebook = view.findViewById(R.id.tvNameFacebook);
         tvActionFacebook = view.findViewById(R.id.tvActionFacebook);
-        itemFacebook = view.findViewById(R.id.itemFacebook);
-        itemFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
-                    bindListener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
-                else onSocialUnlinkClick(AuthManager.PROVIDER_FACEBOOK);
-            }
+        LinearLayout itemFacebook = view.findViewById(R.id.itemFacebook);
+        itemFacebook.setOnClickListener(v -> {
+            if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
+                bindListener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
+            else onSocialUnlinkClick(AuthManager.PROVIDER_FACEBOOK);
         });
 
         tvStatusTwitter = view.findViewById(R.id.tvStatusTwitter);
         ivTwitter = view.findViewById(R.id.ivTwitter);
         tvNameTwitter = view.findViewById(R.id.tvNameTwitter);
         tvActionTwitter = view.findViewById(R.id.tvActionTwitter);
-        itemTwitter = view.findViewById(R.id.itemTwitter);
-        itemTwitter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tvActionTwitter.getText().equals(getString(R.string.action_connect)))
-                    bindListener.onBindClick(AuthManager.PROVIDER_TWITTER);
-                else onSocialUnlinkClick(AuthManager.PROVIDER_TWITTER);
-            }
+        LinearLayout itemTwitter = view.findViewById(R.id.itemTwitter);
+        itemTwitter.setOnClickListener(v -> {
+            if (tvActionTwitter.getText().equals(getString(R.string.action_connect)))
+                bindListener.onBindClick(AuthManager.PROVIDER_TWITTER);
+            else onSocialUnlinkClick(AuthManager.PROVIDER_TWITTER);
         });
 
-        rvEmails = view.findViewById(R.id.rvEmails);
+        RecyclerView rvEmails = view.findViewById(R.id.rvEmails);
         rvEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
         emailAdapter = new EmailAdapter(this);
         rvEmails.setAdapter(emailAdapter);
-        viewAddEmail = view.findViewById(R.id.viewAddEmail);
-        viewAddEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddEmailDialogFragment.newInstance()
-                        .show(getFragmentManager(), AddEmailDialogFragment.class.getSimpleName());
-            }
-        });
+        View viewAddEmail = view.findViewById(R.id.viewAddEmail);
+        viewAddEmail.setOnClickListener(v -> AddEmailDialogFragment.newInstance()
+                .show(getFragmentManager(), AddEmailDialogFragment.class.getSimpleName()));
     }
 
     @Override
@@ -175,18 +154,9 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     private void onSocialUnlinkClick(final String provider) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(getString(R.string.title_delete_social, AuthManager.getProviderName(provider)))
-                .setPositiveButton(R.string.action_disconnect, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        listener.onSocialUnbindClick(provider);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(R.string.action_disconnect, (dialog, which)
+                        -> listener.onSocialUnbindClick(provider))
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
@@ -194,18 +164,8 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     public void onEmailDeleteClick(final int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.title_delete_email)
-                .setPositiveButton(R.string.action_disconnect, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        listener.onDeleteEmailClick(id);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(R.string.action_disconnect, (dialog, which) -> listener.onDeleteEmailClick(id))
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
@@ -214,31 +174,39 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         for (SocialBindingDTO socialBinding : socialBindings) {
             if ("google".equals(socialBinding.getProvider())) {
                 ivGoogle.setImageResource(R.drawable.ic_google_plus);
-                tvNameGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameGoogle
+                        .setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameGoogle.setVisibility(View.VISIBLE);
                 tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account,
                         AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionGoogle.setText(R.string.action_disconnect);
                 tvActionGoogle.setVisibility(View.GONE);
-                tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
+                tvActionGoogle.setTextColor(getActivity().getResources()
+                        .getColor(R.color.account_register_blue));
             } else if ("facebook".equals(socialBinding.getProvider())) {
                 ivFacebook.setImageResource(R.drawable.ic_facebook);
-                tvNameFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameFacebook
+                        .setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameFacebook.setVisibility(View.VISIBLE);
-                tvStatusFacebook.setText(getResources().getString(R.string.title_linked_account,
+                tvStatusFacebook
+                        .setText(getResources().getString(R.string.title_linked_account,
                         AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionFacebook.setText(R.string.action_disconnect);
                 tvActionFacebook.setVisibility(View.GONE);
-                tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
+                tvActionFacebook.setTextColor(getActivity().getResources()
+                        .getColor(R.color.account_register_blue));
             } else if ("twitter".equals(socialBinding.getProvider())) {
                 ivTwitter.setImageResource(R.drawable.ic_twitter);
-                tvNameTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameTwitter
+                        .setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameTwitter.setVisibility(View.VISIBLE);
-                tvStatusTwitter.setText(getResources().getString(R.string.title_linked_account,
+                tvStatusTwitter
+                        .setText(getResources().getString(R.string.title_linked_account,
                         AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionTwitter.setText(R.string.action_disconnect);
                 tvActionTwitter.setVisibility(View.GONE);
-                tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
+                tvActionTwitter.setTextColor(getActivity().getResources()
+                        .getColor(R.color.account_register_blue));
             }
         }
     }
@@ -275,13 +243,10 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(new Action1<XabberAccount>() {
-                @Override
-                public void call(XabberAccount account) {
-                    if (account != null) {
-                        setupSocial(account.getSocialBindings());
-                        setupEmailList(account.getEmails());
-                    }
+            .doOnNext(account -> {
+                if (account != null) {
+                    setupSocial(account.getSocialBindings());
+                    setupEmailList(account.getEmails());
                 }
             }).subscribe());
     }
