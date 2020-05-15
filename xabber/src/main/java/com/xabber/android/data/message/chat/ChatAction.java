@@ -180,7 +180,8 @@ public enum ChatAction {
     subscription_sent_accepted,
     subscription_received_accepted,
     contact_blocked,
-    contact_unblocked;
+    contact_unblocked,
+    contact_deleted;
 
     public static ChatAction getChatAction(StatusMode statusMode) {
         if (statusMode == StatusMode.unavailable)
@@ -313,6 +314,8 @@ public enum ChatAction {
             return context.getString(R.string.action_contact_blocked);
         else if (this == ChatAction.contact_unblocked)
             return context.getString(R.string.action_contact_unblocked);
+        else if (this == ChatAction.contact_deleted)
+            return context.getString(R.string.action_contact_deleted);
         else
             throw new IllegalStateException();
     }
