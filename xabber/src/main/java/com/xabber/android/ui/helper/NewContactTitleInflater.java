@@ -20,6 +20,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -160,8 +161,13 @@ public class NewContactTitleInflater {
                         //Contact not in our roster, but we have an incoming subscription request
                         statusText = context.getString(R.string.contact_state_incoming_request);
                     } else {
-                        //Contact not in our roster, and no subscription requests.
-                        statusText = context.getString(R.string.contact_state_not_in_contact_list);
+                        if (VCardManager.getInstance().isRosterOrHistoryLoaded(abstractContact.getAccount())) {
+                            //Contact not in our roster, and no subscription requests.
+                            statusText = context.getString(R.string.contact_state_not_in_contact_list);
+                        } else {
+                            //Contact state is undefined since roster is not loaded yet
+                            statusText = context.getString(R.string.waiting_for_network);
+                        }
                     }
                 } else {
                     //TODO this is way too messy, should do some cleanup later.
@@ -210,7 +216,7 @@ public class NewContactTitleInflater {
 
                     if (!isConnected)
                         statusText = Application.getInstance().getResources()
-                                .getText(R.string.waiting_to_network);
+                                .getText(R.string.waiting_for_network);
                 }
             }
         }
