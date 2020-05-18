@@ -29,7 +29,13 @@ public class ActionMessageVH extends BasicMessageVH {
 
         String name = RosterManager.getInstance().getBestContact(account, messageRealmObject.getUser()).getName();
         messageText.setText(action.getText(context, name, MessageRealmObject.getSpannable(messageRealmObject).toString()));
-        messageTime.setText(time);
+        if (action == ChatAction.contact_deleted
+                || action == ChatAction.contact_blocked
+                || action == ChatAction.contact_unblocked) {
+            messageTime.setText("");
+        } else {
+            messageTime.setText(time);
+        }
         this.needDate = needDate;
         date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
     }
