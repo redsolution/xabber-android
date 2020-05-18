@@ -1029,8 +1029,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
-        waitToMarkAsRead.add(messageRealmObject.getUniqueId());
-        executeRead(messageRealmObject, trySendDisplay);
+        if (waitToMarkAsRead.add(messageRealmObject.getUniqueId())) {
+            LogManager.d(LOG_TAG, "onBind called, first time trying to read this message with id = " + messageRealmObject.getOriginId()
+                    + "\nand message timestamp = " + messageRealmObject.getTimestamp());
+            executeRead(messageRealmObject, trySendDisplay);
+        }
     }
 
     public void markAsReadAll(boolean trySendDisplay) {

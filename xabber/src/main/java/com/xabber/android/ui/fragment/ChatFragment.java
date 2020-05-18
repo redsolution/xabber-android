@@ -2269,9 +2269,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (message != null && message.isValid() && !message.isRead()) {
             AbstractChat chat = getChat();
             if (chat != null) {
-                LogManager.d(LOG_TAG, "onBind called for the message with id = " + message.getOriginId()
-                        + "\nand timestamp of the message = " + message.getTimestamp()
-                        + "\njust before trying to mark it as 'read'");
                 chat.markAsRead(message, true);
                 updateUnread();
             }
