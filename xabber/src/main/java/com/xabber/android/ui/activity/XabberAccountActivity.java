@@ -318,7 +318,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
-        if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
+        if (deleteAccounts) XabberAccountManager.getInstance().deleteUnSyncedLocalAccounts();
         else AccountManager.getInstance().setAllAccountAutoLoginToXabber(false);
 
         XabberAccountManager.getInstance().removeAccount();

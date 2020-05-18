@@ -416,8 +416,27 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void removeAccount() {
+        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
+            if (entry.getValue())
+                try {
+                    AccountJid accountJid = AccountJid.from(entry.getKey());
+                    AccountManager.getInstance().removeAccount(accountJid);
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+        }
+
+        deleteAccountFromRealm();
         setAccount(null);
+
         this.accountsSyncState.clear();
+    }
+
+    private void deleteAccountFromRealm(){
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        realm.where(XabberAccountRealmObject.class)
+                .findAll()
+                .deleteAllFromRealm();
     }
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount,
@@ -580,10 +599,10 @@ public class XabberAccountManager implements OnLoadListener {
         });
     }
 
-    public void deleteSyncedLocalAccounts() {
+    public void deleteUnSyncedLocalAccounts() {
         for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
             AccountJid accountJid = getExistingAccount(entry.getKey());
-            if (accountJid != null && entry.getValue())
+            if (accountJid != null && !entry.getValue())
                 AccountManager.getInstance().removeAccount(accountJid);
         }
     }
@@ -619,7 +638,7 @@ public class XabberAccountManager implements OnLoadListener {
     public void onInvalidToken() {
         EventBus.getDefault().postSticky(new XabberAccountDeletedEvent());
         Application.getInstance().runInBackground(() -> {
-            deleteSyncedLocalAccounts();
+            deleteUnSyncedLocalAccounts();
             deleteSyncStatesFromRealm();
             deleteXabberAccountFromRealm();
             removeAccount();

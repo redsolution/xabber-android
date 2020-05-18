@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
@@ -40,8 +39,8 @@ import com.xabber.android.ui.color.ColorManager;
 
 import java.util.Collection;
 
-public class DiscoverFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, OnAccountChangedListener, OnContactChangedListener {
-    private CoordinatorLayout coordinatorLayout;
+public class DiscoverFragment extends Fragment implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener, OnAccountChangedListener, OnContactChangedListener {
 
     /* Toolbar variables */
     private RelativeLayout toolbarRelativeLayout;
@@ -49,13 +48,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
     private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
-    private CardView cardViewTest1;
-    private CardView cardViewTest2;
-    private ImageView toolbarAddIv;
-    private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
-    private ImageView toolbarSearchIv;
 
     public static DiscoverFragment newInstance() {
         return new DiscoverFragment();
@@ -69,29 +63,29 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
-        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist);
         toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
-        toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
+        ImageView toolbarAddIv = view.findViewById(R.id.ivAdd);
         toolbarAddIv.setVisibility(View.GONE);
-        toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
-        toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
-        toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
-        toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
+        TextView toolbarTitleTv = view.findViewById(R.id.tvTitle);
+        toolbarAvatarIv = view.findViewById(R.id.ivAvatar);
+        toolbarStatusIv = view.findViewById(R.id.ivStatus);
+        ImageView toolbarSearchIv = view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         //toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         //toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Discover");
-        cardViewTest1 = (CardView) view.findViewById(R.id.card_discover_web);
-        cardViewTest1.setPreventCornerOverlap(false);
-        cardViewTest2 = (CardView) view.findViewById(R.id.card_discover_ios);
-        cardViewTest2.setPreventCornerOverlap(false);
+//        CardView cardViewTest1 = (CardView) view.findViewById(R.id.card_discover_web);
+//        cardViewTest1.setPreventCornerOverlap(false);
+//        CardView cardViewTest2 = (CardView) view.findViewById(R.id.card_discover_ios);
+//        cardViewTest2.setPreventCornerOverlap(false);
 
         return view;
     }
@@ -99,7 +93,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onDetach() {
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         super.onDetach();
     }
 
@@ -114,7 +108,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         update();
     }
 
-    /** OnClickListener for Toolbar */
+    /**
+     * OnClickListener for Toolbar
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -148,15 +144,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         startActivity(i);
     }
 
-    /** Show menu Add contact / Add conference */
-    //private void showToolbarPopup(View v) {
-    //    PopupMenu popupMenu = new PopupMenu(getContext(), v);
-    //    popupMenu.setOnMenuItemClickListener(this);
-    //    popupMenu.inflate(R.menu.menu_add_in_contact_list);
-    //    popupMenu.show();
-    //}
-
-    /** Handle toolbarRelativeLayout menus clicks */
+    /**
+     * Handle toolbarRelativeLayout menus clicks
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -168,16 +158,20 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    /** Update toolbarRelativeLayout via current state */
-    public void updateToolbar(){
+    /**
+     * Update toolbarRelativeLayout via current state
+     */
+    public void updateToolbar() {
         setupToolbarLayout();
         /* Update avatar and status ImageViews via current settings and main user */
-        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
+        if (SettingsManager.contactsShowAvatars()
+                && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
             AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
             AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance()
+                    .getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
             toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
             toolbarStatusIv.setImageLevel(mainAccountStatusMode);
@@ -200,7 +194,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
 
         /* Update left color indicator via current main user */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
             toolbarAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             toolbarAccountColorIndicatorBack.setBackgroundColor(
@@ -232,14 +226,18 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
 
     /**
      * Enable or disable Toolbar scroll behavior
+     *
      * @param enabled
      */
-    private void setToolbarScrollEnabled(boolean enabled){
-        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
-        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
-        if (enabled && toolbarLayoutParams.getScrollFlags() == 0){
+    private void setToolbarScrollEnabled(boolean enabled) {
+        AppBarLayout.LayoutParams toolbarLayoutParams =
+                (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
+        CoordinatorLayout.LayoutParams appBarLayoutParams =
+                (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
+        if (enabled && toolbarLayoutParams.getScrollFlags() == 0) {
             appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
-            toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+            toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                    | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         } else if (!enabled && toolbarLayoutParams.getScrollFlags() != 0) {
             toolbarLayoutParams.setScrollFlags(0);
             appBarLayoutParams.setBehavior(null);

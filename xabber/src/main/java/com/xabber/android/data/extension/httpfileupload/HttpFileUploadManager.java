@@ -397,6 +397,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 + account.toString() + "; uploadServer - " + server.toString());
         if (server == null || server.toString().isEmpty()) {
             LogManager.d(LOG_TAG, "But incoming upload server was null");
+            return;
         }
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;

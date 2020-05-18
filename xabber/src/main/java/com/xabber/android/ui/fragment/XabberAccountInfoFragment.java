@@ -3,7 +3,6 @@ package com.xabber.android.ui.fragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -43,24 +44,22 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvPhone;
 
     private TextView tvLinks;
-    private View viewShowLinks;
     private View viewLinks;
     private ImageView ivChevron;
 
     private View progressView;
     private Fragment fragmentSync;
-    private FragmentTransaction fTrans;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     public static XabberAccountInfoFragment newInstance() {
-        XabberAccountInfoFragment fragment = new XabberAccountInfoFragment();
-        return fragment;
+        return new XabberAccountInfoFragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_xaccount_info, container, false);
     }
 
@@ -77,15 +76,12 @@ public class XabberAccountInfoFragment extends Fragment {
         ivChevron = view.findViewById(R.id.ivChevron);
         tvLinks = view.findViewById(R.id.tvLinks);
         viewLinks = view.findViewById(R.id.viewLinks);
-        viewShowLinks = view.findViewById(R.id.viewShowLinks);
-        viewShowLinks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewLinks.setVisibility(viewLinks.getVisibility() == View.VISIBLE
-                        ? View.GONE : View.VISIBLE );
-                ivChevron.setImageResource(viewLinks.getVisibility() == View.VISIBLE
-                        ? R.drawable.ic_chevron_up : R.drawable.ic_chevron_down);
-            }
+        View viewShowLinks = view.findViewById(R.id.viewShowLinks);
+        viewShowLinks.setOnClickListener(v -> {
+            viewLinks.setVisibility(viewLinks.getVisibility() == View.VISIBLE
+                    ? View.GONE : View.VISIBLE );
+            ivChevron.setImageResource(viewLinks.getVisibility() == View.VISIBLE
+                    ? R.drawable.ic_chevron_up : R.drawable.ic_chevron_down);
         });
 
         Fragment linksFragment = XAccountLinksFragment.newInstance();
@@ -140,12 +136,8 @@ public class XabberAccountInfoFragment extends Fragment {
         compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount account) {
-                        updateData(account);
-                    }
-                }).subscribe());
+                .doOnNext(this::updateData)
+                .subscribe());
     }
 
     public void showProgressInAccount(boolean show) {
@@ -159,31 +151,25 @@ public class XabberAccountInfoFragment extends Fragment {
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> list) {
-                        showProgressView(false);
-                        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().createSyncList(list);
+                .subscribe(list -> {
+                    showProgressView(false);
+                    List<XMPPAccountSettings> items = XabberAccountManager.getInstance()
+                            .createSyncList(list);
 
-                        if (items != null && items.size() > 0) {
-                            // save full list to list for sync
-                            XabberAccountManager.getInstance().setXmppAccountsForSync(items);
-                            // show fragment
-                            showSyncFragment();
-                        } else Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorGetSettings(throwable);
-                    }
-                });
+                    if (items != null && items.size() > 0) {
+                        // save full list to list for sync
+                        XabberAccountManager.getInstance().setXmppAccountsForSync(items);
+                        // show fragment
+                        showSyncFragment();
+                    } else Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_SHORT)
+                            .show();
+                }, this::handleErrorGetSettings);
         compositeSubscription.add(getSettingsSubscription);
     }
 
     private void showSyncFragment() {
         fragmentSync = AccountSyncFragment.newInstance();
-        fTrans = getFragmentManager().beginTransaction();
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.childContainer, fragmentSync);
         fTrans.commit();
     }
@@ -199,7 +185,8 @@ public class XabberAccountInfoFragment extends Fragment {
         if (message != null) {
             if (message.equals("Invalid token")) {
                 XabberAccountManager.getInstance().onInvalidToken();
-                Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.account_deleted,
+                        Toast.LENGTH_LONG).show();
                 getActivity().finish();
             } else {
                 Log.d(LOG_TAG, "Error while synchronization: " + message);
