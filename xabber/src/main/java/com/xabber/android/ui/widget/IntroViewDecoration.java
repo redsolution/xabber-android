@@ -7,21 +7,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
 
 public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
@@ -46,7 +34,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
         if (chat != null && !chat.historyIsFull()) return;
 
-        int dx = parent.getMeasuredWidth() / 14;
+        int dx = parent.getMeasuredWidth() / 20;
 
         introView.layout(parent.getLeft() + dx, 0, parent.getRight() - dx, introView.getMeasuredHeight());
         View firstItem = parent.getChildAt(0);
@@ -69,6 +57,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
+/*
     private void setUpIntroViewFields() {
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
 
@@ -133,12 +122,13 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
             introView.findViewById(R.id.tv_message_editing);
         }
     }
+*/
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         if (parent.getChildAdapterPosition(view) == 0) {
             //setUpIntroViewFields();
-            introView.measure(View.MeasureSpec.makeMeasureSpec(parent.getMeasuredWidth() * 8 / 10, View.MeasureSpec.AT_MOST),
+            introView.measure(View.MeasureSpec.makeMeasureSpec(parent.getMeasuredWidth() * 9 / 10, View.MeasureSpec.AT_MOST),
                     View.MeasureSpec.makeMeasureSpec(parent.getMeasuredHeight(), View.MeasureSpec.AT_MOST));
             outRect.set(0, introView.getMeasuredHeight() + distanceFromMessage, 0, 0);
         } else {

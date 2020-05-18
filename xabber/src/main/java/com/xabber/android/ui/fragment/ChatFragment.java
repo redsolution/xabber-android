@@ -807,8 +807,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) chatIntroLayout.getLayoutParams();
                 Point size = new Point();
                 getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-                lp.leftMargin = size.x / 10;
-                lp.rightMargin = size.x / 10;
+                lp.leftMargin = size.x / 20;
+                lp.rightMargin = size.x / 20;
                 chatIntroLayout.setLayoutParams(lp);
             }
         } else {
@@ -2269,7 +2269,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (message != null && message.isValid() && !message.isRead()) {
             AbstractChat chat = getChat();
             if (chat != null) {
-                LogManager.d(LOG_TAG, "onBind called for the message " + message.toString() + " just before trying to mark it as 'read'");
+                LogManager.d(LOG_TAG, "onBind called for the message with id = " + message.getOriginId()
+                        + "\nand timestamp of the message = " + message.getTimestamp()
+                        + "\njust before trying to mark it as 'read'");
                 chat.markAsRead(message, true);
                 updateUnread();
             }
