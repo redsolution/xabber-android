@@ -29,6 +29,8 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class ContactDeleteDialog extends DialogFragment implements View.OnClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ContactDeleteDialog.ARGUMENT_ACCOUNT";
@@ -116,6 +118,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 if (chat != null && !deleteHistory.isChecked()) {
                     chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted, false);
                 }
+                EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
 
                 dismiss();
                 if (getActivity() instanceof ContactActivity) {
