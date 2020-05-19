@@ -84,6 +84,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
+                LogManager.d("AvatarRepository", "Encountered an error when processing pep hash = " + pepHash);
             } finally {
                 if (realm != null) realm.close();
             }
@@ -153,6 +154,7 @@ public class AvatarRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception("AvatarRepository", e);
+                LogManager.d("AvatarRepository", "Encountered an error when processing vcard hash = " + hash);
             } finally {
                 if (realm != null) realm.close();
             }
