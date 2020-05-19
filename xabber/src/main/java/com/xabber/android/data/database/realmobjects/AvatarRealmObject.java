@@ -14,7 +14,7 @@ public class AvatarRealmObject extends RealmObject {
     public static final class Fields{
         public static final String ID = "id";
         public static final String ACCOUNT_JID = "accountJid";
-        public static final String CONTACT_JID = "contact_jid";
+        public static final String CONTACT_JID = "contactJid";
         public static final String VCARD_HASH = "vCardHash";
         public static final String PEP_HASH = "pepHash";
     }
