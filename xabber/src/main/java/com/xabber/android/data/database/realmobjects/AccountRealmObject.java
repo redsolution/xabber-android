@@ -37,6 +37,7 @@ public class AccountRealmObject extends RealmObject {
     public static class Fields {
         public static final String ID = "id";
         public static final String USERNAME = "userName";
+        public static final String SERVERNAME = "serverName";
         public static final String CLEAR_HISTORY_ON_EXIT = "clearHistoryOnExit";
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";

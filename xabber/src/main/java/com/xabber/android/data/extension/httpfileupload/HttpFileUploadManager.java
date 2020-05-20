@@ -46,6 +46,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Localpart;
 
 import java.io.File;
@@ -406,11 +407,17 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 realm.executeTransaction(realm1 -> {
                     Localpart username = account.getLocalpartOrNull();
                     if (username == null) {
-                        LogManager.d(LOG_TAG, "But username was null");
+                        LogManager.d(LOG_TAG, "But username is null");
+                        return;
+                    }
+                    Domainpart serverName = account.getDomain();
+                    if (serverName == null) {
+                        LogManager.d(LOG_TAG, "But serverName is null");
                         return;
                     }
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
                             .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME, serverName.toString())
                             .findFirst();
                     if (item == null) {
                         LogManager.d(LOG_TAG, "But no account realm object was found");
@@ -440,8 +447,14 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                         LogManager.d(LOG_TAG, "But username is null");
                         return;
                     }
+                    Domainpart serverName = account.getDomain();
+                    if (serverName == null) {
+                        LogManager.d(LOG_TAG, "But serverName is null");
+                        return;
+                    }
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
                             .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME, serverName.toString())
                             .findFirst();
                     if (item != null) {
                         item.setUploadServer("");
