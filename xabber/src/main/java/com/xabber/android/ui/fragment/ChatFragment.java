@@ -1737,7 +1737,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (checkedItems == 1
                 && RrrManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
-                && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()) {
+                && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
+                && chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()) {
             ivEdit.setVisibility(View.VISIBLE);
         } else ivEdit.setVisibility(View.GONE);
     }
@@ -1755,7 +1756,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
         }
 
-        if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments())
+        if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments()
+                && clickedMessageRealmObject.isAcknowledged())
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
 
         if (OTRManager.getInstance().isEncrypted(clickedMessageRealmObject.getText())) {
