@@ -33,7 +33,6 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -54,7 +53,6 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
-    private ImageView toolbarSearchIv;
 
     public static CallsFragment newInstance() {
         return new CallsFragment();
@@ -80,12 +78,10 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
         toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
-        toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         //toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         //toolbarTitleTv.setOnClickListener(this);
-        toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Calls");
 
         ((TextView) view.findViewById(R.id.calls_text_explanation))
@@ -123,10 +119,6 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
                 startActivity(StatusEditActivity.createIntent(getActivity()));
                 break;
             case R.id.tvTitle:
-
-                break;
-            case R.id.toolbar_search_button:
-                startActivity(SearchActivity.createSearchIntent(getActivity()));
                 break;
         }
     }
