@@ -12,6 +12,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
+import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.SettingsManager.InterfaceTheme
 import com.xabber.android.ui.activity.MainActivity
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
@@ -57,7 +59,9 @@ class BottomBar : Fragment(), View.OnClickListener {
         contactsButton!!.setOnClickListener(this)
         discoverButton!!.setOnClickListener(this)
         callsButton!!.setOnClickListener(this)
-        callsButton!!.alpha = 0.4f
+        if (SettingsManager.interfaceTheme().equals(InterfaceTheme.dark))
+            callsButton!!.alpha = 0.5f
+        else callsButton!!.alpha = 0.4f
         settingsButton!!.setOnClickListener(this)
         unreadCoutTextView = view.findViewById(R.id.unread_count_textview)
         return view
