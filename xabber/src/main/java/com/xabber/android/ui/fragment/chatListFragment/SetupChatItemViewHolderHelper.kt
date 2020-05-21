@@ -230,9 +230,12 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
-                if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null && lastMessage.action.isNotEmpty()) ){
+                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null)
+                    holder.messageTextTV.text = ChatStateManager.getInstance()
+                            .getFullChatStateString(chat.account, chat.user)
+                else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null && lastMessage.action.isNotEmpty()) ) {
                     if (holder.accountColorIndicator != null
-                            && (lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString())){
+                            && (lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString())) {
                         holder.messageTextTV.text = Html.fromHtml(StringUtils
                                 .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
                     } else {
