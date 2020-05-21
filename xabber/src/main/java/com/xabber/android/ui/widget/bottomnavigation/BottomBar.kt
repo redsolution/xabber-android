@@ -50,13 +50,12 @@ class BottomBar : Fragment(), View.OnClickListener {
         chatsButton = view.findViewById(R.id.show_chats_button)
         contactsButton = view.findViewById(R.id.show_contacts_button)
         callsButton = view.findViewById(R.id.show_calls_button)
-        discoverButton = view.findViewById(R.id.show_search_button)
+        discoverButton = view.findViewById(R.id.show_discover_button)
         settingsButton = view.findViewById(R.id.show_settings_button)
         chatsImage = view.findViewById(R.id.show_chats_image)
         chatsButton!!.setOnClickListener(this)
         contactsButton!!.setOnClickListener(this)
         discoverButton!!.setOnClickListener(this)
-        discoverButton!!.alpha = 0.4f
         callsButton!!.setOnClickListener(this)
         callsButton!!.alpha = 0.4f
         settingsButton!!.setOnClickListener(this)
@@ -69,7 +68,7 @@ class BottomBar : Fragment(), View.OnClickListener {
             R.id.show_chats_button -> listener!!.onChatsClick()
             R.id.show_calls_button -> listener!!.onCallsClick()
             R.id.show_contacts_button -> listener!!.onContactsClick()
-            R.id.show_search_button -> listener!!.onDiscoverClick()
+            R.id.show_discover_button -> listener!!.onDiscoverClick()
             R.id.show_settings_button -> listener!!.onSettingsClick()
         }
     }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/discover_contacts_root_constraint_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/discover_contacts_list_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expander_height"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textColor="#FF9E9E9E"
+        android:fontFamily="sans-serif-medium"
+        android:text="Contacts"
+        android:paddingLeft="10dp"
+        android:textStyle="normal"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:background="?attr/contact_list_contact_background"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/discover_contacts_list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/contact_list_contact_background"
+        android:layout_below="@id/discover_contacts_list_title"/>
+
+</RelativeLayout>

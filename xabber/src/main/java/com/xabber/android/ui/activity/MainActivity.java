@@ -65,8 +65,8 @@ import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
 import com.xabber.android.ui.dialog.EnterPassDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.CallsFragment;
-import com.xabber.android.ui.fragment.MainActivitySettingsFragment;
 import com.xabber.android.ui.fragment.DiscoverFragment;
+import com.xabber.android.ui.fragment.MainActivitySettingsFragment;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.fragment.contactListFragment.ContactListFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
@@ -123,8 +123,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
      */
     private String action;
     private int unreadMessagesCount;
-    private Fragment contentFragment;
-    private Fragment currentActiveFragment = null;
 
     private ChatListFragment.ChatListState currentChatListState;
 
@@ -632,6 +630,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showDiscoverFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
         setStatusBarColor();
+        if (currentActiveFragmentType.equals(ActiveFragmentType.DISCOVER))
+            getDiscoverFragment().setKeyboardShowed(!getDiscoverFragment().isKeyboardShowed());
     }
 
     private void onXabberAccountClick() {
@@ -701,7 +701,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void showMenuFragment() {
         if (!isFinishing()) {
-            contentFragment = MainActivitySettingsFragment.newInstance();
+            Fragment contentFragment = MainActivitySettingsFragment.newInstance();
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
             fTrans.replace(R.id.container, contentFragment);
             fTrans.commit();
@@ -743,7 +743,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        currentActiveFragment = fragment;
         switch (fragment.getClass().getSimpleName()) {
             case "ContactListFragment":
                 currentActiveFragmentType = ActiveFragmentType.CONTACTS;

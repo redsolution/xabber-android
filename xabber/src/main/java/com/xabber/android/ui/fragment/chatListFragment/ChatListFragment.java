@@ -254,7 +254,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
 
         items = new ArrayList<>();
-        adapter = new ChatListAdapter(items, this);
+        adapter = new ChatListAdapter(items, this, true);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
         DividerItemDecoration divider = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());

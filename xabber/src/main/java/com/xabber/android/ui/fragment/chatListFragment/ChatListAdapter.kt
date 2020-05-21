@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.message.chat.AbstractChat
 
-class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener) :
+class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener,
+                      val swipable: Boolean = true) :
         RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
 
     lateinit var recyclerView: RecyclerView
@@ -32,6 +33,10 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
     fun addItems(newItemsList: MutableList<AbstractChat>){
         this.list.clear()
         this.list.addAll(newItemsList)
+    }
+
+    fun clear(){
+        list.clear()
     }
 
     fun deleteItemByPosition(position: Int) {
@@ -66,7 +71,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
-        ItemTouchHelper(SwipeToArchiveCallback(this)).attachToRecyclerView(recycler)
+        if (swipable) ItemTouchHelper(SwipeToArchiveCallback(this)).attachToRecyclerView(recycler)
         super.onAttachedToRecyclerView(recyclerView)
     }
 

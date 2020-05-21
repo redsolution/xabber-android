@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/discover_contact_list_item_constraint_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
+
+    <include layout="@layout/avatar_view_large"/>
+
+    <TextView
+        android:id="@+id/discover_contact_list_item_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/avatarView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:text="John Doe"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
