@@ -1277,60 +1277,59 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void sendMessage() {
         Editable editable = inputView.getEditableText();
-        String text = null;
+        String text;
         String markupText = null;
-        if (editable == null) {
-            text = inputView.getText().toString().trim();
-        } else {
-            SpannableStringBuilder spannable = new SpannableStringBuilder(editable);
-            StringBuilder htmlMarkupBuilder = new StringBuilder(spannable.toString());
-            int htmlMarkupOffset = 0; // the offset of the html string compared to the normal string without <tags>
-            CustomQuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), CustomQuoteSpan.class);
-            if (quoteSpans.length > 0) {
-                int len = spannable.length();
-                for (CustomQuoteSpan span : quoteSpans) {
-                    int startSpan = spannable.getSpanStart(span);
-                    int endSpan = spannable.getSpanEnd(span);
-                    int spanLength = endSpan - startSpan;
-                    spannable.removeSpan(span);
 
-                    if (startSpan < 0 || endSpan < 0) continue;
-                    if (startSpan >= len || endSpan > len || startSpan > endSpan) continue;
+        SpannableStringBuilder spannable = new SpannableStringBuilder(editable);
+        StringBuilder htmlMarkupBuilder = new StringBuilder(spannable.toString());
+        int htmlMarkupOffset = 0; // the offset of the html string compared to the normal string without <tags>
+        CustomQuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), CustomQuoteSpan.class);
+        if (quoteSpans.length > 0) {
+            int len = spannable.length();
+            for (CustomQuoteSpan span : quoteSpans) {
+                int startSpan = spannable.getSpanStart(span);
+                int endSpan = spannable.getSpanEnd(span);
+                spannable.removeSpan(span);
 
-                    // make sure it's a paragraph
-                    // check top paragraph boundary
-                    if (startSpan != 0 && (spannable.charAt(startSpan - 1) != '\n')) continue;
-                    // check bottom paragraph boundary
-                    if (endSpan != spannable.length() && spannable.charAt(endSpan - 1) != '\n') continue;
+                if (startSpan < 0 || endSpan < 0) continue;
+                if (startSpan >= len || endSpan > len || startSpan > endSpan) continue;
 
-                    // split the quotespan into 1-line strings
-                    String originalQuoteString = spannable.subSequence(startSpan, endSpan).toString();
-                    String[] quoteLines = originalQuoteString.split("\n");
+                // make sure it's a paragraph
+                // check top paragraph boundary
+                if (startSpan != 0 && (spannable.charAt(startSpan - 1) != '\n')) continue;
+                // check bottom paragraph boundary
+                if (endSpan != spannable.length() && spannable.charAt(endSpan - 1) != '\n')
+                    continue;
 
-                    spannable.delete(startSpan, endSpan);
-                    htmlMarkupBuilder.delete(startSpan + htmlMarkupOffset, endSpan + htmlMarkupOffset);
+                // split the quotespan into 1-line strings
+                String originalQuoteString = spannable.subSequence(startSpan, endSpan).toString();
+                String[] quoteLines = originalQuoteString.split("\n");
 
-                    int variableStartSpan = startSpan;
+                spannable.delete(startSpan, endSpan);
+                htmlMarkupBuilder.delete(startSpan + htmlMarkupOffset, endSpan + htmlMarkupOffset);
 
-                    // open the quote tag for the markup text
-                    htmlMarkupBuilder.insert(startSpan + htmlMarkupOffset, "<blockquote>");
-                    htmlMarkupOffset += "<blockquote>".length();
-                    for (int i = 0; i < quoteLines.length; i++) {
-                        // add > at the start of each line
-                        quoteLines[i] = '>' + quoteLines[i] + '\n';
-                        // add modified line back to the spannable and markup text
-                        spannable.insert(variableStartSpan, quoteLines[i]);
-                        htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, quoteLines[i]);
-                        variableStartSpan += quoteLines[i].length();
-                    }
-                    htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, "</blockquote>");
-                    htmlMarkupOffset += "</blockquote>".length();
+                int variableStartSpan = startSpan;
+
+                // open the quote tag for the markup text
+                htmlMarkupBuilder.insert(startSpan + htmlMarkupOffset, "<blockquote>");
+                htmlMarkupOffset += "<blockquote>".length();
+                for (int i = 0; i < quoteLines.length; i++) {
+                    // add > at the start of each line
+                    quoteLines[i] = '>' + quoteLines[i] + '\n';
+                    // add modified line back to the spannable and markup text
+                    spannable.insert(variableStartSpan, quoteLines[i]);
+                    htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, quoteLines[i]);
+                    variableStartSpan += quoteLines[i].length();
                 }
+                htmlMarkupBuilder.insert(variableStartSpan + htmlMarkupOffset, "</blockquote>");
+                htmlMarkupOffset += "</blockquote>".length();
             }
 
-            text = spannable.toString();
             markupText = htmlMarkupBuilder.toString();
         }
+
+        text = spannable.toString();
+
         clearInputText();
         scrollDown();
 
@@ -1738,7 +1737,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && RrrManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
-                && chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()) {
+                && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()
+                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDelivered()
+                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDisplayed())) {
             ivEdit.setVisibility(View.VISIBLE);
         } else ivEdit.setVisibility(View.GONE);
     }
@@ -1757,7 +1758,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments()
-                && clickedMessageRealmObject.isAcknowledged())
+                && (clickedMessageRealmObject.isAcknowledged()
+                || clickedMessageRealmObject.isDelivered()
+                || clickedMessageRealmObject.isDisplayed()))
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
 
         if (OTRManager.getInstance().isEncrypted(clickedMessageRealmObject.getText())) {

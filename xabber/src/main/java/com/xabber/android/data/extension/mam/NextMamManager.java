@@ -897,6 +897,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
         messageRealmObject.setSent(true);
+        messageRealmObject.setAcknowledged(true);
         messageRealmObject.setEncrypted(encrypted);
 
         // attachments
