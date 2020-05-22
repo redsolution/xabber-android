@@ -39,6 +39,7 @@ import java.util.Collections;
  */
 public class AbstractContact extends BaseEntity {
 
+    private long lastTimeSearched = 0;
 
     protected AbstractContact(AccountJid account, ContactJid user) {
         super(account, user);

@@ -143,6 +143,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
     private boolean historyIsBeingLoaded = false;
+    private long lastTimeSearched =  0;
     protected boolean isGroupchat = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {

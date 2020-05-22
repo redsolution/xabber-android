@@ -3,7 +3,6 @@ package com.xabber.android.ui.adapter
 import android.app.Activity
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.utils.Utils
 
 class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
                                       val listener: DiscoverContactsListItemListener) :
@@ -31,7 +29,12 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
     override fun onClick(v: View?) {
         if (v != null && v.id == R.id.ivAvatar)
-            listener.onContactListItemClick(items[recyclerView.getChildLayoutPosition(v)])
+            listener.onContactListItemClick(items[recyclerView.getChildLayoutPosition(v.parent as View)])
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
+        super.onAttachedToRecyclerView(recyclerView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -93,7 +96,7 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
         /* Setup name */
         holder.contactNameTv.text = RosterManager.getInstance()
-                .getBestContact(items[position].account, items[position].user).name
+                .getBestContact(items[position].account, items[position].user).name.split(" ")[0]
 
     }
 

@@ -72,6 +72,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     private ImageView toolbarStatusIv;
     private EditText toolbarSearchEt;
     private ImageView toolbarClearIv;
+    private ImageView toolbarSearchIv;
+    private ImageView toolbarArrowBackIv;
 
     /* ContactsList variables */
     private View contactListRoot;
@@ -145,6 +147,13 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
                 startActivity(StatusEditActivity.createIntent(getActivity()));
                 break;
             case R.id.discover_toolbar_clear_button:
+                toolbarSearchEt.setText("");
+                break;
+            case R.id.discover_toolbar_search_button:
+                setKeyboardShowed(true);
+                break;
+            case R.id.discover_toolbar_arrow_back_image_view:
+                setKeyboardShowed(false);
                 toolbarSearchEt.setText("");
                 break;
         }
@@ -244,7 +253,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     }
 
     public void update() {
-        updateToolbar();
+        //updateToolbar();
     }
 
     @Override
@@ -260,9 +269,15 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     public void setKeyboardShowed(boolean show){
         if (show){
             toolbarSearchEt.requestFocus();
+            toolbarArrowBackIv.setVisibility(View.VISIBLE);
+            toolbarAvatarIv.setVisibility(View.GONE);
+            toolbarStatusIv.setVisibility(View.GONE);
             inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
         } else {
             toolbarSearchEt.clearFocus();
+            toolbarArrowBackIv.setVisibility(View.GONE);
+            toolbarAvatarIv.setVisibility(View.VISIBLE);
+            toolbarStatusIv.setVisibility(View.VISIBLE);
             inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
         }
     }
@@ -281,9 +296,14 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         toolbarStatusIv = view.findViewById(R.id.ivStatus);
         toolbarSearchEt = view.findViewById(R.id.discover_toolbar_edittext);
         toolbarClearIv = view.findViewById(R.id.discover_toolbar_clear_button);
+        toolbarSearchIv = view.findViewById(R.id.discover_toolbar_search_button);
+        toolbarArrowBackIv = view.findViewById(R.id.discover_toolbar_arrow_back_image_view);
 
+        toolbarSearchIv.setOnClickListener(this);
         toolbarClearIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
+        toolbarArrowBackIv.setOnClickListener(this);
+
         toolbarSearchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -292,12 +312,14 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0){
                     toolbarClearIv.setVisibility(View.VISIBLE);
+                    toolbarSearchIv.setVisibility(View.GONE);
                     buildChatsListWithFilter(s.toString().toLowerCase());
                     contactListRoot.setVisibility(View.GONE);
                     if (recentListTitleTextView != null)
                         recentListTitleTextView.setVisibility(View.GONE);
                 } else {
                     toolbarClearIv.setVisibility(View.GONE);
+                    toolbarSearchIv.setVisibility(View.VISIBLE);
                     buildChatsListWithFilter(null);
                     contactListRoot.setVisibility(View.VISIBLE);
                     if (recentListTitleTextView != null)
@@ -311,6 +333,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
 
         toolbarSearchEt.requestFocus();
 
+
+        updateToolbar();
     }
 
     private void initContactsList(View view){

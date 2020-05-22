@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/discover_contact_list_item_constraint_layout"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/discover_contact_list_item_constraint_layout"
     android:layout_width="80dp"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="4dp"
     android:paddingRight="4dp">
 
-    <include layout="@layout/avatar_view_large"/>
+    <include
+        android:id="@+id/discover_avatar_layout"
+        layout="@layout/avatar_view"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/discover_contact_list_item_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/avatarView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:paddingRight="8dp"
-        android:paddingLeft="8dp"
         android:gravity="center_horizontal"
-        android:maxLines="2"
-        android:text="John Doe"/>
+        android:maxLines="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="2dp"
+        android:text="John Doe"
+        android:layout_below="@+id/discover_avatar_layout"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

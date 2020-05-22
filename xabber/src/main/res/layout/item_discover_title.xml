@@ -9,41 +9,81 @@
     android:clickable="true"
     android:elevation="2dp">
 
-    <include layout="@layout/account_color_indicator" />
+    <RelativeLayout
+        android:id="@+id/discover_toolbar_avatar_root"
+        android:layout_width="54dp"
+        android:layout_height="wrap_content">
 
-    <include layout="@layout/avatar_view_xsmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"/>
+        <include
+            android:id="@+id/discover_toolbar_account_indicator"
+            layout="@layout/account_color_indicator" />
+
+        <include layout="@layout/avatar_view_xsmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"/>
+
+        <ImageButton
+            android:id="@+id/discover_toolbar_arrow_back_image_view"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_toLeftOf="@+id/discover_toolbar_account_indicator"
+            android:src="?attr/standard_arrow_left_icon"
+            android:background="@color/transparent"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/discover_toolbar_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="18dp"
-        android:layout_toRightOf="@+id/avatarView">
+        android:layout_toRightOf="@+id/discover_toolbar_avatar_root">
 
         <EditText
             android:id="@+id/discover_toolbar_edittext"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="32dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="14dp"
             android:hint="@string/search"
-            android:layout_toLeftOf="@id/discover_toolbar_clear_button"
-            android:background="@color/transparent" />
-
-        <ImageView
-            android:id="@+id/discover_toolbar_clear_button"
-            android:src="?attr/standard_clear_icon"
-            android:layout_alignParentRight="true"
+            android:paddingLeft="5dp"
             android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/discover_toolbar_button_root"
+            android:background="@drawable/edit_text_rounded_corners_background" />
+
+        <RelativeLayout
+            android:id="@+id/discover_toolbar_button_root"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:visibility="gone" />
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/discover_toolbar_clear_button"
+                android:src="?attr/standard_clear_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/discover_toolbar_search_button"
+                android:src="?attr/standard_search_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:visibility="visible" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
