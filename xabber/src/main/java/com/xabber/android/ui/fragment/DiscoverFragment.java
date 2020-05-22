@@ -16,9 +16,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -33,7 +35,10 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.realmobjects.RecentSearchRealmObject;
+import com.xabber.android.data.database.repositories.RecentSearchRealmObjectRepository;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -62,6 +67,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         OnAccountChangedListener, OnContactChangedListener, ChatListItemListener,
         DiscoverContactsListItemAdapter.DiscoverContactsListItemListener {
 
+    private static final String LOG_TAG = DiscoverFragment.class.getSimpleName();
+
     /* Toolbar variables */
     private AppBarLayout toolbarAppBarLayout;
     private Toolbar toolbarToolbarLayout;
@@ -72,8 +79,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     private ImageView toolbarStatusIv;
     private EditText toolbarSearchEt;
     private ImageView toolbarClearIv;
-    private ImageView toolbarSearchIv;
     private ImageView toolbarArrowBackIv;
+    private ImageView toolbarTuneIcon;
 
     /* ContactsList variables */
     private View contactListRoot;
@@ -84,7 +91,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
 
     /* RecentList variables */
     private ConstraintLayout recentListConstraintLayout;
+    private RelativeLayout recentListTitleRootView;
     private TextView recentListTitleTextView;
+    private AppCompatButton recentListClearBtn;
     private RecyclerView recentListRecyclerView;
     private LinearLayoutManager recentListLinearLayoutManager;
     private ChatListAdapter recentChatListAdapter;
@@ -134,6 +143,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onResume() {
         super.onResume();
+        buildChatsListWithFilter(null);
         update();
     }
 
@@ -149,12 +159,16 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
             case R.id.discover_toolbar_clear_button:
                 toolbarSearchEt.setText("");
                 break;
-            case R.id.discover_toolbar_search_button:
-                setKeyboardShowed(true);
-                break;
             case R.id.discover_toolbar_arrow_back_image_view:
                 setKeyboardShowed(false);
                 toolbarSearchEt.setText("");
+                break;
+            case R.id.discover_toolbar_tune_image_view:
+                Toast.makeText(getContext(), "Under construction", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.discover_recent_list_title_clear_button:
+                RecentSearchRealmObjectRepository.clearAllRecentSearched();
+                buildChatsListWithFilter(null);
                 break;
         }
     }
@@ -164,6 +178,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         try {
             ((MainActivity) getActivity()).onChatClick(RosterManager.getInstance()
                     .getAbstractContact(contact.getAccount(), contact.getUser()));
+            RecentSearchRealmObjectRepository.itemWasSearched(contact.getAccount(), contact.getUser());
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -174,6 +189,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         try {
             ((MainActivity) getActivity()).onChatClick(RosterManager.getInstance()
                     .getAbstractContact(contact.getAccount(), contact.getUser()));
+            RecentSearchRealmObjectRepository.itemWasSearched(contact.getAccount(), contact.getUser());
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -296,13 +312,13 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         toolbarStatusIv = view.findViewById(R.id.ivStatus);
         toolbarSearchEt = view.findViewById(R.id.discover_toolbar_edittext);
         toolbarClearIv = view.findViewById(R.id.discover_toolbar_clear_button);
-        toolbarSearchIv = view.findViewById(R.id.discover_toolbar_search_button);
         toolbarArrowBackIv = view.findViewById(R.id.discover_toolbar_arrow_back_image_view);
+        toolbarTuneIcon = view.findViewById(R.id.discover_toolbar_tune_image_view);
 
-        toolbarSearchIv.setOnClickListener(this);
         toolbarClearIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarArrowBackIv.setOnClickListener(this);
+        toolbarTuneIcon.setOnClickListener(this);
 
         toolbarSearchEt.addTextChangedListener(new TextWatcher() {
             @Override
@@ -312,18 +328,18 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0){
                     toolbarClearIv.setVisibility(View.VISIBLE);
-                    toolbarSearchIv.setVisibility(View.GONE);
                     buildChatsListWithFilter(s.toString().toLowerCase());
                     contactListRoot.setVisibility(View.GONE);
-                    if (recentListTitleTextView != null)
-                        recentListTitleTextView.setVisibility(View.GONE);
+                    toolbarTuneIcon.setVisibility(View.GONE);
+                    if (recentListTitleRootView != null)
+                        recentListTitleRootView.setVisibility(View.GONE);
                 } else {
                     toolbarClearIv.setVisibility(View.GONE);
-                    toolbarSearchIv.setVisibility(View.VISIBLE);
                     buildChatsListWithFilter(null);
                     contactListRoot.setVisibility(View.VISIBLE);
-                    if (recentListTitleTextView != null)
-                        recentListTitleTextView.setVisibility(View.VISIBLE);
+                    toolbarTuneIcon.setVisibility(View.VISIBLE);
+                    if (recentListTitleRootView != null)
+                        recentListTitleRootView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -389,19 +405,36 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         recentListConstraintLayout = view.findViewById(R.id.discover_recent_root_constraint_layout);
         recentListTitleTextView = view.findViewById(R.id.discover_recent_list_title);
         recentListRecyclerView = view.findViewById(R.id.discover_recent_list_recycler);
+        recentListClearBtn = view.findViewById(R.id.discover_recent_list_title_clear_button);
+        recentListTitleRootView = view.findViewById(R.id.discover_recent_list_title_root_relative_layout);
+
+        recentListClearBtn.setOnClickListener(this);
 
         recentListLinearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recentListRecyclerView.setLayoutManager(recentListLinearLayoutManager);
 
         ArrayList<AbstractChat> chats = new ArrayList<>();
-        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-            if (abstractChat.getLastMessage() != null
-                    && !abstractChat.isArchived())
-                chats.add(abstractChat);
+//        if (!RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects().isEmpty()){
+//            for (RecentSearchRealmObject recentSearchRealmObject : RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()){
+//                try {
+//                    AccountJid accountJid = AccountJid.from(recentSearchRealmObject.getAccountJid());
+//                    ContactJid contactJid = ContactJid.from(recentSearchRealmObject.getContactJid());
+//                    if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(), recentSearchRealmObject.getContactJid())){
+//                        AbstractChat abstractChat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+//                        if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
+//                            chats.add(abstractChat);
+//                    } else chats.add(new RegularChat(accountJid, contactJid));
+//                }catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+//            }
+//            recentListTitleRootView.setVisibility(View.VISIBLE);
+//        } else {
+//            recentListTitleRootView.setVisibility(View.GONE);
+//        }
 
         recentChatListAdapter = new ChatListAdapter(chats, this, false);
         recentListRecyclerView.setAdapter(recentChatListAdapter);
+        buildChatsListWithFilter(null);
     }
 
     private void buildChatsListWithFilter(@Nullable String filterString){
@@ -417,15 +450,27 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
                     getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance()
                             .getAllContactsForEnabledAccounts(), filterString));
 
+            recentListTitleRootView.setVisibility(View.GONE);
+
             recentChatListAdapter.clear();
             recentChatListAdapter.addItems(concatLists(chatsList, contactList));
             recentChatListAdapter.notifyDataSetChanged();
         } else {
             ArrayList<AbstractChat> chats = new ArrayList<>();
-            for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                if (abstractChat.getLastMessage() != null
-                        && !abstractChat.isArchived())
-                    chats.add(abstractChat);
+            if (!RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects().isEmpty()){
+                for (RecentSearchRealmObject recentSearchRealmObject : RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()){
+                    try {
+                        AccountJid accountJid = AccountJid.from(recentSearchRealmObject.getAccountJid());
+                        ContactJid contactJid = ContactJid.from(recentSearchRealmObject.getContactJid());
+                        if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(), recentSearchRealmObject.getContactJid())){
+                            AbstractChat abstractChat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+                            if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
+                                chats.add(abstractChat);
+                        } else chats.add(new RegularChat(accountJid, contactJid));
+                    }catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+                }
+                recentListTitleRootView.setVisibility(View.VISIBLE);
+            } else { recentListTitleRootView.setVisibility(View.GONE); }
             recentChatListAdapter.clear();
             recentChatListAdapter.addItems(chats);
             recentChatListAdapter.notifyDataSetChanged();

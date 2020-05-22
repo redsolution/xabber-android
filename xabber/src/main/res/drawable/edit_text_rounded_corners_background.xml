@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:centerY="0.2"
-        android:startColor="?attr/discover_edittext_background_color"
-        android:centerColor="?attr/discover_edittext_background_color"
-        android:endColor="?attr/discover_edittext_background_color"
-        android:angle="270"
-        />
-    <stroke
-        android:width="1dp"
+<shape
+    android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid
         android:color="?attr/discover_edittext_background_color" />
+
     <corners
-        android:radius="5dp" />
+        android:radius="2dp" />
+
 </shape>

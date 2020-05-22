@@ -28,8 +28,13 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
     override fun getItemCount() = items.size
 
     override fun onClick(v: View?) {
-        if (v != null && v.id == R.id.ivAvatar)
-            listener.onContactListItemClick(items[recyclerView.getChildLayoutPosition(v.parent as View)])
+        if (v != null && v.id == R.id.ivAvatar){
+            val position = recyclerView.getChildLayoutPosition(v.parent as View)
+            listener.onContactListItemClick(items[position])
+        } else {
+            val position = recyclerView.getChildLayoutPosition(v!!)
+            listener.onContactListItemClick(items[position])
+        }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -44,7 +49,7 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
 
     override fun onBindViewHolder(holder: DiscoverContactsListItemViewHolder, position: Int) {
-        holder.avatarIv.setOnClickListener(this)
+        holder.itemView.setOnClickListener(this)
 
         /* Setup avatar */
         if (SettingsManager.contactsShowAvatars()) {

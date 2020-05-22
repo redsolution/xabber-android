@@ -268,6 +268,12 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         return chats;
     }
 
+    public boolean hasChat(String accountJid, String contactJid){
+        if (chats.get(accountJid, contactJid) != null)
+            return true;
+        else return false;
+    }
+
     /**
      * Creates and adds new regular chat to be managed.
      *
