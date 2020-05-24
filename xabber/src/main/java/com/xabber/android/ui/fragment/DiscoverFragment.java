@@ -283,24 +283,51 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         update();
     }
 
-    public void setKeyboardShowed(boolean show){
-        if (show){
-            toolbarSearchEt.requestFocus();
+    public void setToolbarModeSearching(boolean enabled){
+        if (enabled){
+            toolbarClearIv.setVisibility(View.VISIBLE);
             toolbarArrowBackIv.setVisibility(View.VISIBLE);
             toolbarAvatarIv.setVisibility(View.GONE);
             toolbarStatusIv.setVisibility(View.GONE);
-            inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
+            toolbarTuneIcon.setVisibility(View.GONE);
+            recentListTitleRootView.setVisibility(View.GONE);
+            contactListRoot.setVisibility(View.GONE);
+
+            toolbarSearchEt.setBackgroundDrawable(null);
+            RelativeLayout.LayoutParams etLayoutParams = (RelativeLayout.LayoutParams) toolbarSearchEt.getLayoutParams();
+            etLayoutParams.setMargins(0, 0,144, 0);
+            toolbarSearchEt.setLayoutParams(etLayoutParams);
+
+            if (!toolbarSearchEt.hasFocus()) toolbarSearchEt.requestFocus();
         } else {
-            toolbarSearchEt.clearFocus();
+            toolbarClearIv.setVisibility(View.GONE);
             toolbarArrowBackIv.setVisibility(View.GONE);
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
+            toolbarTuneIcon.setVisibility(View.VISIBLE);
+            recentListTitleRootView.setVisibility(View.VISIBLE);
+            contactListRoot.setVisibility(View.VISIBLE);
+
+            toolbarSearchEt.setBackgroundDrawable(getContext().getDrawable(R.drawable.edit_text_rounded_corners_background));
+            RelativeLayout.LayoutParams etLayoutParams = (RelativeLayout.LayoutParams) toolbarSearchEt.getLayoutParams();
+            etLayoutParams.setMargins(48, 0,144, 0);
+            toolbarSearchEt.setLayoutParams(etLayoutParams);
+
+            if (!toolbarSearchEt.hasFocus()) toolbarSearchEt.requestFocus();
+        }
+    }
+
+    public void setKeyboardShowed(boolean show){
+        if (show){
+            toolbarSearchEt.requestFocus();
+            inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
+        } else {
             inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
         }
     }
 
     public boolean isKeyboardShowed(){
-        return toolbarSearchEt.isFocused() ;
+        return toolbarSearchEt.isFocused();
     }
 
     private void initToolbar(View view){
@@ -328,19 +355,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0){
-                    toolbarClearIv.setVisibility(View.VISIBLE);
                     buildChatsListWithFilter(s.toString().toLowerCase());
-                    contactListRoot.setVisibility(View.GONE);
-                    toolbarTuneIcon.setVisibility(View.GONE);
-                    if (recentListTitleRootView != null)
-                        recentListTitleRootView.setVisibility(View.GONE);
+                    setToolbarModeSearching(true);
                 } else {
-                    toolbarClearIv.setVisibility(View.GONE);
                     buildChatsListWithFilter(null);
-                    contactListRoot.setVisibility(View.VISIBLE);
-                    toolbarTuneIcon.setVisibility(View.VISIBLE);
-                    if (recentListTitleRootView != null)
-                        recentListTitleRootView.setVisibility(View.VISIBLE);
+                    setToolbarModeSearching(false);
                 }
             }
 
