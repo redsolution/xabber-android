@@ -88,6 +88,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     private RecyclerView contactListRecyclerView;
     private LinearLayoutManager chatListLinearLayoutManager;
     private DiscoverContactsListItemAdapter contactsListAdapter;
+    private View contactListAccountColorIndicator;
 
     /* RecentList variables */
     private ConstraintLayout recentListConstraintLayout;
@@ -357,10 +358,21 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         contactListRoot = view.findViewById(R.id.discover_contacts_list_root);
         contactListTitleTextView = view.findViewById(R.id.discover_contacts_list_title);
         contactListRecyclerView = view.findViewById(R.id.discover_contacts_list_recycler);
+        contactListAccountColorIndicator = view.findViewById(R.id.discover_contact_list_account_color_indicator);
 
         chatListLinearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.HORIZONTAL, false);
         contactListRecyclerView.setLayoutManager(chatListLinearLayoutManager);
+
+        /* Update left color indicator via current main user */
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
+                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+            contactListAccountColorIndicator.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        } else {
+            contactListAccountColorIndicator.setBackgroundColor(
+                    getResources().getColor(R.color.transparent));
+        }
 
         ArrayList<AbstractChat> onlineChats = new ArrayList<>();
         for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts()){
@@ -379,8 +391,6 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
 
         ArrayList<AbstractChat> otherChats = new ArrayList<>();
         for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts()){
-            StatusMode statusMode = RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser()).getStatusMode();
             if (abstractChat.getLastMessage() != null
                     && !abstractChat.isArchived()
                     && !abstractChat.isGroupchat()
