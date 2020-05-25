@@ -30,12 +30,12 @@
         android:id="@+id/search_recent_placeholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/nothing_was_searched"
         android:layout_centerInParent="true"
+        android:gravity="center"
         android:paddingLeft="54dp"
         android:paddingRight="54dp"
-        android:gravity="center"
-        android:textSize="18dp"
-        android:visibility="gone"/>
+        android:text="@string/nothing_was_searched"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

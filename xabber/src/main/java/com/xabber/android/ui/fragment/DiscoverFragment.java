@@ -36,8 +36,6 @@ import java.util.Collection;
 public class DiscoverFragment extends Fragment implements View.OnClickListener,
         OnAccountChangedListener, OnContactChangedListener {
 
-    private static final String LOG_TAG = SearchFragment.class.getSimpleName();
-
     /* Toolbar variables */
     private RelativeLayout toolbarRelativeLayout;
     private View toolbarAccountColorIndicator;

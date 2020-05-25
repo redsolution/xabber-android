@@ -6,7 +6,6 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,19 +57,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
 
     /* ContactsList variables */
     private View contactListRoot;
-    private TextView contactListTitleTextView;
-    private RecyclerView contactListRecyclerView;
-    private LinearLayoutManager chatListLinearLayoutManager;
-    private SearchContactsListItemAdapter contactsListAdapter;
-    private View contactListAccountColorIndicator;
 
     /* RecentList variables */
     private ConstraintLayout recentListRootConstraintLayout;
     private RelativeLayout recentListTitleRootView;
-    private TextView recentListTitleTextView;
-    private TextView recentListClearBtn;
-    private RecyclerView recentListRecyclerView;
-    private LinearLayoutManager recentListLinearLayoutManager;
     private ChatListAdapter recentChatListAdapter;
     private TextView recentPlaceholder;
 
@@ -120,20 +110,22 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
      */
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.search_recent_list_title_clear_button:
-                RecentSearchRealmObjectRepository.clearAllRecentSearched();
-                buildChatsListWithFilter(null);
-                break;
+        if (v.getId() == R.id.search_recent_list_title_clear_button) {
+            RecentSearchRealmObjectRepository.clearAllRecentSearched();
+            buildChatsListWithFilter(null);
         }
     }
 
     @Override
     public void onContactListItemClick(@NotNull AbstractChat contact) {
         try {
+
             ((SearchActivity) getActivity()).onChatClick(RosterManager.getInstance()
                     .getAbstractContact(contact.getAccount(), contact.getUser()));
-            RecentSearchRealmObjectRepository.itemWasSearched(contact.getAccount(), contact.getUser());
+
+            RecentSearchRealmObjectRepository
+                    .itemWasSearched(contact.getAccount(), contact.getUser());
+
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -142,9 +134,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onChatItemClick(@NotNull AbstractChat contact) {
         try {
+
             ((SearchActivity) getActivity()).onChatClick(RosterManager.getInstance()
                     .getAbstractContact(contact.getAccount(), contact.getUser()));
-            RecentSearchRealmObjectRepository.itemWasSearched(contact.getAccount(), contact.getUser());
+
+            RecentSearchRealmObjectRepository
+                    .itemWasSearched(contact.getAccount(), contact.getUser());
+
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -176,7 +172,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     }
 
     public void update() {
-        //updateToolbar();
     }
 
     @Override
@@ -191,11 +186,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
 
     private void initContactsList(View view) {
         contactListRoot = view.findViewById(R.id.search_contacts_list_root);
-        contactListTitleTextView = view.findViewById(R.id.search_contacts_list_title);
-        contactListRecyclerView = view.findViewById(R.id.search_contacts_list_recycler);
-        contactListAccountColorIndicator = view.findViewById(R.id.search_contact_list_account_color_indicator);
+        RecyclerView contactListRecyclerView = view.findViewById(R.id.search_contacts_list_recycler);
+        View contactListAccountColorIndicator = view.findViewById(R.id.search_contact_list_account_color_indicator);
 
-        chatListLinearLayoutManager = new LinearLayoutManager(getActivity(),
+        LinearLayoutManager chatListLinearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.HORIZONTAL, false);
         contactListRecyclerView.setLayoutManager(chatListLinearLayoutManager);
 
@@ -241,22 +235,21 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         if (allChats.size() > 15)
             allChats = new ArrayList<>(allChats.subList(0, 14));
 
-        contactsListAdapter = new SearchContactsListItemAdapter(allChats, this);
+        SearchContactsListItemAdapter contactsListAdapter = new SearchContactsListItemAdapter(allChats, this);
         contactListRecyclerView.setAdapter(contactsListAdapter);
 
     }
 
     private void initRecent(View view) {
         recentListRootConstraintLayout = view.findViewById(R.id.search_recent_root_constraint_layout);
-        recentListTitleTextView = view.findViewById(R.id.search_recent_list_title);
-        recentListRecyclerView = view.findViewById(R.id.search_recent_list_recycler);
-        recentListClearBtn = view.findViewById(R.id.search_recent_list_title_clear_button);
+        RecyclerView recentListRecyclerView = view.findViewById(R.id.search_recent_list_recycler);
+        TextView recentListClearBtn = view.findViewById(R.id.search_recent_list_title_clear_button);
         recentListTitleRootView = view.findViewById(R.id.search_recent_list_title_root_relative_layout);
         recentPlaceholder = view.findViewById(R.id.search_recent_placeholder);
 
         recentListClearBtn.setOnClickListener(this);
 
-        recentListLinearLayoutManager = new LinearLayoutManager(getActivity(),
+        LinearLayoutManager recentListLinearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recentListRecyclerView.setLayoutManager(recentListLinearLayoutManager);
 
@@ -296,15 +289,26 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         } else {
             ArrayList<AbstractChat> chats = new ArrayList<>();
             if (!RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects().isEmpty()) {
-                for (RecentSearchRealmObject recentSearchRealmObject : RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()) {
+                for (RecentSearchRealmObject recentSearchRealmObject :
+                        RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()) {
                     try {
-                        AccountJid accountJid = AccountJid.from(recentSearchRealmObject.getAccountJid());
-                        ContactJid contactJid = ContactJid.from(recentSearchRealmObject.getContactJid());
-                        if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(), recentSearchRealmObject.getContactJid())) {
-                            AbstractChat abstractChat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+                        AccountJid accountJid = AccountJid
+                                .from(recentSearchRealmObject.getAccountJid());
+
+                        ContactJid contactJid = ContactJid
+                                .from(recentSearchRealmObject.getContactJid());
+
+                        if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(),
+                                recentSearchRealmObject.getContactJid())) {
+
+                            AbstractChat abstractChat = ChatManager.getInstance()
+                                    .getOrCreateChat(accountJid, contactJid);
+
                             if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
                                 chats.add(abstractChat);
+
                         } else chats.add(new RegularChat(accountJid, contactJid));
+
                     } catch (Exception e) {
                         LogManager.exception(LOG_TAG, e);
                     }

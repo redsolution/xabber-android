@@ -1,47 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/toolbar_chatlist"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/toolbar_chatlist"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
     android:clickable="true"
-    android:elevation="2dp">
+    android:elevation="2dp"
+    android:orientation="vertical">
 
     <include layout="@layout/account_color_indicator" />
 
-    <include layout="@layout/avatar_view_xsmall"
+    <include
+        layout="@layout/avatar_view_xsmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"/>
+        android:layout_marginLeft="18dp" />
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/avatarView"
+        android:clickable="true"
         android:fontFamily="sans-serif-medium"
-        android:textSize="18sp"
         android:text="@string/application_state_connecting"
         android:textColor="?attr/contact_list_contact_name_text_color"
-        android:clickable="true"
-        android:layout_toRightOf="@+id/avatarView"
-        android:layout_marginLeft="16dp"
-        />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/ivAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:padding="8dp"
+        android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
-        app:srcCompat="?attr/standard_add_icon"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
-        />
+        android:padding="8dp"
+        app:srcCompat="?attr/standard_add_icon" />
 
 </RelativeLayout>

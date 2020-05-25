@@ -14,13 +14,13 @@ import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.roster.RosterManager
 
 class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
                                     val listener: SearchContactsListItemListener) :
-        RecyclerView.Adapter<SearchContactsListItemAdapter.SearchContactsListItemViewHolder>(), View.OnClickListener {
+        RecyclerView.Adapter<SearchContactsListItemAdapter.SearchContactsListItemViewHolder>(),
+        View.OnClickListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -28,7 +28,7 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
     override fun getItemCount() = items.size
 
     override fun onClick(v: View?) {
-        if (v != null && v.id == R.id.ivAvatar){
+        if (v != null && v.id == R.id.ivAvatar) {
             val position = recyclerView.getChildLayoutPosition(v.parent as View)
             listener.onContactListItemClick(items[position])
         } else {
@@ -44,8 +44,8 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             SearchContactsListItemViewHolder(LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.item_discover_contact_list_item, parent, false))
+                    .from(parent.context)
+                    .inflate(R.layout.item_discover_contact_list_item, parent, false))
 
 
     override fun onBindViewHolder(holder: SearchContactsListItemViewHolder, position: Int) {
@@ -63,7 +63,9 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
         /* Setup roster status */
         var statusLevel = RosterManager.getInstance()
-                .getAbstractContact(items[position].account, items[position].user).statusMode.statusLevel
+                .getAbstractContact(items[position].account, items[position].user)
+                .statusMode
+                .statusLevel
 
         val isServer = items[position].user.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
@@ -73,9 +75,8 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(items[position].account)
         val isGroupchat = items[position].isGroupchat
-        val rosterContact = RosterManager.getInstance().getRosterContact(items[position].account, items[position].user)
-        val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
-                || !VCardManager.getInstance().isRosterOrHistoryLoaded(items[position].account)
+        val rosterContact = RosterManager.getInstance()
+                .getRosterContact(items[position].account, items[position].user)
 
         when {
             isBlocked -> statusLevel = 11
@@ -86,12 +87,13 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         holder.statusIv.setImageLevel(statusLevel)
 
         holder.statusIv.visibility =
-                if (!isServer && !isGroupchat && !isBlocked && isVisible && (isUnavailable || !isAccountConnected))
+                if (!isServer && !isGroupchat && !isBlocked && isVisible
+                        && (isUnavailable || !isAccountConnected))
                     View.INVISIBLE
                 else
                     View.VISIBLE
 
-        if ((isServer || isGroupchat) && !isAccountConnected){
+        if ((isServer || isGroupchat) && !isAccountConnected) {
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)
@@ -106,12 +108,12 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
     }
 
 
-    interface SearchContactsListItemListener: View.OnCreateContextMenuListener{
+    interface SearchContactsListItemListener : View.OnCreateContextMenuListener {
         fun onContactListItemClick(contact: AbstractChat)
     }
 
     class SearchContactsListItemViewHolder(itemView: View) :
-            RecyclerView.ViewHolder(itemView){
+            RecyclerView.ViewHolder(itemView) {
         var chat: AbstractChat? = null
         val avatarIv = itemView.findViewById<ImageView>(R.id.ivAvatar)
         val statusIv = itemView.findViewById<ImageView>(R.id.ivStatus)

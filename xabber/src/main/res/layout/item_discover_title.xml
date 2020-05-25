@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/discover_toolbar_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
@@ -29,11 +30,11 @@
         android:layout_toRightOf="@id/discover_avatar_layout"
         android:background="@drawable/edit_text_rounded_corners_background"
         android:gravity="center_vertical"
-        android:text="@string/type_here_to_search"
         android:maxLines="1"
-        android:textStyle="normal"
+        android:paddingLeft="12dp"
+        android:text="@string/type_here_to_search"
         android:textSize="16dp"
-        android:paddingLeft="12dp" />
+        android:textStyle="normal" />
 
     <ImageView
         android:id="@+id/discover_toolbar_tune_image_view"

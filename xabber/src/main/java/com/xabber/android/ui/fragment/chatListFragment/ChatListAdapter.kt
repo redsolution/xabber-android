@@ -11,8 +11,8 @@ import com.xabber.android.R
 import com.xabber.android.data.message.chat.AbstractChat
 
 class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener,
-                      val swipable: Boolean = true) :
-        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
+                      val swipable: Boolean = true) : RecyclerView.Adapter<ChatViewHolder>(),
+        View.OnClickListener, View.OnCreateContextMenuListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -30,12 +30,12 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
         notifyItemChanged(index)
     }
 
-    fun addItems(newItemsList: MutableList<AbstractChat>){
+    fun addItems(newItemsList: MutableList<AbstractChat>) {
         this.list.clear()
         this.list.addAll(newItemsList)
     }
 
-    fun clear(){
+    fun clear() {
         list.clear()
     }
 
@@ -48,7 +48,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
     fun deleteItemByAbstractContact(contact: AbstractChat) =
             deleteItemByPosition(list.indexOf(contact))
 
-    fun onSwipeChatItem(holder: ChatViewHolder){
+    fun onSwipeChatItem(holder: ChatViewHolder) {
         val swipedContact = getAbstractContactFromView(holder.itemView)
         deleteItemByAbstractContact(swipedContact)
         listener.onChatItemSwiped(swipedContact)
@@ -62,7 +62,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
-        listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
+            listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
             ChatViewHolder(LayoutInflater

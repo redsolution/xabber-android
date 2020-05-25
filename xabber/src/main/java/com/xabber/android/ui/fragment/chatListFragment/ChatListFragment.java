@@ -526,7 +526,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     /**
      * Enable or disable Toolbar scroll behavior
-     *
      */
     private void setToolbarScrollEnabled(boolean enabled) {
         AppBarLayout.LayoutParams toolbarLayoutParams =
@@ -772,11 +771,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         unread,
         archived
     }
+
     public interface ChatListFragmentListener {
         void onChatClick(AbstractContact contact);
 
         void onChatListStateChanged(ChatListState chatListState);
     }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NOT_SPECIFIED, SHOW_AVATARS, DO_NOT_SHOW_AVATARS})
     public @interface ChatListAvatarState {

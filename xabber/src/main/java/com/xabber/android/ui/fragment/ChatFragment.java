@@ -153,9 +153,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
-import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import rx.Subscription;
@@ -175,9 +173,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private static final String FORWARD_MESSAGES = "FORWARD_MESSAGES";
     private static final String FORWARD_PURPOSE = "FORWARD_PURPOSE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
-    private final long STOP_TYPING_DELAY = 2500; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
-
+    private final long STOP_TYPING_DELAY = 2500; // in ms
+    boolean isInputEmpty = true;
     private FrameLayout inputPanel;
     private EditText inputView;
     private ImageButton sendButton;
@@ -187,12 +185,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
     private TextView blockedView;
-
     private ViewStub stubNotify;
     private RelativeLayout notifyLayout;
     private TextView tvNotifyTitle;
     private TextView tvNotifyAction;
-
     private View rootView;
     private RecyclerView realmRecyclerView;
     private MessagesAdapter chatMessageAdapter;
@@ -214,14 +210,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private TextView tvNewReceivedCount;
     private View interactionView;
     private TextView tvCount;
-    private ImageView ivClose;
-    private ImageView ivReply;
-    private ImageView ivForward;
-    private ImageView ivDelete;
-    private ImageView ivCopy;
     private ImageView ivEdit;
-
-    boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
 
     private Handler handler = new Handler();
@@ -241,10 +230,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private View recordLockView;
     private ImageView recordLockImage;
     private ImageView recordLockChevronImage;
-    private ImageView recordImageView;
     private Chronometer recordTimer;
     private LinearLayout slideToCancelLayout;
     private LinearLayout cancelRecordingLayout;
+    private final Runnable postAnimation = this::closeVoiceRecordPanel;
     private TextView cancelRecordingTextView;
     private LinearLayout recordingPresenterLayout;
     private LinearLayout recordingPresenterPlaybarLayout;
@@ -255,30 +244,39 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private TextView recordingPresenterDuration;
     private PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress;
     private Subscription audioProgressSubscription;
-
     private boolean isReply = false;
-
     private ChatViewerFragmentListener listener;
-
     private MessageRealmObject clickedMessageRealmObject;
-
     private Timer stopTypingTimer = new Timer();
+    protected final Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            changeStateOfInputViewButtonsTo(false);
+            recordLockView.setVisibility(View.VISIBLE);
+            Utils.performHapticFeedback(rootView);
 
+            recordButtonExpanded.show();
+
+            recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity()
+                    .getApplication(), R.anim.fade_in_200));
+
+            recordLockView.animate()
+                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
+                    .setDuration(300)
+                    .start();
+
+            beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording);
+
+        }
+    };
     private boolean historyIsLoading = false;
     private RealmResults<MessageRealmObject> messageRealmObjects;
-
     private List<HashMap<String, String>> menuItems = null;
-
     private boolean userIsBlocked = false;
-
     private int checkedResource; // use only for alert dialog
-
     private float toolbarElevation;
-
     private int accountColor;
-
     private Intent notifyIntent;
-
     private boolean sendByEnter;
     private BottomMessagesPanel bottomMessagesPanel;
     private List<String> bottomPanelMessagesIds = new ArrayList<>();
@@ -318,32 +316,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         LogManager.i(this, "onCreate " + user);
     }
 
-    protected final Runnable timer = new Runnable() {
-        @Override
-        public void run() {
-            changeStateOfInputViewButtonsTo(false);
-            recordLockView.setVisibility(View.VISIBLE);
-            Utils.performHapticFeedback(rootView);
-
-            recordButtonExpanded.show();
-            recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_in_200));
-            recordLockView.animate()
-                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
-                    .setDuration(300)
-                    .start();
-            beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording);
-
-        }
-    };
-
-    protected final Runnable postAnimation = new Runnable() {
-        @Override
-        public void run() {
-            closeVoiceRecordPanel();
-        }
-    };
-
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -358,171 +330,164 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         btnScrollDown.setOnClickListener(this);
 
         rootView = view.findViewById(R.id.root_view);
-        rootView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom, int leftOld, int topOld, int rightOld, int bottomOld) {
-                int heightOld = bottomOld - topOld;
-                if (heightOld != view.getHeight()) {
-                    rootViewHeight = view.getHeight();
-                    rootViewWidth = view.getWidth();
-                }
+        rootView.addOnLayoutChangeListener((view1, left, top, right, bottom, leftOld, topOld,
+                                            rightOld, bottomOld) -> {
+
+            int heightOld = bottomOld - topOld;
+            if (heightOld != view1.getHeight()) {
+                rootViewHeight = view1.getHeight();
+                rootViewWidth = view1.getWidth();
             }
         });
 
         inputPanel = view.findViewById(R.id.bottomPanel);
 
-        sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
+        sendButton = view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
-        attachButton = (ImageButton) view.findViewById(R.id.button_attach);
-        attachButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAttachButtonPressed();
-                forwardIdsForAttachments(bottomPanelMessagesIds);
-            }
+        attachButton = view.findViewById(R.id.button_attach);
+        attachButton.setOnClickListener(v -> {
+            onAttachButtonPressed();
+            forwardIdsForAttachments(bottomPanelMessagesIds);
         });
 
-        recordButton = (ImageButton) view.findViewById(R.id.button_record);
+        recordButton = view.findViewById(R.id.button_record);
 
-        recordButton.setOnTouchListener(new View.OnTouchListener() {
+        recordButton.setOnTouchListener((view12, motionEvent) -> {
+            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(),
+                            PERMISSIONS_REQUEST_RECORD_AUDIO))
+                        if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(),
+                                PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                            if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
+                                LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)
+                                        view12.getLayoutParams();
 
+                                recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
+                                recordSaveAllowed = false;
+                                slideToCancelLayout.setAlpha(1.0f);
+                                recordLockView.setAlpha(1.0f);
+                                handler.postDelayed(record, 500);
+                                handler.postDelayed(timer, 500);
+                                currentVoiceRecordingState = VoiceRecordState.InitiatedRecording;
+                                Utils.lockScreenRotation(getActivity(), true);
+                            }
+                        }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                        sendVoiceMessage();
+                        Utils.lockScreenRotation(getActivity(), false);
+                    } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
+                        handler.removeCallbacks(record);
+                        handler.removeCallbacks(timer);
+                        currentVoiceRecordingState = VoiceRecordState.NotRecording;
+                        Utils.lockScreenRotation(getActivity(), false);
+                    }
+                    break;
 
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(), PERMISSIONS_REQUEST_RECORD_AUDIO))
-                            if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(), PERMISSIONS_REQUEST_RECORD_AUDIO)) {
-                                if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
-                                    LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)
-                                            view.getLayoutParams();
+                case MotionEvent.ACTION_MOVE:
 
-                                    recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
-                                    recordSaveAllowed = false;
-                                    slideToCancelLayout.setAlpha(1.0f);
-                                    recordLockView.setAlpha(1.0f);
-                                    handler.postDelayed(record, 500);
-                                    handler.postDelayed(timer, 500);
-                                    currentVoiceRecordingState = VoiceRecordState.InitiatedRecording;
-                                    Utils.lockScreenRotation(getActivity(), true);
+                    //FAB movement
+                    LinearLayout.LayoutParams lockParams =
+                            (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+
+                    float yRecordDiff = rootViewHeight
+                            - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
+
+                    float yLockDiff = rootViewHeight
+                            - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
+
+                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                        if (motionEvent.getY() > 0) {
+                            recordButtonExpanded.animate()
+                                    .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                    .setDuration(0)
+                                    .start();
+                            recordLockView.animate()
+                                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
+                                    .setDuration(0)
+                                    .start();
+                            recordLockChevronImage.setAlpha(1f);
+                        } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
+                            recordButtonExpanded.animate()
+                                    .y(yRecordDiff)
+                                    .setDuration(0)
+                                    .start();
+                            recordLockView.animate()
+                                    .y(yLockDiff)
+                                    .setDuration(0)
+                                    .start();
+
+                            //lockParams.topMargin = (int) motionEvent.getY() / 3;
+                            lockParams.topMargin = (int) motionEvent.getY()
+                                    * (recordLockChevronImage.getHeight() - recordLockImage.getPaddingTop())
+                                    / 200;
+                            recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
+                            recordLockChevronImage.setLayoutParams(lockParams);
+                        } else {
+                            currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
+
+                            //workaround for the https://issuetracker.google.com/issues/111316656 issue of
+                            //the button's image not updating after setting a background tint manually.
+                            recordButtonExpanded.hide();
+                            recordButtonExpanded.setImageResource(R.drawable.ic_send_black_24dp);
+                            recordButtonExpanded.show();
+                            ////////////////////////////
+
+                            recordButtonExpanded.animate()
+                                    .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                    .setDuration(100)
+                                    .start();
+                            recordLockView.animate()
+                                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
+                                    .setDuration(100)
+                                    .start();
+
+                            cancelRecordingLayout.setVisibility(View.VISIBLE);
+                            recordLockImage.setImageResource(R.drawable.ic_stop);
+                            recordLockImage.setPadding(0, 0, 0, 0);
+                            recordLockImage.setOnClickListener(view121 -> {
+                                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                                    Utils.performHapticFeedback(rootView);
+                                    stopRecording();
                                 }
-                            }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                            sendVoiceMessage();
-                            Utils.lockScreenRotation(getActivity(), false);
-                        } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
-                            handler.removeCallbacks(record);
-                            handler.removeCallbacks(timer);
-                            currentVoiceRecordingState = VoiceRecordState.NotRecording;
-                            Utils.lockScreenRotation(getActivity(), false);
+                            });
+                            lockParams.topMargin = -(recordLockChevronImage.getHeight());
+                            recordLockChevronImage.setLayoutParams(lockParams);
+                            recordLockChevronImage.setAlpha(0f);
+                            Utils.performHapticFeedback(rootView);
                         }
-                        break;
+                    }
 
-                    case MotionEvent.ACTION_MOVE:
+                    //"Slide To Cancel" movement;
+                    float alpha = (1f + motionEvent.getX() / 400f);
+                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                        if (motionEvent.getX() < 0)
+                            slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
+                        else
+                            slideToCancelLayout.animate().x(0).setDuration(0).start();
 
-                        //FAB movement
-                        LinearLayout.LayoutParams lockParams = (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
-                        float yRecordDiff = rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
-                        float yLockDiff = rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
-                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                            if (motionEvent.getY() > 0) {
-                                recordButtonExpanded.animate()
-                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
-                                        .setDuration(0)
-                                        .start();
-                                recordLockView.animate()
-                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
-                                        .setDuration(0)
-                                        .start();
-                                recordLockChevronImage.setAlpha(1f);
-                            } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
-                                recordButtonExpanded.animate()
-                                        .y(yRecordDiff)
-                                        .setDuration(0)
-                                        .start();
-                                recordLockView.animate()
-                                        .y(yLockDiff)
-                                        .setDuration(0)
-                                        .start();
+                        slideToCancelLayout.setAlpha(alpha);
 
-                                //lockParams.topMargin = (int) motionEvent.getY() / 3;
-                                lockParams.topMargin = (int) motionEvent.getY() * (recordLockChevronImage.getHeight() - recordLockImage.getPaddingTop()) / 200;
-                                recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
-                                recordLockChevronImage.setLayoutParams(lockParams);
-                            } else {
-                                currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
-
-                                //workaround for the https://issuetracker.google.com/issues/111316656 issue of
-                                //the button's image not updating after setting a background tint manually.
-                                recordButtonExpanded.hide();
-                                recordButtonExpanded.setImageResource(R.drawable.ic_send_black_24dp);
-                                recordButtonExpanded.show();
-                                ////////////////////////////
-
-                                recordButtonExpanded.animate()
-                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
-                                        .setDuration(100)
-                                        .start();
-                                recordLockView.animate()
-                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
-                                        .setDuration(100)
-                                        .start();
-
-                                cancelRecordingLayout.setVisibility(View.VISIBLE);
-                                recordLockImage.setImageResource(R.drawable.ic_stop);
-                                recordLockImage.setPadding(0,0,0,0);
-                                recordLockImage.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
-                                            Utils.performHapticFeedback(rootView);
-                                            stopRecording();
-                                        }
-                                    }
-                                });
-                                lockParams.topMargin = -(recordLockChevronImage.getHeight());
-                                recordLockChevronImage.setLayoutParams(lockParams);
-                                recordLockChevronImage.setAlpha(0f);
-                                Utils.performHapticFeedback(rootView);
-                            }
+                        //since alpha and slide are tied together, we can cancel recording by checking transparency value
+                        if (alpha <= 0) {
+                            clearVoiceMessage();
                         }
-
-                        //"Slide To Cancel" movement;
-                        float alpha = (1f + motionEvent.getX() / 400f);
-                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                            if (motionEvent.getX() < 0)
-                                slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
-                            else
-                                slideToCancelLayout.animate().x(0).setDuration(0).start();
-
-                            slideToCancelLayout.setAlpha(alpha);
-
-                            //since alpha and slide are tied together, we can cancel recording by checking transparency value
-                            if (alpha<=0) {
-                                clearVoiceMessage();
-                            }
-                        }
-                        break;
-                }
-                return true;
+                    }
+                    break;
             }
+            return true;
         });
-
-        recordImageView = view.findViewById(R.id.ivRecording);
 
         slideToCancelLayout = view.findViewById(R.id.slide_layout);
 
         cancelRecordingLayout = view.findViewById(R.id.cancel_record_layout);
         cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
-        cancelRecordingTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
-                    clearVoiceMessage();
-                }
+        cancelRecordingTextView.setOnClickListener(view13 -> {
+            if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                clearVoiceMessage();
             }
         });
 
@@ -530,7 +495,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
         recordingPresenterPlaybarLayout.getBackground().setColorFilter(accountColor, PorterDuff.Mode.SRC_IN);
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
-        recordingPresenter.setNotPlayedColor(Color.WHITE); //ContextCompat.getColor(getContext(), R.color.grey_800)
+        recordingPresenter.setNotPlayedColor(Color.WHITE);
         recordingPresenter.setNotPlayedColorAlpha(127);
         recordingPresenter.setPlayedColor(Color.WHITE);
         recordingPlayButton = view.findViewById(R.id.voice_presenter_play);
@@ -542,26 +507,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         voiceMessageRecorderLayout = view.findViewById(R.id.record_layout);
 
         recordTimer = view.findViewById(R.id.chrRecordingTimer);
-        recordTimer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                long elapsedMillis = SystemClock.elapsedRealtime() - recordTimer.getBase();
+        recordTimer.setOnChronometerTickListener(chronometer -> {
+            long elapsedMillis = SystemClock.elapsedRealtime() - recordTimer.getBase();
 
-                if (elapsedMillis > 1000) {
-                    recordSaveAllowed = true;
-                } else
-                    recordSaveAllowed = false;
-            }
+            recordSaveAllowed = elapsedMillis > 1000;
         });
 
-        recordButtonExpanded = (FloatingActionButton) view.findViewById(R.id.record_float_button);
+        recordButtonExpanded = view.findViewById(R.id.record_float_button);
         recordButtonExpanded.setBackgroundTintList(ColorStateList.valueOf(accountColor));
-        recordButtonExpanded.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording)
-                    sendVoiceMessage();
-            }
+        recordButtonExpanded.setOnClickListener(view14 -> {
+            if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording)
+                sendVoiceMessage();
         });
 
         recordLockView = view.findViewById(R.id.record_lock_view);
@@ -572,86 +528,53 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
 
 
-        securityButton = (ImageButton) view.findViewById(R.id.button_security);
-        securityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSecurityMenu();
-            }
-        });
+        securityButton = view.findViewById(R.id.button_security);
+        securityButton.setOnClickListener(v -> showSecurityMenu());
 
         // to avoid strange bug on some 4.x androids
-        inputLayout = (LinearLayout) view.findViewById(R.id.input_layout);
+        inputLayout = view.findViewById(R.id.input_layout);
         inputLayout.setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
         sendByEnter = SettingsManager.chatsSendByEnter();
 
         // interaction view
         interactionView = view.findViewById(R.id.interactionView);
         tvCount = view.findViewById(R.id.tvCount);
-        ivClose = view.findViewById(R.id.ivClose);
-        ivClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomPanelMessagesIds.clear();
-                closeInteractionPanel();
-            }
+        ImageView ivClose = view.findViewById(R.id.ivClose);
+        ivClose.setOnClickListener(v -> {
+            bottomPanelMessagesIds.clear();
+            closeInteractionPanel();
         });
-        ivReply = view.findViewById(R.id.ivReply);
-        ivReply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
-                isReply = true;
-                showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
-                closeInteractionPanel();
-            }
+        ImageView ivReply = view.findViewById(R.id.ivReply);
+        ivReply.setOnClickListener(v -> {
+            bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+            isReply = true;
+            showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
+            closeInteractionPanel();
         });
-        ivForward = view.findViewById(R.id.ivForward);
-        ivForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
-                //closeInteractionPanel();
-                openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
-            }
+        ImageView ivForward = view.findViewById(R.id.ivForward);
+        ivForward.setOnClickListener(v -> {
+            bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+            openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
         });
-        ivDelete = view.findViewById(R.id.ivDelete);
-        ivDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteMessage(new ArrayList<MessageRealmObject>(chatMessageAdapter.getCheckedMessageRealmObjects()));
-            }
-        });
-        ivCopy = view.findViewById(R.id.ivCopy);
-        ivCopy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
-                bottomPanelMessagesIds.clear();
-                closeInteractionPanel();
-            }
+        ImageView ivDelete = view.findViewById(R.id.ivDelete);
+        ivDelete.setOnClickListener(v ->
+                deleteMessage(new ArrayList<>(chatMessageAdapter.getCheckedMessageRealmObjects())));
+        ImageView ivCopy = view.findViewById(R.id.ivCopy);
+        ivCopy.setOnClickListener(v -> {
+            ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+            bottomPanelMessagesIds.clear();
+            closeInteractionPanel();
         });
         ivEdit = view.findViewById(R.id.ivEdit);
-        ivEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
-            }
-        });
+        ivEdit.setOnClickListener(v ->
+                getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageRealmObjects().get(0)));
 
-        sendButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sendMessage();
-                    }
-                }
-        );
+        sendButton.setOnClickListener(v -> sendMessage());
 
         setUpInputView(view);
         setUpEmoji(view);
 
-        realmRecyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
+        realmRecyclerView = view.findViewById(R.id.chat_messages_recycler_view);
 
         layoutManager = new LinearLayoutManager(getActivity());
         realmRecyclerView.setLayoutManager(layoutManager);
@@ -669,10 +592,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
 
-        stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
-        stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
-        stubNewContact = (ViewStub) view.findViewById(R.id.stubNewContact);
-        stubIntro = (ViewStub) view.findViewById(R.id.stubIntro);
+        stubNotify = view.findViewById(R.id.stubNotify);
+        stubJoin = view.findViewById(R.id.stubJoin);
+        stubNewContact = view.findViewById(R.id.stubNewContact);
+        stubIntro = view.findViewById(R.id.stubIntro);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
         if (savedInstanceState != null) {
@@ -688,7 +611,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             String[] ids = savedInstanceState.getStringArray(FORWARD_MESSAGES);
             if (ids != null && ids.length != 0) {
                 bottomPanelMessagesIds.addAll(Arrays.asList(ids));
-                BottomMessagesPanel.Purposes purpose = (BottomMessagesPanel.Purposes) savedInstanceState.getSerializable(FORWARD_PURPOSE);
+                BottomMessagesPanel.Purposes purpose = (BottomMessagesPanel.Purposes)
+                        savedInstanceState.getSerializable(FORWARD_PURPOSE);
                 if (purpose == BottomMessagesPanel.Purposes.FORWARDING) {
                     isReply = savedInstanceState.getBoolean(FORWARD_STATE);
                 }
@@ -710,28 +634,33 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
 
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                } else {
-                    rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                }
-                //measurements for the recording layout animations.
-                rootViewHeight = rootView.getHeight();
-                rootViewWidth = rootView.getWidth();
-                lockViewHeightSize = recordLockView.getHeight();
-                lockViewMarginBottom = ((RelativeLayout.LayoutParams) recordLockView.getLayoutParams()).bottomMargin;
-                fabMicViewHeightSize = recordButtonExpanded.getHeight();
-                fabMicViewMarginBottom = ((RelativeLayout.LayoutParams) recordButtonExpanded.getLayoutParams()).bottomMargin;
-            }
-        });
+        rootView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+                        //measurements for the recording layout animations.
+                        rootViewHeight = rootView.getHeight();
+                        rootViewWidth = rootView.getWidth();
+                        lockViewHeightSize = recordLockView.getHeight();
+                        lockViewMarginBottom = ((RelativeLayout.LayoutParams)
+                                recordLockView.getLayoutParams()).bottomMargin;
+
+                        fabMicViewHeightSize = recordButtonExpanded.getHeight();
+
+                        fabMicViewMarginBottom = ((RelativeLayout.LayoutParams)
+                                recordButtonExpanded.getLayoutParams()).bottomMargin;
+                    }
+                });
 
         return view;
     }
 
-    public void setChat(AccountJid accountJid, ContactJid contactJid) {
+    private void setChat(AccountJid accountJid, ContactJid contactJid) {
         this.account = accountJid;
         this.user = contactJid;
 
@@ -790,16 +719,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void setIntroView() {
-        View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
+        View introView = LayoutInflater.from(realmRecyclerView.getContext())
+                .inflate(R.layout.chat_intro_helper_view, null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             introView.getBackground().setTint(accountColor);
         }
         realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, account, user, getChat()));
     }
 
-    public void inflateIntroView(boolean show) {
+    private void inflateIntroView(boolean show) {
         if (chatIntroLayout == null) {
-            if (show){
+            if (show) {
                 chatIntroLayout = (ViewGroup) stubIntro.inflate();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     chatIntroLayout.getBackground().setTint(accountColor);
@@ -837,7 +767,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         updateContact();
         //restoreInputState();
-        restoreScrollState(((ChatActivity)getActivity()).needScrollToUnread());
+        restoreScrollState(((ChatActivity) getActivity()).needScrollToUnread());
 
         showHideNotifyIfNeed();
 
@@ -912,13 +842,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void setUpInputView(View view) {
-        inputView = (EditText) view.findViewById(R.id.chat_input);
+        inputView = view.findViewById(R.id.chat_input);
         setUpIme();
 
         inputView.setOnEditorActionListener((v, actionId, event) -> {
-            LogManager.d("InputViewDebug", "editorActionListener called, actionId = " + actionId + ", event != null ? " + (event != null) + ", ");
+            LogManager.d("InputViewDebug", "editorActionListener called, actionId = "
+                    + actionId + ", event != null ? " + (event != null) + ", ");
             if (event != null) {
-                LogManager.d("InputViewDebug", "event.getAction() = " + event.getAction() + ", event.getKeyCode() = " + event.getKeyCode());
+                LogManager.d("InputViewDebug", "event.getAction() = "
+                        + event.getAction() + ", event.getKeyCode() = " + event.getKeyCode());
             }
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 sendMessage();
@@ -934,12 +866,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         inputView.setOnKeyListener((view1, keyCode, event) -> {
             if (sendByEnter) {
                 if (keyCode < 29 || keyCode > 54 || event.getKeyCode() < 29 || event.getKeyCode() > 54) {
-                    LogManager.d("InputViewDebug", "onKeyListener called, keyCode = " + keyCode +
-                            ", event.getAction() = " + event.getAction() +
-                            ", event.getKeyCode() = " + event.getKeyCode());
+                    LogManager.d("InputViewDebug", "onKeyListener called, "
+                            + "keyCode = " + keyCode
+                            + ", event.getAction() = " + event.getAction()
+                            + ", event.getKeyCode() = " + event.getKeyCode());
                 }
             }
-            if (keyCode == KeyEvent.KEYCODE_ENTER && sendByEnter && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && sendByEnter
+                    && event.getAction() == KeyEvent.ACTION_DOWN) {
                 sendMessage();
                 return true;
             }
@@ -982,12 +916,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         stopTypingTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ChatStateManager.getInstance().onPaused(account, user);
-                    }
-                });
+                Application.getInstance().runOnUiThread(() ->
+                        ChatStateManager.getInstance().onPaused(account, user));
             }
 
         }, STOP_TYPING_DELAY);
@@ -1002,7 +932,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void setUpEmoji(View view) {
-        final ImageButton emojiButton = (ImageButton) view.findViewById(R.id.button_emoticon);
+        final ImageButton emojiButton = view.findViewById(R.id.button_emoticon);
         final View rootView = view.findViewById(R.id.root_view);
 
 
@@ -1013,13 +943,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         popup.setSizeForSoftKeyboard();
 
         //If the emoji popup is dismissed, change emojiButton to smiley icon
-        popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            @Override
-            public void onDismiss() {
-                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_mood_black_24dp);
-            }
-        });
+        popup.setOnDismissListener(() ->
+                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_mood_black_24dp));
 
         //If the text keyboard closes, also dismiss the emoji popup
         popup.setOnSoftKeyboardOpenCloseListener(new EmojiconsPopup.OnSoftKeyboardOpenCloseListener() {
@@ -1037,67 +962,56 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
 
         //On emoji clicked, add it to edittext
-        popup.setOnEmojiconClickedListener(new EmojiconGridView.OnEmojiconClickedListener() {
+        popup.setOnEmojiconClickedListener(emojicon -> {
+            if (inputView == null || emojicon == null) {
+                return;
+            }
 
-            @Override
-            public void onEmojiconClicked(Emojicon emojicon) {
-                if (inputView == null || emojicon == null) {
-                    return;
-                }
-
-                int start = inputView.getSelectionStart();
-                int end = inputView.getSelectionEnd();
-                if (start < 0) {
-                    inputView.append(emojicon.getEmoji());
-                } else {
-                    inputView.getText().replace(Math.min(start, end),
-                            Math.max(start, end), emojicon.getEmoji(), 0,
-                            emojicon.getEmoji().length());
-                }
+            int start = inputView.getSelectionStart();
+            int end = inputView.getSelectionEnd();
+            if (start < 0) {
+                inputView.append(emojicon.getEmoji());
+            } else {
+                inputView.getText().replace(Math.min(start, end),
+                        Math.max(start, end), emojicon.getEmoji(), 0,
+                        emojicon.getEmoji().length());
             }
         });
 
         //On backspace clicked, emulate the KEYCODE_DEL key event
-        popup.setOnEmojiconBackspaceClickedListener(new EmojiconsPopup.OnEmojiconBackspaceClickedListener() {
-
-            @Override
-            public void onEmojiconBackspaceClicked(View v) {
-                KeyEvent event = new KeyEvent(
-                        0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
-                inputView.dispatchKeyEvent(event);
-            }
+        popup.setOnEmojiconBackspaceClickedListener(v -> {
+            KeyEvent event = new KeyEvent(
+                    0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+            inputView.dispatchKeyEvent(event);
         });
 
         // To toggle between text keyboard and emoji keyboard keyboard(Popup)
-        emojiButton.setOnClickListener(new View.OnClickListener() {
+        emojiButton.setOnClickListener(v -> {
 
-            @Override
-            public void onClick(View v) {
+            //If popup is not showing => emoji keyboard is not visible, we need to show it
+            if (!popup.isShowing()) {
 
-                //If popup is not showing => emoji keyboard is not visible, we need to show it
-                if(!popup.isShowing()){
-
-                    //If keyboard is visible, simply show the emoji popup
-                    if(popup.isKeyBoardOpen()){
-                        popup.showAtBottom();
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
-                    }
-
-                    //else, open the text keyboard first and immediately after that show the emoji popup
-                    else{
-                        inputView.setFocusableInTouchMode(true);
-                        inputView.requestFocus();
-                        popup.showAtBottomPending();
-                        final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
-                    }
+                //If keyboard is visible, simply show the emoji popup
+                if (popup.isKeyBoardOpen()) {
+                    popup.showAtBottom();
+                    changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                 }
 
-                //If popup is showing, simply dismiss it to show the undelying text keyboard
-                else{
-                    popup.dismiss();
+                //else, open the text keyboard first and immediately after that show the emoji popup
+                else {
+                    inputView.setFocusableInTouchMode(true);
+                    inputView.requestFocus();
+                    popup.showAtBottomPending();
+                    final InputMethodManager inputMethodManager = (InputMethodManager)
+                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
+                    changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                 }
+            }
+
+            //If popup is showing, simply dismiss it to show the undelying text keyboard
+            else {
+                popup.dismiss();
             }
         });
     }
@@ -1184,15 +1098,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_EXPORT_CHAT:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
-                else Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_EXPORT_CHAT) {
+            if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
+            else
+                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){
+    private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId) {
         iconToBeChanged.setImageResource(drawableResourceId);
     }
 
@@ -1248,8 +1161,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
 
-
-    public void restoreInputState() {
+    private void restoreInputState() {
         //if (!inputView.getText().equals("") && inputView.getText() != null) return;
 
         //if (userIsBlocked) {
@@ -1270,7 +1182,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    public void saveInputState() {
+    private void saveInputState() {
         ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
                 inputView.getSelectionStart(), inputView.getSelectionEnd());
     }
@@ -1451,7 +1363,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         skipOnTextChanges = true;
         int spanStart = 0;
         int spanEnd;
-        if (bottomMessagesPanel != null && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
+        if (bottomMessagesPanel != null
+                && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
             setInputTextAtCursor(quote);
             return;
         }
@@ -1466,7 +1379,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
         spanEnd = spanStart + quote.length();
         currentText.insert(spanStart, quote);
-        currentText.setSpan(new CustomQuoteSpan(accountColor, getContext().getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        currentText.setSpan(new CustomQuoteSpan(accountColor, getContext()
+                .getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         inputView.setSelection(spanEnd);
         skipOnTextChanges = false;
     }
@@ -1487,7 +1401,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        return ((ChatActivity)getActivity()).onMenuItemClick(item);
+        return ((ChatActivity) getActivity()).onMenuItemClick(item);
     }
 
     public void onExportChatClick() {
@@ -1525,16 +1439,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void deleteMessage(final ArrayList<MessageRealmObject> messages){
+    private void deleteMessage(final ArrayList<MessageRealmObject> messages) {
         final List<String> ids = new ArrayList<>();
         boolean onlyOutgoing = true;
-        for (MessageRealmObject messageRealmObject : messages){
+        for (MessageRealmObject messageRealmObject : messages) {
             ids.add(messageRealmObject.getUniqueId());
             if (messageRealmObject.isIncoming())
                 onlyOutgoing = false;
         }
         int size = ids.size();
-        if (RrrManager.getInstance().isSupported(account)){
+        if (RrrManager.getInstance().isSupported(account)) {
             View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
             checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
@@ -1552,7 +1466,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     })
                     .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) { }
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
                     });
             if (onlyOutgoing) dialog.setView(checkBoxView);
             dialog.show();
@@ -1567,7 +1482,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     })
                     .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {           }
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
                     })
                     .show();
         }
@@ -1575,7 +1491,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeInteractionPanel();
     }
 
-    private void getReadyForMessageEditing(MessageRealmObject messageRealmObject){
+    private void getReadyForMessageEditing(MessageRealmObject messageRealmObject) {
         List<String> arrayList = new ArrayList<String>();
         arrayList.add(messageRealmObject.getUniqueId());
         bottomPanelMessagesIds = arrayList;
@@ -1645,7 +1561,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     try {
                         AbstractChat chat = getChat();
                         if (chat instanceof RegularChat) {
-                            ((RegularChat)chat).setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
+                            ((RegularChat) chat).setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
                             if (restartSession) restartEncryption(account, user);
                             else startEncryption(account, user);
                         } else {
@@ -1914,20 +1830,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         loadHistoryIfNeed();
     }
 
-    public interface ChatViewerFragmentListener {
-        void onCloseChat();
-        void onMessageSent();
-
-        void registerChatFragment(ChatFragment chatFragment);
-        void unregisterChatFragment();
-
-        void playIncomingAnimation();
-    }
-
     public void showHideNotifyIfNeed() {
         AbstractChat chat = getChat();
         if (chat != null && chat instanceof RegularChat) {
-            notifyIntent = ((RegularChat)chat).getIntent();
+            notifyIntent = ((RegularChat) chat).getIntent();
             if (notifyIntent != null) {
                 setupNotifyLayout(notifyIntent);
             } else if (notifyLayout != null)
@@ -1942,8 +1848,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void inflateJoinLayout() {
         View view = stubJoin.inflate();
-        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
-        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
+        joinLayout = view.findViewById(R.id.joinLayout);
+        actionJoin = view.findViewById(R.id.actionJoin);
         actionJoin.setOnClickListener(this);
     }
 
@@ -1974,9 +1880,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void inflateNotifyLayout() {
         View view = stubNotify.inflate();
-        tvNotifyTitle = (TextView) view.findViewById(R.id.tvNotifyTitle);
-        tvNotifyAction = (TextView) view.findViewById(R.id.tvNotifyAction);
-        notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
+        tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle);
+        tvNotifyAction = view.findViewById(R.id.tvNotifyAction);
+        notifyLayout = view.findViewById(R.id.notifyLayout);
         notifyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1997,7 +1903,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void showBlockedBar() {
-        for(int i = 0; i < inputPanel.getChildCount(); i++) {
+        for (int i = 0; i < inputPanel.getChildCount(); i++) {
             View view = inputPanel.getChildAt(i);
             if (view != null && view.getVisibility() == View.VISIBLE) {
                 view.setVisibility(View.GONE);
@@ -2330,7 +2236,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void manageVoiceMessage(boolean saveMessage) {
         handler.removeCallbacks(record);
         handler.removeCallbacks(timer);
-        if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size()>0) {
+        if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
         } else
             stopRecordingAndSend(saveMessage);
@@ -2382,7 +2288,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         if (VoiceManager.getInstance().playbackInProgress("", null))
                             return super.onTouch(view, motionEvent);
                         else {
-                            ((PlayerVisualizerView)view).updatePlayerPercent(0, true);
+                            ((PlayerVisualizerView) view).updatePlayerPercent(0, true);
                             return true;
                         }
                     case MotionEvent.ACTION_UP:
@@ -2499,7 +2405,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void changeStateOfInputViewButtonsTo(boolean state) {
-        ((ImageButton) rootView.findViewById(R.id.button_emoticon)).setEnabled(state);
+        rootView.findViewById(R.id.button_emoticon).setEnabled(state);
         attachButton.setEnabled(state);
         securityButton.setEnabled(state);
     }
@@ -2539,15 +2445,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private enum VoiceRecordState {
-        NotRecording,
-        InitiatedRecording,
-        TouchRecording,
-        NoTouchRecording,
-        StoppedRecording
-    }
-
-    /** Bottom message Panel (forwarding or editing)*/
+    /**
+     * Bottom message Panel (forwarding or editing)
+     */
 
     @Override
     public void onClose() {
@@ -2594,6 +2494,26 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
-        ((ChatActivity)getActivity()).forwardMessages(forwardIds);
+        ((ChatActivity) getActivity()).forwardMessages(forwardIds);
+    }
+
+    private enum VoiceRecordState {
+        NotRecording,
+        InitiatedRecording,
+        TouchRecording,
+        NoTouchRecording,
+        StoppedRecording
+    }
+
+    public interface ChatViewerFragmentListener {
+        void onCloseChat();
+
+        void onMessageSent();
+
+        void registerChatFragment(ChatFragment chatFragment);
+
+        void unregisterChatFragment();
+
+        void playIncomingAnimation();
     }
 }

@@ -18,7 +18,7 @@ public class RecentSearchRealmObjectRepository {
 
     private static final String LOG_TAG = RecentSearchRealmObjectRepository.class.getSimpleName();
 
-    public static void itemWasSearched(AccountJid accountJid, ContactJid contactJid){
+    public static void itemWasSearched(AccountJid accountJid, ContactJid contactJid) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -26,10 +26,13 @@ public class RecentSearchRealmObjectRepository {
                 realm.executeTransaction(realm1 -> {
                     RecentSearchRealmObject result = realm1
                             .where(RecentSearchRealmObject.class)
-                            .equalTo(RecentSearchRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
-                            .equalTo(RecentSearchRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
+                            .equalTo(RecentSearchRealmObject.Fields.ACCOUNT_JID,
+                                    accountJid.toString())
+                            .equalTo(RecentSearchRealmObject.Fields.CONTACT_JID,
+                                    contactJid.getBareJid().toString())
                             .findFirst();
-                    if (result != null && result.getTimestamp() != null && result.getTimestamp() != 0){
+                    if (result != null && result.getTimestamp() != null
+                            && result.getTimestamp() != 0) {
                         result.setTimestamp(System.currentTimeMillis());
                         realm1.copyToRealmOrUpdate(result);
                     } else {
@@ -40,7 +43,7 @@ public class RecentSearchRealmObjectRepository {
                         realm1.copyToRealmOrUpdate(result);
                     }
                 });
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally {
                 if (realm != null)
@@ -49,18 +52,19 @@ public class RecentSearchRealmObjectRepository {
         });
     }
 
-    public static ArrayList<RecentSearchRealmObject> getAllRecentSearchRealmObjects(){
+    public static ArrayList<RecentSearchRealmObject> getAllRecentSearchRealmObjects() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<RecentSearchRealmObject> realmObjects = realm.where(RecentSearchRealmObject.class)
+        RealmResults<RecentSearchRealmObject> realmObjects = realm
+                .where(RecentSearchRealmObject.class)
                 .isNotNull(RecentSearchRealmObject.Fields.TIMESTAMP)
                 .findAll();
-        ArrayList<RecentSearchRealmObject> result = new ArrayList(realmObjects);
+        ArrayList<RecentSearchRealmObject> result = new ArrayList<>(realmObjects);
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
         return result;
     }
 
-    public static void clearAllRecentSearched(){
+    public static void clearAllRecentSearched() {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -69,7 +73,7 @@ public class RecentSearchRealmObjectRepository {
                         .findAll()
                         .deleteAllFromRealm();
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         } finally {
             if (realm != null && Looper.getMainLooper() != Looper.myLooper())

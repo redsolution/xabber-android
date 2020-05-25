@@ -17,8 +17,6 @@ package com.xabber.android.ui.activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -31,7 +29,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -91,8 +88,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class MainActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ChatListFragment.ChatListFragmentListener, MainActivitySettingsFragment.ContactListDrawerListener,
-        BottomBar.OnClickListener {
+        ChatListFragment.ChatListFragmentListener,
+        MainActivitySettingsFragment.ContactListDrawerListener, BottomBar.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -100,9 +97,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private static final int CODE_OPEN_CHAT = 301;
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
-
-    private static final String SAVED_ACTION = "com.xabber.android.ui.activity.ContactList.SAVED_ACTION";
-    private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.activity.ContactList.SAVED_SEND_TEXT";
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
@@ -116,7 +110,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private static final String CALLS_TAG = "CALLS_TAG";
     private static final String BOTTOM_BAR_TAG = "BOTTOM_BAR_TAG";
 
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     public ActiveFragmentType currentActiveFragmentType = ActiveFragmentType.CHATS;
     /**
      * Current action.
@@ -150,14 +143,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     public static Intent createClearStackIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_CLEAR_STACK);
-        return intent;
-    }
-
-    public static Intent createContactSubscriptionIntent(Context context, AccountJid account,
-                                                         ContactJid user) {
-        Intent intent = new EntityIntentBuilder(context, MainActivity.class)
-                .setAccount(account).setUser(user).build();
-        intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
         return intent;
     }
 
@@ -375,28 +360,37 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     public void showPassDialogs() {
-        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccountsForCreate();
+        List<XMPPAccountSettings> items = XabberAccountManager.getInstance()
+                .getXmppAccountsForCreate();
+
         if (items != null && items.size() > 0) {
             for (XMPPAccountSettings item : items) {
-                if (XabberAccountManager.getInstance().isAccountSynchronize(item.getJid()) || SettingsManager.isSyncAllAccounts()) {
-                    if (!item.isDeleted() && XabberAccountManager.getInstance().getExistingAccount(item.getJid()) == null) {
+                if (XabberAccountManager.getInstance().isAccountSynchronize(item.getJid())
+                        || SettingsManager.isSyncAllAccounts()) {
+                    if (!item.isDeleted()
+                            && XabberAccountManager.getInstance().getExistingAccount(item.getJid()) == null) {
                         if (item.getToken() != null && !item.getToken().isEmpty()) {
                             // create account if exist token
                             try {
-                                AccountJid accountJid = AccountManager.getInstance().addAccount(item.getJid(),
-                                        "", item.getToken(), false, true,
-                                        true, false, false,
-                                        true, false);
-                                AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+                                AccountJid accountJid = AccountManager.getInstance()
+                                        .addAccount(item.getJid(), "", item.getToken(),
+                                                false, true, true,
+                                                false, false, true, false);
+                                AccountManager.getInstance().setColor(accountJid,
+                                        ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+
                                 AccountManager.getInstance().setOrder(accountJid, item.getOrder());
-                                AccountManager.getInstance().setTimestamp(accountJid, item.getTimestamp());
+                                AccountManager.getInstance().setTimestamp(accountJid,
+                                        item.getTimestamp());
+
                                 AccountManager.getInstance().onAccountChanged(accountJid);
                             } catch (NetworkException e) {
                                 Application.getInstance().onError(e);
                             }
                             // require pass if token not exist
                         } else
-                            EnterPassDialog.newInstance(item).show(getFragmentManager(), EnterPassDialog.class.getName());
+                            EnterPassDialog.newInstance(item)
+                                    .show(getFragmentManager(), EnterPassDialog.class.getName());
                     }
                 }
             }
@@ -415,7 +409,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void hideKeyboard() {
         if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
     }
@@ -450,13 +445,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Close activity if application was not killed yet.
-                finish();
-            }
-        }, CLOSE_ACTIVITY_AFTER_DELAY);
+        // Close activity if application was not killed yet.
+        new Handler().postDelayed(this::finish, CLOSE_ACTIVITY_AFTER_DELAY);
     }
 
     @Override
@@ -467,35 +457,25 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     protected Dialog onCreateDialog(int id) {
         super.onCreateDialog(id);
-        switch (id) {
-            case DIALOG_CLOSE_APPLICATION_ID:
-                ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage(getString(R.string.application_state_closing));
-                progressDialog.setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                });
-                progressDialog.setIndeterminate(true);
-                return progressDialog;
-            default:
-                return null;
+        if (id == DIALOG_CLOSE_APPLICATION_ID) {
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getString(R.string.application_state_closing));
+            progressDialog.setOnCancelListener(dialog -> finish());
+            progressDialog.setIndeterminate(true);
+            return progressDialog;
         }
+        return null;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.toolbar_default:
-                getContactListFragment().scrollTo(0);
-                break;
+        if (view.getId() == R.id.toolbar_default) {
+            getContactListFragment().scrollTo(0);
         }
     }
 
     @Override
     public void onChatClick(AbstractContact contact) {
-        //TODO fulfill this, maybe like method below
         onContactClick(contact);
     }
 
@@ -607,7 +587,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     @Override
     public void onContactsClick() {
-        showContactListFragment(null);
+        showContactListFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
         if (currentActiveFragmentType == ActiveFragmentType.CONTACTS)
             getContactListFragment().scrollTo(0);
@@ -692,7 +672,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                 showCallsFragment();
                 break;
             case CONTACTS:
-                showContactListFragment(null);
+                showContactListFragment();
                 break;
             case DISCOVER:
                 showDiscoverFragment();
@@ -712,7 +692,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
     }
 
-    private void showContactListFragment(@Nullable AccountJid account) {
+    private void showContactListFragment() {
         if (!isFinishing()) {
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
             fTrans.replace(R.id.container, getContactListFragment(), CONTACT_LIST_TAG);

@@ -62,13 +62,10 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.SearchActivity.ACTION_CONTACT_SUBSCRIPTION";
     private static final String ACTION_SEARCH = "com.xabber.android.ui.activity.SearchActivity.ACTION_SEARCH";
 
-    /* Toolbar variables */
-    private RelativeLayout toolbarLayout;           //Toolbar layout
     private ImageView toolbarBackIv;                //Back arrow always active
     private RelativeLayout toolbarGreetingsLayout;  //Contains toolbarGreetingsSearchIv and "Choose recipient" TextView
-    private ImageView toolbarGreetingsSearchIv;     //Belongs to toolbarGreetingLayout
     private TextView toolbarGreetingsSearchTitle;   //Belongs to toolbarGreetingLayout
-    private RelativeLayout toolbarSearchlayout;     //Contains toolbar toolbarSearchEt, toolbarSearchClearIv
+    private RelativeLayout toolbarSearchLayout;     //Contains toolbar toolbarSearchEt, toolbarSearchClearIv
     private EditText toolbarSearchEt;               //Belongs to toolbarSearchLayout
     private ImageView toolbarSearchClearIv;         //belongs to toolbarSearchLayout
 
@@ -97,10 +94,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         return intent;
     }
 
-    public static Intent createRoomInviteIntent(Context context, AccountJid account, ContactJid room) {
+    public static Intent createRoomInviteIntent(Context context, AccountJid account,
+                                                ContactJid room) {
+
         Intent intent = new EntityIntentBuilder(context, SearchActivity.class)
                 .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);
+
         return intent;
     }
 
@@ -124,12 +124,15 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         /* Initialize and setup toolbar */
-        toolbarLayout = findViewById(R.id.search_toolbar_layout);
+        /* Toolbar variables */
+        //Toolbar layout
+        RelativeLayout toolbarLayout = findViewById(R.id.search_toolbar_layout);
         toolbarBackIv = findViewById(R.id.toolbar_search_back_button);
         toolbarGreetingsLayout = findViewById(R.id.search_toolbar_greetings_view);
-        toolbarGreetingsSearchIv = findViewById(R.id.search_toolbar_search_button);
+        //Belongs to toolbarGreetingLayout
+        ImageView toolbarGreetingsSearchIv = findViewById(R.id.search_toolbar_search_button);
         toolbarGreetingsSearchTitle = findViewById(R.id.search_toolbar_title);
-        toolbarSearchlayout = findViewById(R.id.search_toolbar_search_view);
+        toolbarSearchLayout = findViewById(R.id.search_toolbar_search_view);
         toolbarSearchEt = findViewById(R.id.search_toolbar_edittext);
         toolbarSearchClearIv = findViewById(R.id.search_toolbar_clear_button);
         toolbarSearchClearIv.setOnClickListener(this);
@@ -167,11 +170,16 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
          */
         TypedValue typedValue = new TypedValue();
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-            TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[]{R.attr.contact_list_account_group_background});
+            TypedArray a = this.obtainStyledAttributes(typedValue.data,
+                    new int[]{R.attr.contact_list_account_group_background});
             final int accountGroupColorsResourceId = a.getResourceId(0, 0);
             a.recycle();
-            final int[] accountGroupColors = this.getResources().getIntArray(accountGroupColorsResourceId);
-            final int level = AccountManager.getInstance().getColorLevel(AccountManager.getInstance().getFirstAccount());
+            final int[] accountGroupColors = this.getResources()
+                    .getIntArray(accountGroupColorsResourceId);
+
+            final int level = AccountManager.getInstance().
+                    getColorLevel(AccountManager.getInstance().getFirstAccount());
+
             toolbarLayout.setBackgroundColor(accountGroupColors[level]);
             StatusBarPainter.instanceUpdateWithDefaultColor(this);
         } else {
@@ -270,12 +278,15 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     break;
 
                 case ACTION_SEARCH:
-                    toolbarGreetingsSearchTitle.setText("Search");
+                    toolbarGreetingsSearchTitle
+                            .setText(getApplicationContext().getString(R.string.search));
+
                     toolbarGreetingsLayout.setVisibility(View.GONE);
                     toolbarGreetingsLayout.setOnClickListener(this);
-                    toolbarSearchlayout.setVisibility(View.VISIBLE);
+                    toolbarSearchLayout.setVisibility(View.VISIBLE);
                     toolbarSearchEt.requestFocus();
-                    inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
+                    inputMethodManager.showSoftInput(toolbarSearchEt,
+                            InputMethodManager.SHOW_IMPLICIT);
             }
         }
     }
@@ -302,7 +313,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             case R.id.toolbar_search_back_button:
                 if (!action.equals(ACTION_SEARCH) && toolbarSearchEt.hasFocus()) {
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
-                    toolbarSearchlayout.setVisibility(View.GONE);
+                    toolbarSearchLayout.setVisibility(View.GONE);
                     toolbarGreetingsLayout.setVisibility(View.VISIBLE);
                     toolbarSearchEt.clearFocus();
                     toolbarSearchEt.setText("");
@@ -312,31 +323,21 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                 break;
             case R.id.search_toolbar_greetings_view:
             case R.id.search_toolbar_search_button:
-                toolbarSearchlayout.setVisibility(View.VISIBLE);
+                toolbarSearchLayout.setVisibility(View.VISIBLE);
                 toolbarGreetingsLayout.setVisibility(View.GONE);
                 toolbarSearchEt.requestFocus();
                 inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
                 break;
             case R.id.search_toolbar_clear_button:
-                if (toolbarSearchEt.getText().toString().isEmpty() || toolbarSearchEt.getText() == null) {
+                if (toolbarSearchEt.getText().toString().isEmpty()
+                        || toolbarSearchEt.getText() == null) {
+
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
-                    toolbarSearchlayout.setVisibility(View.GONE);
+                    toolbarSearchLayout.setVisibility(View.GONE);
                     toolbarGreetingsLayout.setVisibility(View.VISIBLE);
-                    //TODO clearing search string
                 } else {
                     toolbarSearchEt.setText("");
                 }
-                break;
-            default:
-                /*
-                inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
-                if (toolbarSearchEt.getText().toString().isEmpty() || toolbarSearchEt.getText() == null){
-                    inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
-                    toolbarSearchlayout.setVisibility(View.GONE);
-                    toolbarGreetingsLayout.setVisibility(View.VISIBLE);
-                    //TODO implement clearing search string and probably change view id
-                }
-                */
                 break;
         }
     }
@@ -371,7 +372,8 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         AccountJid account = getRoomInviteAccount(intent);
         ContactJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
-            ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
+            ContactSubscriptionDialog.newInstance(account, user)
+                    .show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
         }
     }
 
@@ -416,7 +418,10 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             return;
         }
         if (enabledAccounts.size() == 1) {
-            openChat(rosterManager.getBestContact(enabledAccounts.iterator().next(), bareAddress), text);
+
+            openChat(rosterManager.getBestContact(enabledAccounts.iterator().next(), bareAddress),
+                    text);
+
             return;
         }
         AccountChooseDialogFragment.newInstance(bareAddress, text)
@@ -443,15 +448,16 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
 
     @Override
     public void onContactListItemClick(@NotNull AbstractChat contact) {
-        onChatClick(RosterManager.getInstance().getAbstractContact(contact.getAccount(), contact.getUser()));
+        onChatClick(RosterManager.getInstance()
+                .getAbstractContact(contact.getAccount(), contact.getUser()));
     }
 
     @Override
     public void onChatClick(AbstractContact abstractContact) {
 
         if (action == null) {
-            startActivityForResult(ChatActivity.createSendIntent(this, abstractContact.getAccount(),
-                    abstractContact.getUser(), null), 301);
+            startActivityForResult(ChatActivity.createSendIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser(), null), 301);
             return;
         }
         switch (action) {
@@ -491,8 +497,8 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                 break;
             }
             default:
-                startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
-                        abstractContact.getUser()), 301);
+                startActivityForResult(ChatActivity.createSpecificChatIntent(this,
+                        abstractContact.getAccount(), abstractContact.getUser()), 301);
                 break;
         }
     }

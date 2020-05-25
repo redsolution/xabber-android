@@ -39,9 +39,9 @@ import com.xabber.android.ui.color.ColorManager;
 import java.util.Collection;
 
 
-public class CallsFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, OnAccountChangedListener, OnContactChangedListener {
+public class CallsFragment extends Fragment implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener, OnAccountChangedListener, OnContactChangedListener {
 
-    private CoordinatorLayout coordinatorLayout;
 
     /* Toolbar variables */
     private RelativeLayout toolbarRelativeLayout;
@@ -49,8 +49,6 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
-    private ImageView toolbarAddIv;
-    private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
 
@@ -66,22 +64,21 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_calls, container, false);
-        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist);
         toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
-        toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
+        ImageView toolbarAddIv = view.findViewById(R.id.ivAdd);
         toolbarAddIv.setVisibility(View.GONE);
-        toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
-        toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
-        toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
+        TextView toolbarTitleTv = view.findViewById(R.id.tvTitle);
+        toolbarAvatarIv = view.findViewById(R.id.ivAvatar);
+        toolbarStatusIv = view.findViewById(R.id.ivStatus);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
-        //toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
-        //toolbarTitleTv.setOnClickListener(this);
         toolbarTitleTv.setText("Calls");
 
         ((TextView) view.findViewById(R.id.calls_text_explanation))
@@ -93,7 +90,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     @Override
     public void onDetach() {
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         super.onDetach();
     }
 
@@ -108,13 +105,12 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
         update();
     }
 
-    /** OnClickListener for Toolbar */
+    /**
+     * OnClickListener for Toolbar
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ivAdd:
-                //showToolbarPopup(toolbarAddIv);
-                break;
             case R.id.ivAvatar:
                 startActivity(StatusEditActivity.createIntent(getActivity()));
                 break;
@@ -123,31 +119,27 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
         }
     }
 
-    /** Show menu Add contact / Add conference */
-    //private void showToolbarPopup(View v) {
-    //    PopupMenu popupMenu = new PopupMenu(getContext(), v);
-    //    popupMenu.setOnMenuItemClickListener(this);
-    //    popupMenu.inflate(R.menu.menu_add_in_contact_list);
-    //    popupMenu.show();
-    //}
-
-    /** Handle toolbarRelativeLayout menus clicks */
+    /**
+     * Handle toolbarRelativeLayout menus clicks
+     */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_contact:
-                startActivity(ContactAddActivity.createIntent(getActivity()));
-                return true;
-            default:
-                return false;
+        if (item.getItemId() == R.id.action_add_contact) {
+            startActivity(ContactAddActivity.createIntent(getActivity()));
+            return true;
         }
+        return false;
     }
 
-    /** Update toolbarRelativeLayout via current state */
-    public void updateToolbar(){
+    /**
+     * Update toolbarRelativeLayout via current state
+     */
+    private void updateToolbar() {
         setupToolbarLayout();
         /* Update avatar and status ImageViews via current settings and main user */
-        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
+        if (SettingsManager.contactsShowAvatars()
+                && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
+
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
             AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
@@ -175,7 +167,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
 
         /* Update left color indicator via current main user */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
             toolbarAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             toolbarAccountColorIndicatorBack.setBackgroundColor(
@@ -191,34 +183,15 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     /**
      * Setup Toolbar scroll behavior according to ... TODO add proper explanation and logic
      */
-    public void setupToolbarLayout() {
-        //Simply migrated from ChatListFragment atm, should add proper logic when we start working at this activity
+    private void setupToolbarLayout() {
+        AppBarLayout.LayoutParams toolbarLayoutParams =
+                (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
 
-        setToolbarScrollEnabled(false);
-        /*
-        if (recyclerView != null){
-            int count = items.size();
-            if (count <= maxItemsOnScreen){
-                setToolbarScrollEnabled(false);
-            } else {    setToolbarScrollEnabled(true);  }
-        }
-         */
-    }
+        CoordinatorLayout.LayoutParams appBarLayoutParams = (
+                CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
 
-    /**
-     * Enable or disable Toolbar scroll behavior
-     * @param enabled
-     */
-    private void setToolbarScrollEnabled(boolean enabled){
-        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
-        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
-        if (enabled && toolbarLayoutParams.getScrollFlags() == 0){
-            appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
-            toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        } else if (!enabled && toolbarLayoutParams.getScrollFlags() != 0) {
-            toolbarLayoutParams.setScrollFlags(0);
-            appBarLayoutParams.setBehavior(null);
-        }
+        toolbarLayoutParams.setScrollFlags(0);
+        appBarLayoutParams.setBehavior(null);
         toolbarToolbarLayout.setLayoutParams(toolbarLayoutParams);
         toolbarAppBarLayout.setLayoutParams(appBarLayoutParams);
     }

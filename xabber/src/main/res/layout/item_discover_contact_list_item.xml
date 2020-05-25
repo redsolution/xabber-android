@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/discover_contact_list_item_constraint_layout"
     android:layout_width="80dp"
     android:layout_height="wrap_content"
@@ -12,8 +10,8 @@
     <include
         android:id="@+id/discover_avatar_layout"
         layout="@layout/avatar_view"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -21,12 +19,12 @@
         android:id="@+id/discover_contact_list_item_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/discover_avatar_layout"
         android:gravity="center_horizontal"
         android:maxLines="1"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp"
         android:paddingTop="2dp"
-        android:text="John Doe"
-        android:layout_below="@+id/discover_avatar_layout"/>
+        android:paddingRight="8dp"
+        android:text="John Doe" />
 
 </RelativeLayout>
