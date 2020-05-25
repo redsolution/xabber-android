@@ -6,25 +6,33 @@
     android:layout_height="match_parent"
     android:background="?attr/contact_list_contact_background">
 
-    <RelativeLayout
-        android:id="@+id/search_body_root"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/search_contacts_list_root"
-            layout="@layout/item_search_contacts_list"
+        <RelativeLayout
+            android:id="@+id/search_body_root"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
 
-        <include
-            layout="@layout/item_search_recent_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/search_contacts_list_root"
-            android:layout_marginTop="5dp" />
+            <include
+                android:id="@+id/search_contacts_list_root"
+                layout="@layout/item_search_contacts_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    </RelativeLayout>
+            <include
+                layout="@layout/item_search_recent_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/search_contacts_list_root"
+                android:layout_marginTop="5dp" />
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
 
     <TextView
         android:id="@+id/search_recent_placeholder"
