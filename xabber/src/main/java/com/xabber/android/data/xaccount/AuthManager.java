@@ -27,7 +27,6 @@ import rx.Single;
 
 public class AuthManager {
 
-    public static final String PROVIDER_FACEBOOK = "facebook";
     public static final String PROVIDER_TWITTER = "twitter";
     public static final String PROVIDER_GOOGLE = "google";
     private static final String LOG_TAG = AuthManager.class.getSimpleName();
@@ -322,10 +321,10 @@ public class AuthManager {
         switch (provider) {
             case AuthManager.PROVIDER_TWITTER:
                 return "Twitter";
-            case AuthManager.PROVIDER_FACEBOOK:
-                return "Facebook";
-            default:
+            case AuthManager.PROVIDER_GOOGLE:
                 return "Google";
+            default:
+                return "";
         }
     }
 

@@ -116,9 +116,7 @@
     <string name="signup_with_social">Your %1$s account will be linked to create account</string>
 
     <string name="auth_google_error">Authorization via Google failed</string>
-    <string name="auth_facebook_error">Authorization via Facebook failed</string>
     <string name="auth_twitter_error">Authorization via Twitter failed</string>
-    <string name="auth_facebook_cancel">Authorization via Facebook canceled</string>
 
     <string name="action_connect">LINK</string>
     <string name="action_disconnect">UNLINK</string>

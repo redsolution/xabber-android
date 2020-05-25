@@ -126,12 +126,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         ((TextView) view.findViewById(R.id.account_help))
                 .setMovementMethod(LinkMovementMethod.getInstance());
 
-        ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
         ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
         ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
         ImageView ivEmail = view.findViewById(R.id.ivEmail);
 
-        ivFacebook.setOnClickListener(this);
         ivGoogle.setOnClickListener(this);
         ivTwitter.setOnClickListener(this);
         ivEmail.setOnClickListener(this);
@@ -169,9 +167,6 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btnLogin:
                 addAccount();
-                break;
-            case R.id.ivFacebook:
-                listener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
                 break;
             case R.id.ivGoogle:
                 listener.onBindClick(AuthManager.PROVIDER_GOOGLE);

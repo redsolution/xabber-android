@@ -1,16 +1,11 @@
 package com.xabber.android.ui.activity;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -46,7 +41,6 @@ import com.xabber.android.ui.helper.OnSocialBindListener;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -65,9 +59,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
         AddEmailDialogFragment.Listener, ConfirmEmailDialogFragment.Listener, OnSocialBindListener {
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
-
-    // facebook auth
-    private CallbackManager callbackManager;
 
     // twitter auth
     private TwitterAuthClient twitterAuthClient;
@@ -96,9 +87,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // facebook auth
-        if (callbackManager != null)
-            callbackManager.onActivityResult(requestCode, resultCode, data);
         // twitter auth
         if (twitterAuthClient != null)
             twitterAuthClient.onActivityResult(requestCode, resultCode, data);
@@ -107,13 +95,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
-    }
-
-    public void loginFacebook() {
-        FacebookSdk.setApplicationId(getString(R.string.SOCIAL_AUTH_FACEBOOK_KEY));
-        FacebookSdk.sdkInitialize(this);
-        initFacebookAuth();
-        LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
     }
 
     public void loginGoogle() {
@@ -181,31 +162,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                 });
             }
         } else Toast.makeText(this, R.string.auth_google_error, Toast.LENGTH_LONG).show();
-    }
-
-    private void initFacebookAuth() {
-        if (callbackManager != null) return;
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                String token = loginResult.getAccessToken().getToken();
-                if (token != null) {
-                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
-                    onSocialAuthSuccess(AuthManager.PROVIDER_FACEBOOK, credentials);
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_cancel, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_error, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void initTwitterAuth() {
@@ -520,9 +476,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
         switch (provider) {
             case AuthManager.PROVIDER_GOOGLE:
                 loginGoogle();
-                break;
-            case AuthManager.PROVIDER_FACEBOOK:
-                loginFacebook();
                 break;
             case AuthManager.PROVIDER_TWITTER:
                 loginTwitter();
