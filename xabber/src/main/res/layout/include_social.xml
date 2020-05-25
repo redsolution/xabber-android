@@ -48,15 +48,6 @@
             />
 
         <ImageView
-            android:id="@+id/ivFacebook"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-
-            android:src="@drawable/ic_facebook"
-            android:layout_weight="1"
-            />
-
-        <ImageView
             android:id="@+id/ivTwitter"
             android:layout_width="48dp"
             android:layout_height="48dp"

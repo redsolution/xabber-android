@@ -177,7 +177,6 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.0'
 
     // social
-    storeImplementation "com.facebook.android:facebook-login:4.36.1"
     storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
 
     // gms

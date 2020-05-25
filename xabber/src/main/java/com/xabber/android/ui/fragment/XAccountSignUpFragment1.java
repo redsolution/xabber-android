@@ -3,7 +3,6 @@ package com.xabber.android.ui.fragment;
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,12 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.ui.adapter.HostSpinnerAdapter;
+import com.xabber.android.ui.helper.SignUpRepo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,11 +132,11 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
                     case AuthManager.PROVIDER_TWITTER:
                         drawable = getResources().getDrawable(R.drawable.ic_twitter);
                         break;
-                    case AuthManager.PROVIDER_FACEBOOK:
-                        drawable = getResources().getDrawable(R.drawable.ic_facebook);
+                    case AuthManager.PROVIDER_GOOGLE:
+                        drawable = getResources().getDrawable(R.drawable.ic_google_plus);
                         break;
                     default:
-                        drawable = getResources().getDrawable(R.drawable.ic_google_plus);
+                        drawable = null;
                 }
                 tvSocialProvider.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
             }

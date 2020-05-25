@@ -37,10 +37,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     private TextView tvNameGoogle;
     private TextView tvStatusGoogle;
     private TextView tvActionGoogle;
-    private ImageView ivFacebook;
-    private TextView tvNameFacebook;
-    private TextView tvStatusFacebook;
-    private TextView tvActionFacebook;
+
     private ImageView ivTwitter;
     private TextView tvNameTwitter;
     private TextView tvStatusTwitter;
@@ -81,17 +78,6 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
                 bindListener.onBindClick(AuthManager.PROVIDER_GOOGLE);
             else onSocialUnlinkClick(AuthManager.PROVIDER_GOOGLE);
-        });
-
-        tvStatusFacebook = view.findViewById(R.id.tvStatusFacebook);
-        ivFacebook = view.findViewById(R.id.ivFacebook);
-        tvNameFacebook = view.findViewById(R.id.tvNameFacebook);
-        tvActionFacebook = view.findViewById(R.id.tvActionFacebook);
-        LinearLayout itemFacebook = view.findViewById(R.id.itemFacebook);
-        itemFacebook.setOnClickListener(v -> {
-            if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
-                bindListener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
-            else onSocialUnlinkClick(AuthManager.PROVIDER_FACEBOOK);
         });
 
         tvStatusTwitter = view.findViewById(R.id.tvStatusTwitter);
@@ -183,18 +169,6 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 tvActionGoogle.setVisibility(View.GONE);
                 tvActionGoogle.setTextColor(getActivity().getResources()
                         .getColor(R.color.account_register_blue));
-            } else if ("facebook".equals(socialBinding.getProvider())) {
-                ivFacebook.setImageResource(R.drawable.ic_facebook);
-                tvNameFacebook
-                        .setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
-                tvNameFacebook.setVisibility(View.VISIBLE);
-                tvStatusFacebook
-                        .setText(getResources().getString(R.string.title_linked_account,
-                        AuthManager.getProviderName(socialBinding.getProvider())));
-                tvActionFacebook.setText(R.string.action_disconnect);
-                tvActionFacebook.setVisibility(View.GONE);
-                tvActionFacebook.setTextColor(getActivity().getResources()
-                        .getColor(R.color.account_register_blue));
             } else if ("twitter".equals(socialBinding.getProvider())) {
                 ivTwitter.setImageResource(R.drawable.ic_twitter);
                 tvNameTwitter
@@ -218,13 +192,6 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         tvActionGoogle.setText(R.string.action_connect);
         tvActionGoogle.setVisibility(View.VISIBLE);
         tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
-
-        ivFacebook.setImageResource(R.drawable.ic_facebook_disabled);
-        tvNameFacebook.setVisibility(View.GONE);
-        tvStatusFacebook.setText(R.string.title_not_linked_account);
-        tvActionFacebook.setText(R.string.action_connect);
-        tvActionFacebook.setVisibility(View.VISIBLE);
-        tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
 
         ivTwitter.setImageResource(R.drawable.ic_twitter_disabled);
         tvNameTwitter.setVisibility(View.GONE);
