@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_contacts_root_constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/search_contact_list_account_color_indicator"
+        android:layout_width="2dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="1px"
+        android:layout_marginBottom="1px"
+        android:background="@color/amber_700" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/search_contacts_list_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expander_height"
+        android:layout_toRightOf="@id/search_contact_list_account_color_indicator"
+        android:background="?attr/contact_list_contact_background"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:text="Contacts"
+        android:textColor="#FF9E9E9E"
+        android:textSize="16sp"
+        android:textStyle="normal" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_contacts_list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_contacts_list_title"
+        android:layout_toRightOf="@id/search_contact_list_account_color_indicator"
+        android:background="?attr/contact_list_contact_background"
+        android:paddingRight="2dp" />
+
+</RelativeLayout>

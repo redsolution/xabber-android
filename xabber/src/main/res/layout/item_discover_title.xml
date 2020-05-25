@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/discover_toolbar_relative_layout"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/actionBarSize"
+    android:clickable="true"
+    android:elevation="2dp"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/discover_toolbar_account_indicator"
+        layout="@layout/account_color_indicator" />
+
+    <include
+        android:id="@+id/discover_avatar_layout"
+        layout="@layout/avatar_view_xsmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="18dp" />
+
+    <TextView
+        android:id="@+id/discover_toolbar_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="56dp"
+        android:layout_toRightOf="@id/discover_avatar_layout"
+        android:background="@drawable/edit_text_rounded_corners_background"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingLeft="12dp"
+        android:text="@string/type_here_to_search"
+        android:textSize="16dp"
+        android:textStyle="normal" />
+
+    <ImageView
+        android:id="@+id/discover_toolbar_tune_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="8dp"
+        android:src="?attr/standard_tune_icon"
+        android:visibility="visible" />
+
+
+</RelativeLayout>

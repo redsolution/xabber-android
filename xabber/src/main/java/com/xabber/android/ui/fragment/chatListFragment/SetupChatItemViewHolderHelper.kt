@@ -1,13 +1,11 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
-import android.content.Context
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Build
 import android.text.Html
-import android.util.TypedValue
 import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -30,9 +28,9 @@ import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
 import java.util.*
 
-class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractChat){
+class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractChat) {
 
-    fun setup(){
+    fun setup() {
         holder.messageRealmObject = contact.lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
@@ -119,12 +117,13 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.statusIV.setImageLevel(statusLevel)
 
         holder.statusIV.visibility =
-                if (!isServer && !isGroupchat && !isBlocked && isVisible && (isUnavailable || !isAccountConnected))
+                if (!isServer && !isGroupchat && !isBlocked && isVisible
+                        && (isUnavailable || !isAccountConnected))
                     View.INVISIBLE
                 else
                     View.VISIBLE
 
-        if ((isServer || isGroupchat) && !isAccountConnected){
+        if ((isServer || isGroupchat) && !isAccountConnected) {
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)
@@ -132,7 +131,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         } else
             holder.statusIV.setColorFilter(0)
 
-        // holder.onlyStatusIV.setImageLevel(statusLevel)
     }
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
@@ -148,7 +146,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         var iconId: Int
         val mode = chat.notificationState.determineModeByGlobalSettings()
 
-        when (mode){
+        when (mode) {
             NotificationState.NotificationMode.enabled -> iconId = R.drawable.ic_unmute
             NotificationState.NotificationMode.disabled -> iconId = R.drawable.ic_mute
             NotificationState.NotificationMode.bydefault -> iconId = 0
@@ -193,7 +191,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
-        if (chat.lastMessage != null){
+        if (chat.lastMessage != null) {
             holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
                     Date(chat.lastMessage!!.timestamp))
             holder.timeTV.visibility = View.VISIBLE
@@ -214,7 +212,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
             else if (lastMessage != null && lastMessage.haveAttachments()) {
                 holder.messageTextTV.text = if (holder.accountColorIndicator != null)
-                    Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0], holder.accountColorIndicator!!))
+                    Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context,
+                            lastMessage.attachmentRealmObjects[0], holder.accountColorIndicator!!))
                 else
                     StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
                 holder.messageTextTV.typeface = Typeface.DEFAULT
@@ -233,9 +232,11 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null)
                     holder.messageTextTV.text = ChatStateManager.getInstance()
                             .getFullChatStateString(chat.account, chat.user)
-                else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null && lastMessage.action.isNotEmpty()) ) {
+                else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null
+                                && lastMessage.action.isNotEmpty())) {
                     if (holder.accountColorIndicator != null
-                            && (lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString())) {
+                            && (lastMessage.action != null
+                                    && lastMessage.action != ChatAction.contact_deleted.toString())) {
                         holder.messageTextTV.text = Html.fromHtml(StringUtils
                                 .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
                     } else {
@@ -274,29 +275,22 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    fun getMessageStatusImage(messageRealmObject: MessageRealmObject): Int{
-        if (!messageRealmObject.isIncoming) {
+    private fun getMessageStatusImage(messageRealmObject: MessageRealmObject): Int {
+        return if (!messageRealmObject.isIncoming) {
             if (MessageRealmObject.isUploadFileMessage(messageRealmObject)
                     && !messageRealmObject.isSent
                     && System.currentTimeMillis() - messageRealmObject.timestamp > 1000)
-                return R.drawable.ic_message_not_sent_14dp
+                R.drawable.ic_message_not_sent_14dp
             else if (messageRealmObject.isDisplayed || messageRealmObject.isReceivedFromMessageArchive)
-                return R.drawable.ic_message_displayed
+                R.drawable.ic_message_displayed
             else if (messageRealmObject.isDelivered)
-                return R.drawable.ic_message_delivered_14dp
+                R.drawable.ic_message_delivered_14dp
             else if (messageRealmObject.isError)
-                return R.drawable.ic_message_has_error_14dp
+                R.drawable.ic_message_has_error_14dp
             else if (messageRealmObject.isAcknowledged || messageRealmObject.isForwarded)
-                return R.drawable.ic_message_acknowledged_14dp
-            else return R.drawable.ic_message_not_sent_14dp
-        } else return R.drawable.ic_message_not_sent_14dp
-    }
-
-    private fun getThemeResource(context: Context, themeResourceId: Int): Int {
-        val a = context.obtainStyledAttributes(TypedValue().data, intArrayOf(themeResourceId))
-        val accountGroupColorsResourceId = a.getResourceId(0, 0)
-        a.recycle()
-        return accountGroupColorsResourceId
+                R.drawable.ic_message_acknowledged_14dp
+            else R.drawable.ic_message_not_sent_14dp
+        } else R.drawable.ic_message_not_sent_14dp
     }
 
 }

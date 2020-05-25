@@ -87,6 +87,11 @@
 
         <attr name="standard_show_password_icon" format="reference"/>
         <attr name="standard_hide_password_icon" format="reference"/>
+        <attr name="standard_tune_icon" format="reference"/>
+
+        <attr name="standard_arrow_back_icon" format="reference"/>
+
+        <attr name="discover_edittext_background_color" format="color"/>
     </declare-styleable>
     <declare-styleable name="ImFlexboxLayout">
         <attr name="viewPartMain" format="reference"></attr>

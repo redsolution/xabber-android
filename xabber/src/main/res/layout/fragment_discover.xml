@@ -1,212 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/discover_fragment"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/discover_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/contact_list_background"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="?attr/contact_list_contact_background">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/chatlist_toolbar_root"
+        android:id="@+id/discover_toolbar_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/chat_list_toolbar"
+            android:id="@+id/discover_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
-            android:contentInsetLeft="0dp"
-            android:contentInsetStart="0dp"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            android:contentInsetRight="0dp"
-            android:contentInsetEnd="0dp"
-            app:contentInsetRight="0dp"
+            android:background="?attr/bars_color"
             app:contentInsetEnd="0dp"
-            android:background="?attr/bars_color">
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp">
 
-            <include layout="@layout/item_main_title_in_contact_list"/>
+            <include layout="@layout/item_discover_title" />
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        >
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="This section is under construction." />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp"
-            >
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
-
-            <TextView
-                android:id="@+id/calls_text_explanation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fragment_discover_message"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?attr/contact_list_contact_name_text_color" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-<!--    <androidx.core.widget.NestedScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="vertical"-->
-<!--            android:padding="16dp">-->
-
-
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:id="@+id/card_discover_web"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginBottom="20dp"-->
-<!--                app:cardPreventCornerOverlap="false">-->
-
-<!--                <RelativeLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:clickable="true"-->
-<!--                    android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                    android:layout_height="match_parent">-->
-
-<!--                    <ImageView-->
-<!--                        android:id="@+id/iv_background_card"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:adjustViewBounds="true"-->
-<!--                        android:scaleType="centerCrop"-->
-<!--                        android:src="@drawable/about_backdrop"-->
-<!--                        tools:visibility="visible" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/title_web"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_below="@id/iv_background_card"-->
-<!--                        android:layout_marginLeft="15dp"-->
-<!--                        android:layout_marginTop="15dp"-->
-<!--                        android:layout_marginRight="15dp"-->
-<!--                        android:text="Title Web Xabber"-->
-<!--                        android:textSize="30sp" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/subtitle_web"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_below="@id/title_web"-->
-<!--                        android:layout_marginLeft="15dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginRight="15dp"-->
-<!--                        android:layout_marginBottom="15dp"-->
-<!--                        android:text="@string/fragment_discover_template" />-->
-<!--                </RelativeLayout>-->
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-<!--            <androidx.cardview.widget.CardView-->
-<!--                android:id="@+id/card_discover_ios"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:cardPreventCornerOverlap="false">-->
-
-<!--                <RelativeLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:clickable="true"-->
-<!--                    android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                    android:layout_height="match_parent">-->
-
-<!--                    <ImageView-->
-<!--                        android:id="@+id/iv_background_card_ios"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:adjustViewBounds="true"-->
-<!--                        android:scaleType="centerCrop"-->
-<!--                        android:src="@drawable/about_backdrop"-->
-<!--                        tools:visibility="visible" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/title_ios"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_below="@id/iv_background_card_ios"-->
-<!--                        android:layout_marginLeft="15dp"-->
-<!--                        android:layout_marginTop="15dp"-->
-<!--                        android:layout_marginRight="15dp"-->
-<!--                        android:text="Title iOS Xabber"-->
-<!--                        android:textSize="30sp" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/subtitle_ios"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_below="@id/title_ios"-->
-<!--                        android:layout_marginLeft="15dp"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginRight="15dp"-->
-<!--                        android:layout_marginBottom="15dp"-->
-<!--                        android:text="@string/fragment_discover_template" />-->
-<!--                </RelativeLayout>-->
-
-<!--            </androidx.cardview.widget.CardView>-->
-
-<!--        </LinearLayout>-->
-
-<!--        &lt;!&ndash;<LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        android:padding="16dp"-->
-<!--        >-->
-
-<!--            <Space-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="16dp" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/about_text_about"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/fragment_discover_template"-->
-<!--            android:textAppearance="?android:attr/textAppearanceMedium"-->
-<!--            android:textColor="?attr/contact_list_contact_name_text_color" />-->
-
-<!--        <Space-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="16dp" />-->
-
-<!--        </LinearLayout>&ndash;&gt;-->
-<!--    </androidx.core.widget.NestedScrollView>-->
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

@@ -12,6 +12,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
+import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.SettingsManager.InterfaceTheme
 import com.xabber.android.ui.activity.MainActivity
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
@@ -50,15 +52,16 @@ class BottomBar : Fragment(), View.OnClickListener {
         chatsButton = view.findViewById(R.id.show_chats_button)
         contactsButton = view.findViewById(R.id.show_contacts_button)
         callsButton = view.findViewById(R.id.show_calls_button)
-        discoverButton = view.findViewById(R.id.show_search_button)
+        discoverButton = view.findViewById(R.id.show_discover_button)
         settingsButton = view.findViewById(R.id.show_settings_button)
         chatsImage = view.findViewById(R.id.show_chats_image)
         chatsButton!!.setOnClickListener(this)
         contactsButton!!.setOnClickListener(this)
         discoverButton!!.setOnClickListener(this)
-        discoverButton!!.alpha = 0.4f
         callsButton!!.setOnClickListener(this)
-        callsButton!!.alpha = 0.4f
+        if (SettingsManager.interfaceTheme().equals(InterfaceTheme.dark))
+            callsButton!!.alpha = 0.5f
+        else callsButton!!.alpha = 0.4f
         settingsButton!!.setOnClickListener(this)
         unreadCoutTextView = view.findViewById(R.id.unread_count_textview)
         return view
@@ -69,7 +72,7 @@ class BottomBar : Fragment(), View.OnClickListener {
             R.id.show_chats_button -> listener!!.onChatsClick()
             R.id.show_calls_button -> listener!!.onCallsClick()
             R.id.show_contacts_button -> listener!!.onContactsClick()
-            R.id.show_search_button -> listener!!.onDiscoverClick()
+            R.id.show_discover_button -> listener!!.onDiscoverClick()
             R.id.show_settings_button -> listener!!.onSettingsClick()
         }
     }

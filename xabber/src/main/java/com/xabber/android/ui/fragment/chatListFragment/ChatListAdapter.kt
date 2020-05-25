@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.message.chat.AbstractChat
 
-class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener) :
-        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
+class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatListItemListener,
+                      val swipable: Boolean = true) : RecyclerView.Adapter<ChatViewHolder>(),
+        View.OnClickListener, View.OnCreateContextMenuListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -29,9 +30,13 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
         notifyItemChanged(index)
     }
 
-    fun addItems(newItemsList: MutableList<AbstractChat>){
+    fun addItems(newItemsList: MutableList<AbstractChat>) {
         this.list.clear()
         this.list.addAll(newItemsList)
+    }
+
+    fun clear() {
+        list.clear()
     }
 
     fun deleteItemByPosition(position: Int) {
@@ -43,7 +48,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
     fun deleteItemByAbstractContact(contact: AbstractChat) =
             deleteItemByPosition(list.indexOf(contact))
 
-    fun onSwipeChatItem(holder: ChatViewHolder){
+    fun onSwipeChatItem(holder: ChatViewHolder) {
         val swipedContact = getAbstractContactFromView(holder.itemView)
         deleteItemByAbstractContact(swipedContact)
         listener.onChatItemSwiped(swipedContact)
@@ -57,7 +62,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
-        listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
+            listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
             ChatViewHolder(LayoutInflater
@@ -66,7 +71,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>, val listener: ChatLis
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
-        ItemTouchHelper(SwipeToArchiveCallback(this)).attachToRecyclerView(recycler)
+        if (swipable) ItemTouchHelper(SwipeToArchiveCallback(this)).attachToRecyclerView(recycler)
         super.onAttachedToRecyclerView(recyclerView)
     }
 

@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -21,12 +21,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.capability.CapabilitiesManager;
-import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.vcard.VCardManager;
-
-import org.jivesoftware.smack.packet.Presence;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +33,6 @@ import java.util.Collections;
  * @author alexander.ivanov
  */
 public class AbstractContact extends BaseEntity {
-
 
     protected AbstractContact(AccountJid account, ContactJid user) {
         super(account, user);
@@ -72,21 +66,6 @@ public class AbstractContact extends BaseEntity {
             return "";
         } else {
             return statusText;
-        }
-    }
-
-    public ClientSoftware getClientSoftware() {
-        final Presence presence = RosterManager.getInstance().getPresence(account, user);
-
-        if (presence == null || !presence.isAvailable()) {
-            return ClientSoftware.unknown;
-        }
-
-        ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(presence.getFrom());
-        if (clientInfo == null) {
-            return ClientSoftware.unknown;
-        } else {
-            return clientInfo.getClientSoftware();
         }
     }
 

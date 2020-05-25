@@ -107,6 +107,10 @@
         <item name="standard_block_address_icon">@drawable/ic_block_address_grey_24dp</item>
         <item name="standard_divider_drawable">@drawable/chatlist_divider_light</item>
 
+        <item name="discover_edittext_background_color">#80FFFFFF</item>
+        <item name="standard_arrow_back_icon">@drawable/ic_arrow_left_grey_24dp</item>
+        <item name="standard_tune_icon">@drawable/ic_tune_grey_24dp</item>
+
         <item name="standard_show_password_icon">@drawable/ic_show_grey_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_grey_24dp</item>
     </style>
@@ -212,6 +216,10 @@
         <item name="standard_sync_icon">@drawable/ic_sync_white_24dp</item>
         <item name="standard_block_address_icon">@drawable/ic_block_address_white_24dp</item>
         <item name="standard_divider_drawable">@drawable/chatlist_divider_dark</item>
+
+        <item name="discover_edittext_background_color">#20FFFFFF</item>
+        <item name="standard_arrow_back_icon">@drawable/ic_arrow_left_white_24dp</item>
+        <item name="standard_tune_icon">@drawable/ic_tune_white_24dp</item>
 
         <item name="standard_show_password_icon">@drawable/ic_show_white_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_white_24dp</item>

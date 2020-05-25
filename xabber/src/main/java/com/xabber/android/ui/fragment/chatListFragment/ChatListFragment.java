@@ -61,7 +61,6 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.MainActivity;
-import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
@@ -254,7 +253,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
 
         items = new ArrayList<>();
-        adapter = new ChatListAdapter(items, this);
+        adapter = new ChatListAdapter(items, this, true);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
         DividerItemDecoration divider = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
@@ -272,13 +271,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarTitleTv = view.findViewById(R.id.tvTitle);
         toolbarAvatarIv = view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = view.findViewById(R.id.ivStatus);
-        ImageView toolbarSearchIv = view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
-        toolbarAddIv.setOnClickListener(this);
+        toolbarAddIv.setOnClickListener(v -> startActivity(ContactAddActivity.createIntent(getActivity())));
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
-        toolbarSearchIv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
@@ -375,9 +372,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             case R.id.tvTitle:
                 showTitlePopup(toolbarTitleTv);
                 break;
-            case R.id.toolbar_search_button:
-                startActivity(SearchActivity.createSearchIntent(getActivity()));
-                break;
         }
     }
 
@@ -456,9 +450,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_contact:
-                startActivity(ContactAddActivity.createIntent(getActivity()));
-                return true;
             case R.id.action_recent_chats:
                 onStateSelected(ChatListFragment.ChatListState.recent);
                 return true;
@@ -535,7 +526,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     /**
      * Enable or disable Toolbar scroll behavior
-     *
      */
     private void setToolbarScrollEnabled(boolean enabled) {
         AppBarLayout.LayoutParams toolbarLayoutParams =
@@ -781,11 +771,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         unread,
         archived
     }
+
     public interface ChatListFragmentListener {
         void onChatClick(AbstractContact contact);
 
         void onChatListStateChanged(ChatListState chatListState);
     }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NOT_SPECIFIED, SHOW_AVATARS, DO_NOT_SHOW_AVATARS})
     public @interface ChatListAvatarState {
