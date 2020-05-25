@@ -18,9 +18,9 @@ import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.roster.RosterManager
 
-class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
-                                      val listener: DiscoverContactsListItemListener) :
-        RecyclerView.Adapter<DiscoverContactsListItemAdapter.DiscoverContactsListItemViewHolder>(), View.OnClickListener {
+class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
+                                    val listener: SearchContactsListItemListener) :
+        RecyclerView.Adapter<SearchContactsListItemAdapter.SearchContactsListItemViewHolder>(), View.OnClickListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -43,12 +43,12 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            DiscoverContactsListItemViewHolder(LayoutInflater
+            SearchContactsListItemViewHolder(LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.item_discover_contact_list_item, parent, false))
 
 
-    override fun onBindViewHolder(holder: DiscoverContactsListItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchContactsListItemViewHolder, position: Int) {
         holder.itemView.setOnClickListener(this)
 
         /* Setup avatar */
@@ -106,11 +106,11 @@ class DiscoverContactsListItemAdapter(val items: MutableList<AbstractChat>,
     }
 
 
-    interface DiscoverContactsListItemListener: View.OnCreateContextMenuListener{
+    interface SearchContactsListItemListener: View.OnCreateContextMenuListener{
         fun onContactListItemClick(contact: AbstractChat)
     }
 
-    class DiscoverContactsListItemViewHolder(itemView: View) :
+    class SearchContactsListItemViewHolder(itemView: View) :
             RecyclerView.ViewHolder(itemView){
         var chat: AbstractChat? = null
         val avatarIv = itemView.findViewById<ImageView>(R.id.ivAvatar)

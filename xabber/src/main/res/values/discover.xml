@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="type_here_to_search">Type here to search</string>
+    <string name="nothing_was_searched">We searched for and wide and couldn\'t find any results matching your search</string>
+
+</resources>

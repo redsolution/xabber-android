@@ -1,79 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/discover_toolbar_relative_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/discover_toolbar_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
     android:clickable="true"
-    android:elevation="2dp">
+    android:elevation="2dp"
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/discover_toolbar_avatar_root"
-        android:layout_width="54dp"
-        android:layout_height="wrap_content">
+    <include
+        android:id="@+id/discover_toolbar_account_indicator"
+        layout="@layout/account_color_indicator" />
 
-        <include
-            android:id="@+id/discover_toolbar_account_indicator"
-            layout="@layout/account_color_indicator"/>
+    <include
+        android:id="@+id/discover_avatar_layout"
+        layout="@layout/avatar_view_xsmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="18dp" />
 
-        <include layout="@layout/avatar_view_xsmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"/>
-
-        <ImageButton
-            android:id="@+id/discover_toolbar_arrow_back_image_view"
-            android:layout_width="44dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="8dp"
-            android:layout_toLeftOf="@+id/discover_toolbar_account_indicator"
-            android:src="?attr/standard_arrow_left_icon"
-            android:background="@color/transparent"
-            android:visibility="gone"/>
-
-    </RelativeLayout>
-
-    <EditText
+    <TextView
         android:id="@+id/discover_toolbar_edittext"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:hint="@string/search"
-        android:maxLines="1"
-        android:paddingLeft="12dp"
         android:layout_marginLeft="18dp"
         android:layout_marginRight="56dp"
-        android:layout_toRightOf="@id/discover_toolbar_avatar_root"
-        android:background="@drawable/edit_text_rounded_corners_background"/>
-
-    <ImageView
-        android:id="@+id/discover_toolbar_clear_button"
-        android:src="?attr/standard_clear_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="8dp"
-        android:layout_centerVertical="true"
-        android:visibility="gone"/>
+        android:layout_toRightOf="@id/discover_avatar_layout"
+        android:background="@drawable/edit_text_rounded_corners_background"
+        android:gravity="center_vertical"
+        android:text="@string/type_here_to_search"
+        android:maxLines="1"
+        android:textStyle="normal"
+        android:textSize="16dp"
+        android:paddingLeft="12dp" />
 
     <ImageView
         android:id="@+id/discover_toolbar_tune_image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="8dp"
-        android:layout_centerVertical="true"
+        android:padding="8dp"
         android:src="?attr/standard_tune_icon"
-        android:visibility="visible"/>
-
+        android:visibility="visible" />
 
 
 </RelativeLayout>

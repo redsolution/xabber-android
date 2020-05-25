@@ -59,15 +59,19 @@
         android:paddingLeft="18dp"
         android:layout_toRightOf="@+id/toolbar_search_back_button"
         android:visibility="gone">
+
         <EditText
             android:id="@+id/search_toolbar_edittext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/search"
+            android:hint="@string/type_here_to_search"
             android:layout_toLeftOf="@id/search_toolbar_clear_button"
             android:background="@color/transparent"
-
+            android:textSize="16dp"
+            android:layout_marginLeft="14dp"
+            android:textStyle="normal"
             />
+
         <ImageView
             android:id="@+id/search_toolbar_clear_button"
             android:src="?attr/standard_clear_icon"

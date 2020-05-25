@@ -271,7 +271,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     /**
      * Open chat with specified contact and enter text to be sent.
      *
-     * @param text       can be <code>null</code>.
+     * @param text can be <code>null</code>.
      */
     private void openChat(AccountJid account, ContactJid user, String text) {
         if (text == null) {
@@ -573,7 +573,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         startActivity(AccountActivity.createIntent(this, account));
     }
 
-    /** Bottom Bar Chats click handler */
+    /**
+     * Bottom Bar Chats click handler
+     */
     @Override
     public void onChatsClick() {
 
@@ -630,8 +632,10 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showDiscoverFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
         setStatusBarColor();
+
         if (currentActiveFragmentType.equals(ActiveFragmentType.DISCOVER))
-            getDiscoverFragment().setKeyboardShowed(!getDiscoverFragment().isKeyboardShowed());
+            startActivity(SearchActivity.createSearchIntent(getApplicationContext()));
+
     }
 
     private void onXabberAccountClick() {

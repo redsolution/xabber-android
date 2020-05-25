@@ -1,55 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/discover_fragment"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/discover_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/contact_list_contact_background"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="?attr/contact_list_contact_background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/discover_toolbar_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/discover_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            android:contentInsetLeft="0dp"
+            android:background="?attr/bars_color"
             android:contentInsetStart="0dp"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            android:contentInsetRight="0dp"
+            android:contentInsetLeft="0dp"
             android:contentInsetEnd="0dp"
-            app:contentInsetRight="0dp"
+            android:contentInsetRight="0dp"
             app:contentInsetEnd="0dp"
-            android:background="?attr/bars_color" >
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp">
 
-            <include layout="@layout/item_discover_title"/>
+            <include layout="@layout/item_discover_title" />
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
-        android:id="@+id/discover_body_root"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?android:attr/actionBarSize">
-
-        <include
-            android:id="@+id/discover_contacts_list_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/item_discover_contacts_list"/>
-
-        <include layout="@layout/item_discover_recent_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_below="@+id/discover_contacts_list_root"/>
-
-    </RelativeLayout>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="This section is under construction." />
 
 </RelativeLayout>
