@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class RecentSearchRealmObjectRepository {
 
@@ -57,7 +58,8 @@ public class RecentSearchRealmObjectRepository {
         RealmResults<RecentSearchRealmObject> realmObjects = realm
                 .where(RecentSearchRealmObject.class)
                 .isNotNull(RecentSearchRealmObject.Fields.TIMESTAMP)
-                .findAll();
+                .findAll()
+                .sort(RecentSearchRealmObject.Fields.TIMESTAMP, Sort.DESCENDING);
         ArrayList<RecentSearchRealmObject> result = new ArrayList<>(realmObjects);
         if (Looper.getMainLooper() != Looper.myLooper())
             realm.close();
