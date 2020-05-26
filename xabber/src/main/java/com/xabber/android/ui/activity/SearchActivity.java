@@ -162,7 +162,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             }
         });
 
-        showChatListFragment();
+        showSearchFragment();
 
         toolbarGreetingsLayout.setVisibility(View.VISIBLE);
 
@@ -360,7 +360,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     /**
      * Shows existing or make new ChatListFragment
      */
-    private void showChatListFragment() {
+    private void showSearchFragment() {
         if (!isFinishing()) {
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
             fTrans.replace(R.id.search_activity_container, getSearchFragment(), SEARCH_FRAGMENT);

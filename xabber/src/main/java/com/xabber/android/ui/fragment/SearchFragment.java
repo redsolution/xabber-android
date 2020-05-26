@@ -244,10 +244,21 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         recentListRootConstraintLayout = view.findViewById(R.id.search_recent_root_constraint_layout);
         RecyclerView recentListRecyclerView = view.findViewById(R.id.search_recent_list_recycler);
         TextView recentListClearBtn = view.findViewById(R.id.search_recent_list_title_clear_button);
+        View colorIndicator = view.findViewById(R.id.search_recent_list_account_color_indicator);
         recentListTitleRootView = view.findViewById(R.id.search_recent_list_title_root_relative_layout);
         recentPlaceholder = view.findViewById(R.id.search_recent_placeholder);
 
         recentListClearBtn.setOnClickListener(this);
+
+        /* Update left color indicator via current main user */
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
+                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+            colorIndicator.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        } else {
+            colorIndicator.setBackgroundColor(
+                    getResources().getColor(R.color.transparent));
+        }
 
         LinearLayoutManager recentListLinearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);

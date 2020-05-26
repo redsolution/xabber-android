@@ -118,7 +118,7 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         val avatarIv = itemView.findViewById<ImageView>(R.id.ivAvatar)
         val statusIv = itemView.findViewById<ImageView>(R.id.ivStatus)
         val contactNameTv = itemView
-                .findViewById<TextView>(R.id.discover_contact_list_item_name_text_view)
+                .findViewById<TextView>(R.id.search_contact_list_item_name_text_view)
     }
 }
 

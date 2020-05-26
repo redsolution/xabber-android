@@ -25,8 +25,7 @@
                 layout="@layout/item_search_recent_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/search_contacts_list_root"
-                android:layout_marginTop="5dp" />
+                android:layout_below="@+id/search_contacts_list_root"/>
 
         </RelativeLayout>
 

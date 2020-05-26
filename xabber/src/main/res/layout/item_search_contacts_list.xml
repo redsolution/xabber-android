@@ -8,7 +8,7 @@
     <View
         android:id="@+id/search_contact_list_account_color_indicator"
         android:layout_width="2dp"
-        android:layout_height="1dp"
+        android:layout_height="112dp"
         android:layout_marginTop="1px"
         android:layout_marginBottom="1px"
         android:background="@color/amber_700" />
