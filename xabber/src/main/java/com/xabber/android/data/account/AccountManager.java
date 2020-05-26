@@ -60,6 +60,7 @@ import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -344,8 +345,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : accountItems.values()) {
             count[accountItem.getColorIndex() % colors] += 1;
         }
-        int result = 0;
-        int value = count[0];
+        int result = ColorManager.defaultAccountColorIndex;
+        int value = count[ColorManager.defaultAccountColorIndex];
         for (int index = 0; index < count.length; index++) {
             if (count[index] < value) {
                 result = index;
@@ -887,7 +888,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         int colorIndex;
 
         if (accountItem == null) {
-            return 0;
+            return ColorManager.defaultAccountColorIndex;
         } else {
             colorIndex = accountItem.getColorIndex() % colors;
         }

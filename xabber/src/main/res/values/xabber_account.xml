@@ -171,12 +171,12 @@
 
     <string name="title_signup_step_1">Step 1 of 4. Pick username and domain</string>
     <string name="title_signup_step_2">Step 2 of 4. Set password</string>
-    <string name="title_signup_step_3">Step 3 of 4. Accept privacy policy</string>
+    <string name="title_signup_step_3">Step 3 of 4. Terms and Conditions</string>
     <string name="title_signup_step_4">Step 4 of 4. Secure your account</string>
     <string name="title_login_email">Login via email</string>
 
     <string name="license_url" translatable="false">https://www.xabber.com/policy/mobile/</string>
-    <string name="accept_license">Accept privacy policy</string>
+    <string name="accept_license">Accept Terms and Conditions</string>
     <string name="account_secure_description"><![CDATA[Secure your account by linking it with <i>at least one</i> social network or email. If you don’t do that and lose your password, you’ll never be able to restore access to your account!]]></string>
     <string name="account_secure_warning">If you don\'t link it with existing email or social account you might lose access to your XMPP account forever</string>
 

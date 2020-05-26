@@ -28,6 +28,9 @@ public class ColorManager {
     private int themeId;
     private AccountPainter accountPainter;
 
+    public static final int defaultAccountColorIndex = 10;
+    public static final String defaultAccountColorName = "blue";
+
     private int colorContactSecondLine;
 
     private int colorMain;
@@ -252,7 +255,7 @@ public class ColorManager {
 
         Integer colorId = colors.get(colorName);
         if (colorId != null) return colorId;
-        else return 0;
+        else return defaultAccountColorIndex;
     }
 
     public String convertIndexToColorName(int colorIndex) {
@@ -277,7 +280,7 @@ public class ColorManager {
 
         String colorName = colors.get(colorIndex);
         if (colorName != null) return colorName;
-        else return "green";
+        else return defaultAccountColorName;
     }
 
     public static int changeColor(int color, float factor) {

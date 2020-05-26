@@ -136,10 +136,10 @@
   <string name="xaccount_exist">Аккаунт Xabber уже создан</string>
   <string name="title_signup_step_1">Шаг 1 из 4. Выберите имя пользователя и домен</string>
   <string name="title_signup_step_2">Шаг 2 из 4. Установите пароль</string>
-  <string name="title_signup_step_3">Шаг 3 из 4. Политика конфиденциальности</string>
+  <string name="title_signup_step_3">Шаг 3 из 4. Условия предоставления сервиса</string>
   <string name="title_signup_step_4">Шаг 4 из 4. Обезопасьте свой аккаунт</string>
   <string name="title_login_email">Войти с помощью Email</string>
-  <string name="accept_license">Согласиться с политикой конфиденциальности</string>
+  <string name="accept_license">Принять Условия предоставления сервиса</string>
   <string name="account_secure_description"><![CDATA[Обезопасьте свой аккаунт, связав его <i>по крайней мере с одним</i> социальным или Email аккаунтом. Если Вы не сделаете этого, то при утере пароля навсегда потеряете доступ к созданной учётной записи!]]></string>
   <string name="account_secure_warning">Если Вы не привяжете емайл или социальный аккаунт, то можете навсегда утратить доступ к своему XMPP аккаунту</string>
   <string name="password_changed_success">Пароль изменен</string>
