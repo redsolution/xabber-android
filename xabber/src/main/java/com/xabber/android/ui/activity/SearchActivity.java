@@ -85,13 +85,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     }
 
     public static Intent createIntent(Context context) {
-        return new Intent(context, SearchActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        return new Intent(context, SearchActivity.class);
     }
 
     public static Intent createSearchIntent(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
         intent.setAction(ACTION_SEARCH);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 
