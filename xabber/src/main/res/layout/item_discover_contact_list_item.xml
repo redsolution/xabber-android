@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_contact_list_item_constraint_layout"
@@ -22,9 +23,9 @@
         android:layout_below="@+id/search_avatar_layout"
         android:gravity="center_horizontal"
         android:maxLines="1"
-        android:paddingLeft="8dp"
         android:paddingTop="2dp"
-        android:paddingRight="8dp"
-        android:text="John Doe" />
+        android:singleLine="true"
+        android:text="John Doe"
+        android:textAppearance="@style/ChatText.Small" />
 
 </RelativeLayout>
