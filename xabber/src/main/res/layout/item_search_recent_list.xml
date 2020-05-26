@@ -43,7 +43,7 @@
             android:layout_alignParentRight="true"
             android:background="@color/transparent"
             android:gravity="center_vertical"
-            android:paddingRight="16dp"
+            android:paddingRight="8dp"
             android:text="@string/clear"
             android:textColor="#FF9E9E9E"
             android:textSize="14sp"

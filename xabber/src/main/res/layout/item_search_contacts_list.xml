@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/search_contacts_root_constraint_layout"
+    android:id="@+id/search_contacts_root_relative_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/contact_list_contact_background">
 
     <View
         android:id="@+id/search_contact_list_account_color_indicator"

@@ -30,9 +30,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:text="This section is under construction." />
+        android:gravity="center"
+        android:text="This section is under construction."
+        android:background="?attr/contact_list_background"/>
 
 </RelativeLayout>

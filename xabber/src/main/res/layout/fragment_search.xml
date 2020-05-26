@@ -20,7 +20,7 @@
                 android:id="@+id/search_contacts_list_root"
                 layout="@layout/item_search_contacts_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <include
                 layout="@layout/item_search_recent_list"
@@ -32,18 +32,17 @@
 
     </androidx.core.widget.NestedScrollView>
 
-
-
     <TextView
         android:id="@+id/search_recent_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:gravity="center"
         android:paddingLeft="54dp"
         android:paddingRight="54dp"
         android:text="@string/nothing_was_searched"
         android:textSize="18sp"
-        android:visibility="gone" />
+        android:visibility="visible"
+        android:background="?attr/contact_list_background"/>
 
 </RelativeLayout>

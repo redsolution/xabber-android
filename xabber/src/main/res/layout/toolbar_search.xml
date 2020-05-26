@@ -68,8 +68,10 @@
             android:layout_toLeftOf="@id/search_toolbar_clear_button"
             android:background="@color/transparent"
             android:hint="@string/type_here_to_search"
+            android:maxLines="1"
             android:textSize="16dp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:inputType="textNoSuggestions"/>
 
         <ImageView
             android:id="@+id/search_toolbar_clear_button"

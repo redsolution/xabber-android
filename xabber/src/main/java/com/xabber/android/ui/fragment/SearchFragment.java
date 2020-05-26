@@ -185,6 +185,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     }
 
     private void initContactsList(View view) {
+        TextView title = view.findViewById(R.id.search_contacts_list_title);
         contactListRoot = view.findViewById(R.id.search_contacts_list_root);
         RecyclerView contactListRecyclerView = view.findViewById(R.id.search_contacts_list_recycler);
         View contactListAccountColorIndicator = view.findViewById(R.id.search_contact_list_account_color_indicator);
@@ -234,6 +235,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
 
         if (allChats.size() > 15)
             allChats = new ArrayList<>(allChats.subList(0, 14));
+
+        if (allChats.isEmpty()){
+            title.setVisibility(View.GONE);
+            contactListAccountColorIndicator.setVisibility(View.GONE);
+        } else {
+            title.setVisibility(View.VISIBLE);
+            contactListAccountColorIndicator.setVisibility(View.VISIBLE);
+        }
 
         SearchContactsListItemAdapter contactsListAdapter = new SearchContactsListItemAdapter(allChats, this);
         contactListRecyclerView.setAdapter(contactsListAdapter);
@@ -296,6 +305,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
             if (concatLists(chatsList, contactList).size() == 0)
                 recentPlaceholder.setVisibility(View.VISIBLE);
             else recentPlaceholder.setVisibility(View.GONE);
+
+
 
         } else {
             ArrayList<AbstractChat> chats = new ArrayList<>();
