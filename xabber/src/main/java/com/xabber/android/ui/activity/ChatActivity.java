@@ -63,19 +63,18 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
@@ -87,6 +86,7 @@ import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 
@@ -727,7 +727,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         finish();
         ActivityManager.getInstance().clearStack(false);
         //if (!ActivityManager.getInstance().hasContactList(this)) {
-        startActivity(MainActivity.createIntent(this));
+        startActivity(MainActivity.createClearStackIntent(this));
         //}
 
     }
