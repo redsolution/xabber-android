@@ -312,7 +312,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.toolbar_search_back_button:
-                if (!action.equals(ACTION_SEARCH) && toolbarSearchEt.hasFocus()) {
+                if (action != null && !action.equals(ACTION_SEARCH) && toolbarSearchEt.hasFocus()) {
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
                     toolbarSearchLayout.setVisibility(View.GONE);
                     toolbarGreetingsLayout.setVisibility(View.VISIBLE);
