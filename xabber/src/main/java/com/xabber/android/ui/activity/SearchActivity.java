@@ -286,10 +286,15 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     toolbarGreetingsLayout.setOnClickListener(this);
                     toolbarSearchLayout.setVisibility(View.VISIBLE);
                     toolbarSearchEt.requestFocus();
-                    inputMethodManager.showSoftInput(toolbarSearchEt,
-                            InputMethodManager.SHOW_IMPLICIT);
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
+        super.onPause();
     }
 
     @Override

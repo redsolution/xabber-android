@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_toolbar_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="?attr/actionBarSize"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -49,6 +49,7 @@
             android:clickable="true"
             android:padding="8dp"
             android:src="?attr/standard_search_icon" />
+
     </RelativeLayout>
 
     <!--View visible then search active-->
@@ -68,7 +69,6 @@
             android:layout_toLeftOf="@id/search_toolbar_clear_button"
             android:background="@color/transparent"
             android:hint="@string/type_here_to_search"
-            android:maxLines="1"
             android:textSize="16dp"
             android:textStyle="normal"
             android:inputType="textNoSuggestions"/>
