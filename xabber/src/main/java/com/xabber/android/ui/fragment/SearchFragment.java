@@ -195,8 +195,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         contactListRecyclerView.setLayoutManager(chatListLinearLayoutManager);
 
         /* Update left color indicator via current main user */
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1) {
             contactListAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         } else {
@@ -260,8 +259,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         recentListClearBtn.setOnClickListener(this);
 
         /* Update left color indicator via current main user */
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1) {
             colorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         } else {
