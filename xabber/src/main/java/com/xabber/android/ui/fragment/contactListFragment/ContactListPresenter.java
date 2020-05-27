@@ -273,7 +273,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         // Remove empty groups, sort and apply structure.
         items.clear();
 
-        if (hasVisibleContacts) {
+        //if (hasVisibleContacts) {
             if (showAccounts) {
                 for (AccountConfiguration rosterAccount : accounts.values()) {
                     if (rosterAccount.getTotal() != 0) {
@@ -297,7 +297,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     createContactList(items, contacts, comparator);
                 }
             }
-        }
+        //}
 
         if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts);
 

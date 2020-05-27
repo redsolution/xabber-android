@@ -3,8 +3,10 @@ package com.xabber.android.ui.fragment.contactListFragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,6 +42,7 @@ import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.AccountVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ButtonVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
@@ -76,6 +80,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private RecyclerView accountsRecyclerView;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
     private ArrayList<AccountJid> accountsJidList;
+    /**
+     * Default toolbar that is only being displayed
+     * until at least one account starts connecting
+     */
+    private Toolbar defaultToolbarLayout;
     /**
      * View with information shown on empty contact list.
      */
@@ -143,6 +152,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = view.findViewById(R.id.coordinatorLayout);
 
+        defaultToolbarLayout = view.findViewById(R.id.contact_list_default_toolbar);
+        defaultToolbarLayout.setVisibility(View.GONE);
+
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
@@ -193,6 +205,19 @@ public class ContactListFragment extends Fragment implements ContactListView,
         } else accountsRecyclerView.setVisibility(View.GONE);
     }
 
+    private void setDefaultToolbarColors() {
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
+                AccountManager.getInstance().getFirstAccount() != null)
+            defaultToolbarLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
+                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+        else {
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = getContext().getTheme();
+            theme.resolveAttribute(R.attr.bars_color, typedValue, true);
+            defaultToolbarLayout.setBackgroundColor(typedValue.data);
+        }
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -204,6 +229,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onResume() {
         super.onResume();
         presenter.bindView(this);
+        setDefaultToolbarColors();
     }
 
     @Override
@@ -326,6 +352,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
             contactListFragmentListener.onContactListChange(commonState);
 
         if (hasVisibleContacts) {
+            defaultToolbarLayout.setVisibility(View.GONE);
             infoView.setVisibility(View.GONE);
             disconnectedView.clearAnimation();
             return;
@@ -346,69 +373,58 @@ public class ContactListFragment extends Fragment implements ContactListView,
                     presenter.updateContactList();
                 }
             };
-        } else if (commonState == CommonState.online) {
-            state = ContactListState.online;
-            text = R.string.application_state_no_contacts;
-            button = R.string.application_action_no_contacts;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(ContactAddActivity.createIntent(getActivity()));
-                }
-            };
-        } else if (commonState == CommonState.roster) {
-            state = ContactListState.connecting;
-            text = R.string.application_state_roster;
-            button = 0;
-            listener = null;
-        } else if (commonState == CommonState.connecting) {
-            state = ContactListState.connecting;
-            text = R.string.application_state_connecting;
-            button = 0;
-            listener = null;
-        } else if (commonState == CommonState.waiting) {
-            state = ContactListState.offline;
-            text = R.string.application_state_waiting;
-            button = R.string.application_action_waiting;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ConnectionManager.getInstance().connectAll();
-                }
-            };
-        } else if (commonState == CommonState.offline) {
-            state = ContactListState.offline;
-            text = R.string.application_state_offline;
-            button = R.string.application_state_offline;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AccountManager.getInstance().setStatus(
-                            StatusMode.available, null);
-                }
-            };
-        } else if (commonState == CommonState.disabled) {
-            state = ContactListState.offline;
-            text = R.string.application_state_disabled;
-            button = R.string.application_action_disabled;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    contactListFragmentListener.onManageAccountsClick();
-                }
-            };
-        } else if (commonState == CommonState.empty) {
-            state = ContactListState.offline;
-            text = R.string.application_state_empty;
-            button = R.string.application_action_empty;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(AccountAddActivity.createIntent(getActivity()));
-                }
-            };
         } else {
-            throw new IllegalStateException();
+            defaultToolbarLayout.setVisibility(View.VISIBLE);
+            switch (commonState) {
+                case online:
+                    //state = ContactListState.online;
+                    //text = R.string.application_state_no_contacts;
+                    //button = R.string.application_action_no_contacts;
+                    //listener = view -> startActivity(ContactAddActivity.createIntent(getActivity()));
+                    defaultToolbarLayout.setVisibility(View.GONE);
+                    infoView.setVisibility(View.GONE);
+                    disconnectedView.clearAnimation();
+                    return;
+                case roster:
+                    state = ContactListState.connecting;
+                    text = R.string.application_state_roster;
+                    button = 0;
+                    listener = null;
+                    break;
+                case connecting:
+                    state = ContactListState.connecting;
+                    text = R.string.application_state_connecting;
+                    button = 0;
+                    listener = null;
+                    break;
+                case waiting:
+                    state = ContactListState.offline;
+                    text = R.string.application_state_waiting;
+                    button = R.string.application_action_waiting;
+                    listener = view -> ConnectionManager.getInstance().connectAll();
+                    break;
+                case offline:
+                    state = ContactListState.offline;
+                    text = R.string.application_state_offline;
+                    button = R.string.application_state_offline;
+                    listener = view -> AccountManager.getInstance().setStatus(
+                            StatusMode.available, null);
+                    break;
+                case disabled:
+                    state = ContactListState.offline;
+                    text = R.string.application_state_disabled;
+                    button = R.string.application_action_disabled;
+                    listener = view -> contactListFragmentListener.onManageAccountsClick();
+                    break;
+                case empty:
+                    state = ContactListState.offline;
+                    text = R.string.application_state_empty;
+                    button = R.string.application_action_empty;
+                    listener = view -> startActivity(AccountAddActivity.createIntent(getActivity()));
+                    break;
+                default:
+                    throw new IllegalStateException();
+            }
         }
 
         // set up image and animation in placeholder
