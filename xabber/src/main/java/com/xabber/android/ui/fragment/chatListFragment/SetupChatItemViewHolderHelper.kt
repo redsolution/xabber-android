@@ -205,10 +205,15 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text.isNullOrEmpty()) {
 
-            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null)
-                holder.messageTextTV.text = ChatStateManager.getInstance()
+            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null) {
+                val chatState = ChatStateManager.getInstance()
                         .getFullChatStateString(chat.account, chat.user)
-            else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
+                holder.messageTextTV.text = if (holder.accountColorIndicator != null)
+                    Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
+                else chatState
+                holder.messageTextTV.typeface = Typeface.DEFAULT
+                return
+            } else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
             else if (lastMessage != null && lastMessage.haveAttachments()) {
                 holder.messageTextTV.text = if (holder.accountColorIndicator != null)
@@ -229,9 +234,13 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
-                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null)
-                    holder.messageTextTV.text = ChatStateManager.getInstance()
+                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null) {
+                    val chatState = ChatStateManager.getInstance()
                             .getFullChatStateString(chat.account, chat.user)
+                    holder.messageTextTV.text = if (holder.accountColorIndicator != null)
+                        Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
+                    else chatState
+                }
                 else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null
                                 && lastMessage.action.isNotEmpty())) {
                     if (holder.accountColorIndicator != null
