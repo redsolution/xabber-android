@@ -316,12 +316,17 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (SettingsManager.contactsShowAvatars()) {
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            toolbarAvatarIv.setImageDrawable(AvatarManager.getInstance().getMainAccountAvatar());
+            Drawable mainAccountDrawable = AvatarManager.getInstance().getMainAccountAvatar();
+            if (mainAccountDrawable != null) toolbarAvatarIv.setImageDrawable(mainAccountDrawable);
             if (AccountManager.getInstance().getEnabledAccounts().size() > 0) {
-                int mainAccountStatusMode = AccountManager.getInstance()
-                        .getAccount(AccountManager.getInstance().getFirstAccount())
-                        .getDisplayStatusMode()
-                        .getStatusLevel();
+                AccountJid accountJid = AccountManager.getInstance().getFirstAccount();
+                int mainAccountStatusMode = StatusMode.unavailable.getStatusLevel();
+                if (accountJid != null) {
+                    mainAccountStatusMode = AccountManager.getInstance()
+                            .getAccount(accountJid)
+                            .getDisplayStatusMode()
+                            .getStatusLevel();
+                }
                 toolbarStatusIv.setImageLevel(mainAccountStatusMode);
             } else {
                 toolbarStatusIv.setImageLevel(StatusMode.unavailable.ordinal());
