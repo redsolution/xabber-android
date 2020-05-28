@@ -370,6 +370,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     @Nullable
     public AccountItem getAccount(AccountJid account) {
+        if (account == null) {
+            Log.d(LOG_TAG, "accountJid is Null");
+            throw new NullPointerException("accountJid is Null");
+        }
         return accountItems.get(account);
     }
 
