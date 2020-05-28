@@ -12,13 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -55,6 +55,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
 
     private static final String LOG_TAG = SearchFragment.class.getSimpleName();
 
+    private NestedScrollView nestedScrollView;
+
     /* ContactsList variables */
     private View contactListRoot;
 
@@ -63,6 +65,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     private RelativeLayout recentListTitleRootView;
     private ChatListAdapter recentChatListAdapter;
     private TextView recentPlaceholder;
+
+    /* Search variables */
+    private RecyclerView searchListRecyclerView;
+    private ChatListAdapter searchChatListAdapter;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -86,6 +92,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        nestedScrollView = view.findViewById(R.id.search_greetings_root);
+
+        searchListRecyclerView = view.findViewById(R.id.search_list);
+        searchListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false));
+        searchChatListAdapter = new ChatListAdapter(new ArrayList<AbstractChat>(), this, false);
+        searchListRecyclerView.setAdapter(searchChatListAdapter);
 
         initContactsList(view);
         initRecent(view);
@@ -272,6 +286,36 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         recentListRecyclerView.setLayoutManager(recentListLinearLayoutManager);
 
         ArrayList<AbstractChat> chats = new ArrayList<>();
+        if (!RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects().isEmpty()) {
+            for (RecentSearchRealmObject recentSearchRealmObject :
+                    RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()) {
+                try {
+                    AccountJid accountJid = AccountJid
+                            .from(recentSearchRealmObject.getAccountJid());
+
+                    ContactJid contactJid = ContactJid
+                            .from(recentSearchRealmObject.getContactJid());
+
+                    if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(),
+                            recentSearchRealmObject.getContactJid())) {
+
+                        AbstractChat abstractChat = ChatManager.getInstance()
+                                .getOrCreateChat(accountJid, contactJid);
+
+                        if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
+                            chats.add(abstractChat);
+
+                    } else chats.add(new RegularChat(accountJid, contactJid));
+
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+            }
+            recentListRootConstraintLayout.setVisibility(View.VISIBLE);
+        } else {
+            recentListRootConstraintLayout.setVisibility(View.GONE);
+        }
+
         recentChatListAdapter = new ChatListAdapter(chats, this, false);
         recentListRecyclerView.setAdapter(recentChatListAdapter);
 
@@ -291,60 +335,22 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
                     getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance()
                             .getAllContactsForEnabledAccounts(), filterString));
 
-            recentListTitleRootView.setVisibility(View.GONE);
-            recentListRootConstraintLayout.setVisibility(View.VISIBLE);
+            nestedScrollView.setVisibility(View.GONE);
+            searchListRecyclerView.setVisibility(View.VISIBLE);
 
-            contactListRoot.setVisibility(View.GONE);
-
-            recentChatListAdapter.clear();
-            recentChatListAdapter.addItems(concatLists(chatsList, contactList));
-            recentChatListAdapter.notifyDataSetChanged();
+            searchChatListAdapter.clear();
+            searchChatListAdapter.addItems(concatLists(chatsList, contactList));
+            searchChatListAdapter.notifyDataSetChanged();
 
             if (concatLists(chatsList, contactList).size() == 0)
                 recentPlaceholder.setVisibility(View.VISIBLE);
             else recentPlaceholder.setVisibility(View.GONE);
 
-
-
         } else {
-            ArrayList<AbstractChat> chats = new ArrayList<>();
-            if (!RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects().isEmpty()) {
-                for (RecentSearchRealmObject recentSearchRealmObject :
-                        RecentSearchRealmObjectRepository.getAllRecentSearchRealmObjects()) {
-                    try {
-                        AccountJid accountJid = AccountJid
-                                .from(recentSearchRealmObject.getAccountJid());
+            nestedScrollView.setVisibility(View.VISIBLE);
+            searchListRecyclerView.setVisibility(View.GONE);
 
-                        ContactJid contactJid = ContactJid
-                                .from(recentSearchRealmObject.getContactJid());
-
-                        if (ChatManager.getInstance().hasChat(recentSearchRealmObject.getAccountJid(),
-                                recentSearchRealmObject.getContactJid())) {
-
-                            AbstractChat abstractChat = ChatManager.getInstance()
-                                    .getOrCreateChat(accountJid, contactJid);
-
-                            if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
-                                chats.add(abstractChat);
-
-                        } else chats.add(new RegularChat(accountJid, contactJid));
-
-                    } catch (Exception e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
-                }
-                recentListRootConstraintLayout.setVisibility(View.VISIBLE);
-            } else {
-                recentListRootConstraintLayout.setVisibility(View.GONE);
-            }
-
-            contactListRoot.setVisibility(View.VISIBLE);
-            recentListTitleRootView.setVisibility(View.VISIBLE);
             recentPlaceholder.setVisibility(View.GONE);
-
-            recentChatListAdapter.clear();
-            recentChatListAdapter.addItems(chats);
-            recentChatListAdapter.notifyDataSetChanged();
         }
 
     }
