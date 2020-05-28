@@ -8,7 +8,7 @@
     <string name="account_priority">Priority</string>
     <string name="account_resource">Resource</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">You must&#160;<a href="http://www.google.com/#q=register an XMPP account">register an XMPP account</a> before adding it to Xabber!</string>
+    <string name="account_xmpp_register_warning">You must&#160;<a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
     <string name="account_user_name">Username</string>
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
     <string name="EMPTY_USER_NAME">Username is not specified</string>
