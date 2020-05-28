@@ -413,14 +413,18 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (AccountManager.getInstance().getFirstAccount() == null || (bitmaps.isEmpty()
                 || !hashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid())
                 || !XEPHashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid()))) {
-            if (SettingsManager.getMainAvatarHash().equals("0"))
-                return getDefaultAccountAvatar(AccountManager.getInstance().getFirstAccount());
+            if (SettingsManager.getMainAvatarHash().equals("0")) {
+                AccountJid account = AccountManager.getInstance().getFirstAccount();
+                if (account == null) return null;
+                return getDefaultAccountAvatar(account);
+            }
             else {
                 Bitmap value = makeBitmap(AvatarStorage.getInstance().read(SettingsManager.getMainAvatarHash()));
                 return new BitmapDrawable(application.getResources(), value);
             }
         } else {
             AccountJid account = AccountManager.getInstance().getFirstAccount();
+            if (account == null) return null;
             Bitmap value = getBitmap(account.getFullJid().asBareJid());
             if (value != null) {
                 LogManager.d(LOG_TAG, "Avatar is not null");

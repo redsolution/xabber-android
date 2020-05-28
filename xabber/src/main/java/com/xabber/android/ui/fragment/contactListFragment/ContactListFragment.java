@@ -153,7 +153,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         coordinatorLayout = view.findViewById(R.id.coordinatorLayout);
 
         defaultToolbarLayout = view.findViewById(R.id.contact_list_default_toolbar);
-        defaultToolbarLayout.setVisibility(View.GONE);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);

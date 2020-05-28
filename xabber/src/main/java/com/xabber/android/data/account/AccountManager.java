@@ -80,6 +80,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -139,7 +140,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     private AccountManager() {
         this.application = Application.getInstance();
-        accountItems = new HashMap<>();
+        accountItems = new ConcurrentHashMap<>();
         savedStatuses = new ArrayList<>();
         cachedEnabledAccounts = new ArrayList<>();
         accountErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
