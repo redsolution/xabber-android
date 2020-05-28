@@ -3,6 +3,9 @@ package com.xabber.android.ui.adapter
 import android.app.Activity
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +19,8 @@ import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.color.AccountPainter
+import com.xabber.android.ui.color.ColorManager
 
 class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
                                     val listener: SearchContactsListItemListener) :
@@ -102,8 +107,16 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
             holder.statusIv.setColorFilter(0)
 
         /* Setup name */
-        holder.contactNameTv.text = RosterManager.getInstance()
-                .getBestContact(items[position].account, items[position].user).name.split(" ")[0]
+        val name = RosterManager.getInstance().getBestContact(items[position].account,
+                items[position].user).name.split(" ")[0]
+        if (AccountManager.getInstance().enabledAccounts.size > 1){
+            val spannableString = SpannableString(name)
+            val color = ForegroundColorSpan(ColorManager.getInstance().accountPainter
+                    .getAccountMainColor(items[position].account))
+
+            spannableString.setSpan(color, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            holder.contactNameTv.setText(spannableString, TextView.BufferType.SPANNABLE)
+        } else holder.contactNameTv.text = name
 
     }
 

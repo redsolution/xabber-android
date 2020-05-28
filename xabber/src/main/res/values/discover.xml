@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="quick_contacts">Quick contacts</string>
+    <string name="recent_searches">Recent searches</string>
     <string name="type_here_to_search">Type here to search</string>
     <string name="nothing_was_searched">No results</string>
 

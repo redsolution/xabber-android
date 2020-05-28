@@ -24,7 +24,7 @@
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:singleLine="true"
-        android:text="Contacts"
+        android:text="@string/quick_contacts"
         android:textColor="#FF9E9E9E"
         android:textSize="16sp"
         android:textStyle="normal" />
