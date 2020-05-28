@@ -360,29 +360,44 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
         Collection<AbstractChat> resultCollection = new ArrayList<>();
         for (AbstractChat abstractChat : abstractChats) {
-            AbstractContact abstractContact = RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
+
             if (abstractChat.getLastMessage() == null)
                 continue;
+
+            String contactName = RosterManager.getInstance()
+                    .getBestContact(abstractChat.getAccount(), abstractChat.getUser())
+                    .getName()
+                    .toLowerCase();
+
             if (abstractChat.getUser().toString().contains(filterString)
                     || abstractChat.getUser().toString().contains(transliteratedFilterString)
-                    || abstractContact.getName().contains(filterString)
-                    || abstractContact.getName().contains(transliteratedFilterString))
+                    || contactName.contains(filterString)
+                    || contactName.contains(transliteratedFilterString))
+
                 resultCollection.add(abstractChat);
+
         }
         return resultCollection;
     }
 
     private Collection<AbstractChat> getFilteredContactsOfEnabledAccountsByString(
             Collection<AbstractContact> abstractContacts, String filterString) {
+
         String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
         Collection<AbstractChat> resultCollection = new ArrayList<>();
+
         for (AbstractContact abstractContact : abstractContacts) {
+
+            String name = RosterManager.getInstance()
+                    .getBestContact(abstractContact.getAccount(), abstractContact.getUser())
+                    .getName()
+                    .toLowerCase();
 
             if (abstractContact.getUser().toString().contains(filterString)
                     || abstractContact.getUser().toString().contains(transliteratedFilterString)
-                    || abstractContact.getName().contains(filterString)
-                    || abstractContact.getName().contains(transliteratedFilterString))
+                    || name.contains(filterString)
+                    || name.contains(transliteratedFilterString))
+
                 resultCollection.add(new RegularChat(abstractContact.getAccount(),
                         abstractContact.getUser()));
         }
