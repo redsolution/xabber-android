@@ -125,7 +125,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
             barPainter.setLiteGrey();
         } else {
             toolbar.setTitle(R.string.title_register_xabber_account);
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
             toolbar.setTitleTextColor(getResources().getColor(R.color.white));
             barPainter.setBlue(this);
         }
