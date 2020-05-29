@@ -34,7 +34,11 @@ public class BarPainter {
 
     public void updateWithAccountName(AccountJid account) {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(account));
+            if (account == null) {
+                toolbar.setBackgroundColor(standartColor);
+            } else {
+                toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(account));
+            }
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithAccountName(account);
         } else {
@@ -47,7 +51,12 @@ public class BarPainter {
 
     public void setDefaultColor() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+            if (AccountManager.getInstance().getFirstAccount() == null)
+            {
+                toolbar.setBackgroundColor(standartColor);
+            } else {
+                toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+            }
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithDefaultColor();
         } else {
