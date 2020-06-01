@@ -12,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         versionCode 823
-        versionName '2.6.6.823'
+        versionName '3.0.1-beta(823)'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
         vectorDrawables.useSupportLibrary = true
     }
