@@ -178,8 +178,10 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             final int[] accountGroupColors = this.getResources()
                     .getIntArray(accountGroupColorsResourceId);
 
-            final int level = AccountManager.getInstance().
-                    getColorLevel(AccountManager.getInstance().getFirstAccount());
+            int level = 0;
+            if (AccountManager.getInstance().getFirstAccount() != null)
+                level = AccountManager.getInstance()
+                        .getColorLevel(AccountManager.getInstance().getFirstAccount());
 
             toolbarLayout.setBackgroundColor(accountGroupColors[level]);
             StatusBarPainter.instanceUpdateWithDefaultColor(this);
