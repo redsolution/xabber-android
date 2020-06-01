@@ -468,6 +468,7 @@ public class Application extends android.app.Application {
 
     @Override
     public void onLowMemory() {
+        LogManager.e(LOG_TAG, "Warning! Low memory!");
         for (OnLowMemoryListener listener : getManagers(OnLowMemoryListener.class)) {
             listener.onLowMemory();
         }
