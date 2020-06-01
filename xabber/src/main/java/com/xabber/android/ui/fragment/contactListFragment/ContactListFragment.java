@@ -169,7 +169,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         adapter.setDisplayHeadersAtStartUp(true);
         recyclerView.setAdapter(adapter);
 
-        adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.addListener(this);
 
