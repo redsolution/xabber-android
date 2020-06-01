@@ -33,8 +33,8 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
-import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationChannelUtils;
 import com.xabber.android.data.notification.NotificationManager;
@@ -173,7 +173,10 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 ChatManager.getInstance().openChat(account, from);
                 ChatManager.getInstance()
                         .getOrCreateChat(account, from)
-                        .newAction(null, null, ChatAction.attention_requested, fromMUC);
+                        .newAction(null,
+                                Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested),
+                                ChatAction.attention_requested,
+                                fromMUC);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
@@ -207,7 +210,10 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
         StanzaSender.sendStanza(account, message);
-        chat.newAction(null, null, ChatAction.attention_called, false);
+        chat.newAction(null,
+                Application.getInstance().getApplicationContext().getString(R.string.action_attention_called),
+                ChatAction.attention_called,
+                false);
     }
 
     public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {

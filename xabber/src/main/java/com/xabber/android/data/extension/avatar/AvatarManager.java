@@ -662,7 +662,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 setValue(hash, value, type);
                 setXEPHash(jid, hash);
             }
-            if (AccountManager.getInstance().getFirstAccount().getBareJid().toString().equals(jid.toString()))
+            AccountJid account = AccountManager.getInstance().getFirstAccount();
+            if (account != null && account.getBareJid().toString().equals(jid.toString()))
                 SettingsManager.setMainAvatarHash(hash);
         }
     }
