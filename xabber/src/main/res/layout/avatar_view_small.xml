@@ -23,7 +23,7 @@
         android:id="@+id/ivStatusGroupchat"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/ic_groupchat_14_border"
+        android:src="@drawable/ic_groupchat_14_default_border"
         android:layout_gravity="bottom|right"
         android:visibility="gone"
         />
@@ -47,7 +47,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatarOverlay"
         android:layout_width="40dp"
-        android:src="@drawable/ic_stripes"
+        app:srcCompat="@drawable/ic_stripes"
         android:layout_height="40dp"
         app:civ_circle_background_color="@color/transparent"
         android:visibility="gone"/>

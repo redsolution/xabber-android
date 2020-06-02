@@ -94,7 +94,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             if (abstractChat != null && abstractChat.isGroupchat() || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
-                viewHolder.status.setImageResource(R.drawable.ic_groupchat_14_border);
+                viewHolder.status.setImageResource(R.drawable.ic_groupchat_14_default_border);
                 viewHolder.status.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.status.setVisibility(View.GONE);

@@ -25,15 +25,16 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
-import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
@@ -301,7 +302,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int displayedStatus = getStatusLevel();
         if (isBlocked) displayedStatus = 11;
         else if (isServer) displayedStatus = 10;
-        else if (isGroupchat) displayedStatus = 9;
+        else if (isGroupchat) displayedStatus += StatusMode.groupchatOffset;
 
         viewHolder.ivStatus.setImageLevel(displayedStatus);
         viewHolder.ivOnlyStatus.setImageLevel(displayedStatus);

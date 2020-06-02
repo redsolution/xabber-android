@@ -91,7 +91,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 10
-            isGroupchat -> statusLevel = 9
+            isGroupchat -> statusLevel += StatusMode.groupchatOffset
         }
 
         if (isBlocked || (!isRoster && statusLevel < 8)) {

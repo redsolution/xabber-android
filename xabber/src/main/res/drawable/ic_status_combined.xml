@@ -14,10 +14,20 @@
         android:drawable="@drawable/ic_status_invisible_18dp"/>
     <item android:minLevel="6" android:maxLevel="6"
         android:drawable="@drawable/ic_status_unavailable"/>
+
+    <item android:minLevel="20" android:maxLevel="20"
+        android:drawable="@drawable/ic_groupchat_14_chat_border"/>
+    <item android:minLevel="21" android:maxLevel="21"
+        android:drawable="@drawable/ic_groupchat_14_online_border"/>
+    <item android:minLevel="22" android:maxLevel="22"
+        android:drawable="@drawable/ic_groupchat_14_away_border"/>
+    <item android:minLevel="23" android:maxLevel="23"
+        android:drawable="@drawable/ic_groupchat_14_xa_border"/>
+    <item android:minLevel="24" android:maxLevel="24"
+        android:drawable="@drawable/ic_groupchat_14_dnd_border"/>
+
     <item android:minLevel="8" android:maxLevel="8"
         android:drawable="@drawable/ic_status_unsubscribed_18dp"/>
-    <item android:minLevel="9" android:maxLevel="9"
-        android:drawable="@drawable/ic_groupchat_14_border"/>
     <item android:minLevel="10" android:maxLevel="10"
         android:drawable="@drawable/ic_server_14_border"/>
     <item android:minLevel="11" android:maxLevel="11"

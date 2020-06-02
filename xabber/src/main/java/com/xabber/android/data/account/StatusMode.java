@@ -15,6 +15,7 @@
 package com.xabber.android.data.account;
 
 import com.xabber.android.R;
+import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Mode;
@@ -75,6 +76,8 @@ public enum StatusMode {
      */
     unsubscribed;
 
+    public static final int groupchatOffset = 20;
+
     /**
      * Creates new {@link StatusMode} form {@link Presence}.
      */
@@ -109,6 +112,16 @@ public enum StatusMode {
                 return StatusMode.unavailable;
         }
         return StatusMode.unavailable;
+    }
+
+    static public StatusMode createStatusModeForGroup(GroupchatPresence presence) {
+        if (presence == null) return StatusMode.unavailable;
+
+        String statusText = presence.getStatus();
+
+        if (statusText == null || statusText.isEmpty()) return StatusMode.unavailable;
+
+        return fromString(statusText);
     }
 
     /**
@@ -167,7 +180,9 @@ public enum StatusMode {
 
     public static StatusMode fromString(String string){
         switch (string){
+            case "active":
             case "available": return StatusMode.available;
+            case "inactive":
             case "dnd":return StatusMode.dnd;
             case "xa": return StatusMode.xa;
             case "chat": return StatusMode.chat;

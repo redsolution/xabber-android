@@ -87,6 +87,6 @@
         android:layout_marginRight="-1dp"
         android:layout_marginBottom="-1dp"
         android:visibility="visible"
-        tools:srcCompat="@drawable/ic_groupchat_14_border" />
+        tools:srcCompat="@drawable/ic_groupchat_14_default_border" />
 
 </RelativeLayout>

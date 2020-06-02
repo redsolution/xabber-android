@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!--<item>
-        <shape android:shape="ring"
-            android:useLevel="false"
-            android:thickness="2dp">
-            <solid android:color="?attr/contact_list_contact_background"/>
-        </shape>
-    </item>-->
     <item
         android:top="1dp"
         android:left="1dp"
@@ -20,5 +12,5 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_groupchat_14_new" />
+        android:drawable="@drawable/ic_groupchat_14_default" />
 </layer-list>
