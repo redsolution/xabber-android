@@ -15,6 +15,9 @@
     <string name="clear_chat_history_dialog_warning">This operation can not be undone.</string>
     <string name="clear_chat_history_for_companion_checkbox">Attempt to retract your messages from your chat partner\'s archive</string>
     <string name="waiting_for_network">Waiting for network…</string>
+    <string name="contact_groupchat_status_participant">1 participant</string>
+    <string name="contact_groupchat_status_participants">%d participants</string>
+    <string name="contact_groupchat_status_online">, %d online</string>
     <string name="contact_state_not_in_contact_list">Not in your contacts</string>
     <string name="contact_state_no_subscriptions">No subscriptions</string>
     <string name="contact_state_incoming_request">Incoming subscription request…</string>

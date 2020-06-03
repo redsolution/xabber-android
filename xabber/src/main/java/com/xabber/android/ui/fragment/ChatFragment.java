@@ -765,6 +765,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         ChatStateManager.getInstance().onChatOpening(account, user);
 
+        if (getChat() != null && getChat().isGroupchat()) {
+            // TODO should probably move to groupchat manager
+            try {
+                PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), true);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        }
+
         updateContact();
         //restoreInputState();
         restoreScrollState(((ChatActivity) getActivity()).needScrollToUnread());
@@ -783,6 +792,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         super.onPause();
 
         ChatStateManager.getInstance().onPaused(account, user);
+
+        if (getChat() != null && getChat().isGroupchat()) {
+            // TODO should probably move to groupchat manager
+            try {
+                PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), false);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        }
 
         saveInputState();
         saveScrollState();

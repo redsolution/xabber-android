@@ -32,7 +32,11 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
+import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatPresence;
+import com.xabber.android.data.extension.groupchat.GroupchatPresenceNotification;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -40,7 +44,6 @@ import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
@@ -273,7 +276,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (presence == null) {
             return null;
         } else {
-            return presence.getStatus();
+            if (presence.hasExtension(Groupchat.NAMESPACE)) {
+                return ((GroupchatPresence) presence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE)).getStatus();
+            } else {
+                return presence.getStatus();
+            }
         }
     }
 
@@ -322,23 +329,43 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * @throws NetworkException
      */
     public void resendPresence(AccountJid account) throws NetworkException {
-        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getFullJid().asBareJid()));
+        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getBareJid()));
     }
 
     public void sendVCardUpdatePresence(AccountJid account, String hash) throws NetworkException {
         LogManager.i(this, "sendVCardUpdatePresence: " + account);
 
+        Presence accountPresence = getAccountPresence(account);
+        if (accountPresence == null) return;
+
+        VCardManager.getInstance().addVCardUpdateToPresence(accountPresence, hash);
+
+        StanzaSender.sendStanza(account, accountPresence);
+    }
+
+    public void sendPresenceToGroupchat(AbstractChat abstractChat, boolean isPresent) throws NetworkException {
+        LogManager.i(this, "sendPresenceToGroupchat: " + abstractChat);
+
+        Presence accountPresence = getAccountPresence(abstractChat.getAccount());
+        if (accountPresence == null) return;
+
+        VCardManager.getInstance().addVCardUpdateToPresence(accountPresence,
+                AvatarManager.getInstance().getHash(abstractChat.getAccount().getBareJid()));
+
+        GroupchatPresenceNotification groupchatExtension = new GroupchatPresenceNotification(isPresent);
+        accountPresence.addExtension(groupchatExtension);
+        accountPresence.setTo(abstractChat.getTo());
+
+        StanzaSender.sendStanza(abstractChat.getAccount(), accountPresence);
+    }
+
+    private Presence getAccountPresence(AccountJid account) throws NetworkException {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
-            return;
+            return null;
         }
 
-        final Presence presence = accountItem.getPresence();
-
-        final VCardUpdate vCardUpdate = new VCardUpdate();
-        vCardUpdate.setPhotoHash(hash);
-        presence.addExtension(vCardUpdate);
-        StanzaSender.sendStanza(account, presence);
+        return accountItem.getPresence();
     }
 
     @Override

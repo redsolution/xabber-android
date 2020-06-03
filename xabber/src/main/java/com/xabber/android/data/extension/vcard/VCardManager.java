@@ -41,6 +41,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
+import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -466,6 +467,12 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 });
             }
         });
+    }
+
+    public void addVCardUpdateToPresence(Presence presence, String hash) {
+        final VCardUpdate vCardUpdate = new VCardUpdate();
+        vCardUpdate.setPhotoHash(hash);
+        presence.addExtension(vCardUpdate);
     }
 
     /**
