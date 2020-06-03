@@ -1,4 +1,4 @@
-package com.xabber.android.data.groupchat;
+package com.xabber.android.data.message.chat.groupchat;
 
 import android.os.Looper;
 
@@ -18,7 +18,7 @@ import io.realm.RealmResults;
 public class GroupchatUserManager implements OnLoadListener {
 
     private static GroupchatUserManager instance;
-    private final Map<String, GroupchatUser> users = new HashMap<>();
+    private final Map<String, GroupchatMember> users = new HashMap<>();
 
     public static GroupchatUserManager getInstance() {
         if (instance == null) instance = new GroupchatUserManager();
@@ -37,7 +37,7 @@ public class GroupchatUserManager implements OnLoadListener {
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
-    public GroupchatUser getGroupchatUser(String id) {
+    public GroupchatMember getGroupchatUser(String id) {
         return users.get(id);
     }
 
@@ -83,8 +83,8 @@ public class GroupchatUserManager implements OnLoadListener {
         return realmUser;
     }
 
-    private GroupchatUser refUserToUser(GroupchatUserExtension groupchatUserExtension) {
-        GroupchatUser user = new GroupchatUser(groupchatUserExtension.getId());
+    private GroupchatMember refUserToUser(GroupchatUserExtension groupchatUserExtension) {
+        GroupchatMember user = new GroupchatMember(groupchatUserExtension.getId());
         user.setAvatar(groupchatUserExtension.getAvatar());
         user.setBadge(groupchatUserExtension.getBadge());
         user.setJid(groupchatUserExtension.getJid());
@@ -93,8 +93,8 @@ public class GroupchatUserManager implements OnLoadListener {
         return user;
     }
 
-    private GroupchatUser realmUserToUser(GroupchatUserRealmObject groupchatUser) {
-        GroupchatUser user = new GroupchatUser(groupchatUser.getUniqueId());
+    private GroupchatMember realmUserToUser(GroupchatUserRealmObject groupchatUser) {
+        GroupchatMember user = new GroupchatMember(groupchatUser.getUniqueId());
         user.setAvatar(groupchatUser.getAvatar());
         user.setBadge(groupchatUser.getBadge());
         user.setJid(groupchatUser.getJid());
