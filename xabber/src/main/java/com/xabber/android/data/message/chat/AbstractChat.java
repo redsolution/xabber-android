@@ -101,10 +101,6 @@ public abstract class AbstractChat extends BaseEntity implements
     protected boolean active;
     protected boolean isGroupchat = false;
     /**
-     * Whether changes in status should be record.
-     */
-    private boolean trackStatus;
-    /**
      * Whether user never received notifications from this chat.
      */
     private boolean firstNotification;
@@ -112,11 +108,6 @@ public abstract class AbstractChat extends BaseEntity implements
      * Current thread id.
      */
     private String threadId;
-    /**
-     *  Last known "chatstate", i.e. "deleted chat", "chat with cleared history", "normal chat".
-     *  TODO: tie this state with the lastActionTimestamp and archive loading to avoid showing "cleared messages" in chat or showing a "deleted" chat.
-     */
-    private int chatstateType;
     /**
      *  The timestamp of the last chat action, such as: deletion, history clear, etc.
      */
@@ -137,7 +128,6 @@ public abstract class AbstractChat extends BaseEntity implements
         super(account, user);
         threadId = StringUtils.randomString(12);
         active = false;
-        trackStatus = false;
         firstNotification = true;
         notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
@@ -178,7 +168,6 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public void openChat() {
         active = true;
-        trackStatus = true;
     }
 
     void closeChat() {
@@ -358,7 +347,7 @@ public abstract class AbstractChat extends BaseEntity implements
         }
     }
 
-    MessageRealmObject createMessageItem(Resourcepart resource, String text, String markupText,
+    protected MessageRealmObject createMessageItem(Resourcepart resource, String text, String markupText,
                                          ChatAction action, Date delayTimestamp, boolean incoming,
                                          boolean notify, boolean encrypted, boolean offline,
                                          String stanzaId, String originId,
@@ -1191,7 +1180,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return forwardedIds;
     }
 
-    abstract String parseInnerMessage(boolean ui, Message message, Date timestamp,
+    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp,
                                       String parentMessageId);
 
     public String getLastMessageId() {
@@ -1236,7 +1225,6 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     public void setChatstate(int chatstateType) {
-        this.chatstateType = chatstateType;
     }
 
     public static class ChatstateType {

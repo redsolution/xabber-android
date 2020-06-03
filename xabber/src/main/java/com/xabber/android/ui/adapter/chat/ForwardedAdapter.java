@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.groupchat.GroupchatUser;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.RealmRecyclerViewAdapter;
@@ -105,11 +105,11 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
             ((MessageVH)holder).messageId = messageRealmObject.getUniqueId();
 
         // groupchat user
-        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
+        GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),
-                this.extraData.getColorStateList(), groupchatUser,
+                this.extraData.getColorStateList(), groupchatMember,
                 this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
                 this.extraData.getMainMessageTimestamp(), false, false, false, false, false);
 

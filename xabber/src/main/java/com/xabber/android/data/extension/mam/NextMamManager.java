@@ -23,7 +23,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
@@ -914,7 +914,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         // groupchat
         GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
-            GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser, timestamp);
+            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
         }
 
