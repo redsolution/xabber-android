@@ -18,7 +18,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.groupchat.GroupchatUser;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 
@@ -133,7 +133,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(context, extraData.getGroupchatUser(), messageRealmObject, extraData.getUsername(), needTail);
+        setUpAvatar(context, extraData.getGroupchatMember(), messageRealmObject, extraData.getUsername(), needTail);
 
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
@@ -163,11 +163,11 @@ public class IncomingMessageVH  extends FileMessageVH {
         });
     }
 
-    private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageRealmObject messageRealmObject,
+    private void setUpAvatar(Context context, GroupchatMember groupchatMember, MessageRealmObject messageRealmObject,
                              String userName, boolean needTail) {
         boolean needAvatar = SettingsManager.chatsShowAvatars();
         // for new groupchats (0GGG)
-        if (groupchatUser != null) needAvatar = true;
+        if (groupchatMember != null) needAvatar = true;
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
@@ -185,17 +185,17 @@ public class IncomingMessageVH  extends FileMessageVH {
         avatarBackground.setVisibility(View.VISIBLE);
 
         //groupchat avatar
-        if (groupchatUser != null) {
+        if (groupchatMember != null) {
             Drawable placeholder;
             try {
-                ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
-                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupchatUser.getNickname());
+                ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatMember.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupchatMember.getNickname());
             } catch (ContactJid.UserJidCreateException e) {
                placeholder = AvatarManager.getInstance()
-                       .generateDefaultAvatar(groupchatUser.getNickname(), groupchatUser.getNickname());
+                       .generateDefaultAvatar(groupchatMember.getNickname(), groupchatMember.getNickname());
             }
             Glide.with(context)
-                    .load(groupchatUser.getAvatar())
+                    .load(groupchatMember.getAvatar())
                     .centerCrop()
                     .placeholder(placeholder)
                     .error(placeholder)

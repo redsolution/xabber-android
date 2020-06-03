@@ -34,7 +34,7 @@ import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageUtils;
@@ -232,7 +232,7 @@ public class RegularChat extends AbstractChat {
             GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
-                GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
+                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser);
             }
 
             RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
@@ -308,7 +308,7 @@ public class RegularChat extends AbstractChat {
         GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
-            GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser, timestamp.getTime());
+            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)

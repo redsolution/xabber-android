@@ -27,6 +27,7 @@
     <string name="xep_0048_bookmarks">XEP-0048: Bookmarks</string>
     <string name="xep_0rrr_retract">XEP-0RRR: Message delete and rewrite</string>
     <string name="xep_0xxx_reliable_message_delivery">XEP-0XXX: Reliable Message Delivery</string>
+    <string name="xep_0ggg_groupchat">XEP-0GGG: Group Chats</string>
 
     <string name="check_mark">✓</string>
     <string name="cross_mark">✗</string>

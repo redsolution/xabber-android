@@ -15,13 +15,13 @@ import java.util.Map;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class GroupchatUserManager implements OnLoadListener {
+public class GroupchatMemberManager implements OnLoadListener {
 
-    private static GroupchatUserManager instance;
+    private static GroupchatMemberManager instance;
     private final Map<String, GroupchatMember> users = new HashMap<>();
 
-    public static GroupchatUserManager getInstance() {
-        if (instance == null) instance = new GroupchatUserManager();
+    public static GroupchatMemberManager getInstance() {
+        if (instance == null) instance = new GroupchatMemberManager();
         return instance;
     }
 

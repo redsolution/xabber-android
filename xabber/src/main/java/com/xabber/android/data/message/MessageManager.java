@@ -41,7 +41,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -551,7 +551,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             // groupchat
             GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
-                GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
+                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser);
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
             }
 

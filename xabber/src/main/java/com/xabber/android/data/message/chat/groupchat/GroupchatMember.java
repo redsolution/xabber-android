@@ -1,4 +1,4 @@
-package com.xabber.android.data.groupchat;
+package com.xabber.android.data.message.chat.groupchat;
 
 public class GroupchatMember {
 

@@ -81,6 +81,7 @@ public class MessageRealmObject extends RealmObject {
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
+        public static final String IS_PINNED = "isPinned";
     }
 
     /**
@@ -204,6 +205,8 @@ public class MessageRealmObject extends RealmObject {
     @Ignore
     private String packetId;
     private String groupchatUserId;
+
+    private boolean isPinned;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
@@ -470,6 +473,14 @@ public class MessageRealmObject extends RealmObject {
             }
         }
         return false;
+    }
+
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
     }
 
     public boolean isUiEqual(MessageRealmObject comparableMessageRealmObject){
