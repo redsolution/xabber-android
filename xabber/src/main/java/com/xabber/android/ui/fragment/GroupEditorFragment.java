@@ -48,7 +48,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
     private RecyclerView rvContactCircles;
     private ContactCircleEditorAdapter contactCircleEditorAdapter;
 
-    private Collection<String> groups;
+    private Collection<String> groups = new ArrayList<>();
     private Collection<String> selected = new HashSet<>();
 
     /**
@@ -105,9 +105,11 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
             String circleAddInput = savedInstanceState.getString(SAVED_ADD_GROUP_NAME);
             contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
-            groups = RosterManager.getInstance().getGroups(account);
-            if (user != null) {
-                selected = RosterManager.getInstance().getGroups(account, user);
+            if (account != null) {
+                groups = RosterManager.getInstance().getGroups(account);
+                if (user != null) {
+                    selected = RosterManager.getInstance().getGroups(account, user);
+                }
             }
         }
     }
