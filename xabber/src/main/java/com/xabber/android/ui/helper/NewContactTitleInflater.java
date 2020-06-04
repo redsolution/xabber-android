@@ -20,6 +20,8 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
@@ -33,11 +35,14 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.TypingDotsDrawable;
 
+import org.jivesoftware.smack.packet.Presence;
 
 /**
  * Created by valery.miller on 26.10.17.
  */
+
 
 public class NewContactTitleInflater {
 
@@ -177,7 +182,11 @@ public class NewContactTitleInflater {
                             case SubscriptionState.BOTH:
                             case SubscriptionState.TO:
                                 //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
-                                statusText = getNormalStatus(abstractContact);
+                                if (isGroupchat) {
+                                    statusText = getGroupchatStatus(abstractContact);
+                                } else {
+                                    statusText = getNormalStatus(abstractContact);
+                                }
                                 break;
                             case SubscriptionState.FROM:
                                 //Contact is in our roster, and has an accepted subscription to our status
@@ -221,6 +230,29 @@ public class NewContactTitleInflater {
             }
         }
         statusTextView.setText(statusText);
+    }
+
+
+    private static String getGroupchatStatus(AbstractContact contact) {
+        Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getUser());
+        if (groupchatPresence != null && groupchatPresence.hasExtension(Groupchat.NAMESPACE)) {
+            GroupchatPresence groupchatPresenceExtension = groupchatPresence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+            int participants = groupchatPresenceExtension.getAllMembers();
+            int online = groupchatPresenceExtension.getPresentMembers();
+            if (participants != 0) {
+                StringBuilder sb;
+                if (participants == 1) {
+                    sb = new StringBuilder(Application.getInstance().getString(R.string.contact_groupchat_status_participant));
+                } else {
+                    sb = new StringBuilder(Application.getInstance().getString(R.string.contact_groupchat_status_participants, participants));
+                }
+                if (online > 0) {
+                    sb.append(Application.getInstance().getString(R.string.contact_groupchat_status_online, online));
+                }
+                return sb.toString();
+            }
+        }
+        return getNormalStatus(contact);
     }
 
     private static String getNormalStatus(AbstractContact contact) {
