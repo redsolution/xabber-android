@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.references;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatProvider;
 import com.xabber.android.data.extension.groupchat.GroupchatUserContainer;
@@ -212,7 +212,7 @@ public class ReferencesProviderTest {
 
     @Test
     public void parse8() {
-        Groupchat element = (Groupchat) parseGroupString(stringGroupchat);
+        GroupchatExtensionElement element = (GroupchatExtensionElement) parseGroupString(stringGroupchat);
         assertNotNull(element);
         assert (element instanceof GroupchatUserContainer);
         GroupchatUserExtension user = ((GroupchatUserContainer)element).getUser();
@@ -227,7 +227,7 @@ public class ReferencesProviderTest {
 
     @Test
     public void parse9() {
-        Groupchat element = (Groupchat) parseGroupString(stringGroupPresence);
+        GroupchatExtensionElement element = (GroupchatExtensionElement) parseGroupString(stringGroupPresence);
         assertNotNull(element);
         assert (element instanceof GroupchatPresence);
         GroupchatPresence presence = (GroupchatPresence)element;
@@ -241,8 +241,8 @@ public class ReferencesProviderTest {
         assertEquals(225, presence.getAllMembers());
     }
 
-    private Groupchat parseGroupString(String source) {
-        Groupchat result = null;
+    private GroupchatExtensionElement parseGroupString(String source) {
+        GroupchatExtensionElement result = null;
         try {
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(new StringReader(source));

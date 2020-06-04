@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class GroupchatPresence extends Groupchat {
+public class GroupchatPresence extends GroupchatExtensionElement {
 
     public static final String NAME = "name";
     public static final String PRIVACY = "privacy";
@@ -22,7 +22,8 @@ public class GroupchatPresence extends Groupchat {
     private int presentMembers;
     private int allMembers;
 
-    public GroupchatPresence() {}
+    public GroupchatPresence() {
+    }
 
     public String getName() {
         return name;

@@ -21,7 +21,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 
 import org.jivesoftware.smack.packet.Presence;
@@ -57,8 +57,8 @@ public class AbstractContact extends BaseEntity {
 
     public StatusMode getStatusMode() {
         Presence presence = RosterManager.getInstance().getPresence(account, user);
-        if (presence != null && presence.hasExtension(Groupchat.NAMESPACE)) {
-            return StatusMode.createStatusModeForGroup(presence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE));
+        if (presence != null && presence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
+            return StatusMode.createStatusModeForGroup(presence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE));
         } else {
             return StatusMode.createStatusMode(presence);
         }

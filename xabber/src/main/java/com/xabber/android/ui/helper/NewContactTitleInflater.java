@@ -56,7 +56,7 @@ public class NewContactTitleInflater {
         int resID = 0;
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute_large;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute_large;
-        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_toolbar;
+        else if (mode != NotificationState.NotificationMode.byDefault) resID = R.drawable.ic_snooze_toolbar;
         Drawable drawable = null;
         if (resID != 0){
             drawable = resources.getDrawable(resID);
@@ -76,7 +76,7 @@ public class NewContactTitleInflater {
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
                 isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getUser()));
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
-                || mode == NotificationState.NotificationMode.bydefault))
+                || mode == NotificationState.NotificationMode.byDefault))
             nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom_large), null);
 

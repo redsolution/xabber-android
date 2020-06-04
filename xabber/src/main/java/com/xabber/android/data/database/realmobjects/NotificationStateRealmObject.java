@@ -27,7 +27,7 @@ public class NotificationStateRealmObject extends RealmObject {
 
     public NotificationState.NotificationMode getMode() {
         return (mode != null) ? NotificationState.NotificationMode.valueOf(mode)
-                : NotificationState.NotificationMode.bydefault;
+                : NotificationState.NotificationMode.byDefault;
     }
 
     public void setMode(NotificationState.NotificationMode mode) {

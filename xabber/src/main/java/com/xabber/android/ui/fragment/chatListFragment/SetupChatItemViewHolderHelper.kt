@@ -149,7 +149,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         when (mode) {
             NotificationState.NotificationMode.enabled -> iconId = R.drawable.ic_unmute
             NotificationState.NotificationMode.disabled -> iconId = R.drawable.ic_mute
-            NotificationState.NotificationMode.bydefault -> iconId = 0
+            NotificationState.NotificationMode.byDefault -> iconId = 0
             else -> iconId = R.drawable.ic_snooze_mini
         }
 
@@ -157,7 +157,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 if (iconId != 0) resources.getDrawable(iconId) else null, null)
 
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
-                        || mode == NotificationState.NotificationMode.bydefault))
+                        || mode == NotificationState.NotificationMode.byDefault))
             holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null)
 

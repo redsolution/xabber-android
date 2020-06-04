@@ -942,7 +942,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
         if (chat != null)
             return chat.getNotificationState().determineModeByGlobalSettings();
-        else return NotificationState.NotificationMode.bydefault;
+        else return NotificationState.NotificationMode.byDefault;
     }
 
     private void editAlias() {

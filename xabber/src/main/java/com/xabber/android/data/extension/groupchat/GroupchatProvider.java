@@ -10,25 +10,27 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-public class GroupchatProvider extends ExtensionElementProvider<Groupchat> {
+public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensionElement> {
 
-/*
+    /*
 
-*/
+     */
 
     @Override
-    public Groupchat parse(XmlPullParser parser, int initialDepth) throws Exception {
+    public GroupchatExtensionElement parse(XmlPullParser parser, int initialDepth) throws Exception {
         GroupchatUserContainer user = null;
         GroupchatPresence presence;
 
-        outerloop: while (true) {
+        outerloop:
+        while (true) {
             int eventType = parser.getEventType();
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())
                             && ReferenceElement.NAMESPACE.equals(parser.getNamespace())) {
                         GroupchatUserReference referenceWrapperUser = parseGroupUserReference(parser);
-                        if (referenceWrapperUser != null) user = new GroupchatUserContainer(referenceWrapperUser);
+                        if (referenceWrapperUser != null)
+                            user = new GroupchatUserContainer(referenceWrapperUser);
                         return user;
                     } else if (GroupchatPresence.NAME.equals(parser.getName()) ||
                             GroupchatPresence.COLLECT.equals(parser.getName()) ||
@@ -43,8 +45,8 @@ public class GroupchatProvider extends ExtensionElementProvider<Groupchat> {
                     } else parser.next();
                     break;
                 case XmlPullParser.END_TAG:
-                    if (Groupchat.ELEMENT.equals(parser.getName())
-                            && Groupchat.NAMESPACE.equals(parser.getNamespace())) {
+                    if (GroupchatExtensionElement.ELEMENT.equals(parser.getName())
+                            && GroupchatExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
                         break outerloop;
                     } else parser.next();
                     break;
@@ -73,7 +75,8 @@ public class GroupchatProvider extends ExtensionElementProvider<Groupchat> {
         GroupchatPresence presence = new GroupchatPresence();
         int initialDepth = parser.getDepth() - 1;
 
-        innerloop: while (true) {
+        innerloop:
+        while (true) {
             int eventType = parser.getEventType();
             switch (eventType) {
                 case XmlPullParser.START_TAG:

@@ -109,7 +109,7 @@ public abstract class AbstractChat extends BaseEntity implements
      */
     private String threadId;
     /**
-     *  The timestamp of the last chat action, such as: deletion, history clear, etc.
+     * The timestamp of the last chat action, such as: deletion, history clear, etc.
      */
     private Long lastActionTimestamp;
     private int lastPosition;
@@ -129,7 +129,7 @@ public abstract class AbstractChat extends BaseEntity implements
         threadId = StringUtils.randomString(12);
         active = false;
         firstNotification = true;
-        notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
+        notificationState = new NotificationState(NotificationState.NotificationMode.byDefault, 0);
 
         Application.getInstance().runOnUiThread(this::getMessages);
     }
@@ -211,7 +211,7 @@ public abstract class AbstractChat extends BaseEntity implements
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
-        if (notificationState.getMode().equals(NotificationState.NotificationMode.bydefault))
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.byDefault))
             return SettingsManager.eventsOnChat();
         return notificationState.getMode().equals(NotificationState.NotificationMode.enabled);
     }
@@ -252,7 +252,7 @@ public abstract class AbstractChat extends BaseEntity implements
     /**
      * Creates new action with the same timestamp as the last message,
      * as not to disturb the order of chatList elements.
-     *
+     * <p>
      * If there are no messages in the chat, then it's the
      * same as {@link #newAction(Resourcepart, String, ChatAction, boolean)}
      *
@@ -348,14 +348,14 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     protected MessageRealmObject createMessageItem(Resourcepart resource, String text, String markupText,
-                                         ChatAction action, Date delayTimestamp, boolean incoming,
-                                         boolean notify, boolean encrypted, boolean offline,
-                                         String stanzaId, String originId,
-                                         RealmList<AttachmentRealmObject> attachmentRealmObjects,
-                                         String originalStanza, String parentMessageId,
-                                         String originalFrom, boolean isForwarded,
-                                         RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                         boolean fromMUC) {
+                                                   ChatAction action, Date delayTimestamp, boolean incoming,
+                                                   boolean notify, boolean encrypted, boolean offline,
+                                                   String stanzaId, String originId,
+                                                   RealmList<AttachmentRealmObject> attachmentRealmObjects,
+                                                   String originalStanza, String parentMessageId,
+                                                   String originalFrom, boolean isForwarded,
+                                                   RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
+                                                   boolean fromMUC) {
 
         return createMessageItem(UUID.randomUUID().toString(), resource, text, markupText, action,
                 null, delayTimestamp, incoming, notify, encrypted, offline, stanzaId,
@@ -996,7 +996,9 @@ public abstract class AbstractChat extends BaseEntity implements
         updateLastMessage();
     }
 
-    /** UNREAD MESSAGES */
+    /**
+     * UNREAD MESSAGES
+     */
 
     public String getFirstUnreadMessageId() {
         String id = null;
@@ -1088,7 +1090,9 @@ public abstract class AbstractChat extends BaseEntity implements
         return getAllUnreadMessages();
     }
 
-    /** ^ UNREAD MESSAGES ^ */
+    /**
+     * ^ UNREAD MESSAGES ^
+     */
 
     public boolean isArchived() {
         return archived;
@@ -1139,7 +1143,7 @@ public abstract class AbstractChat extends BaseEntity implements
                 && notificationState.getMode() == NotificationState.NotificationMode.disabled
                 || eventsOnChatGlobal()
                 && notificationState.getMode() == NotificationState.NotificationMode.enabled)
-            notificationState.setMode(NotificationState.NotificationMode.bydefault);
+            notificationState.setMode(NotificationState.NotificationMode.byDefault);
 
         setNotificationState(notificationState, needSaveToRealm);
     }
@@ -1181,7 +1185,7 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp,
-                                      String parentMessageId);
+                                                String parentMessageId);
 
     public String getLastMessageId() {
         return lastMessageId;

@@ -4,11 +4,12 @@ import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatU
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class GroupchatUserContainer extends Groupchat {
+public class GroupchatUserContainer extends GroupchatExtensionElement {
 
     private GroupchatUserReference user;
 
-    public GroupchatUserContainer() {}
+    public GroupchatUserContainer() {
+    }
 
     public GroupchatUserContainer(GroupchatUserReference user) {
         this.user = user;

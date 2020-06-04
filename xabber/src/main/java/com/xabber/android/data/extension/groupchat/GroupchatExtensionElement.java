@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.groupchat;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class Groupchat implements ExtensionElement {
+public class GroupchatExtensionElement implements ExtensionElement {
 
     public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
     public static final String ELEMENT = "x";
@@ -27,5 +27,6 @@ public class Groupchat implements ExtensionElement {
         return xml;
     }
 
-    public void appendToXML(XmlStringBuilder xml) { }
+    public void appendToXML(XmlStringBuilder xml) {
+    }
 }

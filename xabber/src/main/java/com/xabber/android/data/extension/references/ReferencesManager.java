@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatUserContainer;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.references.decoration.Decoration;
@@ -139,7 +139,7 @@ public class ReferencesManager {
             }
         }
 
-        List<ExtensionElement> groupchatElements = message.getExtensions(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        List<ExtensionElement> groupchatElements = message.getExtensions(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         for (ExtensionElement groupchatElement : groupchatElements) {
             if (groupchatElement instanceof GroupchatUserContainer) {
                 return true;
@@ -178,7 +178,7 @@ public class ReferencesManager {
 
     @Nullable
     public static GroupchatUserExtension getGroupchatUserFromReferences(Stanza packet) {
-        Groupchat element = packet.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        GroupchatExtensionElement element = packet.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         if (element == null) return null;
         if (element instanceof GroupchatUserContainer) {
             return ((GroupchatUserContainer) element).getUser();
@@ -190,7 +190,7 @@ public class ReferencesManager {
         if (body == null || body.isEmpty() || body.trim().isEmpty()) return new Pair<>(body, null);
 
         List<ExtensionElement> directReferenceElements = message.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
-        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         if ((directReferenceElements == null || directReferenceElements.size() == 0)
                 && (groupchatWrappedElements == null || groupchatWrappedElements.size() == 0)) return new Pair<>(body, null);
 

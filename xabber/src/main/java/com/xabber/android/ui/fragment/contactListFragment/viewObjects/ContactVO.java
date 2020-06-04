@@ -370,13 +370,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         NotificationState.NotificationMode mode = getNotificationMode();
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
-        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_mini;
+        else if (mode != NotificationState.NotificationMode.byDefault) resID = R.drawable.ic_snooze_mini;
         viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 resID != 0 ? resources.getDrawable(resID) : null, null);
 
         /** set up CUSTOM NOTIFICATION */
         if (isCustomNotification() && (mode == NotificationState.NotificationMode.enabled
-                || mode == NotificationState.NotificationMode.bydefault))
+                || mode == NotificationState.NotificationMode.byDefault))
             viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null);
 

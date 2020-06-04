@@ -32,7 +32,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
-import com.xabber.android.data.extension.groupchat.Groupchat;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatPresenceNotification;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
@@ -276,8 +276,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (presence == null) {
             return null;
         } else {
-            if (presence.hasExtension(Groupchat.NAMESPACE)) {
-                return ((GroupchatPresence) presence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE)).getStatus();
+            if (presence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
+                return ((GroupchatPresence) presence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE)).getStatus();
             } else {
                 return presence.getStatus();
             }
