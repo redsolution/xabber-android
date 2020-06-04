@@ -34,7 +34,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.widget.TypingDotsDrawable;
 import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.Presence;
