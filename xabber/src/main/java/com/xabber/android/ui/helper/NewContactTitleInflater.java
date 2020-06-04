@@ -20,6 +20,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.groupchat.Groupchat;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
@@ -33,11 +34,13 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.StringUtils;
 
-
+import org.jivesoftware.smack.packet.Presence;
 /**
  * Created by valery.miller on 26.10.17.
  */
+
 
 public class NewContactTitleInflater {
 
@@ -177,7 +180,11 @@ public class NewContactTitleInflater {
                             case SubscriptionState.BOTH:
                             case SubscriptionState.TO:
                                 //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
-                                statusText = getNormalStatus(abstractContact);
+                                if (isGroupchat) {
+                                    statusText = getGroupchatStatus(abstractContact, context);
+                                } else {
+                                    statusText = getNormalStatus(abstractContact);
+                                }
                                 break;
                             case SubscriptionState.FROM:
                                 //Contact is in our roster, and has an accepted subscription to our status
@@ -221,6 +228,17 @@ public class NewContactTitleInflater {
             }
         }
         statusTextView.setText(statusText);
+    }
+
+
+    private static String getGroupchatStatus(AbstractContact contact, Context context) {
+        Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getUser());
+        if (groupchatPresence != null && groupchatPresence.hasExtension(Groupchat.NAMESPACE)) {
+            return StringUtils.getDisplayStatusForGroupchat(
+                    groupchatPresence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE),
+                    context);
+        }
+        return getNormalStatus(contact);
     }
 
     private static String getNormalStatus(AbstractContact contact) {

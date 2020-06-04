@@ -33,7 +33,6 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatPresenceNotification;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -268,16 +267,28 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public StatusMode getStatusMode(AccountJid account, ContactJid user) {
-        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
+        Presence presence = getPresence(account, user);
+        if (presence != null && presence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
+            return StatusMode.createStatusModeForGroup(presence
+                    .getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE));
+        } else {
+            return StatusMode.createStatusMode(presence);
+        }
     }
 
+    /**
+     *  Get text to display in the status area.
+     */
     public String getStatusText(AccountJid account, ContactJid bareAddress) {
         final Presence presence = getPresence(account, bareAddress);
         if (presence == null) {
             return null;
         } else {
             if (presence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
-                return ((GroupchatPresence) presence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE)).getStatus();
+                return com.xabber.android.utils.StringUtils
+                        .getDisplayStatusForGroupchat(
+                                presence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE),
+                                Application.getInstance());
             } else {
                 return presence.getStatus();
             }
