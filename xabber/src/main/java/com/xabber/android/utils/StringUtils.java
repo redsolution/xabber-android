@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.StringReader;
@@ -356,6 +357,29 @@ public class StringUtils {
 
     public static String getAttachmentDisplayName(Context context, AttachmentRealmObject attachment) {
         return getColoredAttachmentDisplayName(context, attachment, -1);
+    }
+
+    /**
+     *  Returns the text to be displayed in the status area of the groupchat
+     *  with the amount of participants and online members.
+     *  Not to be mistaken with the stanza status value.
+     */
+    public static String getDisplayStatusForGroupchat(GroupchatPresence groupchatPresence, Context context) {
+        int participants = groupchatPresence.getAllMembers();
+        int online = groupchatPresence.getPresentMembers();
+        if (participants != 0) {
+            StringBuilder sb;
+            if (participants == 1) {
+                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_participant));
+            } else {
+                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_participants, participants));
+            }
+            if (online > 0) {
+                sb.append(context.getString(R.string.contact_groupchat_status_online, online));
+            }
+            return sb.toString();
+        }
+        return null;
     }
 
     public static String getColoredAttachmentDisplayName(Context context, AttachmentRealmObject attachment, int accountColorIndicator) {

@@ -21,7 +21,6 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.groupchat.Groupchat;
-import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
@@ -35,9 +34,10 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.TypingDotsDrawable;
+import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.Presence;
-
 /**
  * Created by valery.miller on 26.10.17.
  */
@@ -182,7 +182,7 @@ public class NewContactTitleInflater {
                             case SubscriptionState.TO:
                                 //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
                                 if (isGroupchat) {
-                                    statusText = getGroupchatStatus(abstractContact);
+                                    statusText = getGroupchatStatus(abstractContact, context);
                                 } else {
                                     statusText = getNormalStatus(abstractContact);
                                 }
@@ -232,24 +232,12 @@ public class NewContactTitleInflater {
     }
 
 
-    private static String getGroupchatStatus(AbstractContact contact) {
+    private static String getGroupchatStatus(AbstractContact contact, Context context) {
         Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getUser());
         if (groupchatPresence != null && groupchatPresence.hasExtension(Groupchat.NAMESPACE)) {
-            GroupchatPresence groupchatPresenceExtension = groupchatPresence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE);
-            int participants = groupchatPresenceExtension.getAllMembers();
-            int online = groupchatPresenceExtension.getPresentMembers();
-            if (participants != 0) {
-                StringBuilder sb;
-                if (participants == 1) {
-                    sb = new StringBuilder(Application.getInstance().getString(R.string.contact_groupchat_status_participant));
-                } else {
-                    sb = new StringBuilder(Application.getInstance().getString(R.string.contact_groupchat_status_participants, participants));
-                }
-                if (online > 0) {
-                    sb.append(Application.getInstance().getString(R.string.contact_groupchat_status_online, online));
-                }
-                return sb.toString();
-            }
+            return StringUtils.getDisplayStatusForGroupchat(
+                    groupchatPresence.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE),
+                    context);
         }
         return getNormalStatus(contact);
     }
