@@ -354,129 +354,144 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordButton = view.findViewById(R.id.button_record);
 
         recordButton.setOnTouchListener((view12, motionEvent) -> {
-            switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN:
-                    if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(),
-                            PERMISSIONS_REQUEST_RECORD_AUDIO))
-                        if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(),
-                                PERMISSIONS_REQUEST_RECORD_AUDIO)) {
-                            if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
-                                LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)
-                                        view12.getLayoutParams();
 
-                                recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
-                                recordSaveAllowed = false;
-                                slideToCancelLayout.setAlpha(1.0f);
-                                recordLockView.setAlpha(1.0f);
-                                handler.postDelayed(record, 500);
-                                handler.postDelayed(timer, 500);
-                                currentVoiceRecordingState = VoiceRecordState.InitiatedRecording;
-                                Utils.lockScreenRotation(getActivity(), true);
+            //check support
+            if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+                String serverName = account.getFullJid().getDomain().toString();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(getString(R.string.error_sending_file, ""))
+                        .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+                if (HttpFileUploadManager.getInstance().isFileUploadDiscoveryInProgress(account)) {
+                    builder.setMessage(getActivity().getResources()
+                            .getString(R.string.error_file_upload_disco_in_progress, serverName));
+                } else {
+                    builder.setMessage(getActivity().getResources()
+                            .getString(R.string.error_file_upload_not_support, serverName));
+                }
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(),
+                                PERMISSIONS_REQUEST_RECORD_AUDIO))
+                            if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(),
+                                    PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                                if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
+                                    recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
+                                    recordSaveAllowed = false;
+                                    slideToCancelLayout.setAlpha(1.0f);
+                                    recordLockView.setAlpha(1.0f);
+                                    handler.postDelayed(record, 500);
+                                    handler.postDelayed(timer, 500);
+                                    currentVoiceRecordingState = VoiceRecordState.InitiatedRecording;
+                                    Utils.lockScreenRotation(getActivity(), true);
+                                }
+                            }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            sendVoiceMessage();
+                            Utils.lockScreenRotation(getActivity(), false);
+                        } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
+                            handler.removeCallbacks(record);
+                            handler.removeCallbacks(timer);
+                            currentVoiceRecordingState = VoiceRecordState.NotRecording;
+                            Utils.lockScreenRotation(getActivity(), false);
+                        }
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        //FAB movement
+                        LinearLayout.LayoutParams lockParams =
+                                (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+
+                        float yRecordDiff = rootViewHeight
+                                - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
+
+                        float yLockDiff = rootViewHeight
+                                - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
+
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            if (motionEvent.getY() > 0) {
+                                recordButtonExpanded.animate()
+                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                        .setDuration(0)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
+                                        .setDuration(0)
+                                        .start();
+                                recordLockChevronImage.setAlpha(1f);
+                            } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
+                                recordButtonExpanded.animate()
+                                        .y(yRecordDiff)
+                                        .setDuration(0)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(yLockDiff)
+                                        .setDuration(0)
+                                        .start();
+
+                                //lockParams.topMargin = (int) motionEvent.getY() / 3;
+                                lockParams.topMargin = (int) motionEvent.getY()
+                                        * (recordLockChevronImage.getHeight() - recordLockImage.getPaddingTop())
+                                        / 200;
+                                recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
+                                recordLockChevronImage.setLayoutParams(lockParams);
+                            } else {
+                                currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
+
+                                //workaround for the https://issuetracker.google.com/issues/111316656 issue of
+                                //the button's image not updating after setting a background tint manually.
+                                recordButtonExpanded.hide();
+                                recordButtonExpanded.setImageResource(R.drawable.ic_send_black_24dp);
+                                recordButtonExpanded.show();
+                                ////////////////////////////
+
+                                recordButtonExpanded.animate()
+                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                        .setDuration(100)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
+                                        .setDuration(100)
+                                        .start();
+
+                                cancelRecordingLayout.setVisibility(View.VISIBLE);
+                                recordLockImage.setImageResource(R.drawable.ic_stop);
+                                recordLockImage.setPadding(0, 0, 0, 0);
+                                recordLockImage.setOnClickListener(view121 -> {
+                                    if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                                        Utils.performHapticFeedback(rootView);
+                                        stopRecording();
+                                    }
+                                });
+                                lockParams.topMargin = -(recordLockChevronImage.getHeight());
+                                recordLockChevronImage.setLayoutParams(lockParams);
+                                recordLockChevronImage.setAlpha(0f);
+                                Utils.performHapticFeedback(rootView);
                             }
                         }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                        sendVoiceMessage();
-                        Utils.lockScreenRotation(getActivity(), false);
-                    } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
-                        handler.removeCallbacks(record);
-                        handler.removeCallbacks(timer);
-                        currentVoiceRecordingState = VoiceRecordState.NotRecording;
-                        Utils.lockScreenRotation(getActivity(), false);
-                    }
-                    break;
 
-                case MotionEvent.ACTION_MOVE:
+                        //"Slide To Cancel" movement;
+                        float alpha = (1f + motionEvent.getX() / 400f);
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            if (motionEvent.getX() < 0)
+                                slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
+                            else
+                                slideToCancelLayout.animate().x(0).setDuration(0).start();
 
-                    //FAB movement
-                    LinearLayout.LayoutParams lockParams =
-                            (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+                            slideToCancelLayout.setAlpha(alpha);
 
-                    float yRecordDiff = rootViewHeight
-                            - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
-
-                    float yLockDiff = rootViewHeight
-                            - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
-
-                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                        if (motionEvent.getY() > 0) {
-                            recordButtonExpanded.animate()
-                                    .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
-                                    .setDuration(0)
-                                    .start();
-                            recordLockView.animate()
-                                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
-                                    .setDuration(0)
-                                    .start();
-                            recordLockChevronImage.setAlpha(1f);
-                        } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
-                            recordButtonExpanded.animate()
-                                    .y(yRecordDiff)
-                                    .setDuration(0)
-                                    .start();
-                            recordLockView.animate()
-                                    .y(yLockDiff)
-                                    .setDuration(0)
-                                    .start();
-
-                            //lockParams.topMargin = (int) motionEvent.getY() / 3;
-                            lockParams.topMargin = (int) motionEvent.getY()
-                                    * (recordLockChevronImage.getHeight() - recordLockImage.getPaddingTop())
-                                    / 200;
-                            recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
-                            recordLockChevronImage.setLayoutParams(lockParams);
-                        } else {
-                            currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
-
-                            //workaround for the https://issuetracker.google.com/issues/111316656 issue of
-                            //the button's image not updating after setting a background tint manually.
-                            recordButtonExpanded.hide();
-                            recordButtonExpanded.setImageResource(R.drawable.ic_send_black_24dp);
-                            recordButtonExpanded.show();
-                            ////////////////////////////
-
-                            recordButtonExpanded.animate()
-                                    .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
-                                    .setDuration(100)
-                                    .start();
-                            recordLockView.animate()
-                                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
-                                    .setDuration(100)
-                                    .start();
-
-                            cancelRecordingLayout.setVisibility(View.VISIBLE);
-                            recordLockImage.setImageResource(R.drawable.ic_stop);
-                            recordLockImage.setPadding(0, 0, 0, 0);
-                            recordLockImage.setOnClickListener(view121 -> {
-                                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
-                                    Utils.performHapticFeedback(rootView);
-                                    stopRecording();
-                                }
-                            });
-                            lockParams.topMargin = -(recordLockChevronImage.getHeight());
-                            recordLockChevronImage.setLayoutParams(lockParams);
-                            recordLockChevronImage.setAlpha(0f);
-                            Utils.performHapticFeedback(rootView);
+                            //since alpha and slide are tied together, we can cancel recording by checking transparency value
+                            if (alpha <= 0) {
+                                clearVoiceMessage();
+                            }
                         }
-                    }
-
-                    //"Slide To Cancel" movement;
-                    float alpha = (1f + motionEvent.getX() / 400f);
-                    if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                        if (motionEvent.getX() < 0)
-                            slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
-                        else
-                            slideToCancelLayout.animate().x(0).setDuration(0).start();
-
-                        slideToCancelLayout.setAlpha(alpha);
-
-                        //since alpha and slide are tied together, we can cancel recording by checking transparency value
-                        if (alpha <= 0) {
-                            clearVoiceMessage();
-                        }
-                    }
-                    break;
+                        break;
+                }
             }
             return true;
         });
