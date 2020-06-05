@@ -165,6 +165,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
         OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener {
 
+    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
+    private final long STOP_TYPING_DELAY = 2500;
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
     public static final String VOICE_MESSAGE = "VOICE_MESSAGE";
@@ -173,8 +175,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private static final String FORWARD_MESSAGES = "FORWARD_MESSAGES";
     private static final String FORWARD_PURPOSE = "FORWARD_PURPOSE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
-    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
-    private final long STOP_TYPING_DELAY = 2500; // in ms
     boolean isInputEmpty = true;
     private FrameLayout inputPanel;
     private EditText inputView;
@@ -202,10 +202,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ViewGroup newContactLayout;
     private TextView addContact;
     private TextView blockContact;
-    private ImageButton closeNewContactLayout;
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
-    private LinearLayout actionJoin;
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
     private View interactionView;
@@ -234,15 +232,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private LinearLayout slideToCancelLayout;
     private LinearLayout cancelRecordingLayout;
     private final Runnable postAnimation = this::closeVoiceRecordPanel;
-    private TextView cancelRecordingTextView;
     private LinearLayout recordingPresenterLayout;
-    private LinearLayout recordingPresenterPlaybarLayout;
     private PlayerVisualizerView recordingPresenter;
     private ImageButton recordingPlayButton;
     private ImageButton recordingDeleteButton;
     private ImageButton recordingPresenterSendButton;
     private TextView recordingPresenterDuration;
-    private PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress;
     private Subscription audioProgressSubscription;
     private boolean isReply = false;
     private ChatViewerFragmentListener listener;
@@ -318,7 +313,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         final View view = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -355,8 +351,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         recordButton.setOnTouchListener((view12, motionEvent) -> {
 
+            LogManager.d(LOG_TAG, "Invoked on touch at record button ");
             //check support
             if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+                LogManager.d(LOG_TAG, "But file upload isn't supported by server");
                 String serverName = account.getFullJid().getDomain().toString();
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(getString(R.string.error_sending_file, ""))
@@ -371,13 +369,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 AlertDialog dialog = builder.create();
                 dialog.show();
             } else {
+                LogManager.d(LOG_TAG, "And file upload supported by server");
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
+                        LogManager.d(LOG_TAG, "Case ACTION.DOWN");
                         if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(),
-                                PERMISSIONS_REQUEST_RECORD_AUDIO))
+                                PERMISSIONS_REQUEST_RECORD_AUDIO)){
+                            LogManager.d(LOG_TAG, "Record audio permission granted");
                             if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(),
                                     PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                                LogManager.d(LOG_TAG, "Write file permission granted");
                                 if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
+                                    LogManager.d(LOG_TAG, "Current recording state is not recording");
                                     recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
                                     recordSaveAllowed = false;
                                     slideToCancelLayout.setAlpha(1.0f);
@@ -388,21 +391,26 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                     Utils.lockScreenRotation(getActivity(), true);
                                 }
                             }
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
+                        LogManager.d(LOG_TAG, "Case ACTION.UP");
                         if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            LogManager.d(LOG_TAG, "Current recording state is touch recording");
                             sendVoiceMessage();
                             Utils.lockScreenRotation(getActivity(), false);
                         } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
+                            LogManager.d(LOG_TAG, "Current recording state is initiated recording");
                             handler.removeCallbacks(record);
                             handler.removeCallbacks(timer);
                             currentVoiceRecordingState = VoiceRecordState.NotRecording;
                             Utils.lockScreenRotation(getActivity(), false);
                         }
+                        LogManager.d(LOG_TAG, "Break");
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-
+                        LogManager.d(LOG_TAG, "Case ACTION.MOVE");
                         //FAB movement
                         LinearLayout.LayoutParams lockParams =
                                 (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
@@ -414,7 +422,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
 
                         if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            LogManager.d(LOG_TAG, "Current recording state is touch recording");
                             if (motionEvent.getY() > 0) {
+                                LogManager.d(LOG_TAG, "motion event y > 0");
                                 recordButtonExpanded.animate()
                                         .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
                                         .setDuration(0)
@@ -425,6 +435,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                         .start();
                                 recordLockChevronImage.setAlpha(1f);
                             } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
+                                LogManager.d(LOG_TAG, "motion event y > -200");
                                 recordButtonExpanded.animate()
                                         .y(yRecordDiff)
                                         .setDuration(0)
@@ -441,6 +452,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
                                 recordLockChevronImage.setLayoutParams(lockParams);
                             } else {
+                                LogManager.d(LOG_TAG, "else");
                                 currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
 
                                 //workaround for the https://issuetracker.google.com/issues/111316656 issue of
@@ -463,7 +475,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 recordLockImage.setImageResource(R.drawable.ic_stop);
                                 recordLockImage.setPadding(0, 0, 0, 0);
                                 recordLockImage.setOnClickListener(view121 -> {
+                                    LogManager.d(LOG_TAG, "record lock clicked");
                                     if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                                        LogManager.d(LOG_TAG, "Current recording state is no touch recording");
                                         Utils.performHapticFeedback(rootView);
                                         stopRecording();
                                     }
@@ -478,10 +492,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         //"Slide To Cancel" movement;
                         float alpha = (1f + motionEvent.getX() / 400f);
                         if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                            if (motionEvent.getX() < 0)
+                            LogManager.d(LOG_TAG, "Current recording state is touch recording");
+                            if (motionEvent.getX() < 0){
+                                LogManager.d(LOG_TAG, "motion event x < 0");
                                 slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
-                            else
+                            }
+                            else{
+                                LogManager.d(LOG_TAG, "motion event x >= 0");
                                 slideToCancelLayout.animate().x(0).setDuration(0).start();
+                            }
 
                             slideToCancelLayout.setAlpha(alpha);
 
@@ -490,6 +509,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 clearVoiceMessage();
                             }
                         }
+                        LogManager.d(LOG_TAG, "break");
                         break;
                 }
             }
@@ -499,15 +519,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         slideToCancelLayout = view.findViewById(R.id.slide_layout);
 
         cancelRecordingLayout = view.findViewById(R.id.cancel_record_layout);
-        cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
+        TextView cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
         cancelRecordingTextView.setOnClickListener(view13 -> {
+            LogManager.d(LOG_TAG, "Cancel recording tv clicked");
             if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                LogManager.d(LOG_TAG, "Current recording state is no touch recording");
                 clearVoiceMessage();
             }
         });
 
         recordingPresenterLayout = view.findViewById(R.id.recording_presenter_layout);
-        recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
+        LinearLayout recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
         recordingPresenterPlaybarLayout.getBackground().setColorFilter(accountColor, PorterDuff.Mode.SRC_IN);
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
         recordingPresenter.setNotPlayedColor(Color.WHITE);
@@ -531,8 +553,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordButtonExpanded = view.findViewById(R.id.record_float_button);
         recordButtonExpanded.setBackgroundTintList(ColorStateList.valueOf(accountColor));
         recordButtonExpanded.setOnClickListener(view14 -> {
-            if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording)
+            LogManager.d(LOG_TAG, "record expanded button on click");
+            if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording){
+                LogManager.d(LOG_TAG, "Current recording state is no touch recording");
                 sendVoiceMessage();
+            }
         });
 
         recordLockView = view.findViewById(R.id.record_lock_view);
@@ -1864,7 +1889,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void inflateJoinLayout() {
         View view = stubJoin.inflate();
         joinLayout = view.findViewById(R.id.joinLayout);
-        actionJoin = view.findViewById(R.id.actionJoin);
+        LinearLayout actionJoin = view.findViewById(R.id.actionJoin);
         actionJoin.setOnClickListener(this);
     }
 
@@ -2026,7 +2051,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         addContact = newContactLayout.findViewById(R.id.add_contact);
         blockContact = newContactLayout.findViewById(R.id.block_contact);
-        closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
+        ImageButton closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
 
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.FROM:
@@ -2351,7 +2376,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void subscribeForRecordedAudioProgress() {
-        audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
+        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
         audioProgressSubscription = audioProgress.doOnNext(new Action1<VoiceManager.PublishAudioProgress.AudioInfo>() {
             @Override
             public void call(VoiceManager.PublishAudioProgress.AudioInfo audioInfo) {
