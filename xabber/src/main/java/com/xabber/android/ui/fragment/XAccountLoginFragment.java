@@ -297,7 +297,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             }
         }
 
-        if (domainName.equals("")) {
+        if (domainName.isEmpty()) {
             Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return true;
         }
@@ -307,14 +307,16 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             return false;
         }
 
-        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+        if (domainName.charAt(0)=='.' || domainName.charAt(domainName.length()-1)=='.'){
             Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return true;
         }
 
-        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
-            return true;
+        if (localName.length() > 0) {
+            if (localName.charAt(0) == '.' || localName.charAt(localName.length()-1)=='.') {
+                Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+                return true;
+            }
         }
 
         return false;
