@@ -121,7 +121,8 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public void setPrivacy(GroupchatPrivacyType privacy) {
-        this.privacy = privacy.toString();
+        if (privacy != null)
+            this.privacy = privacy.toString();
     }
 
     public GroupchatIndexType getIndex() {
@@ -136,7 +137,8 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public void setIndex(GroupchatIndexType index) {
-        this.index = index.toString();
+        if (index != null)
+            this.index = index.toString();
     }
 
     public GroupchatMembershipType getMembership() {
@@ -151,7 +153,8 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public void setMembership(GroupchatMembershipType membership) {
-        this.membership = membership.toString();
+        if (membership != null)
+            this.membership = membership.toString();
     }
 
     public String getDescription() {
@@ -325,10 +328,9 @@ public class GroupchatRealmObject extends RealmObject {
 
     public static final class Fields {
         public static final String PRIMARY_KEY = "primaryKey";
-        public static final String GROUPCHAT_JID = "jid";
+        public static final String GROUPCHAT_JID = "groupchatJid";
         public static final String ACCOUNT_JID = "accountJid";
         public static final String OWNER = "owner";
-
     }
 
 }

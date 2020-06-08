@@ -19,6 +19,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
@@ -93,7 +94,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
             }
 
-            if (abstractChat != null && abstractChat.isGroupchat() || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
+            if (abstractChat != null && abstractChat instanceof GroupChat || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
                 viewHolder.status.setImageResource(R.drawable.ic_groupchat_14_default_border);
                 viewHolder.status.setVisibility(View.VISIBLE);
             } else {
@@ -103,7 +104,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (contact.getBareJid().isDomainBareJid()) {
                     name = Application.getInstance().getString(R.string.blocked_domain);
                 } else {
-                    if (abstractChat != null && abstractChat.isGroupchat()) {
+                    if (abstractChat != null && abstractChat instanceof GroupChat) {
                         name = Application.getInstance().getString(R.string.blocked_group);
                     } else {
                         name = Application.getInstance().getString(R.string.blocked_contact);

@@ -479,7 +479,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             try {
                 AccountJid accountJid = AccountJid.from(account);
                 ContactJid contactJid = ContactJid.from(user);
-                AbstractChat chat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+                AbstractChat chat = ChatManager.getInstance().getChat(accountJid, contactJid);
 
                 if (chat instanceof RegularChat) {
                     if (intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
@@ -695,7 +695,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void selectChat(AccountJid accountJid, ContactJid contactJid) { //TODO pay attention. Do we need this?
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+        AbstractChat chat = ChatManager.getInstance().getChat(accountJid, contactJid);
         //selectChatPage(chat, true);
     }
 
@@ -939,7 +939,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private NotificationState.NotificationMode getNotifMode() {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat != null)
             return chat.getNotificationState().determineModeByGlobalSettings();
         else return NotificationState.NotificationMode.byDefault;

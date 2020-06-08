@@ -116,7 +116,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 RosterManager.getInstance().removeContact(account, user);
                 AbstractChat chat = ChatManager.getInstance().getChat(account, user);
                 if (chat != null && !deleteHistory.isChecked()) {
-                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted, false);
+                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
                 }
                 EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
 

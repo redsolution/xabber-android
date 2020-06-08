@@ -226,7 +226,7 @@ public class ContactActivity extends ManagedActivity implements
         contactAddress.setText(user.getBareJid().toString());
         contactName = (TextView) findViewById(R.id.name);
 
-        chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        chat = ChatManager.getInstance().getChat(account, user);
         checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;

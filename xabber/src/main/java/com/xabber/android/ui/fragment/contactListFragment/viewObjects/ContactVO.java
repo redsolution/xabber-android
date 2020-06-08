@@ -36,6 +36,7 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
@@ -140,7 +141,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int accountColorIndicatorBack;
         Drawable avatar;
         int statusLevel;
-        int mucIndicatorLevel;
         boolean isOutgoing = false;
         Date time = null;
         int messageStatus = 0;
@@ -164,10 +164,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int statusId = contact.getStatusMode().getStringID();
 
         String lastActivity = "";
-//        if (contact instanceof RosterContact)
-//             lastActivity = ((RosterContact) contact).getLastActivity(); //TODO REALM UPDATE
 
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getUser());
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
@@ -244,7 +242,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 statusLevel, avatar, 0, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid(), isBlocked);
+                isCustomNotification, chat instanceof GroupChat,
+                contact.getUser().getJid().isDomainBareJid(), isBlocked);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {

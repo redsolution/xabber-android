@@ -18,6 +18,7 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.message.chat.AbstractChat
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
@@ -79,7 +80,7 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(items[position].account)
-        val isGroupchat = items[position].isGroupchat
+        val isGroupchat = items[position] is GroupChat
         val rosterContact = RosterManager.getInstance()
                 .getRosterContact(items[position].account, items[position].user)
 

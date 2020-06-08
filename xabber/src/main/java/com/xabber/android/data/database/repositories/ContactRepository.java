@@ -4,7 +4,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ChatRealmObject;
+import com.xabber.android.data.database.realmobjects.RegularChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -38,7 +38,7 @@ public class ContactRepository {
 
         ContactRealmObject contact = realm
                 .where(ContactRealmObject.class)
-                .equalTo(ChatRealmObject.Fields.CONTACT_JID, jid.toString())
+                .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, jid.toString())
                 .findFirst();
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();

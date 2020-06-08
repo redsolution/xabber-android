@@ -99,7 +99,6 @@ public abstract class AbstractChat extends BaseEntity implements
      * Whether chat is open and should be displayed as active chat.
      */
     protected boolean active;
-    protected boolean isGroupchat = false;
     /**
      * Whether user never received notifications from this chat.
      */
@@ -242,24 +241,22 @@ public abstract class AbstractChat extends BaseEntity implements
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
      */
-    public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
+    public void newAction(Resourcepart resource, String text, ChatAction action) {
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
                 action, null, null, true, false, false, false,
                 null, null, null, null, null, false, null,
-                fromMUC, false, null);
+                false, null);
     }
 
     /**
      * Creates new action with the same timestamp as the last message,
      * as not to disturb the order of chatList elements.
      * <p>
-     * If there are no messages in the chat, then it's the
-     * same as {@link #newAction(Resourcepart, String, ChatAction, boolean)}
      *
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
      */
-    public void newSilentAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
+    public void newSilentAction(Resourcepart resource, String text, ChatAction action) {
         Long lastMessageTimestamp = getLastTimestampFromBackground();
         Date silentTimestamp = null;
         if (lastMessageTimestamp != null) {
@@ -268,7 +265,7 @@ public abstract class AbstractChat extends BaseEntity implements
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
                 action, silentTimestamp, null, true, false, false, false,
                 null, null, null, null, null, false, null,
-                fromMUC, false, null);
+                false, null);
     }
 
     /**
@@ -295,12 +292,12 @@ public abstract class AbstractChat extends BaseEntity implements
                                  final String originalStanza, final String parentMessageId,
                                  final String originalFrom, boolean isForwarded,
                                  final RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                 boolean fromMUC, boolean fromMAM, String groupchatUserId) {
+                                 boolean fromMAM, String groupchatUserId) {
 
         final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
                 markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
                 stanzaId, originId, null, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
+                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
     }
@@ -314,12 +311,12 @@ public abstract class AbstractChat extends BaseEntity implements
                                   final String originalStanza, final String parentMessageId,
                                   final String originalFrom, boolean isForwarded,
                                   final RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                  boolean fromMUC, boolean fromMAM, String groupchatUserId) {
+                                  boolean fromMAM, String groupchatUserId) {
 
         final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
                 markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
                 stanzaId, originId, attachmentRealmObjects, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMUC, fromMAM, groupchatUserId);
+                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageRealmObject);
     }
@@ -354,13 +351,12 @@ public abstract class AbstractChat extends BaseEntity implements
                                                    RealmList<AttachmentRealmObject> attachmentRealmObjects,
                                                    String originalStanza, String parentMessageId,
                                                    String originalFrom, boolean isForwarded,
-                                                   RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                                   boolean fromMUC) {
+                                                   RealmList<ForwardIdRealmObject> forwardIdRealmObjects) {
 
         return createMessageItem(UUID.randomUUID().toString(), resource, text, markupText, action,
                 null, delayTimestamp, incoming, notify, encrypted, offline, stanzaId,
                 originId, attachmentRealmObjects, originalStanza, parentMessageId, originalFrom,
-                isForwarded, forwardIdRealmObjects, fromMUC, false, null);
+                isForwarded, forwardIdRealmObjects, false, null);
     }
 
     protected MessageRealmObject createMessageItem(String uid, Resourcepart resource, String text,
@@ -373,8 +369,7 @@ public abstract class AbstractChat extends BaseEntity implements
                                                    String originalStanza, String parentMessageId,
                                                    String originalFrom, boolean isForwarded,
                                                    RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                                   boolean fromMUC, boolean fromMAM,
-                                                   String groupchatUserId) {
+                                                   boolean fromMAM, String groupchatUserId) {
 
         final boolean visible = ChatManager.getInstance().isVisibleChat(this);
         boolean read = !incoming;
@@ -903,8 +898,7 @@ public abstract class AbstractChat extends BaseEntity implements
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getStanzaId()));
             if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
-                if (!messageRealmObject.isDelivered() && messageRealmObject.isSent()
-                        && !isGroupchat()) {
+                if (!messageRealmObject.isDelivered() && messageRealmObject.isSent()) {
                     message.addExtension(new RetryReceiptRequestElement());
                 }
             if (delayTimestamp != null) {
@@ -1218,14 +1212,6 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public void requestSaveToRealm() {
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
-    }
-
-    public boolean isGroupchat() {
-        return isGroupchat;
-    }
-
-    public void setGroupchat(boolean isGroupchat) {
-        this.isGroupchat = isGroupchat;
     }
 
     public void setChatstate(int chatstateType) {

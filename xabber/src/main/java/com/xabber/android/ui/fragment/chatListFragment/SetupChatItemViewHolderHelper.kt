@@ -20,6 +20,7 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
@@ -83,7 +84,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
-        val isGroupchat = chat.isGroupchat
+        val isGroupchat = chat is GroupChat
         val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.user)
         val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)

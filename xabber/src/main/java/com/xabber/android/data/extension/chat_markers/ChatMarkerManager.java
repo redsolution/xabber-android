@@ -162,7 +162,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 } catch (ContactJid.UserJidCreateException e) {
                     return;
                 }
-                AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, companion);
+                AbstractChat chat = ChatManager.getInstance().getChat(account, companion);
                 if (chat != null) {
                     chat.markAsRead(extension.getId(), extension.getStanzaId(), false);
                     //chat.markAsRead(extension.getId(), false);

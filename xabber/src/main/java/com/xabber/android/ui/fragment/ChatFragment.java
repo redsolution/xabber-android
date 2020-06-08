@@ -105,6 +105,7 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -765,7 +766,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         ChatStateManager.getInstance().onChatOpening(account, user);
 
-        if (getChat() != null && getChat().isGroupchat()) {
+        if (getChat() != null && getChat() instanceof GroupChat) {
             // TODO should probably move to groupchat manager
             try {
                 PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), true);
@@ -793,7 +794,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         ChatStateManager.getInstance().onPaused(account, user);
 
-        if (getChat() != null && getChat().isGroupchat()) {
+        if (getChat() != null && getChat() instanceof GroupChat) {
             // TODO should probably move to groupchat manager
             try {
                 PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), false);
@@ -1046,7 +1047,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Nullable
     private AbstractChat getChat() {
-        return ChatManager.getInstance().getOrCreateChat(account, user);
+        return ChatManager.getInstance().getChat(account, user);
     }
 
 

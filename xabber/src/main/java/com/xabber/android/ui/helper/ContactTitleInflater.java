@@ -30,6 +30,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -124,10 +125,10 @@ public class ContactTitleInflater {
         boolean isServer = false;
         boolean isGroupchat = false;
         AbstractChat chat = ChatManager.getInstance()
-                .getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+                .getChat(abstractContact.getAccount(), abstractContact.getUser());
         if (chat != null) {
             isServer = abstractContact.getUser().getJid().isDomainBareJid();
-            isGroupchat = chat.isGroupchat();
+            isGroupchat = chat instanceof GroupChat;
         }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);

@@ -75,9 +75,7 @@ public class GroupChat extends AbstractChat {
 
     @NonNull
     @Override
-    public Jid getTo() {
-        return user.getBareJid();
-    }
+    public Jid getTo() { return user.getBareJid(); }
 
     @Override
     public Message.Type getType() {
@@ -88,9 +86,8 @@ public class GroupChat extends AbstractChat {
     public MessageRealmObject createNewMessageItem(String text) {
         String id = UUID.randomUUID().toString();
         return createMessageItem(null, text, null, null, null, false,
-                false, false, false, id,
-                id, null, null, null,
-                account.getFullJid().toString(), false, null, false);
+                false, false, false, id, id, null, null, null,
+                account.getFullJid().toString(), false, null);
     }
 
     @Override
@@ -233,6 +230,5 @@ public class GroupChat extends AbstractChat {
     public void setCanChangeAvatars(boolean canChangeAvatars) {
         this.canChangeAvatars = canChangeAvatars;
     }
-
 
 }

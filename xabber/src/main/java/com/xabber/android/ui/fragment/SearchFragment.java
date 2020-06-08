@@ -30,6 +30,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -223,7 +224,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
                     .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser()).getStatusMode();
             if (abstractChat.getLastMessage() != null
                     && !abstractChat.isArchived()
-                    && !abstractChat.isGroupchat()
+                    && !(abstractChat instanceof GroupChat)
                     && !abstractChat.getUser().getJid().isDomainBareJid()
                     && (statusMode.equals(StatusMode.chat) || statusMode.equals(StatusMode.available)))
                 onlineChats.add(abstractChat);
@@ -236,7 +237,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts()) {
             if (abstractChat.getLastMessage() != null
                     && !abstractChat.isArchived()
-                    && !abstractChat.isGroupchat()
+                    && !(abstractChat instanceof GroupChat)
                     && !abstractChat.getUser().getJid().isDomainBareJid())
                 otherChats.add(abstractChat);
         }
@@ -300,7 +301,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
                             recentSearchRealmObject.getContactJid())) {
 
                         AbstractChat abstractChat = ChatManager.getInstance()
-                                .getOrCreateChat(accountJid, contactJid);
+                                .getChat(accountJid, contactJid);
 
                         if (abstractChat.getLastMessage() != null && !abstractChat.isArchived())
                             chats.add(abstractChat);

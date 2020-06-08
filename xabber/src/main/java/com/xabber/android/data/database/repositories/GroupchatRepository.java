@@ -18,7 +18,25 @@ public class GroupchatRepository {
 
     private static final String LOG_TAG = GroupchatRepository.class.getSimpleName();
 
-    public static void saveOrUpdate(GroupChat groupChat) {
+    public static void removeGroupChatFromRealm(GroupChat groupChat){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(GroupchatRealmObject.class)
+                            .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
+                            .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getUser().getBareJid().toString())
+                            .findFirst()
+                            .deleteFromRealm();
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+        });
+    }
+
+    public static void saveOrUpdateGroupchatRealmObject(GroupChat groupChat) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {

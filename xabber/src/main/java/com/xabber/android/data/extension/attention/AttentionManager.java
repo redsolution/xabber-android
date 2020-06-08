@@ -169,21 +169,19 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
-                boolean fromMUC = ((Message) stanza).getType().equals(Message.Type.groupchat);
                 ChatManager.getInstance().openChat(account, from);
                 ChatManager.getInstance()
-                        .getOrCreateChat(account, from)
+                        .getChat(account, from)
                         .newAction(null,
                                 Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested),
-                                ChatAction.attention_requested,
-                                fromMUC);
+                                ChatAction.attention_requested);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
     }
 
     public void sendAttention(AccountJid account, ContactJid user) throws NetworkException {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
         }
@@ -212,8 +210,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         StanzaSender.sendStanza(account, message);
         chat.newAction(null,
                 Application.getInstance().getApplicationContext().getString(R.string.action_attention_called),
-                ChatAction.attention_called,
-                false);
+                ChatAction.attention_called);
     }
 
     public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {

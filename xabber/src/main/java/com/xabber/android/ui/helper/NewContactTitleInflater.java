@@ -26,6 +26,7 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
@@ -99,9 +100,9 @@ public class NewContactTitleInflater {
         boolean isServer = false;
         boolean isBlocked = false;
         boolean isConnected = false;
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser());
         if (chat != null) {
-            isGroupchat = chat.isGroupchat();
+            isGroupchat = chat instanceof GroupChat;
             isServer = abstractContact.getUser().getJid().isDomainBareJid();
             isBlocked = BlockingManager.getInstance()
                     .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getUser());

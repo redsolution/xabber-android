@@ -37,24 +37,24 @@ import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.Jid;
 
 import java.io.File;
@@ -101,7 +101,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
             if (account != null && user != null) {
                 if (ChatManager.getInstance().getChat(account, user) == null) {
-                    ChatManager.getInstance().getOrCreateChat(account, user);
+                    ChatManager.getInstance().getChat(account, user);
                 }
             }
         }
@@ -123,7 +123,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
         EventBus.getDefault().post(new NewMessageEvent());
 
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         sendMessage(text, markupText, chat);
 
         // stop grace period
@@ -150,19 +150,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public String createFileMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, null, forwardIds);
     }
 
     public String createVoiceMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, "voice", forwardIds);
     }
 
     public String createFileMessageFromUrisWithForwards(AccountJid account, ContactJid user, List<Uri> uris, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(null, uris, null, forwardIds);
     }
@@ -381,18 +381,26 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         }
         AccountJid account = connection.getAccount();
 
-        final ContactJid user;
+        final ContactJid contactJid;
         try {
-            user = ContactJid.from(stanza.getFrom()).getBareUserJid();
+            contactJid = ContactJid.from(stanza.getFrom()).getBareUserJid();
         } catch (ContactJid.UserJidCreateException e) {
             return;
         }
         boolean processed = false;
+        if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
+            AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
+            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE) &&
+                    abstractChat instanceof RegularChat){
+                ChatManager.getInstance().removeChat(abstractChat);
+                ChatManager.getInstance().createGroupChat(account, contactJid);
+            }
+        }
 
         try {
             List<AbstractChat> chatsCopy = new ArrayList<>(ChatManager.getInstance().getChats());
             for (AbstractChat chat : chatsCopy) {
-                if (chat.onPacket(user, stanza, false)) {
+                if (chat.onPacket(contactJid, stanza, false)) {
                     processed = true;
                     break;
                 }
@@ -408,36 +416,36 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
             //check for spam
             if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
-                    && RosterManager.getInstance().getRosterContact(account, user) == null ) {
+                    && RosterManager.getInstance().getRosterContact(account, contactJid) == null ) {
 
                 String thread = ((Message) stanza).getThread();
 
                 if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
                     // check if this message is captcha-answer
-                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, user);
+                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, contactJid);
                     if (captcha != null) {
                         // attempt limit overhead
                         if (captcha.getAttemptCount() > CaptchaManager.CAPTCHA_MAX_ATTEMPT_COUNT) {
                             // remove this captcha
-                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            CaptchaManager.getInstance().removeCaptcha(account, contactJid);
                             // discard subscription
                             try {
-                                PresenceManager.getInstance().discardSubscription(account, user);
+                                PresenceManager.getInstance().discardSubscription(account, contactJid);
                             } catch (NetworkException e) {
                                 e.printStackTrace();
                             }
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_many_attempts));
                             return;
                         }
                         if (body.equals(captcha.getAnswer())) {
                             // captcha solved successfully
                             // remove this captcha
-                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            CaptchaManager.getInstance().removeCaptcha(account, contactJid);
 
                             // show auth
-                            PresenceManager.getInstance().handleSubscriptionRequest(account, user);
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            PresenceManager.getInstance().handleSubscriptionRequest(account, contactJid);
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_correct));
                             return;
                         } else {
@@ -445,13 +453,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                             // increment attempt count
                             captcha.setAttemptCount(captcha.getAttemptCount() + 1);
                             // send warning-message
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_incorrect));
                             return;
                         }
                     } else {
                         // no captcha exist and user not from roster
-                        sendMessageWithoutChat(user.getJid(), thread, account,
+                        sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                 Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                         // and skip received message as spam
                         return;
@@ -460,20 +468,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 } else {
                     // if message from not-roster user
                     // send a warning message to sender
-                    sendMessageWithoutChat(user.getJid(), thread, account,
+                    sendMessageWithoutChat(contactJid.getJid(), thread, account,
                             Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                     // and skip received message as spam
                     return;
                 }
             }
-
-            for (ExtensionElement packetExtension : message.getExtensions()) {
-                if (packetExtension instanceof MUCUser) {
-                    return;
-                }
-            }
-
-            ChatManager.getInstance().getOrCreateChat(account, user).onPacket(user, stanza, false);
+            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE))
+                ChatManager.getInstance().createGroupChat(account, contactJid).onPacket(contactJid, stanza, false);
+            else ChatManager.getInstance().createRegularChat(account, contactJid).onPacket(contactJid, stanza, false);
         }
     }
 
@@ -512,7 +515,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 return;
             }
 
-            final AbstractChat finalChat = ChatManager.getInstance().getOrCreateChat(account, companion);
+            final AbstractChat finalChat = ChatManager.getInstance().getChat(account, companion);
 
             String text = body;
             String uid = UUID.randomUUID().toString();
@@ -586,7 +589,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 break;
             }
         }
-        if (ChatManager.getInstance().getOrCreateChat(account, companion) != null) {
+        if (ChatManager.getInstance().getChat(account, companion) != null) {
             return;
         }
         if (processed) {
@@ -596,7 +599,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         if (body == null) {
             return;
         }
-        ChatManager.getInstance().getOrCreateChat(account, companion).onPacket(companion, message, true);
+        ChatManager.getInstance().getChat(account, companion).onPacket(companion, message, true);
 
     }
 

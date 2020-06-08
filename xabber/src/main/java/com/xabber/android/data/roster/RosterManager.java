@@ -107,7 +107,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
-                ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+                ChatManager.getInstance().getChat(contact.getAccount(), contact.getUser());
 
             } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();

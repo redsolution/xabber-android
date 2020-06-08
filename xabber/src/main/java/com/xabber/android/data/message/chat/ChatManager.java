@@ -17,8 +17,6 @@ package com.xabber.android.data.message.chat;
 import android.net.Uri;
 import android.os.Environment;
 
-import androidx.annotation.Nullable;
-
 import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -29,13 +27,15 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.repositories.ChatRepository;
+import com.xabber.android.data.database.repositories.GroupchatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
+import com.xabber.android.data.database.repositories.RegularChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -51,6 +51,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import io.realm.RealmResults;
 
@@ -88,11 +90,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         chats = new NestedMap<>();
         chatInputs = new NestedMap<>();
 
-        for (AbstractChat abstractChat : ChatRepository.getAllChatsFromRealm())
-            chats.put(abstractChat.getAccount().toString(),
-                    abstractChat.getUser().toString(),
-                    abstractChat);
+        for (RegularChat regularChat : RegularChatRepository.getAllRegularChatsFromRealm())
+            chats.put(regularChat.getAccount().toString(), regularChat.getUser().toString(),
+                    regularChat);
 
+        for (GroupChat groupChat : GroupchatRepository.getAllGroupchatsFromRealm())
+            chats.put(groupChat.getAccount().toString(), groupChat.getUser().toString(),
+                    groupChat);
     }
 
     public static ChatManager getInstance() {
@@ -105,10 +109,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public void onLoad() {
-
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-
-        ChatRepository.clearUnusedNotificationStateFromRealm();
     }
 
     @Override
@@ -201,16 +202,21 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         EventBus.getDefault().post(new ChatUpdatedEvent());
-        ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
-                chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
-                chat.isGroupchat(), chat.getUnreadMessageCount(), null);
+
+        if (chat instanceof RegularChat){
+            RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getUser(), null,
+                    chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
+                    0, null);
+        } else if (chat instanceof GroupChat){
+            GroupchatRepository.saveOrUpdateGroupchatRealmObject((GroupChat) chat);
+        }
     }
 
     /**
      * Sets currently visible chat.
      */
     public void setVisibleChat(BaseEntity visibleChat) {
-        this.visibleChat = getOrCreateChat(visibleChat.getAccount(), visibleChat.getUser());
+        this.visibleChat = getChat(visibleChat.getAccount(), visibleChat.getUser());
     }
 
     /**
@@ -234,7 +240,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     @Nullable
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
-            return chats.get(account.toString(), user.getBareJid().toString());
+            AbstractChat abstractChat = chats.get(account.toString(), user.getBareJid().toString());
+            if (abstractChat == null)
+                LogManager.exception("ChatManager", new Exception());
+            return abstractChat;
         } else {
             return null;
         }
@@ -276,12 +285,26 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
      * @param user
      * @return
      */
-    private RegularChat createChat(AccountJid account, ContactJid user) {
+    public RegularChat createRegularChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
-
+        saveOrUpdateChatDataToRealm(chat);
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        return chat;
+    }
 
+    /**
+     * Creates and adds new group chat to be managed.
+     *
+     * @param account
+     * @param user
+     * @return
+     */
+    public GroupChat createGroupChat(AccountJid account, ContactJid user) {
+        GroupChat chat = new GroupChat(account, user);
+        addChat(chat);
+        saveOrUpdateChatDataToRealm(chat);
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         return chat;
     }
 
@@ -309,27 +332,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         LogManager.i(this, "removeChat " + chat.getUser());
         chats.remove(chat.getAccount().toString(), chat.getUser().toString());
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-    }
-
-    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user,
-                                        MessageRealmObject lastMessage) {
-
-        AbstractChat chat = getOrCreateChat(account, user);
-        chat.setLastMessage(lastMessage);
-
-        return chat;
-    }
-
-    /**
-     * Returns existed chat or create new one.
-     *
-     */
-    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            chat = createChat(account, user);
+        if (chat instanceof GroupChat){
+            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
+        } else if (chat instanceof RegularChat){
+            RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
         }
-        return chat;
     }
 
     /**
@@ -339,7 +346,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
      * @param user
      */
     public void openChat(AccountJid account, ContactJid user) {
-        getOrCreateChat(account, user).openChat();
+        getChat(account, user).openChat();
     }
 
     /**

@@ -144,7 +144,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         // remove roster contact
         RosterManager.getInstance().removeContact(account, user);
         if (chat != null) {
-            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted, false);
+            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
         }
 
         if (getActivity() instanceof ContactActivity) {

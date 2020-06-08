@@ -23,12 +23,12 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -280,26 +280,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         else return false;
     }
 
-    /** MAIN */
-
-    /** For load messages that was missed because of errors or crash */
-    private void loadLastMessagesInMissedChatsAsyncOld(Realm realm, AccountItem accountItem) {
-        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
-                || !isSupported(accountItem.getAccount())) return;
-
-        Collection<RosterContact> contacts = RosterManager.getInstance()
-                .getAccountRosterContacts(accountItem.getAccount());
-
-        for (RosterContact contact : contacts) {
-            AbstractChat chat = ChatManager.getInstance()
-                    .getOrCreateChat(contact.getAccount(), contact.getUser());
-            if (getFirstMessage(chat, realm) == null && !chat.isHistoryRequestedAtStart()) {
-                LogManager.d(LOG_TAG, "load missed messages in: " + contact.getUser());
-                requestLastMessageAsync(accountItem, chat);
-            }
-        }
-    }
-
     public void resetContactHistoryIterator(AccountJid accountJid) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         rosterItemIterators.remove(accountItem);
@@ -322,7 +302,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         for (RosterContact contact : contacts) {
             AbstractChat chat = ChatManager.getInstance()
-                    .getOrCreateChat(contact.getAccount(), contact.getUser());
+                    .getChat(contact.getAccount(), contact.getUser());
+            if (chat == null)
+                chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
             if (getFirstMessage(chat, realm) == null && !chat.isHistoryRequestedAtStart()) {
                 contactsWithoutHistory.add(contact);
             }
@@ -372,7 +354,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 RosterContact contact = iterator.next();
                 LogManager.d(LOG_TAG, "load last message in " + contact + " chat");
                 AbstractChat chat = ChatManager.getInstance()
-                        .getOrCreateChat(contact.getAccount(), contact.getUser());
+                        .getChat(contact.getAccount(), contact.getUser());
+                if (chat == null)
+                    chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
                 requestLastMessageAsync(accountItem, chat);
             } else {
                 LogManager.d(LOG_TAG, "finished loading first messages of " + accountItem.getAccount());
@@ -381,21 +365,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             }
         } else {
             LogManager.d(LOG_TAG, "Couldn't find the contact iterator. It was either not set or cleared");
-        }
-    }
-
-    private void loadLastMessagesAsync(AccountItem accountItem) {
-        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
-                || !isSupported(accountItem.getAccount())) return;
-
-        LogManager.d(LOG_TAG, "load last messages in each chat");
-        Collection<RosterContact> contacts = RosterManager.getInstance()
-                .getAccountRosterContacts(accountItem.getAccount());
-
-        for (RosterContact contact : contacts) {
-            AbstractChat chat = ChatManager.getInstance()
-                    .getOrCreateChat(contact.getAccount(), contact.getUser());
-            requestLastMessageAsync(accountItem, chat);
         }
     }
 
@@ -432,7 +401,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 if (list != null) {
                     try {
                         AbstractChat chat = ChatManager.getInstance()
-                                .getOrCreateChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                                .getChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                        if (chat == null)
+                            chat = ChatManager.getInstance().createRegularChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
 
                         int oldSize = parsedMessages.size();
                         parsedMessages.addAll(parseNewMessagesInChat(list, chat, accountItem));
@@ -492,7 +463,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 if (list != null) {
                     try {
                         AbstractChat chat = ChatManager.getInstance()
-                                .getOrCreateChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                                .getChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
 
                         int oldSize = parsedMessages.size();
                         parsedMessages.addAll(parseNewMessagesInChat(list, chat, accountItem));
@@ -788,7 +759,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             user = stanza.getTo().asBareJid();
 
         try {
-            AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, ContactJid.from(user));
+            AbstractChat chat = ChatManager.getInstance().getChat(account, ContactJid.from(user));
+            if (chat == null)
+                chat = ChatManager.getInstance().createRegularChat(account, ContactJid.from(user));
+
             MessageRealmObject messageRealmObject = parseMessage(accountItem, account, chat.getUser(), forwarded, null);
             if (messageRealmObject != null) {
                 saveOrUpdateMessages(realm, Collections.singletonList(messageRealmObject), true);
@@ -953,7 +927,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             e.printStackTrace();
         }
 
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
+        AbstractChat chat = ChatManager.getInstance().getChat(message.getAccount(), message.getUser());
         if (chat == null) return null;
 
         MessageRealmObject localMessage = findSameLocalMessage(realm, chat, message);
@@ -1173,7 +1147,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         for (RosterContact contact : contacts) {
             AbstractChat chat = ChatManager.getInstance()
-                    .getOrCreateChat(contact.getAccount(), contact.getUser());
+                    .getChat(contact.getAccount(), contact.getUser());
 
             MessageRealmObject firstMessage = getFirstMessageForMigration(chat, realm);
             SyncInfoRealmObject syncInfoRealmObject = realm.where(SyncInfoRealmObject.class)

@@ -268,7 +268,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         LogManager.i(this, "newAction. text: " + text + " action " + action);
         AbstractChat chat = getChat(account, user);
         if (chat != null) {
-            chat.newAction(null, text, action, false);
+            chat.newAction(null, text, action);
         }
     }
 
@@ -798,7 +798,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private void setNotifyIntentToChat(Intent intent, AccountJid accountJid, ContactJid contactJid) {
-        RegularChat chat = (RegularChat) ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
+        RegularChat chat = (RegularChat) ChatManager.getInstance().getChat(accountJid, contactJid);
         chat.setIntent(intent);
     }
 }
