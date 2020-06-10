@@ -15,7 +15,6 @@
 package com.xabber.android.data.message.chat;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -36,6 +35,7 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
@@ -51,10 +51,8 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
-import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Date;
@@ -219,14 +217,6 @@ public class RegularChat extends AbstractChat {
                 }
             }
 
-            // groupchat
-            String gropchatUserId = null;
-            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
-            if (groupchatUser != null) {
-                gropchatUserId = groupchatUser.getId();
-                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser);
-            }
-
             RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
 
             String uid = UUID.randomUUID().toString();
@@ -255,16 +245,16 @@ public class RegularChat extends AbstractChat {
             if (attachmentRealmObjects.size() > 0)
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                         timestamp, getDelayStamp(message), true, true, encrypted,
-                        isOfflineMessage(account.getFullJid().getDomain(), packet),
+                        MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
-                        originalFrom, false, forwardIdRealmObjects,false, gropchatUserId);
+                        originalFrom, false, forwardIdRealmObjects,false, null);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, true, encrypted,
-                    isOfflineMessage(account.getFullJid().getDomain(), packet),
+                    MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
-                    originalFrom, false, forwardIdRealmObjects, false, gropchatUserId);
+                    originalFrom, false, forwardIdRealmObjects, false, null);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -274,9 +264,6 @@ public class RegularChat extends AbstractChat {
     @Override
     protected String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId) {
         if (message.getType() == Message.Type.error) return null;
-
-        MUCUser mucUser = MUCUser.from(message);
-        if (mucUser != null && mucUser.getInvite() != null) return null;
 
         final Jid fromJid = message.getFrom();
         Resourcepart resource = null;
@@ -325,16 +312,6 @@ public class RegularChat extends AbstractChat {
                 parentMessageId, originalFrom, true, forwardIdRealmObjects, true, gropchatUserId);
 
         return uid;
-    }
-
-    /**
-     * @return Whether message was delayed by server.
-     */
-    public static boolean isOfflineMessage(Domainpart server, Stanza stanza) {
-        DelayInformation delayInformation = DelayInformation.from(stanza);
-
-        return delayInformation != null
-                && TextUtils.equals(delayInformation.getFrom(), server);
     }
 
     @Override

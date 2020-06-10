@@ -152,7 +152,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return stanzaId;
     }
 
-    static Date getDelayStamp(Message message) {
+    protected static Date getDelayStamp(Message message) {
         DelayInformation delayInformation = DelayInformation.from(message);
         if (delayInformation != null) {
             return delayInformation.getStamp();
@@ -283,7 +283,7 @@ public abstract class AbstractChat extends BaseEntity implements
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource,
+    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource,
                                  String text, String markupText, final ChatAction action,
                                  final Date timestamp, final Date delayTimestamp,
                                  final boolean incoming, boolean notify,
@@ -302,7 +302,7 @@ public abstract class AbstractChat extends BaseEntity implements
         saveMessageItem(ui, messageRealmObject);
     }
 
-    void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
+    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
                                   String markupText, final ChatAction action, final Date timestamp,
                                   final Date delayTimestamp, final boolean incoming, boolean notify,
                                   final boolean encrypted, final boolean offline,
@@ -954,7 +954,7 @@ public abstract class AbstractChat extends BaseEntity implements
      *
      * @param threadId <code>null</code> if current value shouldn't be changed.
      */
-    void updateThreadId(String threadId) {
+    protected void updateThreadId(String threadId) {
         if (threadId == null) {
             return;
         }

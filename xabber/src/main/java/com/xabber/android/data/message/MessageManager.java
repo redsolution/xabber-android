@@ -16,6 +16,7 @@ package com.xabber.android.data.message;
 
 import android.net.Uri;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.xabber.android.R;
@@ -55,7 +56,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Domainpart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -601,6 +604,16 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         }
         ChatManager.getInstance().getChat(account, companion).onPacket(companion, message, true);
 
+    }
+
+    /**
+     * @return Whether message was delayed by server.
+     */
+    public static boolean isOfflineMessage(Domainpart server, Stanza stanza) {
+        DelayInformation delayInformation = DelayInformation.from(stanza);
+
+        return delayInformation != null
+                && TextUtils.equals(delayInformation.getFrom(), server);
     }
 
     public static void setAttachmentLocalPathToNull(final String uniqId) {
