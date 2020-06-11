@@ -54,7 +54,7 @@ public class GroupchatRealmObject extends RealmObject {
 
     public GroupchatRealmObject(AccountJid accountJid, ContactJid contactJid) {
         this.primary = UUID.randomUUID().toString();
-        this.accountJid = accountJid.getBareJid().toString();
+        this.accountJid = accountJid.toString();
         this.groupchatJid = contactJid.getBareJid().toString();
     }
 
