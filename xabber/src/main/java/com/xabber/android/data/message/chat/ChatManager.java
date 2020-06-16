@@ -339,6 +339,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         }
     }
 
+    public void removeChat(AccountJid accountJid, ContactJid contactJid){
+        AbstractChat chat = getChat(accountJid, contactJid);
+        LogManager.i(this, "removeChat " + contactJid);
+        chats.remove(chat.getAccount().toString(), chat.getUser().toString());
+        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        if (chat instanceof GroupChat){
+            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
+        } else if (chat instanceof RegularChat){
+            RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
+        }
+    }
+
     /**
      * Force open chat (make it active).
      *

@@ -73,6 +73,21 @@ public class MessageRepository {
 
     }
 
+    public static MessageRealmObject getMessageFromRealmByStanzaId(String stanzaId){
+        if (Looper.getMainLooper() == Looper.myLooper())
+            return DatabaseManager.getInstance().getDefaultRealmInstance()
+                    .where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId)
+                    .findFirst();
+        else {
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId)
+                    .findFirst();
+            return realm.copyFromRealm(messageRealmObject);
+        }
+    }
+
     public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
         return DatabaseManager.getInstance().getDefaultRealmInstance()
                 .where(MessageRealmObject.class)
