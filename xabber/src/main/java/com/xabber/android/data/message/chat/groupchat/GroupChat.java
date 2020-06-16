@@ -57,6 +57,8 @@ public class GroupChat extends AbstractChat {
     private MessageRealmObject pinnedMessage;
     private ArrayList<GroupchatMember> members;
     private String membersListVersion;
+    private int numberOfMembers;
+    private int numberOfOnlineMembers;
 
     //Permissions and restrictions
     private boolean canInvite;
@@ -76,10 +78,10 @@ public class GroupChat extends AbstractChat {
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user,
                      GroupchatIndexType indexType, GroupchatMembershipType membershipType,
                      GroupchatPrivacyType privacyType, String owner, String name,
-                     String description, MessageRealmObject pinnedMessage, String membersListVersion,
-                     boolean canInvite, boolean canChangeSettings, boolean canChangeUsersSettings,
-                     boolean canChangeNicknames, boolean canChangeBadge, boolean canBlockUsers,
-                     boolean canChangeAvatars) {
+                     String description, int numberOfMembers, ArrayList<GroupchatMember> listOfMembers,
+                     MessageRealmObject pinnedMessage, String membersListVersion, boolean canInvite,
+                     boolean canChangeSettings, boolean canChangeUsersSettings, boolean canChangeNicknames,
+                     boolean canChangeBadge, boolean canBlockUsers, boolean canChangeAvatars) {
         super(account, user);
         this.indexType = indexType;
         this.membershipType = membershipType;
@@ -87,6 +89,8 @@ public class GroupChat extends AbstractChat {
         this.owner = owner;
         this.name = name;
         this.description = description;
+        this.numberOfMembers = numberOfMembers;
+        this.members = listOfMembers;
         this.pinnedMessage = pinnedMessage;
         this.membersListVersion = membersListVersion;
         this.canInvite = canInvite;
@@ -151,7 +155,7 @@ public class GroupChat extends AbstractChat {
             GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
-                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser);
+                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
             }
 
             RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
@@ -174,7 +178,7 @@ public class GroupChat extends AbstractChat {
             text = bodies.first;
             String markupText = bodies.second;
             Date timestamp = null;
-            if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)){
+            if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
                 TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
@@ -184,7 +188,7 @@ public class GroupChat extends AbstractChat {
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
-                        originalFrom, false, forwardIdRealmObjects,false, gropchatUserId);
+                        originalFrom, false, forwardIdRealmObjects, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
@@ -200,7 +204,9 @@ public class GroupChat extends AbstractChat {
 
     @NonNull
     @Override
-    public Jid getTo() { return user.getBareJid(); }
+    public Jid getTo() {
+        return user.getBareJid();
+    }
 
     @Override
     public Message.Type getType() {
@@ -246,7 +252,7 @@ public class GroupChat extends AbstractChat {
         GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
-            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, timestamp.getTime());
+            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)
@@ -343,4 +349,11 @@ public class GroupChat extends AbstractChat {
         this.canChangeAvatars = canChangeAvatars;
     }
 
+    public int getNumberOfMembers() { return numberOfMembers; }
+    public void setNumberOfMembers(int numberOfMembers) { this.numberOfMembers = numberOfMembers; }
+
+    public int getNumberOfOnlineMembers() { return numberOfOnlineMembers; }
+    public void setNumberOfOnlineMembers(int numberOfOnlineMembers) {
+        this.numberOfOnlineMembers = numberOfOnlineMembers;
+    }
 }

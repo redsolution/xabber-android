@@ -18,8 +18,8 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.utils.Utils;
 
 import org.jxmpp.jid.parts.Resourcepart;
@@ -195,7 +195,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                        .generateDefaultAvatar(groupchatMember.getNickname(), groupchatMember.getNickname());
             }
             Glide.with(context)
-                    .load(groupchatMember.getAvatar())
+                    .load(AvatarManager.getInstance().getGroupchatMemberAvatar(groupchatMember, messageRealmObject.getAccount()))
                     .centerCrop()
                     .placeholder(placeholder)
                     .error(placeholder)

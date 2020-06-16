@@ -286,7 +286,7 @@ public class RegularChat extends AbstractChat {
         GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
-            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, timestamp.getTime());
+            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)

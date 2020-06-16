@@ -4,8 +4,10 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -37,6 +39,8 @@ import org.jivesoftware.smackx.pubsub.filter.EventExtensionFilter;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 public final class UserAvatarManager extends Manager {
@@ -69,6 +74,7 @@ public final class UserAvatarManager extends Manager {
 
     private AvatarMetadataStore metadataStore = new AvatarMetadataStore();
     private final Set<AvatarListener> avatarListeners = new HashSet<>();
+    private Set<String> groupchatMemberAvatarRequests = new ConcurrentSkipListSet<>();
 
 
     /**
@@ -313,6 +319,67 @@ public final class UserAvatarManager extends Manager {
         return null;
     }
 
+    public void requestAvatarOfGroupchatMember(GroupchatMember groupchatMember) {
+        if (groupchatMember == null
+                || groupchatMember.getGroupchatJid() == null
+                || groupchatMember.getAvatarHash() == null) {
+            return;
+        }
+        if (groupchatMemberAvatarRequests.contains(groupchatMember.getAvatarHash())) {
+            return;
+        }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            String avatarHash = groupchatMember.getAvatarHash();
+            if (groupchatMemberAvatarRequests.contains(avatarHash)) {
+                return;
+            }
+            groupchatMemberAvatarRequests.add(avatarHash);
+
+            ItemsExtension itemsExtension =
+                    new ItemsExtension(ItemsExtension.ItemsElementType.items,
+                            (DATA_NAMESPACE + "#" + groupchatMember.getId()),
+                            Collections.singletonList(new Item(avatarHash)));
+            BareJid groupchatJid = null;
+            try {
+                groupchatJid = JidCreate.bareFrom(groupchatMember.getGroupchatJid());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(LOG_TAG, e);
+                groupchatMemberAvatarRequests.remove(avatarHash);
+            }
+            if (groupchatJid == null) return;
+            PubSub avatarRequest = PubSub.createPubsubPacket(groupchatJid, IQ.Type.get, itemsExtension, null);
+            PubSub reply;
+            try {
+                 reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow();
+            } catch (NoResponseException
+                    | XMPPErrorException
+                    | InterruptedException
+                    | NotConnectedException e) {
+                LogManager.exception(LOG_TAG, e);
+                groupchatMemberAvatarRequests.remove(avatarHash);
+                return;
+            }
+
+            ItemsExtension receivedItems = reply.getExtension(PubSubElementType.ITEMS);
+            for (ExtensionElement itm : (receivedItems).getExtensions()) {
+                if (!(itm instanceof PayloadItem<?>)) {
+                    continue;
+                }
+                PayloadItem<?> payloadItem = (PayloadItem<?>) itm;
+                if ((payloadItem.getPayload() instanceof DataExtension)) {
+                    DataExtension data = (DataExtension) payloadItem.getPayload();
+                    byte[] avatarData = data.getData();
+                    if (avatarData == null) {
+                        groupchatMemberAvatarRequests.remove(avatarHash);
+                        return;
+                    }
+                    AvatarManager.getInstance().onGroupchatMemberAvatarReceived(avatarHash, avatarData);
+                    groupchatMemberAvatarRequests.remove(avatarHash);
+                }
+            }
+        });
+    }
+
     public String publishAvatarData(byte[] data)
             throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException, PubSubException.NotALeafNodeException {
         String itemId = AvatarManager.getAvatarHash(data);
@@ -434,7 +501,6 @@ public final class UserAvatarManager extends Manager {
      */
     public void unpublishAvatar()
             throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException, PubSubException.NotALeafNodeException {
-        //getOrCreateMetadataNode().publish(new PayloadItem<>(new MetadataExtension(null)));
         PayloadItem item = new PayloadItem<>(null, new MetadataExtension(null));
         PublishItem publishItem = new PublishItem<>(METADATA_NAMESPACE, item);
         PubSub packet = PubSub.createPubsubPacket(null, IQ.Type.set, publishItem, null);

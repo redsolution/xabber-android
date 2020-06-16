@@ -36,6 +36,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -44,8 +45,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -109,6 +112,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      */
     private final Map<Jid, Drawable> contactListDrawables;
     private final Map<Jid, Drawable> contactListDefaultDrawables;
+    private final Map<String, Drawable> groupchatMemberDrawables;
+    private final Map<String, Drawable> groupchatMemberDefaultDrawables;
 
     private AvatarManager() {
         this.application = Application.getInstance();
@@ -118,6 +123,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
         contactListDefaultDrawables = new HashMap<>();
+        groupchatMemberDrawables = new HashMap<>();
+        groupchatMemberDefaultDrawables = new HashMap<>();
     }
 
     public static AvatarManager getInstance() {
@@ -529,6 +536,44 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
+    public Drawable getGroupchatMemberAvatar(GroupchatMember member, AccountJid account) {
+        String avatarHash = member.getAvatarHash();
+        Drawable drawable;
+        if (avatarHash != null) {
+            drawable = groupchatMemberDrawables.get(avatarHash);
+            if (drawable == null) {
+                drawable = getMemberAvatar(avatarHash);
+                if (drawable != null) {
+                    groupchatMemberDrawables.put(avatarHash, drawable);
+                    groupchatMemberDefaultDrawables.remove(member.getBestName());
+                } else {
+                    if (account != null) {
+                        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+                        checkIfMemberAvatarIsSavedLocallyAndLoad(member, accountItem);
+                    }
+                    drawable = getDefaultMemberAvatar(member);
+                }
+            }
+        } else {
+            drawable = getDefaultMemberAvatar(member);
+        }
+        return drawable;
+    }
+
+    private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupchatMember member, AccountItem accountItem) {
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            byte[] avatarValue = AvatarStorage.getInstance().read(member.getAvatarHash());
+            if (avatarValue != null) {
+                Bitmap bitmap = makeBitmap(avatarValue);
+                bitmaps.put(member.getAvatarHash(), bitmap == null ? EMPTY_BITMAP : bitmap);
+            } else {
+                if (accountItem != null) {
+                    UserAvatarManager.getInstanceFor(accountItem.getConnection()).requestAvatarOfGroupchatMember(member);
+                }
+            }
+        });
+    }
+
     /**
      * Gets bitmap with avatar for regular user.
      */
@@ -574,6 +619,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return null;
     }
 
+    private Drawable getMemberAvatar(String avatarHash) {
+        Bitmap value = getBitmapByHash(avatarHash);
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        }
+        return null;
+    }
+
     /**
      * Gets and caches text-base avatar for regular user from cached drawables.
      */
@@ -594,6 +647,15 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (drawable == null) {
             drawable = generateDefaultRoomAvatar(user.getBareJid().toString());
             contactListDefaultDrawables.put(user.getJid(), drawable);
+        }
+        return drawable;
+    }
+
+    private Drawable getDefaultMemberAvatar(GroupchatMember member) {
+        Drawable drawable = groupchatMemberDefaultDrawables.get(member.getBestName());
+        if (drawable == null) {
+            drawable = generateDefaultRoomAvatar(member.getBestName());
+            groupchatMemberDefaultDrawables.put(member.getBestName(), drawable);
         }
         return drawable;
     }
@@ -665,6 +727,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
             AccountJid account = AccountManager.getInstance().getFirstAccount();
             if (account != null && account.getBareJid().toString().equals(jid.toString()))
                 SettingsManager.setMainAvatarHash(hash);
+        }
+    }
+
+    public void onGroupchatMemberAvatarReceived(String hash, byte[] value) {
+        if (hash != null) {
+            setValue(hash, value, "group");
         }
     }
 

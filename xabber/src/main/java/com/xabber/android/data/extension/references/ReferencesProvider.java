@@ -12,6 +12,8 @@ import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatU
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.avatar.MetadataInfo;
+import com.xabber.xmpp.avatar.MetadataProvider;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
@@ -289,7 +291,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         String nickname = null;
         String role = null;
         String badge = null;
-        String avatar = null;
+        String present = null;
+        MetadataInfo avatar = null;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -311,6 +314,9 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                             break;
                         case GroupchatUserExtension.ELEMENT_ROLE:
                             role = parser.nextText();
+                            break;
+                        case GroupchatUserExtension.ELEMENT_PRESENT:
+                            present = parser.nextText();
                             break;
                         case GroupchatUserExtension.ELEMENT_METADATA:
                             if (GroupchatUserExtension.NAMESPACE_METADATA.equals(parser.getNamespace()))
@@ -334,21 +340,20 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             GroupchatUserExtension user = new GroupchatUserExtension(id, nickname, role);
             user.setBadge(badge);
             user.setJid(jid);
-            user.setAvatar(avatar);
+            user.setLastPresent(present);
+            user.setAvatarInfo(avatar);
             return user;
         } else return null;
     }
 
-    private String parseAvatar(XmlPullParser parser) throws Exception {
-        String avatar = null;
+    private MetadataInfo parseAvatar(XmlPullParser parser) throws Exception {
         parser.next();
         if (parser.getEventType() == XmlPullParser.START_TAG) {
             if (GroupchatUserExtension.ELEMENT_INFO.equals(parser.getName())) {
-                avatar = parser.getAttributeValue("", GroupchatUserExtension.ATTR_URL);
-                parser.next();
+                return MetadataProvider.parseInfo(parser);
             }
         }
-        return avatar;
+        return null;
     }
 
 

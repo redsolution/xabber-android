@@ -4,10 +4,13 @@ public class GroupchatMember {
 
     private String id;
     private String jid;
+    private String groupchatJid;
     private String nickname;
     private String role;
     private String badge;
-    private String avatar;
+    private String avatarHash;
+    private String avatarUrl;
+    private String lastPresent;
     private long timestamp;
 
     public GroupchatMember(String id) {
@@ -24,6 +27,14 @@ public class GroupchatMember {
 
     public void setJid(String jid) {
         this.jid = jid;
+    }
+
+    public String getGroupchatJid() {
+        return groupchatJid;
+    }
+
+    public void setGroupchatJid(String groupchatJid) {
+        this.groupchatJid = groupchatJid;
     }
 
     public String getNickname() {
@@ -50,12 +61,20 @@ public class GroupchatMember {
         this.badge = badge;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarHash() {
+        return avatarHash;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarHash(String avatarHash) {
+        this.avatarHash = avatarHash;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public long getTimestamp() {
@@ -64,5 +83,23 @@ public class GroupchatMember {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getLastPresent() {
+        return lastPresent;
+    }
+
+    public void setLastPresent(String lastPresent) {
+        this.lastPresent = lastPresent;
+    }
+
+    public String getBestName() {
+        if (nickname != null && !nickname.isEmpty()) {
+            return nickname;
+        } else if (jid != null && !jid.isEmpty()) {
+            return jid;
+        } else {
+            return id;
+        }
     }
 }

@@ -64,6 +64,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -73,6 +74,7 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.GroupchatInfoFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout;
@@ -180,7 +182,13 @@ public class ContactActivity extends ManagedActivity implements
         setContentView(R.layout.activity_contact_new);
 
         if (savedInstanceState == null) {
-            Fragment fragment = ContactVcardViewerFragment.newInstance(account, user);
+            Fragment fragment;
+            AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+            if (chat instanceof GroupChat) {
+                fragment = GroupchatInfoFragment.newInstance(account, user);
+            } else {
+                fragment = ContactVcardViewerFragment.newInstance(account, user);
+            }
             getSupportFragmentManager().beginTransaction().add(R.id.scrollable_container, fragment).commit();
         }
 
@@ -569,46 +577,6 @@ public class ContactActivity extends ManagedActivity implements
 
     @Override
     public boolean onLongClick(View view) {
-        /*int[] location = new int[2];
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast_message_square, (ViewGroup) findViewById(R.id.message));
-        TextView description = (TextView) layout.findViewById(R.id.description);
-        String desc = "";
-        if (view.getContentDescription()!=null)
-             desc = view.getContentDescription().toString();
-        description.setText(desc);
-        switch (view.getId()) {
-            case R.id.chat_button:
-            case R.id.call_button:
-            case R.id.video_button:
-            case R.id.notify_button:
-                view.getLocationOnScreen(location);
-                final Toast toast = new Toast(getApplicationContext());
-                int offset = calculateOffset(view, layout, description);
-                toast.setGravity(Gravity.START|Gravity.TOP , location[0] + offset, location[1]);
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.setView(layout);
-                toast.show();
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.cancel();
-                    }
-                }, 500);
-                break;
-        }*/
         return true;
     }
-
-
-    /*private int calculateOffset(View buttonView, View toastView, TextView desc) {
-     *//*int I = desc.getWidth();
-        int II = desc.getMeasuredWidth();
-        Rect rect = new Rect();
-        desc.getWindowVisibleDisplayFrame(rect);
-        int III = rect.right - rect.left;*//*
-        return (buttonView.getWidth()  / 4);
-    }*/
 }

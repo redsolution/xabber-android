@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.icu.text.Transliterator;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -30,6 +31,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,8 +63,10 @@ public class StringUtils {
                 DateFormat.SHORT);
         TIME = new SimpleDateFormat("HH:mm:ss");
         timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
+        groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
 
+    private static SimpleDateFormat groupchatMemberPresenceTimeFormat;
     private static SimpleDateFormat logDateTimeFormat;
     private static DateFormat timeFormat;
 
@@ -220,6 +224,72 @@ public class StringUtils {
         return logDateTimeFormat;
     }
 
+    @NonNull
+    public static String getLastPresentString(String lastPresent) {
+        String result = null;
+        if (lastPresent != null && !lastPresent.isEmpty()) {
+            try {
+                Date lastPresentDate = groupchatMemberPresenceTimeFormat.parse(lastPresent);
+                if (lastPresentDate == null) return Application.getInstance().getString(R.string.unavailable);
+                long lastActivityTime = lastPresentDate.getTime();
+
+                if (lastActivityTime > 0) {
+                    long timeAgo = System.currentTimeMillis() - lastActivityTime;
+                    long time;
+                    String sTime;
+                    Date date = new Date(lastActivityTime);
+                    Date today = new Date();
+                    Locale locale = Application.getInstance().getResources().getConfiguration().locale;
+
+                    if (timeAgo < 60) {
+                        result = Application.getInstance().getString(R.string.last_seen_now);
+
+                    } else if (timeAgo < 3600) {
+                        time = TimeUnit.SECONDS.toMinutes(timeAgo);
+                        result = Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
+
+                    } else if (timeAgo < 7200) {
+                        result = Application.getInstance().getString(R.string.last_seen_hours);
+
+                    } else if (isToday(date)) {
+                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                        sTime = pattern.format(date);
+                        result = Application.getInstance().getString(R.string.last_seen_today, sTime);
+
+                    } else if (isYesterday(date)) {
+                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                        sTime = pattern.format(date);
+                        result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
+
+                    } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                        sTime = pattern.format(date);
+                        result = Application.getInstance().getString(R.string.last_seen_on_week,
+                                getDayOfWeek(date, locale), sTime);
+
+                    } else if (date.getYear() == today.getYear()) {
+                        SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
+                        sTime = pattern.format(date);
+                        result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+
+                    } else if (date.getYear() < today.getYear()) {
+                        SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
+                        sTime = pattern.format(date);
+                        result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            result = Application.getInstance().getString(R.string.account_state_connected);
+        }
+        if (result == null) {
+             result = Application.getInstance().getString(R.string.unavailable);
+        }
+        return result;
+    }
+
 //    public static String getLastActivityString(long lastActivityTime) { //TODO REALM UPDATE
 //        String result = RosterCacheManager.getInstance().getCachedLastActivityString(lastActivityTime);
 //
@@ -367,6 +437,10 @@ public class StringUtils {
     public static String getDisplayStatusForGroupchat(GroupchatPresence groupchatPresence, Context context) {
         int participants = groupchatPresence.getAllMembers();
         int online = groupchatPresence.getPresentMembers();
+        return getDisplayStatusForGroupchat(participants, online, context);
+    }
+
+    public static String getDisplayStatusForGroupchat(int participants, int online, Context context) {
         if (participants != 0) {
             StringBuilder sb;
             if (participants == 1) {
