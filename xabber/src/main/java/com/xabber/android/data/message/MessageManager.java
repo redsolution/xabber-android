@@ -557,7 +557,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             // groupchat
             GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
-                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser);
+                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
             }
 

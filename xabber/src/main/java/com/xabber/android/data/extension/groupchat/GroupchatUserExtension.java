@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.groupchat;
 
+import com.xabber.xmpp.avatar.MetadataInfo;
+
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
@@ -14,6 +16,7 @@ public class GroupchatUserExtension implements ExtensionElement {
     public static final String ELEMENT_ROLE       = "role";
     public static final String ELEMENT_BADGE      = "badge";
     public static final String ELEMENT_METADATA   = "metadata";
+    public static final String ELEMENT_PRESENT    = "present";
     public static final String NAMESPACE_METADATA = "urn:xmpp:avatar:metadata";
     public static final String ELEMENT_INFO       = "info";
     public static final String ATTR_URL           = "url";
@@ -23,7 +26,8 @@ public class GroupchatUserExtension implements ExtensionElement {
     private String nickname;
     private String role;
     private String badge;
-    private String avatar;
+    private String lastPresent;
+    private MetadataInfo avatar;
 
     public GroupchatUserExtension(String id, String nickname, String role) {
         this.id = id;
@@ -71,9 +75,13 @@ public class GroupchatUserExtension implements ExtensionElement {
             xml.xmlnsAttribute(NAMESPACE_METADATA);
             xml.rightAngleBracket();
             xml.halfOpenElement(ELEMENT_INFO);
-            xml.attribute(ATTR_URL, avatar);
-            xml.rightAngleBracket();
-            xml.closeElement(ELEMENT_INFO);
+            xml.optElement("id", avatar.getId());
+            xml.optElement("bytes", avatar.getBytes());
+            xml.optElement("type", avatar.getType());
+            xml.optElement("url", avatar.getUrl().toString());
+            if (avatar.getHeight() > 0) xml.attribute("height", avatar.getHeight());
+            if (avatar.getWidth() > 0) xml.attribute("width", avatar.getWidth());
+            xml.closeEmptyElement();
             xml.closeElement(ELEMENT_METADATA);
         }
         xml.closeElement(this);
@@ -88,7 +96,7 @@ public class GroupchatUserExtension implements ExtensionElement {
         this.badge = badge;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatarInfo(MetadataInfo avatar) {
         this.avatar = avatar;
     }
 
@@ -112,7 +120,15 @@ public class GroupchatUserExtension implements ExtensionElement {
         return badge;
     }
 
-    public String getAvatar() {
+    public String getLastPresent() {
+        return lastPresent;
+    }
+
+    public void setLastPresent(String lastPresent) {
+        this.lastPresent = lastPresent;
+    }
+
+    public MetadataInfo getAvatarInfo() {
         return avatar;
     }
 }

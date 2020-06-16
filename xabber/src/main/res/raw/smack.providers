@@ -15,6 +15,11 @@
         <namespace>http://xabber.com/protocol/groupchat</namespace>
         <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
     </extensionProvider>
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>http://xabber.com/protocol/groupchat#members</namespace>
+        <className>com.xabber.android.data.extension.groupchat.GroupchatMembersResultProvider</className>
+    </iqProvider>
 
     <!-- Stanza Session Negotiation -->
     <extensionProvider>

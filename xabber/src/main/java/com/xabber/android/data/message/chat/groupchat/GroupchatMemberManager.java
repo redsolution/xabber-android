@@ -9,6 +9,8 @@ import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.log.LogManager;
 
+import org.jxmpp.jid.BareJid;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,21 +43,21 @@ public class GroupchatMemberManager implements OnLoadListener {
         return users.get(id);
     }
 
-    public void saveGroupchatUser(GroupchatUserExtension user) {
-        saveGroupchatUser(user, System.currentTimeMillis());
+    public void saveGroupchatUser(GroupchatUserExtension user, BareJid groupchatJid) {
+        saveGroupchatUser(user, groupchatJid, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(GroupchatUserExtension user, long timestamp) {
+    public void saveGroupchatUser(GroupchatUserExtension user, BareJid groupchatJid, long timestamp) {
         if (!users.containsKey(user.getId())) {
-            saveUser(user, timestamp);
+            saveUser(user, groupchatJid, timestamp);
         } else if (timestamp > users.get(user.getId()).getTimestamp()) {
-            saveUser(user, timestamp);
+            saveUser(user, groupchatJid, timestamp);
         }
     }
 
-    private void saveUser(GroupchatUserExtension user, long timestamp) {
-        users.put(user.getId(), refUserToUser(user));
-        saveGroupchatUserToRealm(refUserToRealm(user), timestamp);
+    private void saveUser(GroupchatUserExtension user, BareJid groupchatJid, long timestamp) {
+        users.put(user.getId(), refUserToUser(user, groupchatJid));
+        saveGroupchatUserToRealm(refUserToRealm(user, groupchatJid), timestamp);
     }
 
     private void saveGroupchatUserToRealm(final GroupchatUserRealmObject user, final long timestamp) {
@@ -73,19 +75,42 @@ public class GroupchatMemberManager implements OnLoadListener {
         });
     }
 
-    private GroupchatUserRealmObject refUserToRealm(GroupchatUserExtension user) {
+    public static GroupchatUserRealmObject refUserToRealm(GroupchatUserExtension user, BareJid groupchatJid) {
         GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
+        realmUser.setLastPresent(user.getLastPresent());
+        if (groupchatJid != null) realmUser.setGroupchatJid(groupchatJid.toString());
         if (user.getJid() != null) realmUser.setJid(user.getJid());
-        if (user.getAvatar() != null) realmUser.setAvatar(user.getAvatar());
+        if (user.getAvatarInfo() != null) {
+            realmUser.setAvatarHash(user.getAvatarInfo().getId());
+            realmUser.setAvatarUrl(user.getAvatarInfo().getUrl().toString());
+        }
         if (user.getBadge() != null) realmUser.setBadge(user.getBadge());
         return realmUser;
     }
 
-    private GroupchatMember refUserToUser(GroupchatUserExtension groupchatUserExtension) {
+    public static GroupchatUserRealmObject userToRealmUser(GroupchatMember user) {
+        GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
+        realmUser.setNickname(user.getNickname());
+        realmUser.setRole(user.getRole());
+        realmUser.setLastPresent(user.getLastPresent());
+        if (user.getGroupchatJid() != null) realmUser.setGroupchatJid(user.getGroupchatJid());
+        if (user.getJid() != null) realmUser.setJid(user.getJid());
+        if (user.getAvatarHash() != null) realmUser.setAvatarHash(user.getAvatarHash());
+        if (user.getAvatarUrl() != null) realmUser.setAvatarUrl(user.getAvatarUrl());
+        if (user.getBadge() != null) realmUser.setBadge(user.getBadge());
+        return realmUser;
+    }
+
+    public static GroupchatMember refUserToUser(GroupchatUserExtension groupchatUserExtension, BareJid groupchatJid) {
         GroupchatMember user = new GroupchatMember(groupchatUserExtension.getId());
-        user.setAvatar(groupchatUserExtension.getAvatar());
+        if (groupchatJid != null) user.setGroupchatJid(groupchatJid.toString());
+        if (groupchatUserExtension.getAvatarInfo() != null) {
+            user.setAvatarHash(groupchatUserExtension.getAvatarInfo().getId());
+            user.setAvatarUrl(groupchatUserExtension.getAvatarInfo().getUrl().toString());
+        }
+        user.setLastPresent(groupchatUserExtension.getLastPresent());
         user.setBadge(groupchatUserExtension.getBadge());
         user.setJid(groupchatUserExtension.getJid());
         user.setNickname(groupchatUserExtension.getNickname());
@@ -93,9 +118,11 @@ public class GroupchatMemberManager implements OnLoadListener {
         return user;
     }
 
-    private GroupchatMember realmUserToUser(GroupchatUserRealmObject groupchatUser) {
+    public static GroupchatMember realmUserToUser(GroupchatUserRealmObject groupchatUser) {
         GroupchatMember user = new GroupchatMember(groupchatUser.getUniqueId());
-        user.setAvatar(groupchatUser.getAvatar());
+        user.setAvatarHash(groupchatUser.getAvatarHash());
+        user.setAvatarUrl(groupchatUser.getAvatarUrl());
+        user.setLastPresent(groupchatUser.getLastPresent());
         user.setBadge(groupchatUser.getBadge());
         user.setJid(groupchatUser.getJid());
         user.setNickname(groupchatUser.getNickname());
