@@ -599,7 +599,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                             MamElements.NAMESPACE);
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                 | InterruptedException | SmackException.NotConnectedException | ClassCastException e) {
-            LogManager.exception(this, e);
+            LogManager.exception(LOG_TAG, e);
             isSupported = false;
         }
         supportedByAccount.put(accountItem.getAccount(), isSupported);
@@ -635,7 +635,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             try {
                 result = request.execute(mamManager);
             } catch (Exception e) {
-                LogManager.exception(this, e);
+                LogManager.exception(LOG_TAG, e);
             }
         }
         return result;
@@ -870,6 +870,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setPacketId(message.getStanzaId());
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
+        LogManager.d(LOG_TAG, "message with stanzaId = " + messageRealmObject.getStanzaId() +
+                " originId = " + messageRealmObject.getOriginId() +
+                " messageId = " + message.getStanzaId() + " is set as read? - " + (timestamp <= accountItem.getStartHistoryTimestamp()));
         messageRealmObject.setSent(true);
         messageRealmObject.setAcknowledged(true);
         messageRealmObject.setEncrypted(encrypted);
@@ -888,7 +891,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         // groupchat
         GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
-            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, timestamp);
+            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
         }
 
@@ -932,7 +935,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         MessageRealmObject localMessage = findSameLocalMessage(realm, chat, message);
         if (localMessage == null) {
-            LogManager.d(this, "Matching message doesn't exist! Creating a new one");
+            LogManager.d(LOG_TAG, "Matching message doesn't exist! Creating a new one");
 
             // forwarded
             if (originalMessage != null) {
@@ -951,7 +954,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             //
             return message;
         } else {
-            LogManager.d(this, "Matching message found! Updating message");
+            LogManager.d(LOG_TAG, "Matching message found! Updating message");
             realm.beginTransaction();
             localMessage.setArchivedId(message.getArchivedId());
             realm.commitTransaction();
@@ -1114,7 +1117,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private MessageRealmObject findSameLocalMessage(Realm realm, AbstractChat chat, MessageRealmObject message) {
-        LogManager.d(this, "Querying Realm for message. Account: " + chat.getAccount().toString() + " User: " + chat.getUser().toString() + "\nIDs: 1) Stanza Id/Origin Id: " + message.getStanzaId() + " 2) Packet Id: " + message.getPacketId() + " 3) ArchiveId: " + message.getArchivedId());
+        LogManager.d(LOG_TAG, "Querying Realm for message. Account: " + chat.getAccount().toString() + " User: " + chat.getUser().toString() + "\nIDs: 1) Stanza Id/Origin Id: " + message.getStanzaId() + " 2) Packet Id: " + message.getPacketId() + " 3) ArchiveId: " + message.getArchivedId());
         return realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
                 .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
