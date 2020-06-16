@@ -3,6 +3,9 @@ package com.xabber.android.data.extension.groupchat;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
 import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatUserReference;
+import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
+import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -11,10 +14,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensionElement> {
-
-    /*
-
-     */
 
     @Override
     public GroupchatExtensionElement parse(XmlPullParser parser, int initialDepth) throws Exception {
@@ -32,17 +31,18 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                         if (referenceWrapperUser != null)
                             user = new GroupchatUserContainer(referenceWrapperUser);
                         return user;
-                    } else if (GroupchatPresence.NAME.equals(parser.getName()) ||
-                            GroupchatPresence.COLLECT.equals(parser.getName()) ||
-                            GroupchatPresence.MEMBERS.equals(parser.getName()) ||
-                            GroupchatPresence.PEER_TO_PEER.equals(parser.getName()) ||
-                            GroupchatPresence.PINNED_MESSAGE.equals(parser.getName()) ||
-                            GroupchatPresence.PRESENT.equals(parser.getName()) ||
-                            GroupchatPresence.PRIVACY.equals(parser.getName()) ||
-                            GroupchatPresence.STATUS.equals(parser.getName())) {
-                        presence = parseGroupPresence(parser);
-                        return presence;
-                    } else parser.next();
+                    } else {
+                        String name = parser.getName();
+                        if (name != null) {
+                            for (String field : GroupchatPresence.presenceFields) {
+                                if(name.equals(field)) {
+                                    presence = parseGroupPresence(parser);
+                                    return presence;
+                                }
+                            }
+                        }
+                    }
+                    parser.next();
                     break;
                 case XmlPullParser.END_TAG:
                     if (GroupchatExtensionElement.ELEMENT.equals(parser.getName())
@@ -85,6 +85,9 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                         case GroupchatPresence.NAME:
                             presence.setName(parser.nextText());
                             break;
+                        case GroupchatPresence.DESCRIPTION:
+                            presence.setDescription(parser.nextText());
+                            break;
                         case GroupchatPresence.COLLECT:
                             presence.setCollect("yes".equals(parser.nextText()));
                             break;
@@ -101,7 +104,16 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                             presence.setPresentMembers(Integer.parseInt(parser.nextText()));
                             break;
                         case GroupchatPresence.PRIVACY:
-                            presence.setPrivacy(parser.nextText());
+                            presence.setPrivacy(GroupchatPrivacyType
+                                    .getPrivacyTypeFromXml(parser.nextText()));
+                            break;
+                        case GroupchatPresence.MEMBERSHIP:
+                            presence.setMembership(GroupchatMembershipType
+                                    .getMembershipTypeFromXml(parser.nextText()));
+                            break;
+                        case GroupchatPresence.INDEX:
+                            presence.setIndex(GroupchatIndexType
+                                    .getPrivacyTypeFromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.STATUS:
                             presence.setStatus(parser.nextText());

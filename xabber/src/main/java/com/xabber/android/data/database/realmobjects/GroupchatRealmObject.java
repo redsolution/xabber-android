@@ -105,14 +105,17 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public GroupchatPrivacyType getPrivacy() {
-        switch (privacy) {
-            case "incognitoGroupChat":
-                return GroupchatPrivacyType.incognitoGroupChat;
-            case "publicGroupChat":
-                return GroupchatPrivacyType.publicGroupChat;
-            default:
-                return GroupchatPrivacyType.none;
+        if (privacy != null) {
+            switch (privacy) {
+                case "incognitoGroupChat":
+                    return GroupchatPrivacyType.incognitoGroupChat;
+                case "publicGroupChat":
+                    return GroupchatPrivacyType.publicGroupChat;
+                default:
+                    return GroupchatPrivacyType.none;
+            }
         }
+        return GroupchatPrivacyType.none;
     }
     public void setPrivacy(GroupchatPrivacyType privacy) {
         if (privacy != null)
@@ -120,14 +123,19 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public GroupchatIndexType getIndex() {
-        switch (index) {
-            case "global":
-                return GroupchatIndexType.global;
-            case "local":
-                return GroupchatIndexType.local;
-            default:
-                return GroupchatIndexType.none;
+        if (index != null) {
+            switch (index) {
+                case "global":
+                    return GroupchatIndexType.global;
+                case "local":
+                    return GroupchatIndexType.local;
+                case "none":
+                    return GroupchatIndexType.none;
+                default:
+                    return GroupchatIndexType.noneAsNull;
+            }
         }
+        return GroupchatIndexType.noneAsNull;
     }
     public void setIndex(GroupchatIndexType index) {
         if (index != null)
@@ -135,14 +143,17 @@ public class GroupchatRealmObject extends RealmObject {
     }
 
     public GroupchatMembershipType getMembership() {
-        switch (membership) {
-            case "open":
-                return GroupchatMembershipType.open;
-            case "memberOnly":
-                return GroupchatMembershipType.memberOnly;
-            default:
-                return GroupchatMembershipType.none;
+        if (membership != null) {
+            switch (membership) {
+                case "open":
+                    return GroupchatMembershipType.open;
+                case "memberOnly":
+                    return GroupchatMembershipType.memberOnly;
+                default:
+                    return GroupchatMembershipType.none;
+            }
         }
+        return GroupchatMembershipType.none;
     }
     public void setMembership(GroupchatMembershipType membership) {
         if (membership != null)
