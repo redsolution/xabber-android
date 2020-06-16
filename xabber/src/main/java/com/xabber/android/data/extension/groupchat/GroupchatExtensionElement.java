@@ -29,4 +29,5 @@ public class GroupchatExtensionElement implements ExtensionElement {
 
     public void appendToXML(XmlStringBuilder xml) {
     }
+
 }

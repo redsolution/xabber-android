@@ -69,6 +69,10 @@ public class MessageRepository {
         });
     }
 
+    public static void setMessagePinned(MessageRealmObject messagePinned){
+
+    }
+
     public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
         return DatabaseManager.getInstance().getDefaultRealmInstance()
                 .where(MessageRealmObject.class)

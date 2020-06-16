@@ -106,6 +106,7 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -1702,6 +1703,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
         }
 
+        //todo checking privileges
+        if (getChat() instanceof GroupChat)
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
+
         if (clickedMessageRealmObject.isError()) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
         } else if (!clickedMessageRealmObject.isSent()) {
@@ -1758,6 +1763,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 case "action_message_edit":
                     getReadyForMessageEditing(clickedMessageRealmObject);
                     break;
+                case "action_message_pin":
+                    GroupchatManager.getInstance().sendPinMessageRequest(clickedMessageRealmObject);
                 default:
                     break;
             }

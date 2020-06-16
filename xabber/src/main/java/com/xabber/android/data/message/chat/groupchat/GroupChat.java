@@ -43,6 +43,8 @@ import io.realm.RealmList;
 
 public class GroupChat extends AbstractChat {
 
+    private static final String LOG_TAG = GroupChat.class.getSimpleName();
+
     private GroupchatIndexType indexType;
     private GroupchatMembershipType membershipType;
     private GroupchatPrivacyType privacyType;

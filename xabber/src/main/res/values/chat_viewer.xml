@@ -40,6 +40,7 @@
     <string name="message_quote">Quote</string>
     <string name="message_remove">Remove from history</string>
     <string name="message_repeat">Retry sending</string>
+    <string name="message_pin">Pin message</string>
     <string name="message_otr_show_original">Show message</string>
     <string name="save_history">Save local history\nStore message history locally</string>
     <string name="action_attention_called">Call attention was sent</string>

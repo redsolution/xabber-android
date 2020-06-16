@@ -166,6 +166,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         String lastActivity = "";
 
         AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getUser());
+        if (chat == null)
+            chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
