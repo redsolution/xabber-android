@@ -210,7 +210,7 @@ public class GroupChat extends AbstractChat {
 
     @Override
     public Message.Type getType() {
-        return Message.Type.groupchat;
+        return Message.Type.chat;
     }
 
     @Override
