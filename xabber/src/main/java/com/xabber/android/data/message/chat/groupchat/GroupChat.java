@@ -10,6 +10,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -56,6 +57,8 @@ public class GroupChat extends AbstractChat {
     private String description;
     private MessageRealmObject pinnedMessage;
     private ArrayList<GroupchatMember> members;
+    private ArrayList<String> listOfInvites;
+    private ArrayList<GroupchatBlocklistItemElement> listOfBlockedElements;
     private String membersListVersion;
     private int numberOfMembers;
     private int numberOfOnlineMembers;
@@ -355,5 +358,15 @@ public class GroupChat extends AbstractChat {
     public int getNumberOfOnlineMembers() { return numberOfOnlineMembers; }
     public void setNumberOfOnlineMembers(int numberOfOnlineMembers) {
         this.numberOfOnlineMembers = numberOfOnlineMembers;
+    }
+
+    public ArrayList<String> getListOfInvites() { return listOfInvites; }
+    public void setListOfInvites(ArrayList<String> listOfInvites) { this.listOfInvites = listOfInvites; }
+
+    public ArrayList<GroupchatBlocklistItemElement> getListOfBlockedElements() {
+        return listOfBlockedElements;
+    }
+    public void setListOfBlockedElements(ArrayList<GroupchatBlocklistItemElement> listOfBlockedElements) {
+        this.listOfBlockedElements = listOfBlockedElements;
     }
 }

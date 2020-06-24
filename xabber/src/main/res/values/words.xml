@@ -38,4 +38,7 @@
     <string name="contact_bar_notifications">Notifications</string>
     <string name="contact_bar_block">Block</string>
     <string name="contact_bar_unblock">Unblock</string>
+    
+    <string name="groupchat_bar_invite">Invite</string>
+    <string name="groupchat_bar_leave">Leave</string>
 </resources>

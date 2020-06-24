@@ -20,12 +20,14 @@
     <string name="application_state_waiting">Waiting for connection…</string>
     <string name="chat_viewer">Chat</string>
     <string name="CONNECTION_FAILED">Connection error</string>
+    <string name="groupchat_leave">Leave</string>
     <string name="contact_add">Add contact</string>
     <string name="contact_delete">Delete</string>
     <string name="contact_delete_full">Delete contact</string>
     <string name="contact_block">Block contact</string>
     <string name="contact_block_and_delete">Block &amp; Delete</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
+    <string name="groupchat_leave_confirm">Do you really want to leave groupchat %s?</string>
     <string name="contact_delete_confirm_short">Do you really want to delete contact &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="contact_delete_warning">You will be able to exchange messages and subscription requests</string>
     <string name="discard_subscription">Decline contact</string>

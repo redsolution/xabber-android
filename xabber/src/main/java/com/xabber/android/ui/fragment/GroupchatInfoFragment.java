@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,7 +19,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.OnGroupchatMembersListener;
+import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
+import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
@@ -28,6 +30,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.activity.GroupchatSettingsActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
 import com.xabber.android.utils.StringUtils;
 
@@ -38,7 +41,7 @@ import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
-public class GroupchatInfoFragment extends Fragment implements OnGroupchatMembersListener, View.OnClickListener {
+public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener, View.OnClickListener {
 
     private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
@@ -62,7 +65,11 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
     private ViewGroup settingsButton;
     private ViewGroup restrictionsButton;
     private ViewGroup invitationsButton;
+    private TextView invitationsCount;
+    private FrameLayout invitationsStatus;
+    private ProgressBar invitationsProgress;
     private ViewGroup blockedButton;
+    private TextView blockedCount;
 
     // info layout
     private ViewGroup infoLayout;
@@ -102,13 +109,23 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Application.getInstance().addUIListener(OnGroupchatMembersListener.class, this);
+        Application.getInstance().addUIListener(OnGroupchatRequestListener.class, this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Application.getInstance().removeUIListener(OnGroupchatMembersListener.class, this);
+        Application.getInstance().removeUIListener(OnGroupchatRequestListener.class, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+        if (groupChat instanceof GroupChat) {
+            updateChatSettings((GroupChat) groupChat);
+        }
     }
 
     @Override
@@ -118,12 +135,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
             EventBus.getDefault().register(this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().unregister(this);
-    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -170,6 +182,10 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         restrictionsButton = view.findViewById(R.id.restrictionsButtonLayout);
         invitationsButton = view.findViewById(R.id.invitationsButtonLayout);
         blockedButton = view.findViewById(R.id.blockedButtonLayout);
+        invitationsCount = view.findViewById(R.id.invitationsCount);
+        invitationsStatus = view.findViewById(R.id.invitationsStatus);
+        invitationsProgress = view.findViewById(R.id.invitationsProgress);
+        blockedCount = view.findViewById(R.id.blockedCount);
         settingsButton.setOnClickListener(this);
         restrictionsButton.setOnClickListener(this);
         invitationsButton.setOnClickListener(this);
@@ -190,7 +206,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
 
         groupchatJidText.setText(groupchatContact.getBareJid());
 
-        requestMemberList();
+        requestLists();
         groupchatPresence = PresenceManager.getInstance().getPresence(account, groupchatContact);
         groupChat = ChatManager.getInstance().getChat(account, groupchatContact);
 
@@ -204,8 +220,10 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         }
     }
 
-    private void requestMemberList() {
+    private void requestLists() {
         GroupchatManager.getInstance().requestGroupchatMembers(account, groupchatContact);
+        GroupchatManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
+        GroupchatManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
         membersProgress.setVisibility(View.VISIBLE);
     }
 
@@ -292,7 +310,28 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         if (presenceStatus != null) membersHeader.setText(presenceStatus);
 
         settingsLayout.setVisibility(View.VISIBLE);
+        updateChatSettings(groupChat);
         membersLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void updateChatSettings(GroupChat groupChat) {
+        // TODO permission to see invitations
+        ArrayList<String> listOfInvites = groupChat.getListOfInvites();
+        if (listOfInvites != null) {
+            if (listOfInvites.isEmpty()) {
+                invitationsCount.setText("0");
+            } else {
+                invitationsCount.setText(String.valueOf(listOfInvites.size()));
+            }
+        }
+        ArrayList<GroupchatBlocklistItemElement> blockList = groupChat.getListOfBlockedElements();
+        if (blockList != null) {
+            if (blockList.isEmpty()) {
+                blockedCount.setText("0");
+            } else {
+                blockedCount.setText(String.valueOf(blockList.size()));
+            }
+        }
     }
 
     private void updateViewsWithMemberList(ArrayList<GroupchatMember> members) {
@@ -312,6 +351,18 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         updateViewsWithMemberList(listOfMembers);
     }
 
+    @Override
+    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid, ArrayList<String> listOfInvites) {
+        if (checkIfWrongChat(account, groupchatJid)) return;
+        updateChatSettings((GroupChat) groupChat);
+    }
+
+    @Override
+    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid, ArrayList<GroupchatBlocklistItemElement> blockList) {
+        if (checkIfWrongChat(account, groupchatJid)) return;
+        updateChatSettings((GroupChat) groupChat);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
         if (checkIfWrongChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
@@ -328,6 +379,30 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
 
     @Override
     public void onClick(View v) {
+        if (groupChat instanceof GroupChat) {
+            switch (v.getId()) {
+            case R.id.invitationsButtonLayout:
+                    if (((GroupChat) groupChat).getListOfInvites().size() > 0) {
+                        startActivity(GroupchatSettingsActivity
+                                .createIntent(getContext(),
+                                        account, groupchatContact,
+                                        GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
+                    }
+                    break;
+                case R.id.blockedButtonLayout:
+                    if (((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
+                        startActivity(GroupchatSettingsActivity
+                                .createIntent(getContext(),
+                                        account, groupchatContact,
+                                        GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
+                    }
+                    break;
+                }
+        }
+    }
 
+    public interface GroupchatSelectorListItemActions {
+        void onListItemSelected();
+        void onListItemDeselected();
     }
 }
