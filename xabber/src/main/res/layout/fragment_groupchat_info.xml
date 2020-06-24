@@ -59,7 +59,8 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/infoLayout"
@@ -481,9 +482,24 @@
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
+                                android:id="@+id/invitationsCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="999" />
+
+                            <FrameLayout
+                                android:id="@+id/invitationsStatus"
+                                android:layout_width="20dp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:visibility="gone"
+                                tools:visibility="visible">
+                                <ProgressBar
+                                    android:id="@+id/invitationsProgress"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="visible"/>
+                            </FrameLayout>
 
                         </LinearLayout>
 
@@ -503,6 +519,7 @@
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
+                                android:id="@+id/blockedCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0" />

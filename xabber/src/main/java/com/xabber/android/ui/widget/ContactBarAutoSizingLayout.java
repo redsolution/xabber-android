@@ -15,14 +15,14 @@ import java.util.List;
 
 public class ContactBarAutoSizingLayout extends ViewGroup {
 
-    private TextView chat;
-    private TextView call;
-    private TextView notify;
-    private TextView block;
-    private ImageButton buttonChat;
-    private ImageButton buttonCall;
-    private ImageButton buttonNotify;
-    private ImageButton buttonBlock;
+    private TextView text1;
+    private TextView text2;
+    private TextView text3;
+    private TextView text4;
+    private ImageButton button1;
+    private ImageButton button2;
+    private ImageButton button3;
+    private ImageButton button4;
     private View dividerTop;
     private View dividerBottom;
 
@@ -31,6 +31,9 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     private List<TextView> textViews;
     private List<ImageButton> buttonViews;
     private List<String> buttonStrings;
+    private List<String> buttonGroupchatStrings;
+
+    private boolean isForGroupchat = false;
 
     public ContactBarAutoSizingLayout(Context context) {
         this(context, null);
@@ -48,6 +51,10 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
                 getResources().getString(R.string.contact_bar_notifications),
                 getResources().getString(R.string.contact_bar_block),
                 getResources().getString(R.string.contact_bar_unblock));
+        buttonGroupchatStrings = Arrays.asList(getResources().getString(R.string.contact_bar_chat),
+                getResources().getString(R.string.groupchat_bar_invite),
+                getResources().getString(R.string.contact_bar_notifications),
+                getResources().getString(R.string.groupchat_bar_leave));
     }
 
     @Override
@@ -56,24 +63,44 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
         cacheViews();
     }
 
+    public void setForGroupchat(boolean forGroupchat) {
+        this.isForGroupchat = forGroupchat;
+        for (int i = 0; i < textViews.size(); i++) {
+            textViews.get(i).setText(getButtonStrings().get(i));
+        }
+        if (isForGroupchat) {
+            button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_add_black_24dp));
+            button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_leave_24dp));
+        } else {
+            button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_calls_list_new));
+            button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_block_grey600_24dp));
+        }
+        redrawText();
+    }
+
     @Override
     public boolean shouldDelayChildPressedState() {
         return false;
     }
 
     private void cacheViews() {
-        buttonChat = (ImageButton) findViewById(R.id.chat_button);
-        buttonCall = (ImageButton) findViewById(R.id.call_button);
-        buttonNotify = (ImageButton) findViewById(R.id.notify_button);
-        buttonBlock = (ImageButton) findViewById(R.id.block_button);
-        chat = (TextView) findViewById(R.id.chat_button_text);
-        call = (TextView) findViewById(R.id.call_button_text);
-        notify = (TextView) findViewById(R.id.notification_text);
-        block = (TextView) findViewById(R.id.block_text);
+        button1 = (ImageButton) findViewById(R.id.chat_button);
+        button2 = (ImageButton) findViewById(R.id.call_button);
+        button3 = (ImageButton) findViewById(R.id.notify_button);
+        button4 = (ImageButton) findViewById(R.id.block_button);
+        text1 = (TextView) findViewById(R.id.chat_button_text);
+        text2 = (TextView) findViewById(R.id.call_button_text);
+        text3 = (TextView) findViewById(R.id.notification_text);
+        text4 = (TextView) findViewById(R.id.block_text);
         dividerTop = findViewById(R.id.divider_top);
         dividerBottom = findViewById(R.id.divider_bottom);
-        textViews = Arrays.asList(chat, call, notify, block);
-        buttonViews = Arrays.asList(buttonChat, buttonCall, buttonNotify, buttonBlock);
+        textViews = Arrays.asList(text1, text2, text3, text4);
+        buttonViews = Arrays.asList(button1, button2, button3, button4);
+    }
+
+    private List<String> getButtonStrings() {
+        if (isForGroupchat) return buttonGroupchatStrings;
+        else return buttonStrings;
     }
 
     @Override
@@ -84,13 +111,13 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
         int iconMeasureSpecWidth = MeasureSpec.makeMeasureSpec(width / 4, MeasureSpec.EXACTLY);
         int iconMeasureSpecHeight;
 
-        if (chat.getVisibility() != GONE) {
+        if (text1.getVisibility() != GONE) {
             int textIndex = 0;
             int maxTextIndex = -1;
             int textSize = Integer.MIN_VALUE;
             float autoSize;
 
-            for (String name : buttonStrings) {
+            for (String name : getButtonStrings()) {
                 if (name.length() > textSize) {
                     textSize = name.length();
                     maxTextIndex = textIndex;
@@ -98,8 +125,8 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
                 textIndex++;
             }
 
-            measurePaint = chat.getPaint();
-            float textWidth = measurePaint.measureText(buttonStrings.get(maxTextIndex));
+            measurePaint = text1.getPaint();
+            float textWidth = measurePaint.measureText(getButtonStrings().get(maxTextIndex));
             // measureChild(textViews.get(maxTextIndex), widthMeasureSpec, heightMeasureSpec);
 
             if (textWidth > (width / 4f)) {
@@ -108,7 +135,7 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
                 if (ratio < 0.5f) ratio = 0.5f;
                 if (ratio > 1f) ratio = 1f;
 
-                autoSize = chat.getTextSize() * ratio;
+                autoSize = text1.getTextSize() * ratio;
                 for (int i = 0; i < 4; i ++) {
                     // textViews.get(i).setTextSize(autoSize);
                     textViews.get(i).getPaint().setTextSize(autoSize);
@@ -121,7 +148,7 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
             }
             // height += chat.getMeasuredHeight();
 
-            iconMeasureSpecHeight = MeasureSpec.makeMeasureSpec((int) (getResources().getDisplayMetrics().density * 40) + chat.getMeasuredHeight(), MeasureSpec.EXACTLY);
+            iconMeasureSpecHeight = MeasureSpec.makeMeasureSpec((int) (getResources().getDisplayMetrics().density * 40) + text1.getMeasuredHeight(), MeasureSpec.EXACTLY);
             for (ImageButton button : buttonViews) {
                 setPaddingBottom(button, (int) (getResources().getDisplayMetrics().density * 18));
                 increaseVerticalLayoutSize(button, (int) (getResources().getDisplayMetrics().density * 18));
@@ -130,14 +157,14 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
             iconMeasureSpecHeight = MeasureSpec.makeMeasureSpec((int) (getResources().getDisplayMetrics().density * 40), MeasureSpec.EXACTLY);
         }
 
-        measureChild(buttonChat, iconMeasureSpecWidth, iconMeasureSpecHeight);
-        measureChild(buttonCall, iconMeasureSpecWidth, iconMeasureSpecHeight);
-        measureChild(buttonNotify, iconMeasureSpecWidth, iconMeasureSpecHeight);
-        measureChild(buttonBlock, iconMeasureSpecWidth, iconMeasureSpecHeight);
+        measureChild(button1, iconMeasureSpecWidth, iconMeasureSpecHeight);
+        measureChild(button2, iconMeasureSpecWidth, iconMeasureSpecHeight);
+        measureChild(button3, iconMeasureSpecWidth, iconMeasureSpecHeight);
+        measureChild(button4, iconMeasureSpecWidth, iconMeasureSpecHeight);
 
         measureChild(dividerBottom, widthMeasureSpec, heightMeasureSpec);
         measureChild(dividerTop, widthMeasureSpec, heightMeasureSpec);
-        height += buttonChat.getMeasuredHeight();
+        height += button1.getMeasuredHeight();
         setMeasuredDimension(width, height);
     }
 
@@ -145,24 +172,24 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int leftBorder = getPaddingLeft();
         int topWithPadding = getPaddingTop();
-        int bottomTextBorder = topWithPadding + buttonChat.getMeasuredHeight();
-        boolean layoutText = chat.getVisibility() != GONE;
+        int bottomTextBorder = topWithPadding + button1.getMeasuredHeight();
+        boolean layoutText = text1.getVisibility() != GONE;
         final int quarter = (r - l - getPaddingRight()) / 4;
 
-        buttonChat.layout(leftBorder, topWithPadding, leftBorder + buttonChat.getMeasuredWidth(), topWithPadding + buttonChat.getMeasuredHeight());
-        if (layoutText) layoutTextView(chat, leftBorder, bottomTextBorder, chat.getMeasuredWidth(), chat.getMeasuredHeight(), quarter);
-        leftBorder += buttonChat.getMeasuredWidth();
+        button1.layout(leftBorder, topWithPadding, leftBorder + button1.getMeasuredWidth(), topWithPadding + button1.getMeasuredHeight());
+        if (layoutText) layoutTextView(text1, leftBorder, bottomTextBorder, text1.getMeasuredWidth(), text1.getMeasuredHeight(), quarter);
+        leftBorder += button1.getMeasuredWidth();
 
-        buttonCall.layout(leftBorder, topWithPadding, leftBorder + buttonCall.getMeasuredWidth(), topWithPadding + buttonCall.getMeasuredHeight());
-        if (layoutText) layoutTextView(call, leftBorder, bottomTextBorder, call.getMeasuredWidth(), call.getMeasuredHeight(), quarter);
-        leftBorder += buttonCall.getMeasuredWidth();
+        button2.layout(leftBorder, topWithPadding, leftBorder + button2.getMeasuredWidth(), topWithPadding + button2.getMeasuredHeight());
+        if (layoutText) layoutTextView(text2, leftBorder, bottomTextBorder, text2.getMeasuredWidth(), text2.getMeasuredHeight(), quarter);
+        leftBorder += button2.getMeasuredWidth();
 
-        buttonNotify.layout(leftBorder, topWithPadding, leftBorder + buttonNotify.getMeasuredWidth(), topWithPadding + buttonNotify.getMeasuredHeight());
-        if (layoutText) layoutTextView(notify, leftBorder, bottomTextBorder, notify.getMeasuredWidth(), notify.getMeasuredHeight(), quarter);
-        leftBorder += buttonNotify.getMeasuredWidth();
+        button3.layout(leftBorder, topWithPadding, leftBorder + button3.getMeasuredWidth(), topWithPadding + button3.getMeasuredHeight());
+        if (layoutText) layoutTextView(text3, leftBorder, bottomTextBorder, text3.getMeasuredWidth(), text3.getMeasuredHeight(), quarter);
+        leftBorder += button3.getMeasuredWidth();
 
-        buttonBlock.layout(leftBorder, topWithPadding, leftBorder + buttonBlock.getMeasuredWidth(), topWithPadding + buttonBlock.getMeasuredHeight());
-        if (layoutText) layoutTextView(block, leftBorder, bottomTextBorder, block.getMeasuredWidth(), block.getMeasuredHeight(), quarter);
+        button4.layout(leftBorder, topWithPadding, leftBorder + button4.getMeasuredWidth(), topWithPadding + button4.getMeasuredHeight());
+        if (layoutText) layoutTextView(text4, leftBorder, bottomTextBorder, text4.getMeasuredWidth(), text4.getMeasuredHeight(), quarter);
 
         dividerBottom.layout(0, b - t - dividerBottom.getMeasuredHeight(), r, b - t);
         dividerTop.layout(0, 0, r, dividerTop.getMeasuredHeight());
@@ -188,13 +215,13 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     }
 
     public void redrawText() {
-        chat.invalidate();
-        chat.requestLayout();
-        call.invalidate();
-        call.requestLayout();
-        notify.invalidate();
-        notify.requestLayout();
-        block.invalidate();
-        block.requestLayout();
+        text1.invalidate();
+        text1.requestLayout();
+        text2.invalidate();
+        text2.requestLayout();
+        text3.invalidate();
+        text3.requestLayout();
+        text4.invalidate();
+        text4.requestLayout();
     }
 }

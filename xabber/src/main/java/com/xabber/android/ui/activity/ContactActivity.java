@@ -72,6 +72,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.GroupchatLeaveDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.GroupchatInfoFragment;
@@ -113,6 +114,7 @@ public class ContactActivity extends ManagedActivity implements
 
     public int orientation;
     private boolean blocked;
+    private boolean isGroupchat;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactActivity.class)
@@ -203,7 +205,10 @@ public class ContactActivity extends ManagedActivity implements
             }
         });
 
+        chat = ChatManager.getInstance().getChat(account, user);
+        isGroupchat = chat instanceof GroupChat;
         contactBarLayout = findViewById(R.id.contact_bar_layout);
+        contactBarLayout.setForGroupchat(isGroupchat);
 
         chatButton = findViewById(R.id.chat_button);
         chatButtonText = findViewById(R.id.chat_button_text);
@@ -234,7 +239,6 @@ public class ContactActivity extends ManagedActivity implements
         contactAddress.setText(user.getBareJid().toString());
         contactName = (TextView) findViewById(R.id.name);
 
-        chat = ChatManager.getInstance().getChat(account, user);
         checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;
@@ -406,13 +410,17 @@ public class ContactActivity extends ManagedActivity implements
         callsButton.setEnabled(!blocked);
         notifyButton.setEnabled(!blocked);
 
-        blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
-        blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
-                R.color.red_900 :
-                SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
-                R.color.grey_600 :
-                R.color.grey_400));
+        if (isGroupchat) {
 
+        } else {
+            blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
+            blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
+                    R.color.red_900 :
+                    SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
+                            R.color.grey_600 :
+                            R.color.grey_400));
+
+        }
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
             callsButtonText.setVisibility(View.GONE);
@@ -516,10 +524,14 @@ public class ContactActivity extends ManagedActivity implements
                     removeSnooze(chat);
                 break;
             case R.id.block_button:
-                if (blocked)
-                    removeBlock();
-                else
-                    showBlockDialog();
+                if (isGroupchat) {
+                    leaveGroupchat();
+                } else {
+                    if (blocked)
+                        removeBlock();
+                    else
+                        showBlockDialog();
+                }
                 break;
             case R.id.generate_qrcode:
                 generateQR();
@@ -539,6 +551,13 @@ public class ContactActivity extends ManagedActivity implements
                     new NotificationState(NotificationState.NotificationMode.enabled,
                             0), true);
         onSnoozed();
+    }
+
+    private void leaveGroupchat() {
+        if (chat instanceof GroupChat) {
+            GroupchatLeaveDialog.newInstance(chat.getAccount(), chat.getUser())
+                    .show(getSupportFragmentManager(), GroupchatLeaveDialog.class.getSimpleName());
+        }
     }
 
     public void showBlockDialog() {

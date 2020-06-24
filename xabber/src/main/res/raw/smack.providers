@@ -18,7 +18,17 @@
     <iqProvider>
         <elementName>query</elementName>
         <namespace>http://xabber.com/protocol/groupchat#members</namespace>
-        <className>com.xabber.android.data.extension.groupchat.GroupchatMembersResultProvider</className>
+        <className>com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultProvider</className>
+    </iqProvider>
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>http://xabber.com/protocol/groupchat#invite</namespace>
+        <className>com.xabber.android.data.extension.groupchat.invite.GroupchatInvitesResultProvider</className>
+    </iqProvider>
+    <iqProvider>
+            <elementName>query</elementName>
+            <namespace>http://xabber.com/protocol/groupchat#block</namespace>
+            <className>com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultProvider</className>
     </iqProvider>
 
     <!-- Stanza Session Negotiation -->

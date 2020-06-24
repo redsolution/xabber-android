@@ -596,6 +596,7 @@
         </activity>
         <activity android:name=".ui.activity.AccountDeleteActivity" />
         <activity android:name=".ui.activity.ConnectedDevicesActivity" />
+        <activity android:name=".ui.activity.GroupchatSettingsActivity" />
     </application>
 
 </manifest>
