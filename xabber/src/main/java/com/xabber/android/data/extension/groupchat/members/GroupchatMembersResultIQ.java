@@ -1,5 +1,7 @@
-package com.xabber.android.data.extension.groupchat;
+package com.xabber.android.data.extension.groupchat.members;
 
+
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 
 import java.util.Collection;
 
