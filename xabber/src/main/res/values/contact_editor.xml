@@ -20,7 +20,6 @@
     <string name="circle_name">Circle name</string>
     <string name="choose_account">Choose an account</string>
     <string name="EMPTY_ACCOUNT">Please select an account</string>
-    <string name="add_new_group">Add new group…</string>
     <string name="add_new_circle">Add new circle…</string>
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>

@@ -200,7 +200,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         chat.setTyped(typedMessage, selectionStart, selectionEnd);
     }
 
-    void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
+    public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         EventBus.getDefault().post(new ChatUpdatedEvent());
 
         if (chat instanceof RegularChat){

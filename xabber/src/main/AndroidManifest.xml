@@ -136,16 +136,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
+
         <activity
-            android:name=".ui.activity.OccupantListActivity"
-            android:label="@string/occupant_list"
-            android:parentActivityName=".ui.activity.ChatActivity">
+            android:name=".ui.activity.AddActivity"
+            android:label="@string/add"
+            android:parentActivityName=".ui.activity.MainActivity">
+
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.xabber.android.ui.activity.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".ui.activity.CreateGroupchatActivity"
+            android:label="@string/add"
+            android:parentActivityName=".ui.activity.AddActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.AddActivity" />
         </activity>
+
         <activity
             android:name=".ui.activity.ChatActivity"
             android:label="@string/chat_viewer"

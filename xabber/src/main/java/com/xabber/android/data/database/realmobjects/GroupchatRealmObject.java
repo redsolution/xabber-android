@@ -23,9 +23,9 @@ public class GroupchatRealmObject extends RealmObject {
     private String accountJid;
     private String owner;
     private String name;
-    private String privacy = GroupchatPrivacyType.none.toString();
-    private String index = GroupchatIndexType.none.toString();
-    private String membership = GroupchatMembershipType.none.toString();
+    private String privacy = GroupchatPrivacyType.NONE.toString();
+    private String index = GroupchatIndexType.NONE.toString();
+    private String membership = GroupchatMembershipType.NONE.toString();
     private String description;
     private MessageRealmObject pinnedMessage;
     private RealmList<GroupchatUserRealmObject> members;
@@ -108,14 +108,14 @@ public class GroupchatRealmObject extends RealmObject {
         if (privacy != null) {
             switch (privacy) {
                 case "incognitoGroupChat":
-                    return GroupchatPrivacyType.incognitoGroupChat;
+                    return GroupchatPrivacyType.INCOGNITO;
                 case "publicGroupChat":
-                    return GroupchatPrivacyType.publicGroupChat;
+                    return GroupchatPrivacyType.PUBLIC;
                 default:
-                    return GroupchatPrivacyType.none;
+                    return GroupchatPrivacyType.NONE;
             }
         }
-        return GroupchatPrivacyType.none;
+        return GroupchatPrivacyType.NONE;
     }
     public void setPrivacy(GroupchatPrivacyType privacy) {
         if (privacy != null)
@@ -126,16 +126,16 @@ public class GroupchatRealmObject extends RealmObject {
         if (index != null) {
             switch (index) {
                 case "global":
-                    return GroupchatIndexType.global;
+                    return GroupchatIndexType.GLOBAL;
                 case "local":
-                    return GroupchatIndexType.local;
+                    return GroupchatIndexType.LOCAL;
                 case "none":
-                    return GroupchatIndexType.none;
+                    return GroupchatIndexType.NONE;
                 default:
-                    return GroupchatIndexType.noneAsNull;
+                    return GroupchatIndexType.NONE_AS_NULL;
             }
         }
-        return GroupchatIndexType.noneAsNull;
+        return GroupchatIndexType.NONE_AS_NULL;
     }
     public void setIndex(GroupchatIndexType index) {
         if (index != null)
@@ -146,14 +146,14 @@ public class GroupchatRealmObject extends RealmObject {
         if (membership != null) {
             switch (membership) {
                 case "open":
-                    return GroupchatMembershipType.open;
+                    return GroupchatMembershipType.OPEN;
                 case "memberOnly":
-                    return GroupchatMembershipType.memberOnly;
+                    return GroupchatMembershipType.MEMBER_ONLY;
                 default:
-                    return GroupchatMembershipType.none;
+                    return GroupchatMembershipType.NONE;
             }
         }
-        return GroupchatMembershipType.none;
+        return GroupchatMembershipType.NONE;
     }
     public void setMembership(GroupchatMembershipType membership) {
         if (membership != null)

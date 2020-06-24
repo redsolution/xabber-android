@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="groupchat_info">INFO</string>
+    <string name="create_groupchat">Create group chat</string>
+    <string name="create_incognito_groupchat">Create incognito group chat</string>
+    <string name="groupchat_name">Name</string>
+    <string name="groupchat_xmpp_jid">GROUP XMPP JID</string>
+    <string name="groupchat_description">Description</string>
+    <string name="groupchat_status">Status</string>
+    <string name="groupchat_indexed">Indexed</string>
+    <string name="groupchat_anonymous">Anonymous</string>
+    <string name="groupchat_membership">Membership</string>
+    <string name="groupchat_default_restrictions">Default restrictions</string>
+    <string name="groupchat_invitations">Invitations</string>
+    <string name="groupchat_blocked">Blocked</string>
+    <string name="groupchat_settings">Settings</string>
+
+    <string name="groupchat_example_name">For example: Developers groupchat</string>
+    <string name="groupchat_example_jid">developers_group</string>
+    <string name="groupchat_example_description">Best groupchat ever!</string>
+
+    <string name="groupchat_choose_server">Choose server</string>
+    <string name="groupchat_choose_membership">Choose membership type</string>
+    <string name="groupchat_choose_index_type">Choose index type</string>
+
+    <string name="groupchat_membership_type_none">None</string>
+    <string name="groupchat_membership_type_open">Open</string>
+    <string name="groupchat_membership_type_members_only">Members only</string>
+
+    <string name="groupchat_index_type_none">None</string>
+    <string name="groupchat_index_type_global">Global</string>
+    <string name="groupchat_index_type_local">Local</string>
+
+    <string name="groupchat_privacy_type_none">None</string>
+    <string name="groupchat_privacy_type_incognito">Incognito</string>
+    <string name="groupchat_privacy_type_public">Public</string>
+
+</resources>

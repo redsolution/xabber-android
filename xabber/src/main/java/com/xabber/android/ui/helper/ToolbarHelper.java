@@ -21,12 +21,7 @@ public class ToolbarHelper {
         Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar_default);
         toolbar.setTitle(title);
         toolbar.setNavigationIcon(navigationIconResource);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(activity);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(activity));
         return toolbar;
     }
 

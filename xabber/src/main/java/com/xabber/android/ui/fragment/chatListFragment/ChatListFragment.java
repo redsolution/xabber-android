@@ -58,6 +58,7 @@ import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.AddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.MainActivity;
@@ -273,7 +274,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarStatusIv = view.findViewById(R.id.ivStatus);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
-        toolbarAddIv.setOnClickListener(v -> startActivity(ContactAddActivity.createIntent(getActivity())));
+        toolbarAddIv.setOnClickListener(v -> startActivity(new Intent(getActivity(), AddActivity.class)));
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName()))

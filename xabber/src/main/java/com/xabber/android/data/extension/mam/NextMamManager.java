@@ -626,7 +626,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult */
-    private <T> T requestToMessageArchive(AccountItem accountItem, MamRequest<T> request) {
+    private <T> T requestToMessageArchive(ConnectionItem accountItem, MamRequest<T> request) {
         T result = null;
         XMPPTCPConnection connection = accountItem.getConnection();
 
@@ -668,7 +668,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     /** Send async request for recent message from chat history */
-    private void requestLastMessageAsync(@NonNull final AccountItem accountItem, @NonNull final AbstractChat chat) {
+    private void requestLastMessageAsync(@NonNull final ConnectionItem accountItem, @NonNull final AbstractChat chat) {
         requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
@@ -684,6 +684,27 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 mamQueryIQ.setType(IQ.Type.set);
                 mamQueryIQ.setTo((Jid) null);
                 mamQueryIQ.addExtension(rsmSet);
+                accountItem.getConnection().sendStanza(mamQueryIQ);
+                return null;
+            }
+        });
+    }
+
+    public void requestSingleMessageAsync(@NonNull final ConnectionItem accountItem,
+                                          @NonNull final AbstractChat chat, String stanzaId){
+        requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                // add request id to waiting list
+                String queryID = UUID.randomUUID().toString();
+                waitingRequests.put(queryID, chat.getUser());
+
+                // send request stanza
+                DataForm dataForm = getNewMamForm();
+                addWithStanzaId(stanzaId, dataForm);
+                MamQueryIQ mamQueryIQ = new MamQueryIQ(queryID, null, dataForm);
+                mamQueryIQ.setType(IQ.Type.set);
+                mamQueryIQ.setTo(chat.getTo());
                 accountItem.getConnection().sendStanza(mamQueryIQ);
                 return null;
             }
@@ -977,6 +998,13 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (withJid == null) return;
         FormField formField = new FormField("with");
         formField.addValue(withJid.toString());
+        dataForm.addField(formField);
+    }
+
+    private static void addWithStanzaId(String stanzaid, DataForm dataForm) {
+        if (stanzaid == null) return;
+        FormField formField = new FormField("{urn:xmpp:sid:0}stanza-id");
+        formField.addValue(stanzaid);
         dataForm.addField(formField);
     }
 

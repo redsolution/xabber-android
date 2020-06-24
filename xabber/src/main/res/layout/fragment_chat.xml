@@ -21,6 +21,13 @@
     android:id="@+id/root_view"
     android:elevation="24dp">
 
+
+    <include
+        android:id="@+id/pinned_message_include"
+        layout="@layout/pinned_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
         android:layout_width="match_parent"
@@ -34,7 +41,7 @@
         android:paddingTop="4dp"
         android:clipToPadding="false"
         android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/toolbar_default"
+        android:layout_below="@+id/pinned_message_include"
         />
 
     <ViewStub

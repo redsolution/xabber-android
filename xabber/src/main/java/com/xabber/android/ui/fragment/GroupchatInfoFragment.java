@@ -221,15 +221,15 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         GroupchatIndexType indexType = groupChat.getIndexType();
         if (indexType != null) {
             switch (indexType) {
-                case global:
+                case GLOBAL:
                     groupchatIndexText.setText("Global");
                     groupchatIndexLayout.setVisibility(View.VISIBLE);
                     break;
-                case local:
+                case LOCAL:
                     groupchatIndexText.setText("Local");
                     groupchatIndexLayout.setVisibility(View.VISIBLE);
                     break;
-                case noneAsNull:
+                case NONE_AS_NULL:
                 default:
                     groupchatIndexLayout.setVisibility(View.GONE);
             }
@@ -237,15 +237,15 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         GroupchatMembershipType membershipType = groupChat.getMembershipType();
         if (membershipType != null) {
             switch (membershipType) {
-                case open:
+                case OPEN:
                     groupchatMembershipText.setText("Open");
                     groupchatMembershipLayout.setVisibility(View.VISIBLE);
                     break;
-                case memberOnly:
+                case MEMBER_ONLY:
                     groupchatMembershipText.setText("Member only");
                     groupchatMembershipLayout.setVisibility(View.VISIBLE);
                     break;
-                case none:
+                case NONE:
                 default:
                     groupchatMembershipLayout.setVisibility(View.GONE);
             }
@@ -253,15 +253,15 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatMember
         GroupchatPrivacyType privacyType = groupChat.getPrivacyType();
         if (privacyType != null) {
             switch (privacyType) {
-                case publicGroupChat:
+                case PUBLIC:
                     groupchatAnonymityText.setText("Public");
                     groupchatAnonymityLayout.setVisibility(View.VISIBLE);
                     break;
-                case incognitoGroupChat:
+                case INCOGNITO:
                     groupchatAnonymityText.setText("Incognito");
                     groupchatAnonymityLayout.setVisibility(View.VISIBLE);
                     break;
-                case none:
+                case NONE:
                 default:
                     groupchatAnonymityLayout.setVisibility(View.GONE);
             }

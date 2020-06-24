@@ -54,6 +54,17 @@
             />
 
         <ImageView
+            android:id="@+id/ivPin"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/input_view_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_pin_grey_24dp" />
+
+        <ImageView
             android:id="@+id/ivDelete"
             android:layout_width="48dp"
             android:layout_height="@dimen/input_view_height"

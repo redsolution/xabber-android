@@ -107,6 +107,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -131,6 +132,7 @@ import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.MessageHeaderViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
@@ -147,6 +149,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -213,7 +216,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private View interactionView;
     private TextView tvCount;
     private ImageView ivEdit;
+    private ImageView ivPin;
     private boolean skipOnTextChanges = false;
+
+    //pinned message variables
+    private View pinnedRootView;
+    private TextView pinnedMessageTv;
+    private TextView pinnedMessageHeaderTv;
+    private TextView pinnedMessageTimeTv;
+    private ImageView pinnedMessageCrossIv;
 
     private Handler handler = new Handler();
     private VoiceRecordState currentVoiceRecordingState = VoiceRecordState.NotRecording;
@@ -558,6 +569,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
             openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
         });
+
+        ivPin = view.findViewById(R.id.ivPin);
+
+        if (getChat() instanceof GroupChat){ ivPin.setOnClickListener(v ->
+                GroupchatManager.getInstance().sendPinMessageRequest(chatMessageAdapter
+                        .getCheckedMessageRealmObjects().get(0)));
+        }
+
         ImageView ivDelete = view.findViewById(R.id.ivDelete);
         ivDelete.setOnClickListener(v ->
                 deleteMessage(new ArrayList<>(chatMessageAdapter.getCheckedMessageRealmObjects())));
@@ -659,7 +678,40 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     }
                 });
 
+        pinnedRootView = view.findViewById(R.id.pinned_message_include);
+        pinnedMessageTv = view.findViewById(R.id.pinned_message_text);
+        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_header);
+        pinnedMessageTimeTv = view.findViewById(R.id.pinned_message_time);
+        pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv);
+
+        //todo privilege checking
+        if (getChat() instanceof GroupChat)
+            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
+                    .sendUnPinMessageRequest((GroupChat)getChat()));
+        setupPinnedMessageView();
+
         return view;
+    }
+
+    private void setupPinnedMessageView(){
+        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null){
+            pinnedRootView.setVisibility(View.VISIBLE);
+            MessageRealmObject message = ((GroupChat)getChat()).getPinnedMessage();
+
+            if (message.isIncoming())
+                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
+                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+            else
+                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
+
+            pinnedMessageTimeTv.setText(StringUtils
+                    .getSmartTimeText(getContext(), new Date(message.getTimestamp())));
+
+            pinnedMessageTv.setText(message.getText());
+        } else {
+            pinnedRootView.setVisibility(View.GONE);
+        }
+
     }
 
     private void setChat(AccountJid accountJid, ContactJid contactJid) {
@@ -1075,6 +1127,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
             historyIsLoading = true;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(GroupchatManager.GroupchatPresenceUpdatedEvent event){
+        if (event.getGroupJid().getBareJid().equals(user.toString()))
+            setupPinnedMessageView();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1668,6 +1726,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             interactionView.setVisibility(View.GONE);
             replySwipe.setSwipeEnabled(true);
         }
+
+        if (checkedItems == 1 && getChat() instanceof GroupChat){
+            ivPin.setVisibility(View.VISIBLE);
+        } else ivPin.setVisibility(View.GONE);
 
         if (checkedItems == 1
                 && RrrManager.getInstance().isSupported(account)

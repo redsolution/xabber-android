@@ -100,7 +100,7 @@
     <string name="export_chat_title">Enter file name</string>
     <string name="muc_invite">Invite to chat</string>
     <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>
-    <string name="occupant_list">List of occupants</string>
+    //<string name="occupant_list">List of occupants</string>
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
     <string name="otr_refresh">Restart encryption</string>
@@ -148,6 +148,8 @@
 
     <string name="toast_no_history">There are no more messages in the history</string>
 
+    <string name="message_by_me">Me</string>
+
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_participant">Participant</string>
     <string name="muc_role_visitor">Visitor</string>
@@ -188,4 +190,5 @@
     <string name="cancel_action">Cancel</string>
     <string name="delete">Delete</string>
     <string name="edited">(edited at %s)</string>
+
 </resources>

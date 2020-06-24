@@ -19,6 +19,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatUpdateIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.extension.groupchat.OnGroupchatMembersListener;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -33,6 +34,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -70,8 +72,16 @@ public class GroupchatManager implements OnPacketListener {
 
                 GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
 
-                groupChat.setPinnedMessage(MessageRepository
-                        .getMessageFromRealmByStanzaId(presence.getPinnedMessageId()));
+                if (presence.getPinnedMessageId() != null && !presence.getPinnedMessageId().isEmpty()){
+                    MessageRealmObject pinnedMessage = MessageRepository
+                            .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
+                    if (pinnedMessage == null || pinnedMessage.getTimestamp() == null){
+
+                        NextMamManager.getInstance().requestSingleMessageAsync(connection,
+                                groupChat, presence.getPinnedMessageId());
+                    } else groupChat.setPinnedMessage(pinnedMessage);
+                }
+
                 groupChat.setDescription(presence.getDescription());
                 groupChat.setName(presence.getName());
                 groupChat.setIndexType(presence.getIndex());
@@ -79,9 +89,11 @@ public class GroupchatManager implements OnPacketListener {
                 groupChat.setMembershipType(presence.getMembership());
                 groupChat.setNumberOfMembers(presence.getAllMembers());
                 groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
+
                 EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));
                 //todo etc...
 
+                ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }
@@ -102,12 +114,44 @@ public class GroupchatManager implements OnPacketListener {
         return isSupported(AccountManager.getInstance().getAccount(accountJid).getConnection());
     }
 
+    public void sendUnPinMessageRequest(GroupChat groupChat){
+        //todo add privilege checking
+
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                GroupchatPinnedMessageElement groupchatPinnedMessageElement =
+                        new GroupchatPinnedMessageElement("");
+
+                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupChat.getAccount().getFullJid(),
+                        groupChat.getUser().getJid(), groupchatPinnedMessageElement);
+
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(iq, packet -> {
+
+                            if (packet instanceof IQ) {
+                                if (((IQ) packet).getType().equals(IQ.Type.error)){
+                                    LogManager.d(LOG_TAG, "Failed to pin message");
+                                    Toast.makeText(Application.getInstance().getBaseContext(),
+                                            "Failed to retract message", Toast.LENGTH_SHORT).show();
+                                }
+                                if (((IQ) packet).getType().equals(IQ.Type.result)){
+                                    LogManager.d(LOG_TAG, "Message successfully unpinned");
+                                }
+                            }
+
+                        });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
+    }
+
     public void sendPinMessageRequest(MessageRealmObject message){
         //todo add privilege checking
 
         final String stanzaId = message.getStanzaId();
         final AccountJid account = message.getAccount();
-        final String contact = message.getUser().toString();
+        final Jid contact = message.getUser().getJid();
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
@@ -115,7 +159,7 @@ public class GroupchatManager implements OnPacketListener {
                 GroupchatPinnedMessageElement groupchatPinnedMessageElement =
                         new GroupchatPinnedMessageElement(stanzaId);
 
-                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(account.toString(), contact,
+                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(account.getFullJid(), contact,
                         groupchatPinnedMessageElement);
 
                 AccountManager.getInstance().getAccount(account).getConnection()
@@ -129,8 +173,6 @@ public class GroupchatManager implements OnPacketListener {
                                 }
                                 if (((IQ) packet).getType().equals(IQ.Type.result)){
                                     LogManager.d(LOG_TAG, "Message successfully pinned");
-                                    Application.getInstance().runOnUiThread(() ->
-                                            MessageRepository.setMessagePinned(message));
                                 }
                             }
 

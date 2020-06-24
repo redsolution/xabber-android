@@ -36,7 +36,6 @@ import java.util.Collections;
  */
 public class AccountChooseAdapter extends BaseAdapter {
     protected final ArrayList<AccountJid> accounts;
-    private final int[] accountColors;
     private final Activity activity;
 
     public AccountChooseAdapter(Activity activity) {
@@ -45,7 +44,6 @@ public class AccountChooseAdapter extends BaseAdapter {
         accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(accounts);
 
-        accountColors = activity.getResources().getIntArray(R.array.account_500);
     }
 
     @Override
@@ -74,10 +72,6 @@ public class AccountChooseAdapter extends BaseAdapter {
             view = convertView;
         }
         final AccountJid account = (AccountJid) getItem(position);
-
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
-        ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         ((TextView) view.findViewById(R.id.name)).setText(accountManager
                 .getVerboseName(account));

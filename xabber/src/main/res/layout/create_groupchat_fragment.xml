@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <include layout="@layout/account_select_spinner"/>
+
+<!-- Groupchat name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/groupchat_name"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="10dp"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/create_groupchat_name_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/groupchat_example_name"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:singleLine="true"
+        android:textSize="20sp"/>
+
+<!-- Groupchat XMPP JID -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/groupchat_xmpp_jid"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="20dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/create_groupchat_jid_et"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/groupchat_example_jid"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/create_groupchat_comm_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/create_groupchat_jid_et"
+            app:layout_constraintRight_toLeftOf="@id/create_groupchat_server_et"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="20sp"
+            android:text="\@"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/create_groupchat_server_et"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/create_groupchat_comm_at"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:hint="xabber.org"
+            android:minHeight="18dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Settings -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/groupchat_settings"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Membership setting -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:text="@string/groupchat_choose_membership"
+            android:textSize="20sp"/>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/create_groupchat_membership_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:prompt="@string/groupchat_choose_membership"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:minHeight="20dp" />
+
+    </RelativeLayout>
+
+    <!-- Index type setting -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:text="@string/groupchat_choose_index_type"
+            android:textSize="20sp"/>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/create_groupchat_index_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:prompt="@string/groupchat_choose_index_type"
+            android:minHeight="20dp"/>
+
+    </RelativeLayout>
+
+    <!-- Description -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/groupchat_description"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/create_groupchat_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:minLines="5"
+        android:background="@color/white"
+        android:hint="@string/groupchat_example_description"
+        android:gravity="start"
+        android:textSize="20sp"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

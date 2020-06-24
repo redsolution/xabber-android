@@ -74,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="INFO"
+                    android:text="@string/groupchat_info"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -111,6 +111,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginRight="16dp"
+                                android:layout_marginEnd="16dp"
                                 android:layout_marginBottom="8dp"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
@@ -128,7 +129,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Status"
+                                    android:text="@string/groupchat_status"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -175,7 +176,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Name"
+                                    android:text="@string/groupchat_name"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -222,7 +223,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Description"
+                                    android:text="@string/groupchat_description"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -270,7 +271,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Indexed"
+                                    android:text="@string/groupchat_indexed"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -318,7 +319,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Anonymous"
+                                    android:text="@string/groupchat_anonymous"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -366,7 +367,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:singleLine="true"
-                                    android:text="Membership"
+                                    android:text="@string/groupchat_membership"
                                     android:textColor="?android:attr/textColorSecondary"
                                     android:textSize="@dimen/vcard_secondary_text" />
 
@@ -430,7 +431,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Settings"
+                                android:text="@string/settings"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                         </LinearLayout>
@@ -446,7 +447,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Default restrictions"
+                                android:text="@string/groupchat_default_restrictions"
                                 android:textColor="?android:attr/textColorPrimary" />
                         </LinearLayout>
 
@@ -476,7 +477,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Invitations"
+                                android:text="@string/groupchat_invitations"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
@@ -498,7 +499,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Blocked"
+                                android:text="@string/groupchat_blocked"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView

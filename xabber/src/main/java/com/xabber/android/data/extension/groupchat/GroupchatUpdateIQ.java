@@ -1,9 +1,8 @@
 package com.xabber.android.data.extension.groupchat;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.NamedElement;
-import org.jxmpp.stringprep.XmppStringprepException;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,14 +12,14 @@ public class GroupchatUpdateIQ extends IQ  {
     public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
     public static final String ELEMENT = "update";
 
-    private String from;
-    private String to;
+    private Jid from;
+    private Jid to;
     private Collection<NamedElement> elements = new ArrayList<>();
 
     public String getNamespace(){ return NAMESPACE; }
     public String getElementName(){ return ELEMENT; }
 
-    public GroupchatUpdateIQ(String from, String to){
+    public GroupchatUpdateIQ(Jid from, Jid to){
         super(ELEMENT, NAMESPACE);
         this.setType(Type.set);
         this.setFrom(from);
@@ -30,7 +29,7 @@ public class GroupchatUpdateIQ extends IQ  {
         this.to = to;
     }
 
-    public GroupchatUpdateIQ(String from, String to, NamedElement element){
+    public GroupchatUpdateIQ(Jid from, Jid to, NamedElement element){
         super(ELEMENT, NAMESPACE);
         this.setType(Type.set);
         this.setFrom(from);
@@ -42,7 +41,7 @@ public class GroupchatUpdateIQ extends IQ  {
         this.addElement(element);
     }
 
-    public GroupchatUpdateIQ(String from, String to, Collection<NamedElement> elements){
+    public GroupchatUpdateIQ(Jid from, Jid to, Collection<NamedElement> elements){
         super(ELEMENT, NAMESPACE);
         this.setType(Type.set);
         this.setFrom(from);
@@ -61,6 +60,14 @@ public class GroupchatUpdateIQ extends IQ  {
     public void addElements(Collection<NamedElement> elements){
         for (NamedElement element : elements)
             addElement(element);
+    }
+
+    @Override
+    public Type getType() { return Type.set; }
+
+    @Override
+    public Jid getTo() {
+        return to;
     }
 
     @Override
