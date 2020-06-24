@@ -140,6 +140,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onStop() {
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
+        Application.getInstance().removeUIListener(OnStatusChangeListener.class, this);
         super.onStop();
     }
 
@@ -688,6 +689,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
             markAllAsReadButton.setVisibility(View.VISIBLE);
             markAllAsReadButton.setOnClickListener(v -> {
+                LogManager.d("ChatListFragment", "manually executing markAsReadAll");
                 for (AbstractChat chat : ChatManager.getInstance().getChatsOfEnabledAccounts()) {
                     chat.markAsReadAll(true);
                     MessageNotificationManager.getInstance().removeAllMessageNotifications();
