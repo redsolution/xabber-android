@@ -55,8 +55,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//todo add and implement other listeners
-
 public class GroupchatManager implements OnPacketListener {
 
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
@@ -87,7 +85,9 @@ public class GroupchatManager implements OnPacketListener {
 
                 GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
 
-                if (presence.getPinnedMessageId() != null && !presence.getPinnedMessageId().isEmpty()){
+                if (presence.getPinnedMessageId() != null
+                        && !presence.getPinnedMessageId().isEmpty()
+                        && !presence.getPinnedMessageId().equals("0")){
                     MessageRealmObject pinnedMessage = MessageRepository
                             .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
                     if (pinnedMessage == null || pinnedMessage.getTimestamp() == null){
