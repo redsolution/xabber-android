@@ -71,7 +71,7 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
         view.findViewById(R.id.cancel_leave).setOnClickListener(this);
         view.findViewById(R.id.leave).setOnClickListener(this);
 
-        return builder.setTitle(getString(R.string.contact_delete_full))
+        return builder.setTitle(getString(R.string.groupchat_leave_full))
                 .setView(view)
                 .create();
     }
