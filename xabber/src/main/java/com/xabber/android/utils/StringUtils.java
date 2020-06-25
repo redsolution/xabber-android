@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -514,7 +515,9 @@ public class StringUtils {
             String result = xmlOutput.getWriter().toString();
             return xmlData.substring(0, xmlMarkupStartsAtIndex) + "\n" + result.substring(0, result.length()-1);
         } catch (Exception e) {
-            LogManager.e("StringUtils", e.toString());
+            if (!(e instanceof TransformerException)) {
+                LogManager.exception(StringUtils.class.getSimpleName(), e);
+            }
             return xmlData;
         }
     }
