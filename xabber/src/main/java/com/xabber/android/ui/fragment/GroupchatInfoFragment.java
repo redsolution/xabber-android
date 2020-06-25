@@ -382,7 +382,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (groupChat instanceof GroupChat) {
             switch (v.getId()) {
             case R.id.invitationsButtonLayout:
-                    if (((GroupChat) groupChat).getListOfInvites().size() > 0) {
+                    if (((GroupChat) groupChat).getListOfInvites() != null &&
+                            ((GroupChat) groupChat).getListOfInvites().size() > 0) {
                         startActivity(GroupchatSettingsActivity
                                 .createIntent(getContext(),
                                         account, groupchatContact,
@@ -390,7 +391,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                     }
                     break;
                 case R.id.blockedButtonLayout:
-                    if (((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
+                    if (((GroupChat) groupChat).getListOfBlockedElements() != null &&
+                            ((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
                         startActivity(GroupchatSettingsActivity
                                 .createIntent(getContext(),
                                         account, groupchatContact,
