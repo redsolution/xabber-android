@@ -23,7 +23,7 @@
     <iqProvider>
         <elementName>query</elementName>
         <namespace>http://xabber.com/protocol/groupchat#invite</namespace>
-        <className>com.xabber.android.data.extension.groupchat.invite.GroupchatInvitesResultProvider</className>
+        <className>com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultProvider</className>
     </iqProvider>
     <iqProvider>
             <elementName>query</elementName>

@@ -126,6 +126,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (groupChat instanceof GroupChat) {
             updateChatSettings((GroupChat) groupChat);
         }
+        requestLists();
     }
 
     @Override
@@ -206,7 +207,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         groupchatJidText.setText(groupchatContact.getBareJid());
 
-        requestLists();
         groupchatPresence = PresenceManager.getInstance().getPresence(account, groupchatContact);
         groupChat = ChatManager.getInstance().getChat(account, groupchatContact);
 
@@ -315,7 +315,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     private void updateChatSettings(GroupChat groupChat) {
-        // TODO permission to see invitations
         ArrayList<String> listOfInvites = groupChat.getListOfInvites();
         if (listOfInvites != null) {
             if (listOfInvites.isEmpty()) {

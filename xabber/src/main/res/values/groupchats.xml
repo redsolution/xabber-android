@@ -35,4 +35,6 @@
     <string name="groupchat_privacy_type_incognito">Incognito</string>
     <string name="groupchat_privacy_type_public">Public</string>
 
+    <string name="groupchat_invite_reason_dialog_title">Reason</string>
+    <string name="groupchat_invite_reason_dialog_message">Write a reason to go along with the invitation</string>
 </resources>

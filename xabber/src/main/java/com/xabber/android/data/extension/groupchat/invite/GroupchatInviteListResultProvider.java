@@ -8,11 +8,11 @@ import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
 
-public class GroupchatInvitesResultProvider extends IQProvider<GroupchatInvitesResultIQ> {
+public class GroupchatInviteListResultProvider extends IQProvider<GroupchatInviteListResultIQ> {
 
     @Override
-    public GroupchatInvitesResultIQ parse(XmlPullParser parser, int initialDepth) throws Exception {
-        GroupchatInvitesResultIQ resultIQ = new GroupchatInvitesResultIQ();
+    public GroupchatInviteListResultIQ parse(XmlPullParser parser, int initialDepth) throws Exception {
+        GroupchatInviteListResultIQ resultIQ = new GroupchatInviteListResultIQ();
         ArrayList<String> listOfInvites = new ArrayList<>();
 
         outerloop:

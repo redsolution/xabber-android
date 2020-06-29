@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
@@ -32,6 +33,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
@@ -286,6 +288,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             viewHolder.accountColorIndicator.setBackgroundColor(context.getResources().getColor(R.color.transparent));
             viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+        }
+
+        if (adapter.isSelected(position)) {
+            LogManager.d("ListSelection", "item at pos = " + position + " is selected");
+            viewHolder.itemView.getBackground().setColorFilter(new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
+        } else {
+            viewHolder.itemView.getBackground().setColorFilter(null);
         }
 
         /** set up AVATAR */

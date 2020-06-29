@@ -84,14 +84,14 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     }
 
     private void cacheViews() {
-        button1 = (ImageButton) findViewById(R.id.chat_button);
-        button2 = (ImageButton) findViewById(R.id.call_button);
-        button3 = (ImageButton) findViewById(R.id.notify_button);
-        button4 = (ImageButton) findViewById(R.id.block_button);
-        text1 = (TextView) findViewById(R.id.chat_button_text);
-        text2 = (TextView) findViewById(R.id.call_button_text);
-        text3 = (TextView) findViewById(R.id.notification_text);
-        text4 = (TextView) findViewById(R.id.block_text);
+        button1 = (ImageButton) findViewById(R.id.first_button);
+        button2 = (ImageButton) findViewById(R.id.second_button);
+        button3 = (ImageButton) findViewById(R.id.third_button);
+        button4 = (ImageButton) findViewById(R.id.fourth_button);
+        text1 = (TextView) findViewById(R.id.first_button_text);
+        text2 = (TextView) findViewById(R.id.second_button_text);
+        text3 = (TextView) findViewById(R.id.third_button_text);
+        text4 = (TextView) findViewById(R.id.fourth_button_text);
         dividerTop = findViewById(R.id.divider_top);
         dividerBottom = findViewById(R.id.divider_bottom);
         textViews = Arrays.asList(text1, text2, text3, text4);

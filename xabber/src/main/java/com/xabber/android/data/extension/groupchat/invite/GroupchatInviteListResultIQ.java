@@ -7,17 +7,17 @@ import org.jivesoftware.smack.packet.IQ;
 
 import java.util.ArrayList;
 
-public class GroupchatInvitesResultIQ extends IQ {
+public class GroupchatInviteListResultIQ extends IQ {
 
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE
-            + GroupchatInvitesQueryIQ.HASH_INVITE;
+            + GroupchatInviteListQueryIQ.HASH_INVITE;
     public static final String ELEMENT = QUERY_ELEMENT;
     public static final String USER_ELEMENT = GroupchatUserExtension.ELEMENT;
     public static final String ATTRIBUTE_JID = "jid";
 
     private ArrayList<String> listOfInvitedJids;
 
-    public GroupchatInvitesResultIQ() {
+    public GroupchatInviteListResultIQ() {
         super(ELEMENT, NAMESPACE);
     }
 

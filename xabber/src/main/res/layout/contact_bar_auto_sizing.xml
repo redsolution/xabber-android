@@ -14,7 +14,7 @@
         style="@style/Divider"/>
 
     <ImageButton
-        android:id="@+id/chat_button"
+        android:id="@+id/first_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/test_ripple"
@@ -23,7 +23,7 @@
         app:srcCompat="@drawable/ic_chats_list_new" />
 
     <TextView
-        android:id="@+id/chat_button_text"
+        android:id="@+id/first_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -32,7 +32,7 @@
         android:visibility="visible" />
 
     <ImageButton
-        android:id="@+id/call_button"
+        android:id="@+id/second_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/test_ripple"
@@ -41,7 +41,7 @@
         app:srcCompat="@drawable/ic_calls_list_new" />
 
     <TextView
-        android:id="@+id/call_button_text"
+        android:id="@+id/second_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
@@ -49,7 +49,7 @@
         android:text="@string/contact_bar_call" />
 
     <ImageButton
-        android:id="@+id/notify_button"
+        android:id="@+id/third_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/test_ripple"
@@ -58,7 +58,7 @@
         app:srcCompat="@drawable/ic_bell" />
 
     <TextView
-        android:id="@+id/notification_text"
+        android:id="@+id/third_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -67,7 +67,7 @@
         android:text="@string/contact_bar_notifications" />
 
     <ImageButton
-        android:id="@+id/block_button"
+        android:id="@+id/fourth_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/test_ripple"
@@ -77,7 +77,7 @@
         app:srcCompat="@drawable/ic_block_grey600_24dp" />
 
     <TextView
-        android:id="@+id/block_text"
+        android:id="@+id/fourth_button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
