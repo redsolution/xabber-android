@@ -5,7 +5,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 
 import org.jivesoftware.smack.packet.IQ;
 
-public class GroupchatInvitesRevokeIQ extends IQ {
+public class GroupchatInviteListRevokeIQ extends IQ {
 
     public static final String ELEMENT = "revoke";
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE + "#invite";
@@ -13,7 +13,7 @@ public class GroupchatInvitesRevokeIQ extends IQ {
 
     private String inviteJid;
 
-    public GroupchatInvitesRevokeIQ(ContactJid groupchatContact, String jid) {
+    public GroupchatInviteListRevokeIQ(ContactJid groupchatContact, String jid) {
         super(ELEMENT, NAMESPACE);
         inviteJid = jid;
         setTo(groupchatContact.getBareJid());

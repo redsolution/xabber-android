@@ -100,16 +100,16 @@ public class ContactActivity extends ManagedActivity implements
     private AppBarLayout appBarLayout;
     private ImageView background;
     private ImageView QRgen;
-    private ImageButton chatButton;
-    private ImageButton callsButton;
-    private ImageButton blockButton;
-    private ImageButton notifyButton;
+    private ImageButton firstButton;
+    private ImageButton secondButton;
+    private ImageButton thirdButton;
+    private ImageButton fourthButton;
     private int accountMainColor;
     private boolean coloredBlockText;
-    private TextView chatButtonText;
-    private TextView callsButtonText;
-    private TextView blockButtonText;
-    private TextView notifyButtonText;
+    private TextView firstButtonText;
+    private TextView secondButtonText;
+    private TextView thirdButtonText;
+    private TextView fourthButtonText;
     private ContactBarAutoSizingLayout contactBarLayout;
 
     public int orientation;
@@ -210,21 +210,21 @@ public class ContactActivity extends ManagedActivity implements
         contactBarLayout = findViewById(R.id.contact_bar_layout);
         contactBarLayout.setForGroupchat(isGroupchat);
 
-        chatButton = findViewById(R.id.chat_button);
-        chatButtonText = findViewById(R.id.chat_button_text);
-        chatButton.setOnClickListener(this);
+        firstButton = findViewById(R.id.first_button);
+        firstButtonText = findViewById(R.id.first_button_text);
+        firstButton.setOnClickListener(this);
 
-        callsButton = findViewById(R.id.call_button);
-        callsButtonText = findViewById(R.id.call_button_text);
-        callsButton.setOnClickListener(this);
+        secondButton = findViewById(R.id.second_button);
+        secondButtonText = findViewById(R.id.second_button_text);
+        secondButton.setOnClickListener(this);
 
-        blockButton = findViewById(R.id.block_button);
-        blockButtonText = findViewById(R.id.block_text);
-        blockButton.setOnClickListener(this);
+        thirdButton = findViewById(R.id.fourth_button);
+        thirdButtonText = findViewById(R.id.fourth_button_text);
+        thirdButton.setOnClickListener(this);
 
-        notifyButton = findViewById(R.id.notify_button);
-        notifyButtonText = findViewById(R.id.notification_text);
-        notifyButton.setOnClickListener(this);
+        fourthButton = findViewById(R.id.third_button);
+        fourthButtonText = findViewById(R.id.third_button_text);
+        fourthButton.setOnClickListener(this);
 
         int colorLevel = AccountPainter.getAccountColorLevel(account);
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
@@ -383,38 +383,38 @@ public class ContactActivity extends ManagedActivity implements
         if (chat != null) {
             chat.enableNotificationsIfNeed();
             if (chat.notifyAboutMessage() && !blocked)
-                notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
+                fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
             else {
                 notify = false;
                 NotificationState notificationState = chat.getNotificationState();
                 switch (notificationState.getMode()) {
                     case disabled:
-                        notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
                         break;
                     case snooze1d:
                     case snooze2h:
                     case snooze1h:
                     case snooze15m:
                     default:
-                        if (blocked) notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
-                        else notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+                        if (blocked) fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        else fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
                         break;
                 }
             }
         }
-        chatButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
-        callsButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
-        notifyButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
-        blockButton.setColorFilter(getResources().getColor(R.color.red_900));
+        firstButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        secondButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        fourthButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
+        thirdButton.setColorFilter(getResources().getColor(R.color.red_900));
 
-        callsButton.setEnabled(!blocked);
-        notifyButton.setEnabled(!blocked);
+        secondButton.setEnabled(!blocked);
+        fourthButton.setEnabled(!blocked);
 
         if (isGroupchat) {
 
         } else {
-            blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
-            blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
+            thirdButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
+            thirdButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
                     R.color.red_900 :
                     SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
                             R.color.grey_600 :
@@ -422,15 +422,15 @@ public class ContactActivity extends ManagedActivity implements
 
         }
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            chatButtonText.setVisibility(View.GONE);
-            callsButtonText.setVisibility(View.GONE);
-            blockButtonText.setVisibility(View.GONE);
-            notifyButtonText.setVisibility(View.GONE);
+            firstButtonText.setVisibility(View.GONE);
+            secondButtonText.setVisibility(View.GONE);
+            thirdButtonText.setVisibility(View.GONE);
+            fourthButtonText.setVisibility(View.GONE);
         } else {
-            chatButtonText.setVisibility(View.VISIBLE);
-            callsButtonText.setVisibility(View.VISIBLE);
-            blockButtonText.setVisibility(View.VISIBLE);
-            notifyButtonText.setVisibility(View.VISIBLE);
+            firstButtonText.setVisibility(View.VISIBLE);
+            secondButtonText.setVisibility(View.VISIBLE);
+            thirdButtonText.setVisibility(View.VISIBLE);
+            fourthButtonText.setVisibility(View.VISIBLE);
             contactBarLayout.redrawText();
         }
     }
@@ -510,20 +510,24 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.chat_button:
+            case R.id.first_button:
                 startActivity(ChatActivity.createSpecificChatIntent(this, account, user));
                 finish();
                 break;
-            case R.id.call_button:
-                Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
+            case R.id.second_button:
+                if (isGroupchat) {
+                    startActivity(GroupchatInviteContactActivity.createIntent(ContactActivity.this, account, user));
+                } else {
+                    Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
+                }
                 break;
-            case R.id.notify_button:
+            case R.id.third_button:
                 if (chat.notifyAboutMessage())
                     showSnoozeDialog(chat);
                 else
                     removeSnooze(chat);
                 break;
-            case R.id.block_button:
+            case R.id.fourth_button:
                 if (isGroupchat) {
                     leaveGroupchat();
                 } else {

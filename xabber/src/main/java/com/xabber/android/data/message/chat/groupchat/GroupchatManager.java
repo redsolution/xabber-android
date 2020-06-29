@@ -23,9 +23,10 @@ import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemE
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistQueryIQ;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultIQ;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistUnblockIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInvitesQueryIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInvitesResultIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInvitesRevokeIQ;
+import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListQueryIQ;
+import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultIQ;
+import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListRevokeIQ;
+import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteRequestIQ;
 import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
@@ -197,6 +198,33 @@ public class GroupchatManager implements OnPacketListener {
         });
     }
 
+    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid, List<ContactJid> contactsToInvite, String reason) {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
+            if (chat instanceof GroupChat) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+                if (accountItem != null) {
+                    XMPPConnection connection = accountItem.getConnection();
+
+                    for (ContactJid invite : contactsToInvite) {
+                        GroupchatInviteRequestIQ requestIQ = new GroupchatInviteRequestIQ(groupchatJid, invite);
+                        requestIQ.setLetGroupchatSendInviteMessage(true);
+                        if (reason != null && !reason.isEmpty()) {
+                            requestIQ.setReason(reason);
+                        }
+                        try {
+                            connection.sendStanza(requestIQ);
+                        } catch (SmackException.NotConnectedException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     public void requestGroupchatMembers(AccountJid account, ContactJid groupchatJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
@@ -257,7 +285,7 @@ public class GroupchatManager implements OnPacketListener {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
-                    GroupchatInvitesQueryIQ queryIQ = new GroupchatInvitesQueryIQ(groupchatJid);
+                    GroupchatInviteListQueryIQ queryIQ = new GroupchatInviteListQueryIQ(groupchatJid);
                     GroupchatInvitesResultListener listener = new GroupchatInvitesResultListener(account, groupchatJid);
                     try {
                         connection.sendIqWithResponseCallback(queryIQ, listener);
@@ -307,8 +335,8 @@ public class GroupchatManager implements OnPacketListener {
     public void revokeGroupchatInvitation(AccountJid account, ContactJid groupchatJid, String inviteJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-                GroupchatInvitesRevokeIQ revokeIQ =
-                        new GroupchatInvitesRevokeIQ(groupchatJid, inviteJid);
+                GroupchatInviteListRevokeIQ revokeIQ =
+                        new GroupchatInviteListRevokeIQ(groupchatJid, inviteJid);
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -369,8 +397,8 @@ public class GroupchatManager implements OnPacketListener {
 
             for (String inviteJid : inviteJids) {
                 try {
-                    GroupchatInvitesRevokeIQ revokeIQ =
-                            new GroupchatInvitesRevokeIQ(groupchatJid, inviteJid);
+                    GroupchatInviteListRevokeIQ revokeIQ =
+                            new GroupchatInviteListRevokeIQ(groupchatJid, inviteJid);
                     accountItem.getConnection().sendIqWithResponseCallback(revokeIQ, packet -> {
                         if (packet instanceof IQ) {
                             if (groupChat != null) groupChat.getListOfInvites().remove(inviteJid);
@@ -649,8 +677,8 @@ public class GroupchatManager implements OnPacketListener {
 
         @Override
         public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-            if (packet instanceof GroupchatInvitesResultIQ) {
-                GroupchatInvitesResultIQ resultIQ = (GroupchatInvitesResultIQ) packet;
+            if (packet instanceof GroupchatInviteListResultIQ) {
+                GroupchatInviteListResultIQ resultIQ = (GroupchatInviteListResultIQ) packet;
 
                 if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
                         && account.getBareJid().equals(packet.getTo().asBareJid())) {

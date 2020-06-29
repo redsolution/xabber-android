@@ -3,11 +3,11 @@ package com.xabber.android.data.extension.groupchat.invite;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ;
 
-public class GroupchatInvitesQueryIQ extends GroupchatAbstractQueryIQ {
+public class GroupchatInviteListQueryIQ extends GroupchatAbstractQueryIQ {
 
     public static final String HASH_INVITE = "#invite";
 
-    public GroupchatInvitesQueryIQ(ContactJid groupchatJid) {
+    public GroupchatInviteListQueryIQ(ContactJid groupchatJid) {
         super(ELEMENT, NAMESPACE + HASH_INVITE);
         setType(Type.get);
         setTo(groupchatJid.getBareJid());
