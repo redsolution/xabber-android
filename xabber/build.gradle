@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 829
-        versionName '3.0.1(829)'
+        versionCode 832
+        versionName '3.0.1(832)'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
         vectorDrawables.useSupportLibrary = true
     }
@@ -157,14 +157,9 @@ dependencies {
 
     // Opus codec
     implementation 'top.oply.opuslib:opuslib:1.0.2'
-/*
-    implementation 'com.github.martoreto:opuscodec:v1.2.1.2'
-*/
 
     // barcode scanner
-    //implementation 'com.google.zxing:android-integration:3.3.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
-    //implementation 'com.google.android.gms:play-services:8.1.0'
 
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -215,6 +210,7 @@ dependencies {
     storeImplementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") {
         transitive = true
     }
+    implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
 
     // leak canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
