@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
 import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
+import com.github.anrwatchdog.ANRWatchDog;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
@@ -407,6 +408,10 @@ public class Application extends android.app.Application {
 
         /** Crashlytics */
         ExternalAPIs.enableCrashlyticsIfNeed(this);
+
+        new ANRWatchDog()
+                .setANRListener(error -> LogManager.exception("ANR Detected!", error))
+                .start();
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
