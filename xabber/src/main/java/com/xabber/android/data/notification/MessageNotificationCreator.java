@@ -69,6 +69,7 @@ public class MessageNotificationCreator {
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
+                .setAllowSystemGeneratedContextualActions(false)
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                 .setWhen(chat.getLastMessageTimestamp())
                 .setSmallIcon(R.drawable.ic_stat_chat)
