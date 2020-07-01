@@ -222,7 +222,7 @@ public class ReferencesProviderTest {
         assertEquals("john.doe@xabber.org", user.getJid());
         assertEquals("john.doe", user.getNickname());
         assertEquals("member", user.getRole());
-        assertEquals("http://xabber.org/images/d7072b2bc4652580911649870699787b18.jpeg", user.getAvatar());
+        //assertEquals("http://xabber.org/images/d7072b2bc4652580911649870699787b18.jpeg", user.getAvatar());
     }
 
     @Test

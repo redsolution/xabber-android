@@ -88,6 +88,27 @@ public class MessageRepository {
         }
     }
 
+    public static void setStanzaIdByOriginId(String originId, String stanzaId){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try{
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    MessageRealmObject message = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
+                            .findFirst();
+                    message.setStanzaId(stanzaId);
+                    realm1.insertOrUpdate(message);
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (Looper.getMainLooper() != Looper.myLooper() && realm != null)
+                    realm.close();
+            }
+        });
+    }
+
     public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
         return DatabaseManager.getInstance().getDefaultRealmInstance()
                 .where(MessageRealmObject.class)

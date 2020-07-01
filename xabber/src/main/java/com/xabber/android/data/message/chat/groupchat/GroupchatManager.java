@@ -14,6 +14,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupchatEchoExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPinnedMessageElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatUpdateIQ;
@@ -35,6 +36,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,8 +44,11 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jxmpp.jid.Jid;
 
@@ -73,45 +78,65 @@ public class GroupchatManager implements OnPacketListener {
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
         if (packet instanceof Presence && packet.hasExtension(GroupchatPresence.NAMESPACE)) {
-            try {
-                GroupchatPresence presence = (GroupchatPresence) packet.getExtension(GroupchatPresence.NAMESPACE);
+            processPresence(connection, packet);
+        } else if (packet instanceof Message
+                && ((Message) packet).getType().equals(Message.Type.headline)
+                && packet.hasExtension(GroupchatEchoExtensionElement.ELEMENT, GroupchatEchoExtensionElement.NAMESPACE)){
+            processHeadlineEchoMessage(connection, packet);
+        }
+    }
 
-                AccountJid accountJid = AccountJid.from(packet.getTo().toString());
-                ContactJid contactJid = ContactJid.from(packet.getFrom());
+    private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet){
+        try{
+            StandardExtensionElement echoElement = (StandardExtensionElement) packet.getExtensions().get(0);
+            Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
+            String originId = UniqStanzaHelper.getOriginId(message);
+            String stanzaId = UniqStanzaHelper.getContactStanzaId(message);
+            MessageRepository.setStanzaIdByOriginId(originId, stanzaId);
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+    }
 
-                if (ChatManager.getInstance().getChat(accountJid, contactJid) instanceof RegularChat) {
-                    ChatManager.getInstance().removeChat(accountJid, contactJid);
-                    ChatManager.getInstance().createGroupChat(accountJid, contactJid);
-                }
+    private void processPresence(ConnectionItem connection, Stanza packet){
+        try {
+            GroupchatPresence presence = (GroupchatPresence) packet.getExtension(GroupchatPresence.NAMESPACE);
 
-                GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
+            AccountJid accountJid = AccountJid.from(packet.getTo().toString());
+            ContactJid contactJid = ContactJid.from(packet.getFrom());
 
-                if (presence.getPinnedMessageId() != null
-                        && !presence.getPinnedMessageId().isEmpty()
-                        && !presence.getPinnedMessageId().equals("0")){
-                    MessageRealmObject pinnedMessage = MessageRepository
-                            .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
-                    if (pinnedMessage == null || pinnedMessage.getTimestamp() == null){
-
-                        NextMamManager.getInstance().requestSingleMessageAsync(connection,
-                                groupChat, presence.getPinnedMessageId());
-                    } else groupChat.setPinnedMessage(pinnedMessage);
-                }
-
-                groupChat.setDescription(presence.getDescription());
-                groupChat.setName(presence.getName());
-                groupChat.setIndexType(presence.getIndex());
-                groupChat.setPrivacyType(presence.getPrivacy());
-                groupChat.setMembershipType(presence.getMembership());
-                groupChat.setNumberOfMembers(presence.getAllMembers());
-                groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
-
-                EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));
-                //todo etc...
-                ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
+            if (ChatManager.getInstance().getChat(accountJid, contactJid) instanceof RegularChat) {
+                ChatManager.getInstance().removeChat(accountJid, contactJid);
+                ChatManager.getInstance().createGroupChat(accountJid, contactJid);
             }
+
+            GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
+
+            if (presence.getPinnedMessageId() != null
+                    && !presence.getPinnedMessageId().isEmpty()
+                    && !presence.getPinnedMessageId().equals("0")){
+                MessageRealmObject pinnedMessage = MessageRepository
+                        .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
+                if (pinnedMessage == null || pinnedMessage.getTimestamp() == null){
+
+                    NextMamManager.getInstance().requestSingleMessageAsync(connection,
+                            groupChat, presence.getPinnedMessageId());
+                } else groupChat.setPinnedMessage(pinnedMessage);
+            }
+
+            groupChat.setDescription(presence.getDescription());
+            groupChat.setName(presence.getName());
+            groupChat.setIndexType(presence.getIndex());
+            groupChat.setPrivacyType(presence.getPrivacy());
+            groupChat.setMembershipType(presence.getMembership());
+            groupChat.setNumberOfMembers(presence.getAllMembers());
+            groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
+
+            EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));
+            //todo etc...
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
         }
     }
 
