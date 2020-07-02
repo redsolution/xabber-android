@@ -58,17 +58,19 @@ public class StringUtils {
     private static final DateFormat TIME;
     private static final String LOG_DATE_TIME_FORMAT = "HH:mm:ss yyyy-MM-dd";
 
+    private static SimpleDateFormat groupchatMemberPresenceTimeFormat;
+    private static SimpleDateFormat logDateTimeFormat;
+    private static DateFormat timeFormat;
+
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.SHORT);
         TIME = new SimpleDateFormat("HH:mm:ss");
         timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
         groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        groupchatMemberPresenceTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    private static SimpleDateFormat groupchatMemberPresenceTimeFormat;
-    private static SimpleDateFormat logDateTimeFormat;
-    private static DateFormat timeFormat;
 
     private StringUtils() {
     }
