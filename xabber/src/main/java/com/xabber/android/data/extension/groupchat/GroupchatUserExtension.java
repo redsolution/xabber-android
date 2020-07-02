@@ -11,15 +11,16 @@ public class GroupchatUserExtension implements ExtensionElement {
     public static final String NAMESPACE          = "http://xabber.com/protocol/groupchat";
     public static final String ATTR_ID            = "id";
 
-    public static final String ELEMENT_JID        = "jid";
-    public static final String ELEMENT_NICKNAME   = "nickname";
-    public static final String ELEMENT_ROLE       = "role";
-    public static final String ELEMENT_BADGE      = "badge";
-    public static final String ELEMENT_METADATA   = "metadata";
-    public static final String ELEMENT_PRESENT    = "present";
-    public static final String NAMESPACE_METADATA = "urn:xmpp:avatar:metadata";
-    public static final String ELEMENT_INFO       = "info";
-    public static final String ATTR_URL           = "url";
+    public static final String ELEMENT_JID          = "jid";
+    public static final String ELEMENT_NICKNAME     = "nickname";
+    public static final String ELEMENT_ROLE         = "role";
+    public static final String ELEMENT_BADGE        = "badge";
+    public static final String ELEMENT_SUBSCRIPTION = "subscriprion";
+    public static final String ELEMENT_METADATA     = "metadata";
+    public static final String ELEMENT_PRESENT      = "present";
+    public static final String NAMESPACE_METADATA   = "urn:xmpp:avatar:metadata";
+    public static final String ELEMENT_INFO         = "info";
+    public static final String ATTR_URL             = "url";
 
     private String id;
     private String jid;
@@ -27,6 +28,7 @@ public class GroupchatUserExtension implements ExtensionElement {
     private String role;
     private String badge;
     private String lastPresent;
+    private String subscriprion;
     private MetadataInfo avatar;
 
     public GroupchatUserExtension(String id, String nickname, String role) {
@@ -69,6 +71,11 @@ public class GroupchatUserExtension implements ExtensionElement {
             xml.openElement(ELEMENT_JID);
             xml.append(jid);
             xml.closeElement(ELEMENT_JID);
+        }
+        if (subscriprion != null) {
+            xml.openElement(ELEMENT_SUBSCRIPTION);
+            xml.append(subscriprion);
+            xml.closeElement(ELEMENT_SUBSCRIPTION);
         }
         if (avatar != null) {
             xml.halfOpenElement(ELEMENT_METADATA);
@@ -130,5 +137,13 @@ public class GroupchatUserExtension implements ExtensionElement {
 
     public MetadataInfo getAvatarInfo() {
         return avatar;
+    }
+
+    public String getSubscriprion() {
+        return subscriprion;
+    }
+
+    public void setSubscriprion(String subscriprion) {
+        this.subscriprion = subscriprion;
     }
 }
