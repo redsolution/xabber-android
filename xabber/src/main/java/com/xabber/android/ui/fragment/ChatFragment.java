@@ -5,13 +5,13 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -115,6 +116,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
+import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
@@ -162,7 +164,6 @@ import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import rx.Subscription;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
@@ -207,10 +208,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ViewGroup newContactLayout;
     private TextView addContact;
     private TextView blockContact;
-    private ImageButton closeNewContactLayout;
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
-    private LinearLayout actionJoin;
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
     private View interactionView;
@@ -247,15 +246,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private LinearLayout slideToCancelLayout;
     private LinearLayout cancelRecordingLayout;
     private final Runnable postAnimation = this::closeVoiceRecordPanel;
-    private TextView cancelRecordingTextView;
     private LinearLayout recordingPresenterLayout;
-    private LinearLayout recordingPresenterPlaybarLayout;
     private PlayerVisualizerView recordingPresenter;
     private ImageButton recordingPlayButton;
     private ImageButton recordingDeleteButton;
     private ImageButton recordingPresenterSendButton;
     private TextView recordingPresenterDuration;
-    private PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress;
     private Subscription audioProgressSubscription;
     private boolean isReply = false;
     private ChatViewerFragmentListener listener;
@@ -497,7 +493,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         slideToCancelLayout = view.findViewById(R.id.slide_layout);
 
         cancelRecordingLayout = view.findViewById(R.id.cancel_record_layout);
-        cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
+        TextView cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
         cancelRecordingTextView.setOnClickListener(view13 -> {
             if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
                 clearVoiceMessage();
@@ -505,7 +501,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
 
         recordingPresenterLayout = view.findViewById(R.id.recording_presenter_layout);
-        recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
+        LinearLayout recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
         recordingPresenterPlaybarLayout.getBackground().setColorFilter(accountColor, PorterDuff.Mode.SRC_IN);
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
         recordingPresenter.setNotPlayedColor(Color.WHITE);
@@ -685,18 +681,25 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv);
 
         //todo privilege checking
-        if (getChat() instanceof GroupChat)
-            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
-                    .sendUnPinMessageRequest((GroupChat)getChat()));
-        setupPinnedMessageView();
+        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null ){
+            setupPinnedMessageView();
+        } else {
+            pinnedRootView.setVisibility(View.GONE);
+        }
 
         return view;
     }
 
     private void setupPinnedMessageView(){
         if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null){
-            pinnedRootView.setVisibility(View.VISIBLE);
             MessageRealmObject message = ((GroupChat)getChat()).getPinnedMessage();
+
+            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
+                    .sendUnPinMessageRequest((GroupChat)getChat()));
+            pinnedRootView.setOnClickListener(v -> startActivity(MessagesActivity.createIntentShowPinned(getActivity(),
+                    message.getUniqueId(), user, account)));
+
+            pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming())
                 pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
@@ -707,11 +710,54 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedMessageTimeTv.setText(StringUtils
                     .getSmartTimeText(getContext(), new Date(message.getTimestamp())));
 
-            pinnedMessageTv.setText(message.getText());
+            setupPinnedMessageText(message);
         } else {
             pinnedRootView.setVisibility(View.GONE);
         }
 
+    }
+
+    private void setupPinnedMessageText(MessageRealmObject message){
+        String text = message.getText();
+        int forwardedCount = message.getForwardedIds().size();
+        if (text == null || text.isEmpty()) {
+            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(getContext().getResources()
+                    .getString(R.string.forwarded_messages_count), forwardedCount));
+
+            else if (message != null && message.haveAttachments()) {
+                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
+                        message.getAttachmentRealmObjects().get(0)));
+
+                pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+                return;
+            } else
+                pinnedMessageTv.setText(getContext().getResources().getString(R.string.no_messages));
+
+            pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+        } else {
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+            pinnedMessageTv.setVisibility(View.VISIBLE);
+            if (OTRManager.getInstance().isEncrypted(text)) {
+                pinnedMessageTv.setText(getContext().getText(R.string.otr_not_decrypted_message));
+                pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+            } else {
+                try {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                        try {
+                            pinnedMessageTv.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
+                        } catch (Exception e) {
+                            pinnedMessageTv.setText(Html.fromHtml(text));
+                        }
+                    } else pinnedMessageTv.setText(text);
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                    pinnedMessageTv.setText(text);
+                } finally {
+                    pinnedMessageTv.setAlpha(1f);
+                }
+            }
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+        }
     }
 
     private void setChat(AccountJid accountJid, ContactJid contactJid) {
@@ -1534,34 +1580,20 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
                     .setTitle(size == 1 ? getString(R.string.delete_message_title) : getString(R.string.delete_messages_title, String.valueOf(size)))
                     .setMessage(size == 1 ? R.string.delete_message_question : R.string.delete_messages_question)
-                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (checkBox.isChecked())
-                                RrrManager.getInstance().tryToRetractMessage(account, ids, true);
-                            else RrrManager.getInstance().tryToRetractMessage(account, ids, false);
-                        }
+                    .setPositiveButton(R.string.delete, (dialog14, which) -> {
+                        if (checkBox.isChecked())
+                            RrrManager.getInstance().tryToRetractMessage(account, ids, true);
+                        else RrrManager.getInstance().tryToRetractMessage(account, ids, false);
                     })
-                    .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
+                    .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
                     });
             if (onlyOutgoing) dialog.setView(checkBoxView);
             dialog.show();
         } else {
             AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setMessage(getContext().getResources().getString(R.string.delete_messages_question))
-                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            MessageManager.getInstance().removeMessage(ids);
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
+                    .setPositiveButton(R.string.delete, (dialog12, which) -> MessageManager.getInstance().removeMessage(ids))
+                    .setNegativeButton(R.string.cancel_action, (dialog1, which) -> {
                     })
                     .show();
         }
@@ -1624,31 +1656,25 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.otr_select_resource);
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    checkedResource = adapter.getCheckedItem();
-                }
+            builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+                dialog.dismiss();
+                checkedResource = adapter.getCheckedItem();
             });
-            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    checkedResource = adapter.getCheckedItem();
-                    try {
-                        AbstractChat chat = getChat();
-                        if (chat instanceof RegularChat) {
-                            ((RegularChat) chat).setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
-                            if (restartSession) restartEncryption(account, user);
-                            else startEncryption(account, user);
-                        } else {
-                            Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (XmppStringprepException e) {
-                        e.printStackTrace();
+            builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                dialog.dismiss();
+                checkedResource = adapter.getCheckedItem();
+                try {
+                    AbstractChat chat = getChat();
+                    if (chat instanceof RegularChat) {
+                        ((RegularChat) chat).setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
+                        if (restartSession) restartEncryption(account, user);
+                        else startEncryption(account, user);
+                    } else {
                         Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                     }
+                } catch (XmppStringprepException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                 }
             });
             builder.setSingleChoiceItems(adapter, checkedResource, null).show();
@@ -1871,12 +1897,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.release();
-            }
-        });
+        mp.setOnCompletionListener(mediaPlayer -> mp.release());
     }
 
     @Override
@@ -1937,7 +1958,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void inflateJoinLayout() {
         View view = stubJoin.inflate();
         joinLayout = view.findViewById(R.id.joinLayout);
-        actionJoin = view.findViewById(R.id.actionJoin);
+        LinearLayout actionJoin = view.findViewById(R.id.actionJoin);
         actionJoin.setOnClickListener(this);
     }
 
@@ -1971,12 +1992,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle);
         tvNotifyAction = view.findViewById(R.id.tvNotifyAction);
         notifyLayout = view.findViewById(R.id.notifyLayout);
-        notifyLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notifyIntent != null) startActivity(notifyIntent);
-                notifyLayout.setVisibility(View.GONE);
-            }
+        notifyLayout.setOnClickListener(v -> {
+            if (notifyIntent != null) startActivity(notifyIntent);
+            notifyLayout.setVisibility(View.GONE);
         });
     }
 
@@ -2099,7 +2117,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         addContact = newContactLayout.findViewById(R.id.add_contact);
         blockContact = newContactLayout.findViewById(R.id.block_contact);
-        closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
+        ImageButton closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
 
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.FROM:
@@ -2132,99 +2150,90 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         addContact.setTextColor(ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account));
-        addContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!inRoster) {
-                                RosterManager.getInstance()                                                            // Create contact if not in roster.
-                                        .createContact(getAccount(), getUser(), name, new ArrayList<String>());        // (subscription request is sent automatically)
-                            } else {
-                                if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                  // Either only an active subscription to us OR
-                                        || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {        // No active subscriptions.
+        addContact.setOnClickListener(v -> {
+            Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (!inRoster) {
+                            RosterManager.getInstance()                                                            // Create contact if not in roster.
+                                    .createContact(getAccount(), getUser(), name, new ArrayList<String>());        // (subscription request is sent automatically)
+                        } else {
+                            if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                  // Either only an active subscription to us OR
+                                    || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {        // No active subscriptions.
 
-                                    if (!subscriptionState.hasOutgoingSubscription()) {                                // No outgoing subscription at the moment
-                                        PresenceManager.getInstance().subscribeForPresence(account, user);             // So we try to subscribe for contact's presence.
-                                    }
+                                if (!subscriptionState.hasOutgoingSubscription()) {                                // No outgoing subscription at the moment
+                                    PresenceManager.getInstance().subscribeForPresence(account, user);             // So we try to subscribe for contact's presence.
                                 }
                             }
-                            if (subscriptionState.getSubscriptionType() == SubscriptionState.TO) {                   // If we are currently subscribed to contact
-                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);              // Preemptively allow incoming subscription request.
-                            } else if (subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {          // If there are no subscriptions
-                                if (subscriptionState.hasIncomingSubscription()) {                                   // If we have incoming subscription request
-                                    PresenceManager.getInstance().acceptSubscription(account, user, false);  // "quietly" accept it (since we are in the process of
-                                } else {                                                                             // adding a contact, we don't need to create unnecessary Action messages
-                                    PresenceManager.getInstance().addAutoAcceptSubscription(account, user);          // or Preemptively allow incoming request.
-                                }
-                            }
-                        } catch (SmackException.NotLoggedInException
-                                | XMPPException.XMPPErrorException
-                                | SmackException.NotConnectedException
-                                | InterruptedException
-                                | SmackException.NoResponseException
-                                | NetworkException e) {
-                            e.printStackTrace();
                         }
+                        if (subscriptionState.getSubscriptionType() == SubscriptionState.TO) {                   // If we are currently subscribed to contact
+                            PresenceManager.getInstance().addAutoAcceptSubscription(account, user);              // Preemptively allow incoming subscription request.
+                        } else if (subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {          // If there are no subscriptions
+                            if (subscriptionState.hasIncomingSubscription()) {                                   // If we have incoming subscription request
+                                PresenceManager.getInstance().acceptSubscription(account, user, false);  // "quietly" accept it (since we are in the process of
+                            } else {                                                                             // adding a contact, we don't need to create unnecessary Action messages
+                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);          // or Preemptively allow incoming request.
+                            }
+                        }
+                    } catch (SmackException.NotLoggedInException
+                            | XMPPException.XMPPErrorException
+                            | SmackException.NotConnectedException
+                            | InterruptedException
+                            | SmackException.NoResponseException
+                            | NetworkException e) {
+                        e.printStackTrace();
                     }
-                });
-                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
-                newContactLayout.setVisibility(View.GONE);
-                manageToolbarElevation(false);
-            }
+                }
+            });
+            TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+            newContactLayout.setVisibility(View.GONE);
+            manageToolbarElevation(false);
         });
 
         blockContact.setTextColor(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
                 getResources().getColor(R.color.red_700) : getResources().getColor(R.color.red_900));
-        blockContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    // fully discard subscription
-                    PresenceManager.getInstance().discardSubscription(account, user);
-                    PresenceManager.getInstance().unsubscribeFromPresence(account, user);
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
-                }
-                BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
-                    @Override
-                    public void onSuccessBlock() {
-                        Toast.makeText(Application.getInstance(), R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
-                        if (newContactLayout != null) {
-                            if (newContactLayout.getVisibility() == View.VISIBLE)
-                                newContactLayout.setVisibility(View.GONE);
-                        }
-                        getActivity().finish();
-                    }
-
-                    @Override
-                    public void onErrorBlock() {
-                        Toast.makeText(Application.getInstance(), R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
-                    }
-                });
-                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+        blockContact.setOnClickListener(v -> {
+            try {
+                // fully discard subscription
+                PresenceManager.getInstance().discardSubscription(account, user);
+                PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+            } catch (NetworkException e) {
+                Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
+            BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
+                @Override
+                public void onSuccessBlock() {
+                    Toast.makeText(Application.getInstance(), R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
+                    if (newContactLayout != null) {
+                        if (newContactLayout.getVisibility() == View.VISIBLE)
+                            newContactLayout.setVisibility(View.GONE);
+                    }
+                    getActivity().finish();
+                }
+
+                @Override
+                public void onErrorBlock() {
+                    Toast.makeText(Application.getInstance(), R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
+                }
+            });
+            TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
         });
 
-        closeNewContactLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (subscriptionState.hasIncomingSubscription()) {                              // check if we have an incoming (IN) subscription
-                    try {
-                        PresenceManager.getInstance().discardSubscription(account, user);       // discard it on "X"-press
-                    } catch (NetworkException e) {
-                        e.printStackTrace();
-                    }
+        closeNewContactLayout.setOnClickListener(v -> {
+            if (subscriptionState.hasIncomingSubscription()) {                              // check if we have an incoming (IN) subscription
+                try {
+                    PresenceManager.getInstance().discardSubscription(account, user);       // discard it on "X"-press
+                } catch (NetworkException e) {
+                    e.printStackTrace();
                 }
-                if (getChat() != null) {
-                    getChat().setAddContactSuggested(true);                                     // remember "X"-press
-                }
-                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
-                newContactLayout.setVisibility(View.GONE);
-                manageToolbarElevation(false);
             }
+            if (getChat() != null) {
+                getChat().setAddContactSuggested(true);                                     // remember "X"-press
+            }
+            TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+            newContactLayout.setVisibility(View.GONE);
+            manageToolbarElevation(false);
         });
     }
 
@@ -2390,47 +2399,31 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
         recordingPlayButton.setImageResource(R.drawable.ic_play);
 
-        recordingPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VoiceManager.getInstance().voiceClicked(recordingPath);
-            }
+        recordingPlayButton.setOnClickListener(view -> VoiceManager.getInstance().voiceClicked(recordingPath));
+        recordingDeleteButton.setOnClickListener(view -> {
+            releaseRecordedVoicePlayback(recordingPath);
+            finishVoiceRecordLayout();
+            recordingPath = null;
+            audioProgressSubscription.unsubscribe();
         });
-        recordingDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                releaseRecordedVoicePlayback(recordingPath);
-                finishVoiceRecordLayout();
-                recordingPath = null;
-                audioProgressSubscription.unsubscribe();
+        recordingPresenterSendButton.setOnClickListener(view -> {
+            if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
+                sendStoppedVoiceMessage(recordingPath, bottomPanelMessagesIds);
+                hideBottomMessagePanel();
+            } else {
+                sendStoppedVoiceMessage(recordingPath);
             }
-        });
-        recordingPresenterSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
-                    sendStoppedVoiceMessage(recordingPath, bottomPanelMessagesIds);
-                    hideBottomMessagePanel();
-                } else {
-                    sendStoppedVoiceMessage(recordingPath);
-                }
-                scrollDown();
-                setFirstUnreadMessageId(null);
-                finishVoiceRecordLayout();
-                recordingPath = null;
-                audioProgressSubscription.unsubscribe();
-            }
+            scrollDown();
+            setFirstUnreadMessageId(null);
+            finishVoiceRecordLayout();
+            recordingPath = null;
+            audioProgressSubscription.unsubscribe();
         });
     }
 
     private void subscribeForRecordedAudioProgress() {
-        audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
-        audioProgressSubscription = audioProgress.doOnNext(new Action1<VoiceManager.PublishAudioProgress.AudioInfo>() {
-            @Override
-            public void call(VoiceManager.PublishAudioProgress.AudioInfo audioInfo) {
-                setUpAudioProgress(audioInfo);
-            }
-        }).subscribe();
+        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
+        audioProgressSubscription = audioProgress.doOnNext(audioInfo -> setUpAudioProgress(audioInfo)).subscribe();
     }
 
     public void cleanUpVoice(boolean deleteTempFile) {

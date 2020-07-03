@@ -561,7 +561,7 @@
                 <data android:pathPrefix="/account/emails/confirmation" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.ForwardedActivity" >
+        <activity android:name=".ui.activity.MessagesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />

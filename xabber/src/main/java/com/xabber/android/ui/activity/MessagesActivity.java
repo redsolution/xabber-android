@@ -1,6 +1,5 @@
 package com.xabber.android.ui.activity;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -21,26 +20,38 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ForwardedFragment;
 
-public class ForwardedActivity extends ManagedActivity {
+public class MessagesActivity extends ManagedActivity {
 
     private String messageId;
     private ContactJid user;
     private AccountJid account;
+    private String action;
 
     private Toolbar toolbar;
     private Fragment fragment;
 
-    private StatusBarPainter statusBarPainter;
+    public static final String ACTION_SHOW_FORWARDED = "com.xabber.android.ui.activity.ACTION_SHOW_FORWARDED";
+    public static final String ACTION_SHOW_PINNED = "com.xabber.android.ui.activity.ACTION_SHOW_PINNED";
 
     private final static String KEY_MESSAGE_ID = "messageId";
     private final static String KEY_ACCOUNT = "account";
     private final static String KEY_USER = "user";
 
-    public static Intent createIntent(Context context, String messageId, ContactJid user, AccountJid account) {
-        Intent intent = new Intent(context, ForwardedActivity.class);
+    public static Intent createIntentShowForwarded(Context context, String messageId, ContactJid user, AccountJid account) {
+        Intent intent = new Intent(context, MessagesActivity.class);
         intent.putExtra(KEY_MESSAGE_ID, messageId);
         intent.putExtra(KEY_ACCOUNT, (Parcelable) account);
         intent.putExtra(KEY_USER, user);
+        intent.setAction(ACTION_SHOW_FORWARDED);
+        return intent;
+    }
+
+    public static Intent createIntentShowPinned(Context context, String messageId, ContactJid user, AccountJid account) {
+        Intent intent = new Intent(context, MessagesActivity.class);
+        intent.putExtra(KEY_MESSAGE_ID, messageId);
+        intent.putExtra(KEY_ACCOUNT, (Parcelable) account);
+        intent.putExtra(KEY_USER, user);
+        intent.setAction(ACTION_SHOW_PINNED);
         return intent;
     }
 
@@ -54,13 +65,15 @@ public class ForwardedActivity extends ManagedActivity {
             messageId = intent.getStringExtra(KEY_MESSAGE_ID);
             account = intent.getParcelableExtra(KEY_ACCOUNT);
             user = intent.getParcelableExtra(KEY_USER);
+            action = intent.getAction();
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        statusBarPainter = new StatusBarPainter(this);
+        StatusBarPainter statusBarPainter = new StatusBarPainter(this);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-            toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountRippleColor(account));
+            toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter()
+                    .getAccountRippleColor(account));
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithAccountName(account);
         } else {
@@ -71,7 +84,7 @@ public class ForwardedActivity extends ManagedActivity {
             toolbar.setTitleTextColor(Color.WHITE);
             statusBarPainter.updateWithColor(Color.BLACK);
         }
-        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(ForwardedActivity.this));
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(MessagesActivity.this));
     }
 
     @Override
@@ -82,7 +95,7 @@ public class ForwardedActivity extends ManagedActivity {
 
     private void initFragment(AccountJid account, ContactJid user) {
         if (fragment == null)
-            fragment = ForwardedFragment.newInstance(account, user, messageId);
+            fragment = ForwardedFragment.newInstance(account, user, messageId, action);
 
         FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragment);
@@ -90,8 +103,11 @@ public class ForwardedActivity extends ManagedActivity {
     }
 
     public void setToolbar(int forwardedCount) {
-        toolbar.setTitle(String.format(forwardedCount > 1 ?
-                getString(R.string.forwarded_messages_count_plural) : getString(R.string.forwarded_messages_count) ,
-                forwardedCount));
+        if (action.equals(ACTION_SHOW_FORWARDED))
+            toolbar.setTitle(String.format(forwardedCount > 1 ?
+                    getString(R.string.forwarded_messages_count_plural) : getString(R.string.forwarded_messages_count) ,
+                    forwardedCount));
+        else if (action.equals(ACTION_SHOW_PINNED))
+            toolbar.setTitle(getString(R.string.pinned_message));
     }
 }

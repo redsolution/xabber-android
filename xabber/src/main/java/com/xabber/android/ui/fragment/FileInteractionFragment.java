@@ -39,7 +39,7 @@ import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ForwardedActivity;
+import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
@@ -349,7 +349,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     @Override
     public void onForwardClick(String messageId) {
-        startActivity(ForwardedActivity.createIntent(getActivity(), messageId, user, account));
+        startActivity(MessagesActivity.createIntentShowForwarded(getActivity(), messageId, user, account));
     }
 
     protected void onAttachButtonPressed() {

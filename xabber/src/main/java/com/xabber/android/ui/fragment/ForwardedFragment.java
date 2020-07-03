@@ -18,10 +18,11 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ForwardedActivity;
+import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -29,28 +30,34 @@ import com.xabber.android.ui.color.ColorManager;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.xabber.android.ui.activity.MessagesActivity.ACTION_SHOW_FORWARDED;
+import static com.xabber.android.ui.activity.MessagesActivity.ACTION_SHOW_PINNED;
+
 public class ForwardedFragment extends FileInteractionFragment {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
     private final static String KEY_MESSAGE_ID = "messageId";
+    private final static String ACTION = "action";
 
     private String userName;
     private int accountMainColor;
     private int mentionColor;
     private ColorStateList colorStateList;
     private String messageId;
+    private String action;
 
     private RecyclerView recyclerView;
     private View backgroundView;
 
-    public static ForwardedFragment newInstance(AccountJid account, ContactJid user, String messageId) {
+    public static ForwardedFragment newInstance(AccountJid account, ContactJid user, String messageId, String action) {
         ForwardedFragment fragment = new ForwardedFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putParcelable(ARGUMENT_USER, user);
         arguments.putString(KEY_MESSAGE_ID, messageId);
+        arguments.putString(ACTION, action);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -63,6 +70,7 @@ public class ForwardedFragment extends FileInteractionFragment {
             account = args.getParcelable(ARGUMENT_ACCOUNT);
             user = args.getParcelable(ARGUMENT_USER);
             messageId = args.getString(KEY_MESSAGE_ID);
+            action = args.getString(ACTION);
 
             userName = RosterManager.getInstance().getName(account, user);
             accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
@@ -97,30 +105,51 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        // messages adapter
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
                 .findFirst();
 
-        RealmResults<MessageRealmObject> forwardedMessages = realm
-                .where(MessageRealmObject.class)
-                .in(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getForwardedIdsAsArray())
-                .findAll();
+        if (action.equals(ACTION_SHOW_FORWARDED)){
 
-        // groupchat user
-        GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
+            RealmResults<MessageRealmObject> forwardedMessages = realm
+                    .where(MessageRealmObject.class)
+                    .in(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getForwardedIdsAsArray())
+                    .findAll();
 
-        MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
-                this, getActivity(), userName, colorStateList, groupchatMember,
-                accountMainColor, mentionColor, null, false,
-                false, false, false, false);
+            // groupchat user
+            GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
 
-        if (forwardedMessages.size() > 0) {
-            ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
+            MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
+                    this, getActivity(), userName, colorStateList, groupchatMember,
+                    accountMainColor, mentionColor, null, false,
+                    false, false, false, false);
+
+            if (forwardedMessages.size() > 0) {
+                ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
+                recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
+                recyclerView.setAdapter(adapter);
+                ((MessagesActivity)getActivity()).setToolbar(forwardedMessages.size());
+            }
+        } else if (action.equals(ACTION_SHOW_PINNED)) {
+
+            // groupchat user
+            //GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
+
+            MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
+                    this, getActivity(), userName, colorStateList, null,
+                    accountMainColor, mentionColor, null, false,
+                    false, false, false, false);
+
+            RealmResults<MessageRealmObject> messages = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getUniqueId())
+                    .findAll();
+
+            ForwardedAdapter adapter = new ForwardedAdapter(messages, extraData);
             recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
             recyclerView.setAdapter(adapter);
-            ((ForwardedActivity)getActivity()).setToolbar(forwardedMessages.size());
+            ((MessagesActivity)getActivity()).setToolbar(0);
+
         }
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
