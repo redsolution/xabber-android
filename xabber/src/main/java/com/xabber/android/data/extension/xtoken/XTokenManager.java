@@ -44,9 +44,9 @@ public class XTokenManager implements OnPacketListener {
         if (packet instanceof XTokenIQ) {
             AccountManager.getInstance()
                     .updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
-        }
-        if (packet instanceof Message && packet.hasExtension(NAMESPACE))
+        } else if (packet instanceof Message && packet.hasExtension(NAMESPACE)) {
             EventBus.getDefault().post(new SessionsUpdateEvent());
+        }
     }
 
     public void sendXTokenRequest(XMPPTCPConnection connection) {

@@ -22,7 +22,6 @@ import com.xabber.android.service.RecordService;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import io.realm.Realm;
 import rx.subjects.PublishSubject;
@@ -50,7 +49,6 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     private Long clickedTimestamp;
     private boolean clickedAlreadySent;
     private String tempOpusPath;
-    private ArrayList<Float> waveForm = new ArrayList<>();
     private boolean isPaused = false;
     private boolean mPlaybackDelayed = false;
     private boolean activeFocus = false;
@@ -430,7 +428,6 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     public void startRecording() {
         File tempOpusFile;
         try {
-            waveForm.clear();
             tempOpusFile = FileManager.createTempOpusFile("tempOpusFile");
             RecordService.record(Application.getInstance().getApplicationContext(), tempOpusFile.getPath());
             deleteRecordedFile();

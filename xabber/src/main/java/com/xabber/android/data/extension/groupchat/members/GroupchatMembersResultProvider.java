@@ -63,6 +63,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
         String role = null;
         String badge = null;
         String present = null;
+        String subscription = null;
         MetadataInfo avatar = null;
 
         outerloop: while (true) {
@@ -89,6 +90,9 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
                         case GroupchatUserExtension.ELEMENT_PRESENT:
                             present = parser.nextText();
                             break;
+                        case GroupchatUserExtension.ELEMENT_SUBSCRIPTION:
+                            subscription = parser.nextText();
+                            break;
                         case GroupchatUserExtension.ELEMENT_METADATA:
                             if (GroupchatUserExtension.NAMESPACE_METADATA.equals(parser.getNamespace()))
                                 avatar = parseAvatar(parser);
@@ -113,6 +117,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
             user.setJid(jid);
             user.setLastPresent(present);
             user.setAvatarInfo(avatar);
+            user.setSubscriprion(subscription);
             return user;
         } else return null;
     }

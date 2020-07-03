@@ -35,6 +35,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.TypingDotsDrawable;
 import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.Presence;
@@ -44,6 +45,8 @@ import org.jivesoftware.smack.packet.Presence;
 
 
 public class NewContactTitleInflater {
+
+    private static TypingDotsDrawable typingDotsDrawable = new TypingDotsDrawable();
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact,
                                    NotificationState.NotificationMode mode) {
@@ -133,26 +136,34 @@ public class NewContactTitleInflater {
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
-            statusTextView.setAlpha(1);
+            int textAccountColor;
             switch (statusLevel) {
                 case 6:
-                    statusTextView.setTextColor(context.getResources().getColor(R.color.contact_item_text_second_dark));
+                    textAccountColor = context.getResources().getColor(R.color.contact_item_text_second_dark);
                     break;
                 case 11:
-                    statusTextView.setTextColor(Color.RED);
+                    textAccountColor = Color.RED;
                     break;
                 default:
-                    statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800));
+                    textAccountColor = ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800);
             }
+            typingDotsDrawable.setDotColor(textAccountColor);
+            typingDotsDrawable.setAlpha(255);
+            statusTextView.setTextColor(textAccountColor);
+            statusTextView.setAlpha(1);
         } else {
-            statusTextView.setTextColor(context.getResources().getColor(R.color.grey_800));
+            int textGreyColor = context.getResources().getColor(R.color.grey_800);
+            statusTextView.setTextColor(textGreyColor);
             if (isContactOffline(statusLevel)) {
                 statusTextView.setAlpha(0.5f);
             } else {
                 statusTextView.setAlpha(0.9f);
             }
+            typingDotsDrawable.setDotColor(textGreyColor);
+            typingDotsDrawable.setAlpha((int) (0.9 * 255));
         }
 
+        boolean isTyping = false;
         CharSequence statusText;
         if (isBlocked) statusText = "Blocked";
         else if (isServer) statusText = "Server";
@@ -226,9 +237,25 @@ public class NewContactTitleInflater {
                         statusText = Application.getInstance().getResources()
                                 .getText(R.string.waiting_for_network);
                 }
+            } else {
+                isTyping = true;
             }
         }
+
         statusTextView.setText(statusText);
+
+        if (isTyping) {
+            if (statusTextView.getCompoundDrawables()[2] == null) {
+                statusTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, typingDotsDrawable, null);
+            }
+            if (!typingDotsDrawable.isStarted()) {
+                typingDotsDrawable.start();
+            }
+        } else {
+            if (typingDotsDrawable.isStarted())
+                typingDotsDrawable.stop();
+            statusTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        }
     }
 
 
