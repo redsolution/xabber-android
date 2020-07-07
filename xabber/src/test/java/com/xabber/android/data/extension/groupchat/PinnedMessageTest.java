@@ -5,7 +5,6 @@ import com.xabber.android.data.entity.ContactJid;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.jxmpp.jid.Jid;
 
 import static org.junit.Assert.assertEquals;
 

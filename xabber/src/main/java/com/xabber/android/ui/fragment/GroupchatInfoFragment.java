@@ -247,7 +247,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                     groupchatIndexText.setText("Local");
                     groupchatIndexLayout.setVisibility(View.VISIBLE);
                     break;
-                case NONE_AS_NULL:
                 default:
                     groupchatIndexLayout.setVisibility(View.GONE);
             }

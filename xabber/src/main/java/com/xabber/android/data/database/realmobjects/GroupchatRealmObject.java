@@ -129,13 +129,11 @@ public class GroupchatRealmObject extends RealmObject {
                     return GroupchatIndexType.GLOBAL;
                 case "local":
                     return GroupchatIndexType.LOCAL;
-                case "none":
-                    return GroupchatIndexType.NONE;
                 default:
-                    return GroupchatIndexType.NONE_AS_NULL;
+                    return GroupchatIndexType.NONE;
             }
         }
-        return GroupchatIndexType.NONE_AS_NULL;
+        return GroupchatIndexType.NONE;
     }
     public void setIndex(GroupchatIndexType index) {
         if (index != null)

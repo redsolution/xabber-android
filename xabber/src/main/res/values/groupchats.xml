@@ -37,4 +37,6 @@
 
     <string name="groupchat_invite_reason_dialog_title">Reason</string>
     <string name="groupchat_invite_reason_dialog_message">Write a reason to go along with the invitation</string>
+
+    <string name="error_with_group_creating">Error with group creating!</string>
 </resources>

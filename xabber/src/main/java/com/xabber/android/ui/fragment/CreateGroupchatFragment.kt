@@ -4,27 +4,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
+import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.adapter.AccountChooseAdapter
 import com.xabber.android.ui.widget.NoDefaultSpinner
+import org.jivesoftware.smack.StanzaListener
+import org.jivesoftware.smack.packet.IQ
+import org.jivesoftware.smack.packet.Stanza
 
-class CreateGroupchatFragment :  Fragment() {
 
-    lateinit var accountSp: NoDefaultSpinner
-    lateinit var groupchatNameEt: EditText
-    lateinit var groupchatJidEt: EditText
-    lateinit var serverEt: EditText
-    lateinit var membershipTypeSp: Spinner
-    lateinit var indexTypeSp: Spinner
-    lateinit var descriptionEt: EditText
+class CreateGroupchatFragment :  Fragment(), StanzaListener {
+
+    private lateinit var accountSp: NoDefaultSpinner
+    private lateinit var groupchatNameEt: EditText
+    private lateinit var groupchatJidEt: EditText
+    private lateinit var serverEt: EditText
+    private lateinit var membershipTypeSp: Spinner
+    private lateinit var indexTypeSp: Spinner
+    private lateinit var descriptionEt: EditText
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -36,6 +42,7 @@ class CreateGroupchatFragment :  Fragment() {
         membershipTypeSp = view.findViewById(R.id.create_groupchat_membership_spinner)
         indexTypeSp = view.findViewById(R.id.create_groupchat_index_type_spinner)
         descriptionEt = view.findViewById(R.id.create_groupchat_description)
+        progressBar = view.findViewById(R.id.create_groupchat_progress_bar)
 
         setupAccountSpinner()
         setupMembershipTypeSpinner()
@@ -55,7 +62,7 @@ class CreateGroupchatFragment :  Fragment() {
 
     private fun setupMembershipTypeSpinner(){
         val adapter = ArrayAdapter(Application.getInstance().applicationContext,
-                android.R.layout.simple_spinner_item, GroupchatMembershipType.values())
+                android.R.layout.simple_spinner_item, GroupchatMembershipType.getLocalizedValues())
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         membershipTypeSp.adapter = adapter
         membershipTypeSp.setSelection(2)
@@ -63,15 +70,39 @@ class CreateGroupchatFragment :  Fragment() {
 
     private fun setupIndexTypeSpinner(){
         val adapter = ArrayAdapter(Application.getInstance().applicationContext,
-        android.R.layout.simple_spinner_item, GroupchatIndexType.values())
+        android.R.layout.simple_spinner_item, GroupchatIndexType.getLocalizedValues())
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         indexTypeSp.adapter = adapter
         indexTypeSp.setSelection(2)
     }
 
     fun createGroupchat(isIncognito: Boolean){
-        //GroupchatManager.getInstance().sendCreateGroupchatRequest()
+        val membershipType = GroupchatMembershipType
+                .getMembershipByLocalizedString(membershipTypeSp.selectedItem as String)
 
+        val indexType = GroupchatIndexType
+                .getPrivacyByLocalizedString(indexTypeSp.selectedItem as String)
+
+        val privacyType: GroupchatPrivacyType = if (isIncognito) GroupchatPrivacyType.INCOGNITO
+                                                else GroupchatPrivacyType.PUBLIC
+
+        val accountJid = accountSp.selectedItem as AccountJid
+        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountJid,
+                serverEt.text.toString(), groupchatNameEt.text.toString(),
+                descriptionEt.text.toString(), groupchatJidEt.text.toString(), membershipType,
+                indexType, privacyType, this)
+
+        progressBar.visibility = View.VISIBLE
+    }
+
+    override fun processStanza(packet: Stanza?) {
+        if (packet is IQ && packet.type == IQ.Type.result)
+            activity?.finish()
+        else {
+            Toast.makeText(context, getString(R.string.error_with_group_creating), Toast.LENGTH_LONG)
+                    .show()
+            progressBar.visibility = View.GONE
+        }
     }
 
 }

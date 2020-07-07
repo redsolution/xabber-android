@@ -136,7 +136,7 @@ public class GroupchatPresence extends GroupchatExtensionElement {
         if (membership != null) {
             xml.optElement(MEMBERSHIP, membership.toXml());
         }
-        if (index != null && index != GroupchatIndexType.NONE_AS_NULL) {
+        if (index != null) {
             xml.optElement(INDEX, index.toXml());
         }
 

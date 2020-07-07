@@ -7,6 +7,13 @@
 
     <include layout="@layout/account_select_spinner"/>
 
+    <ProgressBar
+        android:id="@+id/create_groupchat_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"/>
+
 <!-- Groupchat name -->
     <TextView
         android:layout_width="wrap_content"

@@ -3,10 +3,10 @@ package com.xabber.android.data.message.chat.groupchat
 import com.xabber.android.R
 import com.xabber.android.data.Application
 
-enum class GroupchatMembershipType(val type: String) {
-    NONE(Application.getInstance().baseContext.getString(R.string.groupchat_membership_type_none)),
-    OPEN(Application.getInstance().baseContext.getString(R.string.groupchat_membership_type_open)),
-    MEMBER_ONLY(Application.getInstance().baseContext.getString(R.string.groupchat_membership_type_members_only));
+enum class GroupchatMembershipType {
+    NONE,
+    OPEN,
+    MEMBER_ONLY;
 
     fun toXml(): String? {
         return when(this) {
@@ -16,7 +16,15 @@ enum class GroupchatMembershipType(val type: String) {
         }
     }
 
-    override fun toString(): String = type
+    fun getLocalizedString(): String{
+        return  when(this){
+            OPEN -> Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_open)
+            MEMBER_ONLY -> Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_members_only)
+            else -> Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_none)
+        }
+    }
+
+
 
     companion object {
         @JvmStatic
@@ -26,6 +34,23 @@ enum class GroupchatMembershipType(val type: String) {
                 "member-only" -> MEMBER_ONLY
                 else -> NONE
             }
+        }
+
+        @JvmStatic
+        fun getMembershipByLocalizedString(text: String?): GroupchatMembershipType {
+            return when (text) {
+                Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_open) -> OPEN
+                Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_members_only) -> MEMBER_ONLY
+                else -> NONE
+            }
+        }
+
+        @JvmStatic
+        fun getLocalizedValues() : List<String>{
+            val result = mutableListOf<String>()
+            for (type in values())
+                result.add(type.getLocalizedString())
+            return result
         }
     }
 }

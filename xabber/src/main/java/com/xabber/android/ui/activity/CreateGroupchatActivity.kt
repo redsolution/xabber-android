@@ -15,7 +15,9 @@ import com.xabber.android.ui.fragment.CreateGroupchatFragment
 
 class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener{
 
-    var isIncognito = false
+    private var isIncognito = false
+
+    private val FRAGMENT_TAG = "com.xabber.android.ui.fragment.CreateGroupchatFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,11 +39,9 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         toolbar.inflateMenu(if (isIncognito) R.menu.toolbar_create_incognito_groupchat
                             else R.menu.toolbar_create_groupchat)
 
-        toolbar.menu.findItem(R.id.action_create_groupchat)?.icon = null
-        toolbar.menu.findItem(R.id.action_create_groupchat)?.isEnabled = false
-
-        toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.icon = null
-        toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.isEnabled = false
+//        toolbar.menu.findItem(R.id.action_create_groupchat)?.isEnabled = false
+//
+//        toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.isEnabled = false
 
         val view = toolbar.findViewById<View>(R.id.action_create_groupchat)
         if (view != null && view is TextView) {
@@ -55,15 +55,13 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         BarPainter(this, toolbar).setDefaultColor()
 
         supportFragmentManager.beginTransaction().add(R.id.container,
-                CreateGroupchatFragment()).commit()
+                CreateGroupchatFragment(), FRAGMENT_TAG).commit()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        return if (item!!.itemId == R.id.action_add_account) { (supportFragmentManager
-                .findFragmentById(R.id.fragment_container) as CreateGroupchatFragment)
+        (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as CreateGroupchatFragment)
                 .createGroupchat(isIncognito)
-            true
-        } else super.onOptionsItemSelected(item)
+        return true
     }
 
     companion object{

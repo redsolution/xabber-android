@@ -14,6 +14,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatEchoExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPinnedMessageElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
@@ -184,6 +185,24 @@ public class GroupchatManager implements OnPacketListener {
                 LogManager.exception(LOG_TAG, e);
             }
         });
+    }
+
+    public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName,
+                                           String description, String groupJid,
+                                           GroupchatMembershipType membershipType,
+                                           GroupchatIndexType indexType,
+                                           GroupchatPrivacyType privacyType,
+                                           StanzaListener listener){
+        CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
+                server, groupName, groupJid, description, membershipType, privacyType, indexType);
+
+        try{
+            AccountManager.getInstance().getAccount(accountJid).getConnection()
+                    .sendIqWithResponseCallback(iq, listener);
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+
     }
 
     public void sendPinMessageRequest(MessageRealmObject message){
