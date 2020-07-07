@@ -41,7 +41,7 @@ import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
-public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener, View.OnClickListener {
+public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener {
 
     private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
@@ -64,11 +64,9 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private ViewGroup settingsLayout;
     private ViewGroup settingsButton;
     private ViewGroup restrictionsButton;
-    private ViewGroup invitationsButton;
     private TextView invitationsCount;
     private FrameLayout invitationsStatus;
     private ProgressBar invitationsProgress;
-    private ViewGroup blockedButton;
     private TextView blockedCount;
 
     // info layout
@@ -181,16 +179,28 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         settingsLayout = view.findViewById(R.id.settingsLayout);
         settingsButton = view.findViewById(R.id.settingsButtonLayout);
         restrictionsButton = view.findViewById(R.id.restrictionsButtonLayout);
-        invitationsButton = view.findViewById(R.id.invitationsButtonLayout);
-        blockedButton = view.findViewById(R.id.blockedButtonLayout);
         invitationsCount = view.findViewById(R.id.invitationsCount);
         invitationsStatus = view.findViewById(R.id.invitationsStatus);
         invitationsProgress = view.findViewById(R.id.invitationsProgress);
         blockedCount = view.findViewById(R.id.blockedCount);
-        settingsButton.setOnClickListener(this);
-        restrictionsButton.setOnClickListener(this);
-        invitationsButton.setOnClickListener(this);
-        blockedButton.setOnClickListener(this);
+        //settingsButton.setOnClickListener(this);
+        //restrictionsButton.setOnClickListener(this);
+
+        view.findViewById(R.id.invitationsButtonLayout).setOnClickListener(v -> {
+            if (((GroupChat) groupChat).getListOfInvites() != null
+                    && ((GroupChat) groupChat).getListOfInvites().size() > 0) {
+                startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
+                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
+            }
+        });
+
+        view.findViewById(R.id.blockedButtonLayout).setOnClickListener(v -> {
+            if (((GroupChat) groupChat).getListOfBlockedElements() != null
+                    && ((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
+                startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
+                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
+            }
+        });
 
 
         membersList.setLayoutManager(new LinearLayoutManager(getActivity(),
@@ -373,32 +383,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (contactJid == null) return true;
         if (!account.getBareJid().equals(this.account.getBareJid())) return true;
         return !contactJid.getBareJid().equals(this.groupchatContact.getBareJid());
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (groupChat instanceof GroupChat) {
-            switch (v.getId()) {
-            case R.id.invitationsButtonLayout:
-                    if (((GroupChat) groupChat).getListOfInvites() != null &&
-                            ((GroupChat) groupChat).getListOfInvites().size() > 0) {
-                        startActivity(GroupchatSettingsActivity
-                                .createIntent(getContext(),
-                                        account, groupchatContact,
-                                        GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
-                    }
-                    break;
-                case R.id.blockedButtonLayout:
-                    if (((GroupChat) groupChat).getListOfBlockedElements() != null &&
-                            ((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
-                        startActivity(GroupchatSettingsActivity
-                                .createIntent(getContext(),
-                                        account, groupchatContact,
-                                        GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
-                    }
-                    break;
-                }
-        }
     }
 
     public interface GroupchatSelectorListItemActions {

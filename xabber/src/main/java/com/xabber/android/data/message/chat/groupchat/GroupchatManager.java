@@ -720,7 +720,7 @@ public class GroupchatManager implements OnPacketListener {
         }
 
         @Override
-        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+        public void processStanza(Stanza packet){
             if (packet instanceof GroupchatInviteListResultIQ) {
                 GroupchatInviteListResultIQ resultIQ = (GroupchatInviteListResultIQ) packet;
 
