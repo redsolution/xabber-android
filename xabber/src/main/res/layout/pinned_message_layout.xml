@@ -27,7 +27,11 @@
         android:paddingTop="6dp"
         tools:text="nickname@example.com"
         android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/pinned_message_avatar"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_toRightOf="@id/pinned_message_avatar"
+        android:layout_toEndOf="@id/pinned_message_avatar"/>
 
     <TextView
         android:id="@+id/pinned_message_text"

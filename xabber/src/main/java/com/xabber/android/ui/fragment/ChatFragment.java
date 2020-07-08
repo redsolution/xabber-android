@@ -568,9 +568,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         ivPin = view.findViewById(R.id.ivPin);
 
-        if (getChat() instanceof GroupChat){ ivPin.setOnClickListener(v ->
-                GroupchatManager.getInstance().sendPinMessageRequest(chatMessageAdapter
-                        .getCheckedMessageRealmObjects().get(0)));
+        if (getChat() instanceof GroupChat){
+            ivPin.setOnClickListener(v -> {
+                GroupchatManager.getInstance().
+                        sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
+                closeInteractionPanel();
+            });
         }
 
         ImageView ivDelete = view.findViewById(R.id.ivDelete);

@@ -6,12 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/chat_input_background"
-    android:clickable="true"
-    >
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/ivClose"
-        android:layout_width="52dp"
+        android:layout_width="48dp"
         android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
@@ -22,88 +21,92 @@
 
     <TextView
         android:id="@+id/tvCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="@dimen/input_view_height"
         android:layout_toRightOf="@id/ivClose"
         android:layout_toEndOf="@id/ivClose"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
+        android:gravity="center"
         tools:text="3"
-        android:textSize="22sp"
-        />
+        android:textSize="22sp" />
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        >
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="96dp"
+        android:layout_marginLeft="96dp">
 
-        <ImageView
-            android:id="@+id/ivEdit"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:padding="12dp"
-            app:srcCompat="@drawable/ic_edit_grey_24dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"
-            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/ivPin"
-            android:layout_width="48dp"
-            android:layout_height="@dimen/input_view_height"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_pin_grey_24dp" />
+            <ImageView
+                android:id="@+id/ivEdit"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_edit_grey_24dp" />
 
-        <ImageView
-            android:id="@+id/ivDelete"
-            android:layout_width="48dp"
-            android:layout_height="@dimen/input_view_height"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:srcCompat="@drawable/ic_delete_grey" />
+            <ImageView
+                android:id="@+id/ivPin"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_pin_grey_24dp" />
 
-        <ImageView
-            android:id="@+id/ivCopy"
-            android:layout_width="48dp"
-            android:layout_height="@dimen/input_view_height"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:srcCompat="@drawable/ic_copy" />
+            <ImageView
+                android:id="@+id/ivDelete"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_delete_grey" />
 
-        <ImageView
-            android:id="@+id/ivReply"
-            android:layout_width="48dp"
-            android:layout_height="@dimen/input_view_height"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:srcCompat="@drawable/ic_message_forwarded_14dp" />
+            <ImageView
+                android:id="@+id/ivCopy"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_copy" />
 
-        <ImageView
-            android:id="@+id/ivForward"
-            android:layout_width="48dp"
-            android:layout_height="@dimen/input_view_height"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:srcCompat="@drawable/ic_forward" />
+            <ImageView
+                android:id="@+id/ivReply"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_message_forwarded_14dp" />
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/ivForward"
+                android:layout_width="48dp"
+                android:layout_height="@dimen/input_view_height"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_forward" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
 </RelativeLayout>
