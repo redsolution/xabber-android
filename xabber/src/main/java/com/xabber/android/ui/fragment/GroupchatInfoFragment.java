@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
@@ -125,6 +126,14 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             updateChatSettings((GroupChat) groupChat);
         }
         requestLists();
+
+        if (groupChat != null && groupChat instanceof GroupChat) {
+            try {
+                PresenceManager.getInstance().sendPresenceToGroupchat(groupChat, true);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -132,6 +141,14 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         super.onPause();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+
+        if (groupChat != null && groupChat instanceof GroupChat) {
+            try {
+                PresenceManager.getInstance().sendPresenceToGroupchat(groupChat, false);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
