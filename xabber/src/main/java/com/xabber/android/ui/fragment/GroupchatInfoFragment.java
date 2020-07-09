@@ -64,7 +64,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     // settings layout
     private ViewGroup settingsLayout;
     private ViewGroup settingsButton;
-    private ViewGroup restrictionsButton;
     private TextView invitationsCount;
     private FrameLayout invitationsStatus;
     private ProgressBar invitationsProgress;
@@ -195,7 +194,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         settingsLayout = view.findViewById(R.id.settingsLayout);
         settingsButton = view.findViewById(R.id.settingsButtonLayout);
-        restrictionsButton = view.findViewById(R.id.restrictionsButtonLayout);
         invitationsCount = view.findViewById(R.id.invitationsCount);
         invitationsStatus = view.findViewById(R.id.invitationsStatus);
         invitationsProgress = view.findViewById(R.id.invitationsProgress);
@@ -203,21 +201,13 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         //settingsButton.setOnClickListener(this);
         //restrictionsButton.setOnClickListener(this);
 
-        view.findViewById(R.id.invitationsButtonLayout).setOnClickListener(v -> {
-            if (((GroupChat) groupChat).getListOfInvites() != null
-                    && ((GroupChat) groupChat).getListOfInvites().size() > 0) {
+        view.findViewById(R.id.invitationsButtonLayout).setOnClickListener(v ->
                 startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
-                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
-            }
-        });
+                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Invitations)));
 
-        view.findViewById(R.id.blockedButtonLayout).setOnClickListener(v -> {
-            if (((GroupChat) groupChat).getListOfBlockedElements() != null
-                    && ((GroupChat) groupChat).getListOfBlockedElements().size() > 0) {
+        view.findViewById(R.id.blockedButtonLayout).setOnClickListener(v ->
                 startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
-                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
-            }
-        });
+                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Blocked)));
 
 
         membersList.setLayoutManager(new LinearLayoutManager(getActivity(),
@@ -267,11 +257,11 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (indexType != null) {
             switch (indexType) {
                 case GLOBAL:
-                    groupchatIndexText.setText("Global");
+                    groupchatIndexText.setText(getString(R.string.groupchat_index_type_global));
                     groupchatIndexLayout.setVisibility(View.VISIBLE);
                     break;
                 case LOCAL:
-                    groupchatIndexText.setText("Local");
+                    groupchatIndexText.setText(getString(R.string.groupchat_index_type_local));
                     groupchatIndexLayout.setVisibility(View.VISIBLE);
                     break;
                 default:
@@ -282,11 +272,11 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (membershipType != null) {
             switch (membershipType) {
                 case OPEN:
-                    groupchatMembershipText.setText("Open");
+                    groupchatMembershipText.setText(getString(R.string.groupchat_membership_type_open));
                     groupchatMembershipLayout.setVisibility(View.VISIBLE);
                     break;
                 case MEMBER_ONLY:
-                    groupchatMembershipText.setText("Member only");
+                    groupchatMembershipText.setText(getString(R.string.groupchat_membership_type_members_only));
                     groupchatMembershipLayout.setVisibility(View.VISIBLE);
                     break;
                 case NONE:
@@ -298,11 +288,11 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (privacyType != null) {
             switch (privacyType) {
                 case PUBLIC:
-                    groupchatAnonymityText.setText("Public");
+                    groupchatAnonymityText.setText(getString(R.string.groupchat_privacy_type_public));
                     groupchatAnonymityLayout.setVisibility(View.VISIBLE);
                     break;
                 case INCOGNITO:
-                    groupchatAnonymityText.setText("Incognito");
+                    groupchatAnonymityText.setText(getString(R.string.groupchat_privacy_type_incognito));
                     groupchatAnonymityLayout.setVisibility(View.VISIBLE);
                     break;
                 case NONE:

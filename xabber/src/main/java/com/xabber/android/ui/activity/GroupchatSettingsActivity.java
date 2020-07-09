@@ -196,7 +196,7 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
                     if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                         toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
                     else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-                    barPainter.setGrey();
+                    //barPainter.setGrey();
                     toolbar.setNavigationOnClickListener(v -> {
                         Fragment fragment = getCurrentFragment();
                         if (fragment instanceof GroupchatSelectorListToolbarActions) {
@@ -232,11 +232,11 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
         switch (settingsType) {
             case Blocked:
                 menu.findItem(R.id.action_perform_on_selected).setVisible(selectionCounter > 0 && !activeProgress);
-                menu.findItem(R.id.action_perform_on_selected).setTitle("Unblock");
+                menu.findItem(R.id.action_perform_on_selected).setTitle(R.string.groupchat_unblock);
                 break;
             case Invitations:
                 menu.findItem(R.id.action_perform_on_selected).setVisible(selectionCounter > 0 && !activeProgress);
-                menu.findItem(R.id.action_perform_on_selected).setTitle("Revoke invitation");
+                menu.findItem(R.id.action_perform_on_selected).setTitle(getString(R.string.groupchat_revoke));
                 break;
         }
         return true;

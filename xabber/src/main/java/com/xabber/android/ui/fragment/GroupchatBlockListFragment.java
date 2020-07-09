@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
 
     private RecyclerView blockList;
     private GroupchatBlocklistAdapter adapter;
+    private TextView placeholder;
 
     private GroupchatSelectorListItemActions blockListListener;
 
@@ -108,14 +110,29 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.fragment_groupchat_settings_list, container, false);
+        placeholder = view.findViewById(R.id.groupchatSettingsPlaceholderTV);
         blockList = view.findViewById(R.id.groupchatSettingsElementList);
         blockList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new GroupchatBlocklistAdapter();
         adapter.setListener(blockListListener);
         blockList.setAdapter(adapter);
-        adapter.setBlockedItems(groupChat.getListOfBlockedElements());
-        //prepopulateList();
+        if (groupChat.getListOfBlockedElements() != null
+                && groupChat.getListOfBlockedElements().size() > 0)
+            adapter.setBlockedItems(groupChat.getListOfBlockedElements());
+        setupPlaceholder();
         return view;
+    }
+
+    private void setupPlaceholder(){
+        if (groupChat.getListOfBlockedElements() != null
+                && groupChat.getListOfBlockedElements().size() > 0){
+            blockList.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            blockList.setVisibility(View.GONE);
+            placeholder.setVisibility(View.VISIBLE);
+            placeholder.setText(getString(R.string.groupchat_blocklist_empty));
+        }
     }
 
     private void prepopulateList() {
@@ -158,6 +175,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         adapter.setBlockedItems(groupChat.getListOfBlockedElements());
         adapter.removeSelectionStateFrom(successfulJids);
         adapter.disableItemClicks(false);
+        setupPlaceholder();
     }
 
     @Override
@@ -170,7 +188,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
     public void onActionFailure(AccountJid account, ContactJid groupchatJid, List<String> failedJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
         adapter.disableItemClicks(false);
-        Toast.makeText(getContext(), "Failed to revoke an invitation to " + failedJids, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getString(R.string.groupchat_failed_to_unblock) + failedJids, Toast.LENGTH_SHORT).show();
     }
 
     private boolean checkIfWrongEntity(AccountJid account, ContactJid groupchatJid) {

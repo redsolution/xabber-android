@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
 
     private RecyclerView invitesList;
     private GroupchatInvitesAdapter adapter;
+    private TextView placeholder;
 
     private GroupchatSelectorListItemActions invitesListListener;
 
@@ -108,13 +110,28 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.fragment_groupchat_settings_list, container, false);
+        placeholder = view.findViewById(R.id.groupchatSettingsPlaceholderTV);
         invitesList = view.findViewById(R.id.groupchatSettingsElementList);
         invitesList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new GroupchatInvitesAdapter();
         adapter.setListener(invitesListListener);
         invitesList.setAdapter(adapter);
-        adapter.setInvites(groupChat.getListOfInvites());
+        if (groupChat.getListOfInvites() != null && groupChat.getListOfInvites().size() > 0)
+            adapter.setInvites(groupChat.getListOfInvites());
+        setupPlaceholder();
         return view;
+    }
+
+    private void setupPlaceholder(){
+        if (groupChat.getListOfInvites() != null
+                && groupChat.getListOfInvites().size() > 0){
+            invitesList.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            invitesList.setVisibility(View.GONE);
+            placeholder.setVisibility(View.VISIBLE);
+            placeholder.setText(getString(R.string.groupchat_invite_lis_empty));
+        }
     }
 
     public void actOnSelection() {
@@ -141,6 +158,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         adapter.setInvites(groupChat.getListOfInvites());
         adapter.removeCheckedInvites(successfulJids);
         adapter.disableItemClicks(false);
+        setupPlaceholder();
     }
 
     @Override
@@ -153,7 +171,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
     public void onActionFailure(AccountJid account, ContactJid groupchatJid, List<String> failedJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
         adapter.disableItemClicks(false);
-        Toast.makeText(getContext(), "Failed to revoke an invitation to " + failedJids, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getString(R.string.groupchat_failed_to_revoke_invitation) + failedJids, Toast.LENGTH_SHORT).show();
     }
 
     private boolean checkIfWrongEntity(AccountJid account, ContactJid groupchatJid) {

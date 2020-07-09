@@ -99,7 +99,7 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener {
         if (packet is IQ && packet.type == IQ.Type.result)
             activity?.finish()
         else {
-            Toast.makeText(context, getString(R.string.error_with_group_creating), Toast.LENGTH_LONG)
+            Toast.makeText(context, getString(R.string.groupchat_failed_to_create_groupchat), Toast.LENGTH_LONG)
                     .show()
             progressBar.visibility = View.GONE
         }

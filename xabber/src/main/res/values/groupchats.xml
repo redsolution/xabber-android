@@ -38,5 +38,13 @@
     <string name="groupchat_invite_reason_dialog_title">Reason</string>
     <string name="groupchat_invite_reason_dialog_message">Write a reason to go along with the invitation</string>
 
-    <string name="error_with_group_creating">Error with group creating!</string>
+    <string name="groupchat_blocklist_empty">Blocklist is empty</string>
+    <string name="groupchat_invite_lis_empty">Invite list is empty</string>
+
+    <string name="groupchat_revoke">Revoke</string>
+    <string name="groupchat_unblock">Unblock</string>
+
+    <string name="groupchat_failed_to_create_groupchat">Failed to create groupchat!</string>
+    <string name="groupchat_failed_to_revoke_invitation">Failed to revoke an invitation to</string>
+    <string name="groupchat_failed_to_unblock">Failed to unblock</string>
 </resources>
