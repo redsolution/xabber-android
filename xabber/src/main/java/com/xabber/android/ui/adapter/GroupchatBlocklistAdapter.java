@@ -134,10 +134,6 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == BlockedElementHolder.headerElement) {
-            return new GroupchatBlockHeaderViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_groupchat_block_header, parent, false));
-        }
         return new GroupchatBlockViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_groupchat_block, parent, false));
     }
@@ -151,22 +147,7 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         BlockedElementHolder item = listOfItems.get(position);
 
-        if (item.getItemVHType() == BlockedElementHolder.headerElement) {
-            GroupchatBlockHeaderViewHolder header = (GroupchatBlockHeaderViewHolder) holder;
-            String headerString = null;
-            switch (item.getBlockedItemType()) {
-                case BlockedElementHolder.blockedJid:
-                    headerString = "Contact Jid";
-                    break;
-                case BlockedElementHolder.blockedDomain:
-                    headerString = "Domain Jid";
-                    break;
-                case BlockedElementHolder.blockedUserId:
-                    headerString = "User Id";
-                    break;
-            }
-            header.headerTitle.setText(headerString);
-        } else if (item.getItemVHType() == BlockedElementHolder.blockedElement) {
+        if (item.getItemVHType() == BlockedElementHolder.blockedElement) {
             GroupchatBlockViewHolder blocked = (GroupchatBlockViewHolder) holder;
             try {
                 blocked.avatar.setImageDrawable(AvatarManager.getInstance()
@@ -184,16 +165,6 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public int getItemCount() {
         return listOfItems.size();
-    }
-
-    static class GroupchatBlockHeaderViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView headerTitle;
-
-        public GroupchatBlockHeaderViewHolder(@NonNull View itemView) {
-            super(itemView);
-            headerTitle = itemView.findViewById(R.id.groupchatBlocklistHeader);
-        }
     }
 
     class GroupchatBlockViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
