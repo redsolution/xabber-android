@@ -59,7 +59,7 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
         account = getAccount(intent);
         groupchatContact = getGroupchatContact(intent);
 
-        setContentView(R.layout.activity_with_toolbar_and_container);
+        setContentView(R.layout.activity_groupchat_invite_contact);
 
         boolean lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light;
 
@@ -128,8 +128,6 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
 
     private void updateToolbar() {
         if (selectionCounter == 0) {
-            //todo change to resource
-            toolbar.setTitle("Invite members");
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
             else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);

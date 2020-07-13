@@ -26,6 +26,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.widget.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +113,11 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         View view = inflater.inflate(R.layout.fragment_groupchat_settings_list, container, false);
         placeholder = view.findViewById(R.id.groupchatSettingsPlaceholderTV);
         invitesList = view.findViewById(R.id.groupchatSettingsElementList);
-        invitesList.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        invitesList.setLayoutManager(llm);
+        DividerItemDecoration divider = new DividerItemDecoration(invitesList.getContext(), llm.getOrientation());
+        divider.skipDividerOnLastItem(true);
+        invitesList.addItemDecoration(divider);
         adapter = new GroupchatInvitesAdapter();
         adapter.setListener(invitesListListener);
         invitesList.setAdapter(adapter);

@@ -21,6 +21,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -232,9 +233,13 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                 rosterConfiguration.sortAbstractContacts(comparator);
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
-                    group.addSubItem(SettingsManager.contactsShowMessages()
-                            ? ExtContactVO.convert(contact, this)
-                            : ContactVO.convert(contact, this));
+                    boolean isGroupchat = ChatManager.getInstance().getChat(contact.getAccount(),
+                            contact.getUser()) instanceof GroupChat;
+                    boolean isServer = contact.getUser().getJid().isDomainBareJid();
+                    if (!isGroupchat && !isServer)
+                        group.addSubItem(SettingsManager.contactsShowMessages()
+                                ? ExtContactVO.convert(contact, this)
+                                : ContactVO.convert(contact, this));
                 }
                 items.add(group);
             }

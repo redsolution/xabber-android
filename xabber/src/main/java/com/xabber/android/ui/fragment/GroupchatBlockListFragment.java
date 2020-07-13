@@ -27,6 +27,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
 import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.widget.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +113,11 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         View view = inflater.inflate(R.layout.fragment_groupchat_settings_list, container, false);
         placeholder = view.findViewById(R.id.groupchatSettingsPlaceholderTV);
         blockList = view.findViewById(R.id.groupchatSettingsElementList);
-        blockList.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        blockList.setLayoutManager(llm);
+        DividerItemDecoration divider = new DividerItemDecoration(blockList.getContext(), llm.getOrientation());
+        divider.skipDividerOnLastItem(true);
+        blockList.addItemDecoration(divider);
         adapter = new GroupchatBlocklistAdapter();
         adapter.setListener(blockListListener);
         blockList.setAdapter(adapter);
