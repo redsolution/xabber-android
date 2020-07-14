@@ -2,10 +2,13 @@ package com.xabber.android.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +35,7 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
+import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +65,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
     private ArrayList<Integer> listOfSelectedPositions;
+    private EditText filterEt;
 
     private OnNumberOfSelectedInvitesChanged listener;
 
@@ -101,6 +106,25 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_groupchat_invite_contact_list, container, false);
+
+        filterEt = view.findViewById(R.id.search_et);
+        filterEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                update();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         contactList = view.findViewById(R.id.contact_list);
         contactList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -236,7 +260,26 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                     boolean isGroupchat = ChatManager.getInstance().getChat(contact.getAccount(),
                             contact.getUser()) instanceof GroupChat;
                     boolean isServer = contact.getUser().getJid().isDomainBareJid();
-                    if (!isGroupchat && !isServer)
+
+                    if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()){
+                        String filter = filterEt.getText().toString();
+                        String transliteratedFilterString = StringUtils.translitirateToLatin(filter);
+
+                        String contactName = RosterManager.getInstance()
+                                .getBestContact(contact.getAccount(), contact.getUser())
+                                .getName()
+                                .toLowerCase();
+
+                        if (contact.getUser().toString().contains(filter)
+                                || contact.getUser().toString().contains(transliteratedFilterString)
+                                || contactName.contains(filter)
+                                || contactName.contains(transliteratedFilterString)){
+                            if (!isGroupchat && !isServer)
+                                group.addSubItem(SettingsManager.contactsShowMessages()
+                                        ? ExtContactVO.convert(contact, this)
+                                        : ContactVO.convert(contact, this));
+                        }
+                    } else if (!isGroupchat && !isServer)
                         group.addSubItem(SettingsManager.contactsShowMessages()
                                 ? ExtContactVO.convert(contact, this)
                                 : ContactVO.convert(contact, this));
