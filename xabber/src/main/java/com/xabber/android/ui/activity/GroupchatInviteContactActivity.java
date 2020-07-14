@@ -99,13 +99,17 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_perform_on_selected:
-                GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();
-                dialog.show(getSupportFragmentManager(), GroupchatInviteReasonDialog.LOG_TAG);
-                break;
+               openInvitationDialog();
+               break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    public void openInvitationDialog(){
+        GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();
+        dialog.show(getSupportFragmentManager(), GroupchatInviteReasonDialog.LOG_TAG);
     }
 
     private void updateMenu() {

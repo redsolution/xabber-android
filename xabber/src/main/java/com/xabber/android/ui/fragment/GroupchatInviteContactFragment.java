@@ -29,6 +29,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.GroupchatInviteContactActivity;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
@@ -309,6 +310,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
             listener.onInviteCountChange(adapter.getSelectedItemCount());
         }
         adapter.notifyItemChanged(position);
+        if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty())
+            ((GroupchatInviteContactActivity)getActivity()).openInvitationDialog();
+
         return true;
     }
 
