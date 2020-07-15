@@ -202,13 +202,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
         VCardManager.getInstance().requestByUser(account, user.getJid());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (vCard == null && !vCardError) {
-                    progressBar.setVisibility(View.GONE);
-                    LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
-                }
+        handler.postDelayed(() -> {
+            if (vCard == null && !vCardError) {
+                progressBar.setVisibility(View.GONE);
+                LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
             }
         }, 30000);
     }

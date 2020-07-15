@@ -23,7 +23,6 @@ public class AccountDeleteFragment extends Fragment {
     private AccountJid account;
     private String jid;
     private CheckBox chbDeleteSettings;
-    private TextView deleteMessage;
 
     public static Fragment newInstance(AccountJid account) {
         AccountDeleteFragment fragment = new AccountDeleteFragment();
@@ -47,7 +46,7 @@ public class AccountDeleteFragment extends Fragment {
         if (XabberAccountManager.getInstance().getAccountSyncState(jid) == null)
             chbDeleteSettings.setVisibility(View.GONE);
 
-        deleteMessage = (TextView) view.findViewById(R.id.accountDeleteMessage);
+        TextView deleteMessage = (TextView) view.findViewById(R.id.accountDeleteMessage);
         StringBuilder deleteMessageText = new StringBuilder();
         deleteMessageText.append(getString(R.string.account_delete_confirmation_question, AccountManager.getInstance().getVerboseName(account)));
         deleteMessageText.append(getString(R.string.account_delete_confirmation_explanation));
@@ -60,22 +59,14 @@ public class AccountDeleteFragment extends Fragment {
         AlertDialog alertDialog = new AlertDialog.Builder(chbDeleteSettings.getContext()).create();
         alertDialog.setTitle("Delete this account");
         alertDialog.setMessage("Are you sure you want to delete this account?");
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", (dialog, which) -> {
 
-                AccountManager.getInstance().removeAccount(account);
-                if (chbDeleteSettings != null && chbDeleteSettings.isChecked())
-                    XabberAccountManager.getInstance().deleteAccountSettings(jid);
-            }
+            AccountManager.getInstance().removeAccount(account);
+            if (chbDeleteSettings != null && chbDeleteSettings.isChecked())
+                XabberAccountManager.getInstance().deleteAccountSettings(jid);
         });
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.dismiss();
-            }
-        });
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) ->
+                dialog.dismiss());
         alertDialog.show();
     }
 }

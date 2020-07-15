@@ -6,7 +6,6 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -57,17 +56,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     private static final String LOG_TAG = SearchFragment.class.getSimpleName();
 
     private NestedScrollView nestedScrollView;
-
-    /* ContactsList variables */
-    private View contactListRoot;
-
-    /* RecentList variables */
-    private ConstraintLayout recentListRootConstraintLayout;
-    private RelativeLayout recentListTitleRootView;
-    private ChatListAdapter recentChatListAdapter;
     private TextView recentPlaceholder;
-
-    /* Search variables */
     private RecyclerView searchListRecyclerView;
     private ChatListAdapter searchChatListAdapter;
 
@@ -201,7 +190,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
 
     private void initContactsList(View view) {
         TextView title = view.findViewById(R.id.search_contacts_list_title);
-        contactListRoot = view.findViewById(R.id.search_contacts_list_root);
         RecyclerView contactListRecyclerView = view.findViewById(R.id.search_contacts_list_recycler);
         View contactListAccountColorIndicator = view.findViewById(R.id.search_contact_list_account_color_indicator);
 
@@ -264,11 +252,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     }
 
     private void initRecent(View view) {
-        recentListRootConstraintLayout = view.findViewById(R.id.search_recent_root_constraint_layout);
+        /* RecentList variables */
+        ConstraintLayout recentListRootConstraintLayout = view.findViewById(R.id.search_recent_root_constraint_layout);
         RecyclerView recentListRecyclerView = view.findViewById(R.id.search_recent_list_recycler);
         TextView recentListClearBtn = view.findViewById(R.id.search_recent_list_title_clear_button);
         View colorIndicator = view.findViewById(R.id.search_recent_list_account_color_indicator);
-        recentListTitleRootView = view.findViewById(R.id.search_recent_list_title_root_relative_layout);
         recentPlaceholder = view.findViewById(R.id.search_recent_placeholder);
 
         recentListClearBtn.setOnClickListener(this);
@@ -317,7 +305,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
             recentListRootConstraintLayout.setVisibility(View.GONE);
         }
 
-        recentChatListAdapter = new ChatListAdapter(chats, this, false);
+        ChatListAdapter recentChatListAdapter = new ChatListAdapter(chats, this, false);
         recentListRecyclerView.setAdapter(recentChatListAdapter);
 
         buildChatsListWithFilter(null);
