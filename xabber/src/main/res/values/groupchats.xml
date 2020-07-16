@@ -9,6 +9,7 @@
     <string name="groupchat_description">Description</string>
     <string name="groupchat_status">Status</string>
     <string name="groupchat_indexed">Indexed</string>
+    <string name="groupchat_index">Index</string>
     <string name="groupchat_anonymous">Anonymous</string>
     <string name="groupchat_membership">Membership</string>
     <string name="groupchat_default_restrictions">Default restrictions</string>
@@ -19,10 +20,6 @@
     <string name="groupchat_example_name">For example: Developers groupchat</string>
     <string name="groupchat_example_jid">developers_group</string>
     <string name="groupchat_example_description">Best groupchat ever!</string>
-
-    <string name="groupchat_choose_server">Choose server</string>
-    <string name="groupchat_choose_membership">Choose membership type</string>
-    <string name="groupchat_choose_index_type">Choose index type</string>
 
     <string name="groupchat_membership_type_none">None</string>
     <string name="groupchat_membership_type_open">Open</string>

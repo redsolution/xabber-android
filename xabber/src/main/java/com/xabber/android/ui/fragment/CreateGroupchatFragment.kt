@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
@@ -21,12 +22,12 @@ import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Stanza
 
 
-class CreateGroupchatFragment :  Fragment(), StanzaListener {
+class CreateGroupchatFragment :  Fragment(), StanzaListener, AdapterView.OnItemSelectedListener {
 
     private lateinit var accountSp: NoDefaultSpinner
     private lateinit var groupchatNameEt: EditText
     private lateinit var groupchatJidEt: EditText
-    private lateinit var serverEt: EditText
+    private lateinit var serverEt: AppCompatEditText
     private lateinit var membershipTypeSp: Spinner
     private lateinit var indexTypeSp: Spinner
     private lateinit var descriptionEt: EditText
@@ -47,6 +48,7 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener {
         setupAccountSpinner()
         setupMembershipTypeSpinner()
         setupIndexTypeSpinner()
+        setupServerEt()
 
         return  view
     }
@@ -58,6 +60,8 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener {
             accountSp.setSelection(0)
             accountSp.visibility = View.GONE
         }
+
+        accountSp.onItemSelectedListener = this
     }
 
     private fun setupMembershipTypeSpinner(){
@@ -71,9 +75,20 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener {
     private fun setupIndexTypeSpinner(){
         val adapter = ArrayAdapter(Application.getInstance().applicationContext,
         android.R.layout.simple_spinner_item, GroupchatIndexType.getLocalizedValues())
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         indexTypeSp.adapter = adapter
         indexTypeSp.setSelection(2)
+    }
+
+    private fun setupServerEt(){
+        if (AccountManager.getInstance().enabledAccounts.size <= 1){
+            val accounts = arrayListOf<AccountJid>()
+            accounts.addAll(AccountManager.getInstance().enabledAccounts)
+            serverEt.setText(accounts[0].fullJid.domain.toString())
+        } else if (accountSp.selectedItem != null){
+            serverEt.setText((accountSp.selectedItem as AccountJid).fullJid.domain)
+        }
     }
 
     fun createGroupchat(isIncognito: Boolean){
@@ -103,6 +118,14 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener {
                     .show()
             progressBar.visibility = View.GONE
         }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        setupServerEt()
     }
 
 }
