@@ -10,14 +10,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar_default"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-
+        android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="?attr/toolbar_popup_theme"
-        android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
+        android:contentInsetLeft="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp">
@@ -33,12 +32,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar_default"/>
-
-    <ViewStub
-        android:id="@+id/showcaseView"
-        android:inflatedId="@+id/showcaseView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout="@layout/showcase_chat_screen" />
 
 </RelativeLayout>

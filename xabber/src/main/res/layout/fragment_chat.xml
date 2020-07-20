@@ -18,16 +18,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/root_view"
-    android:elevation="24dp">
-
+    android:id="@+id/root_view">
 
     <include
         android:id="@+id/pinned_message_include"
         layout="@layout/pinned_message_layout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        />
+        android:layout_height="?attr/actionBarSize" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
@@ -42,8 +39,7 @@
         android:paddingTop="4dp"
         android:clipToPadding="false"
         android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/pinned_message_include"
-        />
+        android:layout_below="@+id/pinned_message_include" />
 
     <ViewStub
         android:id="@+id/stubNewContact"
@@ -59,8 +55,7 @@
         android:layout="@layout/layout_chat_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/secondBottomPanel"
-        />
+        android:layout_above="@+id/secondBottomPanel" />
 
     <ViewStub
         android:id="@+id/stubIntro"
@@ -81,8 +76,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottomPanel"
-        />
+        android:layout_above="@id/bottomPanel" />
 
     <FrameLayout
         android:id="@+id/bottomPanel"
@@ -108,8 +102,7 @@
         android:layout_above="@id/secondBottomPanel"
         android:layout_alignParentRight="true"
         android:clickable="true"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -118,8 +111,7 @@
             android:backgroundTint="?attr/chat_input_background"
             app:srcCompat="@drawable/ic_arrow_down"
             android:tint="?attr/chat_input_button_color"
-            app:borderWidth="0dp"
-            />
+            app:borderWidth="0dp" />
 
         <TextView
             android:id="@+id/tvNewReceivedCount"
@@ -136,8 +128,7 @@
             android:textSize="12sp"
             android:textStyle="bold"
             android:elevation="6dp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -147,8 +138,7 @@
         android:layout="@layout/layout_chat_join"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        />
+        android:layout_alignParentBottom="true" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -159,8 +149,7 @@
         android:indeterminate="true"
         android:elevation="8dp"
         android:layout_marginTop="-8dp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -170,8 +159,7 @@
         android:layout_above="@id/secondBottomPanel"
         android:indeterminate="true"
         android:layout_marginBottom="-8dp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/record_lock_view"
@@ -227,7 +215,6 @@
         android:focusable="true"
         android:clickable="true"
         android:elevation="8dp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
 </RelativeLayout>

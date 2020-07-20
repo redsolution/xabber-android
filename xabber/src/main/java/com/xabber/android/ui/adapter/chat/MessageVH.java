@@ -180,14 +180,17 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // set date
         needDate = extraData.isNeedDate();
         date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
+        if (needDate) messageTime.setText(date + " " + time);
+
 
         // setup CHECKED
-        if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
-                .getColor(R.color.unread_messages_background));
+        if (extraData.isChecked())
+            itemView.setBackgroundColor(extraData.getContext().getResources()
+                    .getColor(R.color.unread_messages_background));
         else itemView.setBackgroundDrawable(null);
     }
 
-    protected void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
         String[] forwardedIDs = messageRealmObject.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();

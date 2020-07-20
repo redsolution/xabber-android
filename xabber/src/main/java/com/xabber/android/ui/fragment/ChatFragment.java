@@ -123,6 +123,7 @@ import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
@@ -181,7 +182,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
     private final long STOP_TYPING_DELAY = 2500; // in ms
-    boolean isInputEmpty = true;
+    private boolean isInputEmpty = true;
     private FrameLayout inputPanel;
     private EditText inputView;
     private ImageButton sendButton;
@@ -233,7 +234,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private int fabMicViewHeightSize;
     private int fabMicViewMarginBottom;
     private float rootViewHeight;
-    private float rootViewWidth;
     private String recordingPath;
 
     //Voice message recorder layout
@@ -257,7 +257,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ChatViewerFragmentListener listener;
     private MessageRealmObject clickedMessageRealmObject;
     private Timer stopTypingTimer = new Timer();
-    protected final Runnable timer = new Runnable() {
+    private final Runnable timer = new Runnable() {
         @Override
         public void run() {
             changeStateOfInputViewButtonsTo(false);
@@ -345,7 +345,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             int heightOld = bottomOld - topOld;
             if (heightOld != view1.getHeight()) {
                 rootViewHeight = view1.getHeight();
-                rootViewWidth = view1.getWidth();
             }
         });
 
@@ -665,7 +664,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         }
                         //measurements for the recording layout animations.
                         rootViewHeight = rootView.getHeight();
-                        rootViewWidth = rootView.getWidth();
                         lockViewHeightSize = recordLockView.getHeight();
                         lockViewMarginBottom = ((RelativeLayout.LayoutParams)
                                 recordLockView.getLayoutParams()).bottomMargin;
@@ -703,6 +701,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     message.getUniqueId(), user, account)));
 
             pinnedRootView.setVisibility(View.VISIBLE);
+
+            pinnedRootView.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(getAccount(), 100));
 
             if (message.isIncoming())
                 pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()

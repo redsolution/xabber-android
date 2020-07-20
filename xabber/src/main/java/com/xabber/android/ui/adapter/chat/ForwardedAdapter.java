@@ -111,7 +111,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
                 null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),
                 this.extraData.getColorStateList(), groupchatMember,
                 this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
-                this.extraData.getMainMessageTimestamp(), false, false, false, false, false);
+                this.extraData.getMainMessageTimestamp(), false, false, false, false, true);
 
         final int viewType = getItemViewType(position);
         switch (viewType) {

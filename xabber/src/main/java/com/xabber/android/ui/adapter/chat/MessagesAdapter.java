@@ -237,11 +237,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         }
 
         // need date
-        boolean needDate;
+        boolean needDate = false;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
-        if (previousMessage != null) {
-            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
-        } else needDate = true;
+//        if (previousMessage != null) {
+//            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
+//        } else needDate = true;
 
         mainMessageTimestamp = messageRealmObject.getTimestamp();
 
