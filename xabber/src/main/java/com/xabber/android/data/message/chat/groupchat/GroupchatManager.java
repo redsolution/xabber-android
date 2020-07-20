@@ -180,6 +180,10 @@ public class GroupchatManager implements OnPacketListener {
                                 }
                             }
 
+                        },  exception -> {
+                            LogManager.d(LOG_TAG, "Failed to pin message");
+                            Toast.makeText(Application.getInstance().getBaseContext(),
+                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
                         });
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
@@ -235,6 +239,10 @@ public class GroupchatManager implements OnPacketListener {
                                 }
                             }
 
+                        }, exception -> {
+                            LogManager.d(LOG_TAG, "Failed to pin message");
+                            Toast.makeText(Application.getInstance().getBaseContext(),
+                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
                         });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
