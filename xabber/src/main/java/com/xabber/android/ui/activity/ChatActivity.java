@@ -168,13 +168,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private ImageView ivEdit;
     private ImageView ivPin;
 
-    //pinned message variables
-    private View pinnedRootView;
-    private TextView pinnedMessageTv;
-    private TextView pinnedMessageHeaderTv;
-    private TextView pinnedMessageTimeTv;
-    private ImageView pinnedMessageCrossIv;
-
     boolean showArchived = false;
     private boolean needScrollToUnread = false;
 
@@ -317,12 +310,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         toolbarBackIv.setOnClickListener(v -> close());
         toolbarOverflowIv.setOnClickListener(v -> setUpOptionsMenu(toolbarOverflowIv));
 
-        pinnedRootView = findViewById(R.id.pinned_message_include);
-        pinnedMessageTv = findViewById(R.id.pinned_message_text);
-        pinnedMessageHeaderTv = findViewById(R.id.pinned_message_header);
-        pinnedMessageTimeTv = findViewById(R.id.pinned_message_time);
-        pinnedMessageCrossIv = findViewById(R.id.pinned_message_close_iv);
-
         interactionsRoot = findViewById(R.id.toolbar_chat_interactions_include);
 
         tvCount = findViewById(R.id.tvCount);
@@ -364,79 +351,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
         } else initChats(false);
-    }
-
-    public void setupPinnedMessageView(AbstractChat chat){
-        //todo privilege checking
-        if (chat instanceof GroupChat && ((GroupChat)chat).getPinnedMessage() != null){
-            MessageRealmObject message = ((GroupChat)chat).getPinnedMessage();
-
-            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
-                    .sendUnPinMessageRequest((GroupChat)chat));
-            pinnedRootView.setOnClickListener(v -> startActivity(MessagesActivity.createIntentShowPinned(this,
-                    message.getUniqueId(), user, account)));
-
-            pinnedRootView.setVisibility(View.VISIBLE);
-
-            pinnedRootView.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(chat.getAccount(), 100));
-
-            if (message.isIncoming())
-                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
-                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
-            else
-                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
-
-            pinnedMessageTimeTv.setText(StringUtils
-                    .getSmartTimeText(this, new Date(message.getTimestamp())));
-
-            setupPinnedMessageText(message);
-        } else {
-            pinnedRootView.setVisibility(View.GONE);
-        }
-
-    }
-
-    private void setupPinnedMessageText(MessageRealmObject message){
-        String text = message.getText();
-        int forwardedCount = message.getForwardedIds().size();
-        if (text == null || text.isEmpty()) {
-            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(this.getResources()
-                    .getString(R.string.forwarded_messages_count), forwardedCount));
-
-            else if (message != null && message.haveAttachments()) {
-                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(this,
-                        message.getAttachmentRealmObjects().get(0)));
-
-                pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-                return;
-            } else
-                pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
-
-            pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
-        } else {
-            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-            pinnedMessageTv.setVisibility(View.VISIBLE);
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                pinnedMessageTv.setText(this.getText(R.string.otr_not_decrypted_message));
-                pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
-            } else {
-                try {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        try {
-                            pinnedMessageTv.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
-                        } catch (Exception e) {
-                            pinnedMessageTv.setText(Html.fromHtml(text));
-                        }
-                    } else pinnedMessageTv.setText(text);
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                    pinnedMessageTv.setText(text);
-                } finally {
-                    pinnedMessageTv.setAlpha(1f);
-                }
-            }
-            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-        }
     }
 
     @Override

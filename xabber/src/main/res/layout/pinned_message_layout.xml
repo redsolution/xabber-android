@@ -4,13 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="?attr/bars_color">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/grey_600"
-        android:alpha="0.5"/>
+    android:background="?attr/contact_list_contact_background"
+    android:elevation="1dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/pinned_message_icon"
@@ -21,7 +16,7 @@
         android:layout_marginLeft="6dp"
         android:scaleType="centerCrop"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:srcCompat="@drawable/ic_pin_grey_24dp"
+        app:srcCompat="@drawable/ic_pin_white_24dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true" />
 

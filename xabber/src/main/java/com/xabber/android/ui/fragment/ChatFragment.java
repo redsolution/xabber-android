@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -66,6 +68,7 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -106,6 +109,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -113,6 +117,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
+import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
@@ -130,6 +135,7 @@ import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.MessageHeaderViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
@@ -146,6 +152,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -218,6 +225,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private int fabMicViewMarginBottom;
     private float rootViewHeight;
     private String recordingPath;
+
+    //pinned message variables
+    private View pinnedRootView;
+    private TextView pinnedMessageTv;
+    private TextView pinnedMessageHeaderTv;
+    private TextView pinnedMessageTimeTv;
+    private ImageView pinnedMessageCrossIv;
+    private ImageView pinnedMessageIv;
 
     //Voice message recorder layout
     private RelativeLayout voiceMessageRecorderLayout;
@@ -630,9 +645,99 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     }
                 });
 
-        ((ChatActivity) getActivity()).setupPinnedMessageView(getChat());
+        pinnedRootView = view.findViewById(R.id.pinned_message_include);
+        pinnedMessageTv = view.findViewById(R.id.pinned_message_text);
+        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_header);
+        pinnedMessageTimeTv = view.findViewById(R.id.pinned_message_time);
+        pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv);
+        pinnedMessageIv = view.findViewById(R.id.pinned_message_icon);
+
+        setupPinnedMessageView();
 
         return view;
+    }
+
+    private void setupPinnedMessageView(){
+        //todo privilege checking
+        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null){
+            MessageRealmObject message = ((GroupChat)getChat()).getPinnedMessage();
+
+            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
+                    .sendUnPinMessageRequest((GroupChat)getChat()));
+            pinnedRootView.setOnClickListener(v ->
+                    startActivity(MessagesActivity.createIntentShowPinned(getContext(),
+                    message.getUniqueId(), user, account)));
+
+            pinnedRootView.setVisibility(View.VISIBLE);
+
+            if (message.isIncoming()){
+                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
+                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+                pinnedMessageHeaderTv.setTextColor(ColorManager.changeColor(
+                        ColorGenerator.MATERIAL.getColor(GroupchatMemberManager.getInstance()
+                                .getGroupchatUser(message.getGroupchatUserId()).getNickname()), 0.8f));
+                pinnedMessageIv.setColorFilter(ColorManager.changeColor(
+                        ColorGenerator.MATERIAL.getColor(GroupchatMemberManager.getInstance()
+                                .getGroupchatUser(message.getGroupchatUserId()).getNickname()), 0.8f));
+            } else {
+                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
+                pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
+                        .getAccountColorWithTint(getAccount(), 500));
+                pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
+                        .getAccountColorWithTint(getAccount(), 500));
+            }
+
+            pinnedMessageTimeTv.setText(StringUtils
+                    .getSmartTimeText(getContext(), new Date(message.getTimestamp())));
+
+            setupPinnedMessageText(message);
+        } else {
+            pinnedRootView.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void setupPinnedMessageText(MessageRealmObject message){
+        String text = message.getText();
+        int forwardedCount = message.getForwardedIds().size();
+        if (text == null || text.isEmpty()) {
+            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(this.getResources()
+                    .getString(R.string.forwarded_messages_count), forwardedCount));
+
+            else if (message != null && message.haveAttachments()) {
+                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
+                        message.getAttachmentRealmObjects().get(0)));
+
+                pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+                return;
+            } else
+                pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
+
+            pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+        } else {
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+            pinnedMessageTv.setVisibility(View.VISIBLE);
+            if (OTRManager.getInstance().isEncrypted(text)) {
+                pinnedMessageTv.setText(this.getText(R.string.otr_not_decrypted_message));
+                pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+            } else {
+                try {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                        try {
+                            pinnedMessageTv.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
+                        } catch (Exception e) {
+                            pinnedMessageTv.setText(Html.fromHtml(text));
+                        }
+                    } else pinnedMessageTv.setText(text);
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                    pinnedMessageTv.setText(text);
+                } finally {
+                    pinnedMessageTv.setAlpha(1f);
+                }
+            }
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+        }
     }
 
     public void onToolbarInteractionCloseClick(){
@@ -1081,7 +1186,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(GroupchatManager.GroupchatPresenceUpdatedEvent event){
         if (event.getGroupJid().getBareJid().equals(user.toString()))
-            ((ChatActivity) getActivity()).setupPinnedMessageView(getChat());
+            setupPinnedMessageView();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

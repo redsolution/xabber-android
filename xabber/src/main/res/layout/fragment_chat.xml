@@ -12,13 +12,18 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/root_view">
+
+    <include
+        android:id="@+id/pinned_message_include"
+        layout="@layout/pinned_message_layout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
@@ -29,10 +34,10 @@
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_message_incoming"
-        android:paddingBottom="4dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
-        android:layout_above="@+id/secondBottomPanel" />
+        android:layout_above="@+id/secondBottomPanel"
+        android:layout_below="@+id/pinned_message_include"/>
 
     <ViewStub
         android:id="@+id/stubNewContact"
@@ -58,12 +63,6 @@
         android:inflatedId="@+id/chat_intro"
         android:layout="@layout/chat_intro_helper_view" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_above="@id/secondBottomPanel"
-        android:background="@drawable/bottom_view_shadow"/>
-
     <FrameLayout
         android:id="@+id/secondBottomPanel"
         android:orientation="vertical"
@@ -75,9 +74,10 @@
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:elevation="1dp">
 
-        <include layout="@layout/view_chat_input" />
+        <include layout="@layout/view_chat_input"/>
 
         <include layout="@layout/view_bottom_chat_interaction"
             android:visibility="gone"/>

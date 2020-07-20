@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:elevation="8dp"
+        android:elevation="2dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="?attr/toolbar_popup_theme"
         android:contentInsetStart="0dp"
@@ -35,10 +35,6 @@
                 layout="@layout/view_toolbar_chat_interaction"
                 android:visibility="gone"
                 />
-
-            <include
-                android:id="@+id/pinned_message_include"
-                layout="@layout/pinned_message_layout"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
