@@ -31,6 +31,12 @@
                 layout="@layout/contact_title" />
 
             <include
+                android:id="@+id/toolbar_chat_interactions_include"
+                layout="@layout/view_toolbar_chat_interaction"
+                android:visibility="gone"
+                />
+
+            <include
                 android:id="@+id/pinned_message_include"
                 layout="@layout/pinned_message_layout"/>
 

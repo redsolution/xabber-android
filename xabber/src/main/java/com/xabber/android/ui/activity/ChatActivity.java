@@ -27,9 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.InputType;
 import android.util.TypedValue;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +35,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -45,7 +42,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -76,7 +72,6 @@ import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -166,6 +161,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private View contactTitleView;
     private ImageView toolbarBackIv;
     private ImageView toolbarOverflowIv;
+
+    //toolbar interaction panel variables
+    private View interactionsRoot;
+    private TextView tvCount;
+    private ImageView ivEdit;
+    private ImageView ivPin;
 
     //pinned message variables
     private View pinnedRootView;
@@ -322,6 +323,36 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         pinnedMessageTimeTv = findViewById(R.id.pinned_message_time);
         pinnedMessageCrossIv = findViewById(R.id.pinned_message_close_iv);
 
+        interactionsRoot = findViewById(R.id.toolbar_chat_interactions_include);
+
+        tvCount = findViewById(R.id.tvCount);
+        findViewById(R.id.ivClose).setOnClickListener(v -> {
+            assert chatFragment != null;
+            chatFragment.onToolbarInteractionCloseClick();
+        });
+
+        ivPin = findViewById(R.id.ivPin);
+        ivPin.setOnClickListener(v -> {
+            assert chatFragment != null;
+            chatFragment.onToolbarInteractionPinClick();
+        });
+
+        findViewById(R.id.ivDelete).setOnClickListener(v -> {
+            assert chatFragment != null;
+            chatFragment.onToolbarInteractionDeleteClick();
+        });
+
+        findViewById(R.id.ivCopy).setOnClickListener(v -> {
+            assert chatFragment != null;
+            chatFragment.onToolbarInteractionCopyClick();
+        });
+
+        ivEdit = findViewById(R.id.ivEdit);
+        ivEdit.setOnClickListener(v -> {
+            assert chatFragment != null;
+            chatFragment.onToolbarInteractionsEditClick();
+        });
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -477,6 +508,27 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         insertExtraText();
         setForwardMessages();
+    }
+
+    public void showToolbarInteractionsPanel(boolean isVisible, boolean isEditable,
+                                             boolean isPinnable, int messagesCount){
+
+        if (isVisible){
+            interactionsRoot.setVisibility(View.VISIBLE);
+            contactTitleView.setVisibility(View.GONE);
+
+            if (isEditable) ivEdit.setVisibility(View.VISIBLE);
+            else ivEdit.setVisibility(View.GONE);
+
+            if (isPinnable) ivPin.setVisibility(View.VISIBLE);
+            else ivPin.setVisibility(View.GONE);
+
+            tvCount.setText(String.valueOf(messagesCount));
+        } else {
+            interactionsRoot.setVisibility(View.GONE);
+            contactTitleView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     public void handleShareFileUri(Uri fileUri) {

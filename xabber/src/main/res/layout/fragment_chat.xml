@@ -79,7 +79,7 @@
 
         <include layout="@layout/view_chat_input" />
 
-        <include layout="@layout/view_chat_interaction"
+        <include layout="@layout/view_bottom_chat_interaction"
             android:visibility="gone"/>
 
         <include layout="@layout/view_chat_record"

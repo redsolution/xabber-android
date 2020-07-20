@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -20,7 +19,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
-import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -108,7 +106,6 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -116,14 +113,12 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
-import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
-import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
@@ -135,7 +130,6 @@ import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.MessageHeaderViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
@@ -152,7 +146,6 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -214,9 +207,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
     private View interactionView;
-    private TextView tvCount;
-    private ImageView ivEdit;
-    private ImageView ivPin;
     private boolean skipOnTextChanges = false;
 
     private Handler handler = new Handler();
@@ -539,47 +529,19 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         // interaction view
         interactionView = view.findViewById(R.id.interactionView);
-        tvCount = view.findViewById(R.id.tvCount);
-        ImageView ivClose = view.findViewById(R.id.ivClose);
-        ivClose.setOnClickListener(v -> {
-            bottomPanelMessagesIds.clear();
-            closeInteractionPanel();
-        });
-        ImageView ivReply = view.findViewById(R.id.ivReply);
-        ivReply.setOnClickListener(v -> {
+
+
+        view.findViewById(R.id.ivReply).setOnClickListener(v -> {
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
             isReply = true;
             showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
             closeInteractionPanel();
         });
-        ImageView ivForward = view.findViewById(R.id.ivForward);
-        ivForward.setOnClickListener(v -> {
+
+        view.findViewById(R.id.ivForward).setOnClickListener(v -> {
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
             openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
         });
-
-        ivPin = view.findViewById(R.id.ivPin);
-
-        if (getChat() instanceof GroupChat){
-            ivPin.setOnClickListener(v -> {
-                GroupchatManager.getInstance().
-                        sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
-                closeInteractionPanel();
-            });
-        }
-
-        ImageView ivDelete = view.findViewById(R.id.ivDelete);
-        ivDelete.setOnClickListener(v ->
-                deleteMessage(new ArrayList<>(chatMessageAdapter.getCheckedMessageRealmObjects())));
-        ImageView ivCopy = view.findViewById(R.id.ivCopy);
-        ivCopy.setOnClickListener(v -> {
-            ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
-            bottomPanelMessagesIds.clear();
-            closeInteractionPanel();
-        });
-        ivEdit = view.findViewById(R.id.ivEdit);
-        ivEdit.setOnClickListener(v ->
-                getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageRealmObjects().get(0)));
 
         sendButton.setOnClickListener(v -> sendMessage());
 
@@ -673,7 +635,33 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         return view;
     }
 
+    public void onToolbarInteractionCloseClick(){
+        bottomPanelMessagesIds.clear();
+        closeInteractionPanel();
+    }
 
+    public void onToolbarInteractionPinClick(){
+        if (getChat() instanceof GroupChat){
+            GroupchatManager.getInstance().
+                    sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
+            bottomPanelMessagesIds.clear();
+            closeInteractionPanel();
+        }
+    }
+
+    public void onToolbarInteractionDeleteClick(){
+        deleteMessage(new ArrayList<>(chatMessageAdapter.getCheckedMessageRealmObjects()));
+    }
+
+    public void onToolbarInteractionCopyClick(){
+        ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+        bottomPanelMessagesIds.clear();
+        closeInteractionPanel();
+    }
+
+    public void onToolbarInteractionsEditClick(){
+        getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
+    }
 
     private void setChat(AccountJid accountJid, ContactJid contactJid) {
         this.account = accountJid;
@@ -1659,28 +1647,27 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onChangeCheckedItems(int checkedItems) {
-        if (checkedItems > 0) {
-            interactionView.setVisibility(View.VISIBLE);
-            tvCount.setText(String.valueOf(checkedItems));
-            replySwipe.setSwipeEnabled(false);
-        } else {
-            interactionView.setVisibility(View.GONE);
-            replySwipe.setSwipeEnabled(true);
-        }
-
-        if (checkedItems == 1 && getChat() instanceof GroupChat){
-            ivPin.setVisibility(View.VISIBLE);
-        } else ivPin.setVisibility(View.GONE);
-
-        if (checkedItems == 1
+        boolean isEditable = checkedItems == 1
                 && RrrManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
                 && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()
                 || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDelivered()
-                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDisplayed())) {
-            ivEdit.setVisibility(View.VISIBLE);
-        } else ivEdit.setVisibility(View.GONE);
+                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDisplayed());
+
+        boolean isPinnable = checkedItems == 1 && getChat() instanceof GroupChat;
+
+        if (checkedItems > 0) {
+            interactionView.setVisibility(View.VISIBLE);
+            ((ChatActivity)getActivity()).showToolbarInteractionsPanel(true, isEditable,
+                    isPinnable, checkedItems);
+            replySwipe.setSwipeEnabled(false);
+        } else {
+            interactionView.setVisibility(View.GONE);
+            replySwipe.setSwipeEnabled(true);
+            ((ChatActivity)getActivity()).showToolbarInteractionsPanel(false, isEditable,
+                    isPinnable, checkedItems);
+        }
     }
 
     public void showCustomMenu(View anchor) {

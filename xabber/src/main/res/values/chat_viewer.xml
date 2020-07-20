@@ -8,6 +8,8 @@
     <string name="chat_delay">sent at %s</string>
     <string name="chat_input_hint">Type your message here</string>
     <string name="chat_send">Send</string>
+    <string name="chat_froward">Forward</string>
+    <string name="chat_reply">Reply</string>
     <string name="chat_record">Record</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_chat_history_dialog_button">Clear</string>
