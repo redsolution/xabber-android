@@ -26,7 +26,8 @@
         android:id="@+id/pinned_message_include"
         layout="@layout/pinned_message_layout"
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="48dp"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
