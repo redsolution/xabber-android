@@ -18,12 +18,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -35,6 +38,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,6 +56,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
@@ -57,6 +64,7 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -65,6 +73,9 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -84,6 +95,8 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
+import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -91,6 +104,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -107,8 +121,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
     private static final String CONTACT_INFO_FRAGMENT_TAG = "CONTACT_INFO_FRAGMENT_TAG";
-
-    private String currentFragment;
 
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_RECENT_CHATS = "com.xabber.android.data.RECENT_CHATS";
@@ -152,6 +164,15 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private Toolbar toolbar;
     private View contactTitleView;
+    private ImageView toolbarBackIv;
+    private ImageView toolbarOverflowIv;
+
+    //pinned message variables
+    private View pinnedRootView;
+    private TextView pinnedMessageTv;
+    private TextView pinnedMessageHeaderTv;
+    private TextView pinnedMessageTimeTv;
+    private ImageView pinnedMessageCrossIv;
 
     boolean showArchived = false;
     private boolean needScrollToUnread = false;
@@ -290,22 +311,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account, user)));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-            toolbar.setOverflowIcon(getResources()
-                    .getDrawable(R.drawable.ic_overflow_menu_grey_24dp));
-        } else {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-            toolbar.setOverflowIcon(getResources()
-                    .getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        }
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationOnClickListener(v -> {
-            if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)){
-                initChats(false);
-                updateToolbar();
-            } else close();
-        });
+        toolbarBackIv = findViewById(R.id.toolbar_arrow_back_iv);
+        toolbarOverflowIv = findViewById(R.id.toolbar_overflow_iv);
+        toolbarBackIv.setOnClickListener(v -> close());
+        toolbarOverflowIv.setOnClickListener(v -> setUpOptionsMenu(toolbarOverflowIv));
+
+        pinnedRootView = findViewById(R.id.pinned_message_include);
+        pinnedMessageTv = findViewById(R.id.pinned_message_text);
+        pinnedMessageHeaderTv = findViewById(R.id.pinned_message_header);
+        pinnedMessageTimeTv = findViewById(R.id.pinned_message_time);
+        pinnedMessageCrossIv = findViewById(R.id.pinned_message_close_iv);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -318,6 +333,79 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
         } else initChats(false);
+    }
+
+    public void setupPinnedMessageView(AbstractChat chat){
+        //todo privilege checking
+        if (chat instanceof GroupChat && ((GroupChat)chat).getPinnedMessage() != null){
+            MessageRealmObject message = ((GroupChat)chat).getPinnedMessage();
+
+            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
+                    .sendUnPinMessageRequest((GroupChat)chat));
+            pinnedRootView.setOnClickListener(v -> startActivity(MessagesActivity.createIntentShowPinned(this,
+                    message.getUniqueId(), user, account)));
+
+            pinnedRootView.setVisibility(View.VISIBLE);
+
+            pinnedRootView.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(chat.getAccount(), 100));
+
+            if (message.isIncoming())
+                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
+                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+            else
+                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
+
+            pinnedMessageTimeTv.setText(StringUtils
+                    .getSmartTimeText(this, new Date(message.getTimestamp())));
+
+            setupPinnedMessageText(message);
+        } else {
+            pinnedRootView.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void setupPinnedMessageText(MessageRealmObject message){
+        String text = message.getText();
+        int forwardedCount = message.getForwardedIds().size();
+        if (text == null || text.isEmpty()) {
+            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(this.getResources()
+                    .getString(R.string.forwarded_messages_count), forwardedCount));
+
+            else if (message != null && message.haveAttachments()) {
+                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(this,
+                        message.getAttachmentRealmObjects().get(0)));
+
+                pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+                return;
+            } else
+                pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
+
+            pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+        } else {
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+            pinnedMessageTv.setVisibility(View.VISIBLE);
+            if (OTRManager.getInstance().isEncrypted(text)) {
+                pinnedMessageTv.setText(this.getText(R.string.otr_not_decrypted_message));
+                pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
+            } else {
+                try {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                        try {
+                            pinnedMessageTv.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
+                        } catch (Exception e) {
+                            pinnedMessageTv.setText(Html.fromHtml(text));
+                        }
+                    } else pinnedMessageTv.setText(text);
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                    pinnedMessageTv.setText(text);
+                } finally {
+                    pinnedMessageTv.setAlpha(1f);
+                }
+            }
+            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
+        }
     }
 
     @Override
@@ -603,14 +691,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private void updateToolbar() {
         NewContactTitleInflater.updateTitle(contactTitleView, this,
                 RosterManager.getInstance().getBestContact(account, user), getNotifMode());
-//        updateToolbarMenuIcon();
-        setUpOptionsMenu(toolbar.getMenu());
 
         /* Update background color via current main user and theme; */
-        TypedValue typedValue = new TypedValue();
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountRippleColor(account));
         } else {
+            TypedValue typedValue = new TypedValue();
             this.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
             toolbar.setBackgroundColor(typedValue.data);
         }
@@ -698,9 +784,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         update();
         finish();
         ActivityManager.getInstance().clearStack(false);
-        //if (!ActivityManager.getInstance().hasContactList(this)) {
         startActivity(MainActivity.createClearStackIntent(this));
-        //}
 
     }
 
@@ -715,57 +799,31 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        setUpOptionsMenu(menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return onMenuItemClick(item);
     }
 
-    private void setUpRegularChatMenu(Menu menu, AbstractChat abstractChat) {
-
-        // archive/unarchive chat
-        menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
-        menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
-
-        // mute chat
-        menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
-        menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
-    }
-
-    private void setUpContactInfoMenu(Menu menu, AbstractChat abstractChat) {
-        // request subscription
-        AbstractContact abstractContact = RosterManager.getInstance()
-                .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
-        menu.findItem(R.id.action_request_subscription).setVisible(!abstractContact.isSubscribed()
-                && !RosterManager.getInstance().hasSubscriptionPending(account, user));
-    }
-
-    private void setUpOptionsMenu(Menu menu) {
+    private void setUpOptionsMenu(View view) {
         AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
         if (abstractChat != null) {
-            menu.clear();
-            MenuInflater inflater = getMenuInflater();
-            if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)) {
-                inflater.inflate(R.menu.toolbar_contact, menu);
-                setUpContactInfoMenu(menu, abstractChat);
-                return;
-            }
-            if (abstractChat instanceof RegularChat) {
-                inflater.inflate(R.menu.menu_chat_regular, menu);
-                setUpRegularChatMenu(menu, abstractChat);
-                return;
-            }
-        }
-    }
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            MenuInflater inflater = popupMenu.getMenuInflater();
 
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        currentFragment = fragment.getTag();
+            //if (abstractChat instanceof RegularChat) {
+            inflater.inflate(R.menu.menu_chat_regular, popupMenu.getMenu());
+            //}
+
+            // archive/unarchive chat
+            popupMenu.getMenu().findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+            popupMenu.getMenu().findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+
+            // mute chat
+            popupMenu.getMenu().findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
+            popupMenu.getMenu().findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
+
+            popupMenu.setOnMenuItemClickListener(this::onMenuItemClick);
+            popupMenu.show();
+        }
     }
 
     @Override
@@ -852,14 +910,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             case R.id.action_archive_chat:
                 if (abstractChat != null) {
                     abstractChat.setArchived(true);
-                    setUpOptionsMenu(toolbar.getMenu());
                 }
                 return true;
 
             case R.id.action_unarchive_chat:
                 if (abstractChat != null) {
                     abstractChat.setArchived(false);
-                    setUpOptionsMenu(toolbar.getMenu());
                 }
                 return true;
 
@@ -912,26 +968,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         else return NotificationState.NotificationMode.byDefault;
     }
 
-    private void editAlias() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.edit_alias);
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
-        if (rosterContact != null)
-            input.setText(rosterContact.getName());
-        builder.setView(input);
-
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) ->
-                RosterManager.getInstance().setName(account, user, input.getText().toString()));
-
-        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
-
-        builder.show();
-    }
-
     private void sendContact() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
         String text = rosterContact != null ? rosterContact.getName() + "\nxmpp:" + user.toString()
@@ -948,7 +984,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent sendIntent = SearchActivity.createIntent(this);
         sendIntent.setAction(ACTION_FORWARD);
         sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
-        //finish();
         startActivity(sendIntent);
     }
 
@@ -966,7 +1001,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onSnoozed() {
-        setUpOptionsMenu(toolbar.getMenu());
         updateToolbar();
     }
 

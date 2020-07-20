@@ -20,12 +20,6 @@
     android:orientation="vertical"
     android:id="@+id/root_view">
 
-    <include
-        android:id="@+id/pinned_message_include"
-        layout="@layout/pinned_message_layout"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
         android:layout_width="match_parent"
@@ -38,8 +32,7 @@
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
-        android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/pinned_message_include" />
+        android:layout_above="@+id/secondBottomPanel" />
 
     <ViewStub
         android:id="@+id/stubNewContact"

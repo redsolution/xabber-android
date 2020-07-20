@@ -219,13 +219,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivPin;
     private boolean skipOnTextChanges = false;
 
-    //pinned message variables
-    private View pinnedRootView;
-    private TextView pinnedMessageTv;
-    private TextView pinnedMessageHeaderTv;
-    private TextView pinnedMessageTimeTv;
-    private ImageView pinnedMessageCrossIv;
-
     private Handler handler = new Handler();
     private VoiceRecordState currentVoiceRecordingState = VoiceRecordState.NotRecording;
     private boolean recordSaveAllowed = false;
@@ -675,93 +668,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     }
                 });
 
-        pinnedRootView = view.findViewById(R.id.pinned_message_include);
-        pinnedMessageTv = view.findViewById(R.id.pinned_message_text);
-        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_header);
-        pinnedMessageTimeTv = view.findViewById(R.id.pinned_message_time);
-        pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv);
-
-        //todo privilege checking
-        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null ){
-            setupPinnedMessageView();
-        } else {
-            pinnedRootView.setVisibility(View.GONE);
-        }
+        ((ChatActivity) getActivity()).setupPinnedMessageView(getChat());
 
         return view;
     }
 
-    private void setupPinnedMessageView(){
-        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null){
-            MessageRealmObject message = ((GroupChat)getChat()).getPinnedMessage();
 
-            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
-                    .sendUnPinMessageRequest((GroupChat)getChat()));
-            pinnedRootView.setOnClickListener(v -> startActivity(MessagesActivity.createIntentShowPinned(getActivity(),
-                    message.getUniqueId(), user, account)));
-
-            pinnedRootView.setVisibility(View.VISIBLE);
-
-            pinnedRootView.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(getAccount(), 100));
-
-            if (message.isIncoming())
-                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
-                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
-            else
-                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
-
-            pinnedMessageTimeTv.setText(StringUtils
-                    .getSmartTimeText(getContext(), new Date(message.getTimestamp())));
-
-            setupPinnedMessageText(message);
-        } else {
-            pinnedRootView.setVisibility(View.GONE);
-        }
-
-    }
-
-    private void setupPinnedMessageText(MessageRealmObject message){
-        String text = message.getText();
-        int forwardedCount = message.getForwardedIds().size();
-        if (text == null || text.isEmpty()) {
-            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(getContext().getResources()
-                    .getString(R.string.forwarded_messages_count), forwardedCount));
-
-            else if (message != null && message.haveAttachments()) {
-                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
-                        message.getAttachmentRealmObjects().get(0)));
-
-                pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-                return;
-            } else
-                pinnedMessageTv.setText(getContext().getResources().getString(R.string.no_messages));
-
-            pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
-        } else {
-            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-            pinnedMessageTv.setVisibility(View.VISIBLE);
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                pinnedMessageTv.setText(getContext().getText(R.string.otr_not_decrypted_message));
-                pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
-            } else {
-                try {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        try {
-                            pinnedMessageTv.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
-                        } catch (Exception e) {
-                            pinnedMessageTv.setText(Html.fromHtml(text));
-                        }
-                    } else pinnedMessageTv.setText(text);
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                    pinnedMessageTv.setText(text);
-                } finally {
-                    pinnedMessageTv.setAlpha(1f);
-                }
-            }
-            pinnedMessageTv.setTypeface(Typeface.DEFAULT);
-        }
-    }
 
     private void setChat(AccountJid accountJid, ContactJid contactJid) {
         this.account = accountJid;
@@ -1181,7 +1093,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(GroupchatManager.GroupchatPresenceUpdatedEvent event){
         if (event.getGroupJid().getBareJid().equals(user.toString()))
-            setupPinnedMessageView();
+            ((ChatActivity) getActivity()).setupPinnedMessageView(getChat());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

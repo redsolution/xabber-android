@@ -6,6 +6,17 @@
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
+    <ImageView
+        android:id="@+id/toolbar_arrow_back_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="?attr/standard_arrow_left_icon"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_gravity="center_vertical"/>
+
     <include layout="@layout/avatar_view_in_chat_screen" />
 
     <LinearLayout
@@ -24,6 +35,7 @@
             android:textColor="?attr/contact_list_contact_name_text_color"
             android:text="Lorem Ipsum"
             android:drawablePadding="4dp"
+            android:layout_marginStart="6dp"
             android:layout_marginLeft="6dp"
             android:textSize="18sp" />
 
@@ -34,9 +46,21 @@
             android:singleLine="true"
             android:textColor="?attr/contact_list_contact_name_text_color"
             android:text="Lorem ipsum dolor sit amet"
+            android:layout_marginStart="6dp"
             android:layout_marginLeft="6dp"
             android:alpha="0.7" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/toolbar_overflow_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="?attr/standard_overflow_icon"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"/>
 
 </LinearLayout>

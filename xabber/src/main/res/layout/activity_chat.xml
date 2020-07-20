@@ -21,9 +21,22 @@
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp">
 
-        <include
-            android:id="@+id/contact_title"
-            layout="@layout/contact_title" />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/contact_title"
+                layout="@layout/contact_title" />
+
+            <include
+                android:id="@+id/pinned_message_include"
+                layout="@layout/pinned_message_layout"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 
     </androidx.appcompat.widget.Toolbar>
 
