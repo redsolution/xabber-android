@@ -45,7 +45,6 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     private EditText userView;
     private EditText passwordView;
     private EditText passwordConfirmEditText;
-    private IntentIntegrator integrator;
     private ImageView qrScan;
     private ImageView clearText;
 
@@ -69,12 +68,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         createAccountCheckBox.setOnClickListener(this);
 
         clearText = view.findViewById(R.id.imgCross);
-        clearText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userView.getText().clear();
-            }
-        });
+        clearText.setOnClickListener(view1 -> userView.getText().clear());
 
         userView = (EditText) view.findViewById(R.id.account_user_name);
         passwordView = (EditText) view.findViewById(R.id.account_password);
@@ -149,7 +143,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.imgQRcode:
                 //((AccountAddActivity)getActivity()).scanQR();
-                integrator = IntentIntegrator.forFragment(this);
+                IntentIntegrator integrator = IntentIntegrator.forFragment(this);
                 integrator.setOrientationLocked(false)
                         .setBeepEnabled(false)
                         .setCameraId(0)

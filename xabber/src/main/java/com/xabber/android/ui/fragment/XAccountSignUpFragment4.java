@@ -7,8 +7,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +14,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import com.xabber.android.R;
-import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -57,12 +56,7 @@ public class XAccountSignUpFragment4 extends Fragment {
         tvDescription = view.findViewById(R.id.tvDescription);
         tvDescription.setText(Html.fromHtml(getActivity().getString(R.string.account_secure_description)));
         btnStart = view.findViewById(R.id.btnStart);
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onStartClick();
-            }
-        });
+        btnStart.setOnClickListener(v -> onStartClick());
 
         Fragment linksFragment = XAccountLinksFragment.newInstance();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -99,15 +93,12 @@ public class XAccountSignUpFragment4 extends Fragment {
         compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(new Action1<XabberAccount>() {
-                @Override
-                public void call(XabberAccount account) {
-                    if (account != null) {
-                        if (account.getSocialBindings().size() > 0 || account.getEmails().size() > 0)
-                            haveLinks = true;
-                        else haveLinks = false;
-                        setupStartButton();
-                    }
+            .doOnNext(account -> {
+                if (account != null) {
+                    if (account.getSocialBindings().size() > 0 || account.getEmails().size() > 0)
+                        haveLinks = true;
+                    else haveLinks = false;
+                    setupStartButton();
                 }
             }).subscribe());
     }
@@ -135,20 +126,10 @@ public class XAccountSignUpFragment4 extends Fragment {
         View view = inflater.inflate(R.layout.skip_links_dialog, null);
 
         Button btnSkip = view.findViewById(R.id.btnSkip);
-        btnSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onStep4Completed();
-            }
-        });
+        btnSkip.setOnClickListener(v -> listener.onStep4Completed());
 
         Button btnCancel = view.findViewById(R.id.btnCancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeDialog();
-            }
-        });
+        btnCancel.setOnClickListener(v -> closeDialog());
 
         return view;
     }

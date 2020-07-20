@@ -270,12 +270,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     protected void subscribeForVoiceDownloadProgress() {
         voiceDownload = DownloadManager.getInstance().subscribeForProgress();
         if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
-        voiceDownloadSubscription = voiceDownload.doOnNext(new Action1<DownloadManager.ProgressData>() {
-            @Override
-            public void call(DownloadManager.ProgressData progressData) {
-                waitForVoiceDownloadFinish(progressData);
-            }
-        }).subscribe();
+        voiceDownloadSubscription = voiceDownload.doOnNext(this::waitForVoiceDownloadFinish).subscribe();
     }
 
     @Override
@@ -297,19 +292,16 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     public void onFileLongClick(final AttachmentRealmObject attachmentRealmObject, View caller) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
         popupMenu.inflate(R.menu.menu_file_attachment);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_copy_link:
-                        onCopyFileLink(attachmentRealmObject);
-                        break;
-                    case R.id.action_share:
-                        onShareClick(attachmentRealmObject);
-                        break;
-                }
-                return true;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_copy_link:
+                    onCopyFileLink(attachmentRealmObject);
+                    break;
+                case R.id.action_share:
+                    onShareClick(attachmentRealmObject);
+                    break;
             }
+            return true;
         });
         popupMenu.show();
     }
@@ -382,12 +374,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
-    protected final Runnable record = new Runnable() {
-        @Override
-        public void run() {
-            VoiceManager.getInstance().startRecording();
-        }
-    };
+    protected final Runnable record = () -> VoiceManager.getInstance().startRecording();
 
     boolean releaseRecordedVoicePlayback(String filePath) {
         VoiceManager.getInstance().releaseMediaPlayer();
