@@ -28,6 +28,7 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
@@ -105,11 +106,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     @Override
     public void onRosterReceived(AccountItem accountItem) {
-        onAccountConnected(accountItem);
-    }
-
-    public void onAccountConnected(AccountItem accountItem) {
-        LogManager.d("AccountRosterListener", "onAccountConnectedStarted");
+        LogManager.d("AccountRosterListener", "onRosterReceivedStarted");
         updateIsSupported(accountItem);
         LogManager.d("AccountRosterListener", "finished checking support");
         //updatePreferencesFromServer(accountItem);
@@ -138,7 +135,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         updatePreferencesFromServer(accountItem);
         LogManager.d("AccountRosterListener", "finished updating preferences");
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-     }
+    }
 
     public void onChatOpen(final AbstractChat chat) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
@@ -310,6 +307,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             }
         }
 
+
         if (rosterItemIterators.get(accountItem) == null) {
             rosterItemIterators.put(accountItem, contactsWithoutHistory.iterator());
         } else {
@@ -441,6 +439,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         int pageLoaded = 0;
         // Request all new messages after last archived id
         while (!complete && id != null && pageLoaded < 2) {
+//            ArrayList<Jid> archiveAdresses;
+//            for (AbstractChat abstractChat : ChatManager.getInstance().getChats())
+
             MamManager.MamQueryResult queryResult = requestMessagesFromId(accountItem, null, id);
             if (queryResult != null) {
                 messages.addAll(queryResult.forwardedMessages);
@@ -682,7 +683,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 addWithJid(chat.getUser().getJid(), dataForm);
                 MamQueryIQ mamQueryIQ = new MamQueryIQ(queryID, null, dataForm);
                 mamQueryIQ.setType(IQ.Type.set);
-                mamQueryIQ.setTo((Jid) null);
+                if (chat instanceof GroupChat)
+                    mamQueryIQ.setTo(chat.getUser().getBareJid());
+                else mamQueryIQ.setTo((Jid) null);
                 mamQueryIQ.addExtension(rsmSet);
                 accountItem.getConnection().sendStanza(mamQueryIQ);
                 return null;
@@ -704,7 +707,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 addWithStanzaId(stanzaId, dataForm);
                 MamQueryIQ mamQueryIQ = new MamQueryIQ(queryID, null, dataForm);
                 mamQueryIQ.setType(IQ.Type.set);
-                mamQueryIQ.setTo(chat.getTo());
+                if (chat instanceof GroupChat)
+                    mamQueryIQ.setTo(chat.getTo());
+                else mamQueryIQ.setTo((Jid) null);
                 accountItem.getConnection().sendStanza(mamQueryIQ);
                 return null;
             }
@@ -719,8 +724,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                if (chat != null) return manager.pageAfter(chat.getUser().getJid(), archivedId, 50);
-                else return manager.pageAfter(null, archivedId, 50);
+                if (chat != null)
+                    return manager.pageAfter(chat.getUser().getJid(), archivedId, 50);
+                else
+                    return manager.pageAfter(null, archivedId, 50);
             }
         });
     }
@@ -886,7 +893,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             messageRealmObject.setDelayTimestamp(messageDelay.getStamp().getTime());
         }
         messageRealmObject.setIncoming(incoming);
-        messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         messageRealmObject.setOriginId(UniqStanzaHelper.getOriginId(message));
         messageRealmObject.setPacketId(message.getStanzaId());
         messageRealmObject.setReceivedFromMessageArchive(true);
@@ -914,6 +920,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (groupchatUser != null) {
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
+            messageRealmObject.setStanzaId(UniqStanzaHelper.getContactStanzaId(message));
+        } else {
+            messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }
 
         return messageRealmObject;

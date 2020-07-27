@@ -20,21 +20,56 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true" />
 
-    <TextView
-        android:id="@+id/pinned_message_header"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
-        android:textSize="12sp"
-        android:paddingTop="6dp"
-        tools:text="nickname@example.com"
-        android:textColor="@color/grey_800"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
         android:layout_toEndOf="@id/pinned_message_icon"
-        android:layout_toRightOf="@id/pinned_message_icon" />
+        android:layout_toRightOf="@id/pinned_message_icon"
+        android:layout_marginTop="6dp"
+        android:layout_toStartOf="@+id/pinned_message_close_iv"
+        android:layout_toLeftOf="@+id/pinned_message_close_iv">
+
+        <TextView
+            android:id="@+id/pinned_message_jid_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textSize="12sp"
+            tools:text="nickname@example.com"
+            android:textColor="@color/grey_800"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/pinned_message_badge_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textColor="@color/grey_600"
+            android:background="@color/grey_200"
+            tools:text="😇"/>
+
+        <TextView
+            android:id="@+id/pinned_message_role_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/grey_600"
+            android:text="Role"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
         android:id="@+id/pinned_message_text"
@@ -42,30 +77,18 @@
         android:layout_height="wrap_content"
         tools:text="Some text"
         android:textColor="@color/black_text"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginBottom="6dp"
         android:layout_toEndOf="@id/pinned_message_icon"
         android:layout_toRightOf="@id/pinned_message_icon"
+        android:layout_toStartOf="@+id/pinned_message_close_iv"
+        android:layout_toLeftOf="@+id/pinned_message_close_iv"
         android:autoLink="all"
         android:maxLines="1"
         android:layout_alignParentBottom="true" />
-
-    <TextView
-        android:id="@+id/pinned_message_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="6dp"
-        android:layout_toEndOf="@id/pinned_message_header"
-        android:layout_toRightOf="@id/pinned_message_header"
-        android:singleLine="true"
-        android:textColor="@color/grey_600"
-        android:textSize="10sp"
-        tools:text="11:40" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/pinned_message_close_iv"

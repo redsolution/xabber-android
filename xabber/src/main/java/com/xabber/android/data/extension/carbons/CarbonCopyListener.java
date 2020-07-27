@@ -30,7 +30,10 @@ class CarbonCopyListener implements CarbonCopyReceivedListener {
                 + direction.toString() + " Message: " + carbonCopy.toString() + " Message: "
                 + wrappingMessage);
         Application.getInstance().runOnUiThread(() -> {
-            MessageManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
+            try{
+                MessageManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
+            } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+
             ChatMarkerManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
             ChatStateManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
             LogManager.d(LOG_TAG, "invoked onCarbonCopyReceived on CarbonExtension.Direction: "

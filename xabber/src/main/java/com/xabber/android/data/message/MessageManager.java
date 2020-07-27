@@ -536,7 +536,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             String markupText = bodies.second;
 
             MessageRealmObject newMessageRealmObject = finalChat.createNewMessageItem(text);
-            newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageRealmObject.setOriginId(UniqStanzaHelper.getOriginId(message));
             if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
                 newMessageRealmObject.setAcknowledged(true);
@@ -559,6 +558,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             if (groupchatUser != null) {
                 GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
+                newMessageRealmObject.setStanzaId(UniqStanzaHelper.getContactStanzaId(message));
+            } else {
+                newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
             }
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);

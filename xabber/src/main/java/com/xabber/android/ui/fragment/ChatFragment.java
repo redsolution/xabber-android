@@ -109,6 +109,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -152,7 +153,6 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -230,7 +230,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private View pinnedRootView;
     private TextView pinnedMessageTv;
     private TextView pinnedMessageHeaderTv;
-    private TextView pinnedMessageTimeTv;
+    private TextView pinnedMessageBadgeTv;
+    private TextView pinnedMessageRoleTv;
     private ImageView pinnedMessageCrossIv;
     private ImageView pinnedMessageIv;
 
@@ -647,8 +648,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         pinnedRootView = view.findViewById(R.id.pinned_message_include);
         pinnedMessageTv = view.findViewById(R.id.pinned_message_text);
-        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_header);
-        pinnedMessageTimeTv = view.findViewById(R.id.pinned_message_time);
+        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_jid_tv);
+        pinnedMessageBadgeTv = view.findViewById(R.id.pinned_message_badge_tv);
+        pinnedMessageRoleTv = view.findViewById(R.id.pinned_message_role_tv);
         pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv);
         pinnedMessageIv = view.findViewById(R.id.pinned_message_icon);
 
@@ -673,12 +675,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (message.isIncoming()){
                 pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
                         .getGroupchatUser(message.getGroupchatUserId()).getBestName());
-                pinnedMessageHeaderTv.setTextColor(ColorManager.changeColor(
-                        ColorGenerator.MATERIAL.getColor(GroupchatMemberManager.getInstance()
-                                .getGroupchatUser(message.getGroupchatUserId()).getNickname()), 0.8f));
-                pinnedMessageIv.setColorFilter(ColorManager.changeColor(
-                        ColorGenerator.MATERIAL.getColor(GroupchatMemberManager.getInstance()
-                                .getGroupchatUser(message.getGroupchatUserId()).getNickname()), 0.8f));
+                pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
+                        .getAccountColorWithTint(getAccount(), 600));
+                pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
+                        .getAccountColorWithTint(getAccount(), 600));
             } else {
                 pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
                 pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
@@ -687,8 +687,22 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            pinnedMessageTimeTv.setText(StringUtils
-                    .getSmartTimeText(getContext(), new Date(message.getTimestamp())));
+            GroupchatMember member = GroupchatMemberManager.getInstance()
+                    .getGroupchatUser(message.getGroupchatUserId());
+            if (member != null){
+                if (member.getBadge() != null){
+                    pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
+                    pinnedMessageBadgeTv.setText(member.getBadge());
+                } else pinnedMessageBadgeTv.setVisibility(View.GONE);
+
+                if (member.getRole() != null){
+                    pinnedMessageRoleTv.setVisibility(View.VISIBLE);
+                    pinnedMessageRoleTv.setText(member.getRole());
+                    pinnedMessageRoleTv.setBackgroundColor(ColorManager.getInstance()
+                            .getAccountPainter().getAccountColorWithTint(getAccount(), 50));
+                } else pinnedMessageRoleTv.setVisibility(View.GONE);
+            }
+
 
             setupPinnedMessageText(message);
         } else {

@@ -6,6 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
@@ -41,6 +42,10 @@ public class GroupchatRepository {
     }
 
     public static void saveOrUpdateGroupchatRealmObject(GroupChat groupChat) {
+        String pinnedMessageId = "";
+        if (groupChat.getPinnedMessage() != null )
+            pinnedMessageId = groupChat.getPinnedMessage().getStanzaId();
+        String finalPinnedMessageId = pinnedMessageId;
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -65,7 +70,9 @@ public class GroupchatRepository {
                     groupchatRealmObject.setIndex(groupChat.getIndexType());
                     groupchatRealmObject.setMembership(groupChat.getMembershipType());
                     groupchatRealmObject.setDescription(groupChat.getDescription());
-                    groupchatRealmObject.setPinnedMessage(groupChat.getPinnedMessage());
+                    groupchatRealmObject.setPinnedMessage(realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.STANZA_ID, finalPinnedMessageId)
+                            .findFirst());
                     groupchatRealmObject.setMembersListVersion(groupChat.getMembersListVersion());
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
 

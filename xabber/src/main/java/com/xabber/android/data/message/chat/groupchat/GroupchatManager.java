@@ -89,6 +89,7 @@ public class GroupchatManager implements OnPacketListener {
 
     private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet){
         try{
+            //if groupchat headlines aren't correctly parsed, must rewrite this
             StandardExtensionElement echoElement = (StandardExtensionElement) packet.getExtensions().get(0);
             Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
             String originId = UniqStanzaHelper.getOriginId(message);
