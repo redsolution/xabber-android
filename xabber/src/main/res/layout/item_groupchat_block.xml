@@ -30,39 +30,19 @@
         android:layout_alignParentRight="true"
         />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_blocked_jid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/block_list_contact_checkbox"
         android:layout_toRightOf="@id/avatarView"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/contact_list_item_name"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:singleLine="true"
-            android:text="Contact list item name"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_blocked_jid"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:gravity="top"
-            android:text="name@example.comname@example.com"
-            android:textSize="12sp"
-            app:autoSizeMaxTextSize="12sp"
-            app:autoSizeMinTextSize="8sp"
-            app:autoSizeTextType="uniform" />
-    </LinearLayout>
+        android:ellipsize="marquee"
+        android:gravity="top"
+        android:text="name@example.comname@example.com"
+        android:textSize="12sp"
+        app:autoSizeMaxTextSize="12sp"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeTextType="uniform" />
 
 </RelativeLayout>

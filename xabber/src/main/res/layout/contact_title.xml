@@ -9,12 +9,12 @@
     <ImageView
         android:id="@+id/toolbar_arrow_back_iv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:src="?attr/standard_arrow_left_icon"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
         android:layout_gravity="center_vertical"/>
 
     <include layout="@layout/avatar_view_in_chat_screen" />
