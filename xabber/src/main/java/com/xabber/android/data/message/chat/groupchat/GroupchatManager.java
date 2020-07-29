@@ -41,6 +41,7 @@ import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -197,13 +198,14 @@ public class GroupchatManager implements OnPacketListener {
                                            GroupchatMembershipType membershipType,
                                            GroupchatIndexType indexType,
                                            GroupchatPrivacyType privacyType,
-                                           StanzaListener listener){
+                                           StanzaListener stanzaListener,
+                                           ExceptionCallback onErrorCallback){
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, groupJid, description, membershipType, privacyType, indexType);
 
         try{
             AccountManager.getInstance().getAccount(accountJid).getConnection()
-                    .sendIqWithResponseCallback(iq, listener);
+                    .sendIqWithResponseCallback(iq, stanzaListener, onErrorCallback);
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
