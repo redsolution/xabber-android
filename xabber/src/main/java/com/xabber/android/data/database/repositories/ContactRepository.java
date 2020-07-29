@@ -4,8 +4,8 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.RegularChatRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
+import com.xabber.android.data.database.realmobjects.RegularChatRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
@@ -35,18 +35,18 @@ public class ContactRepository {
 
     public static String getBestNameFromRealm(Jid jid){
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
+        String name = "";
         ContactRealmObject contact = realm
                 .where(ContactRealmObject.class)
                 .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, jid.toString())
                 .findFirst();
 
+        if (contact != null && contact.getBestName() != null)
+            name = contact.getBestName();
+
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
-        if (contact != null && contact.getBestName() != null)
-            return contact.getBestName();
-        else
-            return "";
+        return name;
     }
 
     public static void saveContactToRealm(final AccountJid accountJid, final Collection<RosterContact> contacts) {
