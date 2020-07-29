@@ -23,8 +23,6 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
@@ -40,16 +38,14 @@ import io.realm.RealmList;
 public class RrrManager implements OnPacketListener {
 
     public static final String NAMESPACE = "http://xabber.com/protocol/rewrite";
-    public static final String NAMESPACE_NOTIFY = NAMESPACE.concat("#notify");
-    public static final String RETRACT_MESSAGE_ELEMENT = "retract-message";
-    public static final String REWRITE_MESSAGE_ELEMENT = "replace";
-    public static final String REPLACED_STAMP_ELEMENT = "replaced";
-    public static final String BODY_MESSAGE_ELEMENT = "body";
-    public static final String BY_ATTRIBUTE = "by";
-    public static final String CONVERSATION_ATTRIBUTE = "conversation";
-    public static final String ID_ATTRIBUTE = "id";
-    public static final String STAMP_ATTRIBUTE = "stamp";
-    public static final String TO_ATTRIBUTE = "to";
+    private static final String NAMESPACE_NOTIFY = NAMESPACE.concat("#notify");
+    private static final String RETRACT_MESSAGE_ELEMENT = "retract-message";
+    private static final String REWRITE_MESSAGE_ELEMENT = "replace";
+    private static final String REPLACED_STAMP_ELEMENT = "replaced";
+    private static final String BY_ATTRIBUTE = "by";
+    private static final String CONVERSATION_ATTRIBUTE = "conversation";
+    private static final String ID_ATTRIBUTE = "id";
+    private static final String STAMP_ATTRIBUTE = "stamp";
     private static final String LOG_TAG = "RRRManager";
     private static RrrManager instance;
 
@@ -82,12 +78,9 @@ public class RrrManager implements OnPacketListener {
     public boolean subscribeForUpdates(final AccountJid accountJid) {
         XMPPTCPConnection xmpptcpConnection = AccountManager.getInstance().getAccount(accountJid).getConnection();
         try {
-            xmpptcpConnection.sendIqWithResponseCallback(new SubscribeUpdatesIQ(accountJid), new StanzaListener() {
-                @Override
-                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-                    if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.error)) {
-                        LogManager.d(LOG_TAG, "Failed to subscribe for RRR updates for account " + accountJid + "! Received error IQ");
-                    }
+            xmpptcpConnection.sendIqWithResponseCallback(new SubscribeUpdatesIQ(accountJid), packet -> {
+                if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.error)) {
+                    LogManager.d(LOG_TAG, "Failed to subscribe for RRR updates for account " + accountJid + "! Received error IQ");
                 }
             });
         } catch (Exception e) {
@@ -194,28 +187,21 @@ public class RrrManager implements OnPacketListener {
 
     public void sendRetractAllMessagesRequest(final AccountJid accountJid, final ContactJid contactJid,
                                               final boolean symmetric){
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(contactJid.toString(),
-                        symmetric);
-                try {
-                    AccountManager.getInstance().getAccount(accountJid).getConnection()
-                            .sendIqWithResponseCallback(retractAllMessagesIQ, new StanzaListener() {
-                                @Override
-                                public void processStanza(Stanza packet)
-                                        throws SmackException.NotConnectedException, InterruptedException {
-                                    if (packet instanceof IQ ) {
-                                        if (((IQ) packet).getType().equals(IQ.Type.error))
-                                            LogManager.d(LOG_TAG, "Failed to retract message");
-                                        else if (((IQ) packet).getType().equals(IQ.Type.result)){
-                                            LogManager.d(LOG_TAG, "Message successfully retracted");
-                                        }
-                                    }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(contactJid.toString(),
+                    symmetric);
+            try {
+                AccountManager.getInstance().getAccount(accountJid).getConnection()
+                        .sendIqWithResponseCallback(retractAllMessagesIQ, packet -> {
+                            if (packet instanceof IQ ) {
+                                if (((IQ) packet).getType().equals(IQ.Type.error))
+                                    LogManager.d(LOG_TAG, "Failed to retract message");
+                                else if (((IQ) packet).getType().equals(IQ.Type.result)){
+                                    LogManager.d(LOG_TAG, "Message successfully retracted");
                                 }
-                            });
-                } catch (Exception e) {LogManager.exception(LOG_TAG, e); }
-            }
+                            }
+                        });
+            } catch (Exception e) {LogManager.exception(LOG_TAG, e); }
         });
         //TODO ALSO AWFUL PLACE FOR DELETING!
         MessageManager.getInstance().clearHistory(accountJid, contactJid);

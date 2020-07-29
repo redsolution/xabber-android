@@ -1,7 +1,8 @@
 package com.xabber.android.data.extension.groupchat;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 
@@ -16,11 +17,12 @@ import java.util.List;
 
 public class CreateGroupchatIQ extends IQ {
 
-    private static final String NAMESPACE = GroupchatManager.NAMESPACE;
-    private static final String ELEMENT = "create";
+    public static final String NAMESPACE_CREATE = ("http://xabber.com/protocol/groupchat#create");
+    public static final String QUERY_ELEMENT = "query";
+    public static final String JID_ELEMENT = "jid";
     private static final String NAME_ELEMENT = "name";
     private static final String DESCRIPTION_ELEMENT = "description";
-    private static final String JID_ELEMENT = "jid";
+    private static final String LOCALPART_ELEMENT = "localpart";
     private static final String PRIVACY_ELEMENT = "privacy";
     private static final String INDEX_ELEMENT = "index";
     private static final String MEMBERSHIP_ELEMENT = "membership";
@@ -42,22 +44,23 @@ public class CreateGroupchatIQ extends IQ {
         return Type.set;
     }
 
-    public CreateGroupchatIQ(Jid from, String to, String groupName, String groupJid,
+    public CreateGroupchatIQ(Jid from, String to, String groupName, String groupLocalpart,
                              String description, GroupchatMembershipType membershipType,
                              GroupchatPrivacyType privacyType, GroupchatIndexType indexType){
-        super(ELEMENT, NAMESPACE);
+        super(QUERY_ELEMENT, NAMESPACE_CREATE);
         this.setType(Type.set);
         this.setFrom(from);
         this.setTo(to);
 
         elements.add(new MSimpleNamedElement(NAME_ELEMENT, groupName));
         elements.add(new MSimpleNamedElement(DESCRIPTION_ELEMENT, description));
-        elements.add(new MSimpleNamedElement(JID_ELEMENT, groupJid));
         elements.add(new MSimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()));
         elements.add(new MSimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()));
         elements.add(new MSimpleNamedElement(INDEX_ELEMENT, indexType.toXml()));
         elements.add(new MSimpleParentElement(CONTACTS_ELEMENT,
                 new MSimpleNamedElement(CONTACT_ELEMENT, from.asBareJid().toString())));
+        if (groupLocalpart != null && !groupLocalpart.isEmpty())
+            elements.add(new MSimpleNamedElement(LOCALPART_ELEMENT, groupLocalpart));
 
         this.from = from;
         this.to = to;
@@ -121,6 +124,12 @@ public class CreateGroupchatIQ extends IQ {
             xmlStringBuilder.closeElement(this);
             return xmlStringBuilder;
         }
+    }
+
+    public interface CreateGroupchatIqResultListener{
+        void onJidConflict();
+        void onOtherError();
+        void onSuccessfullyCreated(AccountJid accountJid, ContactJid contactJid);
     }
 
 }

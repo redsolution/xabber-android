@@ -39,14 +39,15 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -160,18 +161,41 @@ public class GroupchatManager implements OnPacketListener {
     }
 
     public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName,
-                                           String description, String groupJid,
+                                           String description, String localpart,
                                            GroupchatMembershipType membershipType,
                                            GroupchatIndexType indexType,
                                            GroupchatPrivacyType privacyType,
-                                           StanzaListener stanzaListener,
-                                           ExceptionCallback onErrorCallback){
+                                           CreateGroupchatIQ.CreateGroupchatIqResultListener listener){
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
-                server, groupName, groupJid, description, membershipType, privacyType, indexType);
+                server, groupName, localpart, description, membershipType, privacyType, indexType);
 
         try{
             AccountManager.getInstance().getAccount(accountJid).getConnection()
-                    .sendIqWithResponseCallback(iq, stanzaListener, onErrorCallback);
+                    .sendIqWithResponseCallback(iq, packet -> {
+                        if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result){
+                            LogManager.d(LOG_TAG, "Groupchat successfully created");
+                            LogManager.d(LOG_TAG, packet.toXML().toString());
+
+                            StandardExtensionElement standardExtensionElement = packet
+                                    .getExtension(CreateGroupchatIQ.QUERY_ELEMENT, CreateGroupchatIQ.NAMESPACE_CREATE);
+
+                            if (standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT) != null){
+                                String createdGroupchatJid = standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT).getText();
+                                try{
+                                    ContactJid contactJid = ContactJid.from(createdGroupchatJid);
+                                    AccountJid account = AccountJid.from(packet.getTo().toString());
+                                    PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
+                                    listener.onSuccessfullyCreated(accountJid, contactJid);
+                                } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+                            }
+                        }
+                    }, exception -> {
+                        LogManager.exception(LOG_TAG, exception);
+                        if (exception instanceof XMPPException.XMPPErrorException
+                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML().toString().contains("conflict")){
+                            listener.onJidConflict();
+                        } else listener.onOtherError();
+                    });
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }

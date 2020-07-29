@@ -97,12 +97,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded();
-            }
-        });
+        Application.getInstance().runOnUiThread(this::onLoaded);
     }
 
     private void onLoaded() {
@@ -183,6 +178,9 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+        if (chat == null){
+            chat = ChatManager.getInstance().createRegularChat(account, user);
+        }
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received),
                 ChatAction.subscription_received);
     }

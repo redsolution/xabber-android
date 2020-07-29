@@ -517,7 +517,7 @@ public class StringUtils {
             String result = xmlOutput.getWriter().toString();
             return xmlData.substring(0, xmlMarkupStartsAtIndex) + "\n" + result.substring(0, result.length()-1);
         } catch (Exception e) {
-            if (!(e instanceof TransformerException)) {
+            if (!((e instanceof TransformerException) || (e instanceof StringIndexOutOfBoundsException))) {
                 LogManager.exception(StringUtils.class.getSimpleName(), e);
             }
             return xmlData;

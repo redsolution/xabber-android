@@ -11,20 +11,22 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
+import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.ui.adapter.AccountChooseAdapter
 import com.xabber.android.ui.widget.NoDefaultSpinner
-import org.jivesoftware.smack.ExceptionCallback
-import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.IQ
+import org.jivesoftware.smack.packet.StandardExtensionElement
 import org.jivesoftware.smack.packet.Stanza
 
 
-class CreateGroupchatFragment :  Fragment(), StanzaListener, ExceptionCallback,
+class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIqResultListener,
         AdapterView.OnItemSelectedListener {
 
     private val LOG_TAG = this.javaClass.simpleName
@@ -109,29 +111,29 @@ class CreateGroupchatFragment :  Fragment(), StanzaListener, ExceptionCallback,
         GroupchatManager.getInstance().sendCreateGroupchatRequest(accountJid,
                 serverEt.text.toString(), groupchatNameEt.text.toString(),
                 descriptionEt.text.toString(), groupchatJidEt.text.toString(), membershipType,
-                indexType, privacyType, this, this)
+                indexType, privacyType, this)
 
         progressBar.visibility = View.VISIBLE
     }
 
-    override fun processStanza(packet: Stanza?) {
-        if (packet is IQ && packet.type == IQ.Type.result){
-            LogManager.d(LOG_TAG, "Groupchat successfully created")
-            Application.getInstance().runOnUiThread {
-                activity?.finish() //todo replace with opening new created chat
-                progressBar.visibility = View.GONE
-            }
-        }
+    override fun onSuccessfullyCreated(accountJid: AccountJid?, contactJid: ContactJid?) {
+        //todo someshit
+
+        progressBar.visibility = View.GONE
     }
 
-    //in case of error type iq response
-    override fun processException(exception: Exception?) {
-        LogManager.exception(LOG_TAG, exception)
-        Application.getInstance().runOnUiThread {
-            Toast.makeText(context, getString(R.string.groupchat_failed_to_create_groupchat),
-                            Toast.LENGTH_LONG).show()
-            progressBar.visibility = View.GONE
-        }
+    override fun onJidConflict() {
+        Toast.makeText(context,
+                getString(R.string.groupchat_failed_to_create_groupchat_jid_already_exists),
+                Toast.LENGTH_LONG).show()
+        progressBar.visibility = View.GONE
+    }
+
+    override fun onOtherError() {
+        Toast.makeText(context,
+                getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
+                Toast.LENGTH_LONG).show()
+        progressBar.visibility = View.GONE
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

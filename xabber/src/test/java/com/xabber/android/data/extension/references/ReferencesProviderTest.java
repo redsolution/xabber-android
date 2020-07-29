@@ -33,8 +33,8 @@ public class ReferencesProviderTest {
     private ReferencesProvider provider;
     private GroupchatProvider groupchatProvider;
     private XmlPullParserFactory factory;
-    private String stringForward, stringMedia, stringMarkup1,
-            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown, stringGroupchat, stringGroupPresence;
+    private String stringForward, stringMedia, stringMarkup1, stringMarkup2, stringMention,
+            stringQuote, stringNull, stringUnknown, stringGroupchat, stringGroupPresence;
 
     @Before
     public void setUp() throws Exception {
