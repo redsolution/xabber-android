@@ -68,7 +68,6 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -673,8 +672,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
-                        .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+                if (GroupchatMemberManager.getInstance().getGroupchatUser(message.getGroupchatUserId()) != null){
+                    pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
+                            .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+                } else {
+                    pinnedMessageHeaderTv.setText(message.getUser().toString());
+                }
                 pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
                         .getAccountColorWithTint(getAccount(), 600));
                 pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
