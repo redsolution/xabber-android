@@ -114,13 +114,13 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
             item.setBlockedString(element.getBlockedItem());
             listOfItems.add(item);
         }
-        for (GroupchatBlocklistItemElement.ItemType type : GroupchatBlocklistItemElement.ItemType.values()) {
-            if (blockedValuesCounter[type.ordinal()] > 0) {
-                BlockedElementHolder item = new BlockedElementHolder(
-                        BlockedElementHolder.headerElement, type);
-                listOfItems.add(item);
-            }
-        }
+//        for (GroupchatBlocklistItemElement.ItemType type : GroupchatBlocklistItemElement.ItemType.values()) {
+//            if (blockedValuesCounter[type.ordinal()] > 0) {
+//                BlockedElementHolder item = new BlockedElementHolder(
+//                        BlockedElementHolder.headerElement, type);
+//                listOfItems.add(item);
+//            }
+//        }
         Collections.sort(listOfItems, blockedElementComparator);
         notifyDataSetChanged();
     }
@@ -175,7 +175,7 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
         private TextView blockJid;
         private CheckBox blockCheckBox;
 
-        public GroupchatBlockViewHolder(@NonNull View itemView) {
+        GroupchatBlockViewHolder(@NonNull View itemView) {
             super(itemView);
             avatar = itemView.findViewById(R.id.avatar);
             blockJid = itemView.findViewById(R.id.tv_blocked_jid);
