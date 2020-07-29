@@ -46,4 +46,6 @@
     <string name="groupchat_failed_to_create_groupchat">Failed to create groupchat!</string>
     <string name="groupchat_failed_to_revoke_invitation">Failed to revoke an invitation to</string>
     <string name="groupchat_failed_to_unblock">Failed to unblock</string>
+    <string name="groupchat_failed_to_pin_message">Failed to pin message</string>
+    <string name="groupchat_failed_to_unpin_message">Failed to unpin message</string>
 </resources>

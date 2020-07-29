@@ -1,9 +1,11 @@
 package com.xabber.android.data.message.chat.groupchat;
 
+import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -157,42 +159,6 @@ public class GroupchatManager implements OnPacketListener {
         return isSupported(AccountManager.getInstance().getAccount(accountJid).getConnection());
     }
 
-    public void sendUnPinMessageRequest(GroupChat groupChat){
-        //todo add privilege checking
-
-        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            try {
-                GroupchatPinnedMessageElement groupchatPinnedMessageElement =
-                        new GroupchatPinnedMessageElement("");
-
-                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupChat.getAccount().getFullJid(),
-                        groupChat.getUser().getJid(), groupchatPinnedMessageElement);
-
-                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(iq, packet -> {
-
-                            if (packet instanceof IQ) {
-                                if (((IQ) packet).getType().equals(IQ.Type.error)){
-                                    LogManager.d(LOG_TAG, "Failed to pin message");
-                                    Toast.makeText(Application.getInstance().getBaseContext(),
-                                            "Failed to retract message", Toast.LENGTH_SHORT).show();
-                                }
-                                if (((IQ) packet).getType().equals(IQ.Type.result)){
-                                    LogManager.d(LOG_TAG, "Message successfully unpinned");
-                                }
-                            }
-
-                        },  exception -> {
-                            LogManager.d(LOG_TAG, "Failed to pin message");
-                            Toast.makeText(Application.getInstance().getBaseContext(),
-                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
-                        });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            }
-        });
-    }
-
     public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName,
                                            String description, String groupJid,
                                            GroupchatMembershipType membershipType,
@@ -210,6 +176,35 @@ public class GroupchatManager implements OnPacketListener {
             LogManager.exception(LOG_TAG, e);
         }
 
+    }
+
+    public void sendUnPinMessageRequest(GroupChat groupChat){
+        //todo add privilege checking
+
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                GroupchatPinnedMessageElement groupchatPinnedMessageElement =
+                        new GroupchatPinnedMessageElement("");
+
+                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupChat.getAccount().getFullJid(),
+                        groupChat.getUser().getJid(), groupchatPinnedMessageElement);
+
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result))
+                                LogManager.d(LOG_TAG, "Message successfully unpinned");
+                        }, exception -> {
+                            LogManager.exception(LOG_TAG, exception);
+                            Context context = Application.getInstance().getApplicationContext();
+                            Application.getInstance().runOnUiThread(() ->
+                                    Toast.makeText(context,
+                                            context.getText(R.string.groupchat_failed_to_unpin_message),
+                                            Toast.LENGTH_SHORT).show());
+                        });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
     }
 
     public void sendPinMessageRequest(MessageRealmObject message){
@@ -230,22 +225,15 @@ public class GroupchatManager implements OnPacketListener {
 
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
-
-                            if (packet instanceof IQ) {
-                                if (((IQ) packet).getType().equals(IQ.Type.error)) {
-                                    LogManager.d(LOG_TAG, "Failed to pin message");
-                                    Toast.makeText(Application.getInstance().getBaseContext(),
-                                            "Failed to retract message", Toast.LENGTH_SHORT).show();
-                                }
-                                if (((IQ) packet).getType().equals(IQ.Type.result)) {
+                            if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result))
                                     LogManager.d(LOG_TAG, "Message successfully pinned");
-                                }
-                            }
-
                         }, exception -> {
                             LogManager.d(LOG_TAG, "Failed to pin message");
-                            Toast.makeText(Application.getInstance().getBaseContext(),
-                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
+                            Context context = Application.getInstance().getApplicationContext();
+                            Application.getInstance().runOnUiThread(() ->
+                                    Toast.makeText(context,
+                                            context.getText(R.string.groupchat_failed_to_pin_message),
+                                            Toast.LENGTH_SHORT).show());
                         });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -253,7 +241,8 @@ public class GroupchatManager implements OnPacketListener {
         });
     }
 
-    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid, List<ContactJid> contactsToInvite, String reason) {
+    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid,
+                                         List<ContactJid> contactsToInvite, String reason) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
