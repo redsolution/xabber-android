@@ -29,19 +29,13 @@ public class RegularChatRepository {
 
     public static void removeRegularChatFromRealm(RegularChat groupChat){
         Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(GroupchatRealmObject.class)
-                            .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
-                            .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getUser().getBareJid().toString())
-                            .findFirst()
-                            .deleteFromRealm();
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
+                realm.executeTransaction(realm1 -> realm1.where(GroupchatRealmObject.class)
+                        .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
+                        .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getUser().getBareJid().toString())
+                        .findFirst()
+                        .deleteFromRealm());
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         });
     }
 
@@ -78,6 +72,9 @@ public class RegularChatRepository {
                             //.equalTo(MessageRealmObject.Fields.BARE_ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
                             .findFirst();
+
+                    if (lastMessage == null && (messageRealmObject == null))
+                        return;
 
                     if (regularChatRealmObject == null) {
 
