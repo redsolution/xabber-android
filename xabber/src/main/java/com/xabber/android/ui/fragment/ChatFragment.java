@@ -546,14 +546,24 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         interactionView = view.findViewById(R.id.interactionView);
 
 
-        view.findViewById(R.id.ivReply).setOnClickListener(v -> {
+        view.findViewById(R.id.reply_tv).setOnClickListener(v -> {
+            bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+            isReply = true;
+            showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
+            closeInteractionPanel();
+        });
+        view.findViewById(R.id.reply_iv).setOnClickListener(v -> {
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
             isReply = true;
             showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
             closeInteractionPanel();
         });
 
-        view.findViewById(R.id.ivForward).setOnClickListener(v -> {
+        view.findViewById(R.id.forward_iv).setOnClickListener(v -> {
+            bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+            openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
+        });
+        view.findViewById(R.id.forward_tv).setOnClickListener(v -> {
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
             openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
         });
