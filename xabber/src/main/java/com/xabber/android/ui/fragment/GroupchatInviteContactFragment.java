@@ -53,7 +53,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class GroupchatInviteContactFragment extends Fragment implements FlexibleAdapter.OnItemClickListener,
-        ContactVO.ContactClickListener, GroupVO.GroupClickListener {
+        FlexibleAdapter.OnItemLongClickListener, ContactVO.ContactClickListener, GroupVO.GroupClickListener {
 
     public static final String LOG_TAG = GroupchatInviteContactFragment.class.getSimpleName();
 
@@ -66,10 +66,12 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     private RecyclerView contactList;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
-    private ArrayList<Integer> listOfSelectedPositions;
+    private ArrayList<String> listOfSelectedContactJids;
     private EditText filterEt;
     private ImageView clearIv;
     private AppCompatTextView emptyListPlaceholder;
+
+    private boolean modeSelectMultipleAccounts = false;
 
     private OnNumberOfSelectedInvitesChanged listener;
 
@@ -154,7 +156,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         }
 
         if (savedInstanceState != null) {
-            listOfSelectedPositions = savedInstanceState.getIntegerArrayList(ARG_SELECTED_LIST);
+            listOfSelectedContactJids = savedInstanceState.getStringArrayList(ARG_SELECTED_LIST);
         }
 
         return view;
@@ -241,16 +243,25 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         else emptyListPlaceholder.setVisibility(View.GONE);
 
         checkForRestore();
+        adapter.notifyDataSetChanged();
     }
 
     private void checkForRestore() {
-        if (listOfSelectedPositions != null) {
-            for (Integer position : listOfSelectedPositions) {
-                adapter.addSelection(position);
+        if (listOfSelectedContactJids != null) {
+            adapter.clearSelection();
+            for (String contactJid : listOfSelectedContactJids) {
+                adapter.addSelection(getPositionByContactJid(contactJid));
             }
             listener.onInviteCountChange(adapter.getSelectedItemCount());
-            listOfSelectedPositions = null;
         }
+    }
+
+    private int getPositionByContactJid(String contactJid){
+        for (IFlexible item : adapter.getCurrentItems()){
+            if (item instanceof ContactVO && ((ContactVO)item).getContactJid().toString().equals(contactJid))
+                return  adapter.getGlobalPositionOf(item);
+        }
+        return 0;
     }
 
     public List<ContactJid> getSelectedContacts() {
@@ -316,21 +327,69 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     public void cancelSelection() {
+        modeSelectMultipleAccounts = false;
+        listOfSelectedContactJids.clear();
         adapter.clearSelection();
+        update();
     }
 
     @Override
     public boolean onItemClick(View view, int position) {
-        if (adapter.getItem(position) instanceof ContactVO ||
-                adapter.getItem(position) instanceof ExtContactVO) {
-            adapter.toggleSelection(position);
-            listener.onInviteCountChange(adapter.getSelectedItemCount());
+        if (modeSelectMultipleAccounts){
+
+            if (adapter.getItem(position) instanceof ContactVO) {
+                ContactVO clickedItem = (ContactVO) adapter.getItem(position);
+                adapter.toggleSelection(position);
+                ContactJid contactJid = clickedItem.getContactJid();
+                listener.onInviteCountChange(adapter.getSelectedItemCount());
+
+                if (listOfSelectedContactJids == null)
+                    listOfSelectedContactJids = new ArrayList<>();
+
+                if (!listOfSelectedContactJids.contains(contactJid.toString())){
+                    if (adapter.isSelected(position)) listOfSelectedContactJids.add(contactJid.toString());
+                    else listOfSelectedContactJids.remove(contactJid.toString());
+                }
+            }
+
+            adapter.notifyItemChanged(position);
+
+            if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
+
+        } else {
+
+            if (adapter.getItem(position) instanceof ContactVO) {
+                ((GroupchatInviteContactActivity)getActivity()).openInvitationDialogForContact(
+                        ((ContactVO)adapter.getItem(position)).getContactJid());
+            }
+
         }
-        adapter.notifyItemChanged(position);
-        if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty())
-            ((GroupchatInviteContactActivity)getActivity()).openInvitationDialog();
 
         return true;
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        if (!modeSelectMultipleAccounts) modeSelectMultipleAccounts = true;
+
+        if (adapter.getItem(position) instanceof ContactVO) {
+
+            ContactVO clickedItem = (ContactVO) adapter.getItem(position);
+            adapter.toggleSelection(position);
+            ContactJid contactJid = clickedItem.getContactJid();
+            listener.onInviteCountChange(adapter.getSelectedItemCount());
+
+            if (listOfSelectedContactJids == null)
+                listOfSelectedContactJids = new ArrayList<>();
+
+            if (!listOfSelectedContactJids.contains(contactJid.toString())){
+                if (adapter.isSelected(position)) listOfSelectedContactJids.add(contactJid.toString());
+                else listOfSelectedContactJids.remove(contactJid.toString());
+            }
+
+        }
+        if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
+        adapter.notifyItemChanged(position);
     }
 
     @Override

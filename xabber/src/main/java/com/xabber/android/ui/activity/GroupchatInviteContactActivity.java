@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,7 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.GroupchatInviteReasonDialog;
 import com.xabber.android.ui.fragment.GroupchatInviteContactFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupchatInviteContactActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener,
@@ -33,6 +35,7 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
 
     private Toolbar toolbar;
     private BarPainter barPainter;
+    private List<ContactJid> jidsToInvite;
 
     private int selectionCounter;
 
@@ -74,7 +77,6 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
         toolbar.inflateMenu(R.menu.toolbar_groupchat_list_selector);
         toolbar.setOnMenuItemClickListener(this);
 
-
         barPainter = new BarPainter(this, toolbar);
 
         if (savedInstanceState == null) {
@@ -88,6 +90,7 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
     protected void onResume() {
         super.onResume();
         updateToolbar();
+        Toast.makeText(this, getString(R.string.groupchat_long_press_for_select_multiple_contacts), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -108,6 +111,14 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
     }
 
     public void openInvitationDialog(){
+        jidsToInvite = getInviteFragment().getSelectedContacts();
+        GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();
+        dialog.show(getSupportFragmentManager(), GroupchatInviteReasonDialog.LOG_TAG);
+    }
+
+    public void openInvitationDialogForContact(ContactJid contactJid){
+        jidsToInvite = new ArrayList<>();
+        jidsToInvite.add(contactJid);
         GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();
         dialog.show(getSupportFragmentManager(), GroupchatInviteReasonDialog.LOG_TAG);
     }
@@ -169,9 +180,9 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
     public void onReasonSelected(String reason) {
         GroupchatInviteContactFragment fragment = getInviteFragment();
         if (fragment != null) {
-            List<ContactJid> selectedContacts = fragment.getSelectedContacts();
-            GroupchatManager.getInstance().sendGroupchatInvitations(account, groupchatContact, selectedContacts, reason.trim());
+            GroupchatManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite, reason.trim());
             finish();
         }
     }
+
 }
