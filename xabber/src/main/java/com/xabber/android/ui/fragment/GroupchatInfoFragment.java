@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.crashlytics.android.Crashlytics;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -193,7 +194,9 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         groupchatMembershipText = view.findViewById(R.id.groupchat_membership_name);
 
         settingsLayout = view.findViewById(R.id.settingsLayout);
-        settingsButton = view.findViewById(R.id.settingsButtonLayout);
+        view.findViewById(R.id.settingsButtonLayout).setOnClickListener(v -> {
+            Crashlytics.getInstance().crash();
+        });
         invitationsCount = view.findViewById(R.id.invitationsCount);
         invitationsStatus = view.findViewById(R.id.invitationsStatus);
         invitationsProgress = view.findViewById(R.id.invitationsProgress);

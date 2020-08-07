@@ -36,13 +36,14 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmList;
 
-public class GroupChat extends AbstractChat {
+public class GroupChat extends AbstractChat implements Serializable {
 
     private static final String LOG_TAG = GroupChat.class.getSimpleName();
 

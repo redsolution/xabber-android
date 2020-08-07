@@ -22,7 +22,7 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.add_activity_layout)
+        setContentView(R.layout.activity_with_toolbar_and_container)
 
         isIncognito = intent != null
                 && intent.action != null
@@ -39,10 +39,6 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         toolbar.inflateMenu(if (isIncognito) R.menu.toolbar_create_incognito_groupchat
                             else R.menu.toolbar_create_groupchat)
 
-//        toolbar.menu.findItem(R.id.action_create_groupchat)?.isEnabled = false
-//
-//        toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.isEnabled = false
-
         val view = toolbar.findViewById<View>(R.id.action_create_groupchat)
         if (view != null && view is TextView) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
@@ -54,7 +50,7 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
 
         BarPainter(this, toolbar).setDefaultColor()
 
-        supportFragmentManager.beginTransaction().add(R.id.container,
+        supportFragmentManager.beginTransaction().add(R.id.fragment_container,
                 CreateGroupchatFragment(), FRAGMENT_TAG).commit()
     }
 

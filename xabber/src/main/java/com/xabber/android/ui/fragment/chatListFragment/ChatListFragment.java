@@ -369,9 +369,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ivAdd:
-                showToolbarPopup(toolbarAddIv);
-                break;
             case R.id.ivAvatar:
                 startActivity(AccountActivity.createIntent(getActivity(),
                         AccountManager.getInstance().getFirstAccount()));
@@ -429,16 +426,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
      */
     public int getListSize() {
         return items.size();
-    }
-
-    /**
-     * Show menu Add contact / Add conference
-     */
-    private void showToolbarPopup(View v) {
-        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        popupMenu.setOnMenuItemClickListener(this);
-        popupMenu.inflate(R.menu.menu_add_in_contact_list);
-        popupMenu.show();
     }
 
     /**

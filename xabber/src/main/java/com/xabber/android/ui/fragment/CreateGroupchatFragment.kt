@@ -13,23 +13,17 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
-import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.ui.adapter.AccountChooseAdapter
 import com.xabber.android.ui.widget.NoDefaultSpinner
-import org.jivesoftware.smack.packet.IQ
-import org.jivesoftware.smack.packet.StandardExtensionElement
-import org.jivesoftware.smack.packet.Stanza
 
 
 class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIqResultListener,
         AdapterView.OnItemSelectedListener {
 
-    private val LOG_TAG = this.javaClass.simpleName
     private lateinit var accountSp: NoDefaultSpinner
     private lateinit var groupchatNameEt: EditText
     private lateinit var groupchatJidEt: EditText
