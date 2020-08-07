@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,13 +62,14 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     private static final String ARG_SELECTED_LIST = "com.xabber.android.ui.fragment.GroupchatInviteContactFragment.ARG_SELECTED_LIST";
 
     private AccountJid account;
-    private ContactJid groupchatContact;
 
     private RecyclerView contactList;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
     private ArrayList<Integer> listOfSelectedPositions;
     private EditText filterEt;
+    private ImageView clearIv;
+    private AppCompatTextView emptyListPlaceholder;
 
     private OnNumberOfSelectedInvitesChanged listener;
 
@@ -96,7 +99,6 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         Bundle args = getArguments();
         if (args != null) {
             account = args.getParcelable(ARG_ACCOUNT);
-            groupchatContact = args.getParcelable(ARG_GROUPCHAT_CONTACT);
         } else {
             requireActivity().finish();
         }
@@ -118,6 +120,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 update();
+                if (s != null && s.length() > 0)
+                    clearIv.setVisibility(View.VISIBLE);
+                else clearIv.setVisibility(View.GONE);
             }
 
             @Override
@@ -125,6 +130,14 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
             }
         });
+
+        clearIv = view.findViewById(R.id.groupchat_invites_clear_iv);
+        clearIv.setOnClickListener(v -> {
+            filterEt.setText("");
+            update();
+        });
+
+        emptyListPlaceholder = view.findViewById(R.id.empty_placeholder);
 
         contactList = view.findViewById(R.id.contact_list);
         contactList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -224,6 +237,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
 
+        if (this.items.size() == 0) emptyListPlaceholder.setVisibility(View.VISIBLE);
+        else emptyListPlaceholder.setVisibility(View.GONE);
+
         checkForRestore();
     }
 
@@ -285,7 +301,8 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                                 ? ExtContactVO.convert(contact, this)
                                 : ContactVO.convert(contact, this));
                 }
-                items.add(group);
+                if (group.getSubItems() != null && group.getSubItems().size() > 0)
+                    items.add(group);
             }
         }
     }

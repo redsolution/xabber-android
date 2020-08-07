@@ -4,20 +4,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/search_et"
+    <RelativeLayout
+        android:id="@+id/search_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/search"
-        android:paddingLeft="12dp"
-        android:paddingStart="12dp"
-        android:paddingRight="12dp"
-        android:paddingEnd="12dp"/>
+        android:layout_height="36dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/search_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/search"
+            android:background="@color/transparent"
+            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
+            android:paddingRight="12dp"
+            android:paddingEnd="12dp"
+            android:layout_toStartOf="@id/groupchat_invites_clear_iv"
+            android:layout_toLeftOf="@id/groupchat_invites_clear_iv"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/groupchat_invites_clear_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="?attr/standard_clear_icon"
+            android:visibility="gone"
+            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
+            android:paddingRight="12dp"
+            android:paddingEnd="12dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_et"/>
+        android:layout_below="@id/search_root"/>
+
+    <TextView
+        android:id="@+id/empty_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/search_root"
+        android:text="@string/nothing_was_searched"
+        android:visibility="gone"/>
 
 </RelativeLayout>

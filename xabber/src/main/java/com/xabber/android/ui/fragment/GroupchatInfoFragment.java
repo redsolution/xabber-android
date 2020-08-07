@@ -241,7 +241,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         GroupchatManager.getInstance().requestGroupchatMembers(account, groupchatContact);
         GroupchatManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
         GroupchatManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
-        membersProgress.setVisibility(View.VISIBLE);
+         membersProgress.setVisibility(View.VISIBLE);
     }
 
     private void updateChatInfo(GroupChat groupChat) {
