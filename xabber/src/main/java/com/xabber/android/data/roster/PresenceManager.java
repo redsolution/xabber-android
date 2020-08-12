@@ -172,21 +172,21 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /** Added available action to chat, to show chat in recent chats */
     private void createChatForNewContact(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+        if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent),
                 ChatAction.subscription_sent);
     }
 
     private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-        if (chat == null){
-            chat = ChatManager.getInstance().createRegularChat(account, user);
-        }
+        if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received),
                 ChatAction.subscription_received);
     }
 
     private void createChatForAcceptingIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+        if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name),
                 ChatAction.subscription_received_accepted);
@@ -194,6 +194,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     private void createChatForAcceptingOutgoingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+        if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
         chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name),
                 ChatAction.subscription_sent_accepted);
