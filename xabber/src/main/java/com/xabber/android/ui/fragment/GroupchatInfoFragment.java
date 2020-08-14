@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -33,6 +32,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity;
+import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
 import com.xabber.android.utils.StringUtils;
 
@@ -194,14 +194,14 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         groupchatMembershipText = view.findViewById(R.id.groupchat_membership_name);
 
         settingsLayout = view.findViewById(R.id.settingsLayout);
-        view.findViewById(R.id.settingsButtonLayout).setOnClickListener(v -> {
-            Crashlytics.getInstance().crash();
-        });
+        view.findViewById(R.id.settingsButtonLayout).setOnClickListener(v ->
+                startActivity(GroupchatUpdateSettingsActivity.Companion
+                        .createOpenGroupchatSettingsIntentForGroupchat(account, groupchatContact)));
+
         invitationsCount = view.findViewById(R.id.invitationsCount);
         invitationsStatus = view.findViewById(R.id.invitationsStatus);
         invitationsProgress = view.findViewById(R.id.invitationsProgress);
         blockedCount = view.findViewById(R.id.blockedCount);
-        //settingsButton.setOnClickListener(this);
         //restrictionsButton.setOnClickListener(this);
 
         view.findViewById(R.id.invitationsButtonLayout).setOnClickListener(v ->

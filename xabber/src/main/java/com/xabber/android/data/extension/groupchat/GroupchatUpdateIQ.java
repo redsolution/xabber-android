@@ -79,4 +79,9 @@ public class GroupchatUpdateIQ extends IQ  {
         return xml;
     }
 
+    public interface UpdateGroupchatSettingsIqResultListener{
+        void onError();
+        void onSuccess();
+    }
+
 }

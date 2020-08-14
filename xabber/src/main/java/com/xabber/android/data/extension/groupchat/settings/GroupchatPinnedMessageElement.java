@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat;
+package com.xabber.android.data.extension.groupchat.settings;
 
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;

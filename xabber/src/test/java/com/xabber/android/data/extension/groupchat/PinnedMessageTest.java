@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.groupchat;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.settings.GroupchatPinnedMessageElement;
 
 import org.junit.Before;
 import org.junit.Test;

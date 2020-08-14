@@ -51,4 +51,5 @@
     <string name="groupchat_failed_to_unblock">Failed to unblock</string>
     <string name="groupchat_failed_to_pin_message">Failed to pin message</string>
     <string name="groupchat_failed_to_unpin_message">Failed to unpin message</string>
+    <string name="groupchat_failed_to_change_groupchat_settings">Failed to update groupchat settings</string>
 </resources>

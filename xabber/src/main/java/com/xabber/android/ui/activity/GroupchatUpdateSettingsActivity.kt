@@ -48,11 +48,11 @@ class GroupchatUpdateSettingsActivity: ManagedActivity(), Toolbar.OnMenuItemClic
 
         BarPainter(this, toolbar).setDefaultColor()
 
-        if (intent != null && intent.getSerializableExtra(GROUPCHAT_CONTACTJID) != null){
+        if (intent != null && intent.getParcelableExtra<ContactJid>(GROUPCHAT_CONTACTJID) != null){
             val groupChat = ChatManager.getInstance().getChat(intent.getParcelableExtra(GROUPCHAT_ACCOUNTJID),
                     intent.getParcelableExtra(GROUPCHAT_CONTACTJID))
             if (groupChat != null && groupChat is GroupChat)
-                supportFragmentManager.beginTransaction().add(R.id.container,
+                supportFragmentManager.beginTransaction().add(R.id.fragment_container,
                         GroupchatSettingsFragment(groupChat), FRAGMENT_TAG).commit()
         } else finish()
     }
@@ -67,7 +67,7 @@ class GroupchatUpdateSettingsActivity: ManagedActivity(), Toolbar.OnMenuItemClic
         private const val GROUPCHAT_ACCOUNTJID = "com.xabber.android.ui.activity.GroupchatSettingsActivity.GROUPCHAT_ACCOUNTJID"
         private const val GROUPCHAT_CONTACTJID = "com.xabber.android.ui.activity.GroupchatSettingsActivity.GROUPCHAT_CONTACTJID"
         fun createOpenGroupchatSettingsIntentForGroupchat(accountJid: AccountJid, contactJid: ContactJid): Intent {
-            val intent = Intent(Application.getInstance().applicationContext, GroupchatSettingsActivity::class.java)
+            val intent = Intent(Application.getInstance().applicationContext, GroupchatUpdateSettingsActivity::class.java)
             intent.putExtra(GROUPCHAT_CONTACTJID, contactJid)
             intent.putExtra(GROUPCHAT_ACCOUNTJID, accountJid as Parcelable)
             return intent

@@ -43,7 +43,7 @@ import java.util.UUID;
 
 import io.realm.RealmList;
 
-public class GroupChat extends AbstractChat implements Serializable {
+public class GroupChat extends AbstractChat {
 
     private static final String LOG_TAG = GroupChat.class.getSimpleName();
 
