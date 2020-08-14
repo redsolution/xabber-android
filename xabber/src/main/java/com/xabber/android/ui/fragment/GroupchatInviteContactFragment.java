@@ -38,6 +38,7 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
+import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class GroupchatInviteContactFragment extends Fragment implements FlexibleAdapter.OnItemClickListener,
-        FlexibleAdapter.OnItemLongClickListener, ContactVO.ContactClickListener, GroupVO.GroupClickListener {
+        FlexibleAdapter.OnItemLongClickListener, ContactVO.ContactClickListener, GroupVO.GroupClickListener,
+        UpdateBackpressure.UpdatableObject {
 
     public static final String LOG_TAG = GroupchatInviteContactFragment.class.getSimpleName();
 
@@ -70,6 +72,8 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     private EditText filterEt;
     private ImageView clearIv;
     private AppCompatTextView emptyListPlaceholder;
+
+    private UpdateBackpressure updateBackpressure;
 
     private boolean modeSelectMultipleAccounts = false;
 
@@ -121,7 +125,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                update();
+                updateBackpressure.refreshRequest();
                 if (s != null && s.length() > 0)
                     clearIv.setVisibility(View.VISIBLE);
                 else clearIv.setVisibility(View.GONE);
@@ -163,9 +167,17 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     @Override
+    public void onPause() {
+        updateBackpressure.removeRefreshRequests();
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        update();
+        updateBackpressure = new UpdateBackpressure(this);
+        updateBackpressure.build();
+        updateBackpressure.refreshRequest();
     }
 
     @Override

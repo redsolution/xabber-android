@@ -100,13 +100,10 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_perform_on_selected:
-               openInvitationDialog();
-               break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        if (item.getItemId() == R.id.action_perform_on_selected) {
+            openInvitationDialog();
+        } else return super.onOptionsItemSelected(item);
+
         return true;
     }
 
@@ -155,7 +152,6 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
             else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-            barPainter.setGrey();
             toolbar.setNavigationOnClickListener(v -> {
                 GroupchatInviteContactFragment fragment = getInviteFragment();
                 if (fragment != null) {

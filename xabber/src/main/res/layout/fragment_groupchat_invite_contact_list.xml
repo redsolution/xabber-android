@@ -7,8 +7,22 @@
     <RelativeLayout
         android:id="@+id/search_root"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="56dp"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/search_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="?attr/standard_search_icon"
+            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
+            android:paddingRight="12dp"
+            android:paddingEnd="12dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:alpha="0.5" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/search_et"
@@ -20,6 +34,8 @@
             android:paddingStart="12dp"
             android:paddingRight="12dp"
             android:paddingEnd="12dp"
+            android:layout_toEndOf="@id/search_iv"
+            android:layout_toRightOf="@id/search_iv"
             android:layout_toStartOf="@id/groupchat_invites_clear_iv"
             android:layout_toLeftOf="@id/groupchat_invites_clear_iv"/>
 
@@ -33,6 +49,7 @@
             android:paddingStart="12dp"
             android:paddingRight="12dp"
             android:paddingEnd="12dp"
+            android:alpha="0.5"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
