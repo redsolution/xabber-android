@@ -1,8 +1,41 @@
-package com.xabber.android.data.message.chat.groupchat;
+package com.xabber.android.data.database.realmobjects;
 
-public class GroupchatMember {
+import java.util.UUID;
 
-    private String id;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
+
+public class GroupchatMemberRealmObject extends RealmObject {
+
+    public static class Fields {
+        public static final String UNIQUE_ID = "uniqueId";
+        public static final String JID = "jid";
+        public static final String GROUPCHAT_JID = "groupchatJid";
+        public static final String NICKNAME = "nickname";
+        public static final String ROLE = "role";
+        public static final String BADGE = "badge";
+        public static final String AVATAR_HASH = "avatarHash";
+        public static final String AVATAR_URL = "avatarUrl";
+        public static final String LAST_PRESENT = "lastPresent";
+        public static final String TIMESTAMP = "timestamp";
+
+        public static final String IS_CAN_RESTRICT_MEMBERS = "isCanRestrictMembers";
+        public static final String IS_CAN_BLOCK_MEMBERS = "isCanBlockMembers";
+        public static final String IS_CAN_CHANGE_BADGE = "isCanChangeBadge";
+        public static final String IS_CAN_CHANGE_NICKNAME = "isCanChangeNickname";
+        public static final String IS_CAN_DELETE_MESSAGES = "isCanDeleteMessages";
+
+        public static final String IS_RESTRICTED_TO_SEND_MESSAGES = "isRestrictedToSendMessages";
+        public static final String IS_RESTRICTED_TO_READ_MESSAGES = "isRestrictedToReadMessages";
+        public static final String IS_RESTRICTED_TO_SEND_INVITATIONS = "isRestrictedToSendInvitations";
+        public static final String IS_RESTRICTED_TO_SEND_AUDIO = "isRestrictedToSendAudio";
+        public static final String IS_RESTRICTED_TO_SEND_IMAGES = "isRestrictedToSendImages";
+    }
+
+    @PrimaryKey
+    @Required
+    private String uniqueId;
     private String jid;
     private String groupchatJid;
     private String nickname;
@@ -25,20 +58,27 @@ public class GroupchatMember {
     private boolean isRestrictedToSendAudio;
     private boolean isRestrictedToSendImages;
 
-    public GroupchatMember(String id) {
-        this.id = id;
+    public GroupchatMemberRealmObject(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
-    public String getId() {
-        return id;
+    public GroupchatMemberRealmObject() {
+        this.uniqueId = UUID.randomUUID().toString();
     }
 
-    public String getJid() {
-        return jid;
-    }
-    public void setJid(String jid) {
-        this.jid = jid;
-    }
+    public String getUniqueId() { return uniqueId;  }
+
+    public String getJid() { return jid; }
+    public void setJid(String jid) { this.jid = jid; }
+
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public String getBadge() { return badge; }
+    public void setBadge(String badge) { this.badge = badge; }
 
     public String getGroupchatJid() {
         return groupchatJid;
@@ -47,46 +87,14 @@ public class GroupchatMember {
         this.groupchatJid = groupchatJid;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getRole() {
-        return role;
-    }
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getBadge() {
-        return badge;
-    }
-    public void setBadge(String badge) {
-        this.badge = badge;
-    }
-
-    public String getAvatarHash() {
-        return avatarHash;
-    }
-    public void setAvatarHash(String avatarHash) {
-        this.avatarHash = avatarHash;
-    }
+    public String getAvatarHash() { return avatarHash; }
+    public void setAvatarHash(String avatarHash) {this.avatarHash = avatarHash; }
 
     public String getAvatarUrl() {
         return avatarUrl;
     }
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getLastPresent() {
@@ -96,15 +104,8 @@ public class GroupchatMember {
         this.lastPresent = lastPresent;
     }
 
-    public String getBestName() {
-        if (nickname != null && !nickname.isEmpty()) {
-            return nickname;
-        } else if (jid != null && !jid.isEmpty()) {
-            return jid;
-        } else {
-            return id;
-        }
-    }
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
     public boolean isCanRestrictMembers() { return isCanRestrictMembers; }
     public void setCanRestrictMembers(boolean canRestrictMembers) {
@@ -151,5 +152,4 @@ public class GroupchatMember {
     public void setRestrictedToSendImages(boolean restrictedToSendImages) {
         isRestrictedToSendImages = restrictedToSendImages;
     }
-
 }

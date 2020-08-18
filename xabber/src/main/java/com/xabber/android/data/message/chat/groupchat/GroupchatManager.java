@@ -11,7 +11,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupchatMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -914,7 +914,7 @@ public class GroupchatManager implements OnPacketListener {
 
                     ArrayList<GroupchatMember> listOfMembers =
                             new ArrayList<>(groupchatMembers.getListOfMembers().size());
-                    ArrayList<GroupchatUserRealmObject> listOfRealmMembers =
+                    ArrayList<GroupchatMemberRealmObject> listOfRealmMembers =
                             new ArrayList<>(groupchatMembers.getListOfMembers().size());
 
                     for (GroupchatUserExtension userExtension : groupchatMembers.getListOfMembers()) {

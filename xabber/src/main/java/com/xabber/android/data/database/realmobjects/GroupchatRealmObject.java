@@ -28,7 +28,7 @@ public class GroupchatRealmObject extends RealmObject {
     private String membership = GroupchatMembershipType.NONE.toString();
     private String description;
     private MessageRealmObject pinnedMessage;
-    private RealmList<GroupchatUserRealmObject> members;
+    private RealmList<GroupchatMemberRealmObject> members;
     private String membersListVersion;
     private boolean canInvite;
     private boolean canChangeSettings;
@@ -186,10 +186,10 @@ public class GroupchatRealmObject extends RealmObject {
         this.domains = domains;
     }
 
-    public RealmList<GroupchatUserRealmObject> getMembers() {
+    public RealmList<GroupchatMemberRealmObject> getMembers() {
         return members;
     }
-    public void setMembers(RealmList<GroupchatUserRealmObject> members) {
+    public void setMembers(RealmList<GroupchatMemberRealmObject> members) {
         this.members = members;
     }
 

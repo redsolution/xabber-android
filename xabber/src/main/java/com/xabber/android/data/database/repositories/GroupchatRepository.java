@@ -4,8 +4,8 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.GroupchatMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
-import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
@@ -77,7 +77,7 @@ public class GroupchatRepository {
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
 
                     if (groupChat.getMembers() != null && groupChat.getMembers().size() > 0) {
-                        RealmList<GroupchatUserRealmObject> realmMembers = new RealmList<>();
+                        RealmList<GroupchatMemberRealmObject> realmMembers = new RealmList<>();
                         for (GroupchatMember member : groupChat.getMembers()) {
                             realmMembers.add(GroupchatMemberManager.userToRealmUser(member));
                         }
@@ -122,7 +122,7 @@ public class GroupchatRepository {
         for (GroupchatRealmObject gro : realmObjects) {
             if (gro.getMembers() != null && gro.getMembers().size() > 0) {
                 ArrayList<GroupchatMember> listOfMembers = new ArrayList<>(gro.getMembers().size());
-                for (GroupchatUserRealmObject user : gro.getMembers()) {
+                for (GroupchatMemberRealmObject user : gro.getMembers()) {
                     listOfMembers.add(GroupchatMemberManager.realmUserToUser(user));
                 }
                 list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),

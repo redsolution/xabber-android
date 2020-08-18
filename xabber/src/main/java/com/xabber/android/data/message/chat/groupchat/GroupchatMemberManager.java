@@ -5,7 +5,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupchatMemberRealmObject;
 import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
 import com.xabber.android.data.log.LogManager;
 
@@ -30,10 +30,10 @@ public class GroupchatMemberManager implements OnLoadListener {
     @Override
     public void onLoad() {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<GroupchatUserRealmObject> users = realm
-                .where(GroupchatUserRealmObject.class)
+        RealmResults<GroupchatMemberRealmObject> users = realm
+                .where(GroupchatMemberRealmObject.class)
                 .findAll();
-        for (GroupchatUserRealmObject user : users) {
+        for (GroupchatMemberRealmObject user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -60,7 +60,7 @@ public class GroupchatMemberManager implements OnLoadListener {
         saveGroupchatUserToRealm(refUserToRealm(user, groupchatJid), timestamp);
     }
 
-    private void saveGroupchatUserToRealm(final GroupchatUserRealmObject user, final long timestamp) {
+    private void saveGroupchatUserToRealm(final GroupchatMemberRealmObject user, final long timestamp) {
         Application.getInstance().runInBackground(() -> {
             user.setTimestamp(timestamp);
             Realm realm = null;
@@ -75,8 +75,8 @@ public class GroupchatMemberManager implements OnLoadListener {
         });
     }
 
-    public static GroupchatUserRealmObject refUserToRealm(GroupchatUserExtension user, BareJid groupchatJid) {
-        GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
+    public static GroupchatMemberRealmObject refUserToRealm(GroupchatUserExtension user, BareJid groupchatJid) {
+        GroupchatMemberRealmObject realmUser = new GroupchatMemberRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
         realmUser.setLastPresent(user.getLastPresent());
@@ -90,8 +90,8 @@ public class GroupchatMemberManager implements OnLoadListener {
         return realmUser;
     }
 
-    public static GroupchatUserRealmObject userToRealmUser(GroupchatMember user) {
-        GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
+    public static GroupchatMemberRealmObject userToRealmUser(GroupchatMember user) {
+        GroupchatMemberRealmObject realmUser = new GroupchatMemberRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
         realmUser.setLastPresent(user.getLastPresent());
@@ -118,7 +118,7 @@ public class GroupchatMemberManager implements OnLoadListener {
         return user;
     }
 
-    public static GroupchatMember realmUserToUser(GroupchatUserRealmObject groupchatUser) {
+    public static GroupchatMember realmUserToUser(GroupchatMemberRealmObject groupchatUser) {
         GroupchatMember user = new GroupchatMember(groupchatUser.getUniqueId());
         user.setAvatarHash(groupchatUser.getAvatarHash());
         user.setAvatarUrl(groupchatUser.getAvatarUrl());
