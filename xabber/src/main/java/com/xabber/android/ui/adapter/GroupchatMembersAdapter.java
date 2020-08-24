@@ -17,19 +17,35 @@ import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
 
-public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembersAdapter.GroupchatMemberViewHolder> {
+public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembersAdapter.GroupchatMemberViewHolder>
+        implements View.OnClickListener {
 
     private ArrayList<GroupchatMember> groupchatMembers;
     private GroupChat chat;
+    private OnMemberClickListener listener;
+    private RecyclerView recyclerView;
 
-    public GroupchatMembersAdapter(ArrayList<GroupchatMember> groupchatMembers, GroupChat chat) {
+    public GroupchatMembersAdapter(ArrayList<GroupchatMember> groupchatMembers, GroupChat chat,
+                                   OnMemberClickListener listener) {
         this.groupchatMembers = groupchatMembers;
         this.chat = chat;
+        this.listener = listener;
     }
 
     public void setItems(ArrayList<GroupchatMember> groupchatMembers) {
         this.groupchatMembers = groupchatMembers;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        listener.onMemberClick(groupchatMembers.get(recyclerView.getChildAdapterPosition(v)));
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     @NonNull
@@ -43,6 +59,8 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
     @Override
     public void onBindViewHolder(@NonNull GroupchatMemberViewHolder holder, int position) {
         GroupchatMember bindMember = groupchatMembers.get(position);
+
+        holder.root.setOnClickListener(this);
 
         if (bindMember.getNickname() != null && !bindMember.getNickname().isEmpty()) {
             holder.memberName.setText(bindMember.getNickname());
@@ -82,6 +100,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     static class GroupchatMemberViewHolder extends RecyclerView.ViewHolder {
 
+        private View root;
         private ImageView avatar;
         private ImageView memberRole;
         private TextView memberName;
@@ -90,11 +109,16 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
         public GroupchatMemberViewHolder(@NonNull View itemView) {
             super(itemView);
+            root = itemView.findViewById(R.id.member_list_item_root);
             avatar = itemView.findViewById(R.id.ivMemberAvatar);
             memberRole = itemView.findViewById(R.id.ivMemberRole);
             memberName = itemView.findViewById(R.id.tvMemberName);
             memberStatus = itemView.findViewById(R.id.tvMemberStatus);
             memberBadge = itemView.findViewById(R.id.tvMemberBadge);
         }
+    }
+
+    public interface OnMemberClickListener{
+        void onMemberClick(GroupchatMember groupchatMember);
     }
 }

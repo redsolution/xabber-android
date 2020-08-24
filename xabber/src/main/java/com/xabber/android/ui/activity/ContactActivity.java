@@ -93,12 +93,9 @@ public class ContactActivity extends ManagedActivity implements
     private AbstractChat chat;
     private Toolbar toolbar;
     private View contactTitleView;
-    private TextView contactAddress;
-    private TextView contactName;
     private AbstractContact bestContact;
     private CollapsingToolbarLayout collapsingToolbar;
     private AppBarLayout appBarLayout;
-    private ImageView background;
     private ImageView QRgen;
     private ImageButton firstButton;
     private ImageButton secondButton;
@@ -181,7 +178,7 @@ public class ContactActivity extends ManagedActivity implements
             win.setStatusBarColor(Color.TRANSPARENT);
         }
 
-        setContentView(R.layout.activity_contact_new);
+        setContentView(R.layout.activity_contact_info);
 
         if (savedInstanceState == null) {
             Fragment fragment;
@@ -198,17 +195,13 @@ public class ContactActivity extends ManagedActivity implements
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         chat = ChatManager.getInstance().getChat(account, user);
         isGroupchat = chat instanceof GroupChat;
         contactBarLayout = findViewById(R.id.contact_bar_layout);
-        contactBarLayout.setForGroupchat(isGroupchat);
+        if (isGroupchat) contactBarLayout.setForGroupchat();
+        else contactBarLayout.setForContact();
 
         firstButton = findViewById(R.id.first_button);
         firstButtonText = findViewById(R.id.first_button_text);
@@ -229,15 +222,11 @@ public class ContactActivity extends ManagedActivity implements
         int colorLevel = AccountPainter.getAccountColorLevel(account);
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         final int accountDarkColor = ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account);
-        if (colorLevel == 0 || colorLevel == 1 || colorLevel == 3) {
-            coloredBlockText = true;
-        } else
-            coloredBlockText = false;
+        coloredBlockText = colorLevel == 0 || colorLevel == 1 || colorLevel == 3;
 
-        contactTitleView = findViewById(R.id.contact_title_expanded_new);
-        contactAddress = (TextView) findViewById(R.id.address_text);
+        contactTitleView = findViewById(R.id.contact_title_expanded);
+        TextView contactAddress = (TextView) findViewById(R.id.address_text);
         contactAddress.setText(user.getBareJid().toString());
-        contactName = (TextView) findViewById(R.id.name);
 
         checkForBlockedStatus();
 
@@ -254,7 +243,7 @@ public class ContactActivity extends ManagedActivity implements
             orientationLandscape();
         }
 
-        background = findViewById(R.id.backgroundView);
+        ImageView background = findViewById(R.id.backgroundView);
         Drawable backgroundSource = bestContact.getAvatar(false);
         if (backgroundSource == null)
             backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
@@ -347,7 +336,6 @@ public class ContactActivity extends ManagedActivity implements
 
         final NestedScrollView scrollView = findViewById(R.id.scroll_v_card);
         final LinearLayout ll = findViewById(R.id.scroll_v_card_child);
-        //final int actionBarSize = getActionBarSize();
 
         nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -360,22 +348,6 @@ public class ContactActivity extends ManagedActivity implements
             }
         });
 
-        //final View divider = findViewById(R.id.divider);
-        /*if (scrollView != null) {
-            scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    int i = v.getChildAt(0).getPaddingTop();
-                    if (scrollY >= (v.getChildAt(0).getPaddingTop())) {
-                        divider.setVisibility(View.VISIBLE);
-                        contactName.setMaxLines(1);
-                    } else if (divider.getVisibility() != View.INVISIBLE) {
-                        divider.setVisibility(View.INVISIBLE);
-                        contactName.setMaxLines(2);
-                    }
-                }
-            });
-        }*/
     }
 
     private void setContactBar(int color, int orientation) {

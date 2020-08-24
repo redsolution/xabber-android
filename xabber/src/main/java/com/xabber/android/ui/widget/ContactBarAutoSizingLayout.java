@@ -32,8 +32,11 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     private List<ImageButton> buttonViews;
     private List<String> buttonStrings;
     private List<String> buttonGroupchatStrings;
+    private List<String> buttonGroupchatMemberStrings;
 
+    private boolean isForContact = false;
     private boolean isForGroupchat = false;
+    private boolean isForGroupchatMember = false;
 
     public ContactBarAutoSizingLayout(Context context) {
         this(context, null);
@@ -55,6 +58,11 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
                 getResources().getString(R.string.groupchat_bar_invite),
                 getResources().getString(R.string.contact_bar_notifications),
                 getResources().getString(R.string.groupchat_bar_leave));
+        buttonGroupchatMemberStrings = Arrays.asList(getResources().getString(R.string.groupchat_direct_chat),
+                getResources().getString(R.string.groupchat_member_messages),
+                getResources().getString(R.string.groupchat_set_member_badge),
+                getResources().getString(R.string.contact_bar_block),
+                getResources().getString(R.string.contact_bar_unblock));
     }
 
     @Override
@@ -63,18 +71,39 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
         cacheViews();
     }
 
-    public void setForGroupchat(boolean forGroupchat) {
-        this.isForGroupchat = forGroupchat;
+    public void setForGroupchat() {
+        this.isForGroupchat = true;
         for (int i = 0; i < textViews.size(); i++) {
             textViews.get(i).setText(getButtonStrings().get(i));
         }
-        if (isForGroupchat) {
-            button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_add_black_24dp));
-            button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_leave_24dp));
-        } else {
-            button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_calls_list_new));
-            button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_block_grey600_24dp));
+
+        button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_add_black_24dp));
+        button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_group_leave_24dp));
+
+        redrawText();
+    }
+
+    public void setForContact(){
+        isForContact = true;
+        for (int i = 0; i < textViews.size(); i++) {
+            textViews.get(i).setText(getButtonStrings().get(i));
         }
+
+        button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_call_white));
+        button4.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_block_grey600_24dp));
+
+        redrawText();
+    }
+
+    public void setForGroupchatMember(){
+        isForGroupchatMember = true;
+        for (int i = 0; i < textViews.size(); i++) {
+            textViews.get(i).setText(getButtonStrings().get(i));
+        }
+
+        button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_messages_white_24));
+        button3.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_badge_24));
+
         redrawText();
     }
 
@@ -99,7 +128,8 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     }
 
     private List<String> getButtonStrings() {
-        if (isForGroupchat) return buttonGroupchatStrings;
+        if (isForGroupchatMember) return buttonGroupchatMemberStrings;
+        else if (isForGroupchat) return buttonGroupchatStrings;
         else return buttonStrings;
     }
 

@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.activity.GroupchatMemberActivity;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity;
 import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
@@ -43,7 +45,8 @@ import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
 
-public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener {
+public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
+        GroupchatMembersAdapter.OnMemberClickListener {
 
     private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
@@ -215,10 +218,17 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         membersList.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
-        membersAdapter = new GroupchatMembersAdapter(new ArrayList<>(), (GroupChat) ChatManager.getInstance().getChat(account, groupchatContact));
+        membersAdapter = new GroupchatMembersAdapter(new ArrayList<>(), (GroupChat) ChatManager.getInstance().getChat(account, groupchatContact), this);
         membersList.setAdapter(membersAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onMemberClick(GroupchatMember groupchatMember) {
+        Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(getActivity(),
+                groupchatMember.getId(), (GroupChat) groupChat);
+        startActivity(intent);
     }
 
     @Override

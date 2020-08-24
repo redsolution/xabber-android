@@ -224,7 +224,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
-        contactTitleView = findViewById(R.id.contact_title_expanded_new);
+        contactTitleView = findViewById(R.id.contact_title_expanded);
         TextView contactAddressView = (TextView) findViewById(R.id.address_text);
         contactAddressView.setText(account.getFullJid().asBareJid().toString());
 

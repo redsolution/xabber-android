@@ -259,6 +259,11 @@
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
+            android:name=".ui.activity.GroupchatMemberActivity"
+            android:label="@string/member_info"
+            android:parentActivityName=".ui.activity.ChatActivity">
+        </activity>
+        <activity
             android:name=".ui.activity.AccountActivity"
             android:parentActivityName=".ui.activity.MainActivity">
 

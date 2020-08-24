@@ -45,7 +45,6 @@ import java.util.ArrayList;
 public class ContactViewerActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
-    private ProgressBar progressBar;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactViewerActivity.class)
@@ -172,25 +171,15 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
         input.setText(rosterContact.getName());
         builder.setView(input);
 
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                RosterManager.getInstance().setName(getAccount(), getUser(), input.getText().toString());
-            }
-        });
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> RosterManager.getInstance().setName(getAccount(), getUser(), input.getText().toString()));
 
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
 
     private void addContact() {
-        progressBar = new ProgressBar(this);
+        ProgressBar progressBar = new ProgressBar(this);
         progressBar.setIndeterminate(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             progressBar.setIndeterminateTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
@@ -204,37 +193,31 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
         progressBar.setPadding(0,0,Utils.dipToPx(24f, this), 0);
         progressBar.requestLayout();
 
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
-                String name = bestContact != null ? bestContact.getName() : getUser().toString();
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
+            String name = bestContact != null ? bestContact.getName() : getUser().toString();
 
-                try {
-                    RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
-                    PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
-                    stopAddContactProcess(true);
-                } catch (SmackException.NotLoggedInException
-                        | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException
-                        | InterruptedException
-                        | SmackException.NoResponseException
-                        | NetworkException e) {
-                    e.printStackTrace();
-                    stopAddContactProcess(false);
-                }
+            try {
+                RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
+                PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                stopAddContactProcess(true);
+            } catch (SmackException.NotLoggedInException
+                    | XMPPException.XMPPErrorException
+                    | SmackException.NotConnectedException
+                    | InterruptedException
+                    | SmackException.NoResponseException
+                    | NetworkException e) {
+                e.printStackTrace();
+                stopAddContactProcess(false);
             }
         });
     }
 
     private void stopAddContactProcess(final boolean success) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                getToolbar().getMenu().findItem(R.id.add_contact_progress).setVisible(false);
-                if (success) {
-                    onCreateOptionsMenu(getToolbar().getMenu());
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            getToolbar().getMenu().findItem(R.id.add_contact_progress).setVisible(false);
+            if (success) {
+                onCreateOptionsMenu(getToolbar().getMenu());
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.xabber.android.data.message.chat.groupchat;
 
+import com.xabber.android.data.account.StatusMode;
+
 public class GroupchatMember {
 
     private String id;
@@ -11,6 +13,7 @@ public class GroupchatMember {
     private String avatarHash;
     private String avatarUrl;
     private String lastPresent;
+    private StatusMode statusMode;
     private long timestamp;
 
     private boolean isCanRestrictMembers;
@@ -152,4 +155,8 @@ public class GroupchatMember {
         isRestrictedToSendImages = restrictedToSendImages;
     }
 
+
+    public StatusMode getStatusMode() { return statusMode; }
+
+    public void setStatusMode(StatusMode statusMode) { this.statusMode = statusMode; }
 }

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contact_title_expanded_new"
+    android:id="@+id/contact_title_expanded"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="?attr/bottom_navigation_background"
@@ -191,7 +191,7 @@
                 android:orientation="vertical"
                 android:paddingTop="81dp">
 
-                <include layout="@layout/contact_bar_auto_sizing" />
+                <include layout="@layout/view_contact_info_bar" />
 
                 <FrameLayout
                     android:id="@+id/scrollable_container"

@@ -163,7 +163,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             return;
         }
 
-        setContentView(R.layout.activity_contact_list);
+        setContentView(R.layout.activity_main);
         getWindow().setBackgroundDrawable(null);
 
         action = getIntent().getAction();

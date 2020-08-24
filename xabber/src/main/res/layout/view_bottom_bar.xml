@@ -52,7 +52,7 @@
         android:id="@+id/show_calls_button"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_calls_list_new"
+        android:src="@drawable/ic_call_white"
         android:background="@color/transparent"
         android:layout_weight="1"/>
 

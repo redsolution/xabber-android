@@ -38,7 +38,7 @@
         android:background="@drawable/test_ripple"
         android:contentDescription="@string/contact_bar_call"
         android:hapticFeedbackEnabled="true"
-        app:srcCompat="@drawable/ic_calls_list_new" />
+        app:srcCompat="@drawable/ic_call_white" />
 
     <TextView
         android:id="@+id/second_button_text"
