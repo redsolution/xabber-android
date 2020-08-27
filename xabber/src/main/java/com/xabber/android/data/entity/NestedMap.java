@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.entity;
 
+import com.xabber.android.data.log.LogManager;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +41,7 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     /**
      * @return <code>null</code> if there is no such first or second level.
      */
-    public T get(String first, String second) {
+    synchronized public T get(String first, String second) {
         Map<String, T> nested = map.get(first);
         if (nested == null)
             return null;
@@ -49,7 +51,7 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     /**
      * Puts value. Nested map will be created if necessary.
      */
-    synchronized public void put(String first, String second, T value) {
+    public void put(String first, String second, T value) {
         Map<String, T> nested = map.get(first);
         if (nested == null) {
             nested = new HashMap<>();

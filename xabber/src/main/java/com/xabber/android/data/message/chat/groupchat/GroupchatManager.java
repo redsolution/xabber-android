@@ -116,12 +116,15 @@ public class GroupchatManager implements OnPacketListener {
             AccountJid accountJid = AccountJid.from(packet.getTo().toString());
             ContactJid contactJid = ContactJid.from(packet.getFrom());
 
-            if (ChatManager.getInstance().getChat(accountJid, contactJid) instanceof RegularChat) {
-                ChatManager.getInstance().removeChat(accountJid, contactJid);
-                ChatManager.getInstance().createGroupChat(accountJid, contactJid);
-            }
+            GroupChat groupChat;
+            AbstractChat abstractChat = ChatManager.getInstance().getChat(accountJid, contactJid);
 
-            GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
+            if (abstractChat == null)
+                groupChat = ChatManager.getInstance().createGroupChat(accountJid, contactJid);
+            else if (abstractChat instanceof RegularChat) {
+                ChatManager.getInstance().removeChat(accountJid, contactJid);
+                groupChat = ChatManager.getInstance().createGroupChat(accountJid, contactJid);
+            } else groupChat = (GroupChat) abstractChat;
 
             if (presence.getPinnedMessageId() != null
                     && !presence.getPinnedMessageId().isEmpty()

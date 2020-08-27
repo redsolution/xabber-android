@@ -240,8 +240,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     @Nullable
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
-            AbstractChat abstractChat = chats.get(account.toString(), user.getBareJid().toString());
-            return abstractChat;
+            return chats.get(account.toString(), user.getBareJid().toString());
         } else {
             return null;
         }
