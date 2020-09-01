@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
 import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
-import com.github.anrwatchdog.ANRWatchDog;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
@@ -58,13 +57,13 @@ import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -409,9 +408,9 @@ public class Application extends android.app.Application {
         /** Crashlytics */
         ExternalAPIs.enableCrashlyticsIfNeed(this);
 
-        new ANRWatchDog()
-                .setANRListener(error -> LogManager.exception("ANR Detected!", error))
-                .start();
+//        new ANRWatchDog()
+//                .setANRListener(error -> LogManager.exception("ANR Detected!", error))
+//                .start();
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
