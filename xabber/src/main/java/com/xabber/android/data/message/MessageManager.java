@@ -393,15 +393,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         boolean processed = false;
         if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
             AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
-            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)
-                    && abstractChat instanceof RegularChat){
+            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE) &&
+                    abstractChat instanceof RegularChat){
                 ChatManager.getInstance().removeChat(abstractChat);
                 ChatManager.getInstance().createGroupChat(account, contactJid);
             }
-        } else {
-            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE))
-                ChatManager.getInstance().createGroupChat(account, contactJid);
-            else ChatManager.getInstance().createRegularChat(account, contactJid);
         }
 
         try {
