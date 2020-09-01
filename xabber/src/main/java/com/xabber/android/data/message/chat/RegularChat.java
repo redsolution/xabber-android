@@ -38,6 +38,7 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
@@ -168,6 +169,10 @@ public class RegularChat extends AbstractChat {
             if (this.resource != null && presence.getType() == Presence.Type.unavailable
                     && resource != null && this.resource.equals(resource)) {
                 this.resource = null;
+            }
+
+            if (packet.hasExtension(GroupchatManager.NAMESPACE)){
+                return ChatManager.getInstance().convertRegularToGroup(bareAddress, packet, isCarbons, this);
             }
 
 //            if (presence.getType() == Presence.Type.unavailable) {

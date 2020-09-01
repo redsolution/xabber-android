@@ -41,6 +41,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -304,6 +305,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         saveOrUpdateChatDataToRealm(chat);
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         return chat;
+    }
+
+    public boolean convertRegularToGroup(ContactJid bareAddress, Stanza packet, boolean isCarbons, RegularChat regularChat){
+        removeChat(regularChat);
+        return createGroupChat(regularChat.getAccount(), regularChat.getUser()).onPacket(bareAddress, packet, isCarbons);
     }
 
     /**
