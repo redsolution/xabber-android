@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
@@ -88,7 +89,11 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
             holder.memberRole.setVisibility(View.GONE);
         }
 
-        holder.memberStatus.setText(StringUtils.getLastPresentString(bindMember.getLastPresent()));
+        String memberStatus = StringUtils.getLastPresentString(bindMember.getLastPresent());
+        holder.memberStatus.setText(memberStatus);
+        if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected)))
+            holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
+        else holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
 
         holder.avatar.setImageDrawable(AvatarManager.getInstance().getGroupchatMemberAvatar(bindMember, chat.getAccount()));
     }
