@@ -362,7 +362,9 @@ public class GroupChat extends AbstractChat {
     }
 
     public ArrayList<String> getListOfInvites() { return listOfInvites; }
-    public void setListOfInvites(ArrayList<String> listOfInvites) { this.listOfInvites = listOfInvites; }
+    public void setListOfInvites(ArrayList<String> listOfInvites) {
+        this.listOfInvites = listOfInvites;
+    }
 
     public ArrayList<GroupchatBlocklistItemElement> getListOfBlockedElements() {
         return listOfBlockedElements;

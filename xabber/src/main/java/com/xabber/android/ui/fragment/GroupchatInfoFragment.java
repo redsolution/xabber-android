@@ -44,6 +44,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
         GroupchatMembersAdapter.OnMemberClickListener {
@@ -363,14 +364,29 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     private void updateViewsWithMemberList(ArrayList<GroupchatMember> members) {
+
         if (membersAdapter != null) {
-            membersAdapter.setItems(members);
+            if (((GroupChat)groupChat).getListOfBlockedElements() != null && ((GroupChat)groupChat).getListOfBlockedElements().size() != 0)
+                membersAdapter.setItems(new ArrayList<>(filterBlocked(members, ((GroupChat)groupChat).getListOfBlockedElements())));
+            else membersAdapter.setItems(members);
             if (GroupchatManager.checkIfHasActiveMemberListRequest(account, groupchatContact)) {
                 membersProgress.setVisibility(View.VISIBLE);
             } else {
                 membersProgress.setVisibility(View.GONE);
             }
         }
+    }
+
+    private Collection<GroupchatMember> filterBlocked(Collection<GroupchatMember> members, Collection<GroupchatBlocklistItemElement> blocklistItemElements){
+        ArrayList<GroupchatMember> newList = new ArrayList<>(members);
+        for (GroupchatMember member : members){
+            for (GroupchatBlocklistItemElement groupchatBlocklistItemElement : ((GroupChat) groupChat ).getListOfBlockedElements()){
+                if (groupchatBlocklistItemElement.getItemType() == GroupchatBlocklistItemElement.ItemType.jid
+                        && groupchatBlocklistItemElement.getBlockedItem().equals(member.getJid()))
+                    newList.remove(member);
+            }
+        }
+        return newList;
     }
 
     @Override
