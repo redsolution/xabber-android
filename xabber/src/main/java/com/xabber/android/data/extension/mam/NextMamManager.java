@@ -33,6 +33,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
@@ -359,6 +360,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             } else {
                 LogManager.d(LOG_TAG, "finished loading first messages of " + accountItem.getAccount());
                 VCardManager.getInstance().onHistoryLoaded(accountItem);
+                PresenceManager.getInstance().onHistoryLoaded(accountItem);
                 rosterItemIterators.remove(accountItem);
             }
         } else {

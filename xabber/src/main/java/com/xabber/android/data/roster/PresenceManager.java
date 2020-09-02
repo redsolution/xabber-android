@@ -540,6 +540,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
+    public void onHistoryLoaded(AccountItem accountItem){
+        onAuthorized(accountItem);
+    }
+
     public void onRosterEntriesUpdated(AccountJid account, Collection<Jid> entries) {
         for (Jid entry : entries) {
             try {
