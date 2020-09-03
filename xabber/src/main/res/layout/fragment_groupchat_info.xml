@@ -487,19 +487,6 @@
                                 android:layout_height="wrap_content"
                                 android:text="0" />
 
-                            <FrameLayout
-                                android:id="@+id/invitationsStatus"
-                                android:layout_width="20dp"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:visibility="gone"
-                                tools:visibility="visible">
-                                <ProgressBar
-                                    android:id="@+id/invitationsProgress"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:visibility="visible"/>
-                            </FrameLayout>
 
                         </LinearLayout>
 

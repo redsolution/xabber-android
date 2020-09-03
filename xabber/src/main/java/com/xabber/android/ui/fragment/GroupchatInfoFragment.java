@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -61,24 +60,19 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     // members list
     private ViewGroup membersLayout;
-    private RecyclerView membersList;
     private GroupchatMembersAdapter membersAdapter;
     private ProgressBar membersProgress;
     private TextView membersHeader;
 
     // settings layout
     private ViewGroup settingsLayout;
-    private ViewGroup settingsButton;
     private TextView invitationsCount;
-    private FrameLayout invitationsStatus;
-    private ProgressBar invitationsProgress;
     private TextView blockedCount;
 
     // info layout
     private ViewGroup infoLayout;
     private ProgressBar infoProgress;
 
-    private ViewGroup groupchatJidLayout;
     private TextView groupchatJidText;
 
     private ViewGroup groupchatStatusLayout;
@@ -174,7 +168,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         View view = inflater.inflate(R.layout.fragment_groupchat_info, container, false);
 
         membersLayout = view.findViewById(R.id.membersLayout);
-        membersList = view.findViewById(R.id.rvGroupchatMembers);
+        RecyclerView membersList = view.findViewById(R.id.rvGroupchatMembers);
         membersProgress = view.findViewById(R.id.progressGroupchatMembers);
         membersHeader = view.findViewById(R.id.groupchat_members_header);
         membersList.setNestedScrollingEnabled(false);
@@ -182,7 +176,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         // info layout
         infoLayout = view.findViewById(R.id.infoLayout);
         infoProgress = view.findViewById(R.id.progressInfo);
-        groupchatJidLayout = view.findViewById(R.id.groupchat_jid_layout);
         groupchatJidText = view.findViewById(R.id.groupchat_jid_name);
         groupchatStatusLayout = view.findViewById(R.id.groupchat_status_layout);
         groupchatStatusText = view.findViewById(R.id.groupchat_status_name);
@@ -203,8 +196,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                         .createOpenGroupchatSettingsIntentForGroupchat(account, groupchatContact)));
 
         invitationsCount = view.findViewById(R.id.invitationsCount);
-        invitationsStatus = view.findViewById(R.id.invitationsStatus);
-        invitationsProgress = view.findViewById(R.id.invitationsProgress);
         blockedCount = view.findViewById(R.id.blockedCount);
         //restrictionsButton.setOnClickListener(this);
 
