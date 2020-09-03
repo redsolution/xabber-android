@@ -22,7 +22,7 @@ import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorLis
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -147,9 +147,9 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
             return;
         }
         if (checkedInvites.size() == 1) {
-            GroupchatManager.getInstance().revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
+            GroupchatMemberManager.getInstance().revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
         } else {
-            GroupchatManager.getInstance().revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
+            GroupchatMemberManager.getInstance().revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
         }
     }
 

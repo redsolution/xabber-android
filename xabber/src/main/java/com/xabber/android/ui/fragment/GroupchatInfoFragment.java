@@ -28,6 +28,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
@@ -243,10 +244,10 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     private void requestLists() {
-        GroupchatManager.getInstance().requestGroupchatMembers(account, groupchatContact);
-        GroupchatManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
-        GroupchatManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
-         membersProgress.setVisibility(View.VISIBLE);
+        GroupchatMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
+        GroupchatMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
+        GroupchatMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
+        membersProgress.setVisibility(View.VISIBLE);
     }
 
     private void updateChatInfo(GroupChat groupChat) {
@@ -360,7 +361,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             if (((GroupChat)groupChat).getListOfBlockedElements() != null && ((GroupChat)groupChat).getListOfBlockedElements().size() != 0)
                 membersAdapter.setItems(new ArrayList<>(filterBlocked(members, ((GroupChat)groupChat).getListOfBlockedElements())));
             else membersAdapter.setItems(members);
-            if (GroupchatManager.checkIfHasActiveMemberListRequest(account, groupchatContact)) {
+            if (GroupchatMemberManager.checkIfHasActiveMemberListRequest(account, groupchatContact)) {
                 membersProgress.setVisibility(View.VISIBLE);
             } else {
                 membersProgress.setVisibility(View.GONE);

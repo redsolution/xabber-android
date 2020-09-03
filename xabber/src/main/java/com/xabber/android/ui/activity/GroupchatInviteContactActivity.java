@@ -17,7 +17,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.GroupchatInviteReasonDialog;
 import com.xabber.android.ui.fragment.GroupchatInviteContactFragment;
@@ -176,7 +176,7 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
     public void onReasonSelected(String reason) {
         GroupchatInviteContactFragment fragment = getInviteFragment();
         if (fragment != null) {
-            GroupchatManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite, reason.trim());
+            GroupchatMemberManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite, reason.trim());
             finish();
         }
     }

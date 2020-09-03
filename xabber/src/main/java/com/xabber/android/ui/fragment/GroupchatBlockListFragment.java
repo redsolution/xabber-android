@@ -23,7 +23,7 @@ import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorLis
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
 import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -164,9 +164,9 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
             return;
         }
         if (selectedElements.size() == 1) {
-            GroupchatManager.getInstance().unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
+            GroupchatMemberManager.getInstance().unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
         } else {
-            GroupchatManager.getInstance().unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
+            GroupchatMemberManager.getInstance().unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
         }
     }
 

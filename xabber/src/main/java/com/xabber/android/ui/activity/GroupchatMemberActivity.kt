@@ -173,9 +173,9 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
     }
 
     private fun setupNameBlock(){
-        findViewById<TextView>(R.id.name).setText(groupchatMember?.bestName + " " + groupchatMember?.badge)
+        findViewById<TextView>(R.id.name).text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
-            findViewById<TextView>(R.id.address_text).setText(groupchatMember!!.jid)
+            findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
         if (groupchatMember!!.statusMode != null)
             findViewById<ImageView>(R.id.ivStatusGroupchat).setImageLevel(groupchatMember!!.statusMode.statusLevel)
     }
