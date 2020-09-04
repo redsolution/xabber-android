@@ -352,9 +352,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                         }
                     }));
                 }
-            } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
-            }
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         });
     }
 

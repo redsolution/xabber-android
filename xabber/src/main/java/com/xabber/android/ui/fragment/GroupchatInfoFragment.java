@@ -119,8 +119,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onResume() {
         super.onResume();
-        if (EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().unregister(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         if (groupChat instanceof GroupChat) {
             updateChatSettings((GroupChat) groupChat);
         }
@@ -138,8 +138,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onPause() {
         super.onPause();
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
 
         if (groupChat != null && groupChat instanceof GroupChat) {
             try {
@@ -294,7 +294,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (privacyType != null) {
             switch (privacyType) {
                 case PUBLIC:
-                    groupchatAnonymityText.setText(getString(R.string.groupchat_privacy_type_public));
+                    groupchatAnonymityText.setText(getContext().getString(R.string.groupchat_privacy_type_public));
                     groupchatAnonymityLayout.setVisibility(View.VISIBLE);
                     break;
                 case INCOGNITO:

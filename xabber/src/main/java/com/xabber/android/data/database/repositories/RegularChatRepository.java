@@ -8,7 +8,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
-import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.RegularChatRealmObject;
 import com.xabber.android.data.entity.AccountJid;
@@ -30,7 +29,7 @@ public class RegularChatRepository {
     public static void removeRegularChatFromRealm(RegularChat groupChat){
         Application.getInstance().runInBackground(() -> {
             try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
-                realm.executeTransaction(realm1 -> realm1.where(GroupchatRealmObject.class)
+                realm.executeTransaction(realm1 -> realm1.where(RegularChatRealmObject.class)
                         .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
                         .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getUser().getBareJid().toString())
                         .findFirst()

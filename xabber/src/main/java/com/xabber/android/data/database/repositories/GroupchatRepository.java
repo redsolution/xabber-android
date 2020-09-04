@@ -4,7 +4,6 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.GroupchatMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class GroupchatRepository {
@@ -77,11 +75,13 @@ public class GroupchatRepository {
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
 
                     if (groupChat.getMembers() != null && groupChat.getMembers().size() > 0) {
-                        RealmList<GroupchatMemberRealmObject> realmMembers = new RealmList<>();
-                        for (GroupchatMember member : groupChat.getMembers()) {
-                            realmMembers.add(GroupchatMemberManager.userToRealmUser(member));
-                        }
-                        groupchatRealmObject.setMembers(realmMembers);
+//                        RealmList<GroupchatMemberRealmObject> realmMembers = new RealmList<>();
+//                        for (GroupchatMember member : groupChat.getMembers()) {
+//                            realmMembers.add(GroupchatMemberManager.userToRealmUser(member));
+//                        }
+                        groupchatRealmObject.clearMembersIds();
+                        for (GroupchatMember groupchatMember : groupChat.getMembers())
+                            groupchatRealmObject.addMemberId(groupchatMember.getId());
                     }
 
                     groupchatRealmObject.setCanInvite(groupChat.isCanInvite());
@@ -120,10 +120,11 @@ public class GroupchatRepository {
                 .findAll();
 
         for (GroupchatRealmObject gro : realmObjects) {
-            if (gro.getMembers() != null && gro.getMembers().size() > 0) {
-                ArrayList<GroupchatMember> listOfMembers = new ArrayList<>(gro.getMembers().size());
-                for (GroupchatMemberRealmObject user : gro.getMembers()) {
-                    listOfMembers.add(GroupchatMemberManager.realmUserToUser(user));
+            if (gro.getMembersIds() != null && gro.getMembersIds().size() > 0) {
+                ArrayList<GroupchatMember> listOfMembers = new ArrayList<>(gro.getMembersIds().size());
+                for (String user : gro.getMembersIds()) {
+                    if (GroupchatMemberRepository.getGroupchatMemberRealmObjectById(user) != null)
+                        listOfMembers.add(GroupchatMemberManager.realmUserToUser(GroupchatMemberRepository.getGroupchatMemberRealmObjectById(user)));
                 }
                 list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
                         gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
