@@ -44,7 +44,7 @@ public class GroupchatMemberRepository {
 
         for (GroupchatMemberRealmObject gro : groupchatMemberRealmObjects)
             result.add(new GroupchatMember(gro.getUniqueId(), gro.getJid(), gro.getGroupchatJid(),
-                    gro.getRole(), gro.getNickname(), gro.getBadge(), gro.getAvatarHash(),
+                    gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
                     gro.getAvatarUrl(), gro.getLastPresent(), gro.isCanRestrictMembers(),
                     gro.isCanBlockMembers(), gro.isCanChangeBadge(), gro.isCanChangeNickname(),
                     gro.isCanDeleteMessages(), gro.isRestrictedToSendMessages(),
