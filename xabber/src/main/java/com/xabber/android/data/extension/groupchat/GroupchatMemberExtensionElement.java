@@ -15,7 +15,7 @@ public class GroupchatMemberExtensionElement implements ExtensionElement {
     public static final String ELEMENT_NICKNAME = "nickname";
     public static final String ELEMENT_ROLE = "role";
     public static final String ELEMENT_BADGE = "badge";
-    public static final String ELEMENT_SUBSCRIPTION = "subscriprion";
+    public static final String ELEMENT_SUBSCRIPTION = "subscription";
     public static final String ELEMENT_METADATA = "metadata";
     public static final String ELEMENT_PRESENT = "present";
     public static final String NAMESPACE_METADATA = "urn:xmpp:avatar:metadata";
