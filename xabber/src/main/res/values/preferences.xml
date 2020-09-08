@@ -30,10 +30,7 @@
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
     <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
-    <string name="crowdfunding_last_load_timestamp_key">crowdfunding_last_load_timestamp_key</string>
-    <string name="crowdfunding_leader_last_load_timestamp_key">crowdfunding_leader_last_load_timestamp_key</string>
     <string name="first_app_run_timestamp_key">first_app_run_timestamp_key</string>
-    <string name="crowdfunding_last_position_key">crowdfunding_last_position_key</string>
     <string name="enabled_push_nodes">enabled_push_nodes</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
