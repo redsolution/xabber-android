@@ -4,8 +4,8 @@ import com.xabber.android.data.TestApplication;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatProvider;
-import com.xabber.android.data.extension.groupchat.GroupchatUserContainer;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberContainer;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
 
@@ -214,8 +214,8 @@ public class ReferencesProviderTest {
     public void parse8() {
         GroupchatExtensionElement element = (GroupchatExtensionElement) parseGroupString(stringGroupchat);
         assertNotNull(element);
-        assert (element instanceof GroupchatUserContainer);
-        GroupchatUserExtension user = ((GroupchatUserContainer)element).getUser();
+        assert (element instanceof GroupchatMemberContainer);
+        GroupchatMemberExtensionElement user = ((GroupchatMemberContainer)element).getUser();
         assertNotNull(user);
         assertEquals("", user.getBadge());
         assertEquals("kubsgzldk3csvtez", user.getId());

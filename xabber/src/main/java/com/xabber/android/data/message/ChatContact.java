@@ -33,7 +33,7 @@ public class ChatContact extends AbstractContact {
     }
 
     public ChatContact(AbstractChat abstractChat) {
-        super(abstractChat.getAccount(), abstractChat.getUser());
+        super(abstractChat.getAccount(), abstractChat.getContactJid());
     }
 
     @Override

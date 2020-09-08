@@ -27,8 +27,7 @@ public class GroupchatRealmObject extends RealmObject {
     private String index = GroupchatIndexType.NONE.toString();
     private String membership = GroupchatMembershipType.NONE.toString();
     private String description;
-    private MessageRealmObject pinnedMessage;
-    private RealmList<String> membersIds = new RealmList<>();
+    private String pinnedMessageId;
     private String membersListVersion;
     private boolean canInvite;
     private boolean canChangeSettings;
@@ -48,6 +47,7 @@ public class GroupchatRealmObject extends RealmObject {
     private RealmList<String> domains;
     private RealmList<String> invited;
     private String status;
+
     public GroupchatRealmObject() {
         this.primary = UUID.randomUUID().toString();
     }
@@ -61,6 +61,7 @@ public class GroupchatRealmObject extends RealmObject {
     public String getPrimary() {
         return primary;
     }
+
     public void setPrimary(String primary) {
         this.primary = primary;
     }
@@ -73,6 +74,7 @@ public class GroupchatRealmObject extends RealmObject {
         }
         return null;
     }
+
     public void setGroupchatJid(ContactJid contactJid) {
         this.groupchatJid = contactJid.toString();
     }
@@ -85,6 +87,7 @@ public class GroupchatRealmObject extends RealmObject {
         }
         return null;
     }
+
     public void setAccountJid(AccountJid accountJid) {
         this.accountJid = accountJid.toString();
     }
@@ -93,6 +96,7 @@ public class GroupchatRealmObject extends RealmObject {
     public String getOwner() {
         return owner;
     }
+
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -100,6 +104,7 @@ public class GroupchatRealmObject extends RealmObject {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -117,6 +122,7 @@ public class GroupchatRealmObject extends RealmObject {
         }
         return GroupchatPrivacyType.NONE;
     }
+
     public void setPrivacy(GroupchatPrivacyType privacy) {
         if (privacy != null)
             this.privacy = privacy.toString();
@@ -135,6 +141,7 @@ public class GroupchatRealmObject extends RealmObject {
         }
         return GroupchatIndexType.NONE;
     }
+
     public void setIndex(GroupchatIndexType index) {
         if (index != null)
             this.index = index.toString();
@@ -153,6 +160,7 @@ public class GroupchatRealmObject extends RealmObject {
         }
         return GroupchatMembershipType.NONE;
     }
+
     public void setMembership(GroupchatMembershipType membership) {
         if (membership != null)
             this.membership = membership.toString();
@@ -161,20 +169,23 @@ public class GroupchatRealmObject extends RealmObject {
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public MessageRealmObject getPinnedMessage() {
-        return pinnedMessage;
+    public String getPinnedMessageId() {
+        return pinnedMessageId;
     }
-    public void setPinnedMessage(MessageRealmObject pinnedMessage) {
-        this.pinnedMessage = pinnedMessage;
+
+    public void setPinnedMessageId(String pinnedMessageId) {
+        this.pinnedMessageId = pinnedMessageId;
     }
 
     public int getMembersCount() {
         return membersCount;
     }
+
     public void setMembersCount(int membersCount) {
         this.membersCount = membersCount;
     }
@@ -182,18 +193,15 @@ public class GroupchatRealmObject extends RealmObject {
     public RealmList<String> getDomains() {
         return domains;
     }
+
     public void setDomains(RealmList<String> domains) {
         this.domains = domains;
     }
 
-    public RealmList<String> getMembersIds() { return membersIds; }
-    public void setMembersIds(RealmList<String> membersIds) { this.membersIds = membersIds; }
-    public void clearMembersIds(){ this.membersIds.clear(); }
-    public void addMemberId(String memberId){ this.membersIds.add(memberId); }
-
     public long getPresent() {
         return present;
     }
+
     public void setPresent(long present) {
         this.present = present;
     }
@@ -201,6 +209,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCollect() {
         return collect;
     }
+
     public void setCollect(boolean collect) {
         this.collect = collect;
     }
@@ -208,6 +217,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isPeerToPeer() {
         return peerToPeer;
     }
+
     public void setPeerToPeer(boolean peerToPeer) {
         this.peerToPeer = peerToPeer;
     }
@@ -215,6 +225,7 @@ public class GroupchatRealmObject extends RealmObject {
     public String getMembersListVersion() {
         return membersListVersion;
     }
+
     public void setMembersListVersion(String membersListVersion) {
         this.membersListVersion = membersListVersion;
     }
@@ -222,6 +233,7 @@ public class GroupchatRealmObject extends RealmObject {
     public RealmList<String> getInvited() {
         return invited;
     }
+
     public void setInvited(RealmList<String> invited) {
         this.invited = invited;
     }
@@ -229,6 +241,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanInvite() {
         return canInvite;
     }
+
     public void setCanInvite(boolean canInvite) {
         this.canInvite = canInvite;
     }
@@ -236,6 +249,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanChangeSettings() {
         return canChangeSettings;
     }
+
     public void setCanChangeSettings(boolean canChangeSettings) {
         this.canChangeSettings = canChangeSettings;
     }
@@ -243,6 +257,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanChangeUsersSettings() {
         return canChangeUsersSettings;
     }
+
     public void setCanChangeUsersSettings(boolean canChangeUsersSettings) {
         this.canChangeUsersSettings = canChangeUsersSettings;
     }
@@ -250,6 +265,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanChangeNicknames() {
         return canChangeNicknames;
     }
+
     public void setCanChangeNicknames(boolean canChangeNicknames) {
         this.canChangeNicknames = canChangeNicknames;
     }
@@ -257,6 +273,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanChangeBadge() {
         return canChangeBadge;
     }
+
     public void setCanChangeBadge(boolean canChangeBadge) {
         this.canChangeBadge = canChangeBadge;
     }
@@ -264,6 +281,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanBlockUsers() {
         return canBlockUsers;
     }
+
     public void setCanBlockUsers(boolean canBlockUsers) {
         this.canBlockUsers = canBlockUsers;
     }
@@ -271,6 +289,7 @@ public class GroupchatRealmObject extends RealmObject {
     public boolean isCanChangeAvatars() {
         return canChangeAvatars;
     }
+
     public void setCanChangeAvatars(boolean canChangeAvatars) {
         this.canChangeAvatars = canChangeAvatars;
     }
@@ -278,6 +297,7 @@ public class GroupchatRealmObject extends RealmObject {
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -302,6 +322,7 @@ public class GroupchatRealmObject extends RealmObject {
                 return NotificationState.NotificationMode.byDefault;
         }
     }
+
     public void setNotificationMode(NotificationState.NotificationMode notificationMode) {
         this.notificationMode = notificationMode.toString();
     }

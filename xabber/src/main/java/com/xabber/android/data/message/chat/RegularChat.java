@@ -26,7 +26,7 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -105,12 +105,12 @@ public class RegularChat extends AbstractChat {
     @Override
     public Jid getTo() {
         if (OTRresource != null) {
-            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), OTRresource);
+            return JidCreate.fullFrom(contactJid.getJid().asEntityBareJidIfPossible(), OTRresource);
         } else {
             if (resource == null) {
-                return user.getJid();
+                return contactJid.getJid();
             } else {
-                return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
+                return JidCreate.fullFrom(contactJid.getJid().asEntityBareJidIfPossible(), resource);
             }
         }
     }
@@ -126,11 +126,11 @@ public class RegularChat extends AbstractChat {
             if (SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.required)
                 return true;
             SecurityLevel securityLevel = OTRManager.getInstance()
-                    .getSecurityLevel(account, user);
+                    .getSecurityLevel(account, contactJid);
             if (securityLevel != SecurityLevel.plain)
                 return true;
             try {
-                OTRManager.getInstance().startSession(account, user);
+                OTRManager.getInstance().startSession(account, contactJid);
             } catch (NetworkException e) {
             }
         }
@@ -141,7 +141,7 @@ public class RegularChat extends AbstractChat {
     protected String prepareText(String text) {
         text = super.prepareText(text);
         try {
-            return OTRManager.getInstance().transformSending(account, user, text);
+            return OTRManager.getInstance().transformSending(account, contactJid, text);
         } catch (OtrException e) {
             LogManager.exception(this, e);
             return null;
@@ -209,7 +209,7 @@ public class RegularChat extends AbstractChat {
 
             if (!isCarbons) {
                 try {
-                    text = OTRManager.getInstance().transformReceiving(account, user, text);
+                    text = OTRManager.getInstance().transformReceiving(account, contactJid, text);
                 } catch (OtrException e) {
                     if (e.getCause() instanceof OTRUnencryptedException) {
                         text = ((OTRUnencryptedException) e.getCause()).getText();
@@ -261,7 +261,7 @@ public class RegularChat extends AbstractChat {
                     getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
                     originalFrom, false, forwardIdRealmObjects, false, null);
 
-            EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
+            EventBus.getDefault().post(new NewIncomingMessageEvent(account, contactJid));
         }
         return true;
     }
@@ -288,7 +288,7 @@ public class RegularChat extends AbstractChat {
 
         // groupchat
         String gropchatUserId = null;
-        GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());

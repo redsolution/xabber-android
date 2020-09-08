@@ -9,7 +9,7 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -36,7 +36,6 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -56,8 +55,7 @@ public class GroupChat extends AbstractChat {
 
     private String name;
     private String description;
-    private MessageRealmObject pinnedMessage;
-    private ArrayList<GroupchatMember> members;
+    private String pinnedMessageId;
     private ArrayList<String> listOfInvites;
     private ArrayList<GroupchatBlocklistItemElement> listOfBlockedElements;
     private String membersListVersion;
@@ -78,12 +76,11 @@ public class GroupChat extends AbstractChat {
         super(account, user);
     }
 
-    //todo add members list into constructor and change correspondent method at repository
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user,
                      GroupchatIndexType indexType, GroupchatMembershipType membershipType,
                      GroupchatPrivacyType privacyType, String owner, String name,
-                     String description, int numberOfMembers, ArrayList<GroupchatMember> listOfMembers,
-                     MessageRealmObject pinnedMessage, String membersListVersion, boolean canInvite,
+                     String description, int numberOfMembers,
+                     String pinnedMessageId, String membersListVersion, boolean canInvite,
                      boolean canChangeSettings, boolean canChangeUsersSettings, boolean canChangeNicknames,
                      boolean canChangeBadge, boolean canBlockUsers, boolean canChangeAvatars) {
         super(account, user);
@@ -94,8 +91,7 @@ public class GroupChat extends AbstractChat {
         this.name = name;
         this.description = description;
         this.numberOfMembers = numberOfMembers;
-        this.members = listOfMembers;
-        this.pinnedMessage = pinnedMessage;
+        this.pinnedMessageId = pinnedMessageId;
         this.membersListVersion = membersListVersion;
         this.canInvite = canInvite;
         this.canChangeSettings = canChangeSettings;
@@ -141,7 +137,7 @@ public class GroupChat extends AbstractChat {
 
             if (!isCarbons) {
                 try {
-                    text = OTRManager.getInstance().transformReceiving(account, user, text);
+                    text = OTRManager.getInstance().transformReceiving(account, this.contactJid, text);
                 } catch (OtrException e) {
                     if (e.getCause() instanceof OTRUnencryptedException) {
                         text = ((OTRUnencryptedException) e.getCause()).getText();
@@ -156,7 +152,7 @@ public class GroupChat extends AbstractChat {
 
             // groupchat
             String gropchatUserId = null;
-            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
+            GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
                 GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
@@ -201,7 +197,7 @@ public class GroupChat extends AbstractChat {
                     UniqStanzaHelper.getContactStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
                     originalFrom, false, forwardIdRealmObjects, false, gropchatUserId);
 
-            EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
+            EventBus.getDefault().post(new NewIncomingMessageEvent(account, this.contactJid));
         }
         return true;
     }
@@ -209,7 +205,7 @@ public class GroupChat extends AbstractChat {
     @NonNull
     @Override
     public Jid getTo() {
-        return user.getBareJid();
+        return contactJid.getBareJid();
     }
 
     @Override
@@ -253,7 +249,7 @@ public class GroupChat extends AbstractChat {
 
         // groupchat
         String gropchatUserId = null;
-        GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
@@ -311,13 +307,10 @@ public class GroupChat extends AbstractChat {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public MessageRealmObject getPinnedMessage() { return pinnedMessage; }
-    public void setPinnedMessage(MessageRealmObject pinnedMessage) {
-        this.pinnedMessage = pinnedMessage;
+    public String getPinnedMessageId() { return pinnedMessageId; }
+    public void setPinnedMessageId(String pinnedMessageId) {
+        this.pinnedMessageId = pinnedMessageId;
     }
-
-    public ArrayList<GroupchatMember> getMembers() { return members; }
-    public void setMembers(ArrayList<GroupchatMember> members) { this.members = members; }
 
     public String getMembersListVersion() { return membersListVersion; }
     public void setMembersListVersion(String membersListVersion) {

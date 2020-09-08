@@ -23,6 +23,6 @@ import com.xabber.android.data.entity.ContactJid;
  */
 public interface EntityNotificationItem extends AccountNotificationItem {
 
-    ContactJid getUser();
+    ContactJid getContactJid();
 
 }

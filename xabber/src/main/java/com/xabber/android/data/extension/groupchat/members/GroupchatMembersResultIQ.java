@@ -1,27 +1,27 @@
 package com.xabber.android.data.extension.groupchat.members;
 
 
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 
 import java.util.Collection;
 
 public class GroupchatMembersResultIQ extends GroupchatMembersQueryIQ {
 
-    private Collection<GroupchatUserExtension> listOfMembers;
+    private Collection<GroupchatMemberExtensionElement> listOfMembers;
 
     public GroupchatMembersResultIQ() {
         super();
     }
 
-    public GroupchatMembersResultIQ(Collection<GroupchatUserExtension> listOfMembers) {
+    public GroupchatMembersResultIQ(Collection<GroupchatMemberExtensionElement> listOfMembers) {
         this.listOfMembers = listOfMembers;
     }
 
-    public Collection<GroupchatUserExtension> getListOfMembers() {
+    public Collection<GroupchatMemberExtensionElement> getListOfMembers() {
         return listOfMembers;
     }
 
-    public void setListOfMembers(Collection<GroupchatUserExtension> listOfMembers) {
+    public void setListOfMembers(Collection<GroupchatMemberExtensionElement> listOfMembers) {
         this.listOfMembers = listOfMembers;
     }
 }

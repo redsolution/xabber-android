@@ -105,9 +105,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 }
 
                 rosterContacts.put(contact.getAccount().toString(),
-                        contact.getUser().getBareJid().toString(), contact);
+                        contact.getContactJid().getBareJid().toString(), contact);
 
-                ChatManager.getInstance().getChat(contact.getAccount(), contact.getUser());
+                ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
 
             } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();
@@ -252,7 +252,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             try {
                 RosterContact contact = convertRosterEntryToRosterContact(account, roster, entry);
                 rosterContacts.put(account.toString(),
-                        contact.getUser().getBareJid().toString(), contact);
+                        contact.getContactJid().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
                 if (VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {

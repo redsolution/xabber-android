@@ -1,7 +1,5 @@
 package com.xabber.android.data.message.chat.groupchat;
 
-import com.xabber.android.data.account.StatusMode;
-
 public class GroupchatMember {
 
     private String id;
@@ -13,8 +11,6 @@ public class GroupchatMember {
     private String avatarHash;
     private String avatarUrl;
     private String lastPresent;
-    private StatusMode statusMode;
-    private long timestamp;
 
     private boolean isCanRestrictMembers;
     private boolean isCanBlockMembers;
@@ -30,6 +26,34 @@ public class GroupchatMember {
 
     public GroupchatMember(String id) {
         this.id = id;
+    }
+
+    public GroupchatMember(String id, String jid, String groupchatJid, String nickname, String role,
+                           String badge, String avatarHash, String avatarUrl, String lastPresent,
+                           boolean isCanRestrictMembers, boolean isCanBlockMembers,
+                           boolean isCanChangeBadge, boolean isCanChangeNickname,
+                           boolean isCanDeleteMessages, boolean isRestrictedToSendMessages,
+                           boolean isRestrictedToReadMessages, boolean isRestrictedToSendInvitations,
+                           boolean isRestrictedToSendAudio, boolean isRestrictedToSendImages) {
+        this.id = id;
+        this.jid = jid;
+        this.groupchatJid = groupchatJid;
+        this.nickname = nickname;
+        this.role = role;
+        this.badge = badge;
+        this.avatarHash = avatarHash;
+        this.avatarUrl = avatarUrl;
+        this.lastPresent = lastPresent;
+        this.isCanRestrictMembers = isCanRestrictMembers;
+        this.isCanBlockMembers = isCanBlockMembers;
+        this.isCanChangeBadge = isCanChangeBadge;
+        this.isCanChangeNickname = isCanChangeNickname;
+        this.isCanDeleteMessages = isCanDeleteMessages;
+        this.isRestrictedToSendMessages = isRestrictedToSendMessages;
+        this.isRestrictedToReadMessages = isRestrictedToReadMessages;
+        this.isRestrictedToSendInvitations = isRestrictedToSendInvitations;
+        this.isRestrictedToSendAudio = isRestrictedToSendAudio;
+        this.isRestrictedToSendImages = isRestrictedToSendImages;
     }
 
     public String getId() {
@@ -83,13 +107,6 @@ public class GroupchatMember {
     }
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getLastPresent() {
@@ -155,8 +172,4 @@ public class GroupchatMember {
         isRestrictedToSendImages = restrictedToSendImages;
     }
 
-
-    public StatusMode getStatusMode() { return statusMode; }
-
-    public void setStatusMode(StatusMode statusMode) { this.statusMode = statusMode; }
 }

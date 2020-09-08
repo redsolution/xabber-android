@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat;
 
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
-import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatUserReference;
+import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
@@ -17,7 +17,7 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
 
     @Override
     public GroupchatExtensionElement parse(XmlPullParser parser, int initialDepth) throws Exception {
-        GroupchatUserContainer user = null;
+        GroupchatMemberContainer user = null;
         GroupchatPresence presence;
 
         outerloop:
@@ -27,9 +27,9 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                 case XmlPullParser.START_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())
                             && ReferenceElement.NAMESPACE.equals(parser.getNamespace())) {
-                        GroupchatUserReference referenceWrapperUser = parseGroupUserReference(parser);
+                        GroupchatMemberReference referenceWrapperUser = parseGroupUserReference(parser);
                         if (referenceWrapperUser != null)
-                            user = new GroupchatUserContainer(referenceWrapperUser);
+                            user = new GroupchatMemberContainer(referenceWrapperUser);
                         return user;
                     } else {
                         String name = parser.getName();
@@ -57,15 +57,15 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
         return null;
     }
 
-    private GroupchatUserReference parseGroupUserReference(XmlPullParser parser) {
+    private GroupchatMemberReference parseGroupUserReference(XmlPullParser parser) {
         ReferenceElement element = null;
         try {
             element = ReferencesProvider.INSTANCE.parse(parser, parser.getDepth());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (element instanceof GroupchatUserReference) {
-            return (GroupchatUserReference) element;
+        if (element instanceof GroupchatMemberReference) {
+            return (GroupchatMemberReference) element;
         } else {
             return null;
         }

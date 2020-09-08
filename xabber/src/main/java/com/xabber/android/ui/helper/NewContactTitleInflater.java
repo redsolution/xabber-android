@@ -81,14 +81,14 @@ public class NewContactTitleInflater {
 
         // custom notification
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
-                isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getUser()));
+                isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getContactJid()));
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
                 || mode == NotificationState.NotificationMode.byDefault))
             nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom_large), null);
 
         // if it is account, not simple user contact
-        if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
+        if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
         } else {
             avatarView.setImageDrawable(abstractContact.getAvatar());
@@ -103,12 +103,12 @@ public class NewContactTitleInflater {
         boolean isServer = false;
         boolean isBlocked = false;
         boolean isConnected = false;
-        AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
         if (chat != null) {
             isGroupchat = chat instanceof GroupChat;
-            isServer = abstractContact.getUser().getJid().isDomainBareJid();
+            isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
             isBlocked = BlockingManager.getInstance()
-                    .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getUser());
+                    .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
             isConnected = AccountManager.getInstance().getConnectedAccounts()
                     .contains(abstractContact.getAccount());
         }
@@ -169,10 +169,10 @@ public class NewContactTitleInflater {
         else if (isServer) statusText = "Server";
         else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
-                    abstractContact.getAccount(), abstractContact.getUser());
+                    abstractContact.getAccount(), abstractContact.getContactJid());
             if (statusText == null) {
                 if (abstractContact instanceof ChatContact) {
-                    if (PresenceManager.getInstance().hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getUser())) {
+                    if (PresenceManager.getInstance().hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getContactJid())) {
                         //Contact not in our roster, but we have an incoming subscription request
                         statusText = context.getString(R.string.contact_state_incoming_request);
                     } else {
@@ -187,7 +187,7 @@ public class NewContactTitleInflater {
                 } else {
                     //TODO this is way too messy, should do some cleanup later.
                     if (abstractContact instanceof RosterContact) {
-                        SubscriptionState state = RosterManager.getInstance().getSubscriptionState(abstractContact.getAccount(), abstractContact.getUser());
+                        SubscriptionState state = RosterManager.getInstance().getSubscriptionState(abstractContact.getAccount(), abstractContact.getContactJid());
                         switch (state.getSubscriptionType()) {
                             case SubscriptionState.BOTH:
                             case SubscriptionState.TO:
@@ -260,7 +260,7 @@ public class NewContactTitleInflater {
 
 
     private static String getGroupchatStatus(AbstractContact contact, Context context) {
-        Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getUser());
+        Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getContactJid());
         if (groupchatPresence != null && groupchatPresence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
             return StringUtils.getDisplayStatusForGroupchat(
                     groupchatPresence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE),

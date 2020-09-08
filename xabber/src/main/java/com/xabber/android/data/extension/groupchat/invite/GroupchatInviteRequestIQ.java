@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat.invite;
 
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 
 import org.jivesoftware.smack.packet.IQ;
 
@@ -10,7 +10,7 @@ public class GroupchatInviteRequestIQ extends IQ {
 
     public static final String ELEMENT = "invite";
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE;
-    public static final String CHILD_ELEMENT_JID = GroupchatUserExtension.ELEMENT_JID;
+    public static final String CHILD_ELEMENT_JID = GroupchatMemberExtensionElement.ELEMENT_JID;
     public static final String CHILD_ELEMENT_REASON = "reason";
     public static final String CHILD_ELEMENT_SEND = "send";
 

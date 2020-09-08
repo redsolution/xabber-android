@@ -58,7 +58,7 @@ public class ContactTitleInflater {
         nameView.setText(abstractContact.getName());
         if (isForVcard){
             nameView.setVisibility(
-                    abstractContact.getUser().getBareJid().toString().equals(abstractContact.getName()) ?
+                    abstractContact.getContactJid().getBareJid().toString().equals(abstractContact.getName()) ?
                             View.GONE : View.VISIBLE
             );
             if (addressTextView != null) {
@@ -71,7 +71,7 @@ public class ContactTitleInflater {
                 addressTextView.setSelected(true);
             }
             // if it is account, not simple user contact
-            if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
+            if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
                 avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatarNoDefault(abstractContact.getAccount()));
             } else {
                 avatarView.setImageDrawable(abstractContact.getAvatar(false));
@@ -84,7 +84,7 @@ public class ContactTitleInflater {
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap;
                 try {
-                    bitmap = barcodeEncoder.encodeBitmap("xmpp:" + abstractContact.getUser().getBareJid().toString(), BarcodeFormat.QR_CODE, 600, 600);
+                    bitmap = barcodeEncoder.encodeBitmap("xmpp:" + abstractContact.getContactJid().getBareJid().toString(), BarcodeFormat.QR_CODE, 600, 600);
                     Bitmap cropped = Bitmap.createBitmap(bitmap, 50,50,500,500);
                     if (cropped != null) {
                         avatarQRView.setImageBitmap(cropped);
@@ -98,7 +98,7 @@ public class ContactTitleInflater {
         }
         else {
             // if it is account, not simple user contact
-            if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
+            if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
                 avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
             } else {
                 avatarView.setImageDrawable(abstractContact.getAvatar());
@@ -125,9 +125,9 @@ public class ContactTitleInflater {
         boolean isServer = false;
         boolean isGroupchat = false;
         AbstractChat chat = ChatManager.getInstance()
-                .getChat(abstractContact.getAccount(), abstractContact.getUser());
+                .getChat(abstractContact.getAccount(), abstractContact.getContactJid());
         if (chat != null) {
-            isServer = abstractContact.getUser().getJid().isDomainBareJid();
+            isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
             isGroupchat = chat instanceof GroupChat;
         }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
@@ -158,7 +158,7 @@ public class ContactTitleInflater {
         if (isServer) statusText = "Server";
         else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
-                    abstractContact.getAccount(), abstractContact.getUser());
+                    abstractContact.getAccount(), abstractContact.getContactJid());
             if (statusText == null) {
                 statusText = abstractContact.getStatusText().trim();
                 if (statusText.toString().isEmpty()) {

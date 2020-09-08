@@ -26,15 +26,17 @@ public class RegularChatRepository {
 
     private static final String LOG_TAG = RegularChatRepository.class.getSimpleName();
 
-    public static void removeRegularChatFromRealm(RegularChat groupChat){
+    public static void removeRegularChatFromRealm(RegularChat groupChat) {
         Application.getInstance().runInBackground(() -> {
             try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
                 realm.executeTransaction(realm1 -> realm1.where(RegularChatRealmObject.class)
                         .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
-                        .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getUser().getBareJid().toString())
+                        .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getContactJid().getBareJid().toString())
                         .findFirst()
                         .deleteFromRealm());
-            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         });
     }
 
@@ -43,10 +45,10 @@ public class RegularChatRepository {
                                                           int lastPosition, boolean isBlocked,
                                                           boolean isArchived, boolean isHistoryRequestAtStart,
                                                           int unreadCount,
-                                                          ChatNotificationsPreferencesRealmObject notificationsPreferences){
+                                                          ChatNotificationsPreferencesRealmObject notificationsPreferences) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
-            try{
+            try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
 
@@ -106,13 +108,15 @@ public class RegularChatRepository {
 
                 });
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+            } finally {
+                if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
+            }
         });
     }
 
-    public static Collection<RegularChat> getAllRegularChatsFromRealm(){
+    public static Collection<RegularChat> getAllRegularChatsFromRealm() {
         Collection<RegularChat> result = new ArrayList<>();
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -120,7 +124,7 @@ public class RegularChatRepository {
                 .where(RegularChatRealmObject.class)
                 .findAll();
 
-        for (RegularChatRealmObject regularChatRealmObject : realmResults){
+        for (RegularChatRealmObject regularChatRealmObject : realmResults) {
             RegularChat regularChat = new RegularChat(regularChatRealmObject.getAccountJid(), regularChatRealmObject.getContactJid());
             regularChat.setArchivedWithoutRealm(regularChatRealmObject.isArchived());
             regularChat.setLastPosition(regularChatRealmObject.getLastPosition());

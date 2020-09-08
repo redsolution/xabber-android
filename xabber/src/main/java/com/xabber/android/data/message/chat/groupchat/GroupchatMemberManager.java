@@ -1,18 +1,15 @@
 package com.xabber.android.data.message.chat.groupchat;
 
-import android.os.Looper;
-
 import androidx.annotation.IntDef;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.GroupchatMemberRealmObject;
+import com.xabber.android.data.database.repositories.GroupchatMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistQueryIQ;
@@ -39,6 +36,7 @@ import org.jxmpp.jid.BareJid;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class GroupchatMemberManager implements OnLoadListener {
 
@@ -58,66 +53,31 @@ public class GroupchatMemberManager implements OnLoadListener {
     static final int BlockListRequest = 3;
     private static GroupchatMemberManager instance;
     private static Set<GroupchatRequest> groupchatRequests = new ConcurrentSkipListSet<>();
-    private final Map<String, GroupchatMember> users = new HashMap<>();
+    private final Map<String, GroupchatMember> members = new HashMap<>();
 
     public static GroupchatMemberManager getInstance() {
         if (instance == null) instance = new GroupchatMemberManager();
         return instance;
     }
 
-    public static GroupchatMemberRealmObject refUserToRealm(GroupchatUserExtension user, BareJid groupchatJid) {
-        GroupchatMemberRealmObject realmUser = new GroupchatMemberRealmObject(user.getId());
-        realmUser.setNickname(user.getNickname());
-        realmUser.setRole(user.getRole());
-        realmUser.setLastPresent(user.getLastPresent());
-        if (groupchatJid != null) realmUser.setGroupchatJid(groupchatJid.toString());
-        if (user.getJid() != null) realmUser.setJid(user.getJid());
-        if (user.getAvatarInfo() != null) {
-            realmUser.setAvatarHash(user.getAvatarInfo().getId());
-            realmUser.setAvatarUrl(user.getAvatarInfo().getUrl().toString());
-        }
-        if (user.getBadge() != null) realmUser.setBadge(user.getBadge());
-        return realmUser;
-    }
+    public static GroupchatMember getGroupchatMemberFromGroupchatMemberExtensionElement(
+            GroupchatMemberExtensionElement groupchatMemberExtensionElement, BareJid groupchatJid) {
 
-    public static GroupchatMemberRealmObject userToRealmUser(GroupchatMember user) {
-        GroupchatMemberRealmObject realmUser = new GroupchatMemberRealmObject(user.getId());
-        realmUser.setNickname(user.getNickname());
-        realmUser.setRole(user.getRole());
-        realmUser.setLastPresent(user.getLastPresent());
-        if (user.getGroupchatJid() != null) realmUser.setGroupchatJid(user.getGroupchatJid());
-        if (user.getJid() != null) realmUser.setJid(user.getJid());
-        if (user.getAvatarHash() != null) realmUser.setAvatarHash(user.getAvatarHash());
-        if (user.getAvatarUrl() != null) realmUser.setAvatarUrl(user.getAvatarUrl());
-        if (user.getBadge() != null) realmUser.setBadge(user.getBadge());
-        return realmUser;
-    }
+        GroupchatMember user = new GroupchatMember(groupchatMemberExtensionElement.getId());
 
-    public static GroupchatMember refUserToUser(GroupchatUserExtension groupchatUserExtension, BareJid groupchatJid) {
-        GroupchatMember user = new GroupchatMember(groupchatUserExtension.getId());
         if (groupchatJid != null) user.setGroupchatJid(groupchatJid.toString());
-        if (groupchatUserExtension.getAvatarInfo() != null) {
-            user.setAvatarHash(groupchatUserExtension.getAvatarInfo().getId());
-            user.setAvatarUrl(groupchatUserExtension.getAvatarInfo().getUrl().toString());
-        }
-        user.setLastPresent(groupchatUserExtension.getLastPresent());
-        user.setBadge(groupchatUserExtension.getBadge());
-        user.setJid(groupchatUserExtension.getJid());
-        user.setNickname(groupchatUserExtension.getNickname());
-        user.setRole(groupchatUserExtension.getRole());
-        return user;
-    }
 
-    public static GroupchatMember realmUserToUser(GroupchatMemberRealmObject groupchatUser) {
-        GroupchatMember user = new GroupchatMember(groupchatUser.getUniqueId());
-        user.setAvatarHash(groupchatUser.getAvatarHash());
-        user.setAvatarUrl(groupchatUser.getAvatarUrl());
-        user.setLastPresent(groupchatUser.getLastPresent());
-        user.setBadge(groupchatUser.getBadge());
-        user.setJid(groupchatUser.getJid());
-        user.setNickname(groupchatUser.getNickname());
-        user.setRole(groupchatUser.getRole());
-        user.setTimestamp(groupchatUser.getTimestamp());
+        if (groupchatMemberExtensionElement.getAvatarInfo() != null) {
+            user.setAvatarHash(groupchatMemberExtensionElement.getAvatarInfo().getId());
+            user.setAvatarUrl(groupchatMemberExtensionElement.getAvatarInfo().getUrl().toString());
+        }
+
+        user.setLastPresent(groupchatMemberExtensionElement.getLastPresent());
+        user.setBadge(groupchatMemberExtensionElement.getBadge());
+        user.setJid(groupchatMemberExtensionElement.getJid());
+        user.setNickname(groupchatMemberExtensionElement.getNickname());
+        user.setRole(groupchatMemberExtensionElement.getRole());
+
         return user;
     }
 
@@ -178,50 +138,45 @@ public class GroupchatMemberManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<GroupchatMemberRealmObject> users = realm
-                .where(GroupchatMemberRealmObject.class)
-                .findAll();
-        for (GroupchatMemberRealmObject user : users) {
-            this.users.put(user.getUniqueId(), realmUserToUser(user));
+        for (GroupchatMember gm : GroupchatMemberRepository.getAllGroupchatMembersFromRealm()){
+            this.members.put(gm.getId(), gm);
         }
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
-    public GroupchatMember getGroupchatUser(String id) {
-        return users.get(id);
+    public GroupchatMember getGroupchatMemberById(String id) {
+        return members.get(id);
     }
 
-    public void saveGroupchatUser(GroupchatUserExtension user, BareJid groupchatJid) {
+    public Collection<GroupchatMember> getGroupchatMembers(ContactJid groupchatJid){
+        Collection<GroupchatMember> resultList = new ArrayList<>();
+        for (Map.Entry<String, GroupchatMember> entry : members.entrySet()){
+            if (entry.getValue().getGroupchatJid().equals(groupchatJid.toString()))
+                resultList.add(entry.getValue());
+        }
+        return resultList;
+    }
+
+    public Collection<GroupchatMember> getGroupchatMembers(GroupChat groupChat){
+        return getGroupchatMembers(groupChat.getContactJid());
+    }
+
+    public void removeGroupchatMember(String id){
+        members.remove(id);
+        GroupchatMemberRepository.removeGroupchatMemberById(id);
+    }
+
+    public void saveGroupchatUser(GroupchatMemberExtensionElement user, BareJid groupchatJid) {
         saveGroupchatUser(user, groupchatJid, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(GroupchatUserExtension user, BareJid groupchatJid, long timestamp) {
-        if (!users.containsKey(user.getId())) {
-            saveUser(user, groupchatJid, timestamp);
-        } else if (timestamp > users.get(user.getId()).getTimestamp()) {
-            saveUser(user, groupchatJid, timestamp);
-        }
-    }
+    public void saveGroupchatUser(GroupchatMemberExtensionElement user, BareJid groupchatJid,
+                                  long timestamp) {
 
-    private void saveUser(GroupchatUserExtension user, BareJid groupchatJid, long timestamp) {
-        users.put(user.getId(), refUserToUser(user, groupchatJid));
-        saveGroupchatUserToRealm(refUserToRealm(user, groupchatJid), timestamp);
-    }
+        GroupchatMember groupchatMember = getGroupchatMemberFromGroupchatMemberExtensionElement(user,
+                groupchatJid);
 
-    private void saveGroupchatUserToRealm(final GroupchatMemberRealmObject user, final long timestamp) {
-        Application.getInstance().runInBackground(() -> {
-            user.setTimestamp(timestamp);
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(user));
-            } catch (Exception e) {
-                LogManager.exception("GroupchatUserManager", e);
-            } finally {
-                if (realm != null) realm.close();
-            }
-        });
+        members.put(user.getId(), groupchatMember);
+        GroupchatMemberRepository.saveOrUpdateGroupchatMember(groupchatMember);
     }
 
     public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid,
@@ -543,13 +498,13 @@ public class GroupchatMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
-                ArrayList<GroupchatMember> list = ((GroupChat) chat).getMembers();
+                ArrayList<GroupchatMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
                 if (list != null && list.size() > 0) {
                     Application.getInstance().runOnUiThread(() -> {
                         // notify listeners with the locally saved list of members
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatMembersReceived(account, groupchatJid, list);
+                            listener.onGroupchatMembersReceived(account, groupchatJid);
                         }
                     });
                 }
@@ -622,7 +577,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                     Application.getInstance().runOnUiThread(() -> {
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatInvitesReceived(account, groupchatJid, listOfInvites);
+                            listener.onGroupchatInvitesReceived(account, groupchatJid);
                         }
                     });
 
@@ -665,7 +620,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                     Application.getInstance().runOnUiThread(() -> {
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatBlocklistReceived(account, groupchatJid, blockList);
+                            listener.onGroupchatBlocklistReceived(account, groupchatJid);
                         }
                     });
 
@@ -706,30 +661,49 @@ public class GroupchatMemberManager implements OnLoadListener {
         @Override
         public void processStanza(Stanza packet) {
             if (packet instanceof GroupchatMembersResultIQ) {
-                GroupchatMembersResultIQ groupchatMembers = (GroupchatMembersResultIQ) packet;
+                GroupchatMembersResultIQ groupchatMembersIQ = (GroupchatMembersResultIQ) packet;
 
                 if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
                         && account.getBareJid().equals(packet.getTo().asBareJid())) {
 
-                    ArrayList<GroupchatMember> listOfMembers =
-                            new ArrayList<>(groupchatMembers.getListOfMembers().size());
+                    for (GroupchatMemberExtensionElement memberExtension : groupchatMembersIQ.getListOfMembers()) {
+                        String id = memberExtension.getId();
 
-                    for (GroupchatUserExtension userExtension : groupchatMembers.getListOfMembers()) {
-                        listOfMembers.add(GroupchatMemberManager.refUserToUser(userExtension, groupchatJid.getBareJid()));
+                        if (getInstance().members.get(id) == null)
+                            getInstance().members.put(id, new GroupchatMember(id));
+
+                        getInstance().members.get(id).setGroupchatJid(groupchatJid.toString());
+                        if (memberExtension.getRole() != null)
+                            getInstance().members.get(id).setRole(memberExtension.getRole());
+                        if (memberExtension.getNickname() != null)
+                            getInstance().members.get(id).setNickname(memberExtension.getNickname());
+                        if (memberExtension.getBadge() != null)
+                            getInstance().members.get(id).setBadge(memberExtension.getBadge());
+                        if (memberExtension.getJid() != null)
+                            getInstance().members.get(id).setJid(memberExtension.getJid());
+                        if (memberExtension.getLastPresent() != null)
+                            getInstance().members.get(id).setLastPresent(memberExtension.getLastPresent());
+                        if (memberExtension.getAvatarInfo() != null)
+                            getInstance().members.get(id).setAvatarUrl(memberExtension.getAvatarInfo().getUrl().toString());
+
+                        if (memberExtension.getSubscriprion() != null && !memberExtension.getSubscriprion().equals("both")){
+                            getInstance().removeGroupchatMember(id);
+                        }
+
+                        GroupchatMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
+
                     }
 
                     AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
                     if (chat instanceof GroupChat) {
-                        ((GroupChat) chat).setMembers(listOfMembers);
-                        ((GroupChat) chat).setMembersListVersion(groupchatMembers.getQueryVersion());
-                        //chat.requestSaveToRealm();
+                        ((GroupChat) chat).setMembersListVersion(groupchatMembersIQ.getQueryVersion());
+                        ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat);
                     }
 
-                    removeActiveMemberListRequest(account, groupchatJid);
                     Application.getInstance().runOnUiThread(() -> {
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatMembersReceived(account, groupchatJid, listOfMembers);
+                            listener.onGroupchatMembersReceived(account, groupchatJid);
                         }
                     });
                 }

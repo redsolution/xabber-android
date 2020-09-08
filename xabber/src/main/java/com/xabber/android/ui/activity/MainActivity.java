@@ -216,7 +216,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : ChatManager.getInstance().getChats()) {
-            if (check.isActive() && check.getUser().equals(bareAddress)) {
+            if (check.isActive() && check.getContactJid().equals(bareAddress)) {
                 entities.add(check);
             }
         }
@@ -268,7 +268,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     private void openChat(BaseEntity entity, String text) {
-        openChat(entity.getAccount(), entity.getUser(), text);
+        openChat(entity.getAccount(), entity.getContactJid(), text);
     }
 
     @Override
@@ -483,12 +483,12 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
             startActivityForResult(ChatActivity.createSendIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser(), null),
+                    abstractContact.getAccount(), abstractContact.getContactJid(), null),
                     CODE_OPEN_CHAT);
             return;
         }
         startActivityForResult(ChatActivity.createSpecificChatIntent(this,
-                abstractContact.getAccount(), abstractContact.getUser()), CODE_OPEN_CHAT);
+                abstractContact.getAccount(), abstractContact.getContactJid()), CODE_OPEN_CHAT);
     }
 
     @Override

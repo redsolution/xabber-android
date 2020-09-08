@@ -531,7 +531,7 @@ public class ContactActivity extends ManagedActivity implements
 
     private void leaveGroupchat() {
         if (chat instanceof GroupChat) {
-            GroupchatLeaveDialog.newInstance(chat.getAccount(), chat.getUser())
+            GroupchatLeaveDialog.newInstance(chat.getAccount(), chat.getContactJid())
                     .show(getSupportFragmentManager(), GroupchatLeaveDialog.class.getSimpleName());
         }
     }

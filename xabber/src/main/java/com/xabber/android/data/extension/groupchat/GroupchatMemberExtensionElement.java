@@ -5,22 +5,22 @@ import com.xabber.xmpp.avatar.MetadataInfo;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class GroupchatUserExtension implements ExtensionElement {
+public class GroupchatMemberExtensionElement implements ExtensionElement {
 
-    public static final String ELEMENT            = "user";
-    public static final String NAMESPACE          = "http://xabber.com/protocol/groupchat";
-    public static final String ATTR_ID            = "id";
+    public static final String ELEMENT = "user";
+    public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
+    public static final String ATTR_ID = "id";
 
-    public static final String ELEMENT_JID          = "jid";
-    public static final String ELEMENT_NICKNAME     = "nickname";
-    public static final String ELEMENT_ROLE         = "role";
-    public static final String ELEMENT_BADGE        = "badge";
+    public static final String ELEMENT_JID = "jid";
+    public static final String ELEMENT_NICKNAME = "nickname";
+    public static final String ELEMENT_ROLE = "role";
+    public static final String ELEMENT_BADGE = "badge";
     public static final String ELEMENT_SUBSCRIPTION = "subscriprion";
-    public static final String ELEMENT_METADATA     = "metadata";
-    public static final String ELEMENT_PRESENT      = "present";
-    public static final String NAMESPACE_METADATA   = "urn:xmpp:avatar:metadata";
-    public static final String ELEMENT_INFO         = "info";
-    public static final String ATTR_URL             = "url";
+    public static final String ELEMENT_METADATA = "metadata";
+    public static final String ELEMENT_PRESENT = "present";
+    public static final String NAMESPACE_METADATA = "urn:xmpp:avatar:metadata";
+    public static final String ELEMENT_INFO = "info";
+    public static final String ATTR_URL = "url";
 
     private String id;
     private String jid;
@@ -31,7 +31,7 @@ public class GroupchatUserExtension implements ExtensionElement {
     private String subscriprion;
     private MetadataInfo avatar;
 
-    public GroupchatUserExtension(String id, String nickname, String role) {
+    public GroupchatMemberExtensionElement(String id, String nickname, String role) {
         this.id = id;
         this.nickname = nickname;
         this.role = role;
@@ -95,24 +95,16 @@ public class GroupchatUserExtension implements ExtensionElement {
         return xml;
     }
 
-    public void setJid(String jid) {
-        this.jid = jid;
-    }
-
-    public void setBadge(String badge) {
-        this.badge = badge;
-    }
-
-    public void setAvatarInfo(MetadataInfo avatar) {
-        this.avatar = avatar;
-    }
-
     public String getId() {
         return id;
     }
 
     public String getJid() {
         return jid;
+    }
+
+    public void setJid(String jid) {
+        this.jid = jid;
     }
 
     public String getNickname() {
@@ -127,6 +119,10 @@ public class GroupchatUserExtension implements ExtensionElement {
         return badge;
     }
 
+    public void setBadge(String badge) {
+        this.badge = badge;
+    }
+
     public String getLastPresent() {
         return lastPresent;
     }
@@ -137,6 +133,10 @@ public class GroupchatUserExtension implements ExtensionElement {
 
     public MetadataInfo getAvatarInfo() {
         return avatar;
+    }
+
+    public void setAvatarInfo(MetadataInfo avatar) {
+        this.avatar = avatar;
     }
 
     public String getSubscriprion() {

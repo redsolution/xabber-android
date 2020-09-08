@@ -117,7 +117,7 @@ public class ForwardedFragment extends FileInteractionFragment {
                     .findAll();
 
             // groupchat user
-            GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
+            GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
 
             MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                     this, getActivity(), userName, colorStateList, groupchatMember,

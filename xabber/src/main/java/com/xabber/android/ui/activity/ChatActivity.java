@@ -18,15 +18,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -52,7 +49,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
@@ -60,7 +56,6 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -69,9 +64,6 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -90,8 +82,6 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -99,7 +89,6 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -647,7 +636,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
         for (RosterContact contact : entities) {
-            if (contact.getUser().getBareJid().equals(user.getBareJid())) {
+            if (contact.getContactJid().getBareJid().equals(user.getBareJid())) {
                 updateToolbar();
                 return;
             }

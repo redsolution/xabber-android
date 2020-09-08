@@ -15,6 +15,6 @@ public class LastHistoryLoadStartedEvent extends BaseChatEvent {
     }
 
     public ContactJid getUser() {
-        return getEntity().getUser();
+        return getEntity().getContactJid();
     }
 }

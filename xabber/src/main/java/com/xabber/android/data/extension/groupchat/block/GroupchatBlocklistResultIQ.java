@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat.block;
 
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 
 import org.jivesoftware.smack.packet.IQ;
 
@@ -12,11 +12,11 @@ public class GroupchatBlocklistResultIQ extends IQ {
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE
             + GroupchatBlocklistQueryIQ.HASH_BLOCK;
     public static final String ELEMENT = QUERY_ELEMENT;
-    public static final String ELEMENT_JID = GroupchatUserExtension.ELEMENT_JID;
-    public static final String ELEMENT_ID = GroupchatUserExtension.ATTR_ID;
+    public static final String ELEMENT_JID = GroupchatMemberExtensionElement.ELEMENT_JID;
+    public static final String ELEMENT_ID = GroupchatMemberExtensionElement.ATTR_ID;
     public static final String ELEMENT_DOMAIN = "domain";
 
-    public static final String ATTRIBUTE_JID = GroupchatUserExtension.ELEMENT_JID;
+    public static final String ATTRIBUTE_JID = GroupchatMemberExtensionElement.ELEMENT_JID;
     public static final String ATTRIBUTE_NAME = "name";
 
     private ArrayList<GroupchatBlocklistItemElement> blockedItems;

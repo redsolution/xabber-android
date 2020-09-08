@@ -238,8 +238,8 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
         message.addExtension(new ChatStateExtension(ChatState.active));
-        sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
-        cancelPauseIntent(chat.getAccount(), chat.getUser());
+        sent.put(chat.getAccount().toString(), chat.getContactJid().toString(), ChatState.active);
+        cancelPauseIntent(chat.getAccount(), chat.getContactJid());
         cancelComposingSender();
     }
 
@@ -261,7 +261,7 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
 
-        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
+        sent.put(chat.getAccount().toString(), chat.getContactJid().toString(), chatState);
 
         cancelComposingSender();
 
@@ -335,7 +335,7 @@ public class ChatStateManager implements OnDisconnectListener,
         message.addExtension(new ChatStateExtension(ChatState.active));
 
         StanzaSender.sendStanzaAsync(account, message);
-        sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
+        sent.put(chat.getAccount().toString(), chat.getContactJid().toString(), ChatState.active);
     }
     /**
      * Must be call each time user change text message.

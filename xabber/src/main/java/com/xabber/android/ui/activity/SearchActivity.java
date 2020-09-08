@@ -397,7 +397,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : ChatManager.getInstance().getChats()) {
-            if (check.isActive() && check.getUser().equals(bareAddress)) {
+            if (check.isActive() && check.getContactJid().equals(bareAddress)) {
                 entities.add(check);
             }
         }
@@ -451,13 +451,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     }
 
     private void openChat(BaseEntity entity, String text) {
-        openChat(entity.getAccount(), entity.getUser(), text);
+        openChat(entity.getAccount(), entity.getContactJid(), text);
     }
 
     @Override
     public void onContactListItemClick(@NotNull AbstractChat contact) {
         onChatClick(RosterManager.getInstance()
-                .getAbstractContact(contact.getAccount(), contact.getUser()));
+                .getAbstractContact(contact.getAccount(), contact.getContactJid()));
     }
 
     @Override
@@ -465,7 +465,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
 
         if (action == null) {
             startActivityForResult(ChatActivity.createSendIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser(), null), 301);
+                    abstractContact.getAccount(), abstractContact.getContactJid(), null), 301);
             return;
         }
         switch (action) {
@@ -475,13 +475,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     if (getIntent().getExtras() != null) {
                         action = null;
                         startActivity(ChatActivity.createSendUriIntent(this,
-                                abstractContact.getAccount(), abstractContact.getUser(),
+                                abstractContact.getAccount(), abstractContact.getContactJid(),
                                 getIntent().getParcelableExtra(Intent.EXTRA_STREAM)));
                     }
                 } else {
                     action = null;
                     startActivity(ChatActivity.createSendIntent(this,
-                            abstractContact.getAccount(), abstractContact.getUser(), sendText));
+                            abstractContact.getAccount(), abstractContact.getContactJid(), sendText));
                 }
                 finish();
                 break;
@@ -489,7 +489,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                 if (getIntent().getExtras() != null) {
                     action = null;
                     startActivity(ChatActivity.createSendUrisIntent(this,
-                            abstractContact.getAccount(), abstractContact.getUser(),
+                            abstractContact.getAccount(), abstractContact.getContactJid(),
                             getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM)));
                 }
                 finish();
@@ -506,7 +506,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             }
             default:
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser()), 301);
+                        abstractContact.getAccount(), abstractContact.getContactJid()), 301);
                 break;
         }
     }
@@ -515,7 +515,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         ArrayList<String> messages = intent.getStringArrayListExtra(ChatActivity.KEY_MESSAGES_ID);
         if (messages != null)
             startActivity(ChatActivity.createForwardIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser(), messages));
+                    abstractContact.getAccount(), abstractContact.getContactJid(), messages));
     }
 
     private void createShortcut(AbstractContact abstractContact) {

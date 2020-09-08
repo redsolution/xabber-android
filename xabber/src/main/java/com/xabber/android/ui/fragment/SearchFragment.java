@@ -125,10 +125,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         try {
 
             ((SearchActivity) getActivity()).onChatClick(RosterManager.getInstance()
-                    .getAbstractContact(contact.getAccount(), contact.getUser()));
+                    .getAbstractContact(contact.getAccount(), contact.getContactJid()));
 
             RecentSearchRealmObjectRepository
-                    .itemWasSearched(contact.getAccount(), contact.getUser());
+                    .itemWasSearched(contact.getAccount(), contact.getContactJid());
 
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
@@ -140,10 +140,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         try {
 
             ((SearchActivity) getActivity()).onChatClick(RosterManager.getInstance()
-                    .getAbstractContact(contact.getAccount(), contact.getUser()));
+                    .getAbstractContact(contact.getAccount(), contact.getContactJid()));
 
             RecentSearchRealmObjectRepository
-                    .itemWasSearched(contact.getAccount(), contact.getUser());
+                    .itemWasSearched(contact.getAccount(), contact.getContactJid());
 
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
@@ -154,7 +154,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     public void onChatAvatarClick(@NotNull AbstractChat contact) {
         try {
             ((MainActivity) getActivity()).onChatClick(RosterManager.getInstance()
-                    .getAbstractContact(contact.getAccount(), contact.getUser()));
+                    .getAbstractContact(contact.getAccount(), contact.getContactJid()));
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -209,11 +209,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         ArrayList<AbstractChat> onlineChats = new ArrayList<>();
         for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts()) {
             StatusMode statusMode = RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser()).getStatusMode();
+                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getContactJid()).getStatusMode();
             if (abstractChat.getLastMessage() != null
                     && !abstractChat.isArchived()
                     && !(abstractChat instanceof GroupChat)
-                    && !abstractChat.getUser().getJid().isDomainBareJid()
+                    && !abstractChat.getContactJid().getJid().isDomainBareJid()
                     && (statusMode.equals(StatusMode.chat) || statusMode.equals(StatusMode.available)))
                 onlineChats.add(abstractChat);
         }
@@ -226,7 +226,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
             if (abstractChat.getLastMessage() != null
                     && !abstractChat.isArchived()
                     && !(abstractChat instanceof GroupChat)
-                    && !abstractChat.getUser().getJid().isDomainBareJid())
+                    && !abstractChat.getContactJid().getJid().isDomainBareJid())
                 otherChats.add(abstractChat);
         }
 
@@ -354,12 +354,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
                 continue;
 
             String contactName = RosterManager.getInstance()
-                    .getBestContact(abstractChat.getAccount(), abstractChat.getUser())
+                    .getBestContact(abstractChat.getAccount(), abstractChat.getContactJid())
                     .getName()
                     .toLowerCase();
 
-            if (abstractChat.getUser().toString().contains(filterString)
-                    || abstractChat.getUser().toString().contains(transliteratedFilterString)
+            if (abstractChat.getContactJid().toString().contains(filterString)
+                    || abstractChat.getContactJid().toString().contains(transliteratedFilterString)
                     || contactName.contains(filterString)
                     || contactName.contains(transliteratedFilterString))
 
@@ -378,17 +378,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         for (AbstractContact abstractContact : abstractContacts) {
 
             String name = RosterManager.getInstance()
-                    .getBestContact(abstractContact.getAccount(), abstractContact.getUser())
+                    .getBestContact(abstractContact.getAccount(), abstractContact.getContactJid())
                     .getName()
                     .toLowerCase();
 
-            if (abstractContact.getUser().toString().contains(filterString)
-                    || abstractContact.getUser().toString().contains(transliteratedFilterString)
+            if (abstractContact.getContactJid().toString().contains(filterString)
+                    || abstractContact.getContactJid().toString().contains(transliteratedFilterString)
                     || name.contains(filterString)
                     || name.contains(transliteratedFilterString))
 
                 resultCollection.add(new RegularChat(abstractContact.getAccount(),
-                        abstractContact.getUser()));
+                        abstractContact.getContactJid()));
         }
         return resultCollection;
     }
@@ -399,7 +399,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         for (AbstractChat abstractChat : contactsList) {
             boolean isDuplicating = false;
             for (AbstractChat abstractChat1 : chatList)
-                if (abstractChat.getUser() == abstractChat1.getUser()) {
+                if (abstractChat.getContactJid() == abstractChat1.getContactJid()) {
                     isDuplicating = true;
                     break;
                 }

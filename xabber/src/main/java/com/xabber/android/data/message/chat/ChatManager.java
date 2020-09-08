@@ -92,11 +92,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         chatInputs = new NestedMap<>();
 
         for (RegularChat regularChat : RegularChatRepository.getAllRegularChatsFromRealm())
-            chats.put(regularChat.getAccount().toString(), regularChat.getUser().toString(),
+            chats.put(regularChat.getAccount().toString(), regularChat.getContactJid().toString(),
                     regularChat);
 
         for (GroupChat groupChat : GroupchatRepository.getAllGroupchatsFromRealm())
-            chats.put(groupChat.getAccount().toString(), groupChat.getUser().toString(),
+            chats.put(groupChat.getAccount().toString(), groupChat.getContactJid().toString(),
                     groupChat);
     }
 
@@ -205,7 +205,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         EventBus.getDefault().post(new ChatUpdatedEvent());
 
         if (chat instanceof RegularChat){
-            RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getUser(), null,
+            RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getContactJid(), null,
                     chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
                     0, null);
         } else if (chat instanceof GroupChat){
@@ -217,7 +217,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
      * Sets currently visible chat.
      */
     public void setVisibleChat(BaseEntity visibleChat) {
-        this.visibleChat = getChat(visibleChat.getAccount(), visibleChat.getUser());
+        this.visibleChat = getChat(visibleChat.getAccount(), visibleChat.getContactJid());
     }
 
     /**
@@ -309,7 +309,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     public boolean convertRegularToGroup(ContactJid bareAddress, Stanza packet, boolean isCarbons, RegularChat regularChat){
         removeChat(regularChat);
-        return createGroupChat(regularChat.getAccount(), regularChat.getUser()).onPacket(bareAddress, packet, isCarbons);
+        return createGroupChat(regularChat.getAccount(), regularChat.getContactJid()).onPacket(bareAddress, packet, isCarbons);
     }
 
     /**
@@ -318,10 +318,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
      * @param chat
      */
     private void addChat(AbstractChat chat) {
-        if (getChat(chat.getAccount(), chat.getUser()) != null) {
+        if (getChat(chat.getAccount(), chat.getContactJid()) != null) {
             return;
         }
-        chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
+        chats.put(chat.getAccount().toString(), chat.getContactJid().toString(), chat);
 
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
     }
@@ -333,8 +333,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
      */
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
-        LogManager.i(this, "removeChat " + chat.getUser());
-        chats.remove(chat.getAccount().toString(), chat.getUser().toString());
+        LogManager.i(this, "removeChat " + chat.getContactJid());
+        chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
@@ -346,7 +346,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     public void removeChat(AccountJid accountJid, ContactJid contactJid){
         AbstractChat chat = getChat(accountJid, contactJid);
         LogManager.i(this, "removeChat " + contactJid);
-        chats.remove(chat.getAccount().toString(), chat.getUser().toString());
+        chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);

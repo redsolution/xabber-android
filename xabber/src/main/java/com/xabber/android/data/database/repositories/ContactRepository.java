@@ -33,7 +33,7 @@ public class ContactRepository {
         return contacts;
     }
 
-    public static String getBestNameFromRealm(Jid jid){
+    public static String getBestNameFromRealm(Jid jid) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         String name = "";
         ContactRealmObject contact = realm
@@ -67,11 +67,11 @@ public class ContactRepository {
                     List<ContactRealmObject> newContacts = new ArrayList<>();
                     for (RosterContact contact : contacts) {
                         String account = contact.getAccount().getFullJid().asBareJid().toString();
-                        String user = contact.getUser().getBareJid().toString();
+                        String user = contact.getContactJid().getBareJid().toString();
 
                         ContactRealmObject contactRealmObject = realm1
                                 .where(ContactRealmObject.class)
-                                .equalTo(ContactRealmObject.Fields.ID,account + "/" + user)
+                                .equalTo(ContactRealmObject.Fields.ID, account + "/" + user)
                                 .findFirst();
                         if (contactRealmObject == null) {
                             contactRealmObject = new ContactRealmObject();
@@ -93,8 +93,11 @@ public class ContactRepository {
                     }
                     realm1.copyToRealmOrUpdate(newContacts);
                 });
-            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-            finally { if (realm != null) realm.close(); }
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
@@ -106,11 +109,11 @@ public class ContactRepository {
                 realm.executeTransaction(realm1 -> {
                     for (RosterContact contact : contacts) {
                         String accountJid = contact.getAccount().getFullJid().asBareJid().toString();
-                        String contactJid = contact.getUser().getBareJid().toString();
+                        String contactJid = contact.getContactJid().getBareJid().toString();
 
                         ContactRealmObject contactRealmObject = realm1
                                 .where(ContactRealmObject.class)
-                                .equalTo(ContactRealmObject.Fields.ACCOUNT_JID,accountJid)
+                                .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid)
                                 .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
                                 .findFirst();
                         if (contactRealmObject != null)
@@ -119,7 +122,9 @@ public class ContactRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
 
         });
     }
@@ -137,11 +142,13 @@ public class ContactRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
-    public static ContactRealmObject getContactRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid){
+    public static ContactRealmObject getContactRealmObjectFromRealm(AccountJid accountJid, ContactJid contactJid) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         ContactRealmObject contactRealmObject = realm
                 .where(ContactRealmObject.class)

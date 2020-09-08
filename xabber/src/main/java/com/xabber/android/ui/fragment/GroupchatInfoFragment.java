@@ -44,7 +44,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
         GroupchatMembersAdapter.OnMemberClickListener {
@@ -355,62 +354,44 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         }
     }
 
-    private void updateViewsWithMemberList(ArrayList<GroupchatMember> members) {
-
+    private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
-            if (((GroupChat)groupChat).getListOfBlockedElements() != null && ((GroupChat)groupChat).getListOfBlockedElements().size() != 0)
-                membersAdapter.setItems(new ArrayList<>(filterBlocked(members, ((GroupChat)groupChat).getListOfBlockedElements())));
-            else membersAdapter.setItems(members);
-            if (GroupchatMemberManager.checkIfHasActiveMemberListRequest(account, groupchatContact)) {
+            membersAdapter.setItems(new ArrayList<>(GroupchatMemberManager.getInstance().getGroupchatMembers(groupchatContact)));
+            if (GroupchatMemberManager.checkIfHasActiveMemberListRequest(account, groupchatContact))
                 membersProgress.setVisibility(View.VISIBLE);
-            } else {
-                membersProgress.setVisibility(View.GONE);
-            }
+            else membersProgress.setVisibility(View.GONE);
         }
     }
 
-    private Collection<GroupchatMember> filterBlocked(Collection<GroupchatMember> members, Collection<GroupchatBlocklistItemElement> blocklistItemElements){
-        ArrayList<GroupchatMember> newList = new ArrayList<>(members);
-        for (GroupchatMember member : members){
-            for (GroupchatBlocklistItemElement groupchatBlocklistItemElement : ((GroupChat) groupChat ).getListOfBlockedElements()){
-                if (groupchatBlocklistItemElement.getItemType() == GroupchatBlocklistItemElement.ItemType.jid
-                        && groupchatBlocklistItemElement.getBlockedItem().equals(member.getJid()))
-                    newList.remove(member);
-            }
-        }
-        return newList;
+    @Override
+    public void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid) {
+        if (isThisChat(account, groupchatJid))
+            updateViewsWithMemberList();
     }
 
     @Override
-    public void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid, ArrayList<GroupchatMember> listOfMembers) {
-        if (checkIfWrongChat(account, groupchatJid)) return;
-        updateViewsWithMemberList(listOfMembers);
+    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid) {
+        if (isThisChat(account, groupchatJid))
+            updateChatSettings((GroupChat) groupChat);
     }
 
     @Override
-    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid, ArrayList<String> listOfInvites) {
-        if (checkIfWrongChat(account, groupchatJid)) return;
-        updateChatSettings((GroupChat) groupChat);
-    }
-
-    @Override
-    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid, ArrayList<GroupchatBlocklistItemElement> blockList) {
-        if (checkIfWrongChat(account, groupchatJid)) return;
-        updateChatSettings((GroupChat) groupChat);
+    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid) {
+        if (isThisChat(account, groupchatJid))
+            updateChatSettings((GroupChat) groupChat);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
-        if (checkIfWrongChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
-            return;
-        updateChatInfo((GroupChat) groupChat);
+        if (isThisChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
+            updateChatInfo((GroupChat) groupChat);
     }
 
-    private boolean checkIfWrongChat(AccountJid account, ContactJid contactJid) {
-        if (account == null) return true;
-        if (contactJid == null) return true;
-        if (!account.getBareJid().equals(this.account.getBareJid())) return true;
-        return !contactJid.getBareJid().equals(this.groupchatContact.getBareJid());
+    private boolean isThisChat(AccountJid account, ContactJid contactJid) {
+        if (account == null) return false;
+        if (contactJid == null) return false;
+        if (!account.getBareJid().equals(this.account.getBareJid())) return false;
+        return contactJid.getBareJid().equals(this.groupchatContact.getBareJid());
     }
 
     public interface GroupchatSelectorListItemActions {

@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Contact in roster.
  * <p/>
- * {@link #getUser()} always will be bare jid.
+ * {@link #getContactJid()} always will be bare jid.
  *
  * @author alexander.ivanov
  */
@@ -112,7 +112,7 @@ public class RosterContact extends AbstractContact {
 
     @Override
     public StatusMode getStatusMode() {
-        return PresenceManager.getInstance().getStatusMode(account, user);
+        return PresenceManager.getInstance().getStatusMode(account, contactJid);
     }
 
     @Override

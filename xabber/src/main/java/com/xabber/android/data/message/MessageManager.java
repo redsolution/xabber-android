@@ -39,7 +39,7 @@ import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
@@ -554,7 +554,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 newMessageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
 
             // groupchat
-            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+            GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
                 GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());

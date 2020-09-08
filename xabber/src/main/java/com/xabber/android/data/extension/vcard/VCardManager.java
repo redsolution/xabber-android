@@ -133,8 +133,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         // Request vCards for new contacts.
         for (RosterContact contact : accountRosterContacts) {
-            if (!names.containsKey(contact.getUser().getJid())) {
-                request(account, contact.getUser().getJid());
+            if (!names.containsKey(contact.getContactJid().getJid())) {
+                request(account, contact.getContactJid().getJid());
             }
         }
     }

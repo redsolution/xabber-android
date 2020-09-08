@@ -20,7 +20,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 
 class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
@@ -61,7 +60,7 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIv.visibility = View.VISIBLE
             holder.avatarIv.setImageDrawable(RosterManager.getInstance()
-                    .getAbstractContact(items[position].account, items[position].user)
+                    .getAbstractContact(items[position].account, items[position].contactJid)
                     .getAvatar(true))
         } else {
             holder.avatarIv.visibility = View.GONE
@@ -69,20 +68,20 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
         /* Setup roster status */
         var statusLevel = RosterManager.getInstance()
-                .getAbstractContact(items[position].account, items[position].user)
+                .getAbstractContact(items[position].account, items[position].contactJid)
                 .statusMode
                 .statusLevel
 
-        val isServer = items[position].user.jid.isDomainBareJid
+        val isServer = items[position].contactJid.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(items[position].account, items[position].user)
+                .contactIsBlockedLocally(items[position].account, items[position].contactJid)
         val isVisible = holder.avatarIv.visibility == View.VISIBLE
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(items[position].account)
         val isGroupchat = items[position] is GroupChat
         val rosterContact = RosterManager.getInstance()
-                .getRosterContact(items[position].account, items[position].user)
+                .getRosterContact(items[position].account, items[position].contactJid)
 
         when {
             isBlocked -> statusLevel = 11
@@ -109,7 +108,7 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
 
         /* Setup name */
         val name = RosterManager.getInstance().getBestContact(items[position].account,
-                items[position].user).name.split(" ")[0]
+                items[position].contactJid).name.split(" ")[0]
         if (AccountManager.getInstance().enabledAccounts.size > 1){
             val spannableString = SpannableString(name)
             val color = ForegroundColorSpan(ColorManager.getInstance().accountPainter

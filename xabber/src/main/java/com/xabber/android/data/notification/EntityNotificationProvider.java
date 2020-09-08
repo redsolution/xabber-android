@@ -36,7 +36,7 @@ public class EntityNotificationProvider<T extends EntityNotificationItem>
     public T get(AccountJid account, ContactJid user) {
         for (T item : items)
             if (item.getAccount().equals(account)
-                    && item.getUser().equals(user))
+                    && item.getContactJid().equals(user))
                 return item;
         return null;
     }

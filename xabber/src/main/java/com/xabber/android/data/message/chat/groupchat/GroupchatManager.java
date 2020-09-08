@@ -94,6 +94,11 @@ public class GroupchatManager implements OnPacketListener {
 
             GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
 
+            if (groupChat == null) {
+                LogManager.e(LOG_TAG, "Got the groupchat presence, but groupchat isn't exist yet");
+                return;
+            }
+
             if (presence.getPinnedMessageId() != null
                     && !presence.getPinnedMessageId().isEmpty()
                     && !presence.getPinnedMessageId().equals("0")){
@@ -103,7 +108,7 @@ public class GroupchatManager implements OnPacketListener {
 
                     NextMamManager.getInstance().requestSingleMessageAsync(connection,
                             groupChat, presence.getPinnedMessageId());
-                } else groupChat.setPinnedMessage(pinnedMessage);
+                } else groupChat.setPinnedMessageId(presence.getPinnedMessageId());
             }
 
             groupChat.setDescription(presence.getDescription());
@@ -218,14 +223,14 @@ public class GroupchatManager implements OnPacketListener {
                     namedElements.add(new GroupchatMembershipTypeNamedElement(membershipType.toXml()));
 
                 if (pinnedMessageId != null
-                        && !groupchat.getPinnedMessage().getStanzaId().equals(pinnedMessageId))
+                        && !groupchat.getPinnedMessageId().equals(pinnedMessageId))
                     namedElements.add(new GroupchatPinnedMessageElement(pinnedMessageId));
 
 
                 if (namedElements.size() != 0){
 
                     GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupchat.getAccount().getFullJid(),
-                            groupchat.getUser().getBareJid(), namedElements);
+                            groupchat.getContactJid().getBareJid(), namedElements);
 
                     AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
                             .sendIqWithResponseCallback(iq, packet -> {
@@ -257,7 +262,7 @@ public class GroupchatManager implements OnPacketListener {
                         new GroupchatPinnedMessageElement("");
 
                 GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupChat.getAccount().getFullJid(),
-                        groupChat.getUser().getJid(), groupchatPinnedMessageElement);
+                        groupChat.getContactJid().getJid(), groupchatPinnedMessageElement);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {

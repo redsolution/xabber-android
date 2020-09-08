@@ -176,7 +176,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public RealmResults<MessageRealmObject> getMessages() {
         if (messages == null) {
-            messages = MessageRepository.getChatMessages(account, user);
+            messages = MessageRepository.getChatMessages(account, contactJid);
             updateLastMessage();
 
             messages.addChangeListener(this);
@@ -403,7 +403,7 @@ public abstract class AbstractChat extends BaseEntity implements
         MessageRealmObject messageRealmObject = new MessageRealmObject(uid);
 
         messageRealmObject.setAccount(account);
-        messageRealmObject.setUser(user);
+        messageRealmObject.setUser(contactJid);
 
         if (resource == null) {
             messageRealmObject.setResource(Resourcepart.EMPTY);
@@ -448,7 +448,7 @@ public abstract class AbstractChat extends BaseEntity implements
             NotificationManager.getInstance().onMessageNotification(messageRealmObject);
 
         // remove notifications if get outgoing message with 2 sec delay
-        if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
+        if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, contactJid);
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
@@ -491,7 +491,7 @@ public abstract class AbstractChat extends BaseEntity implements
             }
 
             messageRealmObject.setAccount(account);
-            messageRealmObject.setUser(user);
+            messageRealmObject.setUser(contactJid);
             messageRealmObject.setOriginalFrom(account.toString());
             messageRealmObject.setText(FileMessageVH.UPLOAD_TAG);
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
@@ -556,7 +556,7 @@ public abstract class AbstractChat extends BaseEntity implements
      * @return Whether chat accepts packets from specified user.
      */
     private boolean accept(ContactJid jid) {
-        return this.user.equals(jid);
+        return this.contactJid.equals(jid);
     }
 
     @Nullable
@@ -593,7 +593,7 @@ public abstract class AbstractChat extends BaseEntity implements
         MessageRealmObject lastMessage = bgRealm
                 .where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, user.toString())
+                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.TEXT)
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
@@ -823,7 +823,7 @@ public abstract class AbstractChat extends BaseEntity implements
                     RealmResults<MessageRealmObject> messagesToSend = realm1
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                            .equalTo(MessageRealmObject.Fields.USER, user.toString())
+                            .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
                             .equalTo(MessageRealmObject.Fields.SENT, false)
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
                             .findAll();
@@ -1021,7 +1021,7 @@ public abstract class AbstractChat extends BaseEntity implements
                     iterator.remove();
                 }
             }
-            EventBus.getDefault().post(new MessageUpdateEvent(account, user));
+            EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
         });
     }
 
@@ -1030,8 +1030,8 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
-        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, user,
+        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
+        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,
                 trySendDisplay);
     }
 
@@ -1058,7 +1058,7 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
+        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
         BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
     }
 
@@ -1121,7 +1121,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
         if (notificationState.getMode() == NotificationState.NotificationMode.disabled
                 && needSaveToRealm)
-            NotificationManager.getInstance().removeMessageNotification(account, user);
+            NotificationManager.getInstance().removeMessageNotification(account, contactJid);
 
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }

@@ -102,8 +102,8 @@ public class LastActivityInteractor implements OnPacketListener {
         Iterator<RosterContact> iterator = rosterItemIterators.get(account);
         if (iterator != null && iterator.hasNext()) {
             RosterContact contact = iterator.next();
-            requestedLastActivity.put(account, contact.getUser());
-            requestLastActivityAsync(account, contact.getUser());
+            requestedLastActivity.put(account, contact.getContactJid());
+            requestLastActivityAsync(account, contact.getContactJid());
         } else {
             rosterItemIterators.remove(account);
             LogManager.d("timeCount/iterativeRequest", "finished getting last activity, time since connected = "

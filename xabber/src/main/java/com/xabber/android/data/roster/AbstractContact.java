@@ -44,24 +44,24 @@ public class AbstractContact extends BaseEntity {
      * @return Verbose name.
      */
     public String getName() {
-        String vCardName = VCardManager.getInstance().getName(user.getJid());
+        String vCardName = VCardManager.getInstance().getName(contactJid.getJid());
 
         if (!"".equals(vCardName))
             return vCardName;
 
-        return user.toString();
+        return contactJid.toString();
     }
 
     public StatusMode getStatusMode() {
-        return PresenceManager.getInstance().getStatusMode(account, user);
+        return PresenceManager.getInstance().getStatusMode(account, contactJid);
     }
 
     public boolean isSubscribed() {
-        return RosterManager.getInstance().accountIsSubscribedTo(account, user);
+        return RosterManager.getInstance().accountIsSubscribedTo(account, contactJid);
     }
 
     public String getStatusText() {
-        final String statusText = PresenceManager.getInstance().getStatusText(account, user);
+        final String statusText = PresenceManager.getInstance().getStatusText(account, contactJid);
         if (statusText == null) {
             return "";
         } else {
@@ -79,9 +79,9 @@ public class AbstractContact extends BaseEntity {
 
     public Drawable getAvatar(boolean isDefaultAvatarAccepted) {
         if (isDefaultAvatarAccepted)
-            return AvatarManager.getInstance().getUserAvatarForContactList(user, getName());
+            return AvatarManager.getInstance().getUserAvatarForContactList(contactJid, getName());
         else
-            return AvatarManager.getInstance().getUserAvatarForVcard(user);
+            return AvatarManager.getInstance().getUserAvatarForVcard(contactJid);
     }
 
     /**

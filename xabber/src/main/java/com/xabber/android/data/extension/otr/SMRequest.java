@@ -36,10 +36,10 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), account, user);
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), account, contactJid);
         intent.putExtra(ChatActivity.EXTRA_OTR_REQUEST, true);
         intent.putExtra(ChatActivity.KEY_ACCOUNT, account.toString());
-        intent.putExtra(ChatActivity.KEY_USER, user.toString());
+        intent.putExtra(ChatActivity.KEY_USER, contactJid.toString());
         intent.putExtra(ChatActivity.KEY_QUESTION, question);
         return intent;
     }
@@ -51,7 +51,7 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public String getText() {
-        return RosterManager.getInstance().getName(account, user);
+        return RosterManager.getInstance().getName(account, contactJid);
     }
 
 }

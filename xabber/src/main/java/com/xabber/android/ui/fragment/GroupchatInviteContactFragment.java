@@ -211,7 +211,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
                 }
-                users.put(abstractChat.getUser(), abstractChat);
+                users.put(abstractChat.getContactJid(), abstractChat);
             }
         }
 
@@ -298,20 +298,20 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
                     boolean isGroupchat = ChatManager.getInstance().getChat(contact.getAccount(),
-                            contact.getUser()) instanceof GroupChat;
-                    boolean isServer = contact.getUser().getJid().isDomainBareJid();
+                            contact.getContactJid()) instanceof GroupChat;
+                    boolean isServer = contact.getContactJid().getJid().isDomainBareJid();
 
                     if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()){
                         String filter = filterEt.getText().toString();
                         String transliteratedFilterString = StringUtils.translitirateToLatin(filter);
 
                         String contactName = RosterManager.getInstance()
-                                .getBestContact(contact.getAccount(), contact.getUser())
+                                .getBestContact(contact.getAccount(), contact.getContactJid())
                                 .getName()
                                 .toLowerCase();
 
-                        if (contact.getUser().toString().contains(filter)
-                                || contact.getUser().toString().contains(transliteratedFilterString)
+                        if (contact.getContactJid().toString().contains(filter)
+                                || contact.getContactJid().toString().contains(transliteratedFilterString)
                                 || contactName.contains(filter)
                                 || contactName.contains(transliteratedFilterString)){
                             if (!isGroupchat && !isServer)

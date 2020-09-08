@@ -75,6 +75,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
@@ -670,8 +671,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setupPinnedMessageView(){
         //todo privilege checking
-        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessage() != null){
-            MessageRealmObject message = ((GroupChat)getChat()).getPinnedMessage();
+        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null){
+            MessageRealmObject message = MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
 
             pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
                     .sendUnPinMessageRequest((GroupChat)getChat()));
@@ -682,9 +683,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                if (GroupchatMemberManager.getInstance().getGroupchatUser(message.getGroupchatUserId()) != null){
+                if (GroupchatMemberManager.getInstance().getGroupchatMemberById(message.getGroupchatUserId()) != null){
                     pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
-                            .getGroupchatUser(message.getGroupchatUserId()).getBestName());
+                            .getGroupchatMemberById(message.getGroupchatUserId()).getBestName());
                 } else {
                     pinnedMessageHeaderTv.setText(message.getUser().toString());
                 }
@@ -701,7 +702,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
 
             GroupchatMember member = GroupchatMemberManager.getInstance()
-                    .getGroupchatUser(message.getGroupchatUserId());
+                    .getGroupchatMemberById(message.getGroupchatUserId());
             if (member != null){
                 if (member.getBadge() != null){
                     pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
@@ -1491,7 +1492,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     public boolean isEqual(BaseEntity chat) {
-        return chat != null && this.account.equals(chat.getAccount()) && this.user.equals(chat.getUser());
+        return chat != null && this.account.equals(chat.getAccount()) && this.user.equals(chat.getContactJid());
     }
 
     public void setInputText(String additional) {

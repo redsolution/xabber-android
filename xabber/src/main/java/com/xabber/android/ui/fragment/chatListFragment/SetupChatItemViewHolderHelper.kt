@@ -65,7 +65,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
             holder.avatarIV.setImageDrawable(RosterManager.getInstance()
-                    .getAbstractContact(chat.account, chat.user)
+                    .getAbstractContact(chat.account, chat.contactJid)
                     .getAvatar(true))
         } else {
             holder.avatarIV.visibility = View.GONE
@@ -74,18 +74,18 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupRosterStatus(holder: ChatViewHolder, chat: AbstractChat) {
         var statusLevel = RosterManager.getInstance()
-                .getAbstractContact(chat.account, chat.user).statusMode.statusLevel
+                .getAbstractContact(chat.account, chat.contactJid).statusMode.statusLevel
         holder.rosterStatus = statusLevel
 
-        val isServer = chat.user.jid.isDomainBareJid
+        val isServer = chat.contactJid.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(chat.account, chat.user)
+                .contactIsBlockedLocally(chat.account, chat.contactJid)
         val isVisible = holder.avatarIV.visibility == View.VISIBLE
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(chat.account)
         val isGroupchat = chat is GroupChat
-        val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.user)
+        val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.contactJid)
         val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)
 
@@ -136,14 +136,14 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         holder.contactNameTV.text = RosterManager.getInstance()
-                .getBestContact(chat.account, chat.user).name
+                .getBestContact(chat.account, chat.contactJid).name
     }
 
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, chat: AbstractChat) {
 
         val resources = holder.itemView.context.resources
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
-                .isPrefsExist(Key.createKey(chat.account, chat.user))
+                .isPrefsExist(Key.createKey(chat.account, chat.contactJid))
         var iconId: Int
         val mode = chat.notificationState.determineModeByGlobalSettings()
 
@@ -206,9 +206,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text.isNullOrEmpty()) {
 
-            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null) {
+            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
                 val chatState = ChatStateManager.getInstance()
-                        .getFullChatStateString(chat.account, chat.user)
+                        .getFullChatStateString(chat.account, chat.contactJid)
                 holder.messageTextTV.text = if (holder.accountColorIndicator != null)
                     Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
                 else chatState
@@ -235,9 +235,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
                 holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             } else {
-                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.user) != null) {
+                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
                     val chatState = ChatStateManager.getInstance()
-                            .getFullChatStateString(chat.account, chat.user)
+                            .getFullChatStateString(chat.account, chat.contactJid)
                     holder.messageTextTV.text = if (holder.accountColorIndicator != null)
                         Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
                     else chatState

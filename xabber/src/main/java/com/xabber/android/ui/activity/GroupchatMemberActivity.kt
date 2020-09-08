@@ -81,7 +81,7 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         fun createIntentForGroupchatAndMemberId(context: Context, groupchatMemberId: String, groupchat: GroupChat) : Intent{
             val intent = Intent(context, GroupchatMemberActivity::class.java)
             intent.putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
-            intent.putExtra(GROUPCHAT_JID, groupchat.user.toString())
+            intent.putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
             intent.putExtra(ACCOUNT_JID, groupchat.account.toString())
             return intent
         }
@@ -89,7 +89,7 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
+        groupchatMember = GroupchatMemberManager.getInstance().getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID))
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
@@ -176,8 +176,6 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         findViewById<TextView>(R.id.name).text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
-        if (groupchatMember!!.statusMode != null)
-            findViewById<ImageView>(R.id.ivStatusGroupchat).setImageLevel(groupchatMember!!.statusMode.statusLevel)
     }
 
     private fun setupAvatar(){

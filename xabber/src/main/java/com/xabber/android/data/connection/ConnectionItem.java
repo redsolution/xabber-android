@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -28,9 +28,7 @@ import com.xabber.android.data.roster.AccountRosterListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
@@ -48,27 +46,25 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public abstract class ConnectionItem {
 
+    public static long defaultReplyTimeout = 30000; // in ms
+    final String logTag;
     @NonNull
     private final AccountJid account;
-
-    final String logTag;
-
     /**
      * Connection options.
      */
     @NonNull
     private final ConnectionSettings connectionSettings;
-
     @NonNull
     private final com.xabber.android.data.connection.ConnectionListener connectionListener;
-
+    @NonNull
+    private final AccountRosterListener rosterListener;
     /**
      * XMPP connection.
      */
     @NonNull
     XMPPTCPConnection connection;
-    public static long defaultReplyTimeout = 30000; // in ms
-
+    Toast toast;
     /**
      * Current state.
      */
@@ -77,12 +73,21 @@ public abstract class ConnectionItem {
      * Whether the connection is outdated or not and needs to be recreated
      */
     private boolean connectionIsOutdated;
-
-    @NonNull
-    private final AccountRosterListener rosterListener;
-    Toast toast;
-
     private ConnectionThread connectionThread;
+    private StanzaListener everyStanzaListener = stanza -> Application.getInstance().runOnUiThread(() -> {
+        for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
+            listener.onStanza(ConnectionItem.this, stanza);
+        }
+    });
+    private PingFailedListener pingFailedListener = new PingFailedListener() {
+        @Override
+        public void pingFailed() {
+            LogManager.i(this, "pingFailed for " + getAccount());
+            updateState(ConnectionState.offline);
+            disconnect();
+        }
+    };
+
 
     public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
@@ -115,7 +120,6 @@ public abstract class ConnectionItem {
 
         return connection;
     }
-
 
     @NonNull
     public AccountJid getAccount() {
@@ -151,7 +155,7 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        if(getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting) {
+        if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting) {
             // if we wanted to connect during the disconnection process, we
             // need to make sure our connection settings aren't outdated.
             checkIfConnectionIsOutdated();
@@ -293,7 +297,7 @@ public abstract class ConnectionItem {
 
         this.state = newState;
 
-        LogManager.i(logTag, "updateState. prev " + prevState + " new "  + newState);
+        LogManager.i(logTag, "updateState. prev " + prevState + " new " + newState);
 
         return prevState != state;
     }
@@ -315,40 +319,20 @@ public abstract class ConnectionItem {
 
     public void refreshPingFailedListener(boolean register) {
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
-        if (register) PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+        if (register)
+            PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
     }
-
-    private StanzaListener everyStanzaListener = new StanzaListener() {
-        @Override
-        public void processStanza(final Stanza stanza) throws SmackException.NotConnectedException {
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
-                        listener.onStanza(ConnectionItem.this, stanza);
-                    }
-                }
-            });
-        }
-    };
-
-    private PingFailedListener pingFailedListener = new PingFailedListener() {
-        @Override
-        public void pingFailed() {
-            LogManager.i(this, "pingFailed for " + getAccount());
-            updateState(ConnectionState.offline);
-            disconnect();
-        }
-    };
 
     public static class ConnectionStateChangedEvent {
         ConnectionState connectionState;
 
-        ConnectionStateChangedEvent(ConnectionState connectionState){
+        ConnectionStateChangedEvent(ConnectionState connectionState) {
             this.connectionState = connectionState;
         }
 
-        public ConnectionState getConnectionState() { return connectionState; }
+        public ConnectionState getConnectionState() {
+            return connectionState;
+        }
     }
 
 }

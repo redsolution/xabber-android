@@ -541,8 +541,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onChatItemSwiped(@NotNull AbstractChat abstractContact) {
         AbstractChat abstractChat = ChatManager.getInstance()
-                .getChat(abstractContact.getAccount(), abstractContact.getUser());
-        ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+                .getChat(abstractContact.getAccount(), abstractContact.getContactJid());
+        ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid())
                 .setArchived(!abstractChat.isArchived());
         showSnackbar(abstractContact, currentChatsState);
         update();
@@ -553,7 +553,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Intent intent;
         try {
             intent = ContactViewerActivity.createIntent(getActivity(), item.getAccount(),
-                    item.getUser());
+                    item.getContactJid());
             getActivity().startActivity(intent);
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
@@ -571,7 +571,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onChatItemContextMenu(ContextMenu menu, AbstractChat contact) {
         try {
             AbstractContact abstractContact = RosterManager.getInstance()
-                    .getAbstractContact(contact.getAccount(), contact.getUser());
+                    .getAbstractContact(contact.getAccount(), contact.getContactJid());
             ContextMenuHelper.createContactContextMenu(getActivity(), this,
                     abstractContact, menu);
         } catch (Exception e) {
@@ -589,7 +589,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onChatItemClick(AbstractChat item) {
         try {
             chatListFragmentListener.onChatClick(RosterManager.getInstance()
-                    .getAbstractContact(item.getAccount(), item.getUser()));
+                    .getAbstractContact(item.getAccount(), item.getContactJid()));
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }
@@ -651,7 +651,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         for (AbstractChat abstractChat : contactsList) {
             boolean isDuplicating = false;
             for (AbstractChat abstractChat1 : chatList)
-                if (abstractChat.getUser() == abstractChat1.getUser()) {
+                if (abstractChat.getContactJid() == abstractChat1.getContactJid()) {
                     isDuplicating = true;
                     break;
                 }
@@ -698,11 +698,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Collection<AbstractChat> resultCollection = new ArrayList<>();
         for (AbstractChat abstractChat : abstractChats) {
             AbstractContact abstractContact = RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
+                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getContactJid());
             if (abstractChat.getLastMessage() == null)
                 continue;
-            if (abstractChat.getUser().toString().contains(filterString)
-                    || abstractChat.getUser().toString().contains(transliteratedFilterString)
+            if (abstractChat.getContactJid().toString().contains(filterString)
+                    || abstractChat.getContactJid().toString().contains(transliteratedFilterString)
                     || abstractContact.getName().contains(filterString)
                     || abstractContact.getName().contains(transliteratedFilterString))
                 resultCollection.add(abstractChat);
@@ -716,12 +716,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Collection<AbstractChat> resultCollection = new ArrayList<>();
         for (AbstractContact abstractContact : abstractContacts) {
 
-            if (abstractContact.getUser().toString().contains(filterString)
-                    || abstractContact.getUser().toString().contains(transliteratedFilterString)
+            if (abstractContact.getContactJid().toString().contains(filterString)
+                    || abstractContact.getContactJid().toString().contains(transliteratedFilterString)
                     || abstractContact.getName().contains(filterString)
                     || abstractContact.getName().contains(transliteratedFilterString))
                 resultCollection.add(new RegularChat(abstractContact.getAccount(),
-                        abstractContact.getUser()));
+                        abstractContact.getContactJid()));
         }
         return resultCollection;
     }
@@ -744,7 +744,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private void showSnackbar(final AbstractChat deletedItem, final ChatListState previousState) {
         if (snackbar != null) snackbar.dismiss();
         final AbstractChat abstractChat = ChatManager.getInstance()
-                .getChat(deletedItem.getAccount(), deletedItem.getUser());
+                .getChat(deletedItem.getAccount(), deletedItem.getContactJid());
         final boolean archived = abstractChat.isArchived();
         snackbar = Snackbar.make(coordinatorLayout,
                 !archived ? R.string.chat_was_unarchived : R.string.chat_was_archived, Snackbar.LENGTH_LONG);

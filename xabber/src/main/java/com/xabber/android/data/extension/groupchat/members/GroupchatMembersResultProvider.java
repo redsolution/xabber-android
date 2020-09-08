@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.members;
 
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.MetadataProvider;
 
@@ -15,7 +15,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
     @Override
     public GroupchatMembersQueryIQ parse(XmlPullParser parser, int initialDepth) throws Exception {
         GroupchatMembersResultIQ resultIQ = new GroupchatMembersResultIQ();
-        Collection<GroupchatUserExtension> listOfMembers = new ArrayList<>();
+        Collection<GroupchatMemberExtensionElement> listOfMembers = new ArrayList<>();
 
         outerloop:
         while (true) {
@@ -33,8 +33,8 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
 
                             parser.next();
                             break;
-                        case GroupchatUserExtension.ELEMENT:
-                            GroupchatUserExtension member = parseUser(parser);
+                        case GroupchatMemberExtensionElement.ELEMENT:
+                            GroupchatMemberExtensionElement member = parseUser(parser);
                             if (member != null) listOfMembers.add(member);
                             parser.next();
                             break;
@@ -56,7 +56,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
         return resultIQ;
     }
 
-    private GroupchatUserExtension parseUser(XmlPullParser parser) throws Exception {
+    private GroupchatMemberExtensionElement parseUser(XmlPullParser parser) throws Exception {
         String id = null;
         String jid = null;
         String nickname = null;
@@ -71,30 +71,30 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
-                        case GroupchatUserExtension.ELEMENT:
-                            id = parser.getAttributeValue("", GroupchatUserExtension.ATTR_ID);
+                        case GroupchatMemberExtensionElement.ELEMENT:
+                            id = parser.getAttributeValue("", GroupchatMemberExtensionElement.ATTR_ID);
                             parser.next();
                             break;
-                        case GroupchatUserExtension.ELEMENT_JID:
+                        case GroupchatMemberExtensionElement.ELEMENT_JID:
                             jid = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_BADGE:
+                        case GroupchatMemberExtensionElement.ELEMENT_BADGE:
                             badge = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_NICKNAME:
+                        case GroupchatMemberExtensionElement.ELEMENT_NICKNAME:
                             nickname = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_ROLE:
+                        case GroupchatMemberExtensionElement.ELEMENT_ROLE:
                             role = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_PRESENT:
+                        case GroupchatMemberExtensionElement.ELEMENT_PRESENT:
                             present = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_SUBSCRIPTION:
+                        case GroupchatMemberExtensionElement.ELEMENT_SUBSCRIPTION:
                             subscription = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_METADATA:
-                            if (GroupchatUserExtension.NAMESPACE_METADATA.equals(parser.getNamespace()))
+                        case GroupchatMemberExtensionElement.ELEMENT_METADATA:
+                            if (GroupchatMemberExtensionElement.NAMESPACE_METADATA.equals(parser.getNamespace()))
                                 avatar = parseAvatar(parser);
                             parser.next();
                             break;
@@ -103,7 +103,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
                     }
                     break;
                 case XmlPullParser.END_TAG:
-                    if (GroupchatUserExtension.ELEMENT.equals(parser.getName())) {
+                    if (GroupchatMemberExtensionElement.ELEMENT.equals(parser.getName())) {
                         break outerloop;
                     } else parser.next();
                     break;
@@ -112,7 +112,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
             }
         }
         if (id != null && nickname != null && role != null) {
-            GroupchatUserExtension user = new GroupchatUserExtension(id, nickname, role);
+            GroupchatMemberExtensionElement user = new GroupchatMemberExtensionElement(id, nickname, role);
             user.setBadge(badge);
             user.setJid(jid);
             user.setLastPresent(present);
@@ -125,7 +125,7 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
     private MetadataInfo parseAvatar(XmlPullParser parser) throws Exception {
         parser.next();
         if (parser.getEventType() == XmlPullParser.START_TAG) {
-            if (GroupchatUserExtension.ELEMENT_INFO.equals(parser.getName())) {
+            if (GroupchatMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
                 return MetadataProvider.parseInfo(parser);
             }
         }

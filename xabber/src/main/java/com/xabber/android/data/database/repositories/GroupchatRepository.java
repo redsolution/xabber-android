@@ -5,11 +5,8 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +18,7 @@ public class GroupchatRepository {
 
     private static final String LOG_TAG = GroupchatRepository.class.getSimpleName();
 
-    public static void removeGroupChatFromRealm(GroupChat groupChat){
+    public static void removeGroupChatFromRealm(GroupChat groupChat) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -29,21 +26,19 @@ public class GroupchatRepository {
                 realm.executeTransaction(realm1 -> {
                     realm1.where(GroupchatRealmObject.class)
                             .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
-                            .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getUser().getBareJid().toString())
+                            .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getContactJid().getBareJid().toString())
                             .findFirst()
                             .deleteFromRealm();
                 });
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
     public static void saveOrUpdateGroupchatRealmObject(GroupChat groupChat) {
-        String pinnedMessageId = "";
-        if (groupChat.getPinnedMessage() != null )
-            pinnedMessageId = groupChat.getPinnedMessage().getStanzaId();
-        String finalPinnedMessageId = pinnedMessageId;
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -55,12 +50,12 @@ public class GroupchatRepository {
                             .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID,
                                     groupChat.getAccount().toString())
                             .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID,
-                                    groupChat.getUser().getBareJid().toString())
+                                    groupChat.getContactJid().getBareJid().toString())
                             .findFirst();
 
                     if (groupchatRealmObject == null)
                         groupchatRealmObject = new GroupchatRealmObject(groupChat.getAccount(),
-                                groupChat.getUser());
+                                groupChat.getContactJid());
 
                     groupchatRealmObject.setOwner(groupChat.getOwner());
                     groupchatRealmObject.setName(groupChat.getName());
@@ -68,21 +63,9 @@ public class GroupchatRepository {
                     groupchatRealmObject.setIndex(groupChat.getIndexType());
                     groupchatRealmObject.setMembership(groupChat.getMembershipType());
                     groupchatRealmObject.setDescription(groupChat.getDescription());
-                    groupchatRealmObject.setPinnedMessage(realm1.where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.STANZA_ID, finalPinnedMessageId)
-                            .findFirst());
+                    groupchatRealmObject.setPinnedMessageId(groupChat.getPinnedMessageId());
                     groupchatRealmObject.setMembersListVersion(groupChat.getMembersListVersion());
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
-
-                    if (groupChat.getMembers() != null && groupChat.getMembers().size() > 0) {
-//                        RealmList<GroupchatMemberRealmObject> realmMembers = new RealmList<>();
-//                        for (GroupchatMember member : groupChat.getMembers()) {
-//                            realmMembers.add(GroupchatMemberManager.userToRealmUser(member));
-//                        }
-                        groupchatRealmObject.clearMembersIds();
-                        for (GroupchatMember groupchatMember : groupChat.getMembers())
-                            groupchatRealmObject.addMemberId(groupchatMember.getId());
-                    }
 
                     groupchatRealmObject.setCanInvite(groupChat.isCanInvite());
                     groupchatRealmObject.setCanChangeSettings(groupChat.isCanChangeSettings());
@@ -94,8 +77,6 @@ public class GroupchatRepository {
                     groupchatRealmObject.setCanChangeAvatars(groupChat.isCanChangeAvatars());
                     groupchatRealmObject
                             .setNotificationMode(groupChat.getNotificationState().getMode());
-
-                    //todo saving members and variables that i marked as "I dunno what is it"
 
                     realm1.insertOrUpdate(groupchatRealmObject);
                 });
@@ -120,26 +101,12 @@ public class GroupchatRepository {
                 .findAll();
 
         for (GroupchatRealmObject gro : realmObjects) {
-            if (gro.getMembersIds() != null && gro.getMembersIds().size() > 0) {
-                ArrayList<GroupchatMember> listOfMembers = new ArrayList<>(gro.getMembersIds().size());
-                for (String user : gro.getMembersIds()) {
-                    if (GroupchatMemberRepository.getGroupchatMemberRealmObjectById(user) != null)
-                        listOfMembers.add(GroupchatMemberManager.realmUserToUser(GroupchatMemberRepository.getGroupchatMemberRealmObjectById(user)));
-                }
-                list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
-                        gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
-                        gro.getDescription(), gro.getMembersCount(), listOfMembers, gro.getPinnedMessage(),
-                        gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
-                        gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                        gro.isCanBlockUsers(), gro.isCanChangeAvatars()));
-            } else {
-                list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
-                        gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
-                        gro.getDescription(), gro.getMembersCount(), new ArrayList<>(), gro.getPinnedMessage(),
-                        gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
-                        gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                        gro.isCanBlockUsers(), gro.isCanChangeAvatars()));
-            }
+            list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
+                    gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
+                    gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
+                    gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
+                    gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
+                    gro.isCanBlockUsers(), gro.isCanChangeAvatars()));
         }
 
         return list;

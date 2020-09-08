@@ -18,7 +18,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
@@ -300,9 +300,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         for (RosterContact contact : contacts) {
             AbstractChat chat = ChatManager.getInstance()
-                    .getChat(contact.getAccount(), contact.getUser());
+                    .getChat(contact.getAccount(), contact.getContactJid());
             if (chat == null)
-                chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
+                chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
             if (getFirstMessage(chat, realm) == null && !chat.isHistoryRequestedAtStart()) {
                 contactsWithoutHistory.add(contact);
             }
@@ -353,9 +353,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 RosterContact contact = iterator.next();
                 LogManager.d(LOG_TAG, "load last message in " + contact + " chat");
                 AbstractChat chat = ChatManager.getInstance()
-                        .getChat(contact.getAccount(), contact.getUser());
+                        .getChat(contact.getAccount(), contact.getContactJid());
                 if (chat == null)
-                    chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
+                    chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
                 requestLastMessageAsync(accountItem, chat);
             } else {
                 LogManager.d(LOG_TAG, "finished loading first messages of " + accountItem.getAccount());
@@ -369,11 +369,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private void loadLastMessage(Realm realm, AccountItem accountItem, AbstractChat chat) {
-        LogManager.d(LOG_TAG, "load last messages in chat: " + chat.getUser());
+        LogManager.d(LOG_TAG, "load last messages in chat: " + chat.getContactJid());
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, chat);
         if (queryResult != null) {
             List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
-            saveOrUpdateMessages(realm, parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, null));
+            saveOrUpdateMessages(realm, parseMessage(accountItem, chat.getAccount(), chat.getContactJid(), messages, null));
         }
         updateLastMessageId(chat, realm);
     }
@@ -509,11 +509,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private List<MessageRealmObject> parseNewMessagesInChat(ArrayList<Forwarded> chatMessages, AbstractChat chat, AccountItem accountItem) {
         Collections.sort(chatMessages, archiveMessageTimeComparator);
         return new ArrayList<>(parseMessage(accountItem, accountItem.getAccount(),
-                chat.getUser(), chatMessages, chat.getLastMessageId()));
+                chat.getContactJid(), chatMessages, chat.getLastMessageId()));
     }
 
     private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
-        LogManager.d(LOG_TAG, "load next history in chat: " + chat.getUser());
+        LogManager.d(LOG_TAG, "load next history in chat: " + chat.getContactJid());
         MessageRealmObject firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
             if (firstMessage.getArchivedId().equals(firstMessage.getPreviousId())) {
@@ -526,7 +526,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
                 if (!messages.isEmpty()) {
                     List<MessageRealmObject> savedMessages = saveOrUpdateMessages(realm,
-                            parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, null));
+                            parseMessage(accountItem, chat.getAccount(), chat.getContactJid(), messages, null));
 
                     if (savedMessages != null && !savedMessages.isEmpty()) {
                         realm.beginTransaction();
@@ -545,7 +545,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private void loadMissedMessages(Realm realm, AccountItem accountItem, AbstractChat chat, MessageRealmObject m1) {
-        LogManager.d(LOG_TAG, "load missed messages in chat: " + chat.getUser());
+        LogManager.d(LOG_TAG, "load missed messages in chat: " + chat.getContactJid());
         MessageRealmObject m2 = getMessageForCloseMissedMessages(realm, m1);
         if (m2 != null && !m2.getUniqueId().equals(m1.getUniqueId())) {
             Date startDate = new Date(m2.getTimestamp());
@@ -565,7 +565,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             if (!messages.isEmpty()) {
                 List<MessageRealmObject> savedMessages = saveOrUpdateMessages(realm,
-                        parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, m2.getArchivedId()));
+                        parseMessage(accountItem, chat.getAccount(), chat.getContactJid(), messages, m2.getArchivedId()));
 
                 if (savedMessages != null && !savedMessages.isEmpty()) {
                     realm.beginTransaction();
@@ -652,7 +652,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                if (chat != null) return manager.mostRecentPage(chat.getUser().getJid(), 1);
+                if (chat != null) return manager.mostRecentPage(chat.getContactJid().getJid(), 1);
                 else return manager.mostRecentPage(null, 1);
             }
         });
@@ -664,7 +664,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                if (chat != null) return manager.mostRecentPage(chat.getUser().getJid(), 50);
+                if (chat != null) return manager.mostRecentPage(chat.getContactJid().getJid(), 50);
                 else return manager.mostRecentPage(null, 50);
             }
         });
@@ -677,16 +677,16 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 // add request id to waiting list
                 String queryID = UUID.randomUUID().toString();
-                waitingRequests.put(queryID, chat.getUser());
+                waitingRequests.put(queryID, chat.getContactJid());
 
                 // send request stanza
                 RSMSet rsmSet = new RSMSet(null, "", -1, -1, null, 1, null, -1);
                 DataForm dataForm = getNewMamForm();
-                addWithJid(chat.getUser().getJid(), dataForm);
+                addWithJid(chat.getContactJid().getJid(), dataForm);
                 MamQueryIQ mamQueryIQ = new MamQueryIQ(queryID, null, dataForm);
                 mamQueryIQ.setType(IQ.Type.set);
                 if (chat instanceof GroupChat)
-                    mamQueryIQ.setTo(chat.getUser().getBareJid());
+                    mamQueryIQ.setTo(chat.getContactJid().getBareJid());
                 else mamQueryIQ.setTo((Jid) null);
                 mamQueryIQ.addExtension(rsmSet);
                 accountItem.getConnection().sendStanza(mamQueryIQ);
@@ -702,7 +702,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 // add request id to waiting list
                 String queryID = UUID.randomUUID().toString();
-                waitingRequests.put(queryID, chat.getUser());
+                waitingRequests.put(queryID, chat.getContactJid());
 
                 // send request stanza
                 DataForm dataForm = getNewMamForm();
@@ -727,7 +727,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 if (chat != null)
-                    return manager.pageAfter(chat.getUser().getJid(), archivedId, 50);
+                    return manager.pageAfter(chat.getContactJid().getJid(), archivedId, 50);
                 else
                     return manager.pageAfter(null, archivedId, 50);
             }
@@ -741,7 +741,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                return manager.pageBefore(chat.getUser().getJid(), archivedId, 50);
+                return manager.pageBefore(chat.getContactJid().getJid(), archivedId, 50);
             }
         });
     }
@@ -754,7 +754,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                return manager.queryArchive(50, startDate, endDate, chat.getUser().getJid(), null);
+                return manager.queryArchive(50, startDate, endDate, chat.getContactJid().getJid(), null);
             }
         });
     }
@@ -793,7 +793,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             if (chat == null)
                 chat = ChatManager.getInstance().createRegularChat(account, ContactJid.from(user));
 
-            MessageRealmObject messageRealmObject = parseMessage(accountItem, account, chat.getUser(), forwarded, null);
+            MessageRealmObject messageRealmObject = parseMessage(accountItem, account, chat.getContactJid(), forwarded, null);
             if (messageRealmObject != null) {
                 saveOrUpdateMessages(realm, Collections.singletonList(messageRealmObject), true);
                 updateLastMessageId(chat, realm);
@@ -918,7 +918,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setOriginalFrom(message.getFrom().toString());
 
         // groupchat
-        GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
@@ -1041,7 +1041,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     @Nullable private List<MessageRealmObject> findMissedMessages(Realm realm, AbstractChat chat) {
         RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.ARCHIVED_ID)
                 .isNull(MessageRealmObject.Fields.PREVIOUS_ID)
@@ -1079,7 +1079,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private boolean historyIsNotEnough(Realm realm, AbstractChat chat) {
         RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .findAll();
         return results.size() < 30;
@@ -1102,7 +1102,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private MessageRealmObject getFirstMessage(AbstractChat chat, Realm realm) {
         RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.ARCHIVED_ID)
                 .findAll()
@@ -1116,7 +1116,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private MessageRealmObject getFirstMessageForMigration(AbstractChat chat, Realm realm) {
         RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
@@ -1142,7 +1142,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private void updateLastMessageId(AbstractChat chat, Realm realm) {
         RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
@@ -1156,10 +1156,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private MessageRealmObject findSameLocalMessage(Realm realm, AbstractChat chat, MessageRealmObject message) {
-        LogManager.d(LOG_TAG, "Querying Realm for message. Account: " + chat.getAccount().toString() + " User: " + chat.getUser().toString() + "\nIDs: 1) Stanza Id/Origin Id: " + message.getStanzaId() + " 2) Packet Id: " + message.getPacketId() + " 3) ArchiveId: " + message.getArchivedId());
+        LogManager.d(LOG_TAG, "Querying Realm for message. Account: " + chat.getAccount().toString() + " User: " + chat.getContactJid().toString() + "\nIDs: 1) Stanza Id/Origin Id: " + message.getStanzaId() + " 2) Packet Id: " + message.getPacketId() + " 3) ArchiveId: " + message.getArchivedId());
         return realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .equalTo(MessageRealmObject.Fields.TEXT, message.getText())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .beginGroup()
@@ -1189,12 +1189,12 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         for (RosterContact contact : contacts) {
             AbstractChat chat = ChatManager.getInstance()
-                    .getChat(contact.getAccount(), contact.getUser());
+                    .getChat(contact.getAccount(), contact.getContactJid());
 
             MessageRealmObject firstMessage = getFirstMessageForMigration(chat, realm);
             SyncInfoRealmObject syncInfoRealmObject = realm.where(SyncInfoRealmObject.class)
                     .equalTo(SyncInfoRealmObject.FIELD_ACCOUNT, accountItem.getAccount().toString())
-                    .equalTo(SyncInfoRealmObject.FIELD_USER, chat.getUser().toString()).findFirst();
+                    .equalTo(SyncInfoRealmObject.FIELD_USER, chat.getContactJid().toString()).findFirst();
 
             if (firstMessage != null && syncInfoRealmObject != null) {
                 realm.beginTransaction();

@@ -69,7 +69,7 @@ public class ContextMenuHelper {
                                                 AbstractContact abstractContact,
                                                 ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
-        final ContactJid user = abstractContact.getUser();
+        final ContactJid user = abstractContact.getContactJid();
         //menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
         inflater.inflate(R.menu.item_contact, menu);

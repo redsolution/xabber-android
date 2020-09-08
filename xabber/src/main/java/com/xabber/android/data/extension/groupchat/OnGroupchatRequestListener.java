@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 public interface OnGroupchatRequestListener extends BaseUIListener {
 
-    void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid, ArrayList<GroupchatMember> listOfMembers);
+    void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid);
 
-    void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid, ArrayList<String> listOfInvites);
+    void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid);
 
-    void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid, ArrayList<GroupchatBlocklistItemElement> listOfInvites);
+    void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid);
 }

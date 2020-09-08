@@ -210,7 +210,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
                 }
-                users.put(abstractChat.getUser(), abstractChat);
+                users.put(abstractChat.getContactJid(), abstractChat);
             }
         }
 

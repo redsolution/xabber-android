@@ -167,17 +167,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String lastActivity = "";
 
-        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getUser());
+        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
         if (chat == null)
-            chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getUser());
+            chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
             if (chat.getLastActionTimestamp() != null) time = new Date(chat.getLastActionTimestamp());
         } else {
-            if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser()) != null) {
-                String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser());
+            if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid()) != null) {
+                String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
                 messageText = StringUtils.getColoredText(chatState, accountColorIndicatorLight);
             } else if (lastMessage.haveAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
                 AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
@@ -237,17 +237,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         // custom notification
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
-                isPrefsExist(Key.createKey(contact.getAccount(), contact.getUser()));
+                isPrefsExist(Key.createKey(contact.getAccount(), contact.getContactJid()));
 
-        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getUser());
+        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getContactJid());
 
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
                 name, statusText, statusId,
-                statusLevel, avatar, 0, contact.getUser(), contact.getAccount(),
+                statusLevel, avatar, 0, contact.getContactJid(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
                 isCustomNotification, chat instanceof GroupChat,
-                contact.getUser().getJid().isDomainBareJid(), isBlocked);
+                contact.getContactJid().getJid().isDomainBareJid(), isBlocked);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
