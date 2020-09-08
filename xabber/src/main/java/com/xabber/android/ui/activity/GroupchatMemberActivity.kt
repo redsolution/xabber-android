@@ -122,6 +122,9 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
         toolbar?.setNavigationOnClickListener { finish() }
 
+        findViewById<ImageView>(R.id.ivStatus).visibility = View.GONE
+        findViewById<ImageView>(R.id.ivStatusGroupchat).visibility = View.GONE
+
         contactBarLayout = findViewById(R.id.contact_bar_layout)
         contactBarLayout?.setForGroupchatMember()
 
