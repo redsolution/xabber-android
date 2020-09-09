@@ -61,10 +61,14 @@ public class GroupchatMemberRepository {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> realm1.where(GroupchatMemberRealmObject.class)
-                        .equalTo(GroupchatMemberRealmObject.Fields.UNIQUE_ID, id)
-                        .findFirst()
-                        .deleteFromRealm());
+                realm.executeTransaction(realm1 -> {
+                     GroupchatMemberRealmObject gro = realm1.where(GroupchatMemberRealmObject.class)
+                            .equalTo(GroupchatMemberRealmObject.Fields.UNIQUE_ID, id)
+                            .findFirst();
+                     if (gro != null && !"".equals(gro.getUniqueId()))
+                         gro.deleteFromRealm();
+                     else LogManager.e(LOG_TAG, "Tried to delete from realm groupchat member with id " + id + ", but realm hasn't it");
+                });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally {
