@@ -53,7 +53,10 @@ public class NewContactTitleInflater {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
-        nameView.setText(abstractContact.getName());
+        AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
+        if ( chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName()))
+            nameView.setText(((GroupChat)chat).getName());
+        else nameView.setText(abstractContact.getName());
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.contact_list_contact_name_text_color, typedValue, true);
         nameView.setTextColor(typedValue.data);

@@ -158,7 +158,12 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 .getAccountIndicatorBackColor(contact.getAccount());
         avatar = contact.getAvatar();
 
-        String name = contact.getName();
+        String name;
+        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
+        if (chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName()))
+            name = ((GroupChat)chat).getName();
+        else name = contact.getName();
+
 
         statusLevel = contact.getStatusMode().getStatusLevel();
         String messageText;
@@ -167,7 +172,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String lastActivity = "";
 
-        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
         if (chat == null)
             chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
         MessageRealmObject lastMessage = chat.getLastMessage();
