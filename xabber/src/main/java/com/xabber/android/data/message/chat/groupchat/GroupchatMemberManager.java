@@ -670,7 +670,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                         String id = memberExtension.getId();
 
                         if (getInstance().members.get(id) == null)
-                            getInstance().
                             getInstance().members.put(id, new GroupchatMember(id));
 
                         getInstance().members.get(id).setGroupchatJid(groupchatJid.toString());
@@ -684,8 +683,10 @@ public class GroupchatMemberManager implements OnLoadListener {
                             getInstance().members.get(id).setJid(memberExtension.getJid());
                         if (memberExtension.getLastPresent() != null)
                             getInstance().members.get(id).setLastPresent(memberExtension.getLastPresent());
-                        if (memberExtension.getAvatarInfo() != null)
+                        if (memberExtension.getAvatarInfo() != null){
+                            getInstance().members.get(id).setAvatarHash(memberExtension.getAvatarInfo().getId());
                             getInstance().members.get(id).setAvatarUrl(memberExtension.getAvatarInfo().getUrl().toString());
+                        }
 
                         if (memberExtension.getSubscriprion() != null && !memberExtension.getSubscriprion().equals("both")){
                             getInstance().removeGroupchatMember(id);
