@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Não é possível enviar mais de 10 itens de uma vez</string>
     <string name="toast_no_history">Não existem mais mensagens no histórico</string>
     <string name="muc_role_moderator">Moderador</string>
-    <string name="muc_role_participant">Participante</string>
+    <string name="muc_role_member">Participante</string>
     <string name="muc_role_visitor">Visitante</string>
     <string name="toast_archived_show">Mostrar arquivos do bate-papo</string>
     <string name="toast_archived_hide">Arquivos de bate-papo ocultos</string>

@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">您不能一次发送超过10个项目</string>
     <string name="toast_no_history">没有更多的历史消息</string>
     <string name="muc_role_moderator">管理员</string>
-    <string name="muc_role_participant">参与者</string>
+    <string name="muc_role_member">参与者</string>
     <string name="muc_role_visitor">访客</string>
     <string name="toast_archived_show">显示的存档聊天记录</string>
     <string name="toast_archived_hide">隐藏的存档聊天记录</string>

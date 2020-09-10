@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">No puede enviar más de 10 artículos a la vez</string>
     <string name="toast_no_history">No hay más mensajes en el historial</string>
     <string name="muc_role_moderator">Moderador</string>
-    <string name="muc_role_participant">Participante</string>
+    <string name="muc_role_member">Participante</string>
     <string name="muc_role_visitor">Visitante</string>
     <string name="toast_archived_show">Muestra archivo de chats</string>
     <string name="toast_archived_hide">Archivo de chats oculto</string>

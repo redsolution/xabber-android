@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Anda tak bisa mengirim lebih dari 10 item sekaligus</string>
     <string name="toast_no_history">Tidak ada pesan dalam riwayat</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Peserta</string>
+    <string name="muc_role_member">Peserta</string>
     <string name="muc_role_visitor">Pengunjung</string>
     <string name="toast_archived_show">Arsipkan obrolan tertampil</string>
     <string name="toast_archived_hide">Arsipkan obrolan tersembunyi</string>

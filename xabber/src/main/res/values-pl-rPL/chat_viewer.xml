@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Nie możliwe jest wysyłanie więcej niż 10 plików naraz</string>
     <string name="toast_no_history">Niema więcej wiadomości w historii</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Uczestnik</string>
+    <string name="muc_role_member">Uczestnik</string>
     <string name="muc_role_visitor">Odwiedzający</string>
     <string name="toast_archived_show">Archiwum chatów widoczne</string>
     <string name="toast_archived_hide">Archiwum czatów ukryte</string>

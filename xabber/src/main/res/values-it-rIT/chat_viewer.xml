@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Non puoi inviare più di 10 elementi in una sola volta</string>
     <string name="toast_no_history">Non sono presenti ulteriori messaggi nella cronologia</string>
     <string name="muc_role_moderator">Moderatore</string>
-    <string name="muc_role_participant">Partecipante</string>
+    <string name="muc_role_member">Partecipante</string>
     <string name="muc_role_visitor">Visitatore</string>
     <string name="toast_archived_show">Chat archiviate mostrate</string>
     <string name="toast_archived_hide">Chat archiviate nascoste</string>

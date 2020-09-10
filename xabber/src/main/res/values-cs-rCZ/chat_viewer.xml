@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Nemůžete odeslat více než 10 položek najednou</string>
     <string name="toast_no_history">Neexistují žádné další zprávy v historii</string>
     <string name="muc_role_moderator">Moderátor</string>
-    <string name="muc_role_participant">Účastník</string>
+    <string name="muc_role_member">Účastník</string>
     <string name="muc_role_visitor">Návštěvník</string>
     <string name="toast_archived_show">Archív chatů zobrazen</string>
     <string name="toast_archived_hide">Arcvhív chatů skryt</string>

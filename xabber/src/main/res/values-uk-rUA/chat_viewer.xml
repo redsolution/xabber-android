@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Не можна надсилати більше 10 файлів за раз</string>
     <string name="toast_no_history">Немає більше повідомлень у історії</string>
     <string name="muc_role_moderator">Модератор</string>
-    <string name="muc_role_participant">Учасник</string>
+    <string name="muc_role_member">Учасник</string>
     <string name="muc_role_visitor">Відвідувач</string>
     <string name="toast_archived_show">Архівні діалоги відображені</string>
     <string name="toast_archived_hide">Архівні діалоги приховано</string>

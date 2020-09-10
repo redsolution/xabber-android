@@ -105,7 +105,7 @@
     <string name="too_many_files_at_once">لا يمكنك إرسال أكثر من 10 عناصر في وقت واحد</string>
     <string name="toast_no_history">لا يوجد المزيد من الرسائل في التاريخ</string>
     <string name="muc_role_moderator">وسيط</string>
-    <string name="muc_role_participant">مشارك</string>
+    <string name="muc_role_member">مشارك</string>
     <string name="muc_role_visitor">زائر</string>
     <string name="toast_archived_show">الدردشات الأرشيف هو مبين</string>
     <string name="toast_archived_hide">الدردشات الأرشيف مخفية</string>

@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">送信中</string>
     <string name="toast_no_history">履歴にこれ以上メッセージはありません</string>
     <string name="muc_role_moderator">モデレーター</string>
-    <string name="muc_role_participant">参加者</string>
+    <string name="muc_role_member">参加者</string>
     <string name="muc_role_visitor">ビジター</string>
     <string name="toast_archived_show">アーカイブ チャットを表示しました</string>
     <string name="toast_archived_hide">アーカイブ チャットを非表示にしました</string>

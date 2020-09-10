@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Es können max. 10 Anhänge gleichzeitig versendet werden</string>
     <string name="toast_no_history">Es gibt keine weiteren Nachrichten im Verlauf</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Teilnehmer</string>
+    <string name="muc_role_member">Teilnehmer</string>
     <string name="muc_role_visitor">Besucher</string>
     <string name="toast_archived_show">Angezeigte Chats archivieren</string>
     <string name="toast_archived_hide">Verborgene Chats archivieren</string>

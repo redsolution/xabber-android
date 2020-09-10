@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">Lähetetään</string>
     <string name="toast_no_history">Historiassa ei ole enempää viestejä</string>
     <string name="muc_role_moderator">Valvoja</string>
-    <string name="muc_role_participant">Osallistuja</string>
+    <string name="muc_role_member">Osallistuja</string>
     <string name="muc_role_visitor">Kävijä</string>
     <string name="toast_archived_show">Keskustelun arkisto näytetty</string>
     <string name="toast_archived_hide">Keskustelu arkisto piilotettu</string>

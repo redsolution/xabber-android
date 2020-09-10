@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Vous ne pouvez pas envoyer plus de 10 items à la fois</string>
     <string name="toast_no_history">Il n’y a plus aucun message dans l’historique</string>
     <string name="muc_role_moderator">Modérateur</string>
-    <string name="muc_role_participant">Participant</string>
+    <string name="muc_role_member">Participant</string>
     <string name="muc_role_visitor">Visiteur</string>
     <string name="action_copy_link">Copier le lien</string>
     <string name="action_download">Télécharger</string>

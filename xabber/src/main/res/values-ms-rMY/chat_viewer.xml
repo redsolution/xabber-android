@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">Menghantar</string>
     <string name="toast_no_history">Tiada lagi mesej didalam sejarah</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Peserta</string>
+    <string name="muc_role_member">Peserta</string>
     <string name="muc_role_visitor">Pengunjung</string>
     <string name="toast_archived_show">Arkib chat ditunjukkan</string>
     <string name="toast_archived_hide">Arkib chat sembunyi</string>

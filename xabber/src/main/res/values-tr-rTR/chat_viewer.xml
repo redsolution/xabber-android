@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">Gönderiliyor</string>
     <string name="toast_no_history">Orada daha fazla ileti geçmişi de</string>
     <string name="muc_role_moderator">Moderatör</string>
-    <string name="muc_role_participant">Katılımcı</string>
+    <string name="muc_role_member">Katılımcı</string>
     <string name="muc_role_visitor">Ziyaretçi</string>
     <string name="toast_archived_show">Gösterilen sohbetleri arşivle</string>
     <string name="toast_archived_hide">Gizlenen sohbetleri arşivle</string>

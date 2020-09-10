@@ -434,22 +434,22 @@ public class StringUtils {
 
     /**
      *  Returns the text to be displayed in the status area of the groupchat
-     *  with the amount of participants and online members.
+     *  with the amount of members and online members.
      *  Not to be mistaken with the stanza status value.
      */
     public static String getDisplayStatusForGroupchat(GroupchatPresence groupchatPresence, Context context) {
-        int participants = groupchatPresence.getAllMembers();
+        int members = groupchatPresence.getAllMembers();
         int online = groupchatPresence.getPresentMembers();
-        return getDisplayStatusForGroupchat(participants, online, context);
+        return getDisplayStatusForGroupchat(members, online, context);
     }
 
-    public static String getDisplayStatusForGroupchat(int participants, int online, Context context) {
-        if (participants != 0) {
+    public static String getDisplayStatusForGroupchat(int members, int online, Context context) {
+        if (members != 0) {
             StringBuilder sb;
-            if (participants == 1) {
-                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_participant));
+            if (members == 1) {
+                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_member));
             } else {
-                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_participants, participants));
+                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_members, members));
             }
             if (online > 0) {
                 sb.append(context.getString(R.string.contact_groupchat_status_online, online));

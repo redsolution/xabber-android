@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">No podeu enviar més de 10 elements alhora</string>
     <string name="toast_no_history">No hi ha més missatges a la història</string>
     <string name="muc_role_moderator">Moderador</string>
-    <string name="muc_role_participant">Participant</string>
+    <string name="muc_role_member">Participant</string>
     <string name="muc_role_visitor">Visitant</string>
     <string name="toast_archived_show">Arxivar xats mostrats</string>
     <string name="toast_archived_hide">Arxivar xats ocults</string>

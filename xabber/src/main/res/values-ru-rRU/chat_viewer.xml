@@ -128,7 +128,7 @@
     <string name="too_many_files_at_once">Нельзя отправить больше 10 файлов за раз</string>
     <string name="toast_no_history">В истории больше нет сообщений</string>
     <string name="muc_role_moderator">Модератор</string>
-    <string name="muc_role_participant">Участник</string>
+    <string name="muc_role_member">Участник</string>
     <string name="muc_role_visitor">Посетитель</string>
     <string name="toast_archived_show">Архивные диалоги отображены</string>
     <string name="toast_archived_hide">Архивные диалоги скрыты</string>

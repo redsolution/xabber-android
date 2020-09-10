@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Du kan inte skicka fler än 10 filer samtidigt</string>
     <string name="toast_no_history">Det finns inga fler meddelanden i historiken</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Deltagare</string>
+    <string name="muc_role_member">Deltagare</string>
     <string name="muc_role_visitor">Besökare</string>
     <string name="toast_archived_show">Arkiverade chattar visas</string>
     <string name="toast_archived_hide">Arkiverade chattar är dolda</string>

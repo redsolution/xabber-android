@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Δεν μπορείτε να στείλετε περισσότερα από 10 στοιχεία ταυτόχρονα</string>
     <string name="toast_no_history">Δεν υπάρχουν άλλα μηνύματα στο ιστορικό</string>
     <string name="muc_role_moderator">Επόπτης</string>
-    <string name="muc_role_participant">Συμμετέχων</string>
+    <string name="muc_role_member">Συμμετέχων</string>
     <string name="muc_role_visitor">Επισκέπτης</string>
     <string name="toast_archived_show">Αρχειοθέτηση εμφανιζόμενων συνομιλιών</string>
     <string name="toast_archived_hide">Αρχειοθέτηση κρυμμένων συνομιλιών</string>

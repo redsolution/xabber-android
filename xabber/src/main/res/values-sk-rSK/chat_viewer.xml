@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">Odosielanie...</string>
     <string name="toast_no_history">Neexistujú žiadne ďalšie správy v histórii</string>
     <string name="muc_role_moderator">Moderátor</string>
-    <string name="muc_role_participant">Účastník</string>
+    <string name="muc_role_member">Účastník</string>
     <string name="muc_role_visitor">Návštevník</string>
     <string name="toast_archived_show">Archívy chatov zobrazené</string>
     <string name="toast_archived_hide">Archívy chatov skryté</string>

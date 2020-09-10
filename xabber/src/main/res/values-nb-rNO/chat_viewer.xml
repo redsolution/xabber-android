@@ -101,7 +101,7 @@
     <string name="message_status_not_sent">Sender</string>
     <string name="toast_no_history">Det er ingen meldinger i historikken</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Deltager</string>
+    <string name="muc_role_member">Deltager</string>
     <string name="muc_role_visitor">Besøkende</string>
     <string name="toast_archived_show">Arkiver viste sludringer</string>
     <string name="toast_archived_hide">Arkiver skjulte sludringer</string>

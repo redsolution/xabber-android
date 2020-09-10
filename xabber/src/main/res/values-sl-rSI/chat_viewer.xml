@@ -103,7 +103,7 @@
     <string name="too_many_files_at_once">Več kot 10 predmetov naenkrat ni dovoljeno pošiljati</string>
     <string name="toast_no_history">V zgodovini ni nobenih sporočil</string>
     <string name="muc_role_moderator">Moderator</string>
-    <string name="muc_role_participant">Udeleženec</string>
+    <string name="muc_role_member">Udeleženec</string>
     <string name="muc_role_visitor">Obiskovalec</string>
     <string name="toast_archived_show">Prikazani arhivirani klepeti</string>
     <string name="toast_archived_hide">Arhiviraj skrite pogovore</string>
