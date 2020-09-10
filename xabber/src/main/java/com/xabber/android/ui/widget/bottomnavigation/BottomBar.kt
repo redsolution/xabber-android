@@ -37,12 +37,12 @@ class BottomBar : Fragment(), View.OnClickListener {
         fun onSettingsClick()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             listener = context as OnClickListener?
         } catch (e: ClassCastException) {
-            throw ClassCastException(context!!.toString() + " must implement OnClickListener")
+            throw ClassCastException("$context must implement OnClickListener")
         }
     }
 
