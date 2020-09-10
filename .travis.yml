@@ -30,8 +30,8 @@ install:
 
 script:
   # By default Travis-ci executes './gradlew build connectedCheck' if no 'script:' section found.
+  - ./gradlew clean
   - ./gradlew assembleOpenDevRelease
-
 
 env:
 - GRADLE_OPTS="-Xmx2048m -XX:MaxPermSize=2048m"
