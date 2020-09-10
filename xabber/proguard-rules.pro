@@ -8,6 +8,7 @@
 # RxJava
 -dontwarn rx.internal.util.**
 -dontwarn sun.misc.**
+-dontwarn module-info
 
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;
