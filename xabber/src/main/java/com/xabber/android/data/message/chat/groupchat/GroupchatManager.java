@@ -39,16 +39,23 @@ import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GroupchatManager implements OnPacketListener {
 
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
 
-    static private GroupchatManager instance;
+    private static GroupchatManager instance;
+
+    /* */
+    private Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
 
     public static GroupchatManager getInstance() {
         if (instance == null)
@@ -64,7 +71,25 @@ public class GroupchatManager implements OnPacketListener {
                 && ((Message) packet).getType().equals(Message.Type.headline)
                 && packet.hasExtension(GroupchatEchoExtensionElement.ELEMENT, GroupchatEchoExtensionElement.NAMESPACE)){
             processHeadlineEchoMessage(connection, packet);
+        } else if (packet instanceof DiscoverItems){
+            processDiscoInfoIq(connection, packet);
         }
+    }
+
+    private void processDiscoInfoIq(ConnectionItem connectionItem, Stanza packet){
+        try{
+            AccountJid accountJid = connectionItem.getAccount();
+
+            if (availableGroupchatServers.get(accountJid) == null)
+                availableGroupchatServers.remove(accountJid);
+
+            availableGroupchatServers.put(accountJid, new ArrayList<>());
+
+            for (DiscoverItems.Item item : ((DiscoverItems) packet).getItems()){
+                if (NAMESPACE.equals(item.getNode()))
+                    availableGroupchatServers.get(accountJid).add(ContactJid.from(item.getEntityID()).getBareJid());
+            }
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
     }
 
     private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet){
@@ -181,6 +206,10 @@ public class GroupchatManager implements OnPacketListener {
             LogManager.exception(LOG_TAG, e);
         }
 
+    }
+
+    public List<Jid> getAvailableGroupchatServersForAccountJid(AccountJid accountJid) {
+        return availableGroupchatServers.get(accountJid);
     }
 
     public void sendUpdateGroupchatSettingsRequest(GroupChat groupchat, String groupchatName,
