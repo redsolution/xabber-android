@@ -26,9 +26,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.xabber.android.R
-import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
-import com.xabber.android.data.account.listeners.OnAccountChangedListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
@@ -44,7 +42,7 @@ import com.xabber.android.ui.fragment.GroupchatMemberInfoFragment
 import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 
-class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View.OnClickListener,
+class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         SnoozeDialog.OnSnoozeListener {
 
     private val LOG_TAG = this.javaClass.simpleName
@@ -75,9 +73,9 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
     private var isGroupchat = false
 
     companion object{
-        val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
-        val GROUPCHAT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
-        val ACCOUNT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
+        const val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
+        const val GROUPCHAT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
+        const val ACCOUNT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
         fun createIntentForGroupchatAndMemberId(context: Context, groupchatMemberId: String, groupchat: GroupChat) : Intent{
             val intent = Intent(context, GroupchatMemberActivity::class.java)
             intent.putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
@@ -136,12 +134,12 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         secondButtonText = findViewById(R.id.second_button_text)
         secondButton?.setOnClickListener(this)
 
-        thirdButton = findViewById(R.id.fourth_button)
-        thirdButtonText = findViewById(R.id.fourth_button_text)
+        thirdButton = findViewById(R.id.third_button)
+        thirdButtonText = findViewById(R.id.third_button_text)
         thirdButton?.setOnClickListener(this)
 
-        fourthButton = findViewById(R.id.third_button)
-        fourthButtonText = findViewById(R.id.third_button_text)
+        fourthButton = findViewById(R.id.fourth_button)
+        fourthButtonText = findViewById(R.id.fourth_button_text)
         fourthButton?.setOnClickListener(this)
 
         val colorLevel = AccountPainter.getAccountColorLevel(accountJid)
@@ -195,14 +193,8 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
 
     override fun onResume() {
         super.onResume()
-        Application.getInstance().addUIListener(OnAccountChangedListener::class.java, this)
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
         appBarResize()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Application.getInstance().removeUIListener(OnAccountChangedListener::class.java, this)
     }
 
     private fun appBarResize() {
@@ -264,33 +256,22 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         })
     }
 
-    private fun setContactBar(color: Int, orientation: Int) {
-        var notify = true
+    private fun setupSetBadgeLayout(){
 
-        //todo this?
-//        if (groupchat != null) {
-//            groupchat?.enableNotificationsIfNeed()
-//
-//            if (groupchat?.notifyAboutMessage() && !blocked) fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_bell)) else {
-//                notify = false
-//                val notificationState: NotificationState = groupchat?.getNotificationState()
-//                when (notificationState.mode) {
-//                    NotificationMode.disabled -> fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_snooze_forever))
-//                    NotificationMode.snooze1d, NotificationMode.snooze2h, NotificationMode.snooze1h, NotificationMode.snooze15m -> if (blocked) fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_snooze_forever)) else fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_snooze))
-//                    else -> if (blocked) fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_snooze_forever)) else fourthButton!!.setImageDrawable(resources.getDrawable(R.drawable.ic_snooze))
-//                }
-//            }
-//        }
+    }
+
+    private fun setContactBar(color: Int, orientation: Int) {
+
         firstButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
         secondButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
-        fourthButton!!.setColorFilter(if (blocked || !notify) resources.getColor(R.color.grey_500) else color)
-        thirdButton!!.setColorFilter(resources.getColor(R.color.red_900))
+        thirdButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
+        fourthButton!!.setColorFilter(resources.getColor(R.color.red_900))
         secondButton!!.isEnabled = !blocked
         fourthButton!!.isEnabled = !blocked
         if (isGroupchat) {
         } else {
-            thirdButtonText!!.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
-            thirdButtonText!!.setTextColor(resources.getColor(if (blocked || coloredBlockText) R.color.red_900 else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) R.color.grey_600 else R.color.grey_400))
+            fourthButtonText!!.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
+            fourthButtonText!!.setTextColor(resources.getColor(if (blocked || coloredBlockText) R.color.red_900 else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) R.color.grey_600 else R.color.grey_400))
         }
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             firstButtonText!!.visibility = View.GONE
@@ -327,10 +308,6 @@ class GroupchatMemberActivity: ManagedActivity(), OnAccountChangedListener, View
         val actionBarSize = styledAttributes.getDimension(0, 0f).toInt()
         styledAttributes.recycle()
         return actionBarSize
-    }
-
-    override fun onAccountsChanged(accounts: MutableCollection<AccountJid>?) {
-        TODO("Not yet implemented")
     }
 
     override fun onClick(v: View?) {
