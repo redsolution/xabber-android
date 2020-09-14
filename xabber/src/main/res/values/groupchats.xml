@@ -47,6 +47,7 @@
 
     <string name="groupchat_blocklist_empty">Blocklist is empty</string>
     <string name="groupchat_invite_lis_empty">Invite list is empty</string>
+    <string name="groupchat_this_is_you">this is you</string>
 
     <string name="groupchat_revoke">Revoke</string>
     <string name="groupchat_unblock">Unblock</string>

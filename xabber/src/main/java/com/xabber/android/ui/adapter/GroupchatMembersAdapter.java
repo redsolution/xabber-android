@@ -71,9 +71,13 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
         if (bindMember.getBadge() != null && !bindMember.getBadge().isEmpty()) {
             holder.memberBadge.setVisibility(View.VISIBLE);
-            holder.memberBadge.setText(bindMember.getBadge());
+            if (bindMember.isMe())
+                holder.memberBadge.setText(bindMember.getBadge() + " " + Application.getInstance().getString(R.string.groupchat_this_is_you));
+            else holder.memberBadge.setText(bindMember.getBadge());
         } else {
-            holder.memberBadge.setVisibility(View.GONE);
+            if (bindMember.isMe())
+                holder.memberBadge.setText(Application.getInstance().getString(R.string.groupchat_this_is_you));
+            else holder.memberBadge.setVisibility(View.GONE);
         }
 
         if (bindMember.getRole() != null && !bindMember.getBadge().isEmpty()) {

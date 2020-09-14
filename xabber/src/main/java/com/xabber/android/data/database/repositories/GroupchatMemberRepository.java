@@ -45,7 +45,7 @@ public class GroupchatMemberRepository {
         for (GroupchatMemberRealmObject gro : groupchatMemberRealmObjects)
             result.add(new GroupchatMember(gro.getUniqueId(), gro.getJid(), gro.getGroupchatJid(),
                     gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
-                    gro.getAvatarUrl(), gro.getLastPresent(), gro.isCanRestrictMembers(),
+                    gro.getAvatarUrl(), gro.getLastPresent(), gro.isMe(), gro.isCanRestrictMembers(),
                     gro.isCanBlockMembers(), gro.isCanChangeBadge(), gro.isCanChangeNickname(),
                     gro.isCanDeleteMessages(), gro.isRestrictedToSendMessages(),
                     gro.isRestrictedToReadMessages(), gro.isRestrictedToSendInvitations(),
@@ -103,6 +103,8 @@ public class GroupchatMemberRepository {
                     gro.setAvatarHash(groupchatMember.getAvatarHash());
                     gro.setAvatarUrl(groupchatMember.getAvatarUrl());
                     gro.setLastPresent(groupchatMember.getLastPresent());
+
+                    gro.setMe(groupchatMember.isMe());
 
                     gro.setCanRestrictMembers(groupchatMember.isCanRestrictMembers());
                     gro.setCanBlockMembers(groupchatMember.isCanBlockMembers());

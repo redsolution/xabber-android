@@ -44,6 +44,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smack.packet.Presence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
         GroupchatMembersAdapter.OnMemberClickListener {
@@ -246,6 +247,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         GroupchatMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
         GroupchatMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
         GroupchatMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
+        GroupchatMemberManager.getInstance().requestMe(account, groupchatContact);
         membersProgress.setVisibility(View.VISIBLE);
     }
 
@@ -356,11 +358,23 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
-            membersAdapter.setItems(new ArrayList<>(GroupchatMemberManager.getInstance().getGroupchatMembers(groupchatContact)));
+            ArrayList<GroupchatMember> list = new ArrayList<>(GroupchatMemberManager.getInstance().getGroupchatMembers(groupchatContact));
+            Collections.sort(list, (o1, o2) -> {
+                if (o1.isMe() && !o2.isMe()) return -1;
+                if (o2.isMe() && !o1.isMe()) return 1;
+                return 0;
+            });
+            membersAdapter.setItems(list);
             if (GroupchatMemberManager.checkIfHasActiveMemberListRequest(account, groupchatContact))
                 membersProgress.setVisibility(View.VISIBLE);
             else membersProgress.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onMeReceived(AccountJid accountJid, ContactJid groupchatJid) {
+        if (isThisChat(accountJid, groupchatJid))
+            updateViewsWithMemberList();
     }
 
     @Override

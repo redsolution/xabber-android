@@ -11,13 +11,12 @@ public class GroupchatMember {
     private String avatarHash;
     private String avatarUrl;
     private String lastPresent;
-
+    private boolean isMe;
     private boolean isCanRestrictMembers;
     private boolean isCanBlockMembers;
     private boolean isCanChangeBadge;
     private boolean isCanChangeNickname;
     private boolean isCanDeleteMessages;
-
     private boolean isRestrictedToSendMessages;
     private boolean isRestrictedToReadMessages;
     private boolean isRestrictedToSendInvitations;
@@ -30,7 +29,7 @@ public class GroupchatMember {
 
     public GroupchatMember(String id, String jid, String groupchatJid, String nickname, String role,
                            String badge, String avatarHash, String avatarUrl, String lastPresent,
-                           boolean isCanRestrictMembers, boolean isCanBlockMembers,
+                           boolean isMe, boolean isCanRestrictMembers, boolean isCanBlockMembers,
                            boolean isCanChangeBadge, boolean isCanChangeNickname,
                            boolean isCanDeleteMessages, boolean isRestrictedToSendMessages,
                            boolean isRestrictedToReadMessages, boolean isRestrictedToSendInvitations,
@@ -44,6 +43,7 @@ public class GroupchatMember {
         this.avatarHash = avatarHash;
         this.avatarUrl = avatarUrl;
         this.lastPresent = lastPresent;
+        this.isMe = isMe;
         this.isCanRestrictMembers = isCanRestrictMembers;
         this.isCanBlockMembers = isCanBlockMembers;
         this.isCanChangeBadge = isCanChangeBadge;
@@ -55,6 +55,9 @@ public class GroupchatMember {
         this.isRestrictedToSendAudio = isRestrictedToSendAudio;
         this.isRestrictedToSendImages = isRestrictedToSendImages;
     }
+
+    public boolean isMe() { return isMe; }
+    public void setMe(boolean me) { isMe = me; }
 
     public String getId() {
         return id;
@@ -98,20 +101,17 @@ public class GroupchatMember {
     public String getAvatarHash() {
         return avatarHash;
     }
-    public void setAvatarHash(String avatarHash) {
-        this.avatarHash = avatarHash;
-    }
+    public void setAvatarHash(String avatarHash) { this.avatarHash = avatarHash; }
 
     public String getAvatarUrl() {
         return avatarUrl;
     }
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
     public String getLastPresent() {
         return lastPresent;
     }
+
     public void setLastPresent(String lastPresent) {
         this.lastPresent = lastPresent;
     }

@@ -19,6 +19,7 @@ public class GroupchatMemberRealmObject extends RealmObject {
     private String avatarHash;
     private String avatarUrl;
     private String lastPresent;
+    private boolean isMe;
     private boolean isCanRestrictMembers;
     private boolean isCanBlockMembers;
     private boolean isCanChangeBadge;
@@ -32,10 +33,12 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public GroupchatMemberRealmObject(String uniqueId) {
         this.uniqueId = uniqueId;
     }
-
     public GroupchatMemberRealmObject() {
         this.uniqueId = UUID.randomUUID().toString();
     }
+
+    public boolean isMe() { return isMe; }
+    public void setMe(boolean me) { isMe = me; }
 
     public String getUniqueId() {
         return uniqueId;
@@ -196,6 +199,8 @@ public class GroupchatMemberRealmObject extends RealmObject {
         public static final String AVATAR_URL = "avatarUrl";
         public static final String LAST_PRESENT = "lastPresent";
         public static final String TIMESTAMP = "timestamp";
+
+        public static final String IS_ME = "isMe";
 
         public static final String IS_CAN_RESTRICT_MEMBERS = "isCanRestrictMembers";
         public static final String IS_CAN_BLOCK_MEMBERS = "isCanBlockMembers";
