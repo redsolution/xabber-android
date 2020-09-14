@@ -121,14 +121,14 @@
                     android:textSize="20sp"
                     android:text="\@"/>
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <AutoCompleteTextView
                     android:id="@+id/create_groupchat_server_et"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintLeft_toRightOf="@id/create_groupchat_comm_at"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:hint="xabber.org"
+                    android:hint="choose server"
                     android:background="@color/white"
                     android:minHeight="18dp"/>
 

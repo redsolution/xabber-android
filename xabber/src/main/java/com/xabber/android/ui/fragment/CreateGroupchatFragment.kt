@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
@@ -27,7 +26,7 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
     private lateinit var accountSp: NoDefaultSpinner
     private lateinit var groupchatNameEt: EditText
     private lateinit var groupchatJidEt: EditText
-    private lateinit var serverEt: AppCompatEditText
+    private lateinit var serverTv: AutoCompleteTextView
     private lateinit var membershipTypeSp: Spinner
     private lateinit var indexTypeSp: Spinner
     private lateinit var descriptionEt: EditText
@@ -39,7 +38,7 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
         accountSp = view.findViewById(R.id.contact_account)
         groupchatNameEt = view.findViewById(R.id.create_groupchat_name_et)
         groupchatJidEt = view.findViewById(R.id.create_groupchat_jid_et)
-        serverEt = view.findViewById(R.id.create_groupchat_server_et)
+        serverTv = view.findViewById(R.id.create_groupchat_server_et)
         membershipTypeSp = view.findViewById(R.id.create_groupchat_membership_spinner)
         indexTypeSp = view.findViewById(R.id.create_groupchat_index_type_spinner)
         descriptionEt = view.findViewById(R.id.create_groupchat_description)
@@ -82,12 +81,25 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
     }
 
     private fun setupServerEt(){
+        serverTv.setOnClickListener {
+            serverTv.showDropDown()
+            serverTv.hint = getString(R.string.groupchat_custom_server)
+        }
+
         if (AccountManager.getInstance().enabledAccounts.size <= 1){
             val accounts = arrayListOf<AccountJid>()
             accounts.addAll(AccountManager.getInstance().enabledAccounts)
-            serverEt.setText(accounts[0].fullJid.domain.toString())
+            val list = arrayListOf<String>()
+            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accounts[0]))
+                list.add(jid.toString())
+            val adapter = ArrayAdapter<String>(context!!, android.R.layout.simple_spinner_dropdown_item, list)
+            serverTv.setAdapter(adapter)
         } else if (accountSp.selectedItem != null){
-            serverEt.setText((accountSp.selectedItem as AccountJid).fullJid.domain)
+            val list = arrayListOf<String>()
+            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSp.selectedItem as AccountJid))
+                list.add(jid.toString())
+            val adapter = ArrayAdapter<String>(context!!, android.R.layout.simple_spinner_dropdown_item, list)
+            serverTv.setAdapter(adapter)
         }
     }
 
@@ -103,7 +115,7 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
 
         val accountJid = accountSp.selectedItem as AccountJid
         GroupchatManager.getInstance().sendCreateGroupchatRequest(accountJid,
-                serverEt.text.toString(), groupchatNameEt.text.toString(),
+                serverTv.text.toString(), groupchatNameEt.text.toString(),
                 descriptionEt.text.toString(), groupchatJidEt.text.toString(), membershipType,
                 indexType, privacyType, this)
 
