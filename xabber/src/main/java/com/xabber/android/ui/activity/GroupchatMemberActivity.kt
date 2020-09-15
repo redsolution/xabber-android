@@ -56,21 +56,12 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     private var contactTitleView: View? = null
     private var collapsingToolbar: CollapsingToolbarLayout? = null
     private var appBarLayout: AppBarLayout? = null
-    private var firstButton: ImageButton? = null
-    private var secondButton: ImageButton? = null
-    private var thirdButton: ImageButton? = null
-    private var fourthButton: ImageButton? = null
+
     private var accountMainColor = 0
     private var coloredBlockText = false
-    private var firstButtonText: TextView? = null
-    private var secondButtonText: TextView? = null
-    private var thirdButtonText: TextView? = null
-    private var fourthButtonText: TextView? = null
-    private var contactBarLayout: ContactBarAutoSizingLayout? = null
 
     var orientation = 0
     private val blocked = false
-    private var isGroupchat = false
 
     companion object{
         const val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
@@ -123,25 +114,6 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         findViewById<ImageView>(R.id.ivStatus).visibility = View.GONE
         findViewById<ImageView>(R.id.ivStatusGroupchat).visibility = View.GONE
 
-        contactBarLayout = findViewById(R.id.contact_bar_layout)
-        contactBarLayout?.setForGroupchatMember()
-
-        firstButton = findViewById(R.id.first_button)
-        firstButtonText = findViewById(R.id.first_button_text)
-        firstButton?.setOnClickListener(this)
-
-        secondButton = findViewById(R.id.second_button)
-        secondButtonText = findViewById(R.id.second_button_text)
-        secondButton?.setOnClickListener(this)
-
-        thirdButton = findViewById(R.id.third_button)
-        thirdButtonText = findViewById(R.id.third_button_text)
-        thirdButton?.setOnClickListener(this)
-
-        fourthButton = findViewById(R.id.fourth_button)
-        fourthButtonText = findViewById(R.id.fourth_button_text)
-        fourthButton?.setOnClickListener(this)
-
         val colorLevel = AccountPainter.getAccountColorLevel(accountJid)
         accountMainColor = ColorManager.getInstance().accountPainter.getAccountMainColor(accountJid)
         val accountDarkColor = ColorManager.getInstance().accountPainter.getAccountDarkColor(accountJid)
@@ -159,7 +131,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             }
         }
 
-        setContactBar(accountMainColor, orientation)
+        setupContactBar(accountMainColor, orientation)
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationPortrait()
         } else {
@@ -256,35 +228,86 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         })
     }
 
-    private fun setupSetBadgeLayout(){
+    private fun setupDirectChatButtonLayout(color: Int, orientation: Int){
+        val imageButton = findViewById<ImageButton>(R.id.first_button)
+        val textView = findViewById<TextView>(R.id.first_button_text)
 
+        imageButton.setOnClickListener {
+            //todo: direct chat opening
+        }
+
+        imageButton.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            textView.visibility = View.GONE
+        else textView.visibility = View.VISIBLE
     }
 
-    private fun setContactBar(color: Int, orientation: Int) {
+    private fun setupMessagesButtonLayout(color: Int, orientation: Int){
+        val imageButton = findViewById<ImageButton>(R.id.second_button)
+        val textView = findViewById<TextView>(R.id.second_button_text)
 
-        firstButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
-        secondButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
-        thirdButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
-        fourthButton!!.setColorFilter(resources.getColor(R.color.red_900))
-        secondButton!!.isEnabled = !blocked
-        fourthButton!!.isEnabled = !blocked
-        if (isGroupchat) {
-        } else {
-            fourthButtonText!!.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
-            fourthButtonText!!.setTextColor(resources.getColor(if (blocked || coloredBlockText) R.color.red_900 else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) R.color.grey_600 else R.color.grey_400))
+        imageButton.isEnabled = !blocked
+
+        imageButton.setColorFilter(color)
+
+        imageButton.setOnClickListener{
+            //todo this
         }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            firstButtonText!!.visibility = View.GONE
-            secondButtonText!!.visibility = View.GONE
-            thirdButtonText!!.visibility = View.GONE
-            fourthButtonText!!.visibility = View.GONE
-        } else {
-            firstButtonText!!.visibility = View.VISIBLE
-            secondButtonText!!.visibility = View.VISIBLE
-            thirdButtonText!!.visibility = View.VISIBLE
-            fourthButtonText!!.visibility = View.VISIBLE
-            contactBarLayout!!.redrawText()
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            textView.visibility = View.GONE
+        else textView.visibility = View.VISIBLE
+    }
+
+    private fun setupSetBadgeLayout(color: Int, orientation: Int){
+        val imageButton = findViewById<ImageButton>(R.id.third_button)
+        val textView = findViewById<TextView>(R.id.third_button_text)
+
+        imageButton?.setOnClickListener{
+            //todo this
         }
+
+        imageButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            textView!!.visibility = View.GONE
+        else textView!!.visibility = View.VISIBLE
+    }
+
+    private fun setupKickBlockButtonLayout(color: Int, orientation: Int){
+        val imageButton = findViewById<ImageButton>(R.id.fourth_button)
+        val textView = findViewById<TextView>(R.id.fourth_button_text)
+
+        imageButton.setOnClickListener{
+            //todo this
+        }
+
+        textView.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
+        textView.setTextColor(resources.getColor(
+                if (blocked || coloredBlockText) R.color.red_900
+                else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                    R.color.grey_600
+                else R.color.grey_400))
+
+        imageButton.setColorFilter(resources.getColor(R.color.red_900))
+        imageButton.isEnabled = !blocked
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            textView.visibility = View.GONE
+        else textView.visibility = View.VISIBLE
+    }
+
+    private fun setupContactBar(color: Int, orientation: Int) {
+        setupDirectChatButtonLayout(color, orientation)
+        setupMessagesButtonLayout(color, orientation)
+        setupSetBadgeLayout(color, orientation)
+        setupKickBlockButtonLayout(color, orientation)
+
+        val contactBarLayout = findViewById<ContactBarAutoSizingLayout>(R.id.contact_bar_layout)
+        contactBarLayout?.setForGroupchatMember()
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) contactBarLayout!!.redrawText()
     }
 
     fun manageAvailableUsernameSpace() {
