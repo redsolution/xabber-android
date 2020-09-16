@@ -410,16 +410,6 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:name=".ui.activity.ConferenceSelectActivity"
-            android:parentActivityName=".ui.activity.MainActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.MainActivity" />
-        </activity>
-        <activity android:name=".ui.activity.ConferenceFilterActivity" />
-        <activity
             android:name=".ui.activity.BlockedListActivity"
             android:parentActivityName=".ui.activity.AccountActivity">
 
