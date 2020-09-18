@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GroupchatMemberManager implements OnLoadListener {
@@ -46,7 +45,6 @@ public class GroupchatMemberManager implements OnLoadListener {
     private static final String LOG_TAG = GroupchatMemberManager.class.getSimpleName();
 
     private static GroupchatMemberManager instance;
-    private static Set<GroupchatRequest> groupchatRequests = new ConcurrentSkipListSet<>();
     private final Map<String, GroupchatMember> members = new HashMap<>();
 
     public static GroupchatMemberManager getInstance() {
@@ -73,76 +71,6 @@ public class GroupchatMemberManager implements OnLoadListener {
         user.setRole(groupchatMemberExtensionElement.getRole());
 
         return user;
-    }
-
-    private static GroupchatRequest createRequest(AccountJid account, ContactJid groupchatJid,
-                                                  GroupchatRequestTypes requestType) {
-        GroupchatRequest request;
-        switch (requestType) {
-            case MemberListRequest:
-                request = new GroupchatMemberListRequest(account, groupchatJid);
-                break;
-            case InviteListRequest:
-                request = new GroupchatInviteListRequest(account, groupchatJid);
-                break;
-            case BlockListRequest:
-                request = new GroupchatBlockListRequest(account, groupchatJid);
-                break;
-            case MeRequest:
-                request = new GroupchatMeRequest(account, groupchatJid);
-                break;
-            default:
-                throw new RuntimeException("Wrong groupchat request type = " + requestType);
-        }
-        return request;
-    }
-
-    public static boolean checkIfHasActiveInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
-    }
-
-    public static boolean checkIfHasActiveBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
-    }
-
-    public static boolean checkIfHasActiveMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
-    }
-
-    public static boolean checkIfHasActiveMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        return groupchatRequests.contains(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
-    }
-
-    private static void removeInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
-    }
-
-    private static void removeActiveMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
-    }
-
-    private static void removeBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
-    }
-
-    private static void removeMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        groupchatRequests.remove(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
-    }
-
-    private static void addInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
-    }
-
-    private static void addMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
-    }
-
-    private static void addBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
-    }
-
-    private static void addMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        groupchatRequests.add(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
     }
 
     @Override
@@ -221,10 +149,6 @@ public class GroupchatMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
-                if (checkIfHasActiveInviteListRequest(account, groupchatJid)) {
-                    return;
-                }
-                addInviteListRequest(account, groupchatJid);
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -235,14 +159,10 @@ public class GroupchatMemberManager implements OnLoadListener {
                         connection.sendIqWithResponseCallback(queryIQ, listener);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeInviteListRequest(account, groupchatJid);
                     } catch (InterruptedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeInviteListRequest(account, groupchatJid);
                     }
                 }
-            } else {
-                removeInviteListRequest(account, groupchatJid);
             }
         });
     }
@@ -251,10 +171,6 @@ public class GroupchatMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
-                if (checkIfHasActiveBlockListRequest(account, groupchatJid)) {
-                    return;
-                }
-                addBlockListRequest(account, groupchatJid);
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -265,14 +181,10 @@ public class GroupchatMemberManager implements OnLoadListener {
                         connection.sendIqWithResponseCallback(queryIQ, listener);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeBlockListRequest(account, groupchatJid);
                     } catch (InterruptedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeBlockListRequest(account, groupchatJid);
                     }
                 }
-            } else {
-                removeBlockListRequest(account, groupchatJid);
             }
         });
     }
@@ -518,12 +430,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                     });
                 }
 
-                //if (checkIfHasActiveMemberListRequest(account, groupchatJid)) {
-                //    return;
-                //}
-
-                addMeRequest(accountJid, groupchatJid);
-
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 if (accountItem != null) {
                     GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
@@ -534,14 +440,10 @@ public class GroupchatMemberManager implements OnLoadListener {
                         accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeMeRequest(accountJid, groupchatJid);
                     } catch (InterruptedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeMeRequest(accountJid, groupchatJid);
                     }
                 }
-            } else {
-                removeMeRequest(accountJid, groupchatJid);
             }
         });
     }
@@ -561,12 +463,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                     });
                 }
 
-                //if (checkIfHasActiveMemberListRequest(account, groupchatJid)) {
-                //    return;
-                //}
-
-                addMemberListRequest(account, groupchatJid);
-
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
                     GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
@@ -580,20 +476,12 @@ public class GroupchatMemberManager implements OnLoadListener {
                         accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeActiveMemberListRequest(account, groupchatJid);
                     } catch (InterruptedException e) {
                         LogManager.exception(LOG_TAG, e);
-                        removeActiveMemberListRequest(account, groupchatJid);
                     }
                 }
-            } else {
-                removeActiveMemberListRequest(account, groupchatJid);
             }
         });
-    }
-
-    enum GroupchatRequestTypes{
-        MemberListRequest, InviteListRequest, BlockListRequest, MeRequest
     }
 
     private static class GroupchatInvitesResultListener implements StanzaListener {
@@ -624,7 +512,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                         }
                     }
 
-                    removeInviteListRequest(account, groupchatJid);
                     Application.getInstance().runOnUiThread(() -> {
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
@@ -633,7 +520,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                     });
 
                 }
-                removeInviteListRequest(account, groupchatJid);
+
             }
         }
     }
@@ -667,7 +554,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                         }
                     }
 
-                    removeBlockListRequest(account, groupchatJid);
                     Application.getInstance().runOnUiThread(() -> {
                         for (OnGroupchatRequestListener listener :
                                 Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
@@ -676,32 +562,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                     });
 
                 }
-                removeBlockListRequest(account, groupchatJid);
             }
-        }
-    }
-
-    protected static class GroupchatMeRequest extends GroupchatRequest {
-        GroupchatMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-            super(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest);
-        }
-    }
-
-    protected static class GroupchatInviteListRequest extends GroupchatRequest {
-        GroupchatInviteListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, GroupchatRequestTypes.InviteListRequest);
-        }
-    }
-
-    protected static class GroupchatBlockListRequest extends GroupchatRequest {
-        GroupchatBlockListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, GroupchatRequestTypes.BlockListRequest);
-        }
-    }
-
-    protected static class GroupchatMemberListRequest extends GroupchatRequest {
-        GroupchatMemberListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, GroupchatRequestTypes.MemberListRequest);
         }
     }
 
@@ -763,7 +624,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                         }
                     });
                 }
-                removeActiveMemberListRequest(accountJid, groupchatJid);
             }
         }
     }
@@ -827,50 +687,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                         }
                     });
                 }
-                removeActiveMemberListRequest(account, groupchatJid);
             }
-        }
-    }
-
-    private static class GroupchatRequest implements Comparable<GroupchatRequest> {
-        private AccountJid accountJid;
-        private ContactJid groupchatJid;
-        private GroupchatRequestTypes requestType;
-        private int hash = 0;
-
-        GroupchatRequest(AccountJid accountJid, ContactJid groupchatJid, GroupchatRequestTypes requestType) {
-            this.accountJid = accountJid;
-            this.groupchatJid = groupchatJid;
-            this.requestType = requestType;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = hash;
-            if (result == 0) {
-                result = 17;
-
-                result = result * 31 + accountJid.getBareJid().toString().hashCode();
-                result = result * 31 + groupchatJid.getBareJid().toString().hashCode();
-                result = result * 31 + requestType.toString().hashCode();
-                hash = result;
-            }
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            GroupchatRequest that = (GroupchatRequest) o;
-            return requestType == that.requestType &&
-                    accountJid.getBareJid().equals(that.accountJid.getBareJid()) &&
-                    groupchatJid.getBareJid().equals(that.groupchatJid.getBareJid());
-        }
-
-        @Override
-        public int compareTo(GroupchatRequest o) {
-            return Integer.compare(hashCode(), o.hashCode());
         }
     }
 
