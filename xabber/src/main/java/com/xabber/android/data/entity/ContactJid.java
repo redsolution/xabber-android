@@ -35,7 +35,7 @@ public class ContactJid implements Comparable<ContactJid>, Parcelable {
 
     public static @NonNull
     ContactJid from(@Nullable String string) throws UserJidCreateException {
-        if (TextUtils.isEmpty(string)) {
+        if (string == null || string.isEmpty()) {
             throw new UserJidCreateException();
         }
 
