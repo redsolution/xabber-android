@@ -1,7 +1,5 @@
 package com.xabber.android.data.message.chat.groupchat;
 
-import androidx.annotation.IntDef;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -33,8 +31,6 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.jid.BareJid;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,10 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GroupchatMemberManager implements OnLoadListener {
 
     private static final String LOG_TAG = GroupchatMemberManager.class.getSimpleName();
-    static final int MemberListRequest = 1;
-    static final int InviteListRequest = 2;
-    static final int BlockListRequest = 3;
-    static final int MeRequest = 4;
+
     private static GroupchatMemberManager instance;
     private static Set<GroupchatRequest> groupchatRequests = new ConcurrentSkipListSet<>();
     private final Map<String, GroupchatMember> members = new HashMap<>();
@@ -83,7 +76,7 @@ public class GroupchatMemberManager implements OnLoadListener {
     }
 
     private static GroupchatRequest createRequest(AccountJid account, ContactJid groupchatJid,
-                                                  @GroupchatRequestTypes int requestType) {
+                                                  GroupchatRequestTypes requestType) {
         GroupchatRequest request;
         switch (requestType) {
             case MemberListRequest:
@@ -105,51 +98,51 @@ public class GroupchatMemberManager implements OnLoadListener {
     }
 
     public static boolean checkIfHasActiveInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, InviteListRequest));
+        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
     }
 
     public static boolean checkIfHasActiveBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, BlockListRequest));
+        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
     }
 
     public static boolean checkIfHasActiveMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        return groupchatRequests.contains(createRequest(account, groupchatJid, MemberListRequest));
+        return groupchatRequests.contains(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
     }
 
     public static boolean checkIfHasActiveMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        return groupchatRequests.contains(createRequest(accountJid, groupchatJid, MeRequest));
+        return groupchatRequests.contains(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
     }
 
     private static void removeInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, InviteListRequest));
+        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
     }
 
     private static void removeActiveMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, MemberListRequest));
+        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
     }
 
     private static void removeBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.remove(createRequest(account, groupchatJid, BlockListRequest));
+        groupchatRequests.remove(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
     }
 
     private static void removeMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        groupchatRequests.remove(createRequest(accountJid, groupchatJid, MeRequest));
+        groupchatRequests.remove(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
     }
 
     private static void addInviteListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, InviteListRequest));
+        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.InviteListRequest));
     }
 
     private static void addMemberListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, MemberListRequest));
+        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.MemberListRequest));
     }
 
     private static void addBlockListRequest(AccountJid account, ContactJid groupchatJid) {
-        groupchatRequests.add(createRequest(account, groupchatJid, BlockListRequest));
+        groupchatRequests.add(createRequest(account, groupchatJid, GroupchatRequestTypes.BlockListRequest));
     }
 
     private static void addMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-        groupchatRequests.add(createRequest(accountJid, groupchatJid, MeRequest));
+        groupchatRequests.add(createRequest(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest));
     }
 
     @Override
@@ -599,9 +592,8 @@ public class GroupchatMemberManager implements OnLoadListener {
         });
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MemberListRequest, InviteListRequest, BlockListRequest, MeRequest})
-    protected @interface GroupchatRequestTypes {
+    enum GroupchatRequestTypes{
+        MemberListRequest, InviteListRequest, BlockListRequest, MeRequest
     }
 
     private static class GroupchatInvitesResultListener implements StanzaListener {
@@ -691,25 +683,25 @@ public class GroupchatMemberManager implements OnLoadListener {
 
     protected static class GroupchatMeRequest extends GroupchatRequest {
         GroupchatMeRequest(AccountJid accountJid, ContactJid groupchatJid){
-            super(accountJid, groupchatJid, MeRequest);
+            super(accountJid, groupchatJid, GroupchatRequestTypes.MeRequest);
         }
     }
 
     protected static class GroupchatInviteListRequest extends GroupchatRequest {
         GroupchatInviteListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, InviteListRequest);
+            super(accountJid, groupchatJid, GroupchatRequestTypes.InviteListRequest);
         }
     }
 
     protected static class GroupchatBlockListRequest extends GroupchatRequest {
         GroupchatBlockListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, BlockListRequest);
+            super(accountJid, groupchatJid, GroupchatRequestTypes.BlockListRequest);
         }
     }
 
     protected static class GroupchatMemberListRequest extends GroupchatRequest {
         GroupchatMemberListRequest(AccountJid accountJid, ContactJid groupchatJid) {
-            super(accountJid, groupchatJid, MemberListRequest);
+            super(accountJid, groupchatJid, GroupchatRequestTypes.MemberListRequest);
         }
     }
 
@@ -843,10 +835,10 @@ public class GroupchatMemberManager implements OnLoadListener {
     private static class GroupchatRequest implements Comparable<GroupchatRequest> {
         private AccountJid accountJid;
         private ContactJid groupchatJid;
-        private int requestType;
+        private GroupchatRequestTypes requestType;
         private int hash = 0;
 
-        GroupchatRequest(AccountJid accountJid, ContactJid groupchatJid, int requestType) {
+        GroupchatRequest(AccountJid accountJid, ContactJid groupchatJid, GroupchatRequestTypes requestType) {
             this.accountJid = accountJid;
             this.groupchatJid = groupchatJid;
             this.requestType = requestType;
@@ -860,7 +852,7 @@ public class GroupchatMemberManager implements OnLoadListener {
 
                 result = result * 31 + accountJid.getBareJid().toString().hashCode();
                 result = result * 31 + groupchatJid.getBareJid().toString().hashCode();
-                result = result * 31 + requestType;
+                result = result * 31 + requestType.toString().hashCode();
                 hash = result;
             }
             return result;
