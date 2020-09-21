@@ -9,6 +9,7 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
@@ -16,6 +17,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import com.bumptech.glide.Glide
@@ -35,6 +37,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.dialog.SnoozeDialog
@@ -43,7 +46,7 @@ import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 
 class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
-        SnoozeDialog.OnSnoozeListener {
+        SnoozeDialog.OnSnoozeListener, PopupMenu.OnMenuItemClickListener {
 
     private val LOG_TAG = this.javaClass.simpleName
 
@@ -79,7 +82,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         groupchatMember = GroupchatMemberManager.getInstance().getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
-        accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID))
+        accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
 
@@ -141,7 +144,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         setupNameBlock()
         setupAvatar()
 
-        supportFragmentManager.beginTransaction().add(R.id.scrollable_container, GroupchatMemberInfoFragment(groupchatMember!!)).commit()
+        supportFragmentManager.beginTransaction().add(R.id.scrollable_container, GroupchatMemberInfoFragment(groupchatMember!!, groupchat!!)).commit()
 
     }
 
@@ -149,6 +152,10 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         findViewById<TextView>(R.id.name).text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
+
+        findViewById<TextView>(R.id.groupchat_member_title).text = groupchatMember?.role?.capitalize() +
+                " of " + groupchat?.privacyType?.getLocalizedString()?.decapitalize() +
+                " group " + groupchat?.name
     }
 
     private fun setupAvatar(){
@@ -160,7 +167,18 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
                 .transform(MultiTransformation(CenterCrop(), BlurTransformation(25, 8,  /*this,*/accountMainColor)))
                 .into(findViewById(R.id.backgroundView))
 
-        findViewById<ImageView>(R.id.ivAvatar).setImageDrawable(backgroundSource)
+        val avatarIv = findViewById<ImageView>(R.id.ivAvatar)
+        avatarIv.setImageDrawable(backgroundSource)
+        avatarIv.setOnClickListener {
+            val popupMenu = PopupMenu(this, avatarIv)
+            popupMenu.menuInflater.inflate(R.menu.groupchat_member_edit_change_avatar, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener(this)
+            popupMenu.show()
+        }
+
+        findViewById<ImageView>(R.id.ivGroupAvatar).setImageDrawable(RosterManager.getInstance()
+                .getBestContact(accountJid, groupchat?.contactJid).getAvatar(true))
+
     }
 
     override fun onResume() {
@@ -334,6 +352,10 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     }
 
     override fun onClick(v: View?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
         TODO("Not yet implemented")
     }
 

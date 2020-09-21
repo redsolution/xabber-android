@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contact_title_expanded"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/actionBarSize"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/contact_title_padding_left"
+    android:paddingRight="@dimen/contact_title_padding_left"
+    android:paddingBottom="@dimen/contact_title_padding_bottom"
+    tools:showIn="@layout/activity_contact_info">
+
+    <include
+        layout="@layout/groupchat_member_avatar_view_extra_large"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/name_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:minHeight="?attr/actionBarSize"
+        android:orientation="vertical"
+        android:paddingTop="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:gravity="center_vertical"
+                android:text="Lorem Ipsum"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="24sp" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/ivStatus"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_alignBaseline="@+id/imageView"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_status" />
+
+                <ImageView
+                    android:id="@+id/ivStatusGroupchat"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignBaseline="@+id/imageView"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+
+                    android:layout_marginStart="3dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_groupchat_14_default_border"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="3dp"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="Lorem ipsum dolor sit amet"
+            android:textColor="@color/grey_200"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/address_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:gravity="center_vertical"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="Lorem ipsum dolor sit amet"
+            android:textColor="@color/grey_200"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="6dp"
+            android:background="@color/white"/>
+
+        <TextView
+            android:id="@+id/groupchat_member_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:gravity="center_vertical"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="Lorem ipsum dolor sit amet"
+            android:textColor="@color/grey_200"
+            android:textSize="16sp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
