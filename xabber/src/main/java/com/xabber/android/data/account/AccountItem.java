@@ -46,7 +46,7 @@ import java.util.UUID;
 public class AccountItem extends ConnectionItem implements Comparable<AccountItem> {
 
     public static final String UNDEFINED_PASSWORD = "";
-    private static final long GRACE_PERIOD = 150000;
+    private static final long GRACE_PERIOD = 45000;
 
     /**
      * Id in database.
