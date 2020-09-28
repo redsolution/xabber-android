@@ -159,9 +159,12 @@ class FileLog {
     private synchronized void controlFileSize() {
         if (currentFile != null)
             if (currentFile.length() >= LOG_FILE_MAX_SIZE) {
-                    File newFile = createLogFile();
-                    if (newFile != null)
-                        currentFile = newFile;
+                LogManager.d(this.getClass().getSimpleName(), "All logs file is too large, try to recreate");
+                File newFile = createLogFile();
+                if (newFile != null){
+                    LogManager.d(this.getClass().getSimpleName(), "All logs file successfully recreated");
+                    currentFile = newFile;
+                }
             }
 
         if (xmppCurrentFile != null)
