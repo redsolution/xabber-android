@@ -5,6 +5,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.xmpp.SimpleNamedElement;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.NamedElement;
@@ -52,15 +53,15 @@ public class CreateGroupchatIQ extends IQ {
         this.setFrom(from);
         this.setTo(to);
 
-        elements.add(new MSimpleNamedElement(NAME_ELEMENT, groupName));
-        elements.add(new MSimpleNamedElement(DESCRIPTION_ELEMENT, description));
-        elements.add(new MSimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()));
-        elements.add(new MSimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()));
-        elements.add(new MSimpleNamedElement(INDEX_ELEMENT, indexType.toXml()));
+        elements.add(new SimpleNamedElement(NAME_ELEMENT, groupName));
+        elements.add(new SimpleNamedElement(DESCRIPTION_ELEMENT, description));
+        elements.add(new SimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()));
+        elements.add(new SimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()));
+        elements.add(new SimpleNamedElement(INDEX_ELEMENT, indexType.toXml()));
         elements.add(new MSimpleParentElement(CONTACTS_ELEMENT,
-                new MSimpleNamedElement(CONTACT_ELEMENT, from.asBareJid().toString())));
+                new SimpleNamedElement(CONTACT_ELEMENT, from.asBareJid().toString())));
         if (groupLocalpart != null && !groupLocalpart.isEmpty())
-            elements.add(new MSimpleNamedElement(LOCALPART_ELEMENT, groupLocalpart));
+            elements.add(new SimpleNamedElement(LOCALPART_ELEMENT, groupLocalpart));
 
         this.from = from;
         this.to = to;
@@ -73,29 +74,6 @@ public class CreateGroupchatIQ extends IQ {
             for (NamedElement element : elements)
                 xml.append(element.toXML());
         return xml;
-    }
-
-    private static class MSimpleNamedElement implements NamedElement{
-
-        String elementName;
-        String elementValue;
-
-        MSimpleNamedElement(String elementName, String value){
-            this.elementName = elementName;
-            this.elementValue = value;
-        }
-
-        @Override
-        public String getElementName() { return elementName; }
-
-        @Override
-        public CharSequence toXML() {
-            XmlStringBuilder xmlStringBuilder = new XmlStringBuilder(this);
-            xmlStringBuilder.rightAngleBracket();
-            xmlStringBuilder.append(elementValue);
-            xmlStringBuilder.closeElement(this);
-            return xmlStringBuilder;
-        }
     }
 
     private static class MSimpleParentElement implements NamedElement{
