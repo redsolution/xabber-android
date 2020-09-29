@@ -29,7 +29,6 @@ public class CreateGroupchatIQ extends IQ {
     private static final String MEMBERSHIP_ELEMENT = "membership";
     private static final String CONTACTS_ELEMENT = "contacts";
     private static final String CONTACT_ELEMENT = "contact";
-    //todo implement domains, languages
 
     private String to;
     private Jid from;
