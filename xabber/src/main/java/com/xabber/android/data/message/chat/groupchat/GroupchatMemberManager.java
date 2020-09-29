@@ -20,6 +20,8 @@ import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteRequest
 import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -482,6 +484,60 @@ public class GroupchatMemberManager implements OnLoadListener {
                 }
             }
         });
+    }
+
+    public void requestGroupchatMemberRightsForm(AccountJid accountJid, ContactJid groupchatJid, GroupchatMember groupchatMember){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
+            if (chat instanceof GroupChat) {
+                ArrayList<GroupchatMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
+//                if (list != null && list.size() > 0) {
+//                    Application.getInstance().runOnUiThread(() -> {
+//                        // notify listeners with the locally saved list of members
+//                        for (OnGroupchatRequestListener listener :
+//                                Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
+//                            listener.onGroupchatMembersReceived(accountJid, groupchatJid);
+//                        }
+//                    });
+//                }
+
+                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                if (accountItem != null) {
+                    GroupchatMemberRightsQueryIQ queryIQ = new GroupchatMemberRightsQueryIQ(groupchatJid, groupchatMember.getId());
+
+                    GroupchatMemberRightsFormResultListener listener = new GroupchatMemberRightsFormResultListener(accountJid, groupchatJid, groupchatMember);
+                    try {
+                        accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
+                    } catch (SmackException.NotConnectedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    } catch (InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
+                }
+            }
+        });
+    }
+
+    private static class GroupchatMemberRightsFormResultListener implements StanzaListener {
+        private AccountJid account;
+        private ContactJid groupchatJid;
+        private GroupchatMember member;
+
+        GroupchatMemberRightsFormResultListener(AccountJid accountJid, ContactJid groupchatJid, GroupchatMember member){
+            this.account = accountJid;
+            this.groupchatJid = groupchatJid;
+            this.member = member;
+        }
+
+        @Override
+        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+            if (packet instanceof GroupchatMemberRightsReplyIQ){
+                for (OnGroupchatRequestListener listener :
+                        Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
+                    listener.onGroupchatMemberRightsFormReceived(account, groupchatJid, (GroupchatMemberRightsReplyIQ) packet);
+                }
+            }
+        }
     }
 
     private static class GroupchatInvitesResultListener implements StanzaListener {

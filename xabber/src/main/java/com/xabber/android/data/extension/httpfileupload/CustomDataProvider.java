@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.httpfileupload;
 
+import com.xabber.android.data.log.LogManager;
+
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jivesoftware.smack.roster.provider.RosterPacketProvider;
@@ -24,7 +26,11 @@ public class CustomDataProvider extends ExtensionElementProvider<DataForm> {
     @Override
     public DataForm parse(XmlPullParser parser, int initialDepth) throws
             Exception {
-        DataForm.Type dataFormType = DataForm.Type.fromString(parser.getAttributeValue("", "type"));
+        DataForm.Type dataFormType = DataForm.Type.form;
+        try{
+            dataFormType = DataForm.Type.fromString(parser.getAttributeValue("", "type"));
+        } catch (Exception e) { LogManager.exception(this.getClass().getSimpleName(), e); }
+
         DataForm dataForm = new DataForm(dataFormType);
         outerloop: while (true) {
             int eventType = parser.next();

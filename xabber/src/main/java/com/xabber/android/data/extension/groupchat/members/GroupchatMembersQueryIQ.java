@@ -46,8 +46,4 @@ public class GroupchatMembersQueryIQ extends GroupchatAbstractQueryIQ {
         this.queryVersion = queryVersion;
     }
 
-    @Override
-    public RequestType getRequestType() {
-        return RequestType.MemberList;
-    }
 }

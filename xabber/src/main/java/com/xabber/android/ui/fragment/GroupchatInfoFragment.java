@@ -27,6 +27,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
@@ -420,9 +421,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             });
 
             membersAdapter.setItems(list);
-            if (GroupchatMemberManager.checkIfHasActiveMemberListRequest(account, groupchatContact))
-                membersProgress.setVisibility(View.VISIBLE);
-            else membersProgress.setVisibility(View.GONE);
+            membersProgress.setVisibility(View.GONE);
         }
     }
 
@@ -450,8 +449,16 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             updateChatSettings((GroupChat) groupChat);
     }
 
+    @Override
+    public void onGroupchatMemberRightsFormReceived(AccountJid accountJid, ContactJid groupchatJid,
+                                                    GroupchatMemberRightsReplyIQ iq) {
+        //todo {not implemented}
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGroupchatPresenceUpdated(GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
+    public void onGroupchatPresenceUpdated(
+            GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
+
         if (isThisChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
             updateChatInfo((GroupChat) groupChat);
     }

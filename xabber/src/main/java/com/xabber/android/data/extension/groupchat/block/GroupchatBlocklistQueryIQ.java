@@ -19,8 +19,4 @@ public class GroupchatBlocklistQueryIQ extends GroupchatAbstractQueryIQ {
         return xml;
     }
 
-    @Override
-    public RequestType getRequestType() {
-        return RequestType.BlockList;
-    }
 }

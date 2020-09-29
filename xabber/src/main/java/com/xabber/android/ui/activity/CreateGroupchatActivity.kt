@@ -17,8 +17,6 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
 
     private var isIncognito = false
 
-    private val FRAGMENT_TAG = "com.xabber.android.ui.fragment.CreateGroupchatFragment"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,8 +48,10 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
 
         BarPainter(this, toolbar).setDefaultColor()
 
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container,
-                CreateGroupchatFragment(), FRAGMENT_TAG).commit()
+        supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, CreateGroupchatFragment(), FRAGMENT_TAG)
+                .commit()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -62,19 +62,20 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
 
     companion object{
 
+        private const val FRAGMENT_TAG = "com.xabber.android.ui.fragment.CreateGroupchatFragment"
         private const val CREATE_INCOGNITO_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_INCOGNITO_GROUPCHAT_INTENT"
         private const val CREATE_PUBLIC_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_PUBLIC_GROUPCHAT_INTENT"
 
         fun createCreateIncognitoGroupchatIntent() =
                 Intent(Application.getInstance().applicationContext,
                         CreateGroupchatActivity::class.java).apply {
-                    action =  CREATE_INCOGNITO_GROUPCHAT_INTENT
+                    action = CREATE_INCOGNITO_GROUPCHAT_INTENT
                 }
 
         fun createCreatePublicGroupchatIntent() =
                 Intent(Application.getInstance().applicationContext,
                         CreateGroupchatActivity::class.java).apply {
-                    action =  CREATE_PUBLIC_GROUPCHAT_INTENT
+                    action = CREATE_PUBLIC_GROUPCHAT_INTENT
                 }
 
     }

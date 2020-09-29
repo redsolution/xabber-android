@@ -23,6 +23,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIqProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
@@ -149,6 +151,9 @@ class ConnectionThread {
 
         ProviderManager.addIQProvider(SessionsIQ.ELEMENT,
                 SessionsIQ.NAMESPACE, new SessionsProvider());
+
+        ProviderManager.addIQProvider(GroupchatMemberRightsReplyIQ.ELEMENT, GroupchatMemberRightsReplyIQ.NAMESPACE + GroupchatMemberRightsReplyIQ.HASH_BLOCK,
+                new GroupchatMemberRightsReplyIqProvider());
 
         try {
             LogManager.i(this, "Trying to connect and login...");

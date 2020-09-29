@@ -14,11 +14,6 @@ public class GroupchatInviteListQueryIQ extends GroupchatAbstractQueryIQ {
     }
 
     @Override
-    public RequestType getRequestType() {
-        return RequestType.InviteList;
-    }
-
-    @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
         xml.setEmptyElement();
         return xml;

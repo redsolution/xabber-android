@@ -2,6 +2,7 @@
 <!-- Providers file for default Smack extensions -->
 <smackProviders> 
 
+
     <!-- vCardUpdate -->
     <extensionProvider>
         <elementName>x</elementName>
@@ -9,27 +10,38 @@
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
+
     <!-- XEP-0GGG Group Chat -->
     <extensionProvider>
         <elementName>x</elementName>
         <namespace>http://xabber.com/protocol/groupchat</namespace>
         <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
     </extensionProvider>
+
+    <iqProvider>
+            <elementName>query</elementName>
+            <namespace>http://xabber.com/protocol/groupchat#rights</namespace>
+            <className>com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIqProvider</className>
+    </iqProvider>
+
     <iqProvider>
         <elementName>query</elementName>
         <namespace>http://xabber.com/protocol/groupchat#members</namespace>
         <className>com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultProvider</className>
     </iqProvider>
+
     <iqProvider>
         <elementName>query</elementName>
         <namespace>http://xabber.com/protocol/groupchat#invite</namespace>
         <className>com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultProvider</className>
     </iqProvider>
+
     <iqProvider>
-            <elementName>query</elementName>
-            <namespace>http://xabber.com/protocol/groupchat#block</namespace>
-            <className>com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultProvider</className>
+        <elementName>query</elementName>
+        <namespace>http://xabber.com/protocol/groupchat#block</namespace>
+        <className>com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultProvider</className>
     </iqProvider>
+
 
     <!-- Stanza Session Negotiation -->
     <extensionProvider>

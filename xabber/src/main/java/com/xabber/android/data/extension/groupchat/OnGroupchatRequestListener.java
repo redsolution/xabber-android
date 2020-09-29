@@ -1,8 +1,13 @@
 package com.xabber.android.data.extension.groupchat;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.BaseUIListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
+
+import javax.annotation.Nonnull;
 
 public interface OnGroupchatRequestListener extends BaseUIListener {
 
@@ -13,4 +18,6 @@ public interface OnGroupchatRequestListener extends BaseUIListener {
     void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid);
 
     void onMeReceived(AccountJid accountJid, ContactJid groupchatJid);
+
+    void onGroupchatMemberRightsFormReceived(@Nonnull AccountJid accountJid, @NonNull ContactJid groupchatJid, @NonNull GroupchatMemberRightsReplyIQ iq);
 }

@@ -11,13 +11,4 @@ public abstract class GroupchatAbstractQueryIQ extends IQ {
         super(childElementName, childElementNamespace);
     }
 
-    public static String getBaseNamespace() {
-        return NAMESPACE;
-    }
-
-    public abstract RequestType getRequestType();
-
-    public enum RequestType {
-        MemberList, InviteList, BlockList
-    }
 }
