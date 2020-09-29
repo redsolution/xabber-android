@@ -18,6 +18,7 @@ import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListRes
 import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListRevokeIQ;
 import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteRequestIQ;
 import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ;
@@ -417,6 +418,38 @@ public class GroupchatMemberManager implements OnLoadListener {
         });
     }
 
+    public void sendSetMemberBadgeIqRequest(GroupChat groupChat, GroupchatMember groupchatMember, String badge){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+
+                ChangeGroupchatMemberPreferencesIQ iq =
+                        new ChangeGroupchatMemberPreferencesIQ(groupChat.getContactJid(),
+                                groupchatMember.getId(), badge, null);
+
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            //todo implement errors parsing
+                        });
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        });
+    }
+
+    public void sendSetMemberNicknameIqRequest(GroupChat groupChat, GroupchatMember groupchatMember, String nickname){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+
+                ChangeGroupchatMemberPreferencesIQ iq =
+                        new ChangeGroupchatMemberPreferencesIQ(groupChat.getContactJid(),
+                                groupchatMember.getId(), null, nickname);
+
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            //todo implement errors parsing
+                        });
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        });
+    }
+
     public void requestMe(AccountJid accountJid, ContactJid groupchatJid){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
@@ -530,7 +563,7 @@ public class GroupchatMemberManager implements OnLoadListener {
         }
 
         @Override
-        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+        public void processStanza(Stanza packet) {
             if (packet instanceof GroupchatMemberRightsReplyIQ){
                 for (OnGroupchatRequestListener listener :
                         Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
@@ -632,7 +665,7 @@ public class GroupchatMemberManager implements OnLoadListener {
         }
 
         @Override
-        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+        public void processStanza(Stanza packet) {
             if (packet instanceof GroupchatMembersResultIQ) {
                 GroupchatMembersResultIQ groupchatMembersIQ = (GroupchatMembersResultIQ) packet;
 

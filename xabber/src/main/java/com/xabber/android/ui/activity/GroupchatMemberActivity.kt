@@ -17,6 +17,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
@@ -149,7 +151,21 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     }
 
     private fun setupNameBlock(){
-        findViewById<TextView>(R.id.name).text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
+        val nameTv = findViewById<TextView>(R.id.name)
+        nameTv.text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
+        nameTv.setOnClickListener {
+            val adb = AlertDialog.Builder(this)
+            adb.setTitle(getString(R.string.groupchat_set_member_nickname))
+
+            val et = AppCompatEditText(this)
+            et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT)
+            adb.setView(et)
+
+            adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.show()
+        }
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
 
@@ -283,7 +299,17 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         val textView = findViewById<TextView>(R.id.third_button_text)
 
         imageButton?.setOnClickListener{
-            //todo this
+            val adb = AlertDialog.Builder(this)
+            adb.setTitle(getString(R.string.groupchat_set_member_badge))
+
+            val et = AppCompatEditText(this)
+            et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT)
+            adb.setView(et)
+
+            adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.show()
         }
 
         imageButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)

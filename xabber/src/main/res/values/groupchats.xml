@@ -27,6 +27,7 @@
     <string name="groupchat_direct_chat">Direct chat</string>
     <string name="groupchat_member_messages">Messages</string>
     <string name="groupchat_set_member_badge">Set badge</string>
+    <string name="groupchat_set_member_nickname">Set nickname</string>
     <string name="groupchat_member_edit">Edit</string>
     <string name="groupchat_save_member_settings">Save</string>
     <string name="groupchat_edit_member">Edit member</string>
