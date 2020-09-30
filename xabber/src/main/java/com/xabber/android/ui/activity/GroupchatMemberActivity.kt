@@ -39,7 +39,6 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
-import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.dialog.SnoozeDialog
@@ -117,9 +116,6 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
         toolbar?.setNavigationOnClickListener { finish() }
 
-        findViewById<ImageView>(R.id.ivStatus).visibility = View.GONE
-        findViewById<ImageView>(R.id.ivStatusGroupchat).visibility = View.GONE
-
         val colorLevel = AccountPainter.getAccountColorLevel(accountJid)
         accountMainColor = ColorManager.getInstance().accountPainter.getAccountMainColor(accountJid)
         val accountDarkColor = ColorManager.getInstance().accountPainter.getAccountDarkColor(accountJid)
@@ -194,9 +190,6 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             popupMenu.setOnMenuItemClickListener(this)
             popupMenu.show()
         }
-
-        findViewById<ImageView>(R.id.ivGroupAvatar).setImageDrawable(RosterManager.getInstance()
-                .getBestContact(accountJid, groupchat?.contactJid).getAvatar(true))
 
     }
 
