@@ -155,12 +155,13 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         nameTv.text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
         nameTv.setOnClickListener {
             val adb = AlertDialog.Builder(this)
-            adb.setTitle(getString(R.string.groupchat_set_member_nickname))
+            adb.setTitle(getString(R.string.groupchat_member_nickname))
 
             val et = AppCompatEditText(this)
             et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
-            adb.setView(et)
+            et.hint = groupchatMember?.nickname
+            adb.setView(et, 56, 0,56,0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())}
@@ -300,12 +301,14 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
         imageButton?.setOnClickListener{
             val adb = AlertDialog.Builder(this)
-            adb.setTitle(getString(R.string.groupchat_set_member_badge))
+            adb.setTitle(groupchatMember?.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
 
             val et = AppCompatEditText(this)
             et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
-            adb.setView(et)
+            et.isSingleLine = true
+            et.hint = groupchatMember?.badge
+            adb.setView(et, 64, 0, 64, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())}
