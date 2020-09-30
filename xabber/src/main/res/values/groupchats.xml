@@ -89,5 +89,7 @@
     <string name="groupchat_permissions_to_change_badges">Change badges</string>
     <string name="groupchat_permissions_to_change_nicknames">Change nicknames</string>
     <string name="groupchat_permissions_to_delete_messages">Delete messages</string>
+    
+    <string name="groupchat_you_have_no_permissions_to_do_it">You have no permissions to do it!</string>
 
 </resources>

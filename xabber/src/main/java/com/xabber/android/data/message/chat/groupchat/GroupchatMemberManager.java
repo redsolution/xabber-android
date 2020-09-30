@@ -1,5 +1,8 @@
 package com.xabber.android.data.message.chat.groupchat;
 
+import android.widget.Toast;
+
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -30,8 +33,10 @@ import com.xabber.android.data.message.chat.ChatManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
@@ -427,8 +432,16 @@ public class GroupchatMemberManager implements OnLoadListener {
                                 groupchatMember.getId(), badge, null);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(iq, packet -> {
-                            //todo implement errors parsing
+                        .sendIqWithResponseCallback(iq, packet -> { }, exception -> {
+                            LogManager.exception(LOG_TAG, exception);
+                            if (exception instanceof XMPPException.XMPPErrorException &&
+                                    ((XMPPException.XMPPErrorException)exception).getXMPPError()
+                                            .getCondition().equals(XMPPError.Condition.not_allowed))
+
+                                Application.getInstance().runOnUiThread(() -> Toast.makeText(Application.getInstance().getApplicationContext(),
+                                        Application.getInstance().getApplicationContext().getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                                        Toast.LENGTH_SHORT).show());
+
                         });
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         });
@@ -443,8 +456,15 @@ public class GroupchatMemberManager implements OnLoadListener {
                                 groupchatMember.getId(), null, nickname);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(iq, packet -> {
-                            //todo implement errors parsing
+                        .sendIqWithResponseCallback(iq, packet -> { }, exception -> {
+                            LogManager.exception(LOG_TAG, exception);
+                            if (exception instanceof XMPPException.XMPPErrorException &&
+                                    ((XMPPException.XMPPErrorException)exception).getXMPPError()
+                                            .getCondition().equals(XMPPError.Condition.not_allowed))
+
+                                Application.getInstance().runOnUiThread(() -> Toast.makeText(Application.getInstance().getApplicationContext(),
+                                        Application.getInstance().getApplicationContext().getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                                        Toast.LENGTH_SHORT).show());
                         });
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         });
