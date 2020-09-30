@@ -46,6 +46,7 @@ import com.xabber.android.ui.dialog.SnoozeDialog
 import com.xabber.android.ui.fragment.GroupchatMemberInfoFragment
 import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
+import java.util.*
 
 class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         SnoozeDialog.OnSnoozeListener, PopupMenu.OnMenuItemClickListener {
@@ -170,9 +171,10 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
 
-        findViewById<TextView>(R.id.groupchat_member_title).text = groupchatMember?.role?.capitalize() +
-                " of " + groupchat?.privacyType?.getLocalizedString()?.decapitalize() +
-                " group " + groupchat?.name
+        findViewById<TextView>(R.id.groupchat_member_title).text = getString(R.string.groupchat_member_of_group_name,
+                groupchatMember?.role?.capitalize(Locale.getDefault()),
+                groupchat?.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
+                groupchat?.name)
     }
 
     private fun setupAvatar(){
