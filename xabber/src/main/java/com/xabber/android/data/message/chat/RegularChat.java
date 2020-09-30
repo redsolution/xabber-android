@@ -26,6 +26,7 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -60,6 +61,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmList;
+
+import static com.xabber.android.data.message.chat.groupchat.GroupchatManager.SYSTEM_MESSAGE_NAMESPACE;
 
 /**
  * Represents normal chat.
@@ -246,6 +249,9 @@ public class RegularChat extends AbstractChat {
                 TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
+
+            boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE);
+
             // create message with file-attachments
             if (attachmentRealmObjects.size() > 0)
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
@@ -259,7 +265,7 @@ public class RegularChat extends AbstractChat {
                     timestamp, getDelayStamp(message), true, true, encrypted,
                     MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
-                    originalFrom, false, forwardIdRealmObjects, false, null);
+                    originalFrom, false, forwardIdRealmObjects, false, null, isSystem);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, contactJid));
         }
@@ -303,6 +309,8 @@ public class RegularChat extends AbstractChat {
         text = bodies.first;
         String markupText = bodies.second;
 
+        boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE);
+
         // create message with file-attachments
         if (attachmentRealmObjects.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
@@ -314,7 +322,7 @@ public class RegularChat extends AbstractChat {
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
                 false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza,
-                parentMessageId, originalFrom, true, forwardIdRealmObjects, true, gropchatUserId);
+                parentMessageId, originalFrom, true, forwardIdRealmObjects, true, gropchatUserId, isSystem);
 
         return uid;
     }

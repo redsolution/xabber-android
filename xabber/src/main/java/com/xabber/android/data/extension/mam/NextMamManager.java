@@ -18,6 +18,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -80,6 +81,8 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
+
+import static com.xabber.android.data.message.chat.groupchat.GroupchatManager.SYSTEM_MESSAGE_NAMESPACE;
 
 public class NextMamManager implements OnRosterReceivedListener, OnPacketListener {
 
@@ -926,6 +929,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         } else {
             messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }
+        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE))
+            messageRealmObject.setGroupchatSystem(true);
 
         return messageRealmObject;
     }

@@ -51,6 +51,7 @@ public class GroupchatManager implements OnPacketListener {
 
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
+    public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + "#system-message";
 
     private static GroupchatManager instance;
 

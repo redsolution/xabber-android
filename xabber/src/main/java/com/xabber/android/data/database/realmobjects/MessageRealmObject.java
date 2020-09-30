@@ -48,7 +48,6 @@ public class MessageRealmObject extends RealmObject {
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
         public static final String ACCOUNT = "account";
-        //public static final String BARE_ACCOUNT_JID = "bareAccount";
         public static final String USER = "user";
         public static final String RESOURCE = "resource";
         public static final String TEXT = "text";
@@ -56,7 +55,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ACTION = "action";
         public static final String INCOMING = "incoming";
         public static final String ENCRYPTED = "encrypted";
-        public static final String UNENCRYPTED = "unencrypted"; // deprecated
         public static final String OFFLINE = "offline";
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
@@ -81,7 +79,7 @@ public class MessageRealmObject extends RealmObject {
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
-        public static final String IS_PINNED = "isPinned";
+        public static final String IS_GROUPCHAT_SYSTEM = "isGroupchatSystem";
     }
 
     /**
@@ -94,8 +92,7 @@ public class MessageRealmObject extends RealmObject {
 
     @Index
     private String account;
-//    @Index
-//    private String bareAccount;
+
     @Index
     private String user;
 
@@ -205,8 +202,7 @@ public class MessageRealmObject extends RealmObject {
     @Ignore
     private String packetId;
     private String groupchatUserId;
-
-    private boolean isPinned;
+    private boolean isGroupchatSystem = false;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
@@ -411,6 +407,10 @@ public class MessageRealmObject extends RealmObject {
 
     public void setGroupchatUserId(String groupchatUserId) { this.groupchatUserId = groupchatUserId; }
 
+    public boolean isGroupchatSystem() { return isGroupchatSystem; }
+
+    public void setGroupchatSystem(boolean groupchatSystem) { isGroupchatSystem = groupchatSystem; }
+
     public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
 
     public String getFirstForwardedMessageText(int color) {
@@ -473,14 +473,6 @@ public class MessageRealmObject extends RealmObject {
             }
         }
         return false;
-    }
-
-    public boolean isPinned() {
-        return isPinned;
-    }
-
-    public void setPinned(boolean pinned) {
-        isPinned = pinned;
     }
 
     public boolean isUiEqual(MessageRealmObject comparableMessageRealmObject){

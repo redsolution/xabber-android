@@ -245,7 +245,7 @@ public abstract class AbstractChat extends BaseEntity implements
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
                 action, null, null, true, false, false, false,
                 null, null, null, null, null, false, null,
-                false, null);
+                false, null, false);
     }
 
     /**
@@ -265,7 +265,7 @@ public abstract class AbstractChat extends BaseEntity implements
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
                 action, silentTimestamp, null, true, false, false, false,
                 null, null, null, null, null, false, null,
-                false, null);
+                false, null, false);
     }
 
     /**
@@ -292,12 +292,12 @@ public abstract class AbstractChat extends BaseEntity implements
                                  final String originalStanza, final String parentMessageId,
                                  final String originalFrom, boolean isForwarded,
                                  final RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                 boolean fromMAM, String groupchatUserId) {
+                                 boolean fromMAM, String groupchatUserId, boolean isGroupchatSystem) {
 
         final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
                 markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
                 stanzaId, originId, null, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId);
+                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId, isGroupchatSystem);
 
         saveMessageItem(ui, messageRealmObject);
     }
@@ -316,7 +316,7 @@ public abstract class AbstractChat extends BaseEntity implements
         final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
                 markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
                 stanzaId, originId, attachmentRealmObjects, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId);
+                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId, false);
 
         saveMessageItem(ui, messageRealmObject);
     }
@@ -356,7 +356,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return createMessageItem(UUID.randomUUID().toString(), resource, text, markupText, action,
                 null, delayTimestamp, incoming, notify, encrypted, offline, stanzaId,
                 originId, attachmentRealmObjects, originalStanza, parentMessageId, originalFrom,
-                isForwarded, forwardIdRealmObjects, false, null);
+                isForwarded, forwardIdRealmObjects, false, null, false);
     }
 
     protected MessageRealmObject createMessageItem(String uid, Resourcepart resource, String text,
@@ -369,7 +369,8 @@ public abstract class AbstractChat extends BaseEntity implements
                                                    String originalStanza, String parentMessageId,
                                                    String originalFrom, boolean isForwarded,
                                                    RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                                   boolean fromMAM, String groupchatUserId) {
+                                                   boolean fromMAM, String groupchatUserId,
+                                                   boolean isGroupchatSystem) {
 
         final boolean visible = ChatManager.getInstance().isVisibleChat(this);
         boolean read = !incoming;
@@ -441,6 +442,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
         // groupchat
         if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);
+        messageRealmObject.setGroupchatSystem(isGroupchatSystem);
 
         // notification
         enableNotificationsIfNeed();

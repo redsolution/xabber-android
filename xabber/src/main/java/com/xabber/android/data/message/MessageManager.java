@@ -70,6 +70,8 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
+import static com.xabber.android.data.message.chat.groupchat.GroupchatManager.SYSTEM_MESSAGE_NAMESPACE;
+
 /**
  * Manage chats and its messages.
  * <p/>
@@ -562,6 +564,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             } else {
                 newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
             }
+            if (message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE))
+                newMessageRealmObject.setGroupchatSystem(true);
+
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);
 
