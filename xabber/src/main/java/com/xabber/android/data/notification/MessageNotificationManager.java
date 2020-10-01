@@ -122,12 +122,7 @@ public class MessageNotificationManager implements OnLoadListener {
     @Override
     public void onLoad() {
         final List<Chat> chats = loadNotifChatsFromRealm();
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(chats);
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> onLoaded(chats));
     }
 
     /** PUBLIC METHODS */

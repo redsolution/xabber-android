@@ -66,8 +66,6 @@ public class MessageNotificationCreator {
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
 
-
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
                 .setAllowSystemGeneratedContextualActions(false)
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))

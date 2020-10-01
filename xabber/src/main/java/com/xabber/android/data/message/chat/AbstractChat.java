@@ -446,7 +446,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
         // notification
         enableNotificationsIfNeed();
-        if (notify && notifyAboutMessage() && !visible)
+        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem)
             NotificationManager.getInstance().onMessageNotification(messageRealmObject);
 
         // remove notifications if get outgoing message with 2 sec delay
