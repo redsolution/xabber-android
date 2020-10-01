@@ -16,10 +16,10 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -44,6 +44,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 8;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT = 9;
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 10;
+    public static final int VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 11;
 
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
@@ -123,6 +124,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         if (messageRealmObject.getAction() != null)
             return VIEW_TYPE_ACTION_MESSAGE;
 
+        if (messageRealmObject.isGroupchatSystem())
+            return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
+
         // if noFlex is true, should use special layout without flexbox-style text
         boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
         boolean noFlex = messageRealmObject.haveForwardedMessages() || messageRealmObject.haveAttachments();
@@ -190,6 +194,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_message_outgoing_image_text, parent, false),
                         this, this, this, appearanceStyle);
+
+            case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
+                return new GroupchatSystemMessageVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_groupchat_system_message, parent, false));
             default:
                 return null;
         }
@@ -272,6 +280,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
                 ((NoFlexOutgoingMsgVH)holder).bind(messageRealmObject, extraData);
                 break;
+            case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
+                ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
 
         }
     }

@@ -225,10 +225,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setAccount(AccountJid account) {
         this.account = account.toString();
-        //this.bareAccount = account.getFullJid().asBareJid().toString();
     }
-
-    //public String getBareAccount() { return bareAccount; }
 
     public ContactJid getUser() {
         try {
