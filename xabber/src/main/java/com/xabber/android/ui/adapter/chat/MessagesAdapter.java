@@ -31,7 +31,7 @@ import io.realm.RealmResults;
 
 public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject, BasicMessageVH>
         implements MessageVH.MessageClickListener, MessageVH.MessageLongClickListener,
-        FileMessageVH.FileListener {
+        FileMessageVH.FileListener, IncomingMessageVH.OnMessageAvatarClickListener {
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
@@ -52,6 +52,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private final ForwardedAdapter.ForwardListener fwdListener;
     private final Listener listener;
     private final IncomingMessageVH.BindListener bindListener;
+    private final IncomingMessageVH.OnMessageAvatarClickListener onMessageAvatarClickListener;
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
@@ -60,8 +61,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private int mentionColor;
     private String userName;
     private AccountJid account;
-    private ContactJid user;
-    private Long mainMessageTimestamp;
     private int prevItemCount;
     private String prevFirstItemId;
     private String firstUnreadMessageID;
@@ -83,7 +82,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             Context context, RealmResults<MessageRealmObject> messageRealmObjects,
             AbstractChat chat, MessageVH.MessageClickListener messageListener,
             FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
-            Listener listener, IncomingMessageVH.BindListener bindListener) {
+            Listener listener, IncomingMessageVH.BindListener bindListener,
+            IncomingMessageVH.OnMessageAvatarClickListener avatarClickListener) {
         super(context, messageRealmObjects, true);
 
         this.context = context;
@@ -92,9 +92,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         this.fwdListener = fwdListener;
         this.listener = listener;
         this.bindListener = bindListener;
+        this.onMessageAvatarClickListener = avatarClickListener;
 
         account = chat.getAccount();
-        user = chat.getContactJid();
+        ContactJid user = chat.getContactJid();
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
         prevFirstItemId = getFirstMessageId();
@@ -158,12 +159,14 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        this, this, this, bindListener, appearanceStyle);
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
 
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_noflex, parent, false),
-                        this, this, this, bindListener, appearanceStyle);
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
@@ -183,12 +186,14 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_image, parent, false),
-                        this, this, this, bindListener, appearanceStyle);
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
 
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_message_incoming_image_text, parent, false),
-                        this, this, this, bindListener, appearanceStyle);
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
                 return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
@@ -250,7 +255,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 //            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
 //        } else needDate = true;
 
-        mainMessageTimestamp = messageRealmObject.getTimestamp();
+        Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener,
                 context, userName, colorStateList, groupchatMember, accountMainColor, mentionColor, mainMessageTimestamp,
@@ -316,7 +321,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     @Override
     public void onMessageClick(View caller, int position) {
-        if (isCheckMode && !recyclerView.isComputingLayout()) addOrRemoveCheckedItem(position);
+        if (isCheckMode && !recyclerView.isComputingLayout())
+            addOrRemoveCheckedItem(position);
         else messageListener.onMessageClick(caller, position);
     }
 
@@ -325,11 +331,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         addOrRemoveCheckedItem(position);
     }
 
-    public int findMessagePosition(String uniqueId) {
-        for (int i = 0; i < realmResults.size(); i++) {
-            if (realmResults.get(i).getUniqueId().equals(uniqueId)) return i;
-        }
-        return RecyclerView.NO_POSITION;
+    @Override
+    public void onMessageAvatarClick(int position) {
+        if (isCheckMode && !recyclerView.isComputingLayout())
+            addOrRemoveCheckedItem(position);
+        else onMessageAvatarClickListener.onMessageAvatarClick(position);
     }
 
     public void setFirstUnreadMessageId(String id) {

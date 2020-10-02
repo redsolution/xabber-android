@@ -53,7 +53,6 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;

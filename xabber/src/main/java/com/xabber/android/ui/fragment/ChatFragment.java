@@ -118,6 +118,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
+import com.xabber.android.ui.activity.GroupchatMemberActivity;
 import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
@@ -170,7 +171,8 @@ import rx.subjects.PublishSubject;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener {
+        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
+        IncomingMessageVH.OnMessageAvatarClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -822,7 +824,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
-                this, this, this, this, this);
+                this, this, this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
         realmRecyclerView.setItemAnimator(null);
         realmRecyclerView.addItemDecoration(new MessageHeaderViewDecoration());
@@ -1775,6 +1777,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 return;
             }
             showCustomMenu(caller);
+        }
+    }
+
+    @Override
+    public void onMessageAvatarClick(int position) {
+        if (getChat() instanceof GroupChat){
+            String memberId = chatMessageAdapter.getMessageItem(position).getGroupchatUserId();
+            startActivity(GroupchatMemberActivity.Companion
+                    .createIntentForGroupchatAndMemberId(getActivity(), memberId, (GroupChat) getChat()));
+        } else {
+            LogManager.w(LOG_TAG, "onMessageAvatarClick on notGroupchat. Position: " + position);
         }
     }
 

@@ -9,13 +9,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.StyleRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
@@ -34,16 +34,33 @@ public class IncomingMessageVH  extends FileMessageVH {
         void onBind(MessageRealmObject message);
     }
 
+    public interface OnMessageAvatarClickListener{
+        void onMessageAvatarClick(int position);
+    }
+
     IncomingMessageVH(View itemView, MessageClickListener messageListener,
                       MessageLongClickListener longClickListener,
-                      FileListener fileListener, BindListener listener, @StyleRes int appearance) {
+                      FileListener fileListener, BindListener listener,
+                      OnMessageAvatarClickListener avatarClickListener, @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
+
         avatar = itemView.findViewById(R.id.avatar);
+
+        avatar.setOnClickListener(v -> {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(this.getClass().getSimpleName(), "onClick: no position");
+                return;
+            } else avatarClickListener.onMessageAvatarClick(adapterPosition);
+        });
+
         avatarBackground = itemView.findViewById(R.id.avatarBackground);
+
         this.listener = listener;
     }
 
-    public void bind(final MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(final MessageRealmObject messageRealmObject,
+                     MessagesAdapter.MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
 
         Context context = extraData.getContext();
@@ -81,7 +98,8 @@ public class IncomingMessageVH  extends FileMessageVH {
                 }
                 if(imageOnly) needTail = false;
             }
-        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
+        } else if (messageRealmObject.hasImage()
+                && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
             if (messageText.getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
@@ -95,7 +113,8 @@ public class IncomingMessageVH  extends FileMessageVH {
         Drawable shadowDrawable = context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_in_shadow : R.drawable.fwd_shadow)
                             : (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
-        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black),
+                PorterDuff.Mode.MULTIPLY);
         messageBalloon.setBackgroundDrawable(balloonDrawable);
         messageShadow.setBackgroundDrawable(shadowDrawable);
 
@@ -124,7 +143,8 @@ public class IncomingMessageVH  extends FileMessageVH {
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context));
-            if(messageText.getText().toString().trim().isEmpty() && messageRealmObject.isAttachmentImageOnly())
+            if(messageText.getText().toString().trim().isEmpty()
+                    && messageRealmObject.isAttachmentImageOnly())
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
         }
 
@@ -133,7 +153,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(context, extraData.getGroupchatMember(), messageRealmObject, extraData.getUsername(), needTail);
+        setUpAvatar(context, extraData.getGroupchatMember(), messageRealmObject, needTail);
 
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
@@ -163,8 +183,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         });
     }
 
-    private void setUpAvatar(Context context, GroupchatMember groupchatMember, MessageRealmObject messageRealmObject,
-                             String userName, boolean needTail) {
+    private void setUpAvatar(Context context, GroupchatMember groupchatMember,
+                             MessageRealmObject messageRealmObject, boolean needTail) {
+
         boolean needAvatar = SettingsManager.chatsShowAvatars();
         // for new groupchats (0GGG)
         if (groupchatMember != null) needAvatar = true;
@@ -186,16 +207,26 @@ public class IncomingMessageVH  extends FileMessageVH {
 
         //groupchat avatar
         if (groupchatMember != null) {
+
             Drawable placeholder;
+
             try {
-                ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString() + "/" + groupchatMember.getNickname());
-                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupchatMember.getNickname());
+
+                ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString()
+                        + "/"
+                        + groupchatMember.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid,
+                        groupchatMember.getNickname());
+
             } catch (ContactJid.UserJidCreateException e) {
-               placeholder = AvatarManager.getInstance()
-                       .generateDefaultAvatar(groupchatMember.getNickname(), groupchatMember.getNickname());
+
+               placeholder = AvatarManager.getInstance().generateDefaultAvatar(
+                       groupchatMember.getNickname(), groupchatMember.getNickname());
+
             }
             Glide.with(context)
-                    .load(AvatarManager.getInstance().getGroupchatMemberAvatar(groupchatMember, messageRealmObject.getAccount()))
+                    .load(AvatarManager.getInstance().getGroupchatMemberAvatar(groupchatMember,
+                            messageRealmObject.getAccount()))
                     .centerCrop()
                     .placeholder(placeholder)
                     .error(placeholder)
@@ -204,7 +235,6 @@ public class IncomingMessageVH  extends FileMessageVH {
         }
 
         final ContactJid user = messageRealmObject.getUser();
-        final AccountJid account = messageRealmObject.getAccount();
         final Resourcepart resource = messageRealmObject.getResource();
 
         if (resource.equals(Resourcepart.EMPTY)) {
@@ -212,7 +242,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         } else {
 
             String nick = resource.toString();
-            ContactJid contactJid = null;
+            ContactJid contactJid;
 
             try {
                 contactJid = ContactJid.from(user.getJid().toString() + "/" + resource.toString());
