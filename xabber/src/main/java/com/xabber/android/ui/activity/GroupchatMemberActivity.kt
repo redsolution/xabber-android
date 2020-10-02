@@ -30,10 +30,13 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.xabber.android.R
+import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
+import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
+import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember
@@ -48,7 +51,7 @@ import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import java.util.*
 
 class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
-        SnoozeDialog.OnSnoozeListener, PopupMenu.OnMenuItemClickListener {
+        SnoozeDialog.OnSnoozeListener, PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
 
     private val LOG_TAG = this.javaClass.simpleName
 
@@ -78,6 +81,26 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             intent.putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
             intent.putExtra(ACCOUNT_JID, groupchat.account.toString())
             return intent
+        }
+    }
+
+    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
+
+    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
+
+    override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid, groupchatJid: ContactJid, iq: GroupchatMemberRightsReplyIQ) {}
+
+    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
+
+    override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) {}
+
+    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String) {
+        if (accountJid == this.accountJid && groupchatJid == this.groupchatJid
+                && groupchatMemberId == this.groupchatMember?.id){
+            Application.getInstance().runOnUiThread {
+                setupAvatar()
+                setupNameBlock()
+            }
         }
     }
 
@@ -196,7 +219,13 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
+        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java,  this);
         appBarResize()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Application.getInstance().removeUIListener(OnGroupchatRequestListener::class.java, this)
     }
 
     private fun appBarResize() {

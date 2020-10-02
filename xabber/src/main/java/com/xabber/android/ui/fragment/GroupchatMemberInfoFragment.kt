@@ -289,6 +289,8 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
 
     override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) { }
 
+    override fun onGroupchatMemberUpdated(accountJid: AccountJid?, groupchatJid: ContactJid?, groupchatMemberId: String?) { }
+
     override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid,
                                                      groupchatJid: ContactJid,
                                                      iq: GroupchatMemberRightsReplyIQ) {

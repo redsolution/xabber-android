@@ -432,7 +432,14 @@ public class GroupchatMemberManager implements OnLoadListener {
                                 groupchatMember.getId(), badge, null);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(iq, packet -> { }, exception -> {
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
+                                groupchatMember.setBadge(badge);
+                                GroupchatMemberRepository.saveOrUpdateGroupchatMember(groupchatMember);
+                                for (OnGroupchatRequestListener listener : Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
+                                    listener.onGroupchatMemberUpdated(groupChat.getAccount(), groupChat.getContactJid(), groupchatMember.getId());
+                            }
+                        }, exception -> {
                             LogManager.exception(LOG_TAG, exception);
                             if (exception instanceof XMPPException.XMPPErrorException &&
                                     ((XMPPException.XMPPErrorException)exception).getXMPPError()
@@ -456,7 +463,14 @@ public class GroupchatMemberManager implements OnLoadListener {
                                 groupchatMember.getId(), null, nickname);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(iq, packet -> { }, exception -> {
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
+                                groupchatMember.setNickname(nickname);
+                                GroupchatMemberRepository.saveOrUpdateGroupchatMember(groupchatMember);
+                                for (OnGroupchatRequestListener listener : Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
+                                    listener.onGroupchatMemberUpdated(groupChat.getAccount(), groupChat.getContactJid(), groupchatMember.getId());
+                            }
+                        }, exception -> {
                             LogManager.exception(LOG_TAG, exception);
                             if (exception instanceof XMPPException.XMPPErrorException &&
                                     ((XMPPException.XMPPErrorException)exception).getXMPPError()

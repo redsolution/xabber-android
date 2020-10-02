@@ -432,6 +432,12 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
+    public void onGroupchatMemberUpdated(AccountJid accountJid, ContactJid groupchatJid, String groupchatMemberId) {
+        if (isThisChat(accountJid, groupchatJid))
+            Application.getInstance().runOnUiThread(this::updateViewsWithMemberList);
+    }
+
+    @Override
     public void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid) {
         if (isThisChat(account, groupchatJid))
             updateViewsWithMemberList();
