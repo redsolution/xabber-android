@@ -440,10 +440,6 @@ public abstract class AbstractChat extends BaseEntity implements
         messageRealmObject.setParentMessageId(parentMessageId);
         messageRealmObject.setForwarded(isForwarded);
 
-        // groupchat
-        if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);
-        messageRealmObject.setGroupchatSystem(isGroupchatSystem);
-
         // notification
         enableNotificationsIfNeed();
         if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem)
@@ -461,6 +457,12 @@ public abstract class AbstractChat extends BaseEntity implements
         String id = messageRealmObject.getArchivedId();
         if (id == null) id = messageRealmObject.getStanzaId();
         setLastMessageId(id);
+
+        // groupchat
+        if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);{
+            messageRealmObject.setGroupchatSystem(isGroupchatSystem);
+            markAsRead(messageRealmObject, false);
+        }
 
         return messageRealmObject;
     }
