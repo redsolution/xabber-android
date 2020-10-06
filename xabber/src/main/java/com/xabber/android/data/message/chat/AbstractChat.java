@@ -459,9 +459,11 @@ public abstract class AbstractChat extends BaseEntity implements
         setLastMessageId(id);
 
         // groupchat
-        if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);{
+        if (groupchatUserId != null)
+            messageRealmObject.setGroupchatUserId(groupchatUserId);
+        if (isGroupchatSystem){
             messageRealmObject.setGroupchatSystem(isGroupchatSystem);
-            markAsRead(messageRealmObject, false);
+            messageRealmObject.setRead(true);
         }
 
         return messageRealmObject;
