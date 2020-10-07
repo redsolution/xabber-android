@@ -4,15 +4,14 @@ buildscript {
     repositories {
         jcenter()
         google()
-        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.4'
+        classpath 'com.android.tools.build:gradle:4.0.2'
         classpath "io.realm:realm-gradle-plugin:6.0.2"
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.4'
-        classpath 'io.fabric.tools:gradle:1.28.0'
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+        classpath 'com.google.gms:google-services:4.3.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -24,6 +23,5 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         maven { url 'http://igniterealtime.org/repo' }
-        maven { url 'https://maven.fabric.io/public' }
     }
 }

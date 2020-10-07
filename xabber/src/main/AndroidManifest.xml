@@ -16,8 +16,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.xabber.android">
 
-    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="true" />
-
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -52,11 +50,6 @@
         tools:replace="label, icon, allowBackup"
         android:requestLegacyExternalStorage="true"
         android:hardwareAccelerated="true">
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="${crashlytics}"
-            />
 
         <!-- Activities -->
         <activity

@@ -405,9 +405,6 @@ public class Application extends android.app.Application {
                     .build());
         }
 
-        /** Crashlytics */
-        ExternalAPIs.enableCrashlyticsIfNeed(this);
-
 //        new ANRWatchDog()
 //                .setANRListener(error -> LogManager.exception("ANR Detected!", error))
 //                .start();
