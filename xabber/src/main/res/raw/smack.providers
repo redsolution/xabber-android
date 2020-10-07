@@ -14,31 +14,31 @@
     <!-- XEP-0GGG Group Chat -->
     <extensionProvider>
         <elementName>x</elementName>
-        <namespace>http://xabber.com/protocol/groupchat</namespace>
+        <namespace>https://xabber.com/protocol/groups</namespace>
         <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
     </extensionProvider>
 
     <iqProvider>
             <elementName>query</elementName>
-            <namespace>http://xabber.com/protocol/groupchat#rights</namespace>
+            <namespace>https://xabber.com/protocol/groups#rights</namespace>
             <className>com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIqProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
-        <namespace>http://xabber.com/protocol/groupchat#members</namespace>
+        <namespace>https://xabber.com/protocol/groups#members</namespace>
         <className>com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
-        <namespace>http://xabber.com/protocol/groupchat#invite</namespace>
+        <namespace>https://xabber.com/protocol/groups#invite</namespace>
         <className>com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
-        <namespace>http://xabber.com/protocol/groupchat#block</namespace>
+        <namespace>https://xabber.com/protocol/groups#block</namespace>
         <className>com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultProvider</className>
     </iqProvider>
 
@@ -156,11 +156,10 @@
         <className>com.xabber.android.data.extension.reliablemessagedelivery.OriginIdProvider</className>
     </extensionProvider>
 
-
     <!--           Time element provider         -->
     <extensionProvider>
         <elementName>time</elementName>
-        <namespace>http://xabber.com/protocol/delivery</namespace>
+        <namespace>https://xabber.com/protocol/delivery</namespace>
         <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
     </extensionProvider>
 
