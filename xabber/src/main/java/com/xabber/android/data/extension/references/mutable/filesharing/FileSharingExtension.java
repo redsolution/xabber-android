@@ -5,7 +5,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class FileSharingExtension implements ExtensionElement {
 
-    public static final String NAMESPACE = "https://xabber.com/protocol/otb";
+    public static final String NAMESPACE = "https://xabber.com/protocol/files";
     public static final String FILE_SHARING_ELEMENT = "file-sharing";
 
     protected FileInfo fileInfo;

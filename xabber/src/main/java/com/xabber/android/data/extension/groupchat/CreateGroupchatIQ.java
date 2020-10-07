@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.groupchat;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.xmpp.SimpleNamedElement;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class CreateGroupchatIQ extends IQ {
 
-    public static final String NAMESPACE_CREATE = ("http://xabber.com/protocol/groupchat#create");
+    public static final String HASH_BLOCK = "#create";
+    public static final String NAMESPACE = GroupchatManager.NAMESPACE.concat(HASH_BLOCK);
     public static final String QUERY_ELEMENT = "query";
     public static final String JID_ELEMENT = "jid";
     private static final String NAME_ELEMENT = "name";
@@ -47,7 +49,7 @@ public class CreateGroupchatIQ extends IQ {
     public CreateGroupchatIQ(Jid from, String to, String groupName, String groupLocalpart,
                              String description, GroupchatMembershipType membershipType,
                              GroupchatPrivacyType privacyType, GroupchatIndexType indexType){
-        super(QUERY_ELEMENT, NAMESPACE_CREATE);
+        super(QUERY_ELEMENT, NAMESPACE);
         this.setType(Type.set);
         this.setFrom(from);
         this.setTo(to);

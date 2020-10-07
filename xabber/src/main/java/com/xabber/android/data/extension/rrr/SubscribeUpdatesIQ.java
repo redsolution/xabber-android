@@ -6,7 +6,7 @@ import org.jivesoftware.smack.packet.IQ;
 
 public class SubscribeUpdatesIQ extends IQ {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/rewrite";
+    public static final String NAMESPACE = RewriteManager.NAMESPACE;
     public static final String ELEMENT = "activate";
     private String from;
 

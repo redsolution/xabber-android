@@ -35,9 +35,9 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class RrrManager implements OnPacketListener {
+public class RewriteManager implements OnPacketListener {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/rewrite";
+    public static final String NAMESPACE = "https://xabber.com/protocol/rewrite";
     private static final String NAMESPACE_NOTIFY = NAMESPACE.concat("#notify");
     private static final String RETRACT_MESSAGE_ELEMENT = "retract-message";
     private static final String REWRITE_MESSAGE_ELEMENT = "replace";
@@ -47,11 +47,11 @@ public class RrrManager implements OnPacketListener {
     private static final String ID_ATTRIBUTE = "id";
     private static final String STAMP_ATTRIBUTE = "stamp";
     private static final String LOG_TAG = "RRRManager";
-    private static RrrManager instance;
+    private static RewriteManager instance;
 
-    public static RrrManager getInstance() {
+    public static RewriteManager getInstance() {
         if (instance == null)
-            instance = new RrrManager();
+            instance = new RewriteManager();
         return instance;
     }
 
@@ -70,7 +70,7 @@ public class RrrManager implements OnPacketListener {
 
     public void subscribeForUpdates() {
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            if (RrrManager.getInstance().isSupported(accountJid))
+            if (RewriteManager.getInstance().isSupported(accountJid))
                 subscribeForUpdates(accountJid);
         }
     }

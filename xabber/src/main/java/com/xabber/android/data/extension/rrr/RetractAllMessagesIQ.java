@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.rrr;
 import org.jivesoftware.smack.packet.IQ;
 
 public class RetractAllMessagesIQ extends IQ {
-    public static final String NAMESPACE = RrrManager.NAMESPACE;
+    public static final String NAMESPACE = RewriteManager.NAMESPACE;
     public static final String ELEMENT = "retract-all";
     public static final String SYMMETRIC_ATTRIBUTE = "symmetric";
     public static final String CONVERSATION_ATTRIBUTE = "conversation";

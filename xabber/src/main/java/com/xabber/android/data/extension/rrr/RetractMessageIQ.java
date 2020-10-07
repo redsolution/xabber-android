@@ -4,7 +4,7 @@ import org.jivesoftware.smack.packet.IQ;
 
 public class RetractMessageIQ extends IQ {
 
-    public static final String NAMESPACE = RrrManager.NAMESPACE;
+    public static final String NAMESPACE = RewriteManager.NAMESPACE;
     public static final String ELEMENT = "retract-message";
     public static final String SYMMETRIC_ATTRIBUTE = "symmetric";
     public static final String ID_ATTRIBUTE = "id";

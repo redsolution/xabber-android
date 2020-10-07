@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.groupchat;
 
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.NamedElement;
 import org.jxmpp.jid.Jid;
@@ -9,7 +11,7 @@ import java.util.Collection;
 
 public class GroupchatUpdateIQ extends IQ  {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
+    public static final String NAMESPACE = GroupchatManager.NAMESPACE;
     public static final String ELEMENT = "update";
 
     private Jid from;

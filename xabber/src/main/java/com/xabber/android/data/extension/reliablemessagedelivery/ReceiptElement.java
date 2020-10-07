@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ReceiptElement implements EmbeddedPacketExtension {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/delivery";
+    public static final String NAMESPACE = ReliableMessageDeliveryManager.NAMESPACE;
     public static final String ELEMENT = "received";
 
     private TimeElement timeElement;

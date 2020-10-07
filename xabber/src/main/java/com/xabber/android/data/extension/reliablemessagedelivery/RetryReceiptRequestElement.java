@@ -6,7 +6,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 public class RetryReceiptRequestElement implements ExtensionElement {
 
     public static final String ELEMENT = "retry";
-    private static final String NAMESPACE = "http://xabber.com/protocol/delivery";
+    private static final String NAMESPACE = ReliableMessageDeliveryManager.NAMESPACE;
 
     public RetryReceiptRequestElement() {}
 

@@ -53,7 +53,7 @@ import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
@@ -78,7 +78,6 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.AppBlockCanaryContext;
-import com.xabber.android.utils.ExternalAPIs;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -457,7 +456,7 @@ public class Application extends android.app.Application {
         addManager(XTokenManager.getInstance());
         addManager(GroupchatManager.getInstance());
         addManager(GroupchatMemberManager.getInstance());
-        addManager(RrrManager.getInstance());
+        addManager(RewriteManager.getInstance());
         addManager(ReliableMessageDeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
     }

@@ -95,7 +95,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
-import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
@@ -1415,7 +1415,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
-            RrrManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
+            RewriteManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
             hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
             sendMessage(text, markupText);
@@ -1610,7 +1610,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 onlyOutgoing = false;
         }
         int size = ids.size();
-        if (RrrManager.getInstance().isSupported(account)) {
+        if (RewriteManager.getInstance().isSupported(account)) {
             View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
             checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
@@ -1620,8 +1620,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .setMessage(size == 1 ? R.string.delete_message_question : R.string.delete_messages_question)
                     .setPositiveButton(R.string.delete, (dialog14, which) -> {
                         if (checkBox.isChecked())
-                            RrrManager.getInstance().tryToRetractMessage(account, ids, true);
-                        else RrrManager.getInstance().tryToRetractMessage(account, ids, false);
+                            RewriteManager.getInstance().tryToRetractMessage(account, ids, true);
+                        else RewriteManager.getInstance().tryToRetractMessage(account, ids, false);
                     })
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
                     });
@@ -1794,7 +1794,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onChangeCheckedItems(int checkedItems) {
         boolean isEditable = checkedItems == 1
-                && RrrManager.getInstance().isSupported(account)
+                && RewriteManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
                 && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()

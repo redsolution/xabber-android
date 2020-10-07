@@ -8,7 +8,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 public class VoiceMessageExtension implements ExtensionElement {
 
     public static final String VOICE_ELEMENT = "voice-message";
-    public static final String VOICE_NAMESPACE = "https://xabber.com/protocol/voice-message";
+    public static final String VOICE_NAMESPACE = "https://xabber.com/protocol/voice-messages";
 
     private FileSharingExtension voiceFile;
 

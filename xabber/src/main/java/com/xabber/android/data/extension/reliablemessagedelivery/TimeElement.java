@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class TimeElement implements ExtensionElement {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/delivery";
+    public static final String NAMESPACE = ReliableMessageDeliveryManager.NAMESPACE;
     public static final String ELEMENT = "time";
     public static final String ATTRIBUTE_BY = "by";
     public static final String ATTRIBUTE_STAMP = "stamp";

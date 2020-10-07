@@ -50,7 +50,7 @@ import java.util.Map;
 public class GroupchatManager implements OnPacketListener {
 
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
-    public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
+    public static final String NAMESPACE = "https://xabber.com/protocol/groups";
     public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + "#system-message";
 
     private static GroupchatManager instance;
@@ -184,7 +184,7 @@ public class GroupchatManager implements OnPacketListener {
                             LogManager.d(LOG_TAG, packet.toXML().toString());
 
                             StandardExtensionElement standardExtensionElement = packet
-                                    .getExtension(CreateGroupchatIQ.QUERY_ELEMENT, CreateGroupchatIQ.NAMESPACE_CREATE);
+                                    .getExtension(CreateGroupchatIQ.QUERY_ELEMENT, CreateGroupchatIQ.NAMESPACE);
 
                             if (standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT) != null){
                                 String createdGroupchatJid = standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT).getText();

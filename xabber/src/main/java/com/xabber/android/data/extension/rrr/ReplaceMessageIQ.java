@@ -4,7 +4,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 
 public class ReplaceMessageIQ extends IQ {
-    public static final String NAMESPACE = "http://xabber.com/protocol/rewrite";
+    public static final String NAMESPACE = RewriteManager.NAMESPACE;
     public static final String ELEMENT = "replace";
     public static final String ID_ATTRIBUTE = "id";
     public static final String BY_ATTRIBUTE = "by";

@@ -16,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -66,7 +66,7 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
 
         checkBox = (CheckBox) view.findViewById(R.id.clear_history_retract);
 
-        if (RrrManager.getInstance().isSupported(account)){
+        if (RewriteManager.getInstance().isSupported(account)){
             checkBox.setVisibility(View.VISIBLE);
         }
 
@@ -83,8 +83,8 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
                 chat.setChatstate((AbstractChat.ChatstateType.CLEARED_HISTORY));
                 chat.setLastActionTimestamp();
             }
-            if (RrrManager.getInstance().isSupported(account))
-                RrrManager.getInstance().sendRetractAllMessagesRequest(account, user, checkBox.isChecked());
+            if (RewriteManager.getInstance().isSupported(account))
+                RewriteManager.getInstance().sendRetractAllMessagesRequest(account, user, checkBox.isChecked());
             else MessageManager.getInstance().clearHistory(account, user);
         }
         dismiss();

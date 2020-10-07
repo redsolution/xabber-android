@@ -28,7 +28,7 @@ import io.realm.Sort;
 
 public class ReliableMessageDeliveryManager implements OnPacketListener {
 
-    public static final String NAMESPACE = "http://xabber.com/protocol/delivery";
+    public static final String NAMESPACE = "https://xabber.com/protocol/delivery";
     public static final String LOG_TAG = ReliableMessageDeliveryManager.class.getSimpleName();
 
     private static ReliableMessageDeliveryManager instance;

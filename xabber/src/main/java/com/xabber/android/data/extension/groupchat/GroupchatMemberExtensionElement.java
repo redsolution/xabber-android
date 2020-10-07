@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.groupchat;
 
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.xmpp.avatar.MetadataInfo;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -8,7 +9,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 public class GroupchatMemberExtensionElement implements ExtensionElement {
 
     public static final String ELEMENT = "user";
-    public static final String NAMESPACE = "http://xabber.com/protocol/groupchat";
+    public static final String NAMESPACE = GroupchatManager.NAMESPACE;
     public static final String ATTR_ID = "id";
 
     public static final String ELEMENT_JID = "jid";
