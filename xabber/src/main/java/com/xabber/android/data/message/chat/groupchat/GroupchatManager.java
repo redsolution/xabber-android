@@ -13,7 +13,7 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ;
-import com.xabber.android.data.extension.groupchat.GroupchatEchoExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatUpdateIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupchatDescriptionNamedElement;
@@ -70,7 +70,7 @@ public class GroupchatManager implements OnPacketListener {
             processPresence(connection, packet);
         } else if (packet instanceof Message
                 && ((Message) packet).getType().equals(Message.Type.headline)
-                && packet.hasExtension(GroupchatEchoExtensionElement.ELEMENT, GroupchatEchoExtensionElement.NAMESPACE)){
+                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE)){
             processHeadlineEchoMessage(connection, packet);
         } else if (packet instanceof DiscoverItems){
             processDiscoInfoIq(connection, packet);
