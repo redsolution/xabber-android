@@ -159,7 +159,6 @@ class FileLog {
     private synchronized void controlFileSize() {
         if (currentFile != null)
             if (currentFile.length() >= LOG_FILE_MAX_SIZE) {
-                LogManager.d(this.getClass().getSimpleName(), "All logs file is too large, try to recreate");
                 File newFile = createLogFile();
                 if (newFile != null)
                     currentFile = newFile;
