@@ -22,6 +22,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,9 +252,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         // need date
         boolean needDate = false;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
-//        if (previousMessage != null) {
-//            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
-//        } else needDate = true;
+        if (previousMessage != null) {
+            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
+        } else needDate = true;
 
         Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
