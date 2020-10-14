@@ -15,16 +15,15 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,14 +35,20 @@ import java.util.Collections;
  */
 public class AccountChooseAdapter extends BaseAdapter {
     protected final ArrayList<AccountJid> accounts;
-    private final Activity activity;
+    private final LayoutInflater layoutInflater;
 
     public AccountChooseAdapter(Activity activity) {
         super();
-        this.activity = activity;
+        this.layoutInflater = activity.getLayoutInflater();
         accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(accounts);
+    }
 
+    public AccountChooseAdapter(LayoutInflater layoutInflater){
+        super();
+        this.layoutInflater = layoutInflater;
+        accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        Collections.sort(accounts);
     }
 
     @Override
@@ -66,7 +71,7 @@ public class AccountChooseAdapter extends BaseAdapter {
         final View view;
         final AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
+            view = layoutInflater.inflate(
                     R.layout.item_account_choose, parent, false);
         } else {
             view = convertView;
