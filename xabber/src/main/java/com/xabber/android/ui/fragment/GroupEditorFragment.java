@@ -105,10 +105,8 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
             String circleAddInput = savedInstanceState.getString(SAVED_ADD_GROUP_NAME);
             contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
-            groups = RosterManager.getInstance().getGroups(account);
-            if (user != null) {
-                selected = RosterManager.getInstance().getGroups(account, user);
-            }
+            if (account != null) groups = RosterManager.getInstance().getGroups(account);
+            if (user != null) selected = RosterManager.getInstance().getGroups(account, user);
         }
     }
 
@@ -130,7 +128,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
     @Override
     public void onResume() {
         super.onResume();
-        updateCircles();
+        if (groups != null) updateCircles();
     }
 
     protected void updateCircles() {

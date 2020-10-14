@@ -63,8 +63,8 @@ public class ContactAddFragment extends GroupEditorFragment
     public static ContactAddFragment newInstance(AccountJid account, ContactJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_ACCOUNT, account);
-        args.putParcelable(ARG_USER, user);
+        if (account != null ) args.putParcelable(ARG_ACCOUNT, account);
+        if (user != null) args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
