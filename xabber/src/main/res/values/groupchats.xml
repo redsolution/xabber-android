@@ -40,7 +40,9 @@
     <string name="groupchat_example_name">For example: Developers groupchat</string>
     <string name="groupchat_example_jid">developers_group</string>
     <string name="groupchat_example_description">Best groupchat ever!</string>
-    <string name="groupchat_custom_server">custom server</string>
+    <string name="groupchat_custom_server">custom…</string>
+    <string name="groupchat_server">Groupchat server</string>
+    <string name="groupchat_add_custom_server">Add custom server</string>
 
     <string name="groupchat_membership_type_none">None</string>
     <string name="groupchat_membership_type_open">Open</string>

@@ -808,7 +808,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (abstractChat != null) {
             messageRealmObjects = abstractChat.getMessages();
         }
-        if (messageRealmObjects.size() > 0) {
+        if (messageRealmObjects ==null || messageRealmObjects.size() > 0) {
             setIntroView();
             inflateIntroView(false);
         } else {

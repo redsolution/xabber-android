@@ -5,32 +5,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ
+import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.ui.activity.ChatActivity
+import com.xabber.android.ui.activity.CreateGroupchatActivity
 import com.xabber.android.ui.adapter.AccountChooseAdapter
 import com.xabber.android.ui.widget.NoDefaultSpinner
 
 
-class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIqResultListener,
-        AdapterView.OnItemSelectedListener {
+class CreateGroupchatFragment :  Fragment(), CreateGroupchatIqResultListener {
 
     private lateinit var accountSp: NoDefaultSpinner
     private lateinit var groupchatNameEt: EditText
     private lateinit var groupchatJidEt: EditText
-    private lateinit var serverTv: AutoCompleteTextView
+    private lateinit var serversSp: Spinner
     private lateinit var membershipTypeSp: Spinner
     private lateinit var indexTypeSp: Spinner
     private lateinit var descriptionEt: EditText
     private lateinit var progressBar: ProgressBar
+    private lateinit var settingsRootLl: LinearLayoutCompat
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -38,29 +42,41 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
         accountSp = view.findViewById(R.id.contact_account)
         groupchatNameEt = view.findViewById(R.id.create_groupchat_name_et)
         groupchatJidEt = view.findViewById(R.id.create_groupchat_jid_et)
-        serverTv = view.findViewById(R.id.create_groupchat_server_et)
+        serversSp = view.findViewById(R.id.create_groupchat_server_sp)
         membershipTypeSp = view.findViewById(R.id.create_groupchat_membership_spinner)
         indexTypeSp = view.findViewById(R.id.create_groupchat_index_type_spinner)
         descriptionEt = view.findViewById(R.id.create_groupchat_description)
         progressBar = view.findViewById(R.id.create_groupchat_progress_bar)
+        settingsRootLl = view.findViewById(R.id.create_groupchat_group_setting_root)
+
+        if (AccountManager.getInstance().enabledAccounts.size > 1){
+            settingsRootLl.visibility = View.GONE
+        }
 
         setupAccountSpinner()
         setupMembershipTypeSpinner()
         setupIndexTypeSpinner()
-        setupServerEt()
+        setupServerSp()
 
         return  view
     }
 
     private fun setupAccountSpinner(){
-        accountSp.adapter = AccountChooseAdapter(activity)
+        accountSp.adapter = AccountChooseAdapter(layoutInflater)
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1){
             accountSp.setSelection(0)
             accountSp.visibility = View.GONE
         }
 
-        accountSp.onItemSelectedListener = this
+        accountSp.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                setupServerSp()
+                settingsRootLl.visibility = View.VISIBLE
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun setupMembershipTypeSpinner(){
@@ -73,33 +89,69 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
 
     private fun setupIndexTypeSpinner(){
         val adapter = ArrayAdapter(Application.getInstance().applicationContext,
-        android.R.layout.simple_spinner_item, GroupchatIndexType.getLocalizedValues())
+                android.R.layout.simple_spinner_item, GroupchatIndexType.getLocalizedValues())
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         indexTypeSp.adapter = adapter
         indexTypeSp.setSelection(2)
     }
 
-    private fun setupServerEt(){
-        serverTv.setOnClickListener {
-            serverTv.showDropDown()
-            serverTv.hint = getString(R.string.groupchat_custom_server)
-        }
+    private fun createListOfServers(customServer: String = ""): List<String>{
+        val list = arrayListOf<String>()
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1){
+
             val accounts = arrayListOf<AccountJid>()
             accounts.addAll(AccountManager.getInstance().enabledAccounts)
-            val list = arrayListOf<String>()
-            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accounts[0]))
-                list.add(jid.toString())
-            val adapter = ArrayAdapter<String>(context!!, android.R.layout.simple_spinner_dropdown_item, list)
-            serverTv.setAdapter(adapter)
+
+            val serversList = GroupchatManager.getInstance()
+                    .getAvailableGroupchatServersForAccountJid(accounts[0])
+
+            if (serversList!= null && serversList.isNotEmpty())
+                for (jid in serversList)
+                    list.add(jid.toString())
+
         } else if (accountSp.selectedItem != null){
-            val list = arrayListOf<String>()
-            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSp.selectedItem as AccountJid))
+            for (jid in GroupchatManager.getInstance()
+                    .getAvailableGroupchatServersForAccountJid(accountSp.selectedItem as AccountJid))
                 list.add(jid.toString())
-            val adapter = ArrayAdapter<String>(context!!, android.R.layout.simple_spinner_dropdown_item, list)
-            serverTv.setAdapter(adapter)
+        }
+
+        if (customServer.isNotEmpty()) list.add(customServer)
+
+        list.add(getString(R.string.groupchat_custom_server))
+
+        return list
+    }
+
+    private fun setupServerSp(){
+
+        serversSp.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item,
+                createListOfServers())
+
+        serversSp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int,
+                                        id: Long) {
+                if (serversSp.adapter.count > 1 && position == serversSp.adapter.count-1
+                        || serversSp.adapter.count == 1 && position == 0) {
+                    val dialog = AlertDialog.Builder(context!!).apply {
+                        setTitle(getString(R.string.groupchat_server))
+                        val editText = EditText(activity?.baseContext)
+                        setView(editText)
+                        setPositiveButton(getString(R.string.groupchat_add_custom_server)) { _, _ ->
+                            serversSp.adapter = ArrayAdapter(context,
+                                    android.R.layout.simple_spinner_dropdown_item,
+                                    createListOfServers(editText.text.toString()))
+
+                            serversSp.setSelection(serversSp.adapter.count - 2)
+                        }
+                        setNegativeButton(R.string.cancel) { _, _ -> serversSp.setSelection(0)}
+                    }
+                    dialog.create().show()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
@@ -115,7 +167,7 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
 
         val accountJid = accountSp.selectedItem as AccountJid
         GroupchatManager.getInstance().sendCreateGroupchatRequest(accountJid,
-                serverTv.text.toString(), groupchatNameEt.text.toString(),
+                serversSp.selectedItem.toString(), groupchatNameEt.text.toString(),
                 descriptionEt.text.toString(), groupchatJidEt.text.toString(), membershipType,
                 indexType, privacyType, this)
 
@@ -123,31 +175,29 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIQ.CreateGroupchatIq
     }
 
     override fun onSuccessfullyCreated(accountJid: AccountJid?, contactJid: ContactJid?) {
-        //todo someshit
-
-        progressBar.visibility = View.GONE
+        Application.getInstance().runOnUiThread{
+            progressBar.visibility = View.GONE
+            if (activity is CreateGroupchatActivity)
+                activity?.startActivity(ChatActivity.createSendIntent(context, accountJid, contactJid, null))
+        }
     }
 
     override fun onJidConflict() {
-        Toast.makeText(context,
-                getString(R.string.groupchat_failed_to_create_groupchat_jid_already_exists),
-                Toast.LENGTH_LONG).show()
-        progressBar.visibility = View.GONE
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(context,
+                    getString(R.string.groupchat_failed_to_create_groupchat_jid_already_exists),
+                    Toast.LENGTH_LONG).show()
+            progressBar.visibility = View.GONE
+        }
     }
 
     override fun onOtherError() {
-        Toast.makeText(context,
-                getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
-                Toast.LENGTH_LONG).show()
-        progressBar.visibility = View.GONE
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        setupServerEt()
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(context,
+                    getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
+                    Toast.LENGTH_LONG).show()
+            progressBar.visibility = View.GONE
+        }
     }
 
 }

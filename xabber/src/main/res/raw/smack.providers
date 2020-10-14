@@ -19,6 +19,12 @@
     </extensionProvider>
 
     <iqProvider>
+                <elementName>query</elementName>
+                <namespace>https://xabber.com/protocol/groups#create</namespace>
+                <className>com.xabber.android.data.extension.groupchat.create.GroupchatCreateIqResultProvider</className>
+    </iqProvider>
+
+    <iqProvider>
             <elementName>query</elementName>
             <namespace>https://xabber.com/protocol/groups#rights</namespace>
             <className>com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIqProvider</className>

@@ -12,10 +12,11 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatUpdateIQ;
+import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
+import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
 import com.xabber.android.data.extension.groupchat.settings.GroupchatDescriptionNamedElement;
 import com.xabber.android.data.extension.groupchat.settings.GroupchatGroupNameNamedElement;
 import com.xabber.android.data.extension.groupchat.settings.GroupchatIndexTypeNamedElement;
@@ -172,7 +173,7 @@ public class GroupchatManager implements OnPacketListener {
                                            GroupchatMembershipType membershipType,
                                            GroupchatIndexType indexType,
                                            GroupchatPrivacyType privacyType,
-                                           CreateGroupchatIQ.CreateGroupchatIqResultListener listener){
+                                           CreateGroupchatIqResultListener listener){
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
 
@@ -181,20 +182,21 @@ public class GroupchatManager implements OnPacketListener {
                     .sendIqWithResponseCallback(iq, packet -> {
                         if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result){
                             LogManager.d(LOG_TAG, "Groupchat successfully created");
-                            LogManager.d(LOG_TAG, packet.toXML().toString());
 
-                            StandardExtensionElement standardExtensionElement = packet
-                                    .getExtension(CreateGroupchatIQ.QUERY_ELEMENT, CreateGroupchatIQ.NAMESPACE);
-
-                            if (standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT) != null){
-                                String createdGroupchatJid = standardExtensionElement.getFirstElement(CreateGroupchatIQ.JID_ELEMENT).getText();
+                            if (packet instanceof CreateGroupchatIQ.ResultIq){
                                 try{
-                                    ContactJid contactJid = ContactJid.from(createdGroupchatJid);
+                                    ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
                                     AccountJid account = AccountJid.from(packet.getTo().toString());
+                                    PresenceManager.getInstance().addAutoAcceptSubscription(account, contactJid);
                                     PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
+                                    PresenceManager.getInstance().requestSubscription(account, contactJid);
                                     listener.onSuccessfullyCreated(accountJid, contactJid);
-                                } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+                                } catch (Exception e){
+                                    LogManager.exception(LOG_TAG, e);
+                                    listener.onOtherError();
+                                }
                             }
+
                         }
                     }, exception -> {
                         LogManager.exception(LOG_TAG, exception);
