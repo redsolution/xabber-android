@@ -4,7 +4,7 @@ import org.jivesoftware.smack.packet.IQ;
 
 public class XTokenIQ extends IQ {
 
-    public static final String NAMESPACE         = "http://xabber.com/protocol/auth-tokens";
+    public static final String NAMESPACE         = XTokenManager.NAMESPACE;
     public static final String ELEMENT           = "x";
     public static final String ELEMENT_TOKEN     = "token";
     public static final String ELEMENT_TOKEN_UID = "token-uid";

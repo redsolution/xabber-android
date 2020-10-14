@@ -30,7 +30,7 @@ public class XTokenProviderTest {
         factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
 
-        stringToken = "<x xmlns='http://xabber.com/protocol/auth-tokens'>" +
+        stringToken = "<x xmlns='https://xabber.com/protocol/auth-tokens'>" +
                 "<token>VkpTYqfpPcLpwciTRtgHaV7BC9O9kY</token>" +
                 "<expire>1536322632</expire>" +
                 "<token-uid>49975a48609793c5c93f5e9264f6706f04164</token-uid>" +

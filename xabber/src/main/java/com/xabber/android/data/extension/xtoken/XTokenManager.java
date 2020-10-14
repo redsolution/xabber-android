@@ -29,7 +29,7 @@ import java.util.List;
 
 public class XTokenManager implements OnPacketListener {
 
-    private static final String NAMESPACE = "http://xabber.com/protocol/auth-tokens";
+    public static final String NAMESPACE = "https://xabber.com/protocol/auth-tokens";
     private static final String LOG_TAG = XTokenManager.class.getSimpleName();
     private static XTokenManager instance;
 

@@ -30,7 +30,7 @@ public class SessionsProviderTest {
         factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
 
-        stanza = "<x xmlns='http://xabber.com/protocol/auth-tokens#items'>" +
+        stanza = "<x xmlns='https://xabber.com/protocol/auth-tokens#items'>" +
                 "<field var='1'>" +
                 "<client>xabber-web 2.3</client>" +
                 "<device>iMac Pro MacOS 10.14</device>" +
