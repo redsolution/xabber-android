@@ -22,8 +22,8 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
@@ -180,8 +180,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // set date
         needDate = extraData.isNeedDate();
         date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
-        if (needDate) messageTime.setText(date + " " + time);
-
 
         // setup CHECKED
         if (extraData.isChecked())
