@@ -136,10 +136,33 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
             (activity as GroupchatMemberActivity).onNewMemberRightsFormFieldChanged(newFields.size)
     }
 
-    fun sendSaveRequest(){
-        GroupchatMemberManager.getInstance().requestGroupchatMemberRightsChange(groupchat,
-                groupchatMember, newFields.values)
+    private fun createNewDataFrom(): DataForm {
+        val newDataForm = DataForm(DataForm.Type.submit).apply {
+            title = oldDataForm?.title
+            instructions = oldDataForm?.instructions
+        }
+
+        for (oldFormField in oldDataForm!!.fields){
+
+            if (oldFormField.variable == null) continue
+
+            val formFieldToBeAdded = FormField(oldFormField.variable).apply {
+                type = oldFormField.type
+            }
+
+            if (newFields.containsKey(formFieldToBeAdded.variable))
+                formFieldToBeAdded.addValue(newFields[formFieldToBeAdded.variable]!!.values[0])
+            else if (oldFormField.values != null && oldFormField.values.size > 0)
+                formFieldToBeAdded.addValue(oldFormField.values[0])
+
+            newDataForm.addField(formFieldToBeAdded)
+        }
+
+        return newDataForm
     }
+
+    fun sendSaveRequest() = GroupchatMemberManager.getInstance()
+            .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom())
 
     companion object{
         const val TAG = "com.xabber.android.ui.fragment.GroupchatMemberInfoFragment"

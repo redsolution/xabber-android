@@ -40,7 +40,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
-import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
@@ -598,15 +598,14 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         });
     }
 
-    public void requestGroupchatMemberRightsChange(GroupChat groupChat,
-                                                   GroupchatMember groupchatMember,
-                                                   Collection<FormField> formFields){
+    public void requestGroupchatMemberRightsChange(GroupChat groupChat, DataForm dataForm){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(groupChat.getContactJid(), groupchatMember.getId(), formFields), packet -> {
-
-                        });
+                        .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(
+                                groupChat.getContactJid(), dataForm), packet -> {
+                            //todo error handling
+                            });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             }
