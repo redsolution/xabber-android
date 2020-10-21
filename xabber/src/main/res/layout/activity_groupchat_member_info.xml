@@ -41,6 +41,7 @@
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="88dp"
             app:expandedTitleTextAppearance="@style/ContactViewCollapsingToolbarNew"
+            style="@style/ContactViewCollapsingToolbarNew"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@color/transparent">
 
@@ -90,8 +91,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="8dp"
-                android:theme="@style/ThemeBorderlessVcard"
+                android:theme="@style/GroupMemberInfoToolbar"
                 app:layout_collapseMode="pin"
+
                 app:popupTheme="?attr/toolbar_popup_theme" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

@@ -21,7 +21,7 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
     val timeTV: TextView = itemView.findViewById(R.id.tvTime)
     val messageStatusTV: ImageView = itemView.findViewById(R.id.ivMessageStatus)
     val unreadCountTV: TextView = itemView.findViewById(R.id.tvUnreadCount)
-    val accountColorIndicatorBackView: View = itemView.findViewById<View>(R.id.accountColorIndicatorBack)
-    val accountColorIndicatorView: View = itemView.findViewById<View>(R.id.accountColorIndicator)
+    val accountColorIndicatorBackView: View = itemView.findViewById(R.id.accountColorIndicatorBack)
+    val accountColorIndicatorView: View = itemView.findViewById(R.id.accountColorIndicator)
 
 }

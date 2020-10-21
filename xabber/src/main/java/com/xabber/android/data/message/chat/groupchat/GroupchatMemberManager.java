@@ -7,6 +7,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.repositories.GroupchatMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -24,6 +26,7 @@ import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorLis
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
+import com.xabber.android.data.extension.groupchat.rights.GroupRequestMemberRightsChangeIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
 import com.xabber.android.data.log.LogManager;
@@ -37,6 +40,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smackx.xdata.FormField;
 import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
@@ -48,7 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GroupchatMemberManager implements OnLoadListener {
+public class GroupchatMemberManager implements OnLoadListener, OnPacketListener {
 
     private static final String LOG_TAG = GroupchatMemberManager.class.getSimpleName();
 
@@ -88,6 +92,16 @@ public class GroupchatMemberManager implements OnLoadListener {
         }
     }
 
+    @Override
+    public void onStanza(ConnectionItem connection, Stanza packet) {
+//        if (packet instanceof Message
+//                && packet.hasExtension(GroupchatExtensionElement.ELEMENT,
+//                GroupchatExtensionElement.SYSTEM_MESSAGE_NAMESPACE)){
+//            //GroupchatExtensionElement groupchatExtensionElement = packet
+//                    //.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.SYSTEM_MESSAGE_NAMESPACE);
+//        }
+    }
+
     public GroupchatMember getGroupchatMemberById(String id) {
         return members.get(id);
     }
@@ -99,10 +113,6 @@ public class GroupchatMemberManager implements OnLoadListener {
                 resultList.add(entry.getValue());
         }
         return resultList;
-    }
-
-    public Collection<GroupchatMember> getGroupchatMembers(GroupChat groupChat){
-        return getGroupchatMembers(groupChat.getContactJid());
     }
 
     public void removeGroupchatMember(String id){
@@ -539,7 +549,7 @@ public class GroupchatMemberManager implements OnLoadListener {
                     if (version != null && !version.isEmpty()) {
                         queryIQ.setQueryVersion(version);
                     } else queryIQ.setQueryVersion("1");
-                    //}
+
                     GroupchatMembersResultListener listener = new GroupchatMembersResultListener(account, groupchatJid);
                     try {
                         accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
@@ -553,26 +563,67 @@ public class GroupchatMemberManager implements OnLoadListener {
         });
     }
 
-    public void requestGroupchatMemberRightsForm(AccountJid accountJid, ContactJid groupchatJid, GroupchatMember groupchatMember){
+    public void requestGroupchatMemberInfo(GroupChat groupChat, String memberId){
+        final AccountJid accountJid = groupChat.getAccount();
+        final ContactJid groupchatJid = groupChat.getContactJid();
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
             if (chat instanceof GroupChat) {
                 ArrayList<GroupchatMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
-//                if (list != null && list.size() > 0) {
-//                    Application.getInstance().runOnUiThread(() -> {
-//                        // notify listeners with the locally saved list of members
-//                        for (OnGroupchatRequestListener listener :
-//                                Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-//                            listener.onGroupchatMembersReceived(accountJid, groupchatJid);
-//                        }
-//                    });
-//                }
+                if (list != null && list.size() > 0) {
+                    Application.getInstance().runOnUiThread(() -> {
+                        // notify listeners with the locally saved list of members
+                        for (OnGroupchatRequestListener listener :
+                                Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
+                            listener.onMeReceived(accountJid, groupchatJid);
+                        }
+                    });
+                }
 
+                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                if (accountItem != null) {
+                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
+                    queryIQ.setQueryId(memberId);
+
+                    GroupchatMembersResultListener listener = new GroupchatMembersResultListener(accountJid, groupchatJid);
+                    try {
+                        accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
+                    } catch (SmackException.NotConnectedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    } catch (InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
+                }
+            }
+        });
+    }
+
+    public void requestGroupchatMemberRightsChange(GroupChat groupChat,
+                                                   GroupchatMember groupchatMember,
+                                                   Collection<FormField> formFields){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(groupChat.getContactJid(), groupchatMember.getId(), formFields), packet -> {
+
+                        });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
+    }
+
+    public void requestGroupchatMemberRightsForm(AccountJid accountJid, ContactJid groupchatJid, GroupchatMember groupchatMember){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+
+            AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
+
+            if (chat instanceof GroupChat) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 if (accountItem != null) {
                     GroupchatMemberRightsQueryIQ queryIQ = new GroupchatMemberRightsQueryIQ(groupchatJid, groupchatMember.getId());
 
-                    GroupchatMemberRightsFormResultListener listener = new GroupchatMemberRightsFormResultListener(accountJid, groupchatJid, groupchatMember);
+                    GroupchatMemberRightsFormResultListener listener = new GroupchatMemberRightsFormResultListener(accountJid, groupchatJid);
                     try {
                         accountItem.getConnection().sendIqWithResponseCallback(queryIQ, listener);
                     } catch (SmackException.NotConnectedException e) {
@@ -586,14 +637,12 @@ public class GroupchatMemberManager implements OnLoadListener {
     }
 
     private static class GroupchatMemberRightsFormResultListener implements StanzaListener {
-        private AccountJid account;
-        private ContactJid groupchatJid;
-        private GroupchatMember member;
+        private final AccountJid account;
+        private final ContactJid groupchatJid;
 
-        GroupchatMemberRightsFormResultListener(AccountJid accountJid, ContactJid groupchatJid, GroupchatMember member){
+        GroupchatMemberRightsFormResultListener(AccountJid accountJid, ContactJid groupchatJid){
             this.account = accountJid;
             this.groupchatJid = groupchatJid;
-            this.member = member;
         }
 
         @Override
@@ -608,8 +657,8 @@ public class GroupchatMemberManager implements OnLoadListener {
     }
 
     private static class GroupchatInvitesResultListener implements StanzaListener {
-        private AccountJid account;
-        private ContactJid groupchatJid;
+        private final AccountJid account;
+        private final ContactJid groupchatJid;
 
         GroupchatInvitesResultListener(AccountJid account, ContactJid groupchatJid) {
             this.account = account;
@@ -650,8 +699,8 @@ public class GroupchatMemberManager implements OnLoadListener {
 
     private static class GroupchatBlocklistResultListener implements StanzaListener {
 
-        private AccountJid account;
-        private ContactJid groupchatJid;
+        private final AccountJid account;
+        private final ContactJid groupchatJid;
 
         GroupchatBlocklistResultListener(AccountJid account, ContactJid groupchatJid) {
             this.account = account;
@@ -690,8 +739,8 @@ public class GroupchatMemberManager implements OnLoadListener {
     }
 
     private static class GroupchatMeResultListener implements StanzaListener {
-        private AccountJid accountJid;
-        private ContactJid groupchatJid;
+        private final AccountJid accountJid;
+        private final ContactJid groupchatJid;
 
         public GroupchatMeResultListener(AccountJid accountJid, ContactJid groupchatJid){
             this.accountJid = accountJid;
@@ -753,8 +802,8 @@ public class GroupchatMemberManager implements OnLoadListener {
 
     private static class GroupchatMembersResultListener implements StanzaListener {
 
-        private AccountJid account;
-        private ContactJid groupchatJid;
+        private final AccountJid account;
+        private final ContactJid groupchatJid;
 
         public GroupchatMembersResultListener(AccountJid account, ContactJid groupchatJid) {
             this.account = account;
@@ -775,24 +824,26 @@ public class GroupchatMemberManager implements OnLoadListener {
                         if (getInstance().members.get(id) == null)
                             getInstance().members.put(id, new GroupchatMember(id));
 
-                        getInstance().members.get(id).setGroupchatJid(groupchatJid.toString());
+                        GroupchatMember groupchatMember = getInstance().members.get(id);
+
+                        groupchatMember.setGroupchatJid(groupchatJid.toString());
                         if (memberExtension.getRole() != null)
-                            getInstance().members.get(id).setRole(memberExtension.getRole());
+                            groupchatMember.setRole(memberExtension.getRole());
                         if (memberExtension.getNickname() != null)
-                            getInstance().members.get(id).setNickname(memberExtension.getNickname());
+                            groupchatMember.setNickname(memberExtension.getNickname());
                         if (memberExtension.getBadge() != null)
-                            getInstance().members.get(id).setBadge(memberExtension.getBadge());
+                            groupchatMember.setBadge(memberExtension.getBadge());
                         if (memberExtension.getJid() != null)
-                            getInstance().members.get(id).setJid(memberExtension.getJid());
+                            groupchatMember.setJid(memberExtension.getJid());
                         if (memberExtension.getLastPresent() != null)
-                            getInstance().members.get(id).setLastPresent(memberExtension.getLastPresent());
+                            groupchatMember.setLastPresent(memberExtension.getLastPresent());
                         if (memberExtension.getAvatarInfo() != null){
-                            getInstance().members.get(id).setAvatarHash(memberExtension.getAvatarInfo().getId());
-                            getInstance().members.get(id).setAvatarUrl(memberExtension.getAvatarInfo().getUrl().toString());
+                            groupchatMember.setAvatarHash(memberExtension.getAvatarInfo().getId());
+                            groupchatMember.setAvatarUrl(memberExtension.getAvatarInfo().getUrl().toString());
                         }
 
                         if (memberExtension.getSubscriprion() != null && !memberExtension.getSubscriprion().equals("both")){
-                            getInstance().removeGroupchatMember(id);
+                            LogManager.exception(LOG_TAG, new Exception());
                         } else GroupchatMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
 
                     }

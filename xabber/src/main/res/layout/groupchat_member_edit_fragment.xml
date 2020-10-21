@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
+<androidx.core.widget.NestedScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?attr/contact_list_background">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <include layout="@layout/groupchat_member_edit_restrictions_layout"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/groupchat_member_rights_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <include layout="@layout/groupchat_member_edit_permissions_layout"/>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

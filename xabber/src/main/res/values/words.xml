@@ -26,6 +26,7 @@
     <string name="ok">OK</string>
     <string name="login">Login</string>
     <string name="add">Add</string>
+    <string name="set">Set</string>
 
     <string name="share">Share</string>
     <string name="send_to">Send to:</string>
@@ -43,4 +44,9 @@
 
     <string name="groupchat_bar_invite">Invite</string>
     <string name="groupchat_bar_leave">Leave</string>
+
+    <string name="in">in</string>
+    <string name="days">days</string>
+    <string name="hours">hours</string>
+    <string name="minutes">minutes</string>
 </resources>

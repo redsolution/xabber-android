@@ -29,7 +29,7 @@ public class GroupchatMemberExtensionElement implements ExtensionElement {
     private String role;
     private String badge;
     private String lastPresent;
-    private String subscriprion;
+    private String subscription;
     private MetadataInfo avatar;
 
     public GroupchatMemberExtensionElement(String id, String nickname, String role) {
@@ -73,9 +73,9 @@ public class GroupchatMemberExtensionElement implements ExtensionElement {
             xml.append(jid);
             xml.closeElement(ELEMENT_JID);
         }
-        if (subscriprion != null) {
+        if (subscription != null) {
             xml.openElement(ELEMENT_SUBSCRIPTION);
-            xml.append(subscriprion);
+            xml.append(subscription);
             xml.closeElement(ELEMENT_SUBSCRIPTION);
         }
         if (avatar != null) {
@@ -141,10 +141,10 @@ public class GroupchatMemberExtensionElement implements ExtensionElement {
     }
 
     public String getSubscriprion() {
-        return subscriprion;
+        return subscription;
     }
 
     public void setSubscriprion(String subscriprion) {
-        this.subscriprion = subscriprion;
+        this.subscription = subscriprion;
     }
 }

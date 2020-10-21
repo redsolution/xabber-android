@@ -162,31 +162,6 @@ public class StringUtils {
         return TIME.format(timeStamp);
     }
 
-    /**
-     * @param timeStamp
-     * @return String with time or with date and time depend on current time.
-     */
-    public static String getSmartTimeText(Context context, Date timeStamp) {
-        if (timeStamp == null) {
-            return "";
-        }
-
-        // today
-        Calendar midnight = new GregorianCalendar();
-        // reset hour, minutes, seconds and millis
-        midnight.set(Calendar.HOUR_OF_DAY, 0);
-        midnight.set(Calendar.MINUTE, 0);
-        midnight.set(Calendar.SECOND, 0);
-        midnight.set(Calendar.MILLISECOND, 0);
-
-        if (timeStamp.getTime() > midnight.getTimeInMillis()) {
-            return timeFormat.format(timeStamp);
-        } else {
-            DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
-            return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
-        }
-    }
-
     public static String getSmartTimeTextForRoster(Context context, Date timeStamp) {
         if (timeStamp == null)
             return "";
@@ -384,6 +359,35 @@ public class StringUtils {
         SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
                 Application.getInstance().getResources().getConfiguration().locale);
         return pattern.format(date);
+    }
+
+    //todo change this to use string resources
+    public static String getStringForGroupMemberRights(Long expireUnixTime){
+        if(expireUnixTime < 0) throw new IllegalArgumentException("Duration must be greater than zero!");
+
+        long currentTime = System.currentTimeMillis() / 1000;
+        long timeLeft = expireUnixTime - currentTime;
+
+        final long MILLIS_IN_DAY = 86400;
+        final long MILLIS_IN_HOUR = 3600;
+        final long MILLIS_IN_MINUTE = 60;
+
+        long days = timeLeft / MILLIS_IN_DAY;
+        timeLeft -= days * MILLIS_IN_DAY;
+
+        long hours = timeLeft / MILLIS_IN_HOUR;
+        timeLeft-= hours * MILLIS_IN_HOUR;
+
+        long minutes = timeLeft / MILLIS_IN_MINUTE;
+
+        Resources resources = Application.getInstance().getApplicationContext().getResources();
+        String inString = resources.getString(R.string.in);
+
+        if (days >= 1) return inString + " " + days + " " + resources.getString(R.string.days);
+        if (hours >= 1) return inString + " " + hours + " " + resources.getString(R.string.hours);
+        if (minutes >= 1) return inString + " " + minutes + " " + resources.getString(R.string.minutes);
+
+        return "";
     }
 
     public static String getDateStringForClipboard(Long timestamp) {

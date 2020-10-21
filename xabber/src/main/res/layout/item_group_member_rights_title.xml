@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/contact_list_background">
+
+    <TextView
+        android:id="@+id/item_group_member_rights_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/groupchat_member_permissions"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:textStyle="bold"/>
+
+</LinearLayout>

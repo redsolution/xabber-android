@@ -44,14 +44,13 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.ui.dialog.SnoozeDialog
 import com.xabber.android.ui.fragment.GroupchatMemberInfoFragment
 import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import java.util.*
 
 class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
-        SnoozeDialog.OnSnoozeListener, PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
+        PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
 
     private val LOG_TAG = this.javaClass.simpleName
 
@@ -72,29 +71,38 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     private val blocked = false
 
     companion object{
+
         const val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
         const val GROUPCHAT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
         const val ACCOUNT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
-        fun createIntentForGroupchatAndMemberId(context: Context, groupchatMemberId: String, groupchat: GroupChat) : Intent{
+
+        fun createIntentForGroupchatAndMemberId(context: Context, groupchatMemberId: String,
+                                                groupchat: GroupChat) : Intent{
             val intent = Intent(context, GroupchatMemberActivity::class.java)
             intent.putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
             intent.putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
             intent.putExtra(ACCOUNT_JID, groupchat.account.toString())
             return intent
         }
+
     }
 
     override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
     override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid, groupchatJid: ContactJid, iq: GroupchatMemberRightsReplyIQ) {}
+    override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid, groupchatJid: ContactJid,
+                                                     iq: GroupchatMemberRightsReplyIQ) {}
 
-    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
+    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
+        if (account == groupchat?.account && groupchatJid == groupchat?.contactJid)
+            setupNameBlock()
+    }
 
     override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String) {
+    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid,
+                                          groupchatMemberId: String) {
         if (accountJid == this.accountJid && groupchatJid == this.groupchatJid
                 && groupchatMemberId == this.groupchatMember?.id){
             Application.getInstance().runOnUiThread {
@@ -106,7 +114,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        groupchatMember = GroupchatMemberManager.getInstance().getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
+        groupchatMember = GroupchatMemberManager.getInstance()
+                .getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
@@ -120,13 +129,15 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val win = window
             val winParams = win.attributes
-            winParams.flags = winParams.flags and WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS.inv()
+            winParams.flags = winParams.flags and WindowManager.LayoutParams
+                    .FLAG_TRANSLUCENT_STATUS.inv()
             win.attributes = winParams
             win.statusBarColor = Color.TRANSPARENT
         }
@@ -141,7 +152,6 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
         val colorLevel = AccountPainter.getAccountColorLevel(accountJid)
         accountMainColor = ColorManager.getInstance().accountPainter.getAccountMainColor(accountJid)
-        val accountDarkColor = ColorManager.getInstance().accountPainter.getAccountDarkColor(accountJid)
         coloredBlockText = colorLevel == 0 || colorLevel == 1 || colorLevel == 3
 
         //TODO is it necessary?
@@ -166,7 +176,11 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         setupNameBlock()
         setupAvatar()
 
-        supportFragmentManager.beginTransaction().add(R.id.scrollable_container, GroupchatMemberInfoFragment(groupchatMember!!, groupchat!!)).commit()
+        supportFragmentManager.beginTransaction()
+                .add(R.id.scrollable_container,
+                        GroupchatMemberInfoFragment(groupchatMember!!, groupchat!!),
+                        GroupchatMemberInfoFragment.TAG)
+                .commit()
 
     }
 
@@ -184,7 +198,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             adb.setView(et, 56, 0,56,0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance()
+                    .sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())}
             adb.show()
         }
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
@@ -197,7 +212,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     }
 
     private fun setupAvatar(){
-        var backgroundSource = AvatarManager.getInstance().getGroupchatMemberAvatar(groupchatMember, accountJid)
+        var backgroundSource = AvatarManager.getInstance()
+                .getGroupchatMemberAvatar(groupchatMember, accountJid)
         if (backgroundSource == null) backgroundSource = resources.getDrawable(R.drawable.about_backdrop)
         Glide.with(this)
                 .load(backgroundSource)
@@ -219,7 +235,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
-        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java,  this);
+        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java,  this)
+        GroupchatMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupchatMember?.id)
         appBarResize()
     }
 
@@ -273,7 +290,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             val win = window
             win.statusBarColor = accountMainColor
         }
-        if (toolbar!!.overflowIcon != null) toolbar!!.overflowIcon!!.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP)
+        if (toolbar!!.overflowIcon != null) toolbar!!.overflowIcon!!.setColorFilter(Color.BLACK,
+                PorterDuff.Mode.SRC_ATOP)
         val scrollView = findViewById<NestedScrollView>(R.id.scroll_v_card)
         val ll = findViewById<LinearLayout>(R.id.scroll_v_card_child)
         nameHolderView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
@@ -335,7 +353,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             adb.setView(et, 64, 0, 64, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ -> GroupchatMemberManager.getInstance().sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ -> GroupchatMemberManager.getInstance()
+                    .sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())}
             adb.show()
         }
 
@@ -375,7 +394,9 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         setupSetBadgeLayout(color, orientation)
         setupKickBlockButtonLayout(color, orientation)
 
-        val contactBarLayout = findViewById<ContactBarAutoSizingLayout>(R.id.contact_bar_layout)
+        val contactBarLayout =
+                findViewById<ContactBarAutoSizingLayout>(R.id.contact_bar_layout)
+
         contactBarLayout?.setForGroupchatMember()
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) contactBarLayout!!.redrawText()
@@ -398,7 +419,9 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     }
 
     fun getActionBarSize(): Int {
-        val styledAttributes = theme.obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize))
+        val styledAttributes =
+                theme.obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize))
+
         val actionBarSize = styledAttributes.getDimension(0, 0f).toInt()
         styledAttributes.recycle()
         return actionBarSize
@@ -412,8 +435,23 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         TODO("Not yet implemented")
     }
 
-    override fun onSnoozed() {
-        TODO("Not yet implemented")
+    private fun showToolbarMenu(isVisible: Boolean){
+        toolbar?.menu?.clear()
+        if (isVisible){
+            toolbar?.setNavigationIcon(R.drawable.ic_clear_white_24dp)
+
+            toolbar?.inflateMenu(R.menu.update_groupchat_member)
+            toolbar?.setOnMenuItemClickListener {
+                (supportFragmentManager.findFragmentByTag(GroupchatMemberInfoFragment.TAG)
+                        as GroupchatMemberInfoFragment).sendSaveRequest()
+                true
+            }
+        } else {
+            toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+            toolbar?.setNavigationOnClickListener { finish() }
+        }
     }
+
+    fun onNewMemberRightsFormFieldChanged(count: Int) = showToolbarMenu(count > 0)
 
 }

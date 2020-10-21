@@ -16,6 +16,13 @@ class GroupchatMemberRightsQueryIQTest {
         val iq = GroupchatMemberRightsQueryIQ(groupchatJid, "userId").apply { stanzaId = "48ZxA-1" }
 
         Assert.assertEquals(reference, iq.toXML().toString())
-
     }
+
+    @Test
+    fun testChangeMemberRightsRequest(){
+//        val reference = ""
+//
+//       val iq = GroupRequestMemberRightsChangeIQ()
+    }
+
 }

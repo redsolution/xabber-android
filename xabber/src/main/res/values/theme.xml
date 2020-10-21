@@ -240,12 +240,6 @@
         <item name="android:textColor">@color/grey_50</item>
     </style>
 
-    <style name="ContactViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
     <style name="ContactViewCollapsingToolbarNew" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">40sp</item>
         <item name="android:textColorSecondary">@color/white</item>
@@ -256,6 +250,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <style name="GroupMemberInfoToolbar" parent="@style/ThemeBorderlessVcard">
+        <item name="actionMenuTextColor">@color/white</item>
     </style>
 
 </resources>

@@ -12,6 +12,8 @@ public class GroupchatMember {
     private String avatarUrl;
     private String lastPresent;
     private boolean isMe;
+    private boolean isBlocked;
+    private boolean isKicked;
     private boolean isCanRestrictMembers;
     private boolean isCanBlockMembers;
     private boolean isCanChangeBadge;
@@ -171,5 +173,11 @@ public class GroupchatMember {
     public void setRestrictedToSendImages(boolean restrictedToSendImages) {
         isRestrictedToSendImages = restrictedToSendImages;
     }
+
+    public boolean isBlocked() { return isBlocked; }
+    public void setBlocked(boolean blocked) { isBlocked = blocked; }
+
+    public boolean isKicked() { return isKicked; }
+    public void setKicked(boolean kicked) { isKicked = kicked; }
 
 }
