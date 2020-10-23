@@ -111,18 +111,6 @@ android {
     }
 }
 
-def getLocalProperty(String propertyName) {
-    def propsFile = rootProject.file('local.properties')
-    if (propsFile.exists()) {
-        def props = new Properties()
-        props.load(new FileInputStream(propsFile))
-        if (props[propertyName] != null) return props[propertyName]
-        else return ""
-    } else {
-        return ""
-    }
-}
-
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store")) {
     apply plugin: 'com.google.gms.google-services'
     apply plugin: 'com.google.firebase.crashlytics'
@@ -154,7 +142,7 @@ dependencies {
     // firebase
     storeImplementation "com.google.firebase:firebase-messaging:20.3.0"
     storeImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    storeImplementation 'com.google.firebase:firebase-analytics:17.5.0'
+    storeImplementation 'com.google.firebase:firebase-analytics:17.6.0'
     storeImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.2.2'
 
     // otr
@@ -210,7 +198,7 @@ dependencies {
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'de.hdodenhof:circleimageview:3.0.1'
     implementation 'com.melnykov:floatingactionbutton:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'com.reginald:editspinner:1.1.0'
 
     // leak canary
