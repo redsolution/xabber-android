@@ -44,7 +44,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.ui.fragment.GroupchatMemberInfoFragment
+import com.xabber.android.ui.fragment.GroupMemberRightsFragment
 import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import java.util.*
@@ -178,8 +178,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
         supportFragmentManager.beginTransaction()
                 .add(R.id.scrollable_container,
-                        GroupchatMemberInfoFragment(groupchatMember!!, groupchat!!),
-                        GroupchatMemberInfoFragment.TAG)
+                        GroupMemberRightsFragment(groupchatMember!!, groupchat!!),
+                        GroupMemberRightsFragment.TAG)
                 .commit()
 
     }
@@ -442,8 +442,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
             toolbar?.inflateMenu(R.menu.update_groupchat_member)
             toolbar?.setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentByTag(GroupchatMemberInfoFragment.TAG)
-                        as GroupchatMemberInfoFragment).sendSaveRequest()
+                (supportFragmentManager.findFragmentByTag(GroupMemberRightsFragment.TAG)
+                        as GroupMemberRightsFragment).sendSaveRequest()
                 true
             }
         } else {
@@ -452,6 +452,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         }
     }
 
-    fun onNewMemberRightsFormFieldChanged(count: Int) = showToolbarMenu(count > 0)
+    fun onNewMemberRightsFormFieldChanged(count: Int) = Application.getInstance().runOnUiThread {
+        showToolbarMenu(count > 0)
+    }
 
 }

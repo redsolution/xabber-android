@@ -33,6 +33,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 
+import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -598,14 +599,14 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         });
     }
 
-    public void requestGroupchatMemberRightsChange(GroupChat groupChat, DataForm dataForm){
+    public void requestGroupchatMemberRightsChange(GroupChat groupChat, DataForm dataForm,
+                                                   StanzaListener stanzaListener,
+                                                   ExceptionCallback exceptionCallback){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(
-                                groupChat.getContactJid(), dataForm), packet -> {
-                            //todo error handling
-                            });
+                                groupChat.getContactJid(), dataForm), stanzaListener, exceptionCallback);
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             }

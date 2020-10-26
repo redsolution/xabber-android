@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,11 +20,16 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity
 import com.xabber.android.ui.adapter.groups.GroupMemberRightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
+import org.jivesoftware.smack.ExceptionCallback
+import org.jivesoftware.smack.StanzaListener
+import org.jivesoftware.smack.packet.IQ
+import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val groupchat: GroupChat)
-    : Fragment(), OnGroupchatRequestListener, GroupMemberRightsFormListAdapter.Listener {
+class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupchat: GroupChat)
+    : Fragment(), OnGroupchatRequestListener, GroupMemberRightsFormListAdapter.Listener,
+        StanzaListener, ExceptionCallback{
 
     var recyclerView: RecyclerView? = null
     var adapter: GroupMemberRightsFormListAdapter? = null
@@ -65,6 +71,19 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
         recyclerView?.adapter = adapter
         adapter?.notifyDataSetChanged()
 
+    }
+
+    override fun processStanza(packet: Stanza?) {
+        if (packet is IQ && packet.type == IQ.Type.result){
+            newFields.clear()
+            GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
+                    groupchat.contactJid, groupchatMember)
+            notifyActivityAboutNewFieldSizeChanged()
+        }
+    }
+
+    override fun processException(exception: Exception?) {
+        Toast.makeText(context, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
     }
 
     override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) { }
@@ -160,7 +179,7 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
     }
 
     fun sendSaveRequest() = GroupchatMemberManager.getInstance()
-            .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom())
+            .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom(), this, this)
 
     companion object{
         const val TAG = "com.xabber.android.ui.fragment.GroupchatMemberInfoFragment"
