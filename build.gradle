@@ -2,6 +2,11 @@
 buildscript {
     ext.kotlin_version = '1.4.10'
     repositories {
+        mavenLocal() {
+            content{
+                includeGroupByRegex("org\\.igniterealtime.*")
+            }
+        }
         jcenter()
         google()
     }
@@ -18,10 +23,9 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
         google()
         maven { url "https://jitpack.io" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'http://igniterealtime.org/repo' }
     }
 }

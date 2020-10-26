@@ -120,7 +120,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store
 }
 
 ext {
-    smackVerstion = 'ffb99cc'
+    smackVersion = '4.2.1-SNAPSHOT'
 }
 
 dependencies {
@@ -128,10 +128,10 @@ dependencies {
     implementation project(path: 'emojicon', configuration: 'default')
 
     // smack
-    implementation "com.github.str4tocaster.smack:smack-android-extensions:$smackVerstion"
-    implementation "com.github.str4tocaster.smack:smack-experimental:$smackVerstion"
-    implementation "com.github.str4tocaster.smack:smack-tcp:$smackVerstion"
-    implementation "com.github.str4tocaster.smack:smack-resolver-dnsjava:$smackVerstion"
+    implementation "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
+    implementation "org.igniterealtime.smack:smack-experimental:$smackVersion"
+    implementation "org.igniterealtime.smack:smack-tcp:$smackVersion"
+    implementation "org.igniterealtime.smack:smack-resolver-dnsjava:$smackVersion"
 
     // android support
     implementation 'com.google.android.material:material:1.2.1'
