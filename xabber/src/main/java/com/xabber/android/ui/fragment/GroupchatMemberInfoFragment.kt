@@ -95,11 +95,8 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
 
     override fun onOptionPicked(field: FormField, option: FormField.Option?, isChecked: Boolean) {
 
-        // удалить из списка newFields поле с таким же var если оно уже есть там в любом случае
         if (newFields.containsKey(field.variable)) newFields.remove(field.variable)
 
-        // проверить отличается ли полученное поле с опциями от того, что пришло в айкью
-        // если отличается, то добавить в список новых полей
         if (checkPickIsNew(field, option, isChecked)) {
 
             val newFormField = FormField(field.variable)
@@ -107,12 +104,10 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
             newFormField.label = field.label
             if (option != null)
                 newFormField.addValue(option.value)
-            //else newFormField.addValue("")
 
             newFields[field.variable] = newFormField
         }
 
-        // проверить размер списка новых полей и отправить сигнал о наличии или отсуствии новых полей
         notifyActivityAboutNewFieldSizeChanged()
     }
 
