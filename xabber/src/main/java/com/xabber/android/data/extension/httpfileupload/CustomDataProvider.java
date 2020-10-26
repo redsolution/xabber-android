@@ -91,12 +91,15 @@ public class CustomDataProvider extends ExtensionElementProvider<DataForm> {
         }
 
         final ExtendedFormField formField;
-        if (type == FormField.Type.fixed) {
-            formField = new ExtendedFormField();
-        } else {
+
+        if (var != null && !var.isEmpty()){
             formField = new ExtendedFormField(var);
-            formField.setType(type);
+        } else {
+            formField = new ExtendedFormField();
         }
+
+        formField.setType(type);
+
         formField.setLabel(parser.getAttributeValue("", "label"));
 
         outerloop: while (true) {

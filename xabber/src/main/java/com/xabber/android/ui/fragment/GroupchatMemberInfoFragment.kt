@@ -107,7 +107,7 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
             newFormField.label = field.label
             if (option != null)
                 newFormField.addValue(option.value)
-            else newFormField.addValue("")
+            //else newFormField.addValue("")
 
             newFields[field.variable] = newFormField
         }
@@ -148,11 +148,14 @@ class GroupchatMemberInfoFragment(val groupchatMember: GroupchatMember, val grou
 
             val formFieldToBeAdded = FormField(oldFormField.variable).apply {
                 type = oldFormField.type
+                label = oldFormField.label
             }
 
-            if (newFields.containsKey(formFieldToBeAdded.variable))
-                formFieldToBeAdded.addValue(newFields[formFieldToBeAdded.variable]!!.values[0])
-            else if (oldFormField.values != null && oldFormField.values.size > 0)
+            if (newFields.containsKey(formFieldToBeAdded.variable)){
+                if (!newFields[formFieldToBeAdded.variable]!!.values.isNullOrEmpty()){
+                    formFieldToBeAdded.addValue(newFields[formFieldToBeAdded.variable]!!.values[0])
+                }
+            } else if (oldFormField.values != null && oldFormField.values.size > 0)
                 formFieldToBeAdded.addValue(oldFormField.values[0])
 
             newDataForm.addField(formFieldToBeAdded)
