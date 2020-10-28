@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -46,7 +45,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.soundcloud.android.crop.Crop;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.xabber.android.R;
@@ -94,13 +92,14 @@ import java.net.URL;
 import java.util.Collection;
 
 import static com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO;
+import static com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
-        OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener, MenuItem.OnMenuItemClickListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
+        OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener,
+        MenuItem.OnMenuItemClickListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
     private static final String ACTION_CONNECTION_SETTINGS = AccountActivity.class.getName() + "ACTION_CONNECTION_SETTINGS";
-    private static final int REQUEST_PERMISSION_GALLERY = 4;
     public static final String TEMP_FILE_NAME = "cropped";
     public static final String ROTATE_FILE_NAME = "rotated";
     public static final int KB_SIZE_IN_BYTES = 1024;
@@ -116,20 +115,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private View statusIcon;
     private View statusGroupIcon;
     private ImageView avatar;
-    private ImageView background;
-    private ImageView qrCodeLand;
-    private ImageView colorPickerLand;
     private MenuItem qrCodePortrait;
     private MenuItem colorPickerPortrait;
     private SwitchCompat switchCompat;
     private CollapsingToolbarLayout collapsingToolbar;
-    private AppBarLayout appBarLayout;
-    private Toolbar toolbar;
-    private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
     private AccountOptionsAdapter accountOptionsAdapter;
-    private IntentIntegrator integrator;
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
     private String imageFileType;
@@ -155,7 +147,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     @NonNull
     public static Intent createConnectionSettingsIntent(Context context, AccountJid account) {
-        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
+        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account)
+                .build();
         intent.setAction(ACTION_CONNECTION_SETTINGS);
         return intent;
     }
@@ -165,8 +158,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-
-        integrator = new IntentIntegrator(this);
 
         account = getAccount(intent);
         if (account == null) {
@@ -192,27 +183,18 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         setContentView(R.layout.activity_account);
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(AccountActivity.this);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v ->
+                NavUtils.navigateUpFromSameTask(AccountActivity.this));
 
         toolbar.inflateMenu(R.menu.toolbar_account);
 
         MenuItem item = toolbar.getMenu().findItem(R.id.action_account_switch);
-        switchCompat = (SwitchCompat) item.getActionView().findViewById(R.id.account_switch_view);
-        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                AccountManager.getInstance().setEnabled(accountItem.getAccount(), isChecked);
-            }
-        });
+        switchCompat = item.getActionView().findViewById(R.id.account_switch_view);
+        switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->
+                AccountManager.getInstance().setEnabled(accountItem.getAccount(), isChecked));
 
         try {
             fakeAccountUser = ContactJid.from(account.getFullJid().asBareJid());
@@ -225,27 +207,20 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
-        TextView contactAddressView = (TextView) findViewById(R.id.address_text);
+        TextView contactAddressView = findViewById(R.id.address_text);
         contactAddressView.setText(account.getFullJid().asBareJid().toString());
 
-        avatar = (ImageView) findViewById(R.id.ivAvatar);
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeAvatar();
-            }
-        });
+        avatar = findViewById(R.id.ivAvatar);
+        avatar.setOnClickListener(view -> changeAvatar());
         statusIcon = findViewById(R.id.ivStatus);
         statusGroupIcon = findViewById(R.id.ivStatusGroupchat);
-        //statusText = (TextView) findViewById(R.id.status_text);
         progressBar = findViewById(R.id.avatar_publishing_progress);
-        //
+
         toolbar.setOnMenuItemClickListener(this);
         qrCodePortrait = toolbar.getMenu().findItem(R.id.action_generate_qrcode);
         colorPickerPortrait = toolbar.getMenu().findItem(R.id.action_account_color);
-        //qrCodePortrait.setOnMenuItemClickListener(this);
-        //
-        recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
+
+        RecyclerView recyclerView = findViewById(R.id.account_options_recycler_view);
         accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.getValues(), this, accountItem);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
@@ -261,8 +236,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void orientationPortrait() {
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -286,8 +261,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void orientationLandscape() {
-        final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
-        //toolbar.setBackgroundColor(Color.TRANSPARENT);
+        final LinearLayout nameHolderView = findViewById(R.id.name_holder);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window win = getWindow();
             win.setStatusBarColor(accountMainColor);
@@ -296,15 +271,16 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             setSwitchButtonColor();
         }
         qrCodePortrait.setVisible(false);
-        qrCodeLand = findViewById(R.id.generate_qrcode);
+        ImageView qrCodeLand = findViewById(R.id.generate_qrcode);
         qrCodeLand.setOnClickListener(this);
 
         colorPickerPortrait.setVisible(false);
-        colorPickerLand = findViewById(R.id.change_color);
+        ImageView colorPickerLand = findViewById(R.id.change_color);
         colorPickerLand.setOnClickListener(this);
 
         final LinearLayout ll = findViewById(R.id.scroll_view_child);
-        nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver
+                .OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -347,15 +323,16 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         statusGroupIcon.setVisibility(View.GONE);
         if (avatar.getDrawable() == null) {
             defaultAvatar = true;
-            avatar.setImageDrawable(new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
+            avatar.setImageDrawable(new ColorDrawable(ColorManager.getInstance().getAccountPainter()
+                    .getAccountMainColor(account)));
             findViewById(R.id.ivSetAvatar).setVisibility(View.VISIBLE);
         } else {
             defaultAvatar = false;
             findViewById(R.id.ivSetAvatar).setVisibility(View.GONE);
         }
-        if (accountMainColor != ColorManager.getInstance().getAccountPainter().getAccountMainColor(account))
+        if (accountMainColor != ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(account))
             updateAccountColor();
-        //statusText.setText(account.getFullJid().asBareJid().toString());
         switchCompat.setChecked(accountItem.isEnabled());
     }
 
@@ -377,7 +354,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 setSwitchButtonColor();
         }
 
-        background = findViewById(R.id.backgroundView);
+        ImageView background = findViewById(R.id.backgroundView);
         Drawable backgroundSource = bestContact.getAvatar(false);
         if (backgroundSource == null)
             backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
@@ -509,10 +486,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 } else startActivity(TutorialActivity.createIntent(this));
                 break;
             case SESSIONS:
-                //if (accountItem.getConnectionSettings().getXToken() != null &&
-                //        !accountItem.getConnectionSettings().getXToken().isExpired()) {
-                    startActivity(ActiveSessionsActivity.createIntent(this, account));
-                //}
+                startActivity(ActiveSessionsActivity.createIntent(this, account));
                 break;
         }
     }
@@ -593,7 +567,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private void runColorPickerDialog() {
         AccountColorDialog.newInstance(account).show(getFragmentManager(),
                 AccountColorDialog.class.getSimpleName());
-        return;
     }
 
     @Override
@@ -633,27 +606,23 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         PopupMenu menu = new PopupMenu(contextThemeWrapper, avatar);
 
         menu.inflate(R.menu.change_avatar);
-        final MenuItem removeAvatar = menu.getMenu().findItem(R.id.action_remove_avatar);
-        removeAvatar.setVisible(!defaultAvatar);
-        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_choose_from_gallery:
-                        onChooseFromGalleryClick();
-                        removeAvatarFlag = false;
-                        return true;
-                    case R.id.action_take_photo:
-                        onTakePhotoClick();
-                        removeAvatarFlag = false;
-                        return true;
-                    case R.id.action_remove_avatar:
-                        removeAvatar();
-                        saveAvatar();
-                        return true;
-                    default:
-                        return false;
-                }
+        menu.getMenu().findItem(R.id.action_remove_avatar).setVisible(!defaultAvatar);
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_choose_from_gallery:
+                    onChooseFromGalleryClick();
+                    removeAvatarFlag = false;
+                    return true;
+                case R.id.action_take_photo:
+                    onTakePhotoClick();
+                    removeAvatarFlag = false;
+                    return true;
+                case R.id.action_remove_avatar:
+                    removeAvatar();
+                    saveAvatar();
+                    return true;
+                default:
+                    return false;
             }
         });
         menu.show();
@@ -698,7 +667,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void onTakePhotoClick() {
-        if (PermissionsRequester.requestCameraPermissionIfNeeded(this, PermissionsRequester.REQUEST_PERMISSION_CAMERA)) {
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(this,
+                PermissionsRequester.REQUEST_PERMISSION_CAMERA)) {
             takePhoto();
         }
     }
@@ -736,35 +706,28 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             if (resultCode == Activity.RESULT_OK) {
                 newAvatarImageUri = result.getUri();
                 handleCrop(resultCode, data);
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
             }
         }  else if (requestCode == Crop.REQUEST_CROP) {
             //processing data after initial crop with Crop
             handleCrop(resultCode, data);
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void beginCropProcess(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(this.getCacheDir(), TEMP_FILE_NAME));
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, 256)
-                        || FileManager.isImageNeedRotation(source);
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, 256)
+                    || FileManager.isImageNeedRotation(source);
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isImageNeedPreprocess) {
-                            preprocessAndStartCrop(source);
-                        } else {
-                            startCrop(source);
-                        }
-                    }
-                });
-            }
+            Application.getInstance().runOnUiThread(() -> {
+                if (isImageNeedPreprocess) {
+                    preprocessAndStartCrop(source);
+                } else {
+                    startCrop(source);
+                }
+            });
         });
     }
 
@@ -773,45 +736,36 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                            @Override
-                            public void run() {
-                                ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
-                                String imageType = cR.getType(source);
-                                imageFileType = imageType;
+                        Application.getInstance().runInBackgroundUserRequest(() -> {
+                            ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+                            String imageType = cR.getType(source);
+                            imageFileType = imageType;
 
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-                                if (imageFileType.equals("image/png")) {
-                                    resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                } else {
-                                    resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                                }
-                                //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                byte[] data = stream.toByteArray();
-                                resource.recycle();
-                                try {
-                                    stream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Uri rotatedImage;
-                                if (imageType.equals("image/png")) {
-                                    rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
-                                } else {
-                                    rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                                }
-                                if (rotatedImage == null) return;
-                                final Uri rotategImg = rotatedImage;
-
-                                Application.getInstance().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startCrop(rotategImg);
-                                    }
-                                });
-
+                            if (imageFileType.equals("image/png")) {
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            } else {
+                                resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                             }
+
+                            byte[] data = stream.toByteArray();
+                            resource.recycle();
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Uri rotatedImage;
+                            if (imageType.equals("image/png")) {
+                                rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
+                            } else {
+                                rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                            }
+                            if (rotatedImage == null) return;
+
+                            Application.getInstance().runOnUiThread(() -> startCrop(rotatedImage));
+
                         });
                     }
 
@@ -833,7 +787,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         if(cR.getType(srcUri)!=null) {
             if (cR.getType(srcUri).equals("image/png")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+                    CropImage.activity(srcUri).setAspectRatio(1, 1)
+                            .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
                             .setOutputUri(newAvatarImageUri)
                             .start(this);
                 } else
@@ -842,7 +797,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             .start(this);
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                    CropImage.activity(srcUri).setAspectRatio(1, 1)
+                            .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
                             .setOutputUri(newAvatarImageUri)
                             .start(this);
                 } else
@@ -883,60 +839,53 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void resize(final Uri src){
-        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                            @Override
-                            public void run() {
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                if (imageFileType != null) {
-                                    if (imageFileType.equals("image/png")) {
-                                        resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
-                                    } else {
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-                                    }
-                                    //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                }
-                                byte[] data = stream.toByteArray();
-                                if (data.length > 35 * KB_SIZE_IN_BYTES) {
-                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE / 8;
-                                    if (MAX_IMAGE_RESIZE == 0) {
-                                        Toast.makeText(getBaseContext(), "Error with resizing", Toast.LENGTH_LONG).show();
-                                        return;
-                                    }
-                                    resize(src);
-                                    return;
-                                }
-                                resource.recycle();
-                                try {
-                                    stream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Uri rotatedImage = null;
-                                if (imageFileType != null) {
-                                    if (imageFileType.equals("image/png")) {
-                                        rotatedImage = FileManager.savePNGImage(data, "resize");
-                                    } else {
-                                        rotatedImage = FileManager.saveImage(data, "resize");
-                                    }
-                                }
-                                if (rotatedImage == null) return;
-                                try {
-                                    FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                        Application.getInstance().runInBackgroundUserRequest(() -> {
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            if (imageFileType != null) {
+                                if (imageFileType.equals("image/png")) {
+                                    resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
+                                } else {
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 90, stream);
                                 }
 
-                                Application.getInstance().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        checkAvatarSizeAndPublish();
-                                    }
-                                });
                             }
+                            byte[] data = stream.toByteArray();
+                            if (data.length > 35 * KB_SIZE_IN_BYTES) {
+                                MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE / 8;
+                                if (MAX_IMAGE_RESIZE == 0) {
+                                    Toast.makeText(getBaseContext(), "Error with resizing", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                resize(src);
+                                return;
+                            }
+                            resource.recycle();
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Uri rotatedImage = null;
+                            if (imageFileType != null) {
+                                if (imageFileType.equals("image/png")) {
+                                    rotatedImage = FileManager.savePNGImage(data, "resize");
+                                } else {
+                                    rotatedImage = FileManager.saveImage(data, "resize");
+                                }
+                            }
+                            if (rotatedImage == null) return;
+                            try {
+                                FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            Application.getInstance().runOnUiThread(() -> checkAvatarSizeAndPublish());
                         });
                     }
 
@@ -980,60 +929,50 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 showProgressBar(false);
             }
         }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
+        Application.getInstance().runInBackgroundUserRequest(() -> {
 
-                if (removeAvatarFlag) {
-                    try {
-                        //publishing empty (avatar) metadata
-                        mng.unpublishAvatar();
-                        isAvatarSuccessful = true;
-                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
-                        e.printStackTrace();
-                    }
-
-                    final boolean isSuccessfulFinal = isAvatarSuccessful;
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            if (isSuccessfulFinal) {
-                                Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
-                            }
-                            showProgressBar(false);
-                            updateTitle();
-                        }
-                    });
-                } else if(avatarData!=null) {
-                    try {
-                        if(imageFileType.equals("image/png")) {
-                            mng.publishAvatar(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
-                        } else mng.publishAvatarJPG(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
-                        isAvatarSuccessful = true;
-                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
-                        e.printStackTrace();
-                    }
-
-                    final boolean isSuccessfulFinal = isAvatarSuccessful;
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            if (isSuccessfulFinal) {
-                                Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
-                            }
-                            showProgressBar(false);
-                            updateTitle();
-                        }
-                    });
+            if (removeAvatarFlag) {
+                try {
+                    //publishing empty (avatar) metadata
+                    mng.unpublishAvatar();
+                    isAvatarSuccessful = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                final boolean isSuccessfulFinal = isAvatarSuccessful;
+                Application.getInstance().runOnUiThread(() -> {
+
+                    if (isSuccessfulFinal) {
+                        Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                    }
+                    showProgressBar(false);
+                    updateTitle();
+                });
+            } else if(avatarData!=null) {
+                try {
+                    if(imageFileType.equals("image/png")) {
+                        mng.publishAvatar(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
+                    } else mng.publishAvatarJPG(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
+                    isAvatarSuccessful = true;
+                } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
+                        SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                    e.printStackTrace();
+                }
+
+                final boolean isSuccessfulFinal = isAvatarSuccessful;
+                Application.getInstance().runOnUiThread(() -> {
+
+                    if (isSuccessfulFinal) {
+                        Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                    }
+                    showProgressBar(false);
+                    updateTitle();
+                });
             }
         });
     }

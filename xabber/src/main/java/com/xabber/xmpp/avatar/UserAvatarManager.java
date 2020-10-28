@@ -74,7 +74,7 @@ public final class UserAvatarManager extends Manager {
 
     private AvatarMetadataStore metadataStore = new AvatarMetadataStore();
     private final Set<AvatarListener> avatarListeners = new HashSet<>();
-    private Set<String> groupchatMemberAvatarRequests = new ConcurrentSkipListSet<>();
+    private final Set<String> groupchatMemberAvatarRequests = new ConcurrentSkipListSet<>();
 
 
     /**
@@ -143,14 +143,8 @@ public final class UserAvatarManager extends Manager {
         try {
             if (isSupportedByServer())
                 enable();
-        } catch (NoResponseException e) {
-            e.printStackTrace();
-        } catch (XMPPErrorException e) {
-            e.printStackTrace();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
         }
     }
 
@@ -244,7 +238,7 @@ public final class UserAvatarManager extends Manager {
             throws XMPPErrorException, PubSubException.NotALeafNodeException, NotConnectedException,
             InterruptedException, NoResponseException {
         String id = publishAvatarData(data);
-        publishAvatarMetadata(id, data.length, "image/png", height, width);
+        publishAvatarMetadata(id, data.length, ImageType.PNG.getValue(), height, width);
     }
 
     /**
@@ -263,7 +257,7 @@ public final class UserAvatarManager extends Manager {
             throws XMPPErrorException, PubSubException.NotALeafNodeException, NotConnectedException,
             InterruptedException, NoResponseException {
         String id = publishAvatarData(data);
-        publishAvatarMetadata(id, data.length, "image/jpeg", height, width);
+        publishAvatarMetadata(id, data.length, ImageType.JPEG.getValue(), height, width);
     }
 
     /**
@@ -389,10 +383,8 @@ public final class UserAvatarManager extends Manager {
 
 
     private void publishAvatarData(byte[] data, String itemId)
-            throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException, PubSubException.NotALeafNodeException {
+            throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException {
         DataExtension dataExtension = new DataExtension(data);
-
-        //getOrCreateDataNode().publish(new PayloadItem<>(itemId, dataExtension));
 
         PayloadItem item = new PayloadItem<>(itemId, dataExtension);
         PublishItem publishItem = new PublishItem<>(DATA_NAMESPACE, item);
@@ -500,7 +492,7 @@ public final class UserAvatarManager extends Manager {
      * @throws InterruptedException
      */
     public void unpublishAvatar()
-            throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException, PubSubException.NotALeafNodeException {
+            throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         PayloadItem item = new PayloadItem<>(null, new MetadataExtension(null));
         PublishItem publishItem = new PublishItem<>(METADATA_NAMESPACE, item);
         PubSub packet = PubSub.createPubsubPacket(null, IQ.Type.set, publishItem, null);
@@ -508,75 +500,77 @@ public final class UserAvatarManager extends Manager {
     }
 
 
-    private final PEPListener metadataExtensionListener = new PEPListener() {
-        @Override
-        public void eventReceived(EntityBareJid from, EventElement event, Message message) {
-            if (!EventElementType.items.equals(event.getEventType())) {
-                // Totally not of interest for us.
-                return;
+    private final PEPListener metadataExtensionListener = (from, event, message) -> {
+        if (!EventElementType.items.equals(event.getEventType())) {
+            // Totally not of interest for us.
+            return;
+        }
+
+        for (ExtensionElement items : event.getExtensions()) {
+            if (!(items instanceof ItemsExtension)) {
+                continue;
             }
 
-            for (ExtensionElement items : event.getExtensions()) {
-                if (!(items instanceof ItemsExtension)) {
+            for (ExtensionElement item : ((ItemsExtension) items).getExtensions()) {
+                if (!(item instanceof PayloadItem<?>)) {
                     continue;
                 }
 
-                for (ExtensionElement item : ((ItemsExtension) items).getExtensions()) {
-                    if (!(item instanceof PayloadItem<?>)) {
-                        continue;
-                    }
+                PayloadItem<?> payloadItem = (PayloadItem<?>) item;
 
-                    PayloadItem<?> payloadItem = (PayloadItem<?>) item;
+                if ((payloadItem.getPayload() instanceof MetadataExtension)) {
 
-                    if ((payloadItem.getPayload() instanceof MetadataExtension)) {
+                    MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
+                    if (metadataExtension.getInfoElements() == null) {
+                        //contact published an empty metadata to remove avatar
+                        for (AvatarListener listener : avatarListeners) {
+                            listener.onAvatarUpdateReceived(from, metadataExtension);
+                        }
+                        //save as empty bitmap
+                        AvatarManager.getInstance().onAvatarReceived(from, "", null, "xep");
 
-                        MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
-                        if (metadataExtension.getInfoElements() == null) {
-                            //contact published an empty metadata to remove avatar
-                            for (AvatarListener listener : avatarListeners) {
-                                listener.onAvatarUpdateReceived(from, metadataExtension);
+                    } else for (MetadataInfo info : metadataExtension.getInfoElements()) {
+                        if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
+                            AvatarManager am = AvatarManager.getInstance();
+                            // If we have a locally saved copy of the avatar, check if its hash
+                            // matches the hash of the current PEP-avatar(XEP-0084)
+                            // and if not, set it as the current one.
+                            if (am.getCurrentXEPHash(from) != null) {
+                                if (am.getCurrentXEPHash(from).equals(info.getId()))
+                                    continue;
+                                am.setXEPHashAsCurrent(from, info.getId());
                             }
-                            //save as empty bitmap
-                            AvatarManager.getInstance().onAvatarReceived(from, "", null, "xep");
-
-                        } else for (MetadataInfo info : metadataExtension.getInfoElements()) {
-                            if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
-                                AvatarManager am = AvatarManager.getInstance();
-                                // If we have a locally saved copy of the avatar, check if its hash
-                                // matches the hash of the current PEP-avatar(XEP-0084)
-                                // and if not, set it as the current one.
-                                if (am.getCurrentXEPHash(from) != null) {
-                                    if (am.getCurrentXEPHash(from).equals(info.getId()))
-                                        continue;
-                                    am.setXEPHashAsCurrent(from, info.getId());
-                                }
+                        }
+                        for (AvatarListener listener : avatarListeners) {
+                            listener.onAvatarUpdateReceived(from, metadataExtension);
+                        }
+                        try {
+                            byte[] avatar = fetchAvatarFromPubSub(from, info);
+                            if (avatar == null) continue;
+                            String sh1 = info.getId();
+                            if (metadataStore != null) {
+                                metadataStore.setAvatarAvailable(from, info.getId());
                             }
-                            for (AvatarListener listener : avatarListeners) {
-                                listener.onAvatarUpdateReceived(from, metadataExtension);
-                            }
-                            try {
-                                byte[] avatar = fetchAvatarFromPubSub(from, info);
-                                if (avatar == null) continue;
-                                String sh1 = info.getId();
-                                if (metadataStore != null) {
-                                    metadataStore.setAvatarAvailable(from, info.getId());
-                                }
-                                AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
-                            } catch (InterruptedException e) {
-                                LogManager.exception(LOG_TAG, e);
-                            } catch (PubSubException.NotALeafNodeException e) {
-                                LogManager.exception(LOG_TAG, e);
-                            } catch (NoResponseException e) {
-                                LogManager.exception(LOG_TAG, e);
-                            } catch (NotConnectedException e) {
-                                LogManager.exception(LOG_TAG, e);
-                            } catch (XMPPErrorException e) {
-                                LogManager.exception(LOG_TAG, e);
-                            }
+                            AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
+                        } catch (Exception e) {
+                            LogManager.exception(LOG_TAG, e);
                         }
                     }
                 }
             }
         }
     };
+
+    public enum ImageType{
+        PNG,
+        JPEG;
+
+        public String getValue(){
+            switch (this){
+                case PNG: return "image/png";
+                case JPEG: return "image/jpeg";
+                default: return "image";
+            }
+        }
+    }
 }

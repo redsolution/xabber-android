@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -941,20 +940,18 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 try {
                     mng.unpublishAvatar();
                     isAvatarSuccessful = true;
-                } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                        SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 final boolean isSuccessfulFinal = isAvatarSuccessful;
                 Application.getInstance().runOnUiThread(() -> {
                     if (isSuccessfulFinal) {
-                        Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
-                        disableProgressMode();
+                        Toast.makeText(getActivity(), getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
-                        disableProgressMode();
+                        Toast.makeText(getActivity(), getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show();
                     }
+                    disableProgressMode();
                 });
             } else if(avatarData!=null) {
                 try {
@@ -971,10 +968,10 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 Application.getInstance().runOnUiThread(() -> {
 
                     if (isSuccessfulFinal) {
-                        Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show();
                         disableProgressMode();
                     } else {
-                        Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show();
                         disableProgressMode();
                     }
                 });

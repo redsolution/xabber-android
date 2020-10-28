@@ -134,6 +134,9 @@
     <string name="account_vcard">Profile picture, vCard</string>
     <string name="account_vcard_summary">Edit your Avatar and vCard info</string>
 
+    <string name="avatar_successfully_published">Avatar published!</string>
+    <string name="avatar_publishing_failed">Avatar publishing failed!</string>
+
     <string name="account_push">Push notifications</string>
     <string name="account_push_enable">Enable push notifications</string>
 

@@ -3,20 +3,18 @@ package com.xabber.android.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.Rect
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.PopupMenu
@@ -26,17 +24,24 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.soundcloud.android.crop.Crop
+import com.theartofdev.edmodo.cropper.CropImage
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
+import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
+import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember
@@ -44,9 +49,21 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
+import com.xabber.android.ui.fragment.AccountInfoEditFragment
 import com.xabber.android.ui.fragment.GroupMemberRightsFragment
 import com.xabber.android.ui.helper.BlurTransformation
+import com.xabber.android.ui.helper.PermissionsRequester
+import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_CAMERA
+import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
+import com.xabber.android.utils.Utils
+import com.xabber.xmpp.avatar.UserAvatarManager
+import com.xabber.xmpp.vcard.VCard
+import org.apache.commons.io.FileUtils
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.net.URL
 import java.util.*
 
 class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
@@ -66,6 +83,11 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
     private var accountMainColor = 0
     private var coloredBlockText = false
+
+    private var filePhotoUri: Uri? = null
+    private var imageFileType: UserAvatarManager.ImageType? = null
+    private var avatarData: ByteArray? = null
+    private var newAvatarImageUri: Uri? = null
 
     var orientation = 0
     private val blocked = false
@@ -195,7 +217,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
             et.hint = groupchatMember?.nickname
-            adb.setView(et, 56, 0,56,0)
+            adb.setView(et, 56, 0, 56, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance()
@@ -223,19 +245,14 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
         val avatarIv = findViewById<ImageView>(R.id.ivAvatar)
         avatarIv.setImageDrawable(backgroundSource)
-        avatarIv.setOnClickListener {
-            val popupMenu = PopupMenu(this, avatarIv)
-            popupMenu.menuInflater.inflate(R.menu.groupchat_member_edit_change_avatar, popupMenu.menu)
-            popupMenu.setOnMenuItemClickListener(this)
-            popupMenu.show()
-        }
+        avatarIv.setOnClickListener { changeAvatar(it as ImageView) }
 
     }
 
     override fun onResume() {
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
-        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java,  this)
+        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
         GroupchatMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupchatMember?.id)
         appBarResize()
     }
@@ -243,6 +260,337 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onPause() {
         super.onPause()
         Application.getInstance().removeUIListener(OnGroupchatRequestListener::class.java, this)
+    }
+
+    private fun changeAvatar(avatarIv: ImageView) {
+        val contextThemeWrapper = ContextThemeWrapper(this, R.style.PopupMenuOverlapAnchor)
+        android.widget.PopupMenu(contextThemeWrapper, avatarIv).apply {
+            inflate(R.menu.change_avatar)
+            menu.findItem(R.id.action_remove_avatar).isVisible = avatarIv.drawable != null
+            setOnMenuItemClickListener { item: MenuItem ->
+                when (item.itemId) {
+                    R.id.action_choose_from_gallery -> {
+                        onChooseFromGalleryClick()
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.action_take_photo -> {
+                        onTakePhotoClick()
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.action_remove_avatar -> {
+                        saveAvatar(null)
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> return@setOnMenuItemClickListener false
+                }
+            }
+        }
+                .show()
+    }
+
+    private fun onChooseFromGalleryClick() {
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(
+                        this, REQUEST_PERMISSION_GALLERY))
+            chooseFromGallery()
+    }
+
+    private fun onTakePhotoClick() {
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(
+                        this, REQUEST_PERMISSION_CAMERA))
+            takePhoto()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        val isPermissionsGranted = PermissionsRequester.isPermissionGranted(grantResults)
+
+        when (requestCode) {
+            REQUEST_PERMISSION_GALLERY ->
+                if (isPermissionsGranted) chooseFromGallery()
+                else Toast
+                        .makeText(this, R.string.no_permission_to_read_files, Toast.LENGTH_SHORT)
+                        .show()
+
+            REQUEST_PERMISSION_CAMERA ->
+                if (isPermissionsGranted) takePhoto()
+                else Toast
+                        .makeText(this, R.string.no_permission_to_camera, Toast.LENGTH_SHORT)
+                        .show()
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun saveAvatar(newAvatarImageUri: Uri?) {
+        showProgressBar(true)
+        val userAvatarManager = UserAvatarManager
+                .getInstanceFor(AccountManager.getInstance().getAccount(accountJid)?.connection)
+        if (newAvatarImageUri == null) {
+            try {
+                if (userAvatarManager.isSupportedByServer) {
+                    //saving empty avatar
+                    AvatarManager.getInstance().onAvatarReceived(accountJid!!.fullJid.asBareJid(), "", null, "xep") //todo this
+                }
+            } catch (e: Exception) {
+                LogManager.exception(LOG_TAG, e)
+                showProgressBar(false)
+            }
+        } else {
+            try {
+                if (userAvatarManager.isSupportedByServer) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
+                    //xep-0084 av
+                    avatarData = VCard.getBytes(URL(newAvatarImageUri.toString()))
+                    val sh1 = AvatarManager.getAvatarHash(avatarData)
+                    AvatarManager.getInstance().onAvatarReceived(accountJid?.fullJid?.asBareJid(), sh1, avatarData, "xep") //todo this
+                }
+            } catch (e: Exception) {
+                LogManager.exception(LOG_TAG, e)
+                showProgressBar(false)
+            }
+        }
+        Application.getInstance().runInBackgroundUserRequest {
+            if (newAvatarImageUri == null) {
+                try {
+                    //publishing empty (avatar) metadata
+                    GroupchatMemberManager.getInstance().removeMemberAvatar(groupchat,
+                            groupchatMember?.id)
+                    onAvatarSettingEnded(true)
+                } catch (e: Exception) {
+                    onAvatarSettingEnded(false)
+                    LogManager.exception(LOG_TAG, e)
+                }
+            } else if (avatarData != null) {
+                try {
+                    GroupchatMemberManager.getInstance().publishMemberAvatar(groupchat,
+                            groupchatMember?.id,  avatarData, AccountActivity.FINAL_IMAGE_SIZE,
+                            AccountActivity.FINAL_IMAGE_SIZE, imageFileType)
+                    onAvatarSettingEnded(true)
+                } catch (e: Exception) {
+                    onAvatarSettingEnded(false)
+                    LogManager.exception(LOG_TAG, e)
+                }
+
+            }
+        }
+    }
+
+    private fun onAvatarSettingEnded(isSuccessfully: Boolean) =
+        Application.getInstance().runOnUiThread {
+            if (isSuccessfully)
+                Toast.makeText(baseContext, getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show() //todo use resource strings
+            else Toast.makeText(baseContext, getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show()
+            setupAvatar()
+            showProgressBar(false)
+        }
+
+    private fun showProgressBar(show: Boolean) {
+        findViewById<ImageView>(R.id.ivAvatar).visibility = if (show) View.VISIBLE else View.GONE
+        Utils.lockScreenRotation(this, show)
+    }
+
+    private fun chooseFromGallery() = Crop.pickImage(this)
+
+    private fun takePhoto() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(this.packageManager) != null) {
+            var imageFile: File? = null
+            try {
+                imageFile = FileManager.createTempImageFile(AccountActivity.TEMP_FILE_NAME)
+            } catch (e: IOException) {
+                LogManager.exception(this, e)
+            }
+            if (imageFile != null) {
+                filePhotoUri = FileManager.getFileUri(imageFile)
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, filePhotoUri)
+                startActivityForResult(takePictureIntent, AccountInfoEditFragment.REQUEST_TAKE_PHOTO)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
+            //picked gallery
+            data?.data?.let { beginCropProcess(it) }
+        } else if (requestCode == AccountInfoEditFragment.REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            //picked camera
+            filePhotoUri?.let { beginCropProcess(it) }
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            //processing data after initial crop with CropImage
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == RESULT_OK) {
+                newAvatarImageUri = result.uri
+                handleCrop(resultCode)
+            }
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            //processing data after initial crop with Crop
+            handleCrop(resultCode)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun handleCrop(resultCode: Int) {
+        when (resultCode) {
+            RESULT_OK -> checkAvatarSizeAndPublish()
+            else -> {
+                Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show()
+                newAvatarImageUri = null
+            }
+        }
+    }
+
+    private fun beginCropProcess(source: Uri) {
+        newAvatarImageUri = Uri.fromFile(File(this.cacheDir, AccountActivity.TEMP_FILE_NAME))
+        Application.getInstance().runInBackgroundUserRequest {
+            val isImageNeedPreprocess = (FileManager.isImageSizeGreater(source, 256)
+                    || FileManager.isImageNeedRotation(source))
+            Application.getInstance().runOnUiThread {
+                if (isImageNeedPreprocess) {
+                    preprocessAndStartCrop(source)
+                } else {
+                    startCrop(source)
+                }
+            }
+        }
+    }
+
+    private fun preprocessAndStartCrop(source: Uri) {
+        Glide.with(this).asBitmap().load(source).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+                .into(object : CustomTarget<Bitmap?>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        Application.getInstance().runInBackgroundUserRequest {
+                            val cR = Application.getInstance().applicationContext.contentResolver
+                            val imageType = cR.getType(source)
+                            val stream = ByteArrayOutputStream()
+                            if (imageType == "image/png") {
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                            } else {
+                                resource.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                            }
+                            val data = stream.toByteArray()
+                            resource.recycle()
+                            try {
+                                stream.close()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                            val rotatedImage: Uri?
+                            rotatedImage = if (imageType == "image/png") {
+                                FileManager.savePNGImage(data, AccountActivity.ROTATE_FILE_NAME)
+                            } else {
+                                FileManager.saveImage(data, AccountActivity.ROTATE_FILE_NAME)
+                            }
+                            if (rotatedImage == null) return@runInBackgroundUserRequest
+                            Application.getInstance().runOnUiThread { startCrop(rotatedImage) }
+                        }
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        super.onLoadFailed(errorDrawable)
+                        Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+    }
+
+    private fun startCrop(srcUri: Uri) {
+        val cR = Application.getInstance().applicationContext.contentResolver
+        imageFileType = when(cR.getType(srcUri)){
+            "image/png" -> UserAvatarManager.ImageType.PNG
+            "image/jpeg" -> UserAvatarManager.ImageType.JPEG
+            else -> null
+        }
+        if (imageFileType != null) {
+            if (imageFileType == UserAvatarManager.ImageType.PNG) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1)
+                            .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(this)
+                } else Crop.of(srcUri, newAvatarImageUri)
+                        .asSquare()
+                        .start(this)
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1)
+                            .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(this)
+                } else Crop.of(srcUri, newAvatarImageUri)
+                        .asSquare()
+                        .start(this)
+            }
+        }
+    }
+
+    private fun checkAvatarSizeAndPublish() {
+        if (newAvatarImageUri != null) {
+            val file = File(newAvatarImageUri?.path)
+            if (file.length() / AccountActivity.KB_SIZE_IN_BYTES > 35) {
+                resize(newAvatarImageUri as Uri)
+                return
+            }
+            AccountActivity.FINAL_IMAGE_SIZE = AccountActivity.MAX_IMAGE_RESIZE
+            AccountActivity.MAX_IMAGE_RESIZE = 256
+            saveAvatar(newAvatarImageUri)
+        }
+    }
+
+    private fun resize(src: Uri) {
+        Glide.with(this).asBitmap().load(src).override(AccountActivity.MAX_IMAGE_RESIZE, AccountActivity.MAX_IMAGE_RESIZE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+                .into(object : CustomTarget<Bitmap?>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        Application.getInstance().runInBackgroundUserRequest {
+                            val stream = ByteArrayOutputStream()
+                            if (imageFileType != null) {
+                                if (imageFileType == UserAvatarManager.ImageType.PNG) {
+                                    resource.compress(Bitmap.CompressFormat.PNG, 90, stream)
+                                } else {
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                                }
+                            }
+                            val data = stream.toByteArray()
+                            if (data.size > 35 * AccountActivity.KB_SIZE_IN_BYTES) {
+                                AccountActivity.MAX_IMAGE_RESIZE = AccountActivity.MAX_IMAGE_RESIZE - AccountActivity.MAX_IMAGE_RESIZE / 8
+                                if (AccountActivity.MAX_IMAGE_RESIZE == 0) {
+                                    Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_LONG).show()
+                                    return@runInBackgroundUserRequest
+                                }
+                                resize(src)
+                                return@runInBackgroundUserRequest
+                            }
+                            resource.recycle()
+                            try {
+                                stream.close()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                            var rotatedImage: Uri? = null
+                            if (imageFileType != null) {
+                                rotatedImage = if (imageFileType == UserAvatarManager.ImageType.PNG) {
+                                    FileManager.savePNGImage(data, "resize")
+                                } else {
+                                    FileManager.saveImage(data, "resize")
+                                }
+                            }
+                            if (rotatedImage == null) return@runInBackgroundUserRequest
+                            try {
+                                FileUtils.writeByteArrayToFile(File(newAvatarImageUri!!.path), data)
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                            Application.getInstance().runOnUiThread { checkAvatarSizeAndPublish() }
+                        }
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        super.onLoadFailed(errorDrawable)
+                        Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
     }
 
     private fun appBarResize() {
@@ -273,7 +621,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
                     contactTitleView!!.visibility = View.INVISIBLE
                     isShow = true
                 } else if (isShow) {
-                    collapsingToolbar?.setTitle(" ")
+                    collapsingToolbar?.title = " "
                     contactTitleView!!.visibility = View.VISIBLE
                     isShow = false
                 }
