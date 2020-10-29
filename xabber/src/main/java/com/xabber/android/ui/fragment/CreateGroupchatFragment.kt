@@ -1,6 +1,8 @@
 package com.xabber.android.ui.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,7 @@ import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.CreateGroupchatActivity
 import com.xabber.android.ui.adapter.AccountChooseAdapter
 import com.xabber.android.ui.widget.NoDefaultSpinner
+import com.xabber.android.utils.StringUtils
 
 
 class CreateGroupchatFragment :  Fragment(), CreateGroupchatIqResultListener {
@@ -52,6 +55,15 @@ class CreateGroupchatFragment :  Fragment(), CreateGroupchatIqResultListener {
         if (AccountManager.getInstance().enabledAccounts.size > 1){
             settingsRootLl.visibility = View.GONE
         }
+
+        groupchatNameEt.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                groupchatJidEt.setText(StringUtils.getLocalpartHintByString(s.toString()))
+            }
+        })
 
         setupAccountSpinner()
         setupMembershipTypeSpinner()

@@ -59,9 +59,9 @@ public class StringUtils {
     private static final DateFormat TIME;
     private static final String LOG_DATE_TIME_FORMAT = "HH:mm:ss yyyy-MM-dd";
 
-    private static SimpleDateFormat groupchatMemberPresenceTimeFormat;
+    private static final SimpleDateFormat groupchatMemberPresenceTimeFormat;
     private static SimpleDateFormat logDateTimeFormat;
-    private static DateFormat timeFormat;
+    private static final DateFormat timeFormat;
 
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
@@ -268,64 +268,6 @@ public class StringUtils {
         return result;
     }
 
-//    public static String getLastActivityString(long lastActivityTime) { //TODO REALM UPDATE
-//        String result = RosterCacheManager.getInstance().getCachedLastActivityString(lastActivityTime);
-//
-//        if (result == null || result.isEmpty()) {
-//            result = "";
-//            if (lastActivityTime > 0) {
-//                long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
-//                long time;
-//                String sTime;
-//                Date date = new Date(lastActivityTime * 1000);
-//                Date today = new Date();
-//                Locale locale = Application.getInstance().getResources().getConfiguration().locale;
-//
-//                if (timeAgo < 60) {
-//                    result = Application.getInstance().getString(R.string.last_seen_now);
-//
-//                } else if (timeAgo < 3600) {
-//                    time = TimeUnit.SECONDS.toMinutes(timeAgo);
-//                    result = Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
-//
-//                } else if (timeAgo < 7200) {
-//                    result = Application.getInstance().getString(R.string.last_seen_hours);
-//
-//                } else if (isToday(date)) {
-//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-//                    sTime = pattern.format(date);
-//                    result = Application.getInstance().getString(R.string.last_seen_today, sTime);
-//
-//                } else if (isYesterday(date)) {
-//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-//                    sTime = pattern.format(date);
-//                    result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
-//
-//                } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
-//                    SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-//                    sTime = pattern.format(date);
-//                    result = Application.getInstance().getString(R.string.last_seen_on_week,
-//                            getDayOfWeek(date, locale), sTime);
-//
-//                } else if (date.getYear() == today.getYear()) {
-//                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
-//                    sTime = pattern.format(date);
-//                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
-//
-//                } else if (date.getYear() < today.getYear()) {
-//                    SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
-//                    sTime = pattern.format(date);
-//                    result = Application.getInstance().getString(R.string.last_seen_date, sTime);
-//                }
-//
-//                if (!result.isEmpty())
-//                    RosterCacheManager.getInstance().putLastActivityStringToCache(lastActivityTime, result);
-//            }
-//        }
-//
-//        return result;
-//    }
-
     public static boolean isToday(Date date) {
         Calendar calendarOne = Calendar.getInstance();
         Calendar calendarTwo = Calendar.getInstance();
@@ -418,13 +360,11 @@ public class StringUtils {
     }
 
     public static String getColoredText(String text, String hexColor) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<font color='");
-        builder.append(hexColor);
-        builder.append("'>");
-        builder.append(text);
-        builder.append("</font> ");
-        return builder.toString();
+        return "<font color='" +
+                hexColor +
+                "'>" +
+                text +
+                "</font> ";
     }
 
     public static String getColoredText(String text, int color) {
@@ -565,5 +505,17 @@ public class StringUtils {
     public static String translitirateToLatin(String string){
         //TODO add detecting language and make this more flexible
         return Transliterator.getInstance("Cyrillic-Latin").transliterate(string);
+    }
+
+    public static String getLocalpartHintByString(String string){
+        String transliterated = translitirateToLatin(string);
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < transliterated.length(); i++){
+            char c = transliterated.charAt(i);
+            if (!Character.isLetterOrDigit(c))
+                result.append("_");
+            else result.append(c);
+        }
+        return result.toString();
     }
 }
