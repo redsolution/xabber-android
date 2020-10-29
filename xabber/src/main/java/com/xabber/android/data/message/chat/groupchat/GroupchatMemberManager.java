@@ -19,6 +19,8 @@ import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemE
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistQueryIQ;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultIQ;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistUnblockIQ;
+import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
+import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
 import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListQueryIQ;
 import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultIQ;
 import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListRevokeIQ;
@@ -33,6 +35,7 @@ import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsR
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
@@ -496,6 +499,32 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                     failedUnblockRequests.add(blockedElement.getBlockedItem());
                     unfinishedRequestCount.getAndDecrement();
                 }
+            }
+        });
+    }
+
+    public void createChatWithIncognitoMember(GroupChat groupChat, GroupchatMember groupchatMember){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+                CreatePtpGroupIQ iq = new CreatePtpGroupIQ(groupChat, groupchatMember.getId());
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(iq, packet -> {
+                            if (packet instanceof IQ
+                                    && ((IQ) packet).getType().equals(IQ.Type.result)
+                                    && packet instanceof CreateGroupchatIQ.ResultIq){
+                                try{
+                                    ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
+                                    AccountJid account = AccountJid.from(packet.getTo().toString());
+                                    PresenceManager.getInstance().addAutoAcceptSubscription(account, contactJid);
+                                    PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
+                                    PresenceManager.getInstance().requestSubscription(account, contactJid);
+                                } catch (Exception e){
+                                    LogManager.exception(LOG_TAG, e);
+                                }
+                            }
+                        });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
             }
         });
     }

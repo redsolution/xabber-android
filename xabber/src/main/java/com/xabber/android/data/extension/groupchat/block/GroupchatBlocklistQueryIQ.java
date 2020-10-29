@@ -8,7 +8,7 @@ public class GroupchatBlocklistQueryIQ extends GroupchatAbstractQueryIQ {
     public static final String HASH_BLOCK = "#block";
 
     public GroupchatBlocklistQueryIQ(ContactJid groupchatJid) {
-        super(ELEMENT, NAMESPACE + HASH_BLOCK);
+        super(NAMESPACE + HASH_BLOCK);
         setType(Type.get);
         setTo(groupchatJid.getBareJid());
     }

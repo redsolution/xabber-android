@@ -362,7 +362,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             } else if (avatarData != null) {
                 try {
                     GroupchatMemberManager.getInstance().publishMemberAvatar(groupchat,
-                            groupchatMember?.id,  avatarData, AccountActivity.FINAL_IMAGE_SIZE,
+                            groupchatMember?.id, avatarData, AccountActivity.FINAL_IMAGE_SIZE,
                             AccountActivity.FINAL_IMAGE_SIZE, imageFileType)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
@@ -658,7 +658,14 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         val textView = findViewById<TextView>(R.id.first_button_text)
 
         imageButton.setOnClickListener {
-            //todo: direct chat opening
+            if (groupchat!!.privacyType != GroupchatPrivacyType.INCOGNITO
+                    && !groupchatMember!!.jid.isNullOrEmpty()){
+                val contactJid = ContactJid.from(groupchatMember!!.jid)
+                startActivityForResult(ChatActivity.createSpecificChatIntent(this,
+                        groupchat!!.account, contactJid), MainActivity.CODE_OPEN_CHAT)
+            } else {
+                GroupchatMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupchatMember)
+            }
         }
 
         imageButton.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)

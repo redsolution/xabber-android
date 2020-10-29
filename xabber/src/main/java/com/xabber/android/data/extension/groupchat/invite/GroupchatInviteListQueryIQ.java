@@ -8,7 +8,7 @@ public class GroupchatInviteListQueryIQ extends GroupchatAbstractQueryIQ {
     public static final String HASH_INVITE = "#invite";
 
     public GroupchatInviteListQueryIQ(ContactJid groupchatJid) {
-        super(ELEMENT, NAMESPACE + HASH_INVITE);
+        super(NAMESPACE + HASH_INVITE);
         setType(Type.get);
         setTo(groupchatJid.getBareJid());
     }

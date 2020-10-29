@@ -7,8 +7,8 @@ public abstract class GroupchatAbstractQueryIQ extends IQ {
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE;
     public static final String ELEMENT = QUERY_ELEMENT;
 
-    protected GroupchatAbstractQueryIQ(String childElementName, String childElementNamespace) {
-        super(childElementName, childElementNamespace);
+    protected GroupchatAbstractQueryIQ(String childElementNamespace){
+        super(ELEMENT, childElementNamespace);
     }
 
 }

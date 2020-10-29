@@ -94,7 +94,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     /**
      * Select contact to be invited to the room was requested.
      */
-    private static final int CODE_OPEN_CHAT = 301;
+    public static final int CODE_OPEN_CHAT = 301;
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
