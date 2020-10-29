@@ -832,8 +832,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         return messageRealmObjects;
     }
 
-    private @Nullable
-    MessageRealmObject parseMessage(AccountItem accountItem, AccountJid account, ContactJid user, Forwarded forwarded, String prevID) {
+    @Nullable
+    private MessageRealmObject parseMessage(AccountItem accountItem, AccountJid account,
+                                            ContactJid user, Forwarded forwarded, String prevID) {
+
         if (!(forwarded.getForwardedStanza() instanceof Message)) {
             return null;
         }
@@ -929,6 +931,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         } else {
             messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }
+
         if (message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE))
             messageRealmObject.setGroupchatSystem(true);
 

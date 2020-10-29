@@ -466,6 +466,9 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setRead(true);
         }
 
+        if (action != null && (groupchatUserId != null || isGroupchatSystem))
+            return null;
+
         return messageRealmObject;
     }
 

@@ -24,8 +24,11 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -57,20 +60,20 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
-    private int accountMainColor;
-    private ColorStateList colorStateList;
-    private int mentionColor;
-    private String userName;
-    private AccountJid account;
+    private final int accountMainColor;
+    private final ColorStateList colorStateList;
+    private final int mentionColor;
+    private final String userName;
+    private final AccountJid account;
     private int prevItemCount;
     private String prevFirstItemId;
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
     private RecyclerView recyclerView;
-    private List<String> itemsNeedOriginalText = new ArrayList<>();
-    private List<String> checkedItemIds = new ArrayList<>();
-    private List<MessageRealmObject> checkedMessageRealmObjects = new ArrayList<>();
+    private final List<String> itemsNeedOriginalText = new ArrayList<>();
+    private final List<String> checkedItemIds = new ArrayList<>();
+    private final List<MessageRealmObject> checkedMessageRealmObjects = new ArrayList<>();
 
     public interface Listener {
         void onMessagesUpdated();
@@ -114,7 +117,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     private String getFirstMessageId() {
         if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0)
-            return realmResults.first().getUniqueId();
+            return Objects.requireNonNull(realmResults.first()).getUniqueId();
         else return null;
     }
 
@@ -150,8 +153,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         this.recyclerView = recyclerView;
     }
 
+    @NotNull
     @Override
-    public BasicMessageVH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BasicMessageVH onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new ActionMessageVH(LayoutInflater.from(parent.getContext())
@@ -204,13 +208,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
                 return new GroupchatSystemMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_groupchat_system_message, parent, false));
-            default:
-                return null;
+            default: return null;
         }
     }
 
     @Override
-    public void onBindViewHolder(final BasicMessageVH holder, int position) {
+    public void onBindViewHolder(@NotNull final BasicMessageVH holder, int position) {
 
         final int viewType = getItemViewType(position);
         MessageRealmObject messageRealmObject = getMessageItem(position);
@@ -250,7 +253,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         }
 
         // need date
-        boolean needDate = false;
+        boolean needDate;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
         if (previousMessage != null) {
             needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
@@ -264,30 +267,42 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
-                ((ActionMessageVH)holder).bind(messageRealmObject, context, account, needDate);
+                if (holder instanceof ActionMessageVH) {
+                    ((ActionMessageVH)holder).bind(messageRealmObject, context, account, needDate);
+                }
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
-                ((IncomingMessageVH)holder).bind(messageRealmObject, extraData);
+                if (holder instanceof IncomingMessageVH) {
+                    ((IncomingMessageVH)holder).bind(messageRealmObject, extraData);
+                }
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
-                ((NoFlexIncomingMsgVH)holder).bind(messageRealmObject, extraData);
+                if (holder instanceof NoFlexIncomingMsgVH) {
+                    ((NoFlexIncomingMsgVH)holder).bind(messageRealmObject, extraData);
+                }
                 break;
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                ((OutgoingMessageVH)holder).bind(messageRealmObject, extraData);
+                if (holder instanceof OutgoingMessageVH) {
+                    ((OutgoingMessageVH)holder).bind(messageRealmObject, extraData);
+                }
                 break;
 
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
-                ((NoFlexOutgoingMsgVH)holder).bind(messageRealmObject, extraData);
+                if (holder instanceof NoFlexOutgoingMsgVH) {
+                    ((NoFlexOutgoingMsgVH)holder).bind(messageRealmObject, extraData);
+                }
                 break;
             case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
-                ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
+                if (holder instanceof GroupchatSystemMessageVH) {
+                    ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
+                }
 
         }
     }
@@ -424,10 +439,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         return checkedMessageRealmObjects;
     }
 
-    public int getCheckedItemsCount() {
-        return checkedItemIds.size();
-    }
-
     public void resetCheckedItems() {
         if (checkedItemIds.size() > 0) {
             checkedItemIds.clear();
@@ -442,21 +453,21 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     public static class MessageExtraData {
 
-        private Context context;
-        private FileMessageVH.FileListener listener;
-        private ForwardedAdapter.ForwardListener fwdListener;
-        private String username;
-        private ColorStateList colorStateList;
-        private int accountMainColor;
-        private int mentionColor;
-        private Long mainTimestamp;
-        private GroupchatMember groupchatMember;
+        private final Context context;
+        private final FileMessageVH.FileListener listener;
+        private final ForwardedAdapter.ForwardListener fwdListener;
+        private final String username;
+        private final ColorStateList colorStateList;
+        private final int accountMainColor;
+        private final int mentionColor;
+        private final Long mainTimestamp;
+        private final GroupchatMember groupchatMember;
 
-        private boolean showOriginalOTR;
-        private boolean unread;
-        private boolean checked;
-        private boolean needTail;
-        private boolean needDate;
+        private final boolean showOriginalOTR;
+        private final boolean unread;
+        private final boolean checked;
+        private final boolean needTail;
+        private final boolean needDate;
 
         public MessageExtraData(FileMessageVH.FileListener listener,
                                 ForwardedAdapter.ForwardListener fwdListener,
