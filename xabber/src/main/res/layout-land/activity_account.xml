@@ -154,7 +154,7 @@
                         android:layout_marginEnd="3dp"
                         android:layout_marginBottom="15dp"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/ic_groupchat_14_default_border"
+                        app:srcCompat="@drawable/ic_status_combined"
                         tools:visibility="visible" />
                 </FrameLayout>
             </LinearLayout>

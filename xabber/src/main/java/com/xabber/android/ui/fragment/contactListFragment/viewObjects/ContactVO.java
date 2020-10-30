@@ -65,8 +65,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     private final String id;
 
-    private int accountColorIndicator;
-    private int accountColorIndicatorBack;
+    private final int accountColorIndicator;
+    private final int accountColorIndicatorBack;
 
     private final String name;
     private final String status;
@@ -88,9 +88,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final boolean isCustomNotification;
     protected boolean archived;
     protected int forwardedCount;
-    private boolean isGroupchat;
-    private boolean isServer;
-    private boolean isBlocked;
+    private final boolean isGroupchat;
+    private final boolean isServer;
+    private final boolean isBlocked;
 
     protected final ContactClickListener listener;
 

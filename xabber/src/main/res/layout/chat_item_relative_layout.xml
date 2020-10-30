@@ -33,7 +33,7 @@
             android:layout_alignEnd="@+id/ivAvatar"
             android:layout_alignRight="@+id/ivAvatar"
             android:layout_alignBottom="@+id/ivAvatar"
-            android:src="@drawable/ic_groupchat_14_default_border"
+            android:src="@drawable/ic_status_combined"
             android:visibility="gone" />
 
         <ImageView

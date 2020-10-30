@@ -23,7 +23,7 @@
         android:id="@+id/ivStatusGroupchat"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/ic_groupchat_14_default_border"
+        android:src="@drawable/ic_status_combined"
         android:layout_gravity="bottom|right"
         android:visibility="gone"
         />

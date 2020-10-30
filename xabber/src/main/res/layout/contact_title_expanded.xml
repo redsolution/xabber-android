@@ -80,7 +80,7 @@
                     android:layout_marginBottom="30dp"
                     android:layout_weight="1"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_groupchat_14_default_border"
+                    app:srcCompat="@drawable/ic_status_combined"
                     tools:visibility="visible" />
             </FrameLayout>
         </LinearLayout>

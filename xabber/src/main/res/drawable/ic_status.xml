@@ -14,9 +14,7 @@
 -->
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:minLevel="0" android:maxLevel="0">
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#689f38"/>
@@ -31,9 +29,7 @@
         </shape>
     </item>
     <item android:minLevel="1" android:maxLevel="1">
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#FF388E3C"/>
@@ -48,9 +44,7 @@
         </shape>
     </item>
     <item android:minLevel="2" android:maxLevel="2" >
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#FFFFA000"/>
@@ -65,9 +59,7 @@
         </shape>
     </item>
     <item android:minLevel="3" android:maxLevel="3" >
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#FF1976D2"/>
@@ -82,9 +74,7 @@
         </shape>
     </item>
     <item android:minLevel="4" android:maxLevel="4" >
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#FFD32F2F"/>
@@ -100,9 +90,7 @@
     </item>
     <item android:drawable="@drawable/ic_status_invisible_18dp" android:minLevel="5" android:maxLevel="5" />
     <item android:minLevel="6" android:maxLevel="6" >
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+        <shape android:shape="oval">
 
             <solid
                 android:color="#757575"/>

@@ -32,6 +32,7 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.BadgeHelper;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -133,7 +134,8 @@ public class ContactTitleInflater {
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (isServer) {
-            statusModeGroupView.setImageResource(R.drawable.ic_server_14_border);
+            statusModeGroupView.setImageResource(R.drawable.ic_status_combined);
+            statusModeGroupView.setImageLevel(BadgeHelper.INSTANCE.getStatusLevel(abstractContact));
             if (isForVcard) {
                 statusModeGroupView.setVisibility(View.GONE);
                 statusModeView.setVisibility(View.GONE);
