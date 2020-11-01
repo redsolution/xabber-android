@@ -21,7 +21,7 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.BadgeHelper;
+import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
 import com.xabber.android.ui.activity.BlockedListActivity.BlockedListState;
@@ -97,7 +97,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             if (abstractChat != null && abstractChat instanceof GroupChat || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
                 viewHolder.status.setImageResource(R.drawable.ic_status_combined);
-                viewHolder.status.setImageLevel(BadgeHelper.INSTANCE.getStatusLevel(abstractChat));
+                viewHolder.status.setImageLevel(StatusBadgeSetupHelper.INSTANCE.getStatusLevelForAccount(abstractChat));
                 viewHolder.status.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.status.setVisibility(View.GONE);

@@ -316,7 +316,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int displayedStatus = getStatusLevel();
         if (isBlocked) displayedStatus = 11;
         else if (isServer) displayedStatus = 10;
-        else if (isGroupchat) displayedStatus += StatusMode.groupchatOffset;
+        else if (isGroupchat) displayedStatus += StatusMode.PUBLIC_GROUP_OFFSET;
 
         viewHolder.ivStatus.setImageLevel(displayedStatus);
         viewHolder.ivOnlyStatus.setImageLevel(displayedStatus);

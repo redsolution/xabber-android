@@ -119,7 +119,7 @@ public class NewContactTitleInflater {
 
         if (isBlocked) statusLevel = 11;
         else if (isServer) statusLevel = 10;
-        else if (isGroupchat) statusLevel += StatusMode.groupchatOffset;
+        else if (isGroupchat) statusLevel += StatusMode.PUBLIC_GROUP_OFFSET;
 
         statusModeView.setImageLevel(statusLevel);
 

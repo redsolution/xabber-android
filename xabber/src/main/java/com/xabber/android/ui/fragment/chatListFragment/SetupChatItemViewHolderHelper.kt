@@ -35,7 +35,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.messageRealmObject = contact.lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
-        setupRosterStatus(holder, contact)
+        setupStatusBadge(holder, contact)
         setupContactName(holder, contact)
         setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
@@ -72,7 +72,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupRosterStatus(holder: ChatViewHolder, chat: AbstractChat) {
+    private fun setupStatusBadge(holder: ChatViewHolder, chat: AbstractChat) {
         var statusLevel = RosterManager.getInstance()
                 .getAbstractContact(chat.account, chat.contactJid).statusMode.statusLevel
         holder.rosterStatus = statusLevel
@@ -92,7 +92,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 10
-            isGroupchat -> statusLevel += StatusMode.groupchatOffset
+            isGroupchat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
         }
 
         if (isBlocked || (!isRoster && statusLevel < 8)) {
@@ -147,14 +147,12 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val resources = holder.itemView.context.resources
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
                 .isPrefsExist(Key.createKey(chat.account, chat.contactJid))
-        var iconId: Int
         val mode = chat.notificationState.determineModeByGlobalSettings()
-
-        when (mode) {
-            NotificationState.NotificationMode.enabled -> iconId = R.drawable.ic_unmute
-            NotificationState.NotificationMode.disabled -> iconId = R.drawable.ic_mute
-            NotificationState.NotificationMode.byDefault -> iconId = 0
-            else -> iconId = R.drawable.ic_snooze_mini
+        val iconId = when (mode) {
+            NotificationState.NotificationMode.enabled -> R.drawable.ic_unmute
+            NotificationState.NotificationMode.disabled -> R.drawable.ic_mute
+            NotificationState.NotificationMode.byDefault -> 0
+            else -> R.drawable.ic_snooze_mini
         }
 
         holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,

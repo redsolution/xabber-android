@@ -75,7 +75,14 @@ public enum StatusMode {
      */
     unsubscribed;
 
-    public static final int groupchatOffset = 20;
+    public static final int PUBLIC_GROUP_OFFSET = 20;
+    public static final int INCOGNITO_GROUP_OFFSET = 30;
+    public static final int PRIVATE_GROUP_OFFSET = 40;
+    public static final int CHANNEL_OFFSET = 50;
+    public static final int BOT_OFFSET = 60;
+    public static final int RSS_OFFSET = 70;
+    public static final int MOBILE_OFFSET = 80;
+    public static final int SERVER_OFFSET = 90;
 
     /**
      * Creates new {@link StatusMode} form {@link Presence}.
