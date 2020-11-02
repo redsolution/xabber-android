@@ -43,6 +43,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
     public boolean isUnread;
+    public boolean needName;
 
     TextView tvFirstUnread;
     TextView messageTime;
@@ -180,6 +181,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // set date
         needDate = extraData.isNeedDate();
         date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
+
+        needName = extraData.isNeedName();
+        if (!needName) messageHeader.setVisibility(View.GONE);
 
         // setup CHECKED
         if (extraData.isChecked())

@@ -122,7 +122,7 @@ public class ForwardedFragment extends FileInteractionFragment {
             MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                     this, getActivity(), userName, colorStateList, groupchatMember,
                     accountMainColor, mentionColor, null, false,
-                    false, false, false, false);
+                    false, false, false, false, true);
 
             if (forwardedMessages.size() > 0) {
                 ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
@@ -138,7 +138,7 @@ public class ForwardedFragment extends FileInteractionFragment {
             MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                     this, getActivity(), userName, colorStateList, null,
                     accountMainColor, mentionColor, null, false,
-                    false, false, false, false);
+                    false, false, false, false, true);
 
             RealmResults<MessageRealmObject> messages = realm.where(MessageRealmObject.class)
                     .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getUniqueId())

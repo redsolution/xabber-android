@@ -252,18 +252,27 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));
         }
 
-        // need date
+        // need date, need name
         boolean needDate;
+        boolean needName;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
         if (previousMessage != null) {
             needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
-        } else needDate = true;
+            if (messageRealmObject.getGroupchatUserId() != null && !messageRealmObject.getGroupchatUserId().isEmpty()
+                    && previousMessage.getGroupchatUserId() != null && !previousMessage.getGroupchatUserId().isEmpty()){
+                needName = !messageRealmObject.getGroupchatUserId().equals(previousMessage.getGroupchatUserId());
+            } else { needName = true; }
+        } else{
+            needDate = true;
+            needName = true;
+        }
+
 
         Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener,
                 context, userName, colorStateList, groupchatMember, accountMainColor, mentionColor, mainMessageTimestamp,
-                showOriginalOTR, unread, checked, needTail, needDate);
+                showOriginalOTR, unread, checked, needTail, needDate, needName);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -468,13 +477,14 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         private final boolean checked;
         private final boolean needTail;
         private final boolean needDate;
+        private final boolean needName;
 
         public MessageExtraData(FileMessageVH.FileListener listener,
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
                                 GroupchatMember groupchatMember, int accountMainColor, int mentionColor, Long mainTimestamp,
                                 boolean showOriginalOTR, boolean unread, boolean checked,
-                                boolean needTail, boolean needDate) {
+                                boolean needTail, boolean needDate, boolean needName) {
             this.listener = listener;
             this.fwdListener = fwdListener;
             this.context = context;
@@ -489,6 +499,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             this.needDate = needDate;
             this.groupchatMember = groupchatMember;
             this.mainTimestamp = mainTimestamp;
+            this.needName = needName;
         }
 
         public FileMessageVH.FileListener getListener() {
@@ -546,6 +557,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         public boolean isNeedDate() {
             return needDate;
         }
+
+        public boolean isNeedName() { return needName; }
     }
 
     private int getSimpleType(int type) {
