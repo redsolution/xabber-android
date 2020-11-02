@@ -1,7 +1,5 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Build
@@ -10,7 +8,6 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
@@ -24,6 +21,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
@@ -72,67 +70,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupStatusBadge(holder: ChatViewHolder, chat: AbstractChat) {
-        var statusLevel = RosterManager.getInstance()
-                .getAbstractContact(chat.account, chat.contactJid).statusMode.statusLevel
-        holder.rosterStatus = statusLevel
-
-        val isServer = chat.contactJid.jid.isDomainBareJid
-        val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(chat.account, chat.contactJid)
-        val isVisible = holder.avatarIV.visibility == View.VISIBLE
-        val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
-        val isAccountConnected = AccountManager.getInstance().connectedAccounts
-                .contains(chat.account)
-        val isGroupchat = chat is GroupChat
-        val rosterContact = RosterManager.getInstance().getRosterContact(chat.account, chat.contactJid)
-        val isRoster = (rosterContact != null && !rosterContact.isDirtyRemoved)
-                || !VCardManager.getInstance().isRosterOrHistoryLoaded(chat.account)
-
-        when {
-            isBlocked -> statusLevel = 11
-            isServer -> statusLevel = 10
-            isGroupchat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
-        }
-
-        if (isBlocked || (!isRoster && statusLevel < 8)) {
-            if (holder.avatarIV.visibility == View.VISIBLE && isBlocked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    holder.avatarIV.imageAlpha = 128
-                } else {
-                    holder.avatarIV.alpha = 0.5f
-                }
-            }
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_second_line_text_color))
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                holder.avatarIV.imageAlpha = 255
-            } else {
-                holder.avatarIV.alpha = 1.0f
-            }
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_name_text_color))
-        }
-
-        holder.statusIV.setImageLevel(statusLevel)
-
-        holder.statusIV.visibility =
-                if (!isServer && !isGroupchat && !isBlocked && isVisible
-                        && (isUnavailable || !isAccountConnected))
-                    View.INVISIBLE
-                else
-                    View.VISIBLE
-
-        if ((isServer || isGroupchat) && !isAccountConnected) {
-            val colorMatrix = ColorMatrix()
-            colorMatrix.setSaturation(0f)
-            val colorFilter = ColorMatrixColorFilter(colorMatrix)
-            holder.statusIV.colorFilter = colorFilter
-        } else
-            holder.statusIV.setColorFilter(0)
-
-    }
+    private fun setupStatusBadge(holder: ChatViewHolder, chat: AbstractChat) =
+        StatusBadgeSetupHelper.getStatusLevelForChat(chat, holder.statusIV)
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         if (chat is GroupChat)
@@ -140,6 +79,24 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     .getBestContact(chat.account, chat.contactJid).name
         else holder.contactNameTV.text = RosterManager.getInstance()
                 .getBestContact(chat.account, chat.contactJid).name
+
+        val accountJid = chat.account
+        val contactJid = chat.contactJid
+        val rosterContact = RosterManager.getInstance().getRosterContact(accountJid, contactJid)
+        var statusLevel = rosterContact?.statusMode?.statusLevel
+
+        val isBlocked = BlockingManager.getInstance()
+                .contactIsBlockedLocally(accountJid, contactJid)
+        val isRosterContact = (rosterContact != null && !rosterContact.isDirtyRemoved)
+                || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)
+
+        if (isBlocked || (!isRosterContact && statusLevel != null && statusLevel < 8)) {
+            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
+                    R.attr.contact_list_contact_second_line_text_color))
+        } else {
+            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
+                    R.attr.contact_list_contact_name_text_color))
+        }
     }
 
     private fun setupNotificationMuteIcon(holder: ChatViewHolder, chat: AbstractChat) {

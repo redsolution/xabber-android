@@ -3,8 +3,6 @@ package com.xabber.android.ui.helper;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -34,6 +32,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
+import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.TypingDotsDrawable;
 import com.xabber.android.utils.StringUtils;
@@ -101,41 +100,17 @@ public class NewContactTitleInflater {
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
-
-        boolean isGroupchat = false;
-        boolean isServer = false;
-        boolean isBlocked = false;
-        boolean isConnected = false;
         AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
-        if (chat != null) {
-            isGroupchat = chat instanceof GroupChat;
-            isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
-            isBlocked = BlockingManager.getInstance()
-                    .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
-            isConnected = AccountManager.getInstance().getConnectedAccounts()
+
+        StatusBadgeSetupHelper.INSTANCE.getStatusLevelForContact(abstractContact, statusModeView, chat);
+        boolean isGroupchat = chat instanceof GroupChat;
+        boolean isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
+        boolean isBlocked = BlockingManager.getInstance()
+                .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
+        boolean isConnected = AccountManager.getInstance().getConnectedAccounts()
                     .contains(abstractContact.getAccount());
-        }
+
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
-
-        if (isBlocked) statusLevel = 11;
-        else if (isServer) statusLevel = 10;
-        else if (isGroupchat) statusLevel += StatusMode.PUBLIC_GROUP_OFFSET;
-
-        statusModeView.setImageLevel(statusLevel);
-
-        if (isContactOffline(statusLevel)) {
-            statusModeView.setVisibility(View.GONE);
-        } else {
-            statusModeView.setVisibility(View.VISIBLE);
-        }
-
-        if ((isServer || isGroupchat) && !isConnected){
-            ColorMatrix colorMatrix = new ColorMatrix();
-            colorMatrix.setSaturation(0f);
-            ColorMatrixColorFilter colorFilter = new ColorMatrixColorFilter(colorMatrix);
-            statusModeView.setColorFilter(colorFilter);
-        } else
-            statusModeView.setColorFilter(0);
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){

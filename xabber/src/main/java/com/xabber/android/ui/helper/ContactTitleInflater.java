@@ -134,8 +134,9 @@ public class ContactTitleInflater {
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (isServer) {
-            statusModeGroupView.setImageResource(R.drawable.ic_status_combined);
-            statusModeGroupView.setImageLevel(StatusBadgeSetupHelper.INSTANCE.getStatusLevelForAccount(abstractContact));
+            StatusBadgeSetupHelper.INSTANCE.getStatusLevelForContact(abstractContact, statusModeGroupView, null);
+//            statusModeGroupView.setImageResource(R.drawable.ic_status_combined);
+//            statusModeGroupView.setImageLevel(StatusBadgeSetupHelper.INSTANCE.getStatusLevelForAccount(abstractContact));
             if (isForVcard) {
                 statusModeGroupView.setVisibility(View.GONE);
                 statusModeView.setVisibility(View.GONE);

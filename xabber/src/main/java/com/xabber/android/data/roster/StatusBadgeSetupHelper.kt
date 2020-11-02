@@ -5,7 +5,6 @@ import android.graphics.ColorMatrixColorFilter
 import android.os.Build
 import android.view.View
 import android.widget.ImageView
-import com.xabber.android.R
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
@@ -14,7 +13,6 @@ import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
-import com.xabber.android.utils.Utils
 
 object StatusBadgeSetupHelper {
 
@@ -49,54 +47,51 @@ object StatusBadgeSetupHelper {
                     || abstractChat.privacyType == GroupchatPrivacyType.NONE)
         val isIncognitoGroupChat = abstractChat is GroupChat
                 && abstractChat.privacyType == GroupchatPrivacyType.INCOGNITO
+        val isVisible = imageView.visibility == View.VISIBLE
 
         //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
 
-        when {
-            isBlocked -> statusLevel = 11
-            isServer -> statusLevel = 10
-            isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
-            isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
-            //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
-        }
-
-        if (isBlocked || (!isRoster && statusLevel < 8)) {
-            if (holder.avatarIV.visibility == View.VISIBLE && isBlocked) {
+        if (isBlocked || (!isRosterContact && statusLevel < 8)) {
+            if (imageView.visibility == View.VISIBLE && isBlocked) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    holder.avatarIV.imageAlpha = 128
+                    imageView.imageAlpha = 128
                 } else {
-                    holder.avatarIV.alpha = 0.5f
+                    imageView.alpha = 0.5f
                 }
             }
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_second_line_text_color))
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                holder.avatarIV.imageAlpha = 255
+                imageView.imageAlpha = 255
             } else {
-                holder.avatarIV.alpha = 1.0f
+                imageView.alpha = 1.0f
             }
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_name_text_color))
         }
 
-        holder.statusIV.setImageLevel(statusLevel)
-
-        holder.statusIV.visibility =
-                if (!isServer && !isGroupchat && !isBlocked && isVisible
+        // Hiding badges in disconnected\unavailable state only for regular chats
+        imageView.visibility =
+                if (!isServer && !isPublicGroupChat &&!isIncognitoGroupChat && !isBlocked
                         && (isUnavailable || !isAccountConnected))
                     View.INVISIBLE
                 else
                     View.VISIBLE
 
-        if ((isServer || isGroupchat) && !isAccountConnected) {
+        when {
+            isBlocked -> statusLevel = 11
+            isServer -> statusLevel = 90
+            isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
+            isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
+            //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
+        }
+
+        imageView.setImageLevel(statusLevel)
+
+        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected){
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)
-            holder.statusIV.colorFilter = colorFilter
+            imageView.colorFilter = colorFilter
         } else
-            holder.statusIV.setColorFilter(0)
-
+            imageView.setColorFilter(0)
 
     }
 
