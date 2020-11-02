@@ -61,7 +61,7 @@
 
     <!-- Channel -->
     <item android:minLevel="50" android:maxLevel="50"
-        android:drawable="@drawable/ic_status_channel_online"/>
+        android:drawable="@drawable/ic_status_channel_chat"/>
     <item android:minLevel="51" android:maxLevel="51"
         android:drawable="@drawable/ic_status_channel_online"/>
     <item android:minLevel="52" android:maxLevel="52"
