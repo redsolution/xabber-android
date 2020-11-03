@@ -18,7 +18,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity
-import com.xabber.android.ui.adapter.groups.GroupMemberRightsFormListAdapter
+import com.xabber.android.ui.adapter.groups.members.GroupMemberRightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener

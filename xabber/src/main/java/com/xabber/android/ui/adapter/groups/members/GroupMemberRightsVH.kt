@@ -1,4 +1,4 @@
-package com.xabber.android.ui.adapter.groups
+package com.xabber.android.ui.adapter.groups.members
 
 import android.view.View
 import android.widget.CheckBox

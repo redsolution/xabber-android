@@ -12,16 +12,11 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groupchat.GroupPinMessageIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
-import com.xabber.android.data.extension.groupchat.GroupchatUpdateIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
-import com.xabber.android.data.extension.groupchat.settings.GroupchatDescriptionNamedElement;
-import com.xabber.android.data.extension.groupchat.settings.GroupchatGroupNameNamedElement;
-import com.xabber.android.data.extension.groupchat.settings.GroupchatIndexTypeNamedElement;
-import com.xabber.android.data.extension.groupchat.settings.GroupchatMembershipTypeNamedElement;
-import com.xabber.android.data.extension.groupchat.settings.GroupchatPinnedMessageElement;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -34,7 +29,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.NamedElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
@@ -215,72 +209,17 @@ public class GroupchatManager implements OnPacketListener {
         return availableGroupchatServers.get(accountJid);
     }
 
-    public void sendUpdateGroupchatSettingsRequest(GroupChat groupchat, String groupchatName,
-                                                   String groupchatDescription,
-                                                   GroupchatMembershipType membershipType,
-                                                   GroupchatIndexType indexType,
-                                                   String pinnedMessageId){
-
-        sendUpdateGroupchatSettingsRequestWithCallback(groupchat, groupchatName, groupchatDescription,
-                membershipType, indexType, pinnedMessageId, null);
-
-    }
-
     public void sendUpdateGroupchatSettingsRequestWithCallback(GroupChat groupchat, String groupchatName,
                                                                String groupchatDescription,
                                                                GroupchatMembershipType membershipType,
                                                                GroupchatIndexType indexType,
-                                                               String pinnedMessageId,
-                                                               GroupchatUpdateIQ.UpdateGroupchatSettingsIqResultListener listener){
+                                                               String pinnedMessageId){
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
 
-                ArrayList<NamedElement> namedElements = new ArrayList<>();
+                //todo this
 
-                if (groupchatName != null
-                        && !groupchat.getName().equals(groupchatName))
-                    namedElements.add(new GroupchatGroupNameNamedElement(groupchatName));
-
-                if (groupchatDescription != null
-                        && !groupchat.getDescription().equals(groupchatDescription))
-                    namedElements.add(new GroupchatDescriptionNamedElement(groupchatDescription));
-
-                if (indexType != null
-                        && groupchat.getIndexType() != indexType)
-                    namedElements.add(new GroupchatIndexTypeNamedElement(indexType.toXml()));
-
-                if (membershipType != null
-                        && groupchat.getMembershipType() != membershipType)
-                    namedElements.add(new GroupchatMembershipTypeNamedElement(membershipType.toXml()));
-
-                if (pinnedMessageId != null
-                        && !groupchat.getPinnedMessageId().equals(pinnedMessageId))
-                    namedElements.add(new GroupchatPinnedMessageElement(pinnedMessageId));
-
-
-                if (namedElements.size() != 0){
-
-                    GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupchat.getAccount().getFullJid(),
-                            groupchat.getContactJid().getBareJid(), namedElements);
-
-                    AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
-                            .sendIqWithResponseCallback(iq, packet -> {
-
-                                if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
-                                    LogManager.d(LOG_TAG, "Message successfully unpinned");
-                                    if (listener != null)
-                                        Application.getInstance().runOnUiThread(listener::onSuccess);
-
-                                }
-
-                            }, exception -> {
-
-                                LogManager.exception(LOG_TAG, exception);
-                                Application.getInstance().runOnUiThread(listener::onError);
-
-                            });
-                }
             } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
         });
     }
@@ -290,11 +229,9 @@ public class GroupchatManager implements OnPacketListener {
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-                GroupchatPinnedMessageElement groupchatPinnedMessageElement =
-                        new GroupchatPinnedMessageElement("");
 
-                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(groupChat.getAccount().getFullJid(),
-                        groupChat.getContactJid().getJid(), groupchatPinnedMessageElement);
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(groupChat.getAccount().getFullJid(),
+                        groupChat.getContactJid().getJid(), "");
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -317,18 +254,15 @@ public class GroupchatManager implements OnPacketListener {
     public void sendPinMessageRequest(MessageRealmObject message){
         //todo add privilege checking
 
-        final String stanzaId = message.getStanzaId();
         final AccountJid account = message.getAccount();
         final Jid contact = message.getUser().getJid();
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
             try {
-                GroupchatPinnedMessageElement groupchatPinnedMessageElement =
-                        new GroupchatPinnedMessageElement(stanzaId);
 
-                GroupchatUpdateIQ iq = new GroupchatUpdateIQ(account.getFullJid(), contact,
-                        groupchatPinnedMessageElement);
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), contact,
+                        message.getStanzaId());
 
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
