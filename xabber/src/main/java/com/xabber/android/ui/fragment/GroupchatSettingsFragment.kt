@@ -17,6 +17,9 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): Fragment() {
         val view = inflater.inflate(R.layout.groupchat_update_settings_fragment, container, false)
 
 
+
+
+
         return  view
     }
 

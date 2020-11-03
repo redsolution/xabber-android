@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -51,7 +52,7 @@ public class GroupchatManager implements OnPacketListener {
     private static GroupchatManager instance;
 
     /* */
-    private Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
+    private final Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
 
     public static GroupchatManager getInstance() {
         if (instance == null)
@@ -209,15 +210,12 @@ public class GroupchatManager implements OnPacketListener {
         return availableGroupchatServers.get(accountJid);
     }
 
-    public void sendUpdateGroupchatSettingsRequestWithCallback(GroupChat groupchat, String groupchatName,
-                                                               String groupchatDescription,
-                                                               GroupchatMembershipType membershipType,
-                                                               GroupchatIndexType indexType,
-                                                               String pinnedMessageId){
+    public void requestGroupSettingsForm(GroupChat groupchat){
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-
+                AccountItem accountItem = AccountManager.getInstance().getAccount(groupchat.getAccount());
+                accountItem.getConnection().sendIqWithResponseCallback();
                 //todo this
 
             } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
@@ -283,8 +281,8 @@ public class GroupchatManager implements OnPacketListener {
     }
 
     public static class GroupchatPresenceUpdatedEvent {
-        private AccountJid account;
-        private ContactJid groupJid;
+        private final AccountJid account;
+        private final ContactJid groupJid;
 
         GroupchatPresenceUpdatedEvent(AccountJid account, ContactJid groupchatJid) {
             this.account = account;
