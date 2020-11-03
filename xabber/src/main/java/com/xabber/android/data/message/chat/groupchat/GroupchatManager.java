@@ -5,7 +5,6 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -18,6 +17,9 @@ import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
+import com.xabber.android.data.extension.groupchat.settings.GroupSettingsDataFormResultIQ;
+import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ;
+import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -214,11 +216,20 @@ public class GroupchatManager implements OnPacketListener {
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(groupchat.getAccount());
-                accountItem.getConnection().sendIqWithResponseCallback();
-                //todo this
+                AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat.getContactJid()), packet -> {
+                            if (packet instanceof GroupSettingsDataFormResultIQ)
+                                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                    listener.onDataFormReceived(groupchat, ((GroupSettingsDataFormResultIQ) packet).getDataFrom());
+                                }
+                        }, exception -> {
+                            //todo errors handling
+                        } );
 
-            } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+                //todo errors handling
+            }
         });
     }
 

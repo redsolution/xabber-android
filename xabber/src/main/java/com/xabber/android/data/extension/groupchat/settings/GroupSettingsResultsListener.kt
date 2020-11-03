@@ -1,0 +1,9 @@
+package com.xabber.android.data.extension.groupchat.settings
+
+import com.xabber.android.data.BaseUIListener
+import com.xabber.android.data.message.chat.groupchat.GroupChat
+import org.jivesoftware.smackx.xdata.packet.DataForm
+
+interface GroupSettingsResultsListener: BaseUIListener {
+    fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm)
+}

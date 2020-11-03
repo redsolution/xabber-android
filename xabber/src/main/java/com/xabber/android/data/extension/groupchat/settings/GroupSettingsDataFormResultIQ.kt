@@ -1,17 +1,19 @@
 package com.xabber.android.data.extension.groupchat.settings
 
-import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ
+import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupSettingsRequestFormQueryIQ(groupchatJid: ContactJid)
-    : GroupchatAbstractQueryIQ(NAMESPACE) {
+class GroupSettingsDataFormResultIQ: GroupchatAbstractQueryIQ(NAMESPACE) {
+
+    var dataFrom: DataForm? = null
+
     init {
-        to = groupchatJid.jid
-        type = Type.get
+        type = Type.result
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()
+        append(dataFrom?.toXML().toString())
     }
 
 }

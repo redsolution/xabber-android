@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 
 class GroupchatSettingsFragment(private val groupchat: GroupChat): Fragment() {
 
@@ -16,7 +17,7 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): Fragment() {
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.groupchat_update_settings_fragment, container, false)
 
-
+        GroupchatManager.getInstance().requestGroupSettingsForm(groupchat)
 
 
 
