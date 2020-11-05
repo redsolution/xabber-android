@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.ui.fragment.GroupchatSettingsFragment
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
@@ -80,16 +79,17 @@ class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val l
                 else -> {}
             }
 
-    override fun getItemViewType(position: Int) =
-            when (dataForm.fields[position].type) {
-                FormField.Type.list_single -> SINGLE_LIST_OPTIONS_VIEW_TYPE
-                FormField.Type.fixed -> FIXED_VIEW_TYPE
-                FormField.Type.text_single -> if (dataForm.fields[position].variable == "name")
-                    SINGLE_TEXT_SMALL_VIEW_TYPE else SINGLE_TEXT_BIG_VIEW_TYPE
-                else -> HIDDEN_VIEW_TYPE
-            }
+    override fun getItemViewType(position: Int): Int = when (dataForm.fields[position].type) {
+            FormField.Type.list_single -> SINGLE_LIST_OPTIONS_VIEW_TYPE
+            FormField.Type.fixed -> FIXED_VIEW_TYPE
+            FormField.Type.text_single -> SINGLE_TEXT_SMALL_VIEW_TYPE
+            FormField.Type.text_multi -> SINGLE_TEXT_BIG_VIEW_TYPE
+            else -> HIDDEN_VIEW_TYPE
+        }
 
-    override fun getItemCount() = dataForm.fields.size
+
+
+    override fun getItemCount(): Int = dataForm.fields.size
 
     private companion object{
         const val FIXED_VIEW_TYPE = 0

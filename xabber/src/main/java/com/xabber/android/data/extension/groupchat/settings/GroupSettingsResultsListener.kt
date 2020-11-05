@@ -6,4 +6,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm
 
 interface GroupSettingsResultsListener: BaseUIListener {
     fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm)
+    fun onErrorAtDataFormRequesting(groupchat: GroupChat)
+    fun onErrorAtSettingsSetting(groupchat: GroupChat)
+    fun onGroupSettingsSuccessfullyChanged(groupchat: GroupChat)
 }

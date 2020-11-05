@@ -74,6 +74,9 @@
     <string name="groupchat_failed_to_pin_message">Failed to pin message</string>
     <string name="groupchat_failed_to_unpin_message">Failed to unpin message</string>
     <string name="groupchat_failed_to_change_groupchat_settings">Failed to update groupchat settings</string>
+    <string name="groupchat_failed_to_retrieve_settings_data_form">Failed to retrieve settings Data Form</string>
+
+    <string name="groupchat_permissions_successfully_changed">Group settings successfully changed</string>
 
     <string name="groupchat_set_duration">Set duration</string>
     

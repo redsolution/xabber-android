@@ -4,6 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import org.jivesoftware.smackx.xdata.FormField
@@ -25,20 +26,28 @@ class GroupSettingsSingleListFieldVH(val itemView: View): GroupSettingsVH(itemVi
     private val context = itemView.context
 
     fun bind(field: FormField, listener: Listener){
+
+        val textView = TextView(context).apply {
+            text = field.label
+        }
+
         val radioGroup = RadioGroup(context)
         radioGroup.orientation = RadioGroup.VERTICAL
 
         for (option in field.options){
             val radioButton = RadioButton(context).apply {
                 text = option.label
-                id = field.options.indexOf(option)
+                isChecked = option.value == field.values[0]
                 setOnClickListener { listener.onOptionSelected(option) }
             }
             radioGroup.addView(radioButton)
         }
 
-        if (itemView is LinearLayout)
+        if (itemView is LinearLayout){
+            itemView.addView(textView)
             itemView.addView(radioGroup)
+        }
+
     }
 
     interface Listener{
@@ -51,11 +60,10 @@ abstract class GroupSettingsTextSingleFieldVH(val itemView: View): GroupSettings
 
     abstract fun setupEditText(editText: EditText)
 
-
     fun bind(field: FormField, listener: Listener){
         itemView.findViewById<TextView>(R.id.group_settings_label_tv).text = field.label
         val editText = itemView.findViewById<EditText>(R.id.group_settings_et)
-        editText.setText(field.label)
+        editText.setText(field.values[0])
         editText.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -18,33 +17,25 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.GroupchatSettingsFragment
 
-class GroupchatUpdateSettingsActivity: ManagedActivity(), Toolbar.OnMenuItemClickListener {
+class GroupchatUpdateSettingsActivity: ManagedActivity() {
 
     private val FRAGMENT_TAG = "com.xabber.android.ui.fragment.GroupchatSettingsFragment"
+
+    private var toolbar: Toolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_with_toolbar_progress_and_container)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar_default)
+        toolbar = findViewById(R.id.toolbar_default)
 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp)
-        else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp)
+            toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
+        else toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
 
-        toolbar.setNavigationOnClickListener { finish() }
+        toolbar?.setNavigationOnClickListener { finish() }
 
-        toolbar.inflateMenu(R.menu.toolbar_groupchat_settings)
-
-        val view = toolbar.findViewById<View>(R.id.action_update_groupchat_settings)
-        if (view != null && view is TextView) {
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                view.setTextColor(resources.getColor(R.color.grey_900))
-            else view.setTextColor(Color.WHITE)
-        }
-
-        toolbar.setOnMenuItemClickListener(this)
 
         BarPainter(this, toolbar).setDefaultColor()
 
@@ -57,9 +48,34 @@ class GroupchatUpdateSettingsActivity: ManagedActivity(), Toolbar.OnMenuItemClic
         } else finish()
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as GroupchatSettingsFragment).updateSettings()
-        return true
+    fun showToolbarButtons(isEdited: Boolean){
+        toolbar?.menu?.clear()
+        if (isEdited){
+            toolbar?.inflateMenu(R.menu.toolbar_groupchat_settings)
+
+            val view = toolbar?.findViewById<View>(R.id.action_update_groupchat_settings)
+            if (view != null && view is TextView) {
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                    view.setTextColor(resources.getColor(R.color.grey_900))
+                else view.setTextColor(Color.WHITE)
+            }
+
+            toolbar?.setOnMenuItemClickListener {
+                (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as GroupchatSettingsFragment).sendSetNewSettingsRequest()
+                return@setOnMenuItemClickListener true
+            }
+
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar?.setNavigationIcon(R.drawable.ic_clear_grey_24dp)
+            else toolbar?.setNavigationIcon(R.drawable.ic_clear_white_24dp)
+
+        } else {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
+            else toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+
+        }
+
     }
 
     companion object{

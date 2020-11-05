@@ -20,6 +20,7 @@ import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResul
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsDataFormResultIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener;
+import com.xabber.android.data.extension.groupchat.settings.SetGroupSettingsRequestIQ;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -38,6 +39,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
@@ -213,22 +215,50 @@ public class GroupchatManager implements OnPacketListener {
     }
 
     public void requestGroupSettingsForm(GroupChat groupchat){
-
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat.getContactJid()), packet -> {
-                            if (packet instanceof GroupSettingsDataFormResultIQ)
+                            if (packet instanceof GroupSettingsDataFormResultIQ
+                                    && ((GroupSettingsDataFormResultIQ) packet).getType() == IQ.Type.result)
                                 for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
                                     listener.onDataFormReceived(groupchat, ((GroupSettingsDataFormResultIQ) packet).getDataFrom());
                                 }
                         }, exception -> {
-                            //todo errors handling
+                            for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                listener.onErrorAtDataFormRequesting(groupchat);
+                            }
                         } );
 
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
-                //todo errors handling
+                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                    listener.onErrorAtDataFormRequesting(groupchat);
+                }
+            }
+        });
+    }
+
+    public void sendSetGroupSettingsRequest(GroupChat groupchat, DataForm dataForm){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new SetGroupSettingsRequestIQ(groupchat.getContactJid(), dataForm), packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
+                                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                    listener.onGroupSettingsSuccessfullyChanged(groupchat);
+                                }
+                        }, exception -> {
+                            for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                listener.onErrorAtSettingsSetting(groupchat);
+                            }
+                        } );
+
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                    listener.onErrorAtSettingsSetting(groupchat);
+                }
             }
         });
     }
