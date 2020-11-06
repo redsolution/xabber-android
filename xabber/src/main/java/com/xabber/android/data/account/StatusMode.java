@@ -120,6 +120,16 @@ public enum StatusMode {
         return StatusMode.unavailable;
     }
 
+    static public StatusMode createStatusMode(String string){
+        switch (string){
+            case "away": return StatusMode.away;
+            case "chat": return StatusMode.chat;
+            case "dnd": return StatusMode.dnd;
+            case "xa": return StatusMode.xa;
+            default: return StatusMode.available;
+        }
+    }
+
     /**
      * Get {@link Mode} for {@link StatusMode}.
      *

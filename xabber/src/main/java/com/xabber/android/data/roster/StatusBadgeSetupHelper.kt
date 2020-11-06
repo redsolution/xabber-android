@@ -16,15 +16,6 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 
 object StatusBadgeSetupHelper {
 
-//    fun getStatusLevelForAccount(accountJid: AccountJid): Int {
-//
-//    }
-//
-//    fun getStatusLevelForAccount(account: AccountItem) = getStatusLevelForAccount(account.account)
-
-
-
-
     fun getStatusLevelForContact(abstractContact: AbstractContact, imageView: ImageView,
                                  abstractChat: AbstractChat? = ChatManager.getInstance()
                                          .getChat(abstractContact.account, abstractContact.contactJid)){
@@ -97,6 +88,5 @@ object StatusBadgeSetupHelper {
 
     fun getStatusLevelForChat(abstractChat: AbstractChat, imageView: ImageView) = getStatusLevelForContact(RosterManager.getInstance()
             .getAbstractContact(abstractChat.account, abstractChat.contactJid), imageView, abstractChat)
-
 
 }
