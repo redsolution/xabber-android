@@ -351,22 +351,22 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @param account
      * @return List of groups in specified account.
      */
-    public Collection<String> getGroups(AccountJid account) {
+    public Collection<String> getCircles(AccountJid account) {
         final Roster roster = getRoster(account);
 
-        Collection<String> returnGroups = new ArrayList<>();
+        Collection<String> returnCircles = new ArrayList<>();
 
         if (roster == null) {
-            return returnGroups;
+            return returnCircles;
         }
 
         final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
 
         for (org.jivesoftware.smack.roster.RosterGroup rosterGroup : groups) {
-            returnGroups.add(rosterGroup.getName());
+            returnCircles.add(rosterGroup.getName());
         }
 
-        return returnGroups;
+        return returnCircles;
     }
 
     /**
@@ -405,7 +405,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * @return Contact's groups.
      */
-    public Collection<String> getGroups(AccountJid account, ContactJid user) {
+    public Collection<String> getCircles(AccountJid account, ContactJid user) {
         RosterContact contact = getRosterContact(account, user);
         if (contact == null) {
             return Collections.emptyList();
@@ -480,7 +480,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         });
     }
 
-    public void setGroups(AccountJid account, ContactJid user, Collection<String> groups) throws NetworkException {
+    public void setCircles(AccountJid account, ContactJid user, Collection<String> circles) throws NetworkException {
         final Roster roster = getRoster(account);
 
         if (roster == null) {
@@ -496,7 +496,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         RosterPacket packet = new RosterPacket();
         packet.setType(IQ.Type.set);
         RosterPacket.Item item = new RosterPacket.Item(user.getBareJid(), entry.getName());
-        for (String group : groups) {
+        for (String group : circles) {
             item.addGroupName(group);
         }
         packet.addRosterItem(item);

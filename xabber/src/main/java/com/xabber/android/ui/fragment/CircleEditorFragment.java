@@ -33,33 +33,33 @@ import java.util.HashSet;
  * list in the layout file with id = "@+id/rvCircles", as well as the
  * super() call in {@link #onActivityCreated(Bundle)}
  */
-public class GroupEditorFragment extends Fragment implements ContactCircleEditorAdapter.OnCircleActionListener {
+public class CircleEditorFragment extends Fragment implements ContactCircleEditorAdapter.OnCircleActionListener {
 
-    static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_ACCOUNT";
-    static final String ARG_USER = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_USER";
+    static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.CircleEditorFragment.ARG_ACCOUNT";
+    static final String ARG_USER = "com.xabber.android.ui.fragment.CircleEditorFragment.ARG_USER";
 
-    private static final String SAVED_GROUPS = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_GROUPS";
-    private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_SELECTED";
-    private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
+    private static final String SAVED_CIRCLES = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_CIRCLES";
+    private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_SELECTED";
+    private static final String SAVED_ADD_CIRCLE_NAME = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_ADD_CIRCLE_NAME";
 
     private AccountJid account;
-    private ContactJid user;
+    private ContactJid contactJid;
 
     private RecyclerView rvContactCircles;
     private ContactCircleEditorAdapter contactCircleEditorAdapter;
 
-    private Collection<String> groups;
+    private Collection<String> circles;
     private Collection<String> selected = new HashSet<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public GroupEditorFragment() {
+    public CircleEditorFragment() {
     }
 
-    public static GroupEditorFragment newInstance(AccountJid account, ContactJid user) {
-        GroupEditorFragment fragment = new GroupEditorFragment();
+    public static CircleEditorFragment newInstance(AccountJid account, ContactJid user) {
+        CircleEditorFragment fragment = new CircleEditorFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
         args.putParcelable(ARG_USER, user);
@@ -84,7 +84,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
 
         if (getArguments() != null) {
             account = getArguments().getParcelable(ARG_ACCOUNT);
-            user = getArguments().getParcelable(ARG_USER);
+            contactJid = getArguments().getParcelable(ARG_USER);
         }
     }
 
@@ -100,17 +100,17 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
         initRecyclerView(getView());
 
         if (savedInstanceState != null) {
-            groups = savedInstanceState.getStringArrayList(SAVED_GROUPS);
+            circles = savedInstanceState.getStringArrayList(SAVED_CIRCLES);
             selected = savedInstanceState.getStringArrayList(SAVED_SELECTED);
-            String circleAddInput = savedInstanceState.getString(SAVED_ADD_GROUP_NAME);
+            String circleAddInput = savedInstanceState.getString(SAVED_ADD_CIRCLE_NAME);
             contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
-            if (account != null) groups = RosterManager.getInstance().getGroups(account);
-            if (user != null) selected = RosterManager.getInstance().getGroups(account, user);
+            if (account != null) circles = RosterManager.getInstance().getCircles(getAccount());
+            if (contactJid != null) selected = RosterManager.getInstance().getCircles(getAccount(), getContactJid());
         }
     }
 
-    private void initRecyclerView(View rootView) {
+    void initRecyclerView(View rootView) {
         if (rootView == null) return;
 
         rvContactCircles = rootView.findViewById(R.id.rvCircles);
@@ -121,19 +121,19 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
         rvContactCircles.setNestedScrollingEnabled(false);
     }
 
-    protected void setAccountGroups() {
-        groups = RosterManager.getInstance().getGroups(account);
+    protected void setAccountCircles() {
+        circles = RosterManager.getInstance().getCircles(getAccount());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (groups != null) updateCircles();
+        if (circles != null) updateCircles();
     }
 
     protected void updateCircles() {
-        ArrayList<String> list = new ArrayList<>(groups);
-        ArrayList<ContactCircleEditorAdapter.ContactCircle> circles = new ArrayList<>(groups.size());
+        ArrayList<String> list = new ArrayList<>(circles);
+        ArrayList<ContactCircleEditorAdapter.ContactCircle> circles = new ArrayList<>(this.circles.size());
         Collections.sort(list);
         contactCircleEditorAdapter.clear();
 
@@ -150,9 +150,9 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
 
         selected = getSelected();
 
-        outState.putStringArrayList(SAVED_GROUPS, getGroups());
+        outState.putStringArrayList(SAVED_CIRCLES, getCircles());
         outState.putStringArrayList(SAVED_SELECTED, new ArrayList<>(selected));
-        outState.putString(SAVED_ADD_GROUP_NAME, contactCircleEditorAdapter.getInputCircleName());
+        outState.putString(SAVED_ADD_CIRCLE_NAME, contactCircleEditorAdapter.getInputCircleName());
     }
 
     @Override
@@ -164,7 +164,7 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
         return rvContactCircles;
     }
 
-    protected ArrayList<String> getGroups() {
+    protected ArrayList<String> getCircles() {
         return contactCircleEditorAdapter.getCircles();
     }
 
@@ -184,9 +184,9 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
     public void saveCircles() {
         selected = getSelected();
 
-        if (account != null && user != null) {
+        if (account != null && contactJid != null) {
             try {
-                RosterManager.getInstance().setGroups(account, user, selected);
+                RosterManager.getInstance().setCircles(account, contactJid, selected);
             } catch (NetworkException e) {
                 Application.getInstance().onError(e);
             }
@@ -201,11 +201,11 @@ public class GroupEditorFragment extends Fragment implements ContactCircleEditor
         this.account = account;
     }
 
-    protected ContactJid getUser() {
-        return user;
+    protected ContactJid getContactJid() {
+        return contactJid;
     }
 
-    protected void setUser(ContactJid user) {
-        this.user = user;
+    protected void setContactJid(ContactJid contactJid) {
+        this.contactJid = contactJid;
     }
 }

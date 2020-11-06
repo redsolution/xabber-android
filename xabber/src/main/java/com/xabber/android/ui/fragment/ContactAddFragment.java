@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ContactAddFragment extends GroupEditorFragment
+public class ContactAddFragment extends CircleEditorFragment
         implements AdapterView.OnItemSelectedListener, ContactAdder, View.OnClickListener {
 
     private static final String SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME";
@@ -84,13 +84,13 @@ public class ContactAddFragment extends GroupEditorFragment
             name = savedInstanceState.getString(SAVED_NAME);
             error = savedInstanceState.getString(SAVED_ERROR);
             setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
-            setUser((ContactJid) savedInstanceState.getParcelable(SAVED_USER));
+            setContactJid((ContactJid) savedInstanceState.getParcelable(SAVED_USER));
         } else {
-            if (getAccount() == null || getUser() == null) {
+            if (getAccount() == null || getContactJid() == null) {
                 name = null;
             } else {
-                name = RosterManager.getInstance().getName(getAccount(), getUser());
-                if (getUser().getJid().asBareJid().toString().equals(name)) {
+                name = RosterManager.getInstance().getName(getAccount(), getContactJid());
+                if (getContactJid().getJid().asBareJid().toString().equals(name)) {
                     name = null;
                 }
             }
@@ -142,8 +142,8 @@ public class ContactAddFragment extends GroupEditorFragment
         qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
         qrScan.setOnClickListener(this);
 
-        if (getUser() != null) {
-            userView.setText(getUser().getBareJid().toString());
+        if (getContactJid() != null) {
+            userView.setText(getContactJid().getBareJid().toString());
         }
         if (name != null) {
             nameView.setText(name);
@@ -251,7 +251,7 @@ public class ContactAddFragment extends GroupEditorFragment
 
             if (!selectedAccount.equals(getAccount())) {
                 setAccount(selectedAccount);
-                setAccountGroups();
+                setAccountCircles();
                 updateCircles();
             }
 

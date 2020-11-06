@@ -420,7 +420,7 @@ public class MessageNotificationCreator {
     }
 
     private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getContactJid());
+        Collection<String> groups = RosterManager.getInstance().getCircles(chat.getAccountJid(), chat.getContactJid());
         Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getContactJid(),
                 chat.getLastMessage().getMessageText().toString());
         return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(chat.getAccountJid(),

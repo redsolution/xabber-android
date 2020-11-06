@@ -4,7 +4,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
-import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import org.jivesoftware.smackx.xdata.FormField
@@ -37,10 +36,10 @@ class GroupSettingsSingleListFieldVH(val itemView: View): GroupSettingsVH(itemVi
         for (option in field.options){
             val radioButton = RadioButton(context).apply {
                 text = option.label
-                isChecked = option.value == field.values[0]
                 setOnClickListener { listener.onOptionSelected(option) }
             }
             radioGroup.addView(radioButton)
+            if (option.value == field.values[0]) radioGroup.check(radioButton.id)
         }
 
         if (itemView is LinearLayout){

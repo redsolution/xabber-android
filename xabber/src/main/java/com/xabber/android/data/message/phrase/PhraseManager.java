@@ -60,7 +60,7 @@ public class PhraseManager implements OnLoadListener {
     }
 
     public long getPhraseID(AccountJid account, ContactJid user, String text) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(
+        Collection<String> groups = RosterManager.getInstance().getCircles(
                 account, user);
         for (Phrase phrase : phrases) {
             if (phrase.matches(text, user.toString(), groups)) return phrase.getId();
