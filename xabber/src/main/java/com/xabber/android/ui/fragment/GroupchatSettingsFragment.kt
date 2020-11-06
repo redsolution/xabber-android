@@ -21,13 +21,14 @@ import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import java.util.*
 
-class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorFragment(),
+class GroupchatSettingsFragment(private val groupchat: GroupChat) : CircleEditorFragment(),
         GroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
 
     init {
         account = groupchat.account
         contactJid = groupchat.contactJid
     }
+
     private lateinit var recyclerView: RecyclerView
     private var dataForm: DataForm? = null
     private val newFields = mutableMapOf<String, FormField>()
@@ -43,7 +44,7 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
 
         view.findViewById<TextView>(R.id.tvCircles).setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
 
-        return  view
+        return view
     }
 
     override fun onResume() {
@@ -63,28 +64,28 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
     override fun getAccount() = groupchat.account
     override fun getContactJid() = groupchat.contactJid
 
-    private fun sendRequestGroupSettingsDataForm(){
+    private fun sendRequestGroupSettingsDataForm() {
         GroupchatManager.getInstance().requestGroupSettingsForm(groupchat)
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
-    fun saveChanges(){
+    fun saveChanges() {
         if (checkHasChangesInSettings()) sendSetNewSettingsRequest()
         if (checkIsCirclesChanged()) saveCircles()
     }
 
-    private fun sendSetNewSettingsRequest(){
+    private fun sendSetNewSettingsRequest() {
         GroupchatManager.getInstance().sendSetGroupSettingsRequest(groupchat, createNewDataForm())
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
-    private fun createNewDataForm(): DataForm{
+    private fun createNewDataForm(): DataForm {
         val newDataForm = DataForm(DataForm.Type.submit).apply {
             title = dataForm?.title
             instructions = dataForm?.instructions
         }
 
-        for (oldFormField in dataForm!!.fields){
+        for (oldFormField in dataForm!!.fields) {
 
             if (oldFormField.variable == null) continue
 
@@ -93,8 +94,8 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
                 label = oldFormField.label
             }
 
-            if (newFields.containsKey(formFieldToBeAdded.variable)){
-                if (!newFields[formFieldToBeAdded.variable]!!.values.isNullOrEmpty()){
+            if (newFields.containsKey(formFieldToBeAdded.variable)) {
+                if (!newFields[formFieldToBeAdded.variable]!!.values.isNullOrEmpty()) {
                     formFieldToBeAdded.addValue(newFields[formFieldToBeAdded.variable]!!.values[0])
                 }
             } else if (oldFormField.values != null && oldFormField.values.size > 0)
@@ -106,8 +107,9 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
         return newDataForm
     }
 
-    private fun updateViewWithDataForm(dataForm: DataForm){
-        val adapter = GroupSettingsFormListAdapter(dataForm, this)
+    private fun updateViewWithDataForm(dataForm: DataForm) {
+        val adapter = GroupSettingsFormListAdapter(dataForm,
+                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account), this)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
@@ -115,7 +117,7 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
     override fun onSingleOptionClicked(field: FormField, option: FormField.Option) {
         if (newFields.containsKey(field.variable)) newFields.remove(field.variable)
 
-        if (checkIsPickedOptionNew(field, option)){
+        if (checkIsPickedOptionNew(field, option)) {
 
             val formFieldToBeAdded = FormField(field.variable)
 
@@ -131,7 +133,7 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
 
     override fun onSingleTextTextChanged(field: FormField, text: String) {
         if (newFields.containsKey(field.variable)) newFields.remove(field.variable)
-        if (checkIsTextNew(field, text)){
+        if (checkIsTextNew(field, text)) {
             val formFieldToBeAdded = FormField(field.variable)
 
             formFieldToBeAdded.type = field.type
@@ -144,25 +146,25 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
     }
 
 
-    private fun checkIsPickedOptionNew(newField: FormField, newOption: FormField.Option?): Boolean{
-        for (oldField in dataForm!!.fields){
-            if (oldField.variable == newField.variable){
+    private fun checkIsPickedOptionNew(newField: FormField, newOption: FormField.Option?): Boolean {
+        for (oldField in dataForm!!.fields) {
+            if (oldField.variable == newField.variable) {
                 return oldField.values[0] != newOption!!.value
             }
         }
         return true
     }
 
-    private fun checkIsTextNew(newField: FormField, newText: String) : Boolean{
-        for (oldField in dataForm!!.fields){
-            if (oldField.variable == newField.variable){
+    private fun checkIsTextNew(newField: FormField, newText: String): Boolean {
+        for (oldField in dataForm!!.fields) {
+            if (oldField.variable == newField.variable) {
                 return oldField.values[0] != newText
             }
         }
         return true
     }
 
-    private fun checkIsCirclesChanged(): Boolean{
+    private fun checkIsCirclesChanged(): Boolean {
         val selectedCircles = selected
         contactCircles.sort()
         selectedCircles.sort()
@@ -170,8 +172,8 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat): CircleEditorF
         return contactCircles.size != selectedCircles.size
     }
 
-    private fun checkHasChangesInSettings(): Boolean{
-        for (field in dataForm!!.fields){
+    private fun checkHasChangesInSettings(): Boolean {
+        for (field in dataForm!!.fields) {
             if (newFields.containsKey(field.variable)) return true
         }
         return false
