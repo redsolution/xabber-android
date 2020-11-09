@@ -43,10 +43,6 @@ public class ContactTitleInflater {
         updateTitle(titleView, context, abstractContact, false);
     }
 
-    public static void updateTitleWithNameColorizing() {
-
-    }
-
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard) {
         updateTitle(titleView, context, abstractContact, isForVcard, true);
     }

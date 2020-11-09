@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
@@ -30,9 +31,14 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
                 container, false)
 
         recyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context).apply {
+
+        val llm = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
+        recyclerView.layoutManager = llm
+
+        val dividerItemDecoration = DividerItemDecoration(recyclerView.context, llm.orientation)
+        recyclerView.addItemDecoration(dividerItemDecoration)
 
         return view
     }
