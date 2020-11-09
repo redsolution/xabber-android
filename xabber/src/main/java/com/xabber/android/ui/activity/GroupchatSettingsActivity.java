@@ -21,14 +21,16 @@ import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorLis
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
-import com.xabber.android.ui.fragment.GroupchatBlockListFragment;
-import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
-import com.xabber.android.ui.fragment.GroupchatInvitesFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class GroupchatSettingsActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, GroupchatSelectorListItemActions, OnGroupchatSelectorListToolbarActionResult {
+public class GroupchatSettingsActivity extends ManagedActivity implements
+        Toolbar.OnMenuItemClickListener, GroupchatSelectorListItemActions,
+        OnGroupchatSelectorListToolbarActionResult {
 
     private static final String GROUPCHAT_SETTINGS_TYPE = "GROUPCHAT_SETTINGS_TYPE";
     private AccountJid account;
@@ -42,15 +44,10 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
 
     private int selectionCounter = 0;
 
-    public enum GroupchatSettingsType {
-        None, Settings, Restrictions, Invitations, Blocked
-    }
-
     public static Intent createIntent(Context context, AccountJid account, ContactJid groupchatJid, GroupchatSettingsType type) {
         Intent intent = new EntityIntentBuilder(context, GroupchatSettingsActivity.class)
                 .setAccount(account)
                 .setUser(groupchatJid)
-                //.addSegment(type.name())
                 .build();
         intent.putExtra(GROUPCHAT_SETTINGS_TYPE, type);
         return intent;
@@ -75,7 +72,6 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
         return GroupchatSettingsType.None;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +90,7 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
 
         boolean lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light;
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(lightTheme ? R.drawable.ic_arrow_left_grey_24dp : R.drawable.ic_arrow_left_white_24dp);
         if (toolbar.getOverflowIcon() != null) {
             toolbar.getOverflowIcon().setColorFilter(lightTheme ?
@@ -246,7 +242,6 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
         return getSupportFragmentManager().findFragmentByTag(settingsType.name());
     }
 
-
     @Override
     public void onActionSuccess(AccountJid account, ContactJid groupchatJid, List<String> successfulJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
@@ -272,8 +267,13 @@ public class GroupchatSettingsActivity extends ManagedActivity implements Toolba
         return !groupchatJid.getBareJid().equals(this.groupchatContact.getBareJid());
     }
 
+    public enum GroupchatSettingsType {
+        None, Settings, Restrictions, Invitations, Blocked
+    }
+
     public interface GroupchatSelectorListToolbarActions {
         void actOnSelection();
+
         void cancelSelection();
     }
 }

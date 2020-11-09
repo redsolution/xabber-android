@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment
+package com.xabber.android.ui.fragment.groups
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,7 +29,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm
 
 class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupchat: GroupChat)
     : Fragment(), OnGroupchatRequestListener, GroupMemberRightsFormListAdapter.Listener,
-        StanzaListener, ExceptionCallback{
+        StanzaListener, ExceptionCallback {
 
     var recyclerView: RecyclerView? = null
     var adapter: GroupMemberRightsFormListAdapter? = null
@@ -41,8 +41,8 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.groupchat_member_edit_fragment, container, false)
-        recyclerView = view.findViewById(R.id.groupchat_member_rights_recycler_view)
+        val view = inflater.inflate(R.layout.simple_nested_scroll_with_recycler_view, container, false)
+        recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
@@ -63,7 +63,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         super.onPause()
     }
 
-    private fun setupRecyclerViewWithDataForm(dataForm: DataForm){
+    private fun setupRecyclerViewWithDataForm(dataForm: DataForm) {
         adapter = GroupMemberRightsFormListAdapter(dataForm,
                 ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
                 fragmentManager!!, this)
@@ -74,7 +74,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
     }
 
     override fun processStanza(packet: Stanza?) {
-        if (packet is IQ && packet.type == IQ.Type.result){
+        if (packet is IQ && packet.type == IQ.Type.result) {
             newFields.clear()
             GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
                     groupchat.contactJid, groupchatMember)
@@ -86,15 +86,15 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         Toast.makeText(context, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
     }
 
-    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) { }
+    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) { }
+    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) { }
+    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) { }
+    override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatMemberUpdated(accountJid: AccountJid?, groupchatJid: ContactJid?, groupchatMemberId: String?) { }
+    override fun onGroupchatMemberUpdated(accountJid: AccountJid?, groupchatJid: ContactJid?, groupchatMemberId: String?) {}
 
     override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid,
                                                      groupchatJid: ContactJid,
@@ -102,7 +102,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
 
         for (field in iq.dataFrom!!.fields)
             if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
-                    && groupchatMember.id == field.values[0]){
+                    && groupchatMember.id == field.values[0]) {
                 oldDataForm = iq.dataFrom
                 Application.getInstance().runOnUiThread {
                     setupRecyclerViewWithDataForm(iq.dataFrom!!)
@@ -130,11 +130,11 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         notifyActivityAboutNewFieldSizeChanged()
     }
 
-    private fun checkPickIsNew(newField: FormField, newOption: FormField.Option?, isChecked: Boolean): Boolean{
-        for (oldField in oldDataForm!!.fields){
-            if (oldField.variable == newField.variable){
-                if (newOption != null){
-                    if (oldField.values != null && oldField.values.size != 0){
+    private fun checkPickIsNew(newField: FormField, newOption: FormField.Option?, isChecked: Boolean): Boolean {
+        for (oldField in oldDataForm!!.fields) {
+            if (oldField.variable == newField.variable) {
+                if (newOption != null) {
+                    if (oldField.values != null && oldField.values.size != 0) {
                         if (oldField.values[0] as String == newOption.value) return false
                     } else return true
                 } else {
@@ -145,7 +145,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         return true
     }
 
-    private fun notifyActivityAboutNewFieldSizeChanged(){
+    private fun notifyActivityAboutNewFieldSizeChanged() {
         if (activity != null && activity is GroupchatMemberActivity)
             (activity as GroupchatMemberActivity).onNewMemberRightsFormFieldChanged(newFields.size)
     }
@@ -156,7 +156,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
             instructions = oldDataForm?.instructions
         }
 
-        for (oldFormField in oldDataForm!!.fields){
+        for (oldFormField in oldDataForm!!.fields) {
 
             if (oldFormField.variable == null) continue
 
@@ -165,8 +165,8 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
                 label = oldFormField.label
             }
 
-            if (newFields.containsKey(formFieldToBeAdded.variable)){
-                if (!newFields[formFieldToBeAdded.variable]!!.values.isNullOrEmpty()){
+            if (newFields.containsKey(formFieldToBeAdded.variable)) {
+                if (!newFields[formFieldToBeAdded.variable]!!.values.isNullOrEmpty()) {
                     formFieldToBeAdded.addValue(newFields[formFieldToBeAdded.variable]!!.values[0])
                 }
             } else if (oldFormField.values != null && oldFormField.values.size > 0)
@@ -181,7 +181,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
     fun sendSaveRequest() = GroupchatMemberManager.getInstance()
             .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom(), this, this)
 
-    companion object{
+    companion object {
         const val TAG = "com.xabber.android.ui.fragment.GroupchatMemberInfoFragment"
     }
 

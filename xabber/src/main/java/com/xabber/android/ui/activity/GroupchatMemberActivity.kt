@@ -50,7 +50,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.AccountInfoEditFragment
-import com.xabber.android.ui.fragment.GroupMemberRightsFragment
+import com.xabber.android.ui.fragment.groups.GroupMemberRightsFragment
 import com.xabber.android.ui.helper.BlurTransformation
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_CAMERA
@@ -66,7 +66,7 @@ import java.io.IOException
 import java.net.URL
 import java.util.*
 
-class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
+class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
 
     private val LOG_TAG = this.javaClass.simpleName
@@ -92,14 +92,14 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     var orientation = 0
     private val blocked = false
 
-    companion object{
+    companion object {
 
         const val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
         const val GROUPCHAT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
         const val ACCOUNT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
 
         fun createIntentForGroupchatAndMemberId(context: Context, groupchatMemberId: String,
-                                                groupchat: GroupChat) : Intent{
+                                                groupchat: GroupChat): Intent {
             val intent = Intent(context, GroupchatMemberActivity::class.java)
             intent.putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
             intent.putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
@@ -114,7 +114,8 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
     override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid, groupchatJid: ContactJid,
-                                                     iq: GroupchatMemberRightsReplyIQ) {}
+                                                     iq: GroupchatMemberRightsReplyIQ) {
+    }
 
     override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
         if (account == groupchat?.account && groupchatJid == groupchat?.contactJid)
@@ -126,7 +127,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid,
                                           groupchatMemberId: String) {
         if (accountJid == this.accountJid && groupchatJid == this.groupchatJid
-                && groupchatMemberId == this.groupchatMember?.id){
+                && groupchatMemberId == this.groupchatMember?.id) {
             Application.getInstance().runOnUiThread {
                 setupAvatar()
                 setupNameBlock()
@@ -206,7 +207,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
     }
 
-    private fun setupNameBlock(){
+    private fun setupNameBlock() {
         val nameTv = findViewById<TextView>(R.id.name)
         nameTv.text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
         nameTv.setOnClickListener {
@@ -220,8 +221,10 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             adb.setView(et, 56, 0, 56, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ -> GroupchatMemberManager.getInstance()
-                    .sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
+                GroupchatMemberManager.getInstance()
+                        .sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())
+            }
             adb.show()
         }
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
@@ -233,7 +236,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
                 groupchat?.name)
     }
 
-    private fun setupAvatar(){
+    private fun setupAvatar() {
         var backgroundSource = AvatarManager.getInstance()
                 .getGroupchatMemberAvatar(groupchatMember, accountJid)
         if (backgroundSource == null) backgroundSource = resources.getDrawable(R.drawable.about_backdrop)
@@ -375,13 +378,13 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
     }
 
     private fun onAvatarSettingEnded(isSuccessfully: Boolean) =
-        Application.getInstance().runOnUiThread {
-            if (isSuccessfully)
-                Toast.makeText(baseContext, getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show() //todo use resource strings
-            else Toast.makeText(baseContext, getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show()
-            setupAvatar()
-            showProgressBar(false)
-        }
+            Application.getInstance().runOnUiThread {
+                if (isSuccessfully)
+                    Toast.makeText(baseContext, getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show() //todo use resource strings
+                else Toast.makeText(baseContext, getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show()
+                setupAvatar()
+                showProgressBar(false)
+            }
 
     private fun showProgressBar(show: Boolean) {
         findViewById<ImageView>(R.id.ivAvatar).visibility = if (show) View.VISIBLE else View.GONE
@@ -495,7 +498,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
     private fun startCrop(srcUri: Uri) {
         val cR = Application.getInstance().applicationContext.contentResolver
-        imageFileType = when(cR.getType(srcUri)){
+        imageFileType = when (cR.getType(srcUri)) {
             "image/png" -> UserAvatarManager.ImageType.PNG
             "image/jpeg" -> UserAvatarManager.ImageType.JPEG
             else -> null
@@ -653,13 +656,13 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         })
     }
 
-    private fun setupDirectChatButtonLayout(color: Int, orientation: Int){
+    private fun setupDirectChatButtonLayout(color: Int, orientation: Int) {
         val imageButton = findViewById<ImageButton>(R.id.first_button)
         val textView = findViewById<TextView>(R.id.first_button_text)
 
         imageButton.setOnClickListener {
             if (groupchat!!.privacyType != GroupchatPrivacyType.INCOGNITO
-                    && !groupchatMember!!.jid.isNullOrEmpty()){
+                    && !groupchatMember!!.jid.isNullOrEmpty()) {
                 val contactJid = ContactJid.from(groupchatMember!!.jid)
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this,
                         groupchat!!.account, contactJid), MainActivity.CODE_OPEN_CHAT)
@@ -675,7 +678,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         else textView.visibility = View.VISIBLE
     }
 
-    private fun setupMessagesButtonLayout(color: Int, orientation: Int){
+    private fun setupMessagesButtonLayout(color: Int, orientation: Int) {
         val imageButton = findViewById<ImageButton>(R.id.second_button)
         val textView = findViewById<TextView>(R.id.second_button_text)
 
@@ -683,7 +686,7 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
 
         imageButton.setColorFilter(color)
 
-        imageButton.setOnClickListener{
+        imageButton.setOnClickListener {
             //todo this
         }
 
@@ -692,11 +695,11 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         else textView.visibility = View.VISIBLE
     }
 
-    private fun setupSetBadgeLayout(color: Int, orientation: Int){
+    private fun setupSetBadgeLayout(color: Int, orientation: Int) {
         val imageButton = findViewById<ImageButton>(R.id.third_button)
         val textView = findViewById<TextView>(R.id.third_button_text)
 
-        imageButton?.setOnClickListener{
+        imageButton?.setOnClickListener {
             val adb = AlertDialog.Builder(this)
             adb.setTitle(groupchatMember?.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
 
@@ -708,8 +711,10 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
             adb.setView(et, 64, 0, 64, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ -> GroupchatMemberManager.getInstance()
-                    .sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())}
+            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
+                GroupchatMemberManager.getInstance()
+                        .sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())
+            }
             adb.show()
         }
 
@@ -720,11 +725,11 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         else textView!!.visibility = View.VISIBLE
     }
 
-    private fun setupKickBlockButtonLayout(color: Int, orientation: Int){
+    private fun setupKickBlockButtonLayout(color: Int, orientation: Int) {
         val imageButton = findViewById<ImageButton>(R.id.fourth_button)
         val textView = findViewById<TextView>(R.id.fourth_button_text)
 
-        imageButton.setOnClickListener{
+        imageButton.setOnClickListener {
             //todo this
         }
 
@@ -790,9 +795,9 @@ class GroupchatMemberActivity: ManagedActivity(), View.OnClickListener,
         TODO("Not yet implemented")
     }
 
-    private fun showToolbarMenu(isVisible: Boolean){
+    private fun showToolbarMenu(isVisible: Boolean) {
         toolbar?.menu?.clear()
-        if (isVisible){
+        if (isVisible) {
             toolbar?.setNavigationIcon(R.drawable.ic_clear_white_24dp)
 
             toolbar?.inflateMenu(R.menu.update_groupchat_member)

@@ -5,6 +5,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ
 
 class GroupSettingsRequestFormQueryIQ(groupchatJid: ContactJid)
     : GroupchatAbstractQueryIQ(NAMESPACE) {
+
     init {
         to = groupchatJid.jid
         type = Type.get

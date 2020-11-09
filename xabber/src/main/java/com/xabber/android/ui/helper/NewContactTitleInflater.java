@@ -38,6 +38,7 @@ import com.xabber.android.ui.widget.TypingDotsDrawable;
 import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.Presence;
+
 /**
  * Created by valery.miller on 26.10.17.
  */
@@ -45,16 +46,16 @@ import org.jivesoftware.smack.packet.Presence;
 
 public class NewContactTitleInflater {
 
-    private static TypingDotsDrawable typingDotsDrawable = new TypingDotsDrawable();
+    private static final TypingDotsDrawable typingDotsDrawable = new TypingDotsDrawable();
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact,
                                    NotificationState.NotificationMode mode) {
-        final TextView nameView = (TextView) titleView.findViewById(R.id.name);
-        final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
+        final TextView nameView = titleView.findViewById(R.id.name);
+        final ImageView avatarView = titleView.findViewById(R.id.ivAvatar);
 
         AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
-        if ( chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName()))
-            nameView.setText(((GroupChat)chat).getName());
+        if (chat instanceof GroupChat && !"".equals(((GroupChat) chat).getName()))
+            nameView.setText(((GroupChat) chat).getName());
         else nameView.setText(abstractContact.getName());
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.contact_list_contact_name_text_color, typedValue, true);
@@ -64,16 +65,17 @@ public class NewContactTitleInflater {
         Resources resources = context.getResources();
         int resID = 0;
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute_large;
-        else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute_large;
-        else if (mode != NotificationState.NotificationMode.byDefault) resID = R.drawable.ic_snooze_toolbar;
+        else if (mode == NotificationState.NotificationMode.disabled)
+            resID = R.drawable.ic_mute_large;
+        else if (mode != NotificationState.NotificationMode.byDefault)
+            resID = R.drawable.ic_snooze_toolbar;
         Drawable drawable = null;
-        if (resID != 0){
+        if (resID != 0) {
             drawable = resources.getDrawable(resID);
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
                 drawable.setAlpha(144);
-            }
-            else {
+            } else {
                 drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                 drawable.setAlpha(128);
             }
@@ -99,21 +101,21 @@ public class NewContactTitleInflater {
     }
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
-        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
+        final ImageView statusModeView = titleView.findViewById(R.id.ivStatus);
         AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
 
-        StatusBadgeSetupHelper.INSTANCE.getStatusLevelForContact(abstractContact, statusModeView, chat);
+        StatusBadgeSetupHelper.INSTANCE.setupImageViewForContact(abstractContact, statusModeView, chat);
         boolean isGroupchat = chat instanceof GroupChat;
         boolean isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
         boolean isBlocked = BlockingManager.getInstance()
                 .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
         boolean isConnected = AccountManager.getInstance().getConnectedAccounts()
-                    .contains(abstractContact.getAccount());
+                .contains(abstractContact.getAccount());
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
 
-        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
+        final TextView statusTextView = titleView.findViewById(R.id.status_text);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
             int textAccountColor;
             switch (statusLevel) {
                 case 6:

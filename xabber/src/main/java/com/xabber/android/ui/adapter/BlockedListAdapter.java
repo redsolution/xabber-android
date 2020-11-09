@@ -96,7 +96,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             if (abstractChat != null && abstractChat instanceof GroupChat || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
-                StatusBadgeSetupHelper.INSTANCE.getStatusLevelForChat(abstractChat, viewHolder.status);
+                StatusBadgeSetupHelper.INSTANCE.setupImageViewForChat(abstractChat, viewHolder.status);
                 viewHolder.status.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.status.setVisibility(View.GONE);

@@ -71,7 +71,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupStatusBadge(holder: ChatViewHolder, chat: AbstractChat) =
-        StatusBadgeSetupHelper.getStatusLevelForChat(chat, holder.statusIV)
+            StatusBadgeSetupHelper.setupImageViewForChat(chat, holder.statusIV)
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         if (chat is GroupChat)
@@ -199,8 +199,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     holder.messageTextTV.text = if (holder.accountColorIndicator != null)
                         Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
                     else chatState
-                }
-                else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null
+                } else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null
                                 && lastMessage.action.isNotEmpty())) {
                     if (holder.accountColorIndicator != null
                             && (lastMessage.action != null

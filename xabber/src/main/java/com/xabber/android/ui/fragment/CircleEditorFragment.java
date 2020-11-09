@@ -42,8 +42,8 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_SELECTED";
     private static final String SAVED_ADD_CIRCLE_NAME = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_ADD_CIRCLE_NAME";
 
-    private AccountJid account;
-    private ContactJid contactJid;
+    public AccountJid account;
+    public ContactJid contactJid;
 
     private RecyclerView rvContactCircles;
     private ContactCircleEditorAdapter contactCircleEditorAdapter;
@@ -106,7 +106,8 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
             if (account != null) circles = RosterManager.getInstance().getCircles(getAccount());
-            if (contactJid != null) selected = RosterManager.getInstance().getCircles(getAccount(), getContactJid());
+            if (contactJid != null)
+                selected = RosterManager.getInstance().getCircles(getAccount(), getContactJid());
         }
     }
 

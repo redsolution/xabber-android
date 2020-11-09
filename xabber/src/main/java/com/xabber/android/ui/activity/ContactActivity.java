@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -75,7 +75,7 @@ import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.GroupchatLeaveDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
-import com.xabber.android.ui.fragment.GroupchatInfoFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout;
@@ -88,6 +88,7 @@ public class ContactActivity extends ManagedActivity implements
         View.OnLongClickListener, SnoozeDialog.OnSnoozeListener, BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
+    public int orientation;
     private AccountJid account;
     private ContactJid user;
     private AbstractChat chat;
@@ -108,8 +109,6 @@ public class ContactActivity extends ManagedActivity implements
     private TextView thirdButtonText;
     private TextView fourthButtonText;
     private ContactBarAutoSizingLayout contactBarLayout;
-
-    public int orientation;
     private boolean blocked;
     private boolean isGroupchat;
 
@@ -193,7 +192,7 @@ public class ContactActivity extends ManagedActivity implements
 
         bestContact = RosterManager.getInstance().getBestContact(account, user);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(v -> finish());
 
@@ -225,7 +224,7 @@ public class ContactActivity extends ManagedActivity implements
         coloredBlockText = colorLevel == 0 || colorLevel == 1 || colorLevel == 3;
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
-        TextView contactAddress = (TextView) findViewById(R.id.address_text);
+        TextView contactAddress = findViewById(R.id.address_text);
         contactAddress.setText(user.getBareJid().toString());
 
         checkForBlockedStatus();
@@ -293,8 +292,8 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void orientationPortrait() {
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -319,7 +318,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void orientationLandscape() {
-        final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
+        final LinearLayout nameHolderView = findViewById(R.id.name_holder);
 
         toolbar.setTitle("");
         toolbar.setBackgroundColor(Color.TRANSPARENT);
@@ -368,8 +367,10 @@ public class ContactActivity extends ManagedActivity implements
                     case snooze1h:
                     case snooze15m:
                     default:
-                        if (blocked) fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
-                        else fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+                        if (blocked)
+                            fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        else
+                            fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
                         break;
                 }
             }
@@ -562,13 +563,16 @@ public class ContactActivity extends ManagedActivity implements
             setContactBar(accountMainColor, orientation);
         }
     }
+
     @Override
     public void onSuccessUnblock() {
         blocked = false;
         setContactBar(accountMainColor, orientation);
     }
+
     @Override
-    public void onErrorUnblock() { }
+    public void onErrorUnblock() {
+    }
 
     @Override
     public boolean onLongClick(View view) {

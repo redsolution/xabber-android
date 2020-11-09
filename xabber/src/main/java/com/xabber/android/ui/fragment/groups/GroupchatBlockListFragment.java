@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment;
+package com.xabber.android.ui.fragment.groups;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -26,7 +26,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
-import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ import java.util.List;
 
 public class GroupchatBlockListFragment extends Fragment implements GroupchatSelectorListToolbarActions, OnGroupchatSelectorListToolbarActionResult {
 
-    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatBlockListFragment.ARG_ACCOUNT";
-    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.GroupchatBlockListFragment.ARG_GROUPCHAT_CONTACT";
+    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_ACCOUNT";
+    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_GROUPCHAT_CONTACT";
 
     private AccountJid account;
     private ContactJid groupchatContact;
@@ -128,9 +128,9 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         return view;
     }
 
-    private void setupPlaceholder(){
+    private void setupPlaceholder() {
         if (groupChat.getListOfBlockedElements() != null
-                && groupChat.getListOfBlockedElements().size() > 0){
+                && groupChat.getListOfBlockedElements().size() > 0) {
             blockList.setVisibility(View.VISIBLE);
             placeholder.setVisibility(View.GONE);
         } else {

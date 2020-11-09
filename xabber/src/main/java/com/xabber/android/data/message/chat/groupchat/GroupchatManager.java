@@ -21,6 +21,10 @@ import com.xabber.android.data.extension.groupchat.settings.GroupSettingsDataFor
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener;
 import com.xabber.android.data.extension.groupchat.settings.SetGroupSettingsRequestIQ;
+import com.xabber.android.data.extension.groupchat.status.GroupSetStatusRequestIQ;
+import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
+import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
+import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -49,10 +53,9 @@ import java.util.Map;
 
 public class GroupchatManager implements OnPacketListener {
 
-    private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     public static final String NAMESPACE = "https://xabber.com/protocol/groups";
     public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + "#system-message";
-
+    private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     private static GroupchatManager instance;
 
     /* */
@@ -70,15 +73,15 @@ public class GroupchatManager implements OnPacketListener {
             processPresence(connection, packet);
         } else if (packet instanceof Message
                 && ((Message) packet).getType().equals(Message.Type.headline)
-                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE)){
+                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE)) {
             processHeadlineEchoMessage(connection, packet);
-        } else if (packet instanceof DiscoverItems){
+        } else if (packet instanceof DiscoverItems) {
             processDiscoInfoIq(connection, packet);
         }
     }
 
-    private void processDiscoInfoIq(ConnectionItem connectionItem, Stanza packet){
-        try{
+    private void processDiscoInfoIq(ConnectionItem connectionItem, Stanza packet) {
+        try {
             AccountJid accountJid = connectionItem.getAccount();
 
             if (availableGroupchatServers.get(accountJid) == null)
@@ -86,27 +89,29 @@ public class GroupchatManager implements OnPacketListener {
 
             availableGroupchatServers.put(accountJid, new ArrayList<>());
 
-            for (DiscoverItems.Item item : ((DiscoverItems) packet).getItems()){
+            for (DiscoverItems.Item item : ((DiscoverItems) packet).getItems()) {
                 if (NAMESPACE.equals(item.getNode()))
                     availableGroupchatServers.get(accountJid).add(ContactJid.from(item.getEntityID()).getBareJid());
             }
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        }
     }
 
-    private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet){
-        try{
+    private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet) {
+        try {
             //if groupchat headlines aren't correctly parsed, must rewrite this
             StandardExtensionElement echoElement = (StandardExtensionElement) packet.getExtensions().get(0);
             Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
             String originId = UniqStanzaHelper.getOriginId(message);
             String stanzaId = UniqStanzaHelper.getContactStanzaId(message);
             MessageRepository.setStanzaIdByOriginId(originId, stanzaId);
-        } catch (Exception e){
+        } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
     }
 
-    private void processPresence(ConnectionItem connection, Stanza packet){
+    private void processPresence(ConnectionItem connection, Stanza packet) {
         try {
             GroupchatPresence presence = (GroupchatPresence) packet.getExtension(GroupchatPresence.NAMESPACE);
 
@@ -127,10 +132,10 @@ public class GroupchatManager implements OnPacketListener {
 
             if (presence.getPinnedMessageId() != null
                     && !presence.getPinnedMessageId().isEmpty()
-                    && !presence.getPinnedMessageId().equals("0")){
+                    && !presence.getPinnedMessageId().equals("0")) {
                 MessageRealmObject pinnedMessage = MessageRepository
                         .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
-                if (pinnedMessage == null || pinnedMessage.getTimestamp() == null){
+                if (pinnedMessage == null || pinnedMessage.getTimestamp() == null) {
 
                     NextMamManager.getInstance().requestSingleMessageAsync(connection,
                             groupChat, presence.getPinnedMessageId());
@@ -148,7 +153,7 @@ public class GroupchatManager implements OnPacketListener {
             EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));
             //todo etc...
             ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
-        } catch (Exception e){
+        } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
     }
@@ -172,25 +177,25 @@ public class GroupchatManager implements OnPacketListener {
                                            GroupchatMembershipType membershipType,
                                            GroupchatIndexType indexType,
                                            GroupchatPrivacyType privacyType,
-                                           CreateGroupchatIqResultListener listener){
+                                           CreateGroupchatIqResultListener listener) {
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
 
-        try{
+        try {
             AccountManager.getInstance().getAccount(accountJid).getConnection()
                     .sendIqWithResponseCallback(iq, packet -> {
-                        if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result){
+                        if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result) {
                             LogManager.d(LOG_TAG, "Groupchat successfully created");
 
-                            if (packet instanceof CreateGroupchatIQ.ResultIq){
-                                try{
+                            if (packet instanceof CreateGroupchatIQ.ResultIq) {
+                                try {
                                     ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
                                     AccountJid account = AccountJid.from(packet.getTo().toString());
                                     PresenceManager.getInstance().addAutoAcceptSubscription(account, contactJid);
                                     PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
                                     PresenceManager.getInstance().requestSubscription(account, contactJid);
                                     listener.onSuccessfullyCreated(accountJid, contactJid);
-                                } catch (Exception e){
+                                } catch (Exception e) {
                                     LogManager.exception(LOG_TAG, e);
                                     listener.onOtherError();
                                 }
@@ -200,11 +205,11 @@ public class GroupchatManager implements OnPacketListener {
                     }, exception -> {
                         LogManager.exception(LOG_TAG, exception);
                         if (exception instanceof XMPPException.XMPPErrorException
-                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML().toString().contains("conflict")){
+                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML().toString().contains("conflict")) {
                             listener.onJidConflict();
                         } else listener.onOtherError();
                     });
-        } catch (Exception e){
+        } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
 
@@ -214,56 +219,105 @@ public class GroupchatManager implements OnPacketListener {
         return availableGroupchatServers.get(accountJid);
     }
 
-    public void requestGroupSettingsForm(GroupChat groupchat){
+    public void requestGroupStatusForm(GroupChat groupchat) {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new GroupStatusFormRequestIQ(groupchat.getContactJid()), packet -> {
+                            if (packet instanceof GroupStatusDataFormIQ
+                                    && ((GroupStatusDataFormIQ) packet).getType() == IQ.Type.result)
+                                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                    listener.onStatusDataFormReceived(groupchat, ((GroupStatusDataFormIQ) packet).getDataForm());
+                                }
+                        }, exception -> {
+                            for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                listener.onError(groupchat);
+                            }
+                        });
+
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                    listener.onError(groupchat);
+                }
+            }
+        });
+    }
+
+    public void sendSetGroupchatStatusRequest(GroupChat groupChat, DataForm dataForm) {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new GroupSetStatusRequestIQ(groupChat.getContactJid(), dataForm), packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
+                                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                    listener.onStatusSuccessfullyChanged(groupChat);
+                                }
+                        }, exception -> {
+                            for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                listener.onError(groupChat);
+                            }
+                        });
+
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                    listener.onError(groupChat);
+                }
+            }
+        });
+    }
+
+    public void requestGroupSettingsForm(GroupChat groupchat) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat.getContactJid()), packet -> {
                             if (packet instanceof GroupSettingsDataFormResultIQ
                                     && ((GroupSettingsDataFormResultIQ) packet).getType() == IQ.Type.result)
-                                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                                     listener.onDataFormReceived(groupchat, ((GroupSettingsDataFormResultIQ) packet).getDataFrom());
                                 }
                         }, exception -> {
-                            for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                            for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                                 listener.onErrorAtDataFormRequesting(groupchat);
                             }
-                        } );
+                        });
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                     listener.onErrorAtDataFormRequesting(groupchat);
                 }
             }
         });
     }
 
-    public void sendSetGroupSettingsRequest(GroupChat groupchat, DataForm dataForm){
+    public void sendSetGroupSettingsRequest(GroupChat groupchat, DataForm dataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new SetGroupSettingsRequestIQ(groupchat.getContactJid(), dataForm), packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
-                                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                                     listener.onGroupSettingsSuccessfullyChanged(groupchat);
                                 }
                         }, exception -> {
-                            for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                            for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                                 listener.onErrorAtSettingsSetting(groupchat);
                             }
-                        } );
+                        });
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupSettingsResultsListener listener: Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)){
+                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                     listener.onErrorAtSettingsSetting(groupchat);
                 }
             }
         });
     }
 
-    public void sendUnPinMessageRequest(GroupChat groupChat){
+    public void sendUnPinMessageRequest(GroupChat groupChat) {
         //todo add privilege checking
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
@@ -284,13 +338,13 @@ public class GroupchatManager implements OnPacketListener {
                                             context.getText(R.string.groupchat_failed_to_unpin_message),
                                             Toast.LENGTH_SHORT).show());
                         });
-            } catch (Exception e){
+            } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             }
         });
     }
 
-    public void sendPinMessageRequest(MessageRealmObject message){
+    public void sendPinMessageRequest(MessageRealmObject message) {
         //todo add privilege checking
 
         final AccountJid account = message.getAccount();
@@ -306,7 +360,7 @@ public class GroupchatManager implements OnPacketListener {
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result))
-                                    LogManager.d(LOG_TAG, "Message successfully pinned");
+                                LogManager.d(LOG_TAG, "Message successfully pinned");
                         }, exception -> {
                             LogManager.d(LOG_TAG, "Failed to pin message");
                             Context context = Application.getInstance().getApplicationContext();

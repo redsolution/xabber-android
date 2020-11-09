@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -43,7 +43,7 @@ public class ContactTitleInflater {
         updateTitle(titleView, context, abstractContact, false);
     }
 
-    public static void updateTitleWithNameColorizing(){
+    public static void updateTitleWithNameColorizing() {
 
     }
 
@@ -52,12 +52,12 @@ public class ContactTitleInflater {
     }
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard, boolean qrAvatarNeeded) {
-        final TextView nameView = (TextView) titleView.findViewById(R.id.name);
-        final TextView addressTextView = (TextView) titleView.findViewById(R.id.address_text);
-        final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
+        final TextView nameView = titleView.findViewById(R.id.name);
+        final TextView addressTextView = titleView.findViewById(R.id.address_text);
+        final ImageView avatarView = titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
-        if (isForVcard){
+        if (isForVcard) {
             nameView.setVisibility(
                     abstractContact.getContactJid().getBareJid().toString().equals(abstractContact.getName()) ?
                             View.GONE : View.VISIBLE
@@ -79,14 +79,14 @@ public class ContactTitleInflater {
             }
 
             /*in case qrcode-avatars will be needed, probably should migrate it into avatar manager
-*/
+             */
             if (avatarView.getDrawable() == null && qrAvatarNeeded) {
-                ImageView avatarQRView = (ImageView) titleView.findViewById(R.id.ivAvatarQR);
+                ImageView avatarQRView = titleView.findViewById(R.id.ivAvatarQR);
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap;
                 try {
                     bitmap = barcodeEncoder.encodeBitmap("xmpp:" + abstractContact.getContactJid().getBareJid().toString(), BarcodeFormat.QR_CODE, 600, 600);
-                    Bitmap cropped = Bitmap.createBitmap(bitmap, 50,50,500,500);
+                    Bitmap cropped = Bitmap.createBitmap(bitmap, 50, 50, 500, 500);
                     if (cropped != null) {
                         avatarQRView.setImageBitmap(cropped);
                         //avatarQRView.setVisibility(View.VISIBLE);
@@ -96,8 +96,7 @@ public class ContactTitleInflater {
                 }
             }
             setStatus(context, titleView, abstractContact, true);
-        }
-        else {
+        } else {
             // if it is account, not simple user contact
             if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
                 avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
@@ -107,10 +106,11 @@ public class ContactTitleInflater {
             setStatus(context, titleView, abstractContact);
         }
         /* Colorize name accordingly to color theme */
-        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()){
+        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 nameView.setTextColor(Color.BLACK);
-            else nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
+            else
+                nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
         }
 
     }
@@ -120,8 +120,8 @@ public class ContactTitleInflater {
     }
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact, boolean isForVcard) {
-        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
-        ImageView statusModeGroupView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
+        final ImageView statusModeView = titleView.findViewById(R.id.ivStatus);
+        ImageView statusModeGroupView = titleView.findViewById(R.id.ivStatusGroupchat);
 
         boolean isServer = false;
         boolean isGroupchat = false;
@@ -134,7 +134,7 @@ public class ContactTitleInflater {
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (isServer) {
-            StatusBadgeSetupHelper.INSTANCE.getStatusLevelForContact(abstractContact, statusModeGroupView, null);
+            StatusBadgeSetupHelper.INSTANCE.setupImageViewForContact(abstractContact, statusModeGroupView, null);
 //            statusModeGroupView.setImageResource(R.drawable.ic_status_combined);
 //            statusModeGroupView.setImageLevel(StatusBadgeSetupHelper.INSTANCE.getStatusLevelForAccount(abstractContact));
             if (isForVcard) {
@@ -155,7 +155,7 @@ public class ContactTitleInflater {
             }
         }
 
-        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
+        final TextView statusTextView = titleView.findViewById(R.id.status_text);
 
         CharSequence statusText;
         if (isServer) statusText = "Server";
@@ -171,10 +171,11 @@ public class ContactTitleInflater {
         }
         statusTextView.setText(statusText);
         /* Colorize status accordingly to color theme */
-        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()){
+        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 statusTextView.setTextColor(Color.BLACK);
-            else statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
+            else
+                statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
         }
     }
 

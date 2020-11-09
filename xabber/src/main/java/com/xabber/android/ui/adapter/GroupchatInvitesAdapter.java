@@ -14,7 +14,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 
 import java.util.ArrayList;
 import java.util.HashSet;

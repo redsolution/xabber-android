@@ -20,7 +20,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.GroupchatInviteReasonDialog;
-import com.xabber.android.ui.fragment.GroupchatInviteContactFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
 
         boolean lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light;
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(lightTheme ? R.drawable.ic_arrow_left_grey_24dp : R.drawable.ic_arrow_left_white_24dp);
         if (toolbar.getOverflowIcon() != null) {
             toolbar.getOverflowIcon().setColorFilter(lightTheme ?
@@ -107,13 +107,13 @@ public class GroupchatInviteContactActivity extends ManagedActivity implements T
         return true;
     }
 
-    public void openInvitationDialog(){
+    public void openInvitationDialog() {
         jidsToInvite = getInviteFragment().getSelectedContacts();
         GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();
         dialog.show(getSupportFragmentManager(), GroupchatInviteReasonDialog.LOG_TAG);
     }
 
-    public void openInvitationDialogForContact(ContactJid contactJid){
+    public void openInvitationDialogForContact(ContactJid contactJid) {
         jidsToInvite = new ArrayList<>();
         jidsToInvite.add(contactJid);
         GroupchatInviteReasonDialog dialog = new GroupchatInviteReasonDialog();

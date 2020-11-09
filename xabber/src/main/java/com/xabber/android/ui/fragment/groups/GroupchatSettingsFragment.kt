@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment
+package com.xabber.android.ui.fragment.groups
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +17,7 @@ import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity
 import com.xabber.android.ui.adapter.groups.settings.GroupSettingsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
+import com.xabber.android.ui.fragment.CircleEditorFragment
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import java.util.*

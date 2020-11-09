@@ -16,11 +16,11 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.ui.color.BarPainter
-import com.xabber.android.ui.fragment.GroupchatSettingsFragment
+import com.xabber.android.ui.fragment.groups.GroupchatSettingsFragment
 
-class GroupchatUpdateSettingsActivity: ManagedActivity() {
+class GroupchatUpdateSettingsActivity : ManagedActivity() {
 
-    private val FRAGMENT_TAG = "com.xabber.android.ui.fragment.GroupchatSettingsFragment"
+    private val FRAGMENT_TAG = "com.xabber.android.ui.fragment.groups.GroupchatSettingsFragment"
 
     private lateinit var toolbar: Toolbar
     private lateinit var progressBar: ProgressBar
@@ -43,7 +43,7 @@ class GroupchatUpdateSettingsActivity: ManagedActivity() {
 
         BarPainter(this, toolbar).setDefaultColor()
 
-        if (intent != null && intent.getParcelableExtra<ContactJid>(GROUPCHAT_CONTACTJID) != null){
+        if (intent != null && intent.getParcelableExtra<ContactJid>(GROUPCHAT_CONTACTJID) != null) {
             val groupChat = ChatManager.getInstance().getChat(intent.getParcelableExtra(GROUPCHAT_ACCOUNTJID),
                     intent.getParcelableExtra(GROUPCHAT_CONTACTJID))
             if (groupChat != null && groupChat is GroupChat)
@@ -56,9 +56,9 @@ class GroupchatUpdateSettingsActivity: ManagedActivity() {
             if (isVisible) progressBar.visibility = View.VISIBLE
             else progressBar.visibility = View.GONE
 
-    fun showToolbarButtons(isEdited: Boolean){
+    fun showToolbarButtons(isEdited: Boolean) {
         toolbar.menu?.clear()
-        if (isEdited){
+        if (isEdited) {
             toolbar.inflateMenu(R.menu.toolbar_groupchat_settings)
 
             val view = toolbar.findViewById<View>(R.id.action_update_groupchat_settings)
@@ -86,16 +86,18 @@ class GroupchatUpdateSettingsActivity: ManagedActivity() {
 
     }
 
-    companion object{
+    companion object {
 
         private const val GROUPCHAT_ACCOUNTJID = "com.xabber.android.ui.activity.GroupchatSettingsActivity.GROUPCHAT_ACCOUNTJID"
         private const val GROUPCHAT_CONTACTJID = "com.xabber.android.ui.activity.GroupchatSettingsActivity.GROUPCHAT_CONTACTJID"
-        fun createOpenGroupchatSettingsIntentForGroupchat(accountJid: AccountJid, contactJid: ContactJid): Intent {
-            val intent = Intent(Application.getInstance().applicationContext, GroupchatUpdateSettingsActivity::class.java)
-            intent.putExtra(GROUPCHAT_CONTACTJID, contactJid)
-            intent.putExtra(GROUPCHAT_ACCOUNTJID, accountJid as Parcelable)
-            return intent
-        }
+
+        fun createOpenGroupchatSettingsIntentForGroupchat(accountJid: AccountJid,
+                                                          contactJid: ContactJid) =
+                Intent(Application.getInstance().applicationContext,
+                        GroupchatUpdateSettingsActivity::class.java).apply {
+                    putExtra(GROUPCHAT_CONTACTJID, contactJid)
+                    putExtra(GROUPCHAT_ACCOUNTJID, accountJid as Parcelable)
+                }
 
     }
 

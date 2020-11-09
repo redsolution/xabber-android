@@ -22,7 +22,13 @@
             <elementName>query</elementName>
             <namespace>https://xabber.com/protocol/groups</namespace>
             <className>com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestDataFormResultProvider</className>
-        </iqProvider>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#status</namespace>
+        <className>com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIqProvider</className>
+    </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>

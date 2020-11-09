@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment;
+package com.xabber.android.ui.fragment.groups;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -25,7 +25,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
-import com.xabber.android.ui.fragment.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ import java.util.Set;
 
 public class GroupchatInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions, OnGroupchatSelectorListToolbarActionResult {
 
-    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatInvitesFragment.ARG_ACCOUNT";
-    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.GroupchatInvitesFragment.ARG_GROUPCHAT_CONTACT";
+    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_ACCOUNT";
+    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_GROUPCHAT_CONTACT";
 
     private AccountJid account;
     private ContactJid groupchatContact;
@@ -127,9 +127,9 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         return view;
     }
 
-    private void setupPlaceholder(){
+    private void setupPlaceholder() {
         if (groupChat.getListOfInvites() != null
-                && groupChat.getListOfInvites().size() > 0){
+                && groupChat.getListOfInvites().size() > 0) {
             invitesList.setVisibility(View.VISIBLE);
             placeholder.setVisibility(View.GONE);
         } else {

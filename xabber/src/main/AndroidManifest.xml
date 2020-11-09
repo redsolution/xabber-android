@@ -594,6 +594,8 @@
 
         <activity android:name=".ui.activity.ConnectedDevicesActivity" />
 
+        <activity android:name=".ui.activity.GroupStatusActivity" />
+
         <activity android:name=".ui.activity.GroupchatSettingsActivity" />
 
         <activity android:name=".ui.activity.GroupchatUpdateSettingsActivity" />

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment;
+package com.xabber.android.ui.fragment.groups;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -59,9 +59,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     public static final String LOG_TAG = GroupchatInviteContactFragment.class.getSimpleName();
 
-    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupchatInviteContactFragment.ARG_ACCOUNT";
-    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.GroupchatInviteContactFragment.ARG_GROUPCHAT_CONTACT";
-    private static final String ARG_SELECTED_LIST = "com.xabber.android.ui.fragment.GroupchatInviteContactFragment.ARG_SELECTED_LIST";
+    private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.ARG_ACCOUNT";
+    private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.ARG_GROUPCHAT_CONTACT";
+    private static final String ARG_SELECTED_LIST = "com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.ARG_SELECTED_LIST";
 
     private AccountJid account;
 
@@ -268,10 +268,10 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         }
     }
 
-    private int getPositionByContactJid(String contactJid){
-        for (IFlexible item : adapter.getCurrentItems()){
-            if (item instanceof ContactVO && ((ContactVO)item).getContactJid().toString().equals(contactJid))
-                return  adapter.getGlobalPositionOf(item);
+    private int getPositionByContactJid(String contactJid) {
+        for (IFlexible item : adapter.getCurrentItems()) {
+            if (item instanceof ContactVO && ((ContactVO) item).getContactJid().toString().equals(contactJid))
+                return adapter.getGlobalPositionOf(item);
         }
         return 0;
     }
@@ -301,7 +301,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                             contact.getContactJid()) instanceof GroupChat;
                     boolean isServer = contact.getContactJid().getJid().isDomainBareJid();
 
-                    if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()){
+                    if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()) {
                         String filter = filterEt.getText().toString();
                         String transliteratedFilterString = StringUtils.translitirateToLatin(filter);
 
@@ -313,7 +313,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                         if (contact.getContactJid().toString().contains(filter)
                                 || contact.getContactJid().toString().contains(transliteratedFilterString)
                                 || contactName.contains(filter)
-                                || contactName.contains(transliteratedFilterString)){
+                                || contactName.contains(transliteratedFilterString)) {
                             if (!isGroupchat && !isServer)
                                 group.addSubItem(SettingsManager.contactsShowMessages()
                                         ? ExtContactVO.convert(contact, this)
@@ -347,7 +347,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     @Override
     public boolean onItemClick(View view, int position) {
-        if (modeSelectMultipleAccounts){
+        if (modeSelectMultipleAccounts) {
 
             if (adapter.getItem(position) instanceof ContactVO) {
                 ContactVO clickedItem = (ContactVO) adapter.getItem(position);
@@ -358,8 +358,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                 if (listOfSelectedContactJids == null)
                     listOfSelectedContactJids = new ArrayList<>();
 
-                if (!listOfSelectedContactJids.contains(contactJid.toString())){
-                    if (adapter.isSelected(position)) listOfSelectedContactJids.add(contactJid.toString());
+                if (!listOfSelectedContactJids.contains(contactJid.toString())) {
+                    if (adapter.isSelected(position))
+                        listOfSelectedContactJids.add(contactJid.toString());
                     else listOfSelectedContactJids.remove(contactJid.toString());
                 }
             }
@@ -371,8 +372,8 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         } else {
 
             if (adapter.getItem(position) instanceof ContactVO) {
-                ((GroupchatInviteContactActivity)getActivity()).openInvitationDialogForContact(
-                        ((ContactVO)adapter.getItem(position)).getContactJid());
+                ((GroupchatInviteContactActivity) getActivity()).openInvitationDialogForContact(
+                        ((ContactVO) adapter.getItem(position)).getContactJid());
             }
 
         }
@@ -394,8 +395,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
             if (listOfSelectedContactJids == null)
                 listOfSelectedContactJids = new ArrayList<>();
 
-            if (!listOfSelectedContactJids.contains(contactJid.toString())){
-                if (adapter.isSelected(position)) listOfSelectedContactJids.add(contactJid.toString());
+            if (!listOfSelectedContactJids.contains(contactJid.toString())) {
+                if (adapter.isSelected(position))
+                    listOfSelectedContactJids.add(contactJid.toString());
                 else listOfSelectedContactJids.remove(contactJid.toString());
             }
 

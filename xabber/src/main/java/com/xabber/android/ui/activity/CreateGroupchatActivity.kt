@@ -11,9 +11,9 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.ui.color.BarPainter
-import com.xabber.android.ui.fragment.CreateGroupchatFragment
+import com.xabber.android.ui.fragment.groups.CreateGroupchatFragment
 
-class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener{
+class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener {
 
     private var isIncognito = false
 
@@ -35,7 +35,7 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         toolbar.setNavigationOnClickListener { finish() }
 
         toolbar.inflateMenu(if (isIncognito) R.menu.toolbar_create_incognito_groupchat
-                            else R.menu.toolbar_create_groupchat)
+        else R.menu.toolbar_create_groupchat)
 
         val view = toolbar.findViewById<View>(R.id.action_create_groupchat)
         if (view != null && view is TextView) {
@@ -60,9 +60,9 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         return true
     }
 
-    companion object{
+    companion object {
 
-        private const val FRAGMENT_TAG = "com.xabber.android.ui.fragment.CreateGroupchatFragment"
+        private const val FRAGMENT_TAG = "com.xabber.android.ui.fragment.groups.CreateGroupchatFragment"
         private const val CREATE_INCOGNITO_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_INCOGNITO_GROUPCHAT_INTENT"
         private const val CREATE_PUBLIC_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_PUBLIC_GROUPCHAT_INTENT"
 

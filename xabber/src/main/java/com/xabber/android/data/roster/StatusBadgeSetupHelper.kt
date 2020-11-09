@@ -5,6 +5,8 @@ import android.graphics.ColorMatrixColorFilter
 import android.os.Build
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.res.ResourcesCompat
+import com.xabber.android.R
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
@@ -16,9 +18,9 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 
 object StatusBadgeSetupHelper {
 
-    fun getStatusLevelForContact(abstractContact: AbstractContact, imageView: ImageView,
+    fun setupImageViewForContact(abstractContact: AbstractContact, imageView: ImageView,
                                  abstractChat: AbstractChat? = ChatManager.getInstance()
-                                         .getChat(abstractContact.account, abstractContact.contactJid)){
+                                         .getChat(abstractContact.account, abstractContact.contactJid)) {
 
         val accountJid = abstractContact.account
         val contactJid = abstractContact.contactJid
@@ -35,7 +37,7 @@ object StatusBadgeSetupHelper {
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupchatPrivacyType.PUBLIC
-                    || abstractChat.privacyType == GroupchatPrivacyType.NONE)
+                || abstractChat.privacyType == GroupchatPrivacyType.NONE)
         val isIncognitoGroupChat = abstractChat is GroupChat
                 && abstractChat.privacyType == GroupchatPrivacyType.INCOGNITO
         if (statusLevel == StatusMode.unavailable.statusLevel && !isAccountConnected)
@@ -77,7 +79,7 @@ object StatusBadgeSetupHelper {
 
         imageView.setImageLevel(statusLevel)
 
-        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected){
+        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected) {
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)
@@ -87,9 +89,16 @@ object StatusBadgeSetupHelper {
 
     }
 
-    fun getStatusLevelForChat(abstractChat: AbstractChat, imageView: ImageView) =
-            getStatusLevelForContact(RosterManager.getInstance()
+    fun setupImageViewForChat(abstractChat: AbstractChat, imageView: ImageView) =
+            setupImageViewForContact(RosterManager.getInstance()
                     .getAbstractContact(abstractChat.account, abstractChat.contactJid), imageView,
                     abstractChat)
+
+    fun setupImageView(statusMode: StatusMode = StatusMode.unavailable, offset: Int = 0,
+                       imageView: ImageView) {
+        imageView.setImageDrawable(ResourcesCompat.getDrawable(imageView.context.resources,
+                R.drawable.ic_status_combined, null))
+        imageView.setImageLevel(statusMode.statusLevel + offset)
+    }
 
 }
