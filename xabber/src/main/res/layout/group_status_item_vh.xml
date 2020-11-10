@@ -17,7 +17,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/grey_900"
+        android:textColor="?attr/contact_list_contact_name_text_color"
         android:layout_centerVertical="true"/>
 
     <ImageView
