@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginTop="12dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/group_settings_label_tv"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingLeft="16dp"
-        android:paddingEnd="16dp"
-        android:paddingRight="16dp"
-        android:text="@string/settings"
-        android:textStyle="bold" />
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/group_settings_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp"
-        android:paddingStart="4dp"
-        android:paddingLeft="4dp"
-        android:paddingEnd="4dp"
-        android:paddingRight="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:gravity="top"
-        android:background="@drawable/edit_text_rounded_corners_background_grey"/>
+        android:background="@drawable/edit_text_rounded_corners_background_grey">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/group_settings_label_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+
+            android:paddingTop="10dp"
+            android:text="@string/settings" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/group_settings_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="top"
+            android:maxLines="1"
+            android:background="@color/transparent"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_800"/>
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/group_settings_single_text_bottom_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="groupchat@domain.com"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:visibility="gone"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

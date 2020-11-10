@@ -9,7 +9,8 @@ import com.xabber.android.R
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val accountColor: Int, private val listener: Listener)
+class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val accountColor: Int,
+                                   private val listener: Listener, private val groupchatJid: String)
     : RecyclerView.Adapter<GroupSettingsVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupSettingsVH =
@@ -20,13 +21,13 @@ class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val a
 
                 SINGLE_LIST_OPTIONS_VIEW_TYPE -> GroupSettingsSingleListFieldVH(
                         LayoutInflater.from(parent.context)
-                                .inflate(R.layout.item_group_settings_fixed_view_holder, parent, false))
+                                .inflate(R.layout.item_group_settings_radio_view_holder, parent, false))
 
-                SINGLE_TEXT_SMALL_VIEW_TYPE -> GroupSettingsTextSingleSingleLineFieldVH(LayoutInflater.from(parent.context)
+                SINGLE_TEXT_SMALL_VIEW_TYPE -> GroupSettingsTextSingleFieldVH(LayoutInflater.from(parent.context)
                         .inflate(R.layout.item_group_settings_single_text_view_holder, parent, false))
 
-                SINGLE_TEXT_BIG_VIEW_TYPE -> GroupSettingsTextSingleBigFieldVH(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_group_settings_single_text_view_holder, parent, false))
+                SINGLE_TEXT_BIG_VIEW_TYPE -> GroupSettingsTextSingleFieldVH(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_group_settings_multi_text_view_holder, parent, false))
 
                 else -> HiddenVH(View(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -72,8 +73,7 @@ class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val a
                                     object : GroupSettingsTextSingleFieldVH.Listener {
                                         override fun onTextChanged(text: String) =
                                                 listener.onSingleTextTextChanged(field, text)
-
-                                    })
+                                    }, groupchatJid)
                 }
 
                 else -> {

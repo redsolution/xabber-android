@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/action_update_groupchat_settings"
-        android:title="@string/groupchat_update_settings"
+        android:title="@string/save"
         app:showAsAction="always"/>
 </menu>

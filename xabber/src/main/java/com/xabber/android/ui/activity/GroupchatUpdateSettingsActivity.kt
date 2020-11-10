@@ -16,7 +16,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.ui.color.BarPainter
-import com.xabber.android.ui.fragment.groups.GroupchatSettingsFragment
+import com.xabber.android.ui.fragment.groups.GroupUpdateSettingsFragment
 
 class GroupchatUpdateSettingsActivity : ManagedActivity() {
 
@@ -38,6 +38,7 @@ class GroupchatUpdateSettingsActivity : ManagedActivity() {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
 
+        toolbar.title = getString(R.string.groupchat_group_settings)
         toolbar.setNavigationOnClickListener { finish() }
 
 
@@ -48,7 +49,7 @@ class GroupchatUpdateSettingsActivity : ManagedActivity() {
                     intent.getParcelableExtra(GROUPCHAT_CONTACTJID))
             if (groupChat != null && groupChat is GroupChat)
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container,
-                        GroupchatSettingsFragment(groupChat), FRAGMENT_TAG).commit()
+                        GroupUpdateSettingsFragment(groupChat), FRAGMENT_TAG).commit()
         } else finish()
     }
 
@@ -69,7 +70,7 @@ class GroupchatUpdateSettingsActivity : ManagedActivity() {
             }
 
             toolbar.setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as GroupchatSettingsFragment).saveChanges()
+                (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as GroupUpdateSettingsFragment).saveChanges()
                 return@setOnMenuItemClickListener true
             }
 

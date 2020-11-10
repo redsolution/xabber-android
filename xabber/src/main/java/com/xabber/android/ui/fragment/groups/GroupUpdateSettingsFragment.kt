@@ -22,7 +22,7 @@ import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import java.util.*
 
-class GroupchatSettingsFragment(private val groupchat: GroupChat) : CircleEditorFragment(),
+class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEditorFragment(),
         GroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
 
     init {
@@ -39,9 +39,10 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat) : CircleEditor
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.groupchat_update_settings_fragment, container, false)
         recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(context).apply {
+        var llm = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
+        recyclerView.layoutManager = llm
 
         view.findViewById<TextView>(R.id.tvCircles).setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
 
@@ -110,7 +111,8 @@ class GroupchatSettingsFragment(private val groupchat: GroupChat) : CircleEditor
 
     private fun updateViewWithDataForm(dataForm: DataForm) {
         val adapter = GroupSettingsFormListAdapter(dataForm,
-                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account), this)
+                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account),
+                this, groupchat.contactJid.bareJid.toString())
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
