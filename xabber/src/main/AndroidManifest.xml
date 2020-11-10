@@ -594,7 +594,11 @@
 
         <activity android:name=".ui.activity.ConnectedDevicesActivity" />
 
-        <activity android:name=".ui.activity.GroupStatusActivity" />
+        <activity android:name=".ui.activity.GroupStatusActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ContactViewerActivity"/>
+        </activity>
 
         <activity android:name=".ui.activity.GroupchatSettingsActivity" />
 
