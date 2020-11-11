@@ -243,7 +243,7 @@ public class ContactActivity extends ManagedActivity implements
         }
 
         ImageView background = findViewById(R.id.backgroundView);
-        Drawable backgroundSource = bestContact.getAvatar(false);
+        Drawable backgroundSource = bestContact.getAvatar(isGroupchat);
         if (backgroundSource == null)
             backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
         Glide.with(this)

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="12dp"
+    android:layout_marginTop="24dp"
     android:layout_marginStart="16dp"
     android:layout_marginLeft="16dp"
     android:layout_marginEnd="16dp"
@@ -36,11 +36,13 @@
         android:gravity="top"
         android:maxLines="5"
         android:minLines="5"
+        android:hint="@string/groupchat_example_description"
         android:background="@color/transparent"/>
 
     <View
+        android:id="@+id/group_settings_line_view"
         android:layout_width="match_parent"
-        android:layout_height="1px"
+        android:layout_height="2dp"
         android:background="@color/grey_800"/>
 
 </LinearLayout>

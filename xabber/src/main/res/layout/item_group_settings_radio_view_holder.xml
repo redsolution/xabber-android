@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="16dp">
 
     <TextView
         android:id="@+id/group_settings_fixed_tv"
@@ -25,5 +26,11 @@
         android:layout_marginLeft="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"/>
+
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter.groups.settings
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,8 @@ import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
 class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val accountColor: Int,
-                                   private val listener: Listener, private val groupchatJid: String)
+                                   private val listener: Listener, private val groupchatJid: String,
+                                   private val avatarDrawable: Drawable)
     : RecyclerView.Adapter<GroupSettingsVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupSettingsVH =
@@ -38,47 +40,39 @@ class GroupSettingsFormListAdapter(private val dataForm: DataForm, private val a
             }
 
 
-    override fun onBindViewHolder(holder: GroupSettingsVH, position: Int) =
-            when (holder.itemViewType) {
+    override fun onBindViewHolder(holder: GroupSettingsVH, position: Int) {
 
-                FIXED_VIEW_TYPE -> (holder as GroupSettingsFixedFieldVH)
-                        .bind(dataForm.fields[position].values[0])
+        val field = dataForm.fields[position]
 
-                SINGLE_LIST_OPTIONS_VIEW_TYPE -> {
-                    val field = dataForm.fields[position]
-                    (holder as GroupSettingsSingleListFieldVH)
-                            .bind(field, accountColor,
-                                    object : GroupSettingsSingleListFieldVH.Listener {
-                                        override fun onOptionSelected(option: FormField.Option) =
-                                                listener.onSingleOptionClicked(field, option)
+        when (holder.itemViewType) {
 
-                                    })
-                }
+            FIXED_VIEW_TYPE -> (holder as GroupSettingsFixedFieldVH)
+                    .bind(dataForm.fields[position].values[0])
 
-                SINGLE_TEXT_BIG_VIEW_TYPE -> {
-                    val field = dataForm.fields[position]
-                    (holder as GroupSettingsTextSingleFieldVH)
-                            .bind(field, accountColor,
-                                    object : GroupSettingsTextSingleFieldVH.Listener {
-                                        override fun onTextChanged(text: String) =
-                                                listener.onSingleTextTextChanged(field, text)
+            SINGLE_LIST_OPTIONS_VIEW_TYPE -> (holder as GroupSettingsSingleListFieldVH)
+                    .bind(field, accountColor,
+                            object : GroupSettingsSingleListFieldVH.Listener {
+                                override fun onOptionSelected(option: FormField.Option) =
+                                        listener.onSingleOptionClicked(field, option)
+                            })
 
-                                    })
-                }
+            SINGLE_TEXT_BIG_VIEW_TYPE -> (holder as GroupSettingsTextMultiFieldVH)
+                    .bind(field, object : GroupSettingsTextMultiFieldVH.Listener {
+                        override fun onTextChanged(text: String) =
+                                listener.onSingleTextTextChanged(field, text)
+                    }, accountColor)
 
-                SINGLE_TEXT_SMALL_VIEW_TYPE -> {
-                    val field = dataForm.fields[position]
-                    (holder as GroupSettingsTextSingleFieldVH)
-                            .bind(field, accountColor,
-                                    object : GroupSettingsTextSingleFieldVH.Listener {
-                                        override fun onTextChanged(text: String) =
-                                                listener.onSingleTextTextChanged(field, text)
-                                    }, groupchatJid)
-                }
 
-                else -> {
-                }
-            }
+            SINGLE_TEXT_SMALL_VIEW_TYPE -> (holder as GroupSettingsTextSingleFieldVH)
+                    .bind(field, object : GroupSettingsTextMultiFieldVH.Listener {
+                        override fun onTextChanged(text: String) =
+                                listener.onSingleTextTextChanged(field, text)
+                    }, accountColor, groupchatJid, avatarDrawable)
+
+
+            else -> {}
+        }
+    }
 
     override fun getItemViewType(position: Int): Int = when (dataForm.fields[position].type) {
         FormField.Type.list_single -> SINGLE_LIST_OPTIONS_VIEW_TYPE

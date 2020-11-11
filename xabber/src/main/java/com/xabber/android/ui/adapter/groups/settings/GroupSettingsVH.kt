@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.groups.settings
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +13,9 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
+import com.xabber.android.data.SettingsManager
+import com.xabber.android.ui.color.ColorManager
+import de.hdodenhof.circleimageview.CircleImageView
 import org.jivesoftware.smackx.xdata.FormField
 
 abstract class GroupSettingsVH(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -72,14 +76,77 @@ class GroupSettingsSingleListFieldVH(val itemView: View) : GroupSettingsVH(itemV
 
 }
 
-class GroupSettingsTextSingleFieldVH(val itemView: View) : GroupSettingsVH(itemView) {
+class GroupSettingsTextSingleFieldVH(val view: View) : GroupSettingsTextMultiFieldVH(view){
 
-    fun bind(field: FormField, color: Int, listener: Listener, groupchatJid: String? = null) {
-        itemView.findViewById<TextView>(R.id.group_settings_label_tv).apply {
-            text = field.label
+    fun bind(field: FormField, listener: Listener, color: Int, groupchatJid: String? = null,
+             avatar: Drawable? = null) {
+
+        bind(field, listener, color)
+
+        val isGroupNameField = field.variable == GROUP_NAME_VARIABLE
+
+        val avatarIv = view.findViewById<CircleImageView>(R.id.avatarView)
+        val helperTv = view.findViewById<TextView>(R.id.group_settings_single_text_bottom_tv)
+
+        avatarIv.apply {
+            if (isGroupNameField && avatar != null){
+                visibility = View.VISIBLE
+                setImageDrawable(avatar)
+                //todo avatar change menu opening
+            } else {
+                visibility = View.GONE
+            }
         }
-        itemView.findViewById<EditText>(R.id.group_settings_et).apply {
+
+        helperTv.apply {
+            if (isGroupNameField && groupchatJid != null){
+                visibility = View.VISIBLE
+                text = groupchatJid
+            } else{
+                visibility = View.GONE
+            }
+        }
+
+    }
+
+    private companion object{
+        const val GROUP_NAME_VARIABLE = "name"
+    }
+
+}
+
+open class GroupSettingsTextMultiFieldVH(val itemView: View): GroupSettingsVH(itemView){
+
+    fun bind(field: FormField, listener: Listener, color: Int){
+
+        val labelTv = itemView.findViewById<TextView>(R.id.group_settings_label_tv)
+        val editText = itemView.findViewById<EditText>(R.id.group_settings_et)
+        val lineView = itemView.findViewById<View>(R.id.group_settings_line_view)
+
+        val defaultLabelTextColor = labelTv.currentTextColor
+        val defaultLineBackgroundColor =
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
+
+        labelTv.apply {
+            hint = field.label
+        }
+
+        editText.apply {
             setText(field.values[0])
+
+            setOnFocusChangeListener { _, b ->
+                if (b){
+                    labelTv.setTextColor(color)
+                    lineView.setBackgroundColor(color)
+                }
+                else {
+                    labelTv.setTextColor(defaultLabelTextColor)
+                    lineView.setBackgroundColor(defaultLineBackgroundColor)
+                }
+            }
+
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -89,13 +156,7 @@ class GroupSettingsTextSingleFieldVH(val itemView: View) : GroupSettingsVH(itemV
                     listener.onTextChanged(s.toString())
                 }
             })
-        }
 
-        if (field.variable == "name" && groupchatJid != null){
-            itemView.findViewById<TextView>(R.id.group_settings_single_text_bottom_tv).apply {
-                visibility = View.VISIBLE
-                text = groupchatJid
-            }
         }
 
     }

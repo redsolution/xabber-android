@@ -110,9 +110,10 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     }
 
     private fun updateViewWithDataForm(dataForm: DataForm) {
+        val avatar = RosterManager.getInstance().getAbstractContact(account, contactJid).avatar
         val adapter = GroupSettingsFormListAdapter(dataForm,
                 ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account),
-                this, groupchat.contactJid.bareJid.toString())
+                this, groupchat.contactJid.bareJid.toString(), avatar)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
