@@ -40,7 +40,9 @@ object StatusBadgeSetupHelper {
                 || abstractChat.privacyType == GroupchatPrivacyType.NONE)
         val isIncognitoGroupChat = abstractChat is GroupChat
                 && abstractChat.privacyType == GroupchatPrivacyType.INCOGNITO
-        if (statusLevel == StatusMode.unavailable.statusLevel && !isAccountConnected)
+
+        if (statusLevel == StatusMode.unavailable.statusLevel
+                || statusLevel == StatusMode.connection.statusLevel)
             statusLevel = 5
 
         //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
