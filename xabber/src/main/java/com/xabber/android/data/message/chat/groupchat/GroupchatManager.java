@@ -27,6 +27,7 @@ import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
@@ -86,7 +87,7 @@ public class GroupchatManager implements OnPacketListener {
             processPresence(connection, packet);
         } else if (packet instanceof Message
                 && ((Message) packet).getType().equals(Message.Type.headline)
-                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE)) {
+                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, ReliableMessageDeliveryManager.NAMESPACE)) {
             processHeadlineEchoMessage(connection, packet);
         } else if (packet instanceof DiscoverItems) {
             processDiscoInfoIq(connection, packet);
