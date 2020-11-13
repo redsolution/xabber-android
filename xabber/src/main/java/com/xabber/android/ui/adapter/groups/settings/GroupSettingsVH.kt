@@ -6,11 +6,10 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.ContextThemeWrapper
+import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -53,7 +52,7 @@ class GroupSettingsSingleListFieldVH(val itemView: View) : GroupSettingsVH(itemV
                     buttonTintList = ColorStateList(
                             arrayOf(intArrayOf(-android.R.attr.state_checked),
                                     intArrayOf(android.R.attr.state_checked)),
-                            intArrayOf( Color.BLACK /** disabled */ , color /** enabled */))
+                            intArrayOf( Color.GRAY /** disabled */ , color /** enabled */))
 
             }
 
@@ -76,45 +75,6 @@ class GroupSettingsSingleListFieldVH(val itemView: View) : GroupSettingsVH(itemV
 
 }
 
-class GroupSettingsTextSingleFieldVH(val view: View) : GroupSettingsTextMultiFieldVH(view){
-
-    fun bind(field: FormField, listener: Listener, color: Int, groupchatJid: String? = null,
-             avatar: Drawable? = null) {
-
-        bind(field, listener, color)
-
-        val isGroupNameField = field.variable == GROUP_NAME_VARIABLE
-
-        val avatarIv = view.findViewById<CircleImageView>(R.id.avatarView)
-        val helperTv = view.findViewById<TextView>(R.id.group_settings_single_text_bottom_tv)
-
-        avatarIv.apply {
-            if (isGroupNameField && avatar != null){
-                visibility = View.VISIBLE
-                setImageDrawable(avatar)
-                //todo avatar change menu opening
-            } else {
-                visibility = View.GONE
-            }
-        }
-
-        helperTv.apply {
-            if (isGroupNameField && groupchatJid != null){
-                visibility = View.VISIBLE
-                text = groupchatJid
-            } else{
-                visibility = View.GONE
-            }
-        }
-
-    }
-
-    private companion object{
-        const val GROUP_NAME_VARIABLE = "name"
-    }
-
-}
-
 open class GroupSettingsTextMultiFieldVH(val itemView: View): GroupSettingsVH(itemView){
 
     fun bind(field: FormField, listener: Listener, color: Int){
@@ -130,7 +90,7 @@ open class GroupSettingsTextMultiFieldVH(val itemView: View): GroupSettingsVH(it
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
 
         labelTv.apply {
-            hint = field.label
+            text = field.label
         }
 
         editText.apply {
@@ -163,6 +123,76 @@ open class GroupSettingsTextMultiFieldVH(val itemView: View): GroupSettingsVH(it
 
     interface Listener {
         fun onTextChanged(text: String)
+    }
+
+}
+
+class GroupSettingsTextSingleFieldVH(val view: View) : GroupSettingsTextMultiFieldVH(view){
+
+    fun bind(field: FormField, listener: Listener, color: Int, groupchatJid: String? = null,
+             avatar: Drawable? = null, avatarViewListener: AvatarViewListener? = null) {
+
+        bind(field, listener, color)
+
+        val isGroupNameField = field.variable == GROUP_NAME_VARIABLE
+
+        val avatarIv = view.findViewById<CircleImageView>(R.id.avatarView)
+        val helperTv = view.findViewById<TextView>(R.id.group_settings_single_text_bottom_tv)
+
+        avatarIv.apply {
+            if (isGroupNameField && avatar != null && avatarViewListener != null){
+                visibility = View.VISIBLE
+                setImageDrawable(avatar)
+                //setOnClickListener { onAvatarClick(it as ImageView, avatarViewListener) }
+            } else {
+                visibility = View.GONE
+            }
+        }
+
+        helperTv.apply {
+            if (isGroupNameField && groupchatJid != null){
+                visibility = View.VISIBLE
+                text = groupchatJid
+            } else{
+                visibility = View.GONE
+            }
+        }
+
+    }
+
+    private fun onAvatarClick(view: ImageView, avatarViewListener: AvatarViewListener?){
+        val contextThemeWrapper = ContextThemeWrapper(view.context, R.style.PopupMenuOverlapAnchor)
+        PopupMenu(contextThemeWrapper, view).apply {
+            inflate(R.menu.change_avatar)
+            menu.findItem(R.id.action_remove_avatar).isVisible = view.drawable != null
+            setOnMenuItemClickListener { item: MenuItem ->
+                when (item.itemId) {
+                    R.id.action_choose_from_gallery -> {
+                        avatarViewListener?.onChooseFromGalleryClick()
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.action_take_photo -> {
+                        avatarViewListener?.onTakePhotoClick()
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.action_remove_avatar -> {
+                        avatarViewListener?.onRemoveAvatarClick()
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> return@setOnMenuItemClickListener false
+                }
+            }
+        }.show()
+    }
+
+    private companion object{
+        const val GROUP_NAME_VARIABLE = "name"
+    }
+
+    interface AvatarViewListener{
+        fun onChooseFromGalleryClick()
+        fun onTakePhotoClick()
+        fun onRemoveAvatarClick()
     }
 
 }

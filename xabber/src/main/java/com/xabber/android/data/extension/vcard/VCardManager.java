@@ -365,12 +365,12 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
 
         Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
-        for (ContactJid blockedContact : blockedContacts) {
-            if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
-                onVCardFailed(account, srcUser);
-                return;
-            }
-        }
+//        for (ContactJid blockedContact : blockedContacts) {
+//            if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
+//                onVCardFailed(account, srcUser);
+//                return;
+//            }
+//        }
 
         //if (BlockingManager.getInstance().jidIsBlockedLocally(account, srcUser)) {
         //    onVCardFailed(account, srcUser);

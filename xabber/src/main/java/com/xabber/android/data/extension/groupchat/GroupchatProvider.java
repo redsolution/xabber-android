@@ -113,7 +113,7 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                             break;
                         case GroupchatPresence.INDEX:
                             presence.setIndex(GroupchatIndexType
-                                    .getPrivacyTypeFromXml(parser.nextText()));
+                                    .getIndexTypeFromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.STATUS:
                             presence.setStatus(parser.nextText());

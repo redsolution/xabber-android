@@ -8,7 +8,7 @@ enum class GroupchatIndexType{
     GLOBAL,     // explicit "global"
     LOCAL;      // explicit "local"
 
-    fun toXml(): String? {
+    fun toXml(): String {
         return when(this) {
             LOCAL -> "local"
             GLOBAL -> "global"
@@ -26,7 +26,7 @@ enum class GroupchatIndexType{
 
     companion object {
         @JvmStatic
-        fun getPrivacyTypeFromXml(text: String?): GroupchatIndexType {
+        fun getIndexTypeFromXml(text: String?): GroupchatIndexType {
             return when (text) {
                 "local" -> LOCAL
                 "global" -> GLOBAL
@@ -35,7 +35,7 @@ enum class GroupchatIndexType{
         }
 
         @JvmStatic
-        fun getPrivacyByLocalizedString(text: String?) : GroupchatIndexType {
+        fun getIndexTypeByLocalizedString(text: String?) : GroupchatIndexType {
             return when (text) {
                 Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_local) -> LOCAL
                 Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_global) -> GLOBAL

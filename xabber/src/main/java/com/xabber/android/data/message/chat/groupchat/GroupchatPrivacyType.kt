@@ -8,11 +8,11 @@ enum class GroupchatPrivacyType {
     INCOGNITO,
     PUBLIC;
 
-    fun toXml(): String? {
+    fun toXml(): String {
         return when(this) {
             PUBLIC -> "public"
             INCOGNITO -> "incognito"
-            NONE -> null
+            NONE -> "none"
         }
     }
 

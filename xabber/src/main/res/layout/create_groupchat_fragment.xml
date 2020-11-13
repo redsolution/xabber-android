@@ -256,7 +256,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="@string/groupchat_indexed"
+                    android:text="@string/groupchat_index"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="@dimen/vcard_secondary_text" />
 

@@ -8,11 +8,11 @@ enum class GroupchatMembershipType {
     OPEN,
     MEMBER_ONLY;
 
-    fun toXml(): String? {
+    fun toXml(): String {
         return when(this) {
             OPEN -> "open"
             MEMBER_ONLY -> "member-only"
-            NONE -> null
+            NONE -> "none"
         }
     }
 

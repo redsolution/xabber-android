@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -74,7 +75,10 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         menu.clear();
-        getMenuInflater().inflate(R.menu.toolbar_contact, menu);
+
+        if (isGroupchat)
+            getMenuInflater().inflate(R.menu.group_info_toolbar_menu, menu);
+        else getMenuInflater().inflate(R.menu.toolbar_contact, menu);
 
         setUpContactInfoMenu(menu, rosterContact);
 
@@ -88,7 +92,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             menu.findItem(R.id.action_request_subscription).setVisible(false);
             changeTextColor();
             manageAvailableUsernameSpace();
-        } else {
+        } else if (!isGroupchat) {
             getTitleView().setOnClickListener(v -> startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
             menu.findItem(R.id.action_add_contact).setVisible(false);
             menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
@@ -152,6 +156,25 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             case R.id.action_remove_contact:
                 ContactDeleteDialog.newInstance(getAccount(), getUser())
                         .show(getSupportFragmentManager(), ContactDeleteDialog.class.getName());
+                return true;
+
+            case R.id.action_group_settings:
+                startActivity(GroupchatUpdateSettingsActivity.Companion
+                        .createOpenGroupchatSettingsIntentForGroupchat(getAccount(), getUser()));
+                return true;
+
+            case R.id.action_group_default_restrictions:
+                Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.action_group_invitations:
+                startActivity(GroupchatSettingsActivity.createIntent(this, getAccount(),
+                        getUser(), GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
+                return true;
+
+            case R.id.action_group_blocked:
+                startActivity(GroupchatSettingsActivity.createIntent(this, getAccount(),
+                        getUser(), GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
                 return true;
 
             default:

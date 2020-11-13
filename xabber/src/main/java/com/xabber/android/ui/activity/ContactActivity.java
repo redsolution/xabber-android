@@ -110,7 +110,7 @@ public class ContactActivity extends ManagedActivity implements
     private TextView fourthButtonText;
     private ContactBarAutoSizingLayout contactBarLayout;
     private boolean blocked;
-    private boolean isGroupchat;
+    protected boolean isGroupchat;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ContactActivity.class)

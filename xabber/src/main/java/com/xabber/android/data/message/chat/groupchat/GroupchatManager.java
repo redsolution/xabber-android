@@ -12,6 +12,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groupchat.GroupPinMessageIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
@@ -30,10 +31,15 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.xmpp.avatar.DataExtension;
+import com.xabber.xmpp.avatar.MetadataExtension;
+import com.xabber.xmpp.avatar.MetadataInfo;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -43,13 +49,20 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
+import org.jivesoftware.smackx.pubsub.PayloadItem;
+import org.jivesoftware.smackx.pubsub.PublishItem;
+import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
+import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
 
 public class GroupchatManager implements OnPacketListener {
 
@@ -142,11 +155,8 @@ public class GroupchatManager implements OnPacketListener {
                 } else groupChat.setPinnedMessageId(presence.getPinnedMessageId());
             }
 
-            groupChat.setDescription(presence.getDescription());
             groupChat.setName(presence.getName());
-            groupChat.setIndexType(presence.getIndex());
             groupChat.setPrivacyType(presence.getPrivacy());
-            groupChat.setMembershipType(presence.getMembership());
             groupChat.setNumberOfMembers(presence.getAllMembers());
             groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
 
@@ -313,6 +323,61 @@ public class GroupchatManager implements OnPacketListener {
                 for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                     listener.onErrorAtSettingsSetting(groupchat);
                 }
+            }
+        });
+    }
+
+    public void sendRemoveGroupAvatarRequest(GroupChat groupChat){
+        Application.getInstance().runInBackground(() -> {
+            try{
+                PayloadItem<MetadataExtension> item = new PayloadItem<>(null, new MetadataExtension(null));
+                PublishItem<PayloadItem<MetadataExtension>> publishItem = new PublishItem<>(METADATA_NAMESPACE, item);
+
+                PubSub packet = PubSub.createPubsubPacket(groupChat.getContactJid().getBareJid(),
+                        IQ.Type.set, publishItem, null);
+
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .createStanzaCollectorAndSend(packet).nextResultOrThrow(45000);
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
+    }
+
+    public void sendPublishGroupAvatar(GroupChat groupChat, String memberId, byte[] data, int height,
+                                    int width, UserAvatarManager.ImageType type){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+                XMPPConnection connectionItem = AccountManager.getInstance()
+                        .getAccount(groupChat.getAccount()).getConnection();
+
+                String avatarHash = AvatarManager.getAvatarHash(data);
+
+                DataExtension dataExtension = new DataExtension(data);
+                PayloadItem<DataExtension> dataItem = new PayloadItem<>(avatarHash, dataExtension);
+                PublishItem<PayloadItem<DataExtension>> dataPublishItem = new PublishItem<>(
+                        DATA_NAMESPACE + "#" + memberId, dataItem);
+                PubSub dataPacket = PubSub.createPubsubPacket(groupChat.getContactJid().getBareJid(),
+                        IQ.Type.set, dataPublishItem, null);
+
+                connectionItem.createStanzaCollectorAndSend(dataPacket).nextResultOrThrow(60000);
+
+                MetadataInfo metadataInfo = new MetadataInfo(avatarHash,
+                        null, data.length, type.getValue(), height, width);
+                MetadataExtension metadataExtension = new MetadataExtension(
+                        Collections.singletonList(metadataInfo), null);
+                PayloadItem<MetadataExtension> metadataItem = new PayloadItem<>(avatarHash,
+                        metadataExtension);
+                PublishItem<PayloadItem<MetadataExtension>> metadataPublishItem = new PublishItem<>(
+                        METADATA_NAMESPACE + "#" + memberId, metadataItem);
+                PubSub metadataPacket = PubSub.createPubsubPacket(
+                        groupChat.getContactJid().getBareJid(), IQ.Type.set, metadataPublishItem,
+                        null);
+
+                connectionItem.createStanzaCollectorAndSend(metadataPacket).nextResultOrThrow(45000);
+
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
             }
         });
     }

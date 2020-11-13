@@ -8,8 +8,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,8 +26,9 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
+import com.xabber.android.data.extension.vcard.OnVCardListener;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
@@ -38,23 +39,26 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.activity.GroupStatusActivity;
 import com.xabber.android.ui.activity.GroupchatMemberActivity;
-import com.xabber.android.ui.activity.GroupchatSettingsActivity;
-import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.vcard.VCard;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
-        GroupchatMembersAdapter.OnMemberClickListener {
+        GroupchatMembersAdapter.OnMemberClickListener, OnVCardListener {
 
     private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
@@ -65,7 +69,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private AbstractChat groupChat;
     private Presence groupchatPresence;
 
-
     // members list
     private ViewGroup membersLayout;
     private GroupchatMembersAdapter membersAdapter;
@@ -73,27 +76,16 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private TextView membersHeader;
 
     private String filterString;
-    private AppCompatImageView membersFilterSearchIv;
     private AppCompatImageView membersFilterClearIv;
     private AppCompatEditText membersFilterEt;
-    private RelativeLayout membersFilterRootRl;
-
-    // settings layout
-    private ViewGroup settingsLayout;
-    private TextView invitationsCount;
-    private TextView blockedCount;
 
     // info layout
     private ViewGroup infoLayout;
     private ProgressBar infoProgress;
 
-    private TextView groupchatJidText;
-
     private ViewGroup groupchatStatusLayout;
     private TextView groupchatStatusText;
-
-    private ViewGroup groupchatNameLayout;
-    private TextView groupchatNameText;
+    private ImageView groupchatStatusIv;
 
     private ViewGroup groupchatDescriptionLayout;
     private TextView groupchatDescriptionText;
@@ -121,12 +113,14 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     public void onAttach(Context context) {
         super.onAttach(context);
         Application.getInstance().addUIListener(OnGroupchatRequestListener.class, this);
+        Application.getInstance().addUIListener(OnVCardListener.class, this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         Application.getInstance().removeUIListener(OnGroupchatRequestListener.class, this);
+        Application.getInstance().removeUIListener(OnVCardListener.class, this);
     }
 
     @Override
@@ -134,9 +128,9 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         super.onResume();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        if (groupChat instanceof GroupChat) {
-            updateChatSettings((GroupChat) groupChat);
-        }
+
+        VCardManager.getInstance().requestByUser(account, groupchatContact.getJid());
+
         requestLists();
 
         if (groupChat != null && groupChat instanceof GroupChat) {
@@ -177,7 +171,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_groupchat_info, container, false);
 
         membersLayout = view.findViewById(R.id.membersLayout);
@@ -189,11 +184,9 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         // info layout
         infoLayout = view.findViewById(R.id.infoLayout);
         infoProgress = view.findViewById(R.id.progressInfo);
-        groupchatJidText = view.findViewById(R.id.groupchat_jid_name);
         groupchatStatusLayout = view.findViewById(R.id.groupchat_status_layout);
         groupchatStatusText = view.findViewById(R.id.groupchat_status_name);
-        groupchatNameLayout = view.findViewById(R.id.groupchat_name_layout);
-        groupchatNameText = view.findViewById(R.id.groupchat_name);
+        groupchatStatusIv = view.findViewById(R.id.status_view);
         groupchatDescriptionLayout = view.findViewById(R.id.groupchat_description_layout);
         groupchatDescriptionText = view.findViewById(R.id.groupchat_description_name);
         groupchatIndexLayout = view.findViewById(R.id.groupchat_indexed_layout);
@@ -205,35 +198,17 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         setupFiltering(view);
 
-        settingsLayout = view.findViewById(R.id.settingsLayout);
-        view.findViewById(R.id.settingsButtonLayout).setOnClickListener(v ->
-                startActivity(GroupchatUpdateSettingsActivity.Companion
-                        .createOpenGroupchatSettingsIntentForGroupchat(account, groupchatContact)));
-
-        invitationsCount = view.findViewById(R.id.invitationsCount);
-        blockedCount = view.findViewById(R.id.blockedCount);
-        //restrictionsButton.setOnClickListener(this);
-
-        view.findViewById(R.id.invitationsButtonLayout).setOnClickListener(v ->
-                startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
-                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Invitations)));
-
-        view.findViewById(R.id.blockedButtonLayout).setOnClickListener(v ->
-                startActivity(GroupchatSettingsActivity.createIntent(getContext(), account,
-                        groupchatContact, GroupchatSettingsActivity.GroupchatSettingsType.Blocked)));
-
-
         membersList.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
-        membersAdapter = new GroupchatMembersAdapter(new ArrayList<>(), (GroupChat) ChatManager.getInstance().getChat(account, groupchatContact), this);
+        membersAdapter = new GroupchatMembersAdapter(new ArrayList<>(),
+                (GroupChat) ChatManager.getInstance().getChat(account, groupchatContact), this);
         membersList.setAdapter(membersAdapter);
 
         return view;
     }
 
     private void setupFiltering(View view) {
-        membersFilterRootRl = view.findViewById(R.id.search_root);
-        membersFilterSearchIv = view.findViewById(R.id.search_iv);
+        AppCompatImageView membersFilterSearchIv = view.findViewById(R.id.search_iv);
         membersFilterClearIv = view.findViewById(R.id.clear_iv);
         membersFilterEt = view.findViewById(R.id.search_et);
 
@@ -266,7 +241,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     @Override
     public void onMemberClick(GroupchatMember groupchatMember) {
-        Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(getActivity(),
+        Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(
+                getActivity(),
                 groupchatMember.getId(), (GroupChat) groupChat);
         startActivity(intent);
     }
@@ -274,8 +250,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        groupchatJidText.setText(groupchatContact.getBareJid());
 
         groupchatPresence = PresenceManager.getInstance().getPresence(account, groupchatContact);
         groupChat = ChatManager.getInstance().getChat(account, groupchatContact);
@@ -285,28 +259,21 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         } else {
             infoProgress.setVisibility(View.VISIBLE);
             infoLayout.setVisibility(View.GONE);
-            settingsLayout.setVisibility(View.GONE);
             membersLayout.setVisibility(View.GONE);
         }
     }
 
     private void requestLists() {
         GroupchatMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
-        GroupchatMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact);
-        GroupchatMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact);
         GroupchatMemberManager.getInstance().requestMe(account, groupchatContact);
         membersProgress.setVisibility(View.VISIBLE);
     }
 
     private void updateChatInfo(GroupChat groupChat) {
-        //GroupchatPresence groupchatPresence = GroupchatManager.getInstance().getGroupchatPresence(groupChat);
-        //if (groupchatPresence == null)
-        //    return;
 
         infoLayout.setVisibility(View.VISIBLE);
         infoProgress.setVisibility(View.GONE);
 
-        //GroupchatIndexType indexType = groupchatPresence.getIndex();
         GroupchatIndexType indexType = groupChat.getIndexType();
         if (indexType != null) {
             switch (indexType) {
@@ -355,12 +322,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             }
         } else groupchatAnonymityLayout.setVisibility(View.GONE);
 
-        String name = groupChat.getName();
-        if (name != null && !name.isEmpty()) {
-            groupchatNameText.setText(name);
-            groupchatNameLayout.setVisibility(View.VISIBLE);
-        } else groupchatNameLayout.setVisibility(View.GONE);
-
         String description = groupChat.getDescription();
         if (description != null && !description.isEmpty()) {
             groupchatDescriptionText.setText(description);
@@ -371,51 +332,31 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (status != null && !status.isEmpty()) {
             groupchatStatusText.setText(status);
             groupchatStatusLayout.setVisibility(View.VISIBLE);
+            StatusBadgeSetupHelper.INSTANCE.setupImageViewForChat(groupChat, groupchatStatusIv);
         } else groupchatStatusLayout.setVisibility(View.GONE);
 
         groupchatStatusLayout.setOnClickListener(v ->
                 startActivity(GroupStatusActivity.Companion.createIntent(getContext(), account,
                         groupchatContact)));
 
-        String presenceStatus = StringUtils.getDisplayStatusForGroupchat(
-                groupChat.getNumberOfMembers(),
-                groupChat.getNumberOfOnlineMembers(),
-                getContext());
-        if (presenceStatus != null) membersHeader.setText(presenceStatus);
-
-        settingsLayout.setVisibility(View.VISIBLE);
-        updateChatSettings(groupChat);
+        membersHeader.setText(groupChat.getNumberOfMembers() + " " + getResources().getQuantityString(R.plurals.groupchat_number_of_members, groupChat.getNumberOfMembers()));
+        membersHeader.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         membersLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void updateChatSettings(GroupChat groupChat) {
-        ArrayList<String> listOfInvites = groupChat.getListOfInvites();
-        if (listOfInvites != null) {
-            if (listOfInvites.isEmpty()) {
-                invitationsCount.setText("0");
-            } else {
-                invitationsCount.setText(String.valueOf(listOfInvites.size()));
-            }
-        }
-        ArrayList<GroupchatBlocklistItemElement> blockList = groupChat.getListOfBlockedElements();
-        if (blockList != null) {
-            if (blockList.isEmpty()) {
-                blockedCount.setText("0");
-            } else {
-                blockedCount.setText(String.valueOf(blockList.size()));
-            }
-        }
     }
 
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
             ArrayList<GroupchatMember> list = new ArrayList<>();
             if (filterString != null && !filterString.isEmpty()) {
-                for (GroupchatMember groupchatMember : GroupchatMemberManager.getInstance().getGroupchatMembers(groupchatContact))
+                for (GroupchatMember groupchatMember : GroupchatMemberManager.getInstance()
+                        .getGroupchatMembers(groupchatContact))
                     if (groupchatMember.getNickname().toLowerCase().contains(filterString)
-                            || groupchatMember.getNickname().toLowerCase().contains(StringUtils.translitirateToLatin(filterString))
-                            || (groupchatMember.getJid() != null && groupchatMember.getJid().toLowerCase().contains(filterString))
-                            || (groupchatMember.getJid() != null && groupchatMember.getJid().toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
+                            || groupchatMember.getNickname().toLowerCase()
+                                .contains(StringUtils.translitirateToLatin(filterString))
+                            || (groupchatMember.getJid() != null && groupchatMember.getJid()
+                                .toLowerCase().contains(filterString))
+                            || (groupchatMember.getJid() != null && groupchatMember.getJid()
+                                .toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
                         list.add(groupchatMember);
             } else list.addAll(GroupchatMemberManager.getInstance()
                     .getGroupchatMembers(groupchatContact));
@@ -438,7 +379,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onGroupchatMemberUpdated(AccountJid accountJid, ContactJid groupchatJid, String groupchatMemberId) {
+    public void onGroupchatMemberUpdated(AccountJid accountJid, ContactJid groupchatJid,
+                                         String groupchatMemberId) {
         if (isThisChat(accountJid, groupchatJid))
             Application.getInstance().runOnUiThread(this::updateViewsWithMemberList);
     }
@@ -450,22 +392,35 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid) {
-        if (isThisChat(account, groupchatJid))
-            updateChatSettings((GroupChat) groupChat);
+    public void onVCardReceived(AccountJid account, Jid jid, VCard vCard) {
+        if (account.toString().equals(this.account.toString())
+                && jid.toString().equals(this.groupchatContact.getJid().toString())){
+            ((GroupChat)groupChat).setDescription(vCard.getDescription());
+            ((GroupChat)groupChat).setPrivacyType(vCard.getPrivacyType());
+            ((GroupChat)groupChat).setIndexType(vCard.getIndexType());
+            ((GroupChat)groupChat).setMembershipType(vCard.getMembershipType());
+            ((GroupChat)groupChat).setName(vCard.getNickName());
+            ((GroupChat)groupChat).setNumberOfMembers(vCard.getMembersCount());
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
+            updateChatInfo(((GroupChat)groupChat));
+        }
     }
 
     @Override
-    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid) {
-        if (isThisChat(account, groupchatJid))
-            updateChatSettings((GroupChat) groupChat);
+    public void onVCardFailed(AccountJid account, Jid jid) {
+        //todo this
     }
 
     @Override
-    public void onGroupchatMemberRightsFormReceived(AccountJid accountJid, ContactJid groupchatJid,
-                                                    GroupchatMemberRightsReplyIQ iq) {
-        //todo {not implemented}
-    }
+    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid) { }
+
+    @Override
+    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid) { }
+
+    @Override
+    public void onGroupchatMemberRightsFormReceived(@NotNull AccountJid accountJid,
+                                                    @NotNull ContactJid groupchatJid,
+                                                    @NotNull GroupchatMemberRightsReplyIQ iq) { }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(
@@ -487,4 +442,5 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         void onListItemDeselected();
     }
+
 }

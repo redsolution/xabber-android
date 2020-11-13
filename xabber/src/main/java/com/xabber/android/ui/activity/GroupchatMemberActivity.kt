@@ -342,9 +342,9 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             try {
                 if (userAvatarManager.isSupportedByServer) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
                     //xep-0084 av
-                    avatarData = VCard.getBytes(URL(newAvatarImageUri.toString()))
-                    val sh1 = AvatarManager.getAvatarHash(avatarData)
-                    AvatarManager.getInstance().onAvatarReceived(accountJid?.fullJid?.asBareJid(), sh1, avatarData, "xep") //todo this
+//                    avatarData = VCard.getBytes(URL(newAvatarImageUri.toString()))
+//                    val sh1 = AvatarManager.getAvatarHash(avatarData)
+//                    AvatarManager.getInstance().onAvatarReceived(accountJid?.fullJid?.asBareJid(), sh1, avatarData, "xep") //todo this
                 }
             } catch (e: Exception) {
                 LogManager.exception(LOG_TAG, e)

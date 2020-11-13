@@ -172,7 +172,7 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
                 .getMembershipByLocalizedString(membershipTypeSp.selectedItem as String)
 
         val indexType = GroupchatIndexType
-                .getPrivacyByLocalizedString(indexTypeSp.selectedItem as String)
+                .getIndexTypeByLocalizedString(indexTypeSp.selectedItem as String)
 
         val privacyType: GroupchatPrivacyType = if (isIncognito) GroupchatPrivacyType.INCOGNITO
         else GroupchatPrivacyType.PUBLIC
