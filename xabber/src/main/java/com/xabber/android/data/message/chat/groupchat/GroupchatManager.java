@@ -18,6 +18,10 @@ import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
+import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
+import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener;
+import com.xabber.android.data.extension.groupchat.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
+import com.xabber.android.data.extension.groupchat.restrictions.RequestToChangeGroupDefaultRestrictionsIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsDataFormResultIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener;
@@ -273,6 +277,56 @@ public class GroupchatManager implements OnPacketListener {
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
                 for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                    listener.onError(groupChat);
+                }
+            }
+        });
+    }
+
+    public void requestGroupDefaultRestrictionsDataForm(GroupChat groupchat){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new RequestGroupDefaultRestrictionsDataFormIQ(groupchat.getContactJid()), packet -> {
+                            if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
+                                    && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
+                                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                    listener.onDataFormReceived(groupchat, ((GroupDefaultRestrictionsDataFormResultIQ) packet).getDataForm());
+                                }
+                        }, exception -> {
+                            for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                listener.onError(groupchat);
+                            }
+                        });
+
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                    listener.onError(groupchat);
+                }
+            }
+        });
+    }
+
+    public void requestSetGroupDefaultRestrictions(GroupChat groupChat, DataForm dataForm){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                        .sendIqWithResponseCallback(new RequestToChangeGroupDefaultRestrictionsIQ(groupChat.getContactJid(), dataForm), packet -> {
+                            if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
+                                    && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
+                                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                    listener.onSuccessful(groupChat);
+                                }
+                        }, exception -> {
+                            for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                listener.onError(groupChat);
+                            }
+                        });
+
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
                     listener.onError(groupChat);
                 }
             }

@@ -58,12 +58,10 @@ import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALL
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import com.xabber.android.utils.Utils
 import com.xabber.xmpp.avatar.UserAvatarManager
-import com.xabber.xmpp.vcard.VCard
 import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.net.URL
 import java.util.*
 
 class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,

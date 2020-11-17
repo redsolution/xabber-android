@@ -44,6 +44,12 @@
 
     <iqProvider>
         <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#default-rights</namespace>
+        <className>com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsResultIqProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#members</namespace>
         <className>com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultProvider</className>
     </iqProvider>

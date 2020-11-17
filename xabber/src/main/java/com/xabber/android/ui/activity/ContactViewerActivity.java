@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -164,7 +163,8 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
                 return true;
 
             case R.id.action_group_default_restrictions:
-                Toast.makeText(getApplicationContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                startActivity(GroupDefaultRestrictionsActivity.Companion.createIntent(this,
+                        getAccount(), getUser()));
                 return true;
 
             case R.id.action_group_invitations:

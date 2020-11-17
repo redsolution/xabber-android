@@ -1,4 +1,4 @@
-package com.xabber.android.ui.fragment.groups
+package com.xabber.android.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,26 +10,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.entity.AccountJid
-import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
+import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener
 import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
-import com.xabber.android.ui.activity.GroupchatMemberActivity
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.ui.activity.GroupDefaultRestrictionsActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
-import org.jivesoftware.smack.ExceptionCallback
-import org.jivesoftware.smack.StanzaListener
-import org.jivesoftware.smack.packet.IQ
-import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupchat: GroupChat)
-    : Fragment(), OnGroupchatRequestListener, RightsFormListAdapter.Listener,
-        StanzaListener, ExceptionCallback {
+class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragment(),
+        RightsFormListAdapter.Listener, GroupDefaultRestrictionsListener {
 
     var recyclerView: RecyclerView? = null
     var adapter: RightsFormListAdapter? = null
@@ -47,19 +38,20 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                groupchat.contactJid, groupchatMember)
+        GroupchatManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
+        if (activity != null && activity is GroupDefaultRestrictionsActivity)
+            (activity as GroupDefaultRestrictionsActivity).showProgressBar(true)
 
         return view
     }
 
     override fun onResume() {
-        Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
+        Application.getInstance().addUIListener(GroupDefaultRestrictionsListener::class.java, this)
         super.onResume()
     }
 
     override fun onPause() {
-        Application.getInstance().removeUIListener(OnGroupchatRequestListener::class.java, this)
+        Application.getInstance().removeUIListener(GroupDefaultRestrictionsListener::class.java, this)
         super.onPause()
     }
 
@@ -73,43 +65,31 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
 
     }
 
-    override fun processStanza(packet: Stanza?) {
-        if (packet is IQ && packet.type == IQ.Type.result) {
-            newFields.clear()
-            GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                    groupchat.contactJid, groupchatMember)
-            notifyActivityAboutNewFieldSizeChanged()
-        }
+    override fun onSuccessful(groupchat: GroupChat) {
+        newFields.clear()
+        GroupchatManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
+        notifyActivityAboutNewFieldSizeChanged()
+        if (activity != null && activity is GroupDefaultRestrictionsActivity)
+            (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
     }
 
-    override fun processException(exception: Exception?) {
+    override fun onError(groupchat: GroupChat) {
         Toast.makeText(context, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
+        if (activity != null && activity is GroupDefaultRestrictionsActivity)
+            (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
     }
 
-    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
+    override fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm) {
+        Application.getInstance().runOnUiThread {
 
-    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
-
-    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
-
-    override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) {}
-
-    override fun onGroupchatMemberUpdated(accountJid: AccountJid?, groupchatJid: ContactJid?, groupchatMemberId: String?) {}
-
-    override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid,
-                                                     groupchatJid: ContactJid,
-                                                     iq: GroupchatMemberRightsReplyIQ) {
-
-        for (field in iq.dataFrom!!.fields)
-            if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
-                    && groupchatMember.id == field.values[0]) {
-                oldDataForm = iq.dataFrom
-                Application.getInstance().runOnUiThread {
-                    setupRecyclerViewWithDataForm(iq.dataFrom!!)
-                }
-                break
+            if (groupchat == this.groupchat) {
+                oldDataForm = dataForm
+                setupRecyclerViewWithDataForm(dataForm)
             }
 
+            if (activity != null && activity is GroupDefaultRestrictionsActivity)
+                (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
+        }
     }
 
     override fun onOptionPicked(field: FormField, option: FormField.Option?, isChecked: Boolean) {
@@ -146,8 +126,10 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
     }
 
     private fun notifyActivityAboutNewFieldSizeChanged() {
-        if (activity != null && activity is GroupchatMemberActivity)
-            (activity as GroupchatMemberActivity).onNewMemberRightsFormFieldChanged(newFields.size)
+        Application.getInstance().runOnUiThread {
+            if (activity != null && activity is GroupDefaultRestrictionsActivity)
+                (activity as GroupDefaultRestrictionsActivity).showToolbarMenu(newFields.isNotEmpty())
+        }
     }
 
     private fun createNewDataFrom(): DataForm {
@@ -178,11 +160,11 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         return newDataForm
     }
 
-    fun sendSaveRequest() = GroupchatMemberManager.getInstance()
-            .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom(), this, this)
+    fun sendSaveRequest() = GroupchatManager.getInstance()
+            .requestSetGroupDefaultRestrictions(groupchat, createNewDataFrom())
 
     companion object {
-        const val TAG = "com.xabber.android.ui.fragment.GroupchatMemberInfoFragment"
+        const val TAG = "com.xabber.android.ui.fragment.GroupDefaultRestrictionsFragment"
     }
 
 }

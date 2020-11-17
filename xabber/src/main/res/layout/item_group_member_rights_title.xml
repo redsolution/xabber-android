@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/contact_list_background">
+    android:background="@color/transparent">
 
     <TextView
         android:id="@+id/item_group_member_rights_title_tv"

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.adapter.groups.members
+package com.xabber.android.ui.adapter.groups.rights
 
 import android.view.View
 import android.widget.CheckBox
@@ -8,14 +8,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.ui.dialog.OptionPickerDialog
-import com.xabber.android.utils.StringUtils
 import org.jivesoftware.smackx.xdata.FormField
 
-abstract class GroupMemberRightsVH(itemView: View) : RecyclerView.ViewHolder(itemView)
+abstract class GroupRightsVH(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-class HiddenVH(itemView: View) : GroupMemberRightsVH(itemView)
+class HiddenVH(itemView: View) : GroupRightsVH(itemView)
 
-class TitleVH(itemView: View) : GroupMemberRightsVH(itemView) {
+class TitleVH(itemView: View) : GroupRightsVH(itemView) {
 
     private val titleTv = itemView.findViewById<TextView>(R.id.item_group_member_rights_title_tv)
 
@@ -26,7 +25,7 @@ class TitleVH(itemView: View) : GroupMemberRightsVH(itemView) {
 
 }
 
-class FieldVH(itemView: View, val listener: Listener) : GroupMemberRightsVH(itemView),
+class FieldVH(itemView: View, val listener: Listener) : GroupRightsVH(itemView),
         OptionPickerDialog.OptionPickerDialogListener {
 
     private val fieldTitleTv = itemView.findViewById<TextView>(R.id.item_group_member_rights_field_tv)
@@ -43,7 +42,7 @@ class FieldVH(itemView: View, val listener: Listener) : GroupMemberRightsVH(item
         if (field.values != null && field.values.size > 0){
             checkBox.isChecked = true
             if (field.values[0] != "0") {
-                timeTv.text = StringUtils.getStringForGroupMemberRights(field.values[0].toLong())
+                timeTv.text = field.values[0]
                 timeTv.visibility = View.VISIBLE
             }
         }

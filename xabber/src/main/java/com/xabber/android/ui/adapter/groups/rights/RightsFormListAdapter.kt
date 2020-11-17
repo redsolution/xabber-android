@@ -1,4 +1,4 @@
-package com.xabber.android.ui.adapter.groups.members
+package com.xabber.android.ui.adapter.groups.rights
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +10,10 @@ import com.xabber.android.R
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupMemberRightsFormListAdapter(private val dataForm: DataForm, val color: Int,
-                                       private val supportFragmentManager: FragmentManager,
-                                       val listener: Listener) : FieldVH.Listener,
-        RecyclerView.Adapter<GroupMemberRightsVH>() {
+class RightsFormListAdapter(private val dataForm: DataForm, val color: Int,
+                            private val supportFragmentManager: FragmentManager,
+                            val listener: Listener) : FieldVH.Listener,
+        RecyclerView.Adapter<GroupRightsVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
@@ -31,7 +31,7 @@ class GroupMemberRightsFormListAdapter(private val dataForm: DataForm, val color
             }
 
 
-    override fun onBindViewHolder(holder: GroupMemberRightsVH, position: Int) {
+    override fun onBindViewHolder(holder: GroupRightsVH, position: Int) {
         when (holder.itemViewType) {
             TITLE_VIEW_TYPE -> (holder as TitleVH).bind(dataForm.fields[position].values[0], color)
             FIELD_VIEW_TYPE -> (holder as FieldVH).bind(dataForm.fields[position], supportFragmentManager)

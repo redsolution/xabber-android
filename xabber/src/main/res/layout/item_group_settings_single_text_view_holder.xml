@@ -59,7 +59,7 @@
                 android:id="@+id/group_settings_line_view"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/grey_800"/>
+                android:background="@color/grey_600"/>
 
         </LinearLayout>
 
