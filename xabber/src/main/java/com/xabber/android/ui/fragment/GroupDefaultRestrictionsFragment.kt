@@ -55,8 +55,16 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
         super.onPause()
     }
 
+    private fun DataForm.removeFixedFields(): DataForm{
+        val result = DataForm(this.type)
+        for (field in this.fields)
+            if (field.type != FormField.Type.fixed)
+                result.addField(field)
+        return result
+    }
+
     private fun setupRecyclerViewWithDataForm(dataForm: DataForm) {
-        adapter = RightsFormListAdapter(dataForm,
+        adapter = RightsFormListAdapter(dataForm.removeFixedFields(),
                 ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
                 fragmentManager!!, this)
 
