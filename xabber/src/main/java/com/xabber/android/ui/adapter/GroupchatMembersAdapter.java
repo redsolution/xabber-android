@@ -22,8 +22,8 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
         implements View.OnClickListener {
 
     private ArrayList<GroupchatMember> groupchatMembers;
-    private GroupChat chat;
-    private OnMemberClickListener listener;
+    private final GroupChat chat;
+    private final OnMemberClickListener listener;
     private RecyclerView recyclerView;
 
     public GroupchatMembersAdapter(ArrayList<GroupchatMember> groupchatMembers, GroupChat chat,

@@ -20,6 +20,8 @@
     <string name="groupchat_role">Role</string>
     <string name="groupchat_member_permissions">Permissions</string>
 
+    <string name="groupchat_search_members">Search members</string>
+
     <plurals name="groupchat_number_of_members">
         <item quantity="one">member</item>
         <item quantity="zero">members</item>

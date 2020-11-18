@@ -111,10 +111,6 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
-    override fun onGroupchatMemberRightsFormReceived(accountJid: AccountJid, groupchatJid: ContactJid,
-                                                     iq: GroupchatMemberRightsReplyIQ) {
-    }
-
     override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
         if (account == groupchat?.account && groupchatJid == groupchat?.contactJid)
             setupNameBlock()

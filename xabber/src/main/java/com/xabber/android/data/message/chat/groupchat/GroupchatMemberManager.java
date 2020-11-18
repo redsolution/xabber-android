@@ -29,6 +29,7 @@ import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorLis
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
+import com.xabber.android.data.extension.groupchat.rights.GroupMemberRightsListener;
 import com.xabber.android.data.extension.groupchat.rights.GroupRequestMemberRightsChangeIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
@@ -41,7 +42,6 @@ import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 
-import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -694,16 +694,22 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         });
     }
 
-    public void requestGroupchatMemberRightsChange(GroupChat groupChat, DataForm dataForm,
-                                                   StanzaListener stanzaListener,
-                                                   ExceptionCallback exceptionCallback){
+    public void requestGroupchatMemberRightsChange(GroupChat groupChat, DataForm dataForm){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(
-                                groupChat.getContactJid(), dataForm), stanzaListener, exceptionCallback);
+                                groupChat.getContactJid(), dataForm), packet -> {
+                            for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                                listener.onSuccessfullyChanges(groupChat);
+
+                        }, exception -> {
+                            for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                                listener.onError(groupChat);
+                        });
             } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
+                for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                    listener.onError(groupChat);
             }
         });
     }
@@ -743,9 +749,9 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         @Override
         public void processStanza(Stanza packet) {
             if (packet instanceof GroupchatMemberRightsReplyIQ){
-                for (OnGroupchatRequestListener listener :
-                        Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                    listener.onGroupchatMemberRightsFormReceived(account, groupchatJid, (GroupchatMemberRightsReplyIQ) packet);
+                for (GroupMemberRightsListener listener :
+                        Application.getInstance().getUIListeners(GroupMemberRightsListener.class)) {
+                    listener.onGroupchatMemberRightsFormReceived(((GroupChat)ChatManager.getInstance().getChat(account, groupchatJid)), (GroupchatMemberRightsReplyIQ) packet);
                 }
             }
         }

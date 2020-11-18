@@ -3,8 +3,6 @@ package com.xabber.android.ui.fragment.groups;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +22,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -44,13 +39,11 @@ import com.xabber.android.ui.activity.GroupStatusActivity;
 import com.xabber.android.ui.activity.GroupchatMemberActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.vcard.VCard;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 
@@ -74,10 +67,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private GroupchatMembersAdapter membersAdapter;
     private ProgressBar membersProgress;
     private TextView membersHeader;
-
-    private String filterString;
-    private AppCompatImageView membersFilterClearIv;
-    private AppCompatEditText membersFilterEt;
 
     // info layout
     private ViewGroup infoLayout;
@@ -196,8 +185,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         groupchatMembershipLayout = view.findViewById(R.id.groupchat_membership_layout);
         groupchatMembershipText = view.findViewById(R.id.groupchat_membership_name);
 
-        setupFiltering(view);
-
         membersList.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
         membersAdapter = new GroupchatMembersAdapter(new ArrayList<>(),
@@ -205,38 +192,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         membersList.setAdapter(membersAdapter);
 
         return view;
-    }
-
-    private void setupFiltering(View view) {
-        AppCompatImageView membersFilterSearchIv = view.findViewById(R.id.search_iv);
-        membersFilterClearIv = view.findViewById(R.id.clear_iv);
-        membersFilterEt = view.findViewById(R.id.search_et);
-
-        membersFilterClearIv.setOnClickListener(v -> membersFilterEt.setText(""));
-
-        membersFilterSearchIv.setOnClickListener(v -> membersFilterEt.requestFocus());
-
-        membersFilterEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s != null && s.length() > 0) {
-                    membersFilterClearIv.setVisibility(View.VISIBLE);
-                    filterString = s.toString().toLowerCase();
-                } else {
-                    filterString = "";
-                    membersFilterClearIv.setVisibility(View.GONE);
-                }
-                updateViewsWithMemberList();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
     }
 
     @Override
@@ -346,19 +301,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
-            ArrayList<GroupchatMember> list = new ArrayList<>();
-            if (filterString != null && !filterString.isEmpty()) {
-                for (GroupchatMember groupchatMember : GroupchatMemberManager.getInstance()
-                        .getGroupchatMembers(groupchatContact))
-                    if (groupchatMember.getNickname().toLowerCase().contains(filterString)
-                            || groupchatMember.getNickname().toLowerCase()
-                                .contains(StringUtils.translitirateToLatin(filterString))
-                            || (groupchatMember.getJid() != null && groupchatMember.getJid()
-                                .toLowerCase().contains(filterString))
-                            || (groupchatMember.getJid() != null && groupchatMember.getJid()
-                                .toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
-                        list.add(groupchatMember);
-            } else list.addAll(GroupchatMemberManager.getInstance()
+
+            ArrayList<GroupchatMember> list = new ArrayList<>(GroupchatMemberManager.getInstance()
                     .getGroupchatMembers(groupchatContact));
 
             Collections.sort(list, (o1, o2) -> {
@@ -416,11 +360,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     @Override
     public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid) { }
-
-    @Override
-    public void onGroupchatMemberRightsFormReceived(@NotNull AccountJid accountJid,
-                                                    @NotNull ContactJid groupchatJid,
-                                                    @NotNull GroupchatMemberRightsReplyIQ iq) { }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(

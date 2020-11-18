@@ -19,7 +19,5 @@ public interface OnGroupchatRequestListener extends BaseUIListener {
 
     void onMeReceived(AccountJid accountJid, ContactJid groupchatJid);
 
-    void onGroupchatMemberRightsFormReceived(@Nonnull AccountJid accountJid, @NonNull ContactJid groupchatJid, @NonNull GroupchatMemberRightsReplyIQ iq);
-
     void onGroupchatMemberUpdated(AccountJid accountJid, ContactJid groupchatJid, String groupchatMemberId);
 }

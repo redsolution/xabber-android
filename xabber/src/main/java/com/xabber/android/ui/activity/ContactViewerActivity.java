@@ -177,6 +177,10 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
                         getUser(), GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
                 return true;
 
+            case R.id.action_search_members:
+                startActivity(FilterGroupMembersActivity.Companion.createIntent(this,
+                        getAccount(), getUser()));
+
             default:
                 return super.onOptionsItemSelected(item);
         }
