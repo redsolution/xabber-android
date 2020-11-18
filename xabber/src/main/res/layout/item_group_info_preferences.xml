@@ -24,6 +24,15 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/groupchat_anonymity_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="@string/groupchat_none_group"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
                 <LinearLayout
                     android:id="@+id/groupchat_description_layout"
                     android:layout_width="match_parent"
@@ -99,47 +108,6 @@
                             android:layout_height="wrap_content"
                             android:singleLine="true"
                             android:text="@string/groupchat_index"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:textSize="@dimen/vcard_secondary_text" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/groupchat_anonymity_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="72dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/groupchat_anonymity_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="No"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="@dimen/vcard_main_text" />
-
-                        <TextView
-                            android:id="@+id/groupchat_anonymity_hint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:singleLine="true"
-                            android:text="@string/groupchat_group_type"
                             android:textColor="?android:attr/textColorSecondary"
                             android:textSize="@dimen/vcard_secondary_text" />
 

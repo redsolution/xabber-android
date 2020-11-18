@@ -65,6 +65,10 @@
     <string name="groupchat_privacy_type_incognito">Incognito</string>
     <string name="groupchat_privacy_type_public">Public</string>
 
+    <string name="groupchat_public_group">Public group</string>
+    <string name="groupchat_incognito_group">Incognito group</string>
+    <string name="groupchat_none_group">None group</string>
+
     <string name="groupchat_invite_reason_dialog_title">Reason</string>
     <string name="groupchat_invite_reason_dialog_message">Write a reason to go along with the invitation</string>
     <string name="groupchat_long_press_for_select_multiple_contacts">Long press for select multiple accounts</string>

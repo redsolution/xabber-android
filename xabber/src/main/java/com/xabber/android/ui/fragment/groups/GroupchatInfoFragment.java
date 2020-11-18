@@ -82,7 +82,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private ViewGroup groupchatIndexLayout;
     private TextView groupchatIndexText;
 
-    private ViewGroup groupchatAnonymityLayout;
     private TextView groupchatAnonymityText;
 
     private ViewGroup groupchatMembershipLayout;
@@ -180,7 +179,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         groupchatDescriptionText = view.findViewById(R.id.groupchat_description_name);
         groupchatIndexLayout = view.findViewById(R.id.groupchat_indexed_layout);
         groupchatIndexText = view.findViewById(R.id.groupchat_indexed_name);
-        groupchatAnonymityLayout = view.findViewById(R.id.groupchat_anonymity_layout);
         groupchatAnonymityText = view.findViewById(R.id.groupchat_anonymity_name);
         groupchatMembershipLayout = view.findViewById(R.id.groupchat_membership_layout);
         groupchatMembershipText = view.findViewById(R.id.groupchat_membership_name);
@@ -261,21 +259,18 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             }
         } else groupchatMembershipLayout.setVisibility(View.GONE);
         GroupchatPrivacyType privacyType = groupChat.getPrivacyType();
+        groupchatAnonymityText.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         if (privacyType != null) {
             switch (privacyType) {
                 case PUBLIC:
-                    groupchatAnonymityText.setText(getContext().getString(R.string.groupchat_privacy_type_public));
-                    groupchatAnonymityLayout.setVisibility(View.VISIBLE);
+                    groupchatAnonymityText.setText(getContext().getString(R.string.groupchat_public_group));
                     break;
                 case INCOGNITO:
-                    groupchatAnonymityText.setText(getString(R.string.groupchat_privacy_type_incognito));
-                    groupchatAnonymityLayout.setVisibility(View.VISIBLE);
+                    groupchatAnonymityText.setText(getString(R.string.groupchat_incognito_group));
                     break;
                 case NONE:
-                default:
-                    groupchatAnonymityLayout.setVisibility(View.GONE);
             }
-        } else groupchatAnonymityLayout.setVisibility(View.GONE);
+        } else groupchatAnonymityText.setVisibility(View.GONE);
 
         String description = groupChat.getDescription();
         if (description != null && !description.isEmpty()) {
