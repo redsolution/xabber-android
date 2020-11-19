@@ -157,12 +157,11 @@ public class GroupchatManager implements OnPacketListener {
 
                     NextMamManager.getInstance().requestSingleMessageAsync(connection,
                             groupChat, presence.getPinnedMessageId());
-                } else groupChat.setPinnedMessageId(presence.getPinnedMessageId());
+                }
+                groupChat.setPinnedMessageId(presence.getPinnedMessageId());
             }
 
             groupChat.setName(presence.getName());
-            groupChat.setPrivacyType(presence.getPrivacy());
-            groupChat.setNumberOfMembers(presence.getAllMembers());
             groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
 
             EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));

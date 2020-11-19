@@ -21,7 +21,10 @@
             android:layout_marginTop="16dp"/>
 
         <include
-            layout="@layout/item_group_info_members"/>
+            layout="@layout/item_group_info_members"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

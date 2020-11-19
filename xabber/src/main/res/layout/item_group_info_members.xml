@@ -26,7 +26,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="999 MEMBERS, 1 ONLINE"
                     android:textSize="14sp"
                     android:textStyle="bold" />

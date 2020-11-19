@@ -89,15 +89,15 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 filterString = p0.toString()
                 if (p0.isNullOrEmpty()) {
-                    arrowBackIv.visibility = View.VISIBLE
                     clearIv.visibility = View.GONE
                 } else {
-                    arrowBackIv.visibility = View.GONE
                     clearIv.visibility = View.VISIBLE
                 }
                 updateRecyclerView()
             }
         })
+
+        editText.requestFocus()
 
     }
 

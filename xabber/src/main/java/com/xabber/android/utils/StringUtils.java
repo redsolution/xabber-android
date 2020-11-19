@@ -68,7 +68,7 @@ public class StringUtils {
                 DateFormat.SHORT);
         TIME = new SimpleDateFormat("HH:mm:ss");
         timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
-        groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'Z'HH:mm:ss");
+        groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         groupchatMemberPresenceTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 

@@ -74,11 +74,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
     }
 
     override fun onSuccessful(groupchat: GroupChat) {
-        newFields.clear()
-        GroupchatManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
-        notifyActivityAboutNewFieldSizeChanged()
-        if (activity != null && activity is GroupDefaultRestrictionsActivity)
-            (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
+        activity?.finish()
     }
 
     override fun onError(groupchat: GroupChat) {

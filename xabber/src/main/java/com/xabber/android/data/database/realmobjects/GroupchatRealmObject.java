@@ -131,8 +131,10 @@ public class GroupchatRealmObject extends RealmObject {
     public GroupchatIndexType getIndex() {
         if (index != null) {
             switch (index) {
+                case "GLOBAL":
                 case "global":
                     return GroupchatIndexType.GLOBAL;
+                case "LOCAL":
                 case "local":
                     return GroupchatIndexType.LOCAL;
                 default:
@@ -150,9 +152,11 @@ public class GroupchatRealmObject extends RealmObject {
     public GroupchatMembershipType getMembership() {
         if (membership != null) {
             switch (membership) {
+                case "OPEN":
                 case "open":
                     return GroupchatMembershipType.OPEN;
                 case "memberOnly":
+                case "MEMBER_ONLY":
                     return GroupchatMembershipType.MEMBER_ONLY;
                 default:
                     return GroupchatMembershipType.NONE;

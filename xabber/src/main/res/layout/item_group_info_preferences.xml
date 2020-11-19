@@ -28,7 +28,9 @@
                     android:id="@+id/groupchat_anonymity_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="8dp"
                     android:text="@string/groupchat_none_group"
                     android:textSize="14sp"
                     android:textStyle="bold" />
