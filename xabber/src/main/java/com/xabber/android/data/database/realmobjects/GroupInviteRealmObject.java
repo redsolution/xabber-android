@@ -9,7 +9,7 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-class GroupInviteRealmObject extends RealmObject {
+public class GroupInviteRealmObject extends RealmObject {
 
     private static final String LOG_TAG = GroupInviteRealmObject.class.getSimpleName();
     public static class Fields {
@@ -24,7 +24,7 @@ class GroupInviteRealmObject extends RealmObject {
     }
 
     @PrimaryKey
-    private final String id;
+    private String id;
 
     private String accountJid;
     private String groupJid;
