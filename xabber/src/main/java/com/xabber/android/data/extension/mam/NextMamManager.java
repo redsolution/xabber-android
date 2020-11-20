@@ -425,11 +425,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 updateLastMessageId(chat, realm);
                 chat.setHistoryRequestedWithoutRealm(true);
             }
-            Application.getInstance().runOnUiThread(() -> {
-                for (AbstractChat chat : chatsNeedUpdateLastMessageId) {
-                    chat.requestSaveToRealm();
-                }
-            });
+            for (AbstractChat chat : chatsNeedUpdateLastMessageId) {
+                ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat);
+            }
         }
     }
 

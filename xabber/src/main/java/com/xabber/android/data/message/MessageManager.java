@@ -40,6 +40,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
@@ -116,10 +117,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
     /**
      * Sends message. Creates and registers new chat if necessary.
-     *
-     * @param account
-     * @param user
-     * @param text
      */
     public void sendMessage(AccountJid account, ContactJid user, String text) {
         sendMessage(account, user, text, null);
@@ -256,14 +253,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     public void updateMessageWithError(final String messageId, final String errorDescription) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransactionAsync(realm1 -> {
-                updateMessageWithError(realm1, messageId, errorDescription);
-            });
+            realm.executeTransactionAsync(realm1 -> updateMessageWithError(realm1, messageId, errorDescription));
         } else {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransaction(realm1 ->  {
-                updateMessageWithError(realm1, messageId, errorDescription);
-            });
+            realm.executeTransaction(realm1 -> updateMessageWithError(realm1, messageId, errorDescription));
             realm.close();
         }
     }
@@ -306,9 +299,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
     /**
      * Removes all messages from chat.
-     *
-     * @param account
-     * @param user
      */
     public void clearHistory(final AccountJid account, final ContactJid user) {
         final long startTime = System.currentTimeMillis();
@@ -371,13 +361,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         });
     }
 
-
     /**
      * Called on action settings change.
      */
-    public void onSettingsChanged() {
-
-    }
+    public void onSettingsChanged() {}
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
@@ -393,12 +380,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             return;
         }
         boolean processed = false;
-        if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
-            AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
-            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE) &&
-                    abstractChat instanceof RegularChat){
-                ChatManager.getInstance().removeChat(abstractChat);
-                ChatManager.getInstance().createGroupChat(account, contactJid);
+        if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)){
+            if (stanza.hasExtension(IncomingInviteExtensionElement.INVITE_ELEMENT,
+                    IncomingInviteExtensionElement.NAMESPACE)){
+                LogManager.i(LOG_TAG, "Incoming group invite detected");
+                //todo create group chat
+                //todo create invite message
+            }
+            else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
+                AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
+                if (abstractChat instanceof RegularChat){
+                    ChatManager.getInstance().removeChat(abstractChat);
+                    ChatManager.getInstance().createGroupChat(account, contactJid);
+                }
             }
         }
 
@@ -452,7 +446,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                             PresenceManager.getInstance().handleSubscriptionRequest(account, contactJid);
                             sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_correct));
-                            return;
                         } else {
                             // captcha solved unsuccessfully
                             // increment attempt count
@@ -460,14 +453,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                             // send warning-message
                             sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_incorrect));
-                            return;
                         }
                     } else {
                         // no captcha exist and user not from roster
                         sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                 Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                         // and skip received message as spam
-                        return;
                     }
 
                 } else {
@@ -476,8 +467,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                     sendMessageWithoutChat(contactJid.getJid(), thread, account,
                             Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                     // and skip received message as spam
-                    return;
                 }
+                return;
             }
             if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE))
                 ChatManager.getInstance().createGroupChat(account, contactJid).onPacket(contactJid, stanza, false);
@@ -578,7 +569,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             return;
         }
 
-        ContactJid companion = null;
+        ContactJid companion;
         try {
             companion = ContactJid.from(message.getFrom()).getBareUserJid();
         } catch (ContactJid.UserJidCreateException e) {
@@ -636,4 +627,5 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         });
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
+
 }

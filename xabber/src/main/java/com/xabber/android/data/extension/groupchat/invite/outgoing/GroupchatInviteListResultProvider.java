@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat.invite;
+package com.xabber.android.data.extension.groupchat.invite.outgoing;
 
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;

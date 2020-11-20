@@ -60,6 +60,7 @@ import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -114,7 +115,7 @@ public abstract class AbstractChat extends BaseEntity implements
     private int lastPosition;
     private boolean archived;
     private NotificationState notificationState;
-    private Set<String> waitToMarkAsRead = new HashSet<>();
+    private final Set<String> waitToMarkAsRead = new HashSet<>();
     private MessageRealmObject lastMessage;
     private RealmResults<MessageRealmObject> messages;
     private RealmResults<MessageRealmObject> unreadMessages;
@@ -147,7 +148,6 @@ public abstract class AbstractChat extends BaseEntity implements
         if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
 
         stanzaId = UniqStanzaHelper.getOriginId(message);
-        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
 
         return stanzaId;
     }
@@ -462,7 +462,7 @@ public abstract class AbstractChat extends BaseEntity implements
         if (groupchatUserId != null)
             messageRealmObject.setGroupchatUserId(groupchatUserId);
         if (isGroupchatSystem){
-            messageRealmObject.setGroupchatSystem(isGroupchatSystem);
+            messageRealmObject.setGroupchatSystem(true);
             messageRealmObject.setRead(true);
         }
 
@@ -571,10 +571,6 @@ public abstract class AbstractChat extends BaseEntity implements
     @Nullable
     public synchronized MessageRealmObject getLastMessage() {
         return lastMessage;
-    }
-
-    public void setLastMessage(MessageRealmObject lastMessage) {
-        this.lastMessage = lastMessage;
     }
 
     private void updateLastMessage() {
@@ -800,16 +796,17 @@ public abstract class AbstractChat extends BaseEntity implements
             spans.add(new Pair<>(encodedStartIndex, encodedEndIndex));
         }
 
-        for (Pair span : spans) {
-            message.addExtension(new Markup(
-                    begin + (int) span.first,
-                    begin + (int) span.second,
-                    false,
-                    false,
-                    false,
-                    false,
-                    true,
-                    null)
+        for (Pair<Integer, Integer> span : spans) {
+            if (span.first != null && span.second != null)
+                message.addExtension(new Markup(
+                        begin + span.first,
+                        begin + span.second,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true,
+                        null)
             );
         }
     }
@@ -973,8 +970,6 @@ public abstract class AbstractChat extends BaseEntity implements
     /**
      * Processes incoming packet.
      *
-     * @param contactJid
-     * @param packet
      * @return Whether packet was directed to this chat.
      */
     public boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
@@ -988,14 +983,14 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     /**
-     * Disconnection occured.
+     * Disconnection occurred.
      */
     void onDisconnect() {
         setLastMessageId(null);
     }
 
     @Override
-    public void onChange(RealmResults<MessageRealmObject> messageRealmObjects) {
+    public void onChange(@NotNull RealmResults<MessageRealmObject> messageRealmObjects) {
         updateLastMessage();
     }
 
@@ -1005,7 +1000,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public String getFirstUnreadMessageId() {
         String id = null;
-        RealmResults<MessageRealmObject> results = getAllUnreadAscending();
+        RealmResults<MessageRealmObject> results = getAllUnreadMessages();
         if (results != null && !results.isEmpty()) {
             MessageRealmObject firstUnreadMessage = results.first();
             if (firstUnreadMessage != null)
@@ -1034,14 +1029,19 @@ public abstract class AbstractChat extends BaseEntity implements
         });
     }
 
-    public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        executeRead(messageId, stanzaId, trySendDisplay);
-    }
-
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
         EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
         BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,
                 trySendDisplay);
+    }
+
+    private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
+        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
+        BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
+    }
+
+    public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+        executeRead(messageId, stanzaId, trySendDisplay);
     }
 
     public void markAsRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
@@ -1056,7 +1056,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public void markAsReadAll(boolean trySendDisplay) {
         LogManager.d(LOG_TAG, "executing markAsReadAll");
-        RealmResults<MessageRealmObject> results = getAllUnreadAscending();
+        RealmResults<MessageRealmObject> results = getAllUnreadMessages();
         if (results != null && !results.isEmpty()) {
             for (MessageRealmObject message : results) {
                 waitToMarkAsRead.add(message.getUniqueId());
@@ -1064,11 +1064,6 @@ public abstract class AbstractChat extends BaseEntity implements
             MessageRealmObject lastMessage = results.last();
             if (lastMessage != null) executeRead(lastMessage, trySendDisplay);
         }
-    }
-
-    private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
-        BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
     }
 
     private RealmResults<MessageRealmObject> getAllUnreadMessages() {
@@ -1088,14 +1083,6 @@ public abstract class AbstractChat extends BaseEntity implements
         }
         return unreadMessages;
     }
-
-    private RealmResults<MessageRealmObject> getAllUnreadAscending() {
-        return getAllUnreadMessages();
-    }
-
-    /**
-     * ^ UNREAD MESSAGES ^
-     */
 
     public boolean isArchived() {
         return archived;
@@ -1187,8 +1174,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return forwardedIds;
     }
 
-    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp,
-                                                String parentMessageId);
+    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId);
 
     public String getLastMessageId() {
         return lastMessageId;
@@ -1219,17 +1205,4 @@ public abstract class AbstractChat extends BaseEntity implements
         this.historyRequestedAtStart = isHistoryRequested;
     }
 
-    public void requestSaveToRealm() {
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
-    }
-
-    public void setChatstate(int chatstateType) {
-    }
-
-    public static class ChatstateType {
-        public static final int NORMAL = 0;
-        public static final int CLEARED_HISTORY = 1;
-        public static final int DELETED = 2;
-
-    }
 }

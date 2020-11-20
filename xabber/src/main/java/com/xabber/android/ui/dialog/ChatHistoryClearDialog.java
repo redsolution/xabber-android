@@ -17,8 +17,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.rrr.RewriteManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -80,7 +80,6 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
         if (v.getId() == R.id.clear) {
             AbstractChat chat = ChatManager.getInstance().getChat(account, user);
             if (chat != null) {
-                chat.setChatstate((AbstractChat.ChatstateType.CLEARED_HISTORY));
                 chat.setLastActionTimestamp();
             }
             if (RewriteManager.getInstance().isSupported(account))

@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat.invite;
+package com.xabber.android.data.extension.groupchat.invite.outgoing;
 
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;

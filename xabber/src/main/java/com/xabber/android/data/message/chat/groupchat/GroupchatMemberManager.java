@@ -22,11 +22,11 @@ import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResul
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistUnblockIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListQueryIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListResultIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteListRevokeIQ;
-import com.xabber.android.data.extension.groupchat.invite.GroupchatInviteRequestIQ;
-import com.xabber.android.data.extension.groupchat.invite.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListQueryIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListResultIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListRevokeIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteRequestIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
