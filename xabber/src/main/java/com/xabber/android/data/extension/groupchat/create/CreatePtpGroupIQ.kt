@@ -27,7 +27,7 @@ class CreatePtpGroupIQ(private val groupchat: GroupChat, private val memberId: S
             closeElement(PEER_TO_PEER_ELEMENT)
         }
 
-        override fun getNamespace() = ""
+        override fun getNamespace() = null
 
         override fun getElementName() = PEER_TO_PEER_ELEMENT
 

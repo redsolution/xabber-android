@@ -522,6 +522,9 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                                     LogManager.exception(LOG_TAG, e);
                                 }
                             }
+                        }, exception -> {
+                            LogManager.e(LOG_TAG, "Exception while creating direct chat \n");
+                            exception.printStackTrace();
                         });
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
