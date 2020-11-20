@@ -1,5 +1,6 @@
 package com.xabber.android.data.message.chat.groupchat;
 
+import android.content.Context;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -37,6 +38,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
@@ -518,6 +520,8 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                                     PresenceManager.getInstance().addAutoAcceptSubscription(account, contactJid);
                                     PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
                                     PresenceManager.getInstance().requestSubscription(account, contactJid);
+                                    Context context = Application.getInstance().getApplicationContext();
+                                    context.startActivity(ChatActivity.createSendIntent(context, groupChat.getAccount(), contactJid, null));
                                 } catch (Exception e){
                                     LogManager.exception(LOG_TAG, e);
                                 }
