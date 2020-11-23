@@ -7,33 +7,39 @@ import org.jivesoftware.smack.util.XmlStringBuilder
 
 class IncomingInviteExtensionElement: ExtensionElement {
 
-    var jid: String? = ""
+    var groupJid: String? = ""
 
-    var reasonElement: ReasonElement? = null
+    private var reasonElement: ReasonElement? = null
 
-    override fun toXML(): CharSequence = XmlStringBuilder().apply {
-        attribute(JID_ATTRIBUTE, jid)
-        rightAngleBracket()
-        append(reasonElement?.toXML().toString())
-        closeElement(INVITE_ELEMENT)
+    fun setReason(reason: String){
+        reasonElement = ReasonElement(reason)
     }
 
-    override fun getElementName() = INVITE_ELEMENT
+    fun getReason() = reasonElement?.reason
+
+    override fun toXML(): CharSequence = XmlStringBuilder().apply {
+        attribute(JID_ATTRIBUTE, groupJid)
+        rightAngleBracket()
+        append(reasonElement?.toXML().toString())
+        closeElement(ELEMENT)
+    }
+
+    override fun getElementName() = ELEMENT
 
     override fun getNamespace() = NAMESPACE
 
     companion object{
         const val HASH_BLOCK = "#invite"
         const val NAMESPACE = GroupchatManager.NAMESPACE + HASH_BLOCK
-        const val INVITE_ELEMENT = "invite"
+        const val ELEMENT = "invite"
         const val JID_ATTRIBUTE = "jid"
     }
 
-    class ReasonElement(val value: String): NamedElement{
+    class ReasonElement(val reason: String): NamedElement{
 
         override fun toXML() = XmlStringBuilder(this).apply {
             rightAngleBracket()
-            append(value)
+            append(reason)
             closeElement(ELEMENT_NAME)
         }
 

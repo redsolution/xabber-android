@@ -48,6 +48,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -381,13 +382,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         }
         boolean processed = false;
         if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)){
-            if (stanza.hasExtension(IncomingInviteExtensionElement.INVITE_ELEMENT,
+            if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT,
                     IncomingInviteExtensionElement.NAMESPACE)){
-                LogManager.i(LOG_TAG, "Incoming group invite detected");
-                //todo create group chat
-                //todo create invite message
-            }
-            else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
+                IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
+                        IncomingInviteExtensionElement.NAMESPACE);
+                LogManager.i(LOG_TAG, "Incoming group invite detected to group jid: " + inviteElement.getGroupJid()
+                        + "; with reason: " + inviteElement.getReason()
+                        + "; from jid: " + stanza.getFrom().toString());
+                GroupchatManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, 0);
+                //todo timestamp parsing
+                return;
+            } else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
                 AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
                 if (abstractChat instanceof RegularChat){
                     ChatManager.getInstance().removeChat(abstractChat);
@@ -495,7 +500,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
-        LogManager.d(LOG_TAG, "invoked processCarbonsMessage");
         if (direction == CarbonExtension.Direction.sent) {
             ContactJid companion;
             try {
@@ -507,7 +511,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
             final String body = message.getBody();
             if (body == null) {
-                LogManager.d(LOG_TAG, "... but message body is null!");
                 return;
             }
 

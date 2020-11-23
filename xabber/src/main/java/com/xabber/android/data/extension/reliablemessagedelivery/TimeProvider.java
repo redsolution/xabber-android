@@ -11,4 +11,5 @@ public class TimeProvider extends ExtensionElementProvider<TimeElement> {
         String timestamp = parser.getAttributeValue("", "stamp");
         return new TimeElement(name, timestamp);
     }
+
 }

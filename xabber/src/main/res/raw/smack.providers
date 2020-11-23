@@ -18,6 +18,12 @@
         <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
     </extensionProvider>
 
+    <extensionProvider>
+        <elementName>invite</elementName>
+        <namespace>https://xabber.com/protocol/groups#invite</namespace>
+        <className>com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElementProvider</className>
+    </extensionProvider>
+
     <iqProvider>
             <elementName>query</elementName>
             <namespace>https://xabber.com/protocol/groups</namespace>

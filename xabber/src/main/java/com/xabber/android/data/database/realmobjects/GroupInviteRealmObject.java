@@ -49,7 +49,7 @@ public class GroupInviteRealmObject extends RealmObject {
             return null;
         }
     }
-    public void setAccountJid(AccountJid accountJid) { this.accountJid = accountJid.getBareJid().toString(); }
+    public void setAccountJid(AccountJid accountJid) { this.accountJid = accountJid.toString(); }
 
     public ContactJid getGroupJid() {
         try{
@@ -59,7 +59,7 @@ public class GroupInviteRealmObject extends RealmObject {
             return null;
         }
     }
-    public void setGroupJid(ContactJid groupJid) { this.groupJid = groupJid.getBareJid().toString(); }
+    public void setGroupJid(ContactJid groupJid) { this.groupJid = groupJid.toString(); }
 
     public ContactJid getSenderJid() {
         try{

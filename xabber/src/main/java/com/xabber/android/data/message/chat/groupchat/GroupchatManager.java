@@ -5,19 +5,25 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.GroupInviteRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groupchat.GroupPinMessageIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
+import com.xabber.android.data.extension.groupchat.invite.incoming.DeclineGroupInviteIQ;
+import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
 import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener;
 import com.xabber.android.data.extension.groupchat.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
@@ -69,20 +75,27 @@ import java.util.Map;
 import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
 import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
 
-public class GroupchatManager implements OnPacketListener {
+public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/groups";
     public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + "#system-message";
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     private static GroupchatManager instance;
 
-    /* */
     private final Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
+    private final NestedMap<GroupInviteRealmObject> invitesMap = new NestedMap<>();
 
     public static GroupchatManager getInstance() {
         if (instance == null)
             instance = new GroupchatManager();
         return instance;
+    }
+
+    @Override
+    public void onLoad() {
+        for (GroupInviteRealmObject giro : GroupInviteRepository.getAllInvitationsForEnabledAccounts()){
+            invitesMap.put(giro.getAccountJid().toString(), giro.getGroupJid().toString(), giro);
+        }
     }
 
     @Override
@@ -170,6 +183,88 @@ public class GroupchatManager implements OnPacketListener {
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
+    }
+
+    public void processIncomingInvite(IncomingInviteExtensionElement inviteExtensionElement, AccountJid accountJid,
+                                      ContactJid sender, long timestamp){
+        try{
+            ContactJid groupJid = ContactJid.from(inviteExtensionElement.getGroupJid());
+            String reason = inviteExtensionElement.getReason();
+
+            GroupInviteRealmObject giro = new GroupInviteRealmObject();
+            giro.setAccountJid(accountJid);
+            giro.setAccountJid(accountJid);
+            giro.setIncoming(true);
+            giro.setGroupJid(groupJid);
+            giro.setSenderJid(sender);
+            giro.setReason(reason);
+            giro.setDate(timestamp);
+            giro.setRead(false);
+
+            invitesMap.put(accountJid.toString(), groupJid.toString(), giro);
+            GroupInviteRepository.saveInviteToRealm(giro);
+
+            ChatManager.getInstance().createGroupChat(accountJid, groupJid);
+
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+
+    }
+
+    public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
+        try{
+            PresenceManager.getInstance().acceptSubscription(accountJid, groupJid);
+            invitesMap.remove(accountJid.toString(), groupJid.toString());
+            GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
+            //todo maybe callback to ui
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+    }
+
+    public void declineInvitation(AccountJid accountJid, ContactJid groupJid){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try{
+                AccountManager.getInstance().getAccount(accountJid).getConnection().sendIqWithResponseCallback(
+                        new DeclineGroupInviteIQ(groupJid),
+                        packet -> {
+                            if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result){
+                                LogManager.i(LOG_TAG,
+                                        "Invite from group " + groupJid.toString()
+                                                + " to account " + accountJid.toString()
+                                                + " successfully declined.");
+                                invitesMap.remove(accountJid.toString(), groupJid.toString());
+                                GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
+                                //todo callback to ui
+                            }
+                        },
+                        exception -> {
+                            LogManager.e(LOG_TAG,
+                                    "Error to decline the invite from group " + groupJid.toString()
+                                            + " to account " + accountJid.toString() + "!" + "\n"
+                                            + exception.getMessage());
+                            //todo callback to ui
+                        });
+            } catch (Exception e){
+                LogManager.e(LOG_TAG,
+                        "Error to decline the invite from group " + groupJid.toString()
+                                + " to account " + accountJid.toString() + "!" + "\n"
+                                + e.getMessage());
+                //todo callback to ui
+            }
+        });
+
+    }
+
+    public boolean hasInvite(AccountJid accountJid, ContactJid groupchatJid){
+        return invitesMap.get(accountJid.toString(), groupchatJid.toString()) != null;
+    }
+
+    public GroupInviteRealmObject getInvite(AccountJid accountJid, ContactJid groupJid){
+        if (hasInvite(accountJid, groupJid))
+            return invitesMap.get(accountJid.toString(), groupJid.toString());
+        else return null;
     }
 
     public boolean isSupported(XMPPTCPConnection connection) {

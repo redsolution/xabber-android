@@ -74,6 +74,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -1449,6 +1450,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         updateSendButtonSecurityLevel();
         updateBlockedState();
         showNewContactLayoutIfNeed();
+        showGroupInvitationIfNeed();
     }
 
     private void onScrollDownClick() {
@@ -2082,6 +2084,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inputPanel.addView(blockedView);
         } else {
             blockedView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showGroupInvitationIfNeed(){
+        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())){
+            GroupInviteRealmObject giro = GroupchatManager.getInstance().getInvite(getAccount(), getUser());
+            Toast.makeText(getContext(), giro.getReason(), Toast.LENGTH_LONG).show();
         }
     }
 
