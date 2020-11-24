@@ -10,7 +10,7 @@ class GroupchatMemberRightsQueryIQTest {
     @Test
     fun testGroupchatMemberRightsQueryIqBuilding() {
 
-        val reference = "<iq to='groupchat@server.org' id='48ZxA-1' type='get'><query xmlns='http://xabber.com/protocol/groupchat#rights'><user xmlns='http://xabber.com/protocol/groupchat' id='userId'></user></query></iq>"
+        val reference = "<iq to='groupchat@server.org' id='48ZxA-1' type='get'><query xmlns='https://xabber.com/protocol/groups#rights'><user xmlns='https://xabber.com/protocol/groups' id='userId'></user></query></iq>"
 
         val groupchatJid = ContactJid.from("groupchat@server.org")
         val iq = GroupchatMemberRightsQueryIQ(groupchatJid, "userId").apply { stanzaId = "48ZxA-1" }

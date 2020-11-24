@@ -373,4 +373,20 @@ public class GroupChat extends AbstractChat {
     public void setListOfBlockedElements(ArrayList<GroupchatBlocklistItemElement> listOfBlockedElements) {
         this.listOfBlockedElements = listOfBlockedElements;
     }
+
+    @Override
+    public Date getLastTime() {
+        MessageRealmObject lastMessage = getLastMessage();
+        if (lastMessage != null) {
+            return new Date(lastMessage.getTimestamp());
+        } else {
+            if (lastActionTimestamp != null) {
+                return new Date(getLastActionTimestamp());
+            }
+            if (GroupchatManager.getInstance().hasInvite(account, contactJid))
+                return new Date(GroupchatManager.getInstance().getInvite(account, contactJid).getDate());
+            return null;
+        }
+    }
+
 }

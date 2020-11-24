@@ -12,10 +12,21 @@ class IncomingInviteExtensionElementProvider: ExtensionElementProvider<IncomingI
         outerloop@ while (true) {
             when (parser.eventType) {
                 XmlPullParser.START_TAG -> {
-                    if (IncomingInviteExtensionElement.ELEMENT == parser.name) {
-                        inviteElement.groupJid = parser.getAttributeValue("", IncomingInviteExtensionElement.JID_ATTRIBUTE)
-                    } else if (IncomingInviteExtensionElement.ReasonElement.ELEMENT_NAME == parser.name){
-                        inviteElement.setReason(ProviderUtils.parseText(parser))
+                    when (parser.name) {
+                        IncomingInviteExtensionElement.ELEMENT -> {
+                            inviteElement.groupJid = parser.getAttributeValue("", IncomingInviteExtensionElement
+                                    .JID_ATTRIBUTE) ?: ""
+                        }
+                        IncomingInviteExtensionElement.ReasonElement.ELEMENT_NAME -> {
+                            inviteElement.setReason(ProviderUtils.parseText(parser))
+                        }
+                        IncomingInviteExtensionElement.UserElement.ELEMENT -> {
+                            val userJid = parser.getAttributeValue("", IncomingInviteExtensionElement.UserElement
+                                    .JID_ATTRIBUTE) ?: ""
+                            val userId = parser.getAttributeValue("", IncomingInviteExtensionElement.UserElement
+                                    .ID_ATTRIBUTE) ?: ""
+                            inviteElement.setUser(userJid, userId)
+                        }
                     }
                     parser.next()
                 }

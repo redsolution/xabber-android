@@ -189,17 +189,17 @@ public class ReferencesProviderTest {
     }
 */
 
-/*
-    @Test
-    public void parse6() {
-        Quote element = (Quote) parseString(stringQuote);
-        assertNotNull(element);
-        assertEquals("quote", element.getType().toString());
-        assertEquals(0, element.getBegin());
-        assertEquals(31, element.getEnd());
-        assertEquals("> ", element.getMarker());
-    }
-*/
+
+//    @Test
+//    public void parse6() {
+//        Quote element = (Quote) parseString(stringQuote);
+//        assertNotNull(element);
+//        assertEquals("quote", element.getType().toString());
+//        assertEquals(0, element.getBegin());
+//        assertEquals(31, element.getEnd());
+//        assertEquals("> ", element.getMarker());
+//    }
+
 
     @Test
     public void parse7() {

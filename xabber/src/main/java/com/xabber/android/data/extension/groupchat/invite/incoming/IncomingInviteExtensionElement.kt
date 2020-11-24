@@ -7,20 +7,26 @@ import org.jivesoftware.smack.util.XmlStringBuilder
 
 class IncomingInviteExtensionElement: ExtensionElement {
 
-    var groupJid: String? = ""
+    var groupJid: String = ""
 
     private var reasonElement: ReasonElement? = null
+    private var userElement: UserElement? = null
 
-    fun setReason(reason: String){
-        reasonElement = ReasonElement(reason)
-    }
+    fun setReason(reason: String){ reasonElement = ReasonElement(reason) }
+    fun getReason() = reasonElement?.reason ?: ""
 
-    fun getReason() = reasonElement?.reason
+    fun setUser(jid: String = "", id: String = ""){ userElement = UserElement(jid, id) }
+
+    fun getUserJid() = userElement?.jid ?: ""
+    fun getUserId() = userElement?.id ?: ""
 
     override fun toXML(): CharSequence = XmlStringBuilder().apply {
+        halfOpenElement(ELEMENT)
         attribute(JID_ATTRIBUTE, groupJid)
+        xmllangAttribute(NAMESPACE)
         rightAngleBracket()
-        append(reasonElement?.toXML().toString())
+        if (reasonElement != null) append(reasonElement?.toXML().toString())
+        if (userElement != null) append(userElement?.toXML().toString())
         closeElement(ELEMENT)
     }
 
@@ -48,6 +54,28 @@ class IncomingInviteExtensionElement: ExtensionElement {
         companion object {
             const val ELEMENT_NAME = "reason"
         }
+
+    }
+
+    class UserElement(val jid: String = "", val id: String = ""): ExtensionElement {
+
+        override fun toXML() = XmlStringBuilder().apply {
+            halfOpenElement(ELEMENT)
+            attribute(JID_ATTRIBUTE, jid)
+            attribute(ID_ATTRIBUTE, id)
+            closeEmptyElement()
+        }
+
+        override fun getElementName() = ELEMENT
+
+        override fun getNamespace() = null
+
+        companion object{
+            const val ELEMENT = "user"
+            const val JID_ATTRIBUTE = "jid"
+            const val ID_ATTRIBUTE = "id"
+        }
+
     }
 
 }

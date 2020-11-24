@@ -111,7 +111,7 @@ public abstract class AbstractChat extends BaseEntity implements
     /**
      * The timestamp of the last chat action, such as: deletion, history clear, etc.
      */
-    private Long lastActionTimestamp;
+    protected Long lastActionTimestamp;
     private int lastPosition;
     private boolean archived;
     private NotificationState notificationState;

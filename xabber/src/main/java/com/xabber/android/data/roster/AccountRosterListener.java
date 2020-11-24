@@ -16,7 +16,7 @@ import java.util.Collection;
 
 public class AccountRosterListener implements RosterListener, RosterLoadedListener {
 
-    private AccountJid account;
+    private final AccountJid account;
 
     public AccountJid getAccount() {
         return account;
@@ -79,4 +79,5 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
         LogManager.e(getLogTag(), "onRosterLoadingFailed");
         LogManager.exception(getLogTag(), e);
     }
+
 }

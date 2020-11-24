@@ -19,11 +19,11 @@ class CreateGroupchatIQ(val contact: Jid, to: String, val groupName: String?, pr
 
         append(SimpleNamedElement(NAME_ELEMENT, groupName!!).toXML())
         append(SimpleNamedElement(DESCRIPTION_ELEMENT, description!!).toXML())
-        append(SimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()!!).toXML())
-        append(SimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()!!).toXML())
-        append(SimpleNamedElement(INDEX_ELEMENT, indexType.toXml()!!).toXML())
+        append(SimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()).toXML())
+        append(SimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()).toXML())
+        append(SimpleNamedElement(INDEX_ELEMENT, indexType.toXml()).toXML())
 
-        append(ContactsNamedElement(contact.toString()).toXML())
+        append(ContactsNamedElement(contact.asBareJid().toString()).toXML())
 
         if (groupLocalpart != null && groupLocalpart.isNotEmpty())
             append(SimpleNamedElement(LOCALPART_ELEMENT, groupLocalpart).toXML())

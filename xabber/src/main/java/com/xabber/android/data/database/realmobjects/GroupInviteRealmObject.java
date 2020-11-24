@@ -30,7 +30,7 @@ public class GroupInviteRealmObject extends RealmObject {
     private String groupJid;
     private String senderJid;
 
-    private long date;
+    private long date = 0;
     private String reason;
     private boolean isIncoming;
     private boolean isRead;

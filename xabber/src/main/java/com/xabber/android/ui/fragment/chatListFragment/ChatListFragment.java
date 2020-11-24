@@ -51,6 +51,7 @@ import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
@@ -110,7 +111,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
-    private ImageView toolbarAddIv;
     private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
@@ -125,7 +125,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         updateBackpressure = new ChatListUpdateBackpressure(this);
@@ -227,7 +227,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO implement scroll to account if it need;
     }
 
     public void scrollToTop() {
@@ -269,7 +268,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
-        toolbarAddIv = view.findViewById(R.id.ivAdd);
+        ImageView toolbarAddIv = view.findViewById(R.id.ivAdd);
         toolbarTitleTv = view.findViewById(R.id.tvTitle);
         toolbarAvatarIv = view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = view.findViewById(R.id.ivStatus);
@@ -379,41 +378,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
     }
 
-    private void testLayoutInflating() {
-        final long optimizedDefault = getLayoutTime(R.layout.item_chat_in_contact_list);
-        final long custom = getLayoutTime(R.layout.item_chat_in_contact_list_new);
-        final long oldDefault = getLayoutTime(R.layout.item_chat_in_contact_list_old);
-
-        LogManager.i("LayoutTime", "optimized default : " + optimizedDefault);
-        LogManager.i("LayoutTime", "custom : " + custom);
-        LogManager.i("LayoutTime", "old default : " + oldDefault);
-    }
-
-    private long getLayoutTime(int layoutRes) {
-        final Context targetContext = recyclerView.getContext();
-        final LayoutInflater layoutInflater = LayoutInflater.from(targetContext);
-
-        final long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
-            final View view = layoutInflater.inflate(layoutRes, null);
-            view.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
-
-            view.measure(
-                    View.MeasureSpec.makeMeasureSpec(
-                            recyclerView.getWidth(),
-                            View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(
-                            (int) (getResources().getDisplayMetrics().density * 64),
-                            View.MeasureSpec.UNSPECIFIED)
-            );
-            final int measuredHeight = view.getMeasuredHeight();
-            final int measuredWidth = view.getMeasuredWidth();
-
-            view.layout(0, 0, measuredWidth, measuredHeight);
-        }
-        return System.currentTimeMillis() - startTime;
-    }
-
     /**
      * @return Return true when first element of chat list is on the top of the screen
      */
@@ -510,11 +474,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private void setupToolbarLayout() {
         if (recyclerView != null) {
             int count = items.size();
-            if (count <= maxItemsOnScreen) {
-                setToolbarScrollEnabled(false);
-            } else {
-                setToolbarScrollEnabled(true);
-            }
+            setToolbarScrollEnabled(count > maxItemsOnScreen);
         }
     }
 
@@ -549,7 +509,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatAvatarClick(AbstractChat item) {
+    public void onChatAvatarClick(@NotNull AbstractChat item) {
         Intent intent;
         try {
             intent = ContactViewerActivity.createIntent(getActivity(), item.getAccount(),
@@ -562,13 +522,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
+    public void onCreateContextMenu(@NotNull ContextMenu menu, @NotNull View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
-    public void onChatItemContextMenu(ContextMenu menu, AbstractChat contact) {
+    public void onChatItemContextMenu(@NotNull ContextMenu menu, @NotNull AbstractChat contact) {
         try {
             AbstractContact abstractContact = RosterManager.getInstance()
                     .getAbstractContact(contact.getAccount(), contact.getContactJid());
@@ -586,7 +546,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemClick(AbstractChat item) {
+    public void onChatItemClick(@NotNull AbstractChat item) {
         try {
             chatListFragmentListener.onChatClick(RosterManager.getInstance()
                     .getAbstractContact(item.getAccount(), item.getContactJid()));
@@ -604,17 +564,21 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (filterString == null || filterString.equals("")) {
             if (currentChatsState == ChatListState.recent)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if (abstractChat.getLastMessage() != null
+                    if ( (abstractChat.getLastMessage() != null
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && !abstractChat.isArchived())
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.unread)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if (abstractChat.getLastMessage() != null
+                    if ((abstractChat.getLastMessage() != null
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.getUnreadMessageCount() != 0)
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.archived)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if (abstractChat.getLastMessage() != null && abstractChat.isArchived())
+                    if ((abstractChat.getLastMessage() != null
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            && abstractChat.isArchived())
                         newList.add(abstractChat);
 
             Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(),

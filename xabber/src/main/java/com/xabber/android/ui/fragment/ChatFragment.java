@@ -1450,7 +1450,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         updateSendButtonSecurityLevel();
         updateBlockedState();
         showNewContactLayoutIfNeed();
-        showGroupInvitationIfNeed();
     }
 
     private void onScrollDownClick() {
@@ -2087,19 +2086,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void showGroupInvitationIfNeed(){
-        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())){
-            GroupInviteRealmObject giro = GroupchatManager.getInstance().getInvite(getAccount(), getUser());
-            Toast.makeText(getContext(), giro.getReason(), Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void showNewContactLayoutIfNeed() {
 
-        //if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
-        //    if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
-        //    return;
-        //}
         if (userIsBlocked) {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             return;
@@ -2137,12 +2125,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
+        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())){
+            GroupInviteRealmObject giro = GroupchatManager.getInstance().getInvite(getAccount(), getUser());
+            //todo here should be a view window setup
+        }
+
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
         } else {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             PresenceManager.getInstance().clearSubscriptionRequestNotification(account, user);
         }
+
     }
 
     private void inflateNewContactLayout(final SubscriptionState subscriptionState,

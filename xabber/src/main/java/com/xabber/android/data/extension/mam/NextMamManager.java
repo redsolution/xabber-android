@@ -20,9 +20,11 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
@@ -30,6 +32,7 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
@@ -37,6 +40,7 @@ import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -90,13 +94,13 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     private static NextMamManager instance;
 
-    private Map<AccountJid, Boolean> supportedByAccount = new ConcurrentHashMap<>();
+    private final Map<AccountJid, Boolean> supportedByAccount = new ConcurrentHashMap<>();
     private boolean isRequested = false;
     private final Object lock = new Object();
-    private Map<String, ContactJid> waitingRequests = new HashMap<>();
-    private Map<AccountItem, Iterator<RosterContact>> rosterItemIterators = new ConcurrentHashMap<>();
+    private final Map<String, ContactJid> waitingRequests = new HashMap<>();
+    private final Map<AccountItem, Iterator<RosterContact>> rosterItemIterators = new ConcurrentHashMap<>();
 
-    private static Comparator<Forwarded> archiveMessageTimeComparator = (o1, o2) -> {
+    private static final Comparator<Forwarded> archiveMessageTimeComparator = (o1, o2) -> {
         long time1 = o1.getDelayInformation().getStamp().getTime();
         long time2 = o2.getDelayInformation().getStamp().getTime();
         return Long.compare(time1, time2);
@@ -224,12 +228,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         final AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         if (accountItem == null || !isSupported(accountJid)) return;
 
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                requestUpdatePreferences(accountItem);
-            }
-        });
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> requestUpdatePreferences(accountItem));
     }
 
     @Override
@@ -241,6 +240,24 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                             (MamElements.MamResultExtension) packetExtension;
                     String resultID = resultExtension.getQueryId();
                     if (waitingRequests.containsKey(resultID)) {
+                        Stanza forwardedStanza = resultExtension.getForwarded().getForwardedStanza();
+                        if (forwardedStanza.hasExtension(IncomingInviteExtensionElement.ELEMENT,
+                                IncomingInviteExtensionElement.NAMESPACE)){
+                            try{
+                                IncomingInviteExtensionElement inviteElement = forwardedStanza
+                                        .getExtension(IncomingInviteExtensionElement.ELEMENT,
+                                                IncomingInviteExtensionElement.NAMESPACE);
+                                long timestamp = 0;
+                                if (forwardedStanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                                    TimeElement timeElement = (TimeElement) forwardedStanza.getExtension(TimeElement.ELEMENT,
+                                            TimeElement.NAMESPACE);
+                                    timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+                                }
+                                GroupchatManager.getInstance().processIncomingInvite(inviteElement, connection.getAccount(),
+                                        ContactJid.from(forwardedStanza.getFrom()), timestamp);
+                            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                            return;
+                        }
                         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         parseAndSaveMessageFromMamResult(realm, connection.getAccount(), resultExtension.getForwarded());
                         ContactJid contactJid = waitingRequests.get(resultID);
@@ -299,7 +316,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         Collection<RosterContact> contacts = RosterManager.getInstance()
                 .getAccountRosterContacts(accountItem.getAccount());
-        Collection<RosterContact> contactsWithoutHistory = new ArrayList<RosterContact>();
+        Collection<RosterContact> contactsWithoutHistory = new ArrayList<>();
 
         for (RosterContact contact : contacts) {
             AbstractChat chat = ChatManager.getInstance()
@@ -499,7 +516,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 user = stanza.getTo().asBareJid();
 
             if (!sortedMapOfChats.containsKey(user.toString())) {
-                sortedMapOfChats.put(user.toString(), new ArrayList<Forwarded>());
+                sortedMapOfChats.put(user.toString(), new ArrayList<>());
             }
             ArrayList<Forwarded> list = sortedMapOfChats.get(user.toString());
             if (list != null) list.add(forwarded);
@@ -590,6 +607,25 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (queryResult != null && !queryResult.forwardedMessages.isEmpty()) {
             Forwarded forwarded = queryResult.forwardedMessages.get(0);
             startHistoryTimestamp = forwarded.getDelayInformation().getStamp().getTime();
+            Stanza forwardedStanza = forwarded.getForwardedStanza();
+            if (forwardedStanza.hasExtension(IncomingInviteExtensionElement.ELEMENT,
+                    IncomingInviteExtensionElement.NAMESPACE)){
+                try{
+                    IncomingInviteExtensionElement inviteElement = forwardedStanza
+                            .getExtension(IncomingInviteExtensionElement.ELEMENT,
+                                    IncomingInviteExtensionElement.NAMESPACE);
+                    long timestamp = 0;
+                    if (forwardedStanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                        TimeElement timeElement = (TimeElement) forwardedStanza.getExtension(TimeElement.ELEMENT,
+                                TimeElement.NAMESPACE);
+                        timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+                    }
+                    GroupchatManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                            ContactJid.from(forwardedStanza.getFrom()), timestamp);
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+                accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
+                return;
+            }
             parseAndSaveMessageFromMamResult(realm, accountItem.getAccount(), forwarded);
         }
         accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
@@ -622,10 +658,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         }
     }
 
-    /** REQUESTS */
-
     /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult */
-    abstract class MamRequest<T>  {
+    abstract static class MamRequest<T>  {
         abstract T execute(MamManager manager) throws Exception;
     }
 
@@ -840,6 +874,21 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         Message message = (Message) forwarded.getForwardedStanza();
 
+        if (message.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)){
+            try{
+                IncomingInviteExtensionElement inviteElement = message
+                        .getExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE);
+                long timestamp = 0;
+                if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                    TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                    timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+                }
+                GroupchatManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                        ContactJid.from(message.getFrom()), timestamp);
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            return null;
+        }
+
         DelayInformation delayInformation = forwarded.getDelayInformation();
 
         DelayInformation messageDelay = DelayInformation.from(message);
@@ -946,9 +995,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         List<MessageRealmObject> messagesToSave = new ArrayList<>();
         realm.refresh();
         if (messages != null && !messages.isEmpty()) {
-            Iterator<MessageRealmObject> iterator = messages.iterator();
-            while (iterator.hasNext()) {
-                MessageRealmObject newMessage = determineSaveOrUpdate(realm, iterator.next(), ui);
+            for (MessageRealmObject message : messages) {
+                MessageRealmObject newMessage = determineSaveOrUpdate(realm, message, ui);
                 if (newMessage != null) messagesToSave.add(newMessage);
             }
         }

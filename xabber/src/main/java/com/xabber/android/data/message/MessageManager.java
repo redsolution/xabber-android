@@ -44,6 +44,7 @@ import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInvit
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -52,6 +53,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -386,11 +388,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                     IncomingInviteExtensionElement.NAMESPACE)){
                 IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
                         IncomingInviteExtensionElement.NAMESPACE);
-                LogManager.i(LOG_TAG, "Incoming group invite detected to group jid: " + inviteElement.getGroupJid()
-                        + "; with reason: " + inviteElement.getReason()
-                        + "; from jid: " + stanza.getFrom().toString());
-                GroupchatManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, 0);
-                //todo timestamp parsing
+                long timestamp = 0;
+                if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                    TimeElement timeElement = (TimeElement) stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                    timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+                }
+                GroupchatManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, timestamp);
                 return;
             } else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
                 AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);

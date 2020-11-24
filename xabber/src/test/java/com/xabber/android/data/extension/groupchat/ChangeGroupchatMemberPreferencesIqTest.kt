@@ -12,7 +12,7 @@ class ChangeGroupchatMemberPreferencesIqTest {
 
     @Test
     fun testIqCreatingSetBadge() {
-        val reference = "<iq to='groupchat@otherdomain.com' id='iqId' type='set'><query xmlns='http://xabber.com/protocol/groupchat#members'><user id='memberId' xmlns='http://xabber.com/protocol/groupchat'><badge>badge!</badge></user></query></iq>"
+        val reference = "<iq to='groupchat@otherdomain.com' id='iqId' type='set'><query xmlns='https://xabber.com/protocol/groups#members'><user id='memberId' xmlns='https://xabber.com/protocol/groups'><badge>badge!</badge></user></query></iq>"
         val groupchatJid = ContactJid.from("groupchat@otherdomain.com")
 
         val memberId = "memberId"
@@ -27,7 +27,7 @@ class ChangeGroupchatMemberPreferencesIqTest {
 
     @Test
     fun testIqCreatingSetNickname() {
-        val reference = "<iq to='groupchat@otherdomain.com' id='iqId' type='set'><query xmlns='http://xabber.com/protocol/groupchat#members'><user id='memberId' xmlns='http://xabber.com/protocol/groupchat'><nickname>nickname!</nickname></user></query></iq>"
+        val reference = "<iq to='groupchat@otherdomain.com' id='iqId' type='set'><query xmlns='https://xabber.com/protocol/groups#members'><user id='memberId' xmlns='https://xabber.com/protocol/groups'><nickname>nickname!</nickname></user></query></iq>"
         val groupchatJid = ContactJid.from("groupchat@otherdomain.com")
 
         val memberId = "memberId"
