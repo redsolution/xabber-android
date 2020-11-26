@@ -712,11 +712,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public void onCloseChat() {
-        close();
-    }
-
-    @Override
     public void onMessageSent() {
 
     }

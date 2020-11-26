@@ -51,7 +51,7 @@ public class GroupChat extends AbstractChat {
 
     private GroupchatIndexType indexType;
     private GroupchatMembershipType membershipType;
-    private GroupchatPrivacyType privacyType;
+    private GroupchatPrivacyType privacyType = GroupchatPrivacyType.NONE;
 
     //TODO may be Jid type
     private String owner;
@@ -383,10 +383,16 @@ public class GroupChat extends AbstractChat {
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            if (GroupchatManager.getInstance().hasInvite(account, contactJid))
+            if (GroupchatManager.getInstance().hasUnreadInvite(account, contactJid))
                 return new Date(GroupchatManager.getInstance().getInvite(account, contactJid).getDate());
             return null;
         }
+    }
+
+    @Override
+    public int getUnreadMessageCount() {
+        if (GroupchatManager.getInstance().hasUnreadInvite(account, contactJid)) return super.getUnreadMessageCount() + 1;
+        else return super.getUnreadMessageCount();
     }
 
 }

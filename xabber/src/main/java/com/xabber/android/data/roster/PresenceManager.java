@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -115,7 +115,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Requests subscription to the contact.
      *
-     * @throws NetworkException
      */
     public void requestSubscription(AccountJid account, ContactJid user) throws NetworkException {
         requestSubscription(account, user, true);
@@ -124,7 +123,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Requests subscription to the contact.
      * Create chat with new contact if need.
-     * @throws NetworkException
      */
     public void requestSubscription(AccountJid account, ContactJid user, boolean createChat) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
@@ -341,7 +339,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Sends new presence information.
      *
-     * @throws NetworkException
      */
     public void resendPresence(AccountJid account) throws NetworkException {
         sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getBareJid()));
@@ -485,7 +482,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                         }
 
                         // skip subscription, waiting for captcha in messageManager
-                        return;
 
                     } else {
                         // generate captcha
@@ -497,8 +493,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                                 Application.getInstance().getResources().getString(R.string.spam_filter_limit_subscription) + " " + captchaQuestion);
 
                         // and skip subscription, waiting for captcha in messageManager
-                        return;
                     }
+                    return;
                 }
 
                 // subscription request

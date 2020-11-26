@@ -18,6 +18,7 @@ import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
 import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
@@ -83,7 +84,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val accountJid = chat.account
         val contactJid = chat.contactJid
         val rosterContact = RosterManager.getInstance().getRosterContact(accountJid, contactJid)
-        var statusLevel = rosterContact?.statusMode?.statusLevel
+        val statusLevel = rosterContact?.statusMode?.statusLevel
 
         val isBlocked = BlockingManager.getInstance()
                 .contactIsBlockedLocally(accountJid, contactJid)
@@ -150,16 +151,32 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
-        if (chat.lastMessage != null) {
-            holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                    Date(chat.lastMessage!!.timestamp))
-            holder.timeTV.visibility = View.VISIBLE
-        } else holder.timeTV.visibility = View.INVISIBLE
+        holder.timeTV.visibility = View.VISIBLE
+        when {
+            GroupchatManager.getInstance().hasUnreadInvite(chat.account, chat.contactJid) -> {
+                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
+                        Date(GroupchatManager.getInstance().getInvite(chat.account, chat.contactJid).date))
+            }
+            chat.lastMessage != null -> {
+                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
+                        Date(chat.lastMessage!!.timestamp))
+            }
+            else -> holder.timeTV.visibility = View.INVISIBLE
+        }
     }
 
     private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
-        val lastMessage = chat.lastMessage
         val context = holder.itemView.context
+
+        if (GroupchatManager.getInstance().hasUnreadInvite(chat.account, chat.contactJid)
+                && chat is GroupChat){
+            holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
+                    chat.privacyType.getLocalizedString().decapitalize())
+            holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
+            return
+        }
+
+        val lastMessage = chat.lastMessage
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text.isNullOrEmpty()) {

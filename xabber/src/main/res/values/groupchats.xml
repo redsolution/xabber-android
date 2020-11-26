@@ -31,6 +31,11 @@
         <item quantity="other">members</item>
     </plurals>
 
+
+    <string name="groupchat_join">Join</string>
+    <string name="groupchat_decline">Decline</string>
+
+    <string name="groupchat_invitation_to_group_chat">Invitation to %1$s group</string>
     <string name="groupchat_member_of_group_name">%1$s of %2$s group %3$s</string>
     <string name="member_info">Member info</string>
     <string name="groupchat_direct_chat">Direct chat</string>

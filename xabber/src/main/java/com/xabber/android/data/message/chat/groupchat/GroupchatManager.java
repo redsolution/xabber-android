@@ -38,16 +38,19 @@ import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequest
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.vcard.VCard;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.XMPPConnection;
@@ -191,6 +194,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             ContactJid groupJid = ContactJid.from(inviteExtensionElement.getGroupJid());
             String reason = inviteExtensionElement.getReason();
 
+            // todo setup privacy
             GroupInviteRealmObject giro = new GroupInviteRealmObject();
             giro.setAccountJid(accountJid);
             giro.setAccountJid(accountJid);
@@ -200,6 +204,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             giro.setReason(reason);
             giro.setDate(timestamp);
             giro.setRead(false);
+
+            VCardManager.getInstance().requestByUser(accountJid, groupJid.getJid());
 
             invitesMap.put(accountJid.toString(), groupJid.toString(), giro);
             GroupInviteRepository.saveInviteToRealm(giro);
@@ -212,12 +218,24 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     }
 
+    public void processVcard(AccountJid accountJid, ContactJid groupJid, VCard vcard){
+        GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid);
+        ((GroupChat)groupChat).setDescription(vcard.getDescription());
+        ((GroupChat)groupChat).setPrivacyType(vcard.getPrivacyType());
+        ((GroupChat)groupChat).setIndexType(vcard.getIndexType());
+        ((GroupChat)groupChat).setMembershipType(vcard.getMembershipType());
+        ((GroupChat)groupChat).setName(vcard.getNickName());
+        ((GroupChat)groupChat).setNumberOfMembers(vcard.getMembersCount());
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
+    }
+
     public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
         try{
+            String name = ((GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid)).getName();
+            RosterManager.getInstance().createContact(accountJid, groupJid, name, new ArrayList<>());
             PresenceManager.getInstance().acceptSubscription(accountJid, groupJid);
             invitesMap.remove(accountJid.toString(), groupJid.toString());
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
-            //todo maybe callback to ui
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
@@ -236,7 +254,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                                 + " successfully declined.");
                                 invitesMap.remove(accountJid.toString(), groupJid.toString());
                                 GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
-                                //todo callback to ui
                             }
                         },
                         exception -> {
@@ -244,25 +261,24 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                     "Error to decline the invite from group " + groupJid.toString()
                                             + " to account " + accountJid.toString() + "!" + "\n"
                                             + exception.getMessage());
-                            //todo callback to ui
                         });
             } catch (Exception e){
                 LogManager.e(LOG_TAG,
                         "Error to decline the invite from group " + groupJid.toString()
                                 + " to account " + accountJid.toString() + "!" + "\n"
                                 + e.getMessage());
-                //todo callback to ui
             }
         });
 
     }
 
-    public boolean hasInvite(AccountJid accountJid, ContactJid groupchatJid){
-        return invitesMap.get(accountJid.toString(), groupchatJid.toString()) != null;
+    public boolean hasUnreadInvite(AccountJid accountJid, ContactJid groupchatJid){
+        GroupInviteRealmObject giro = invitesMap.get(accountJid.toString(), groupchatJid.toString());
+        return giro != null && !giro.isRead();
     }
 
     public GroupInviteRealmObject getInvite(AccountJid accountJid, ContactJid groupJid){
-        if (hasInvite(accountJid, groupJid))
+        if (hasUnreadInvite(accountJid, groupJid))
             return invitesMap.get(accountJid.toString(), groupJid.toString());
         else return null;
     }
@@ -314,7 +330,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                     }, exception -> {
                         LogManager.exception(LOG_TAG, exception);
                         if (exception instanceof XMPPException.XMPPErrorException
-                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML().toString().contains("conflict")) {
+                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML()
+                                    .toString().contains("conflict")) {
                             listener.onJidConflict();
                         } else listener.onOtherError();
                     });

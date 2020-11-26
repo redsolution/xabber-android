@@ -59,7 +59,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +74,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     private static RosterManager instance;
 
-    private NestedMap<RosterContact> rosterContacts;
+    private final NestedMap<RosterContact> rosterContacts;
 
     private final NestedMap<WeakReference<AbstractContact>> contactsCache;
 
@@ -115,7 +114,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 e.printStackTrace();
             }
         }
-        onContactsChanged(Collections.<RosterContact>emptyList());
+        onContactsChanged(Collections.emptyList());
     }
 
     @Nullable
@@ -149,22 +148,10 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     @Nullable
     public Presence getPresence(AccountJid account, ContactJid user) {
         return PresenceManager.getInstance().getPresence(account, user);
-        //final Roster roster = getRoster(account);
-        //if (roster == null) {
-        //    return null;
-        //} else {
-        //    return roster.getPresence(user.getJid().asBareJid());
-        //}
     }
 
     public List<Presence> getPresences(AccountJid account, Jid user) {
         return PresenceManager.getInstance().getAvailablePresences(account, user.asBareJid());
-        //final Roster roster = getRoster(account);
-        //if (roster == null) {
-        //    return new ArrayList<>();
-        //} else {
-        //    return roster.getAvailablePresences(user.asBareJid());
-        //}
     }
 
     public boolean accountIsSubscribedTo(AccountJid account, ContactJid user) {
@@ -229,8 +216,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     public Collection<RosterContact> getAllContacts() {
         List<RosterContact> contactsCopy = new ArrayList<>();
-        for (Iterator<String> it = rosterContacts.keySet().iterator(); it.hasNext(); ) {
-            String key = it.next();
+        for (String key : rosterContacts.keySet()) {
             contactsCopy.addAll(rosterContacts.getNested(key).values());
         }
         return Collections.unmodifiableCollection(contactsCopy);
@@ -288,7 +274,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     @NonNull
-    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) throws ContactJid.UserJidCreateException {
+    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry)
+            throws ContactJid.UserJidCreateException {
         final RosterContact contact = RosterContact
                 .getRosterContact(account, ContactJid.from(rosterEntry.getJid()), rosterEntry.getName());
 
@@ -328,12 +315,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return getRosterContact(accountJid, contactJid.getBareJid());
     }
 
-    /**
-     *
-     * @param account
-     * @param user
-     * @return
-     */
     public AbstractContact getBestContact(AccountJid account, ContactJid user) {
         AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
 
@@ -348,7 +329,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     /**
-     * @param account
      * @return List of groups in specified account.
      */
     public Collection<String> getCircles(AccountJid account) {
@@ -415,12 +395,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     /**
      * Requests to create new contact.
-     *
-     * @param account
-     * @param user
-     * @param name
-     * @param groups
-     * @throws NetworkException
      */
     public void createContact(AccountJid account, ContactJid user, String name,
                               Collection<String> groups)
@@ -460,22 +434,19 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         }
 
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    roster.removeEntry(entry);
-                    PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
-                    EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
-                    Application.getInstance().onError(R.string.NOT_CONNECTED);
-                } catch (SmackException.NoResponseException e) {
-                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
-                } catch (XMPPException.XMPPErrorException e) {
-                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
-                } catch (InterruptedException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                roster.removeEntry(entry);
+                PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
+                EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+            } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+                Application.getInstance().onError(R.string.NOT_CONNECTED);
+            } catch (SmackException.NoResponseException e) {
+                Application.getInstance().onError(R.string.CONNECTION_FAILED);
+            } catch (XMPPException.XMPPErrorException e) {
+                Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+            } catch (InterruptedException e) {
+                LogManager.exception(LOG_TAG, e);
             }
         });
     }
@@ -533,8 +504,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Requests to remove group from all contacts in account.
      */
-    public void removeGroup(AccountJid account, String groupName)
-            throws NetworkException {
+    public void removeGroup(AccountJid account, String groupName){
         final Roster roster = getRoster(account);
         if (roster == null) {
             return;
@@ -545,25 +515,21 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                for (RosterEntry entry : group.getEntries()) {
-                    try {
-                        group.removeEntry(entry);
-                    } catch (SmackException.NoResponseException e) {
-                        Application.getInstance().onError(R.string.CONNECTION_FAILED);
-                    } catch (SmackException.NotConnectedException e) {
-                        Application.getInstance().onError(R.string.NOT_CONNECTED);
-                    } catch (XMPPException.XMPPErrorException e) {
-                        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
-                    } catch (InterruptedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            for (RosterEntry entry : group.getEntries()) {
+                try {
+                    group.removeEntry(entry);
+                } catch (SmackException.NoResponseException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                } catch (SmackException.NotConnectedException e) {
+                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                } catch (XMPPException.XMPPErrorException e) {
+                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                } catch (InterruptedException e) {
+                    LogManager.exception(LOG_TAG, e);
                 }
-
             }
+
         });
     }
 
@@ -571,7 +537,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * Requests to remove group from all contacts in all accounts.
      *
      */
-    public void removeGroup(String group) throws NetworkException {
+    public void removeGroup(String group) {
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             removeGroup(account, group);
         }
@@ -580,7 +546,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Requests to rename group.
      *
-     * @param account
      * @param oldGroup can be <code>null</code> for "no group".
      */
     public void renameGroup(AccountJid account, String oldGroup, final String newGroup) {
@@ -594,12 +559,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         if (TextUtils.isEmpty(oldGroup)) {
-            Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-                @Override
-                public void run() {
-                    createGroupForUnfiledEntries(newGroup, roster);
-                }
-            });
+            Application.getInstance().runInBackgroundNetworkUserRequest(
+                    () -> createGroupForUnfilledEntries(newGroup, roster));
             return;
         }
 
@@ -608,32 +569,29 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    group.setName(newGroup);
-                } catch (SmackException.NoResponseException e) {
-                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
-                } catch (SmackException.NotConnectedException e) {
-                    Application.getInstance().onError(R.string.NOT_CONNECTED);
-                } catch (XMPPException.XMPPErrorException e) {
-                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
-                } catch (InterruptedException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                group.setName(newGroup);
+            } catch (SmackException.NoResponseException e) {
+                Application.getInstance().onError(R.string.CONNECTION_FAILED);
+            } catch (SmackException.NotConnectedException e) {
+                Application.getInstance().onError(R.string.NOT_CONNECTED);
+            } catch (XMPPException.XMPPErrorException e) {
+                Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+            } catch (InterruptedException e) {
+                LogManager.exception(LOG_TAG, e);
             }
         });
 
     }
 
-    private void createGroupForUnfiledEntries(String newGroup, Roster roster) {
-        final Set<RosterEntry> unfiledEntries = roster.getUnfiledEntries();
+    private void createGroupForUnfilledEntries(String newGroup, Roster roster) {
+        final Set<RosterEntry> unfilledEntries = roster.getUnfiledEntries();
 
         final org.jivesoftware.smack.roster.RosterGroup group = roster.createGroup(newGroup);
 
         try {
-            for (RosterEntry entry : unfiledEntries) {
+            for (RosterEntry entry : unfilledEntries) {
                 group.addEntry(entry);
             }
         } catch (SmackException.NoResponseException e) {
@@ -659,7 +617,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     /**
-     * @param account
      * @return Whether roster for specified account has been received.
      */
     public boolean isRosterReceived(AccountJid account) {
@@ -706,16 +663,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Notifies registered {@link OnContactChangedListener}.
      *
-     * @param entities
      */
     public static void onContactsChanged(final Collection<RosterContact> entities) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnContactChangedListener onContactChangedListener : Application
-                        .getInstance().getUIListeners(OnContactChangedListener.class)) {
-                    onContactChangedListener.onContactsChanged(entities);
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnContactChangedListener onContactChangedListener : Application
+                    .getInstance().getUIListeners(OnContactChangedListener.class)) {
+                onContactChangedListener.onContactsChanged(entities);
             }
         });
     }
@@ -742,13 +695,10 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             entities.add(rosterContact);
         }
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnChatStateListener onChatStateListener : Application
-                        .getInstance().getUIListeners(OnChatStateListener.class)) {
-                    onChatStateListener.onChatStateChanged(entities);
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnChatStateListener onChatStateListener : Application
+                    .getInstance().getUIListeners(OnChatStateListener.class)) {
+                onChatStateListener.onChatStateChanged(entities);
             }
         });
     }
@@ -849,5 +799,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         public boolean hasIncomingSubscription() {
             return pendingSubscription == PENDING_IN || pendingSubscription == PENDING_IN_OUT;
         }
+
     }
+
 }
