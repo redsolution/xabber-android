@@ -232,8 +232,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
         try{
             String name = ((GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid)).getName();
-            RosterManager.getInstance().createContact(accountJid, groupJid, name, new ArrayList<>());
             PresenceManager.getInstance().acceptSubscription(accountJid, groupJid);
+            RosterManager.getInstance().createContact(accountJid, groupJid, name, new ArrayList<>());
             invitesMap.remove(accountJid.toString(), groupJid.toString());
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
         } catch (Exception e){
@@ -550,10 +550,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public void sendUnPinMessageRequest(GroupChat groupChat) {
         //todo add privilege checking
-
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-
                 GroupPinMessageIQ iq = new GroupPinMessageIQ(groupChat.getAccount().getFullJid(),
                         groupChat.getContactJid().getJid(), "");
 
@@ -564,10 +562,10 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                         }, exception -> {
                             LogManager.exception(LOG_TAG, exception);
                             Context context = Application.getInstance().getApplicationContext();
-                            Application.getInstance().runOnUiThread(() ->
-                                    Toast.makeText(context,
-                                            context.getText(R.string.groupchat_failed_to_unpin_message),
-                                            Toast.LENGTH_SHORT).show());
+                            Application.getInstance().runOnUiThread(() -> Toast.makeText(
+                                    context,
+                                    context.getText(R.string.groupchat_failed_to_unpin_message),
+                                    Toast.LENGTH_SHORT).show());
                         });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -580,13 +578,13 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
         final AccountJid account = message.getAccount();
         final Jid contact = message.getUser().getJid();
+        final String messageId = message.getStanzaId();
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
             try {
 
-                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), contact,
-                        message.getStanzaId());
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), contact, messageId);
 
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -595,10 +593,9 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                         }, exception -> {
                             LogManager.d(LOG_TAG, "Failed to pin message");
                             Context context = Application.getInstance().getApplicationContext();
-                            Application.getInstance().runOnUiThread(() ->
-                                    Toast.makeText(context,
-                                            context.getText(R.string.groupchat_failed_to_pin_message),
-                                            Toast.LENGTH_SHORT).show());
+                            Application.getInstance().runOnUiThread(() -> Toast.makeText(context,
+                                    context.getText(R.string.groupchat_failed_to_pin_message),
+                                    Toast.LENGTH_SHORT).show());
                         });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);

@@ -36,11 +36,8 @@ public class GroupchatRealmObject extends RealmObject {
     private boolean canChangeBadge;
     private boolean canBlockUsers;
     private boolean canChangeAvatars;
-    //maybe should be NotificationState
     private String notificationMode;
-    //maybe useless
     private int membersCount;
-    //i dunno what is it
     private long present;
     private boolean collect;
     private boolean peerToPeer;

@@ -8,12 +8,14 @@ import io.realm.annotations.Index;
 
 public class SyncInfoRealmObject extends RealmObject {
 
-    public static final String FIELD_ACCOUNT = "account";
-    public static final String FIELD_USER = "user";
-    public static final String FIELD_FIRST_MAM_MESSAGE_MAM_ID = "firstMamMessageMamId";
-    public static final String FIELD_FIRST_MAM_MESSAGE_STANZA_ID = "firstMamMessageStanzaId";
-    public static final String FIELD_LAST_MESSAGE_MAM_ID = "lastMessageMamId";
-    public static final String FIELD_REMOTE_HISTORY_COMPLETELY_LOADED = "isRemoteHistoryCompletelyLoaded";
+    public static class Fields{
+        public static final String FIELD_ACCOUNT = "account";
+        public static final String FIELD_USER = "user";
+        public static final String FIELD_FIRST_MAM_MESSAGE_MAM_ID = "firstMamMessageMamId";
+        public static final String FIELD_FIRST_MAM_MESSAGE_STANZA_ID = "firstMamMessageStanzaId";
+        public static final String FIELD_LAST_MESSAGE_MAM_ID = "lastMessageMamId";
+        public static final String FIELD_REMOTE_HISTORY_COMPLETELY_LOADED = "isRemoteHistoryCompletelyLoaded";
+    }
 
     @Index
     private String account;
@@ -73,4 +75,5 @@ public class SyncInfoRealmObject extends RealmObject {
     public void setFirstMamMessageStanzaId(String firstMamMessageStanzaId) {
         this.firstMamMessageStanzaId = firstMamMessageStanzaId;
     }
+
 }

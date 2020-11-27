@@ -1247,8 +1247,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             MessageRealmObject firstMessage = getFirstMessageForMigration(chat, realm);
             SyncInfoRealmObject syncInfoRealmObject = realm.where(SyncInfoRealmObject.class)
-                    .equalTo(SyncInfoRealmObject.FIELD_ACCOUNT, accountItem.getAccount().toString())
-                    .equalTo(SyncInfoRealmObject.FIELD_USER, chat.getContactJid().toString()).findFirst();
+                    .equalTo(SyncInfoRealmObject.Fields.FIELD_ACCOUNT, accountItem.getAccount().toString())
+                    .equalTo(SyncInfoRealmObject.Fields.FIELD_USER, chat.getContactJid().toString()).findFirst();
 
             if (firstMessage != null && syncInfoRealmObject != null) {
                 realm.beginTransaction();

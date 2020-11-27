@@ -18,11 +18,8 @@ public class ResourceRealmObject extends RealmObject {
     @PrimaryKey
     private String id;
 
-
-
-
-
     public ResourceRealmObject(){
         this.id = UUID.randomUUID().toString();
     }
+
 }

@@ -59,7 +59,7 @@ public class MessageRepository {
                             .deleteAllFromRealm();
 
                     realm1.where(SyncInfoRealmObject.class)
-                            .equalTo(SyncInfoRealmObject.FIELD_ACCOUNT, account.toString())
+                            .equalTo(SyncInfoRealmObject.Fields.FIELD_ACCOUNT, account.toString())
                             .findAll()
                             .deleteAllFromRealm();
                 });

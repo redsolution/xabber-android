@@ -6,13 +6,12 @@ import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.Jid
 
-class GroupPinMessageIQ(from: Jid, to: Jid, val messageId: String)
-    : IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
+class GroupPinMessageIQ(from: Jid, to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
 
     init {
         this.type = Type.set
         this.from = from
-        this.to = to
+        this.to = to.asEntityFullJidIfPossible() ?: to
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {

@@ -23,13 +23,11 @@ public class GroupchatRepository {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(GroupchatRealmObject.class)
-                            .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
-                            .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getContactJid().getBareJid().toString())
-                            .findFirst()
-                            .deleteFromRealm();
-                });
+                realm.executeTransaction(realm1 -> realm1.where(GroupchatRealmObject.class)
+                        .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
+                        .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getContactJid().toString())
+                        .findFirst()
+                        .deleteFromRealm());
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally {
@@ -48,9 +46,9 @@ public class GroupchatRepository {
                     GroupchatRealmObject groupchatRealmObject = realm1
                             .where(GroupchatRealmObject.class)
                             .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID,
-                                    groupChat.getAccount().toString())
+                                    groupChat.getAccount().getBareJid().toString())
                             .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID,
-                                    groupChat.getContactJid().getBareJid().toString())
+                                    groupChat.getContactJid().toString())
                             .findFirst();
 
                     if (groupchatRealmObject == null)

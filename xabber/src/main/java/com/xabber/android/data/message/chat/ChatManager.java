@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -62,11 +62,10 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
-        OnRosterReceivedListener, OnAccountDisabledListener, OnDisconnectListener {
+public class ChatManager implements OnLoadListener, OnAccountRemovedListener, OnRosterReceivedListener,
+        OnAccountDisabledListener, OnDisconnectListener {
 
-    public static final Uri EMPTY_SOUND = Uri
-            .parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
+    public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
     private static ChatManager instance;
 
@@ -104,7 +103,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         if (instance == null) {
             instance = new ChatManager();
         }
-
         return instance;
     }
 
@@ -144,8 +142,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     }
 
     /**
-     * @param account
-     * @param user
      * @return typed but not sent message.
      */
     public String getTypedMessage(AccountJid account, ContactJid user) {
@@ -157,8 +153,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     }
 
     /**
-     * @param account
-     * @param user
      * @return Start selection position.
      */
     public int getSelectionStart(AccountJid account, ContactJid user) {
@@ -170,8 +164,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     }
 
     /**
-     * @param account
-     * @param user
      * @return End selection position.
      */
     public int getSelectionEnd(AccountJid account, ContactJid user) {
@@ -184,12 +176,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Sets typed message and selection options for specified chat.
-     *
-     * @param account
-     * @param user
-     * @param typedMessage
-     * @param selectionStart
-     * @param selectionEnd
      */
     public void setTyped(AccountJid account, ContactJid user, String typedMessage,
                          int selectionStart, int selectionEnd) {
@@ -228,7 +214,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     }
 
     /**
-     * @param chat
      * @return Whether specified chat is currently visible.
      */
     public boolean isVisibleChat(AbstractChat chat) {
@@ -241,8 +226,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     @Nullable
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
-            AbstractChat abstractChat = chats.get(account.toString(), user.getBareJid().toString());
-            return abstractChat;
+            return chats.get(account.toString(), user.getBareJid().toString());
         } else {
             return null;
         }
@@ -279,10 +263,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Creates and adds new regular chat to be managed.
-     *
-     * @param account
-     * @param user
-     * @return
      */
     public RegularChat createRegularChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user);
@@ -294,10 +274,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Creates and adds new group chat to be managed.
-     *
-     * @param account
-     * @param user
-     * @return
      */
     public GroupChat createGroupChat(AccountJid account, ContactJid user) {
         GroupChat chat = new GroupChat(account, user);
@@ -307,15 +283,16 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         return chat;
     }
 
-    public boolean convertRegularToGroup(ContactJid bareAddress, Stanza packet, boolean isCarbons, RegularChat regularChat){
+    public boolean convertRegularToGroup(ContactJid bareAddress, Stanza packet, boolean isCarbons,
+                                         RegularChat regularChat){
         removeChat(regularChat);
-        return createGroupChat(regularChat.getAccount(), regularChat.getContactJid()).onPacket(bareAddress, packet, isCarbons);
+        return createGroupChat(regularChat.getAccount(),
+                regularChat.getContactJid()).onPacket(bareAddress, packet, isCarbons);
     }
 
     /**
      * Adds chat to be managed.
      *
-     * @param chat
      */
     private void addChat(AbstractChat chat) {
         if (getChat(chat.getAccount(), chat.getContactJid()) != null) {
@@ -328,8 +305,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Removes chat from managed.
-     *
-     * @param chat
      */
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
@@ -357,9 +332,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Force open chat (make it active).
-     *
-     * @param account
-     * @param user
      */
     public void openChat(AccountJid account, ContactJid user) {
         getChat(account, user).openChat();
@@ -367,9 +339,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Closes specified chat (make it inactive).
-     *
-     * @param account
-     * @param user
      */
     public void closeChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
@@ -381,21 +350,14 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     /**
      * Export chat to file with specified name.
-     *
-     * @param account
-     * @param user
-     * @param fileName
-     * @throws NetworkException
      */
-    public File exportChat(AccountJid account, ContactJid user, String fileName)
-            throws NetworkException {
+    public File exportChat(AccountJid account, ContactJid user, String fileName) throws NetworkException {
 
         final File file = new File(Environment.getExternalStorageDirectory(), fileName);
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            final String titleName = RosterManager.getInstance().getName(account, user) + " ("
-                    + user + ")";
+            final String titleName = RosterManager.getInstance().getName(account, user) + " (" + user + ")";
             out.write("<html><head><title>");
             out.write(StringUtils.escapeHtml(titleName));
             out.write("</title></head><body>");
@@ -404,8 +366,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository
-                        .getChatMessages(account, user);
+                RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository.getChatMessages(account, user);
 
                 for (MessageRealmObject messageRealmObject : messageRealmObjects) {
                     if (messageRealmObject.getAction() != null) {
@@ -421,8 +382,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
                     out.write("<b>");
                     out.write(StringUtils.escapeHtml(name));
                     out.write("</b>&nbsp;(");
-                    out.write(StringUtils.getDateTimeText(new
-                            Date(messageRealmObject.getTimestamp())));
+                    out.write(StringUtils.getDateTimeText(new Date(messageRealmObject.getTimestamp())));
                     out.write(")<br />\n<p>");
                     out.write(StringUtils.escapeHtml(messageRealmObject.getText()));
                     out.write("</p><hr />\n");
@@ -437,6 +397,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         return file;
     }
 
-    public static class ChatUpdatedEvent {
-    }
+    public static class ChatUpdatedEvent { }
+
 }
