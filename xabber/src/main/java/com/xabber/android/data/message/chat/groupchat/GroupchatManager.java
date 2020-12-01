@@ -225,7 +225,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         groupChat.setPrivacyType(vcard.getPrivacyType());
         groupChat.setIndexType(vcard.getIndexType());
         groupChat.setMembershipType(vcard.getMembershipType());
-        groupChat.setName(vcard.getNickName());
+        if (vcard.getNickName() != null && !vcard.getNickName().isEmpty()) groupChat.setName(vcard.getNickName());
         groupChat.setNumberOfMembers(vcard.getMembersCount());
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
     }

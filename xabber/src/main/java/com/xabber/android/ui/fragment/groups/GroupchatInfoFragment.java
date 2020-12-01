@@ -338,7 +338,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             ((GroupChat)groupChat).setPrivacyType(vCard.getPrivacyType());
             ((GroupChat)groupChat).setIndexType(vCard.getIndexType());
             ((GroupChat)groupChat).setMembershipType(vCard.getMembershipType());
-            ((GroupChat)groupChat).setName(vCard.getNickName());
+            if (vCard.getNickName() != null && !vCard.getNickName().isEmpty())
+                ((GroupChat)groupChat).setName(vCard.getNickName());
             ((GroupChat)groupChat).setNumberOfMembers(vCard.getMembersCount());
             ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
             updateChatInfo(((GroupChat)groupChat));

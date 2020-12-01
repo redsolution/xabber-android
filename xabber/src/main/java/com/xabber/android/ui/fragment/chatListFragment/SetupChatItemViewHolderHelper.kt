@@ -76,10 +76,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         if (chat is GroupChat)
-            holder.contactNameTV.text = chat.name ?: RosterManager.getInstance()
-                    .getBestContact(chat.account, chat.contactJid).name
-        else holder.contactNameTV.text = RosterManager.getInstance()
-                .getBestContact(chat.account, chat.contactJid).name
+            holder.contactNameTV.text = chat.name
+                    ?: RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
+        else holder.contactNameTV.text = RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
 
         val accountJid = chat.account
         val contactJid = chat.contactJid
