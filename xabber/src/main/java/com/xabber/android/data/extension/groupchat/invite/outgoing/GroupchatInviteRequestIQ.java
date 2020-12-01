@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.groupchat.invite.outgoing;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 
 import org.jivesoftware.smack.packet.IQ;
 
@@ -18,10 +19,12 @@ public class GroupchatInviteRequestIQ extends IQ {
     private String reason;
     private boolean letGroupchatSendInviteMessage = false;
 
-    public GroupchatInviteRequestIQ(ContactJid groupchatJid, ContactJid inviteJid) {
+    public GroupchatInviteRequestIQ(GroupChat groupchat, ContactJid inviteJid) {
         super(ELEMENT, NAMESPACE);
         setType(Type.set);
-        setTo(groupchatJid.getBareJid());
+        if (groupchat.getFullJidIfPossible() != null)
+            setTo(groupchat.getFullJidIfPossible());
+        else setTo(groupchat.getContactJid().getJid());
         jid = inviteJid.getBareJid().toString();
     }
 
@@ -41,4 +44,5 @@ public class GroupchatInviteRequestIQ extends IQ {
         xml.optElement(CHILD_ELEMENT_SEND, letGroupchatSendInviteMessage ? "true" : "");
         return xml;
     }
+
 }

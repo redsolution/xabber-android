@@ -1,13 +1,13 @@
 package com.xabber.android.data.extension.groupchat.invite.incoming
 
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import org.jivesoftware.smack.packet.IQ
 
-class DeclineGroupInviteIQ(groupJid: ContactJid): IQ(DECLINE_ELEMENT, GroupchatManager.NAMESPACE + HASH_BLOCK) {
+class DeclineGroupInviteIQ(groupChat: GroupChat): IQ(DECLINE_ELEMENT, GroupchatManager.NAMESPACE + HASH_BLOCK) {
 
     init {
-        to = groupJid.jid
+        to = groupChat.fullJidIfPossible ?: groupChat.contactJid.jid
         type = Type.set
     }
 

@@ -1,13 +1,12 @@
 package com.xabber.android.data.extension.groupchat.settings
 
-import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 
-class GroupSettingsRequestFormQueryIQ(groupchatJid: ContactJid)
-    : GroupchatAbstractQueryIQ(NAMESPACE) {
+class GroupSettingsRequestFormQueryIQ(groupchat: GroupChat) : GroupchatAbstractQueryIQ(NAMESPACE) {
 
     init {
-        to = groupchatJid.jid
+        to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
         type = Type.get
     }
 

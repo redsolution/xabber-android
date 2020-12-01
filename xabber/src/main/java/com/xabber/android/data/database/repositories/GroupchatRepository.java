@@ -76,6 +76,8 @@ public class GroupchatRepository {
                     groupchatRealmObject
                             .setNotificationMode(groupChat.getNotificationState().getMode());
 
+                    groupchatRealmObject.setResource(groupChat.getResource());
+
                     realm1.insertOrUpdate(groupchatRealmObject);
                 });
             } catch (Exception e) {
@@ -104,7 +106,7 @@ public class GroupchatRepository {
                     gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
                     gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
                     gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                    gro.isCanBlockUsers(), gro.isCanChangeAvatars()));
+                    gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource()));
         }
 
         return list;

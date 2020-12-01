@@ -1,8 +1,8 @@
 package com.xabber.android.data.extension.groupchat.block;
 
-import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 
 import org.jivesoftware.smack.packet.IQ;
 
@@ -19,10 +19,12 @@ public class GroupchatBlocklistUnblockIQ extends IQ {
 
     private GroupchatBlocklistItemElement blockedElement;
 
-    public GroupchatBlocklistUnblockIQ(ContactJid groupchatContact, GroupchatBlocklistItemElement blockedElement) {
+    public GroupchatBlocklistUnblockIQ(GroupChat groupChat, GroupchatBlocklistItemElement blockedElement) {
         super(ELEMENT, NAMESPACE);
         this.blockedElement = blockedElement;
-        setTo(groupchatContact.getBareJid());
+        if (groupChat.getFullJidIfPossible() != null)
+            setTo(groupChat.getFullJidIfPossible());
+        else setTo(groupChat.getContactJid().getJid());
         setType(Type.set);
     }
 
@@ -36,6 +38,5 @@ public class GroupchatBlocklistUnblockIQ extends IQ {
         }
         return xml;
     }
-
 
 }

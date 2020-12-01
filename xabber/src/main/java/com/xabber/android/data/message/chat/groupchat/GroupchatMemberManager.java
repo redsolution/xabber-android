@@ -216,7 +216,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                     XMPPConnection connection = accountItem.getConnection();
 
                     for (ContactJid invite : contactsToInvite) {
-                        GroupchatInviteRequestIQ requestIQ = new GroupchatInviteRequestIQ(groupchatJid, invite);
+                        GroupchatInviteRequestIQ requestIQ = new GroupchatInviteRequestIQ((GroupChat) chat, invite);
                         requestIQ.setLetGroupchatSendInviteMessage(true);
 
                         if (reason != null && !reason.isEmpty())
@@ -243,7 +243,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
-                    GroupchatInviteListQueryIQ queryIQ = new GroupchatInviteListQueryIQ(groupchatJid);
+                    GroupchatInviteListQueryIQ queryIQ = new GroupchatInviteListQueryIQ((GroupChat) chat);
                     GroupchatInvitesResultListener listener = new GroupchatInvitesResultListener(account, groupchatJid);
                     try {
                         connection.sendIqWithResponseCallback(queryIQ, listener);
@@ -265,7 +265,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
-                    GroupchatBlocklistQueryIQ queryIQ = new GroupchatBlocklistQueryIQ(groupchatJid);
+                    GroupchatBlocklistQueryIQ queryIQ = new GroupchatBlocklistQueryIQ((GroupChat) chat);
                     GroupchatBlocklistResultListener listener = new GroupchatBlocklistResultListener(account, groupchatJid);
                     try {
                         connection.sendIqWithResponseCallback(queryIQ, listener);
@@ -282,8 +282,8 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
     public void revokeGroupchatInvitation(AccountJid account, ContactJid groupchatJid, String inviteJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-                GroupchatInviteListRevokeIQ revokeIQ =
-                        new GroupchatInviteListRevokeIQ(groupchatJid, inviteJid);
+                GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(account, groupchatJid);
+                GroupchatInviteListRevokeIQ revokeIQ = new GroupchatInviteListRevokeIQ(groupChat, inviteJid);
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -344,7 +344,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
             for (String inviteJid : inviteJids) {
                 try {
                     GroupchatInviteListRevokeIQ revokeIQ =
-                            new GroupchatInviteListRevokeIQ(groupchatJid, inviteJid);
+                            new GroupchatInviteListRevokeIQ(groupChat, inviteJid);
                     accountItem.getConnection().sendIqWithResponseCallback(revokeIQ, packet -> {
                         if (packet instanceof IQ) {
                             if (groupChat != null) groupChat.getListOfInvites().remove(inviteJid);
@@ -393,8 +393,9 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
     public void unblockGroupchatBlockedElement(AccountJid account, ContactJid groupchatJid, GroupchatBlocklistItemElement blockedElement) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
+                GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(account, groupchatJid);
                 GroupchatBlocklistUnblockIQ revokeIQ =
-                        new GroupchatBlocklistUnblockIQ(groupchatJid, blockedElement);
+                        new GroupchatBlocklistUnblockIQ(groupChat, blockedElement);
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -457,8 +458,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
 
             for (GroupchatBlocklistItemElement blockedElement : blockedElements) {
                 try {
-                    GroupchatBlocklistUnblockIQ revokeIQ =
-                            new GroupchatBlocklistUnblockIQ(groupchatJid, blockedElement);
+                    GroupchatBlocklistUnblockIQ revokeIQ = new GroupchatBlocklistUnblockIQ(groupChat, blockedElement);
                     accountItem.getConnection().sendIqWithResponseCallback(revokeIQ, packet -> {
                         if (packet instanceof IQ) {
                             if (groupChat != null)
@@ -541,8 +541,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
             try{
 
                 ChangeGroupchatMemberPreferencesIQ iq =
-                        new ChangeGroupchatMemberPreferencesIQ(groupChat.getContactJid(),
-                                groupchatMember.getId(), badge, null);
+                        new ChangeGroupchatMemberPreferencesIQ(groupChat, groupchatMember.getId(), badge, null);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -572,8 +571,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
             try{
 
                 ChangeGroupchatMemberPreferencesIQ iq =
-                        new ChangeGroupchatMemberPreferencesIQ(groupChat.getContactJid(),
-                                groupchatMember.getId(), null, nickname);
+                        new ChangeGroupchatMemberPreferencesIQ(groupChat, groupchatMember.getId(), null, nickname);
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -614,7 +612,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 if (accountItem != null) {
-                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
+                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ((GroupChat) chat);
                     queryIQ.setQueryId("");
 
                     GroupchatMeResultListener listener = new GroupchatMeResultListener(accountJid, groupchatJid);
@@ -647,7 +645,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
-                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
+                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ((GroupChat) chat);
                     String version = ((GroupChat) chat).getMembersListVersion();
                     if (version != null && !version.isEmpty()) {
                         queryIQ.setQueryVersion(version);
@@ -685,7 +683,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 if (accountItem != null) {
-                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ(groupchatJid);
+                    GroupchatMembersQueryIQ queryIQ = new GroupchatMembersQueryIQ((GroupChat) groupChat);
                     queryIQ.setQueryId(memberId);
 
                     GroupchatMembersResultListener listener = new GroupchatMembersResultListener(accountJid, groupchatJid);
@@ -706,7 +704,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
             try{
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(
-                                groupChat.getContactJid(), dataForm), packet -> {
+                                groupChat, dataForm), packet -> {
                             for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
                                 listener.onSuccessfullyChanges(groupChat);
 
@@ -729,7 +727,8 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
             if (chat instanceof GroupChat) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 if (accountItem != null) {
-                    GroupchatMemberRightsQueryIQ queryIQ = new GroupchatMemberRightsQueryIQ(groupchatJid, groupchatMember.getId());
+                    GroupchatMemberRightsQueryIQ queryIQ = new GroupchatMemberRightsQueryIQ((GroupChat) chat,
+                            groupchatMember.getId());
 
                     GroupchatMemberRightsFormResultListener listener = new GroupchatMemberRightsFormResultListener(accountJid, groupchatJid);
                     try {

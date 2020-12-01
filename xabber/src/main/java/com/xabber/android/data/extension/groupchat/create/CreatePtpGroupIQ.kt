@@ -8,7 +8,7 @@ class CreatePtpGroupIQ(private val groupchat: GroupChat, private val memberId: S
     : GroupchatCreateAbstractIQ() {
 
     init {
-        this.setTo(groupchat.contactJid.jid.domain.toString())
+        to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
         from = groupchat.account.bareJid
         type = Type.set
     }

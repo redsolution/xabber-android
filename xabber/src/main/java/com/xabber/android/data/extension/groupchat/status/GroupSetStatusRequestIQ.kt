@@ -1,14 +1,14 @@
 package com.xabber.android.data.extension.groupchat.status
 
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupSetStatusRequestIQ(groupchatJid: ContactJid, private val dataForm: DataForm)
+class GroupSetStatusRequestIQ(groupchat: GroupChat, private val dataForm: DataForm)
     : AbstractGroupStatusIQ() {
 
     init {
         type = Type.set
-        to = groupchatJid.bareJid
+        to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {

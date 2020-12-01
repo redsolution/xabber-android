@@ -44,6 +44,7 @@ public class GroupchatRealmObject extends RealmObject {
     private RealmList<String> domains;
     private RealmList<String> invited;
     private String status;
+    private String resource;
 
     public GroupchatRealmObject() {
         this.primary = UUID.randomUUID().toString();
@@ -323,6 +324,9 @@ public class GroupchatRealmObject extends RealmObject {
                 return NotificationState.NotificationMode.byDefault;
         }
     }
+
+    public String getResource() { return resource; }
+    public void setResource(String resource) { this.resource = resource; }
 
     public void setNotificationMode(NotificationState.NotificationMode notificationMode) {
         this.notificationMode = notificationMode.toString();

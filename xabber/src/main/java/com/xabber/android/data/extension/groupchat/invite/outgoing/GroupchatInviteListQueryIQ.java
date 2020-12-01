@@ -1,16 +1,18 @@
 package com.xabber.android.data.extension.groupchat.invite.outgoing;
 
-import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 
 public class GroupchatInviteListQueryIQ extends GroupchatAbstractQueryIQ {
 
     public static final String HASH_INVITE = "#invite";
 
-    public GroupchatInviteListQueryIQ(ContactJid groupchatJid) {
+    public GroupchatInviteListQueryIQ(GroupChat groupChat) {
         super(NAMESPACE + HASH_INVITE);
         setType(Type.get);
-        setTo(groupchatJid.getBareJid());
+        if (groupChat.getFullJidIfPossible() != null)
+            setTo(groupChat.getFullJidIfPossible());
+        else setTo(groupChat.getContactJid().getJid());
     }
 
     @Override

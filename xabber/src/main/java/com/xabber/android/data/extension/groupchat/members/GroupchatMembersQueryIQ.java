@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.members;
 
-import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
 
 public class GroupchatMembersQueryIQ extends GroupchatAbstractMembersIQ {
     public static final String VERSION = "version";
@@ -14,10 +14,11 @@ public class GroupchatMembersQueryIQ extends GroupchatAbstractMembersIQ {
         setType(Type.get);
     }
 
-    public GroupchatMembersQueryIQ(ContactJid groupchatJid) {
+    public GroupchatMembersQueryIQ(GroupChat groupChat) {
         super();
         setType(Type.get);
-        setTo(groupchatJid.getBareJid());
+        if (groupChat.getFullJidIfPossible() != null) setTo(groupChat.getFullJidIfPossible());
+        else setTo(groupChat.getContactJid().getJid());
     }
 
     @Override

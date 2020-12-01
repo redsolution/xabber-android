@@ -4,14 +4,14 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
-import org.jxmpp.jid.Jid
+import org.jxmpp.jid.FullJid
 
-class GroupPinMessageIQ(from: Jid, to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
+class GroupPinMessageIQ(from: FullJid, to: FullJid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
 
     init {
         this.type = Type.set
         this.from = from
-        this.to = to.asEntityFullJidIfPossible() ?: to
+        this.to = to
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {

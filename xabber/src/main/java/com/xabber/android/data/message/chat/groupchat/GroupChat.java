@@ -3,6 +3,7 @@ package com.xabber.android.data.message.chat.groupchat;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
@@ -23,6 +24,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
@@ -34,7 +36,9 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -53,7 +57,6 @@ public class GroupChat extends AbstractChat {
     private GroupchatMembershipType membershipType;
     private GroupchatPrivacyType privacyType = GroupchatPrivacyType.NONE;
 
-    //TODO may be Jid type
     private String owner;
 
     private String name;
@@ -65,6 +68,8 @@ public class GroupChat extends AbstractChat {
     private int numberOfMembers;
     private int numberOfOnlineMembers;
 
+    private String resource;
+
     //Permissions and restrictions
     private boolean canInvite;
     private boolean canChangeSettings;
@@ -73,7 +78,6 @@ public class GroupChat extends AbstractChat {
     private boolean canChangeBadge;
     private boolean canBlockUsers;
     private boolean canChangeAvatars;
-
 
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user) {
         super(account, user);
@@ -85,7 +89,7 @@ public class GroupChat extends AbstractChat {
                      String description, int numberOfMembers,
                      String pinnedMessageId, String membersListVersion, boolean canInvite,
                      boolean canChangeSettings, boolean canChangeUsersSettings, boolean canChangeNicknames,
-                     boolean canChangeBadge, boolean canBlockUsers, boolean canChangeAvatars) {
+                     boolean canChangeBadge, boolean canBlockUsers, boolean canChangeAvatars, String resource) {
         super(account, user);
         this.indexType = indexType;
         this.membershipType = membershipType;
@@ -103,18 +107,25 @@ public class GroupChat extends AbstractChat {
         this.canChangeBadge = canChangeBadge;
         this.canBlockUsers = canBlockUsers;
         this.canChangeAvatars = canChangeAvatars;
+        this.resource = resource;
     }
 
     @Override
     public boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
         if (!super.onPacket(contactJid, packet, isCarbons))
             return false;
-        final Resourcepart resource = packet.getFrom().getResourceOrNull();
-        if (packet instanceof Presence) {
-            //TODO implement presence processing
 
+        final Resourcepart resource = packet.getFrom().getResourceOrNull();
+        if (resource != null && !resource.toString().isEmpty()) {
+            this.resource = resource.toString();
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        }
+
+        if (packet instanceof Presence) {
+            //todo
         } else if (packet instanceof Message) {
             final Message message = (Message) packet;
+
             if (message.getType() == Message.Type.error)
                 return true;
 
@@ -182,7 +193,7 @@ public class GroupChat extends AbstractChat {
             String markupText = bodies.second;
             Date timestamp = null;
             if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                TimeElement timeElement = message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
 
@@ -219,6 +230,17 @@ public class GroupChat extends AbstractChat {
         return Message.Type.chat;
     }
 
+    @Nullable
+    public FullJid getFullJidIfPossible(){
+        try{
+            if (resource != null && !resource.isEmpty())
+                return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/" + resource);
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+        return null;
+    }
+
     @Override
     public MessageRealmObject createNewMessageItem(String text) {
         String id = UUID.randomUUID().toString();
@@ -228,8 +250,7 @@ public class GroupChat extends AbstractChat {
     }
 
     @Override
-    public RealmList<ForwardIdRealmObject> parseForwardedMessage(boolean ui, Stanza packet,
-                                                                 String parentMessageId) {
+    public RealmList<ForwardIdRealmObject> parseForwardedMessage(boolean ui, Stanza packet, String parentMessageId) {
         return super.parseForwardedMessage(ui, packet, parentMessageId);
     }
 
@@ -243,6 +264,11 @@ public class GroupChat extends AbstractChat {
         String text = message.getBody();
         if (text == null) return null;
 
+        if (resource != null) {
+            this.resource = resource.toString();
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        }
+
         boolean encrypted = OTRManager.getInstance().isEncrypted(text);
 
         RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
@@ -254,10 +280,10 @@ public class GroupChat extends AbstractChat {
         if (fromJid != null) originalFrom = fromJid.toString();
 
         // groupchat
-        String gropchatUserId = null;
+        String groupchatUserId = null;
         GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
-            gropchatUserId = groupchatUser.getId();
+            groupchatUserId = groupchatUser.getId();
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
@@ -277,13 +303,13 @@ public class GroupChat extends AbstractChat {
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
                     false, UniqStanzaHelper.getContactStanzaId(message), UniqStanzaHelper.getOriginId(message), attachmentRealmObjects,
-                    originalStanza, parentMessageId, originalFrom, true, forwardIdRealmObjects, true, gropchatUserId);
+                    originalStanza, parentMessageId, originalFrom, true, forwardIdRealmObjects, true, groupchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
                 false, UniqStanzaHelper.getContactStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza,
-                parentMessageId, originalFrom, true, forwardIdRealmObjects, true, gropchatUserId, isSystem);
+                parentMessageId, originalFrom, true, forwardIdRealmObjects, true, groupchatUserId, isSystem);
 
         return uid;
     }
@@ -295,9 +321,11 @@ public class GroupChat extends AbstractChat {
     }
 
     /* Getters and setters */
-
     public GroupchatIndexType getIndexType() { return indexType; }
     public void setIndexType(GroupchatIndexType indexType) { this.indexType = indexType; }
+
+    public String getResource() { return resource; }
+    public void setResource(String resource) { this.resource = resource; }
 
     public GroupchatMembershipType getMembershipType() { return membershipType; }
     public void setMembershipType(GroupchatMembershipType membershipType) { this.membershipType = membershipType; }

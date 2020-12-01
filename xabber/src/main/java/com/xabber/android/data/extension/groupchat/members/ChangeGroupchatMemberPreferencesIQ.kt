@@ -1,19 +1,19 @@
 package com.xabber.android.data.extension.groupchat.members
 
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class ChangeGroupchatMemberPreferencesIQ(val groupchatJid: ContactJid, val memberId: String,
+class ChangeGroupchatMemberPreferencesIQ(val groupchat: GroupChat, val memberId: String,
                                          val badge: String? = null, val nickname: String? = null)
     : GroupchatAbstractMembersIQ() {
 
     init {
         this.type = Type.set
-        this.to = groupchatJid.bareJid
+        this.to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
     }
 
     companion object {

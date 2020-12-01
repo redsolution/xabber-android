@@ -2,11 +2,12 @@ package com.xabber.android.data.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import com.xabber.android.data.log.LogManager;
 
-
+import org.jetbrains.annotations.NotNull;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.FullJid;
@@ -20,14 +21,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializable {
-    private static final String LOG_TAG = AccountJid.class.getSimpleName();
 
     private final @NonNull FullJid fullJid;
 
-    private static int counter = 0;
     private int order = 0;
-    private static Map<FullJid, AccountJid> instances = new ConcurrentHashMap<>();
-
+    private static final Map<FullJid, AccountJid> instances = new ConcurrentHashMap<>();
 
     public static AccountJid from(Localpart localpart, DomainBareJid domainBareJid, Resourcepart resource) {
         return getAccountJid(JidCreate.fullFrom(localpart, domainBareJid, resource));
@@ -39,7 +37,6 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
 
     private AccountJid(@NonNull FullJid fullJid) {
         this.fullJid = fullJid;
-        counter++;
     }
 
     private static AccountJid getAccountJid(@NonNull FullJid fullJid) {
@@ -65,11 +62,6 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
         this.order = order;
     }
 
-//    @Override
-//    public int compareTo(@NonNull AccountJid another) {
-//        return this.getFullJid().compareTo(another.getFullJid());
-//    }
-
     @Override
     public int compareTo(@NonNull AccountJid another) {
         return this.order - another.order;
@@ -77,7 +69,7 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof AccountJid) {
+        if (o instanceof AccountJid) {
             return getFullJid().equals(((AccountJid) o).getFullJid());
         } else {
             return false;
@@ -89,6 +81,7 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
         return getFullJid().hashCode();
     }
 
+    @NotNull
     @Override
     public String toString() {
         return getFullJid().toString();
@@ -120,4 +113,5 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
             return new AccountJid[size];
         }
     };
+
 }

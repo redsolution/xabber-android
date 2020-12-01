@@ -1,12 +1,12 @@
 package com.xabber.android.data.extension.groupchat.restrictions
 
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 
-class RequestGroupDefaultRestrictionsDataFormIQ(to: ContactJid): AbstractGroupDefaultRestrictionsIQ() {
+class RequestGroupDefaultRestrictionsDataFormIQ(groupchat: GroupChat): AbstractGroupDefaultRestrictionsIQ() {
 
     init {
         type = Type.get
-        setTo(to.bareJid.toString())
+        to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {

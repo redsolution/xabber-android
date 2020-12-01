@@ -67,6 +67,7 @@ import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PublishItem;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
@@ -220,12 +221,12 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public void processVcard(AccountJid accountJid, ContactJid groupJid, VCard vcard){
         GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid);
-        ((GroupChat)groupChat).setDescription(vcard.getDescription());
-        ((GroupChat)groupChat).setPrivacyType(vcard.getPrivacyType());
-        ((GroupChat)groupChat).setIndexType(vcard.getIndexType());
-        ((GroupChat)groupChat).setMembershipType(vcard.getMembershipType());
-        ((GroupChat)groupChat).setName(vcard.getNickName());
-        ((GroupChat)groupChat).setNumberOfMembers(vcard.getMembersCount());
+        groupChat.setDescription(vcard.getDescription());
+        groupChat.setPrivacyType(vcard.getPrivacyType());
+        groupChat.setIndexType(vcard.getIndexType());
+        groupChat.setMembershipType(vcard.getMembershipType());
+        groupChat.setName(vcard.getNickName());
+        groupChat.setNumberOfMembers(vcard.getMembersCount());
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
     }
 
@@ -244,8 +245,9 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     public void declineInvitation(AccountJid accountJid, ContactJid groupJid){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
+                GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid);
                 AccountManager.getInstance().getAccount(accountJid).getConnection().sendIqWithResponseCallback(
-                        new DeclineGroupInviteIQ(groupJid),
+                        new DeclineGroupInviteIQ(groupChat),
                         packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result){
                                 LogManager.i(LOG_TAG,
@@ -256,12 +258,10 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                 GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
                             }
                         },
-                        exception -> {
-                            LogManager.e(LOG_TAG,
-                                    "Error to decline the invite from group " + groupJid.toString()
-                                            + " to account " + accountJid.toString() + "!" + "\n"
-                                            + exception.getMessage());
-                        });
+                        exception -> LogManager.e(LOG_TAG,
+                                "Error to decline the invite from group " + groupJid.toString()
+                                        + " to account " + accountJid.toString() + "!" + "\n"
+                                        + exception.getMessage()));
             } catch (Exception e){
                 LogManager.e(LOG_TAG,
                         "Error to decline the invite from group " + groupJid.toString()
@@ -349,7 +349,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new GroupStatusFormRequestIQ(groupchat.getContactJid()), packet -> {
+                        .sendIqWithResponseCallback(new GroupStatusFormRequestIQ(groupchat), packet -> {
                             if (packet instanceof GroupStatusDataFormIQ
                                     && ((GroupStatusDataFormIQ) packet).getType() == IQ.Type.result)
                                 for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
@@ -374,7 +374,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new GroupSetStatusRequestIQ(groupChat.getContactJid(), dataForm), packet -> {
+                        .sendIqWithResponseCallback(new GroupSetStatusRequestIQ(groupChat, dataForm), packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
                                 for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
                                     listener.onStatusSuccessfullyChanged(groupChat);
@@ -398,7 +398,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new RequestGroupDefaultRestrictionsDataFormIQ(groupchat.getContactJid()), packet -> {
+                        .sendIqWithResponseCallback(new RequestGroupDefaultRestrictionsDataFormIQ(groupchat), packet -> {
                             if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
                                     && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
                                 for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
@@ -423,7 +423,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new RequestToChangeGroupDefaultRestrictionsIQ(groupChat.getContactJid(), dataForm), packet -> {
+                        .sendIqWithResponseCallback(new RequestToChangeGroupDefaultRestrictionsIQ(groupChat, dataForm), packet -> {
                             if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
                                     && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
                                 for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
@@ -448,7 +448,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat.getContactJid()), packet -> {
+                        .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat), packet -> {
                             if (packet instanceof GroupSettingsDataFormResultIQ
                                     && ((GroupSettingsDataFormResultIQ) packet).getType() == IQ.Type.result)
                                 for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
@@ -473,7 +473,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
-                        .sendIqWithResponseCallback(new SetGroupSettingsRequestIQ(groupchat.getContactJid(), dataForm), packet -> {
+                        .sendIqWithResponseCallback(new SetGroupSettingsRequestIQ(groupchat, dataForm), packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
                                 for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
                                     listener.onGroupSettingsSuccessfullyChanged(groupchat);
@@ -553,7 +553,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 GroupPinMessageIQ iq = new GroupPinMessageIQ(groupChat.getAccount().getFullJid(),
-                        groupChat.getContactJid().getJid(), "");
+                        groupChat.getFullJidIfPossible(), "");
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -577,14 +577,15 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         //todo add privilege checking
 
         final AccountJid account = message.getAccount();
-        final Jid contact = message.getUser().getJid();
+        final ContactJid contact = message.getUser();
         final String messageId = message.getStanzaId();
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
             try {
-
-                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), contact, messageId);
+                FullJid fullJid =
+                        ((GroupChat) ChatManager.getInstance().getChat(account, contact)).getFullJidIfPossible();
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), fullJid, messageId);
 
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {

@@ -1,13 +1,14 @@
 package com.xabber.android.data.extension.groupchat.rights
 
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupchatMemberSetRightsQueryIQ(private val dataForm: DataForm, groupchatJid: ContactJid): GroupchatAbstractRightsIQ(){
+class GroupchatMemberSetRightsQueryIQ(private val dataForm: DataForm, groupchat: GroupChat):
+        GroupchatAbstractRightsIQ(){
 
     init {
         this.type = Type.set
-        this.to = groupchatJid.bareJid
+        this.to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
