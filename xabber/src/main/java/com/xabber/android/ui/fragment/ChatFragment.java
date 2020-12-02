@@ -366,9 +366,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(),
                                 PERMISSIONS_REQUEST_RECORD_AUDIO)) {
                             if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
-                                LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)
-                                        view12.getLayoutParams();
-
                                 recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
                                 recordSaveAllowed = false;
                                 slideToCancelLayout.setAlpha(1.0f);
@@ -795,7 +792,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         this.user = contactJid;
 
         AbstractChat abstractChat = getChat();
-        showSecurityButton(true);
+        showSecurityButton(abstractChat instanceof RegularChat);
 
         if (abstractChat != null) {
             messageRealmObjects = abstractChat.getMessages();
@@ -806,7 +803,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         } else {
             messageRealmObjects.addChangeListener(new RealmChangeListener<RealmResults<MessageRealmObject>>() {
                 @Override
-                public void onChange(RealmResults<MessageRealmObject> element) {
+                public void onChange(@NotNull RealmResults<MessageRealmObject> element) {
                     setIntroView();
                     inflateIntroView(false);
                     messageRealmObjects.removeChangeListener(this);
@@ -1317,7 +1314,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             sendButton.setVisibility(View.GONE);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
-            showSecurityButton(true);
+            showSecurityButton(getChat() instanceof RegularChat);
             recordButton.setVisibility(View.VISIBLE);
             attachButton.setVisibility(View.VISIBLE);
         } else {
