@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -7,6 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
@@ -19,7 +22,7 @@ import com.xabber.android.utils.Utils;
 
 public class ForwardedVH extends FileMessageVH {
 
-    private TextView tvForwardedCount;
+    private final TextView tvForwardedCount;
 
     public ForwardedVH(View itemView, MessageClickListener messageListener,
                        MessageLongClickListener longClickListener, FileListener listener,
@@ -28,6 +31,7 @@ public class ForwardedVH extends FileMessageVH {
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData, String accountJid) {
         super.bind(messageRealmObject, extraData);
 
@@ -80,8 +84,8 @@ public class ForwardedVH extends FileMessageVH {
         Drawable shadowDrawable = context.getResources().getDrawable(
                 haveForwarded ? R.drawable.fwd_shadow : R.drawable.msg_shadow);
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-        messageBalloon.setBackgroundDrawable(balloonDrawable);
-        messageShadow.setBackgroundDrawable(shadowDrawable);
+        messageBalloon.setBackground(balloonDrawable);
+        messageShadow.setBackground(shadowDrawable);
 
 
         float border = 3.5f;
@@ -92,16 +96,6 @@ public class ForwardedVH extends FileMessageVH {
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border, context));
-                /*messageBalloon.setPadding(
-                        Utils.dipToPx(3f, context),
-                        Utils.dipToPx(-2f, context),
-                        Utils.dipToPx(3f, context),
-                        Utils.dipToPx(-15f, context));*/
-                /*messageInfo.setPadding(
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(-7f, context),
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(0f, context));*/
             }
         }
 
@@ -112,9 +106,10 @@ public class ForwardedVH extends FileMessageVH {
             TypedValue typedValue = new TypedValue();
             extraData.getContext().getTheme().resolveAttribute(R.attr.message_background,
                     typedValue, true);
-            setUpMessageBalloonBackground(messageBalloon,
-                    extraData.getContext().getResources().getColorStateList(typedValue.resourceId));
+            setUpMessageBalloonBackground(messageBalloon, AppCompatResources.getColorStateList(extraData.getContext(),
+                    typedValue.resourceId));
         }
 
     }
+
 }

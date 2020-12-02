@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -17,12 +19,12 @@ import com.xabber.android.utils.Utils;
 
 public class OutgoingMessageVH extends FileMessageVH {
 
-    OutgoingMessageVH(View itemView, MessageClickListener messageListener,
-                      MessageLongClickListener longClickListener,
+    OutgoingMessageVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
                       FileListener fileListener, @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
 
@@ -61,22 +63,21 @@ public class OutgoingMessageVH extends FileMessageVH {
             forwardLayout.setLayoutParams(forwardedParams);
         } else if (forwardLayout != null) forwardLayout.setVisibility(View.GONE);
 
-        boolean imageAttached = false;
         if(messageRealmObject.haveAttachments()) {
             if (messageRealmObject.hasImage()) {
-                imageAttached = true;
                 needTail = false;
             }
         }
+
         // setup BACKGROUND
         Drawable shadowDrawable = context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_out_shadow : R.drawable.fwd_shadow)
                         : (needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow));
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-        messageBalloon.setBackgroundDrawable(context.getResources().getDrawable(
+        messageBalloon.setBackground(context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_out : R.drawable.fwd)
                             : (needTail ? R.drawable.msg_out : R.drawable.msg)));
-        messageShadow.setBackgroundDrawable(shadowDrawable);
+        messageShadow.setBackground(shadowDrawable);
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -110,16 +111,18 @@ public class OutgoingMessageVH extends FileMessageVH {
                 } else messageInfo.setPadding(0, 0, Utils.dipToPx(border+1.5f, context), Utils.dipToPx(4.7f, context));
             }
         }
+
         // setup BACKGROUND COLOR
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
-        setUpMessageBalloonBackground(messageBalloon, context.getResources().getColorStateList(typedValue.resourceId));
+        setUpMessageBalloonBackground(messageBalloon,
+                AppCompatResources.getColorStateList(context, typedValue.resourceId));
 
         // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
-                subscribeForUploadProgress(context);
+                subscribeForUploadProgress();
             }
 
             @Override
@@ -134,9 +137,6 @@ public class OutgoingMessageVH extends FileMessageVH {
         progressBar.setVisibility(View.GONE);
 
         boolean isFileUploadInProgress = MessageRealmObject.isUploadFileMessage(messageRealmObject);
-
-        //if (isFileUploadInProgress)
-        //    progressBar.setVisibility(View.VISIBLE);
 
         int messageIcon = R.drawable.ic_message_not_sent_14dp;
 
@@ -170,4 +170,5 @@ public class OutgoingMessageVH extends FileMessageVH {
         if (messageIcon != 0) statusIcon.setImageResource(messageIcon);
         else statusIcon.setVisibility(View.GONE);
     }
+
 }

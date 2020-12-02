@@ -40,8 +40,8 @@ import io.realm.Sort;
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
-    private MessageClickListener listener;
-    private MessageLongClickListener longClickListener;
+    private final MessageClickListener listener;
+    private final MessageLongClickListener longClickListener;
     public boolean isUnread;
     public boolean needName;
 
@@ -67,8 +67,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         void onLongMessageClick(int position);
     }
 
-    public MessageVH(View itemView, MessageClickListener listener,
-                     MessageLongClickListener longClickListener, @StyleRes int appearance) {
+    public MessageVH(View itemView, MessageClickListener listener, MessageLongClickListener longClickListener,
+                     @StyleRes int appearance) {
+
         super(itemView, appearance);
         this.listener = listener;
         this.longClickListener = longClickListener;
@@ -189,7 +190,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         if (extraData.isChecked())
             itemView.setBackgroundColor(extraData.getContext().getResources()
                     .getColor(R.color.unread_messages_background));
-        else itemView.setBackgroundDrawable(null);
+        else itemView.setBackground(null);
     }
 
     void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
@@ -265,6 +266,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             else view.setBackgroundDrawable(wrapDrawable);
             view.setPadding(pL, pT, pR, pB);
         }
-
     }
+
 }

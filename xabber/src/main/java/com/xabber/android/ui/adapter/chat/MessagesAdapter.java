@@ -136,14 +136,16 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
         boolean noFlex = messageRealmObject.haveForwardedMessages() || messageRealmObject.haveAttachments();
         boolean isImage = messageRealmObject.hasImage();
-        boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage) || (!messageRealmObject.isAttachmentImageOnly());
+        boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
+                || (!messageRealmObject.isAttachmentImageOnly());
 
         if (messageRealmObject.isIncoming()) {
             if(isImage) {
                 return notJustImage? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
-            }else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+            } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
 
-        } else if(isImage) return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+        } else if(isImage)
+            return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
         else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
@@ -237,15 +239,19 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageRealmObject.getUniqueId());
 
         // groupchat user
-        GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
+        GroupchatMember groupchatMember =
+                GroupchatMemberManager.getInstance().getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
 
         // need tail
         boolean needTail = false;
         if (groupchatMember != null) {
             MessageRealmObject nextMessage = getMessageItem(position + 1);
             if (nextMessage != null) {
-                GroupchatMember user2 = GroupchatMemberManager.getInstance().getGroupchatMemberById(nextMessage.getGroupchatUserId());
-                if (user2 != null) needTail = !groupchatMember.getId().equals(user2.getId());
+                GroupchatMember user2 =
+                        GroupchatMemberManager.getInstance().getGroupchatMemberById(nextMessage.getGroupchatUserId());
+
+                if (user2 != null)
+                    needTail = !groupchatMember.getId().equals(user2.getId());
                 else needTail = true;
             } else needTail = true;
         } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
@@ -270,9 +276,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
-        MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener,
-                context, userName, colorStateList, groupchatMember, accountMainColor, mentionColor, mainMessageTimestamp,
-                showOriginalOTR, unread, checked, needTail, needDate, needName);
+        MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, context, userName, colorStateList,
+                groupchatMember, accountMainColor, mentionColor, mainMessageTimestamp, showOriginalOTR, unread, checked,
+                needTail, needDate, needName);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -312,7 +318,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 if (holder instanceof GroupchatSystemMessageVH) {
                     ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
                 }
-
         }
     }
 
@@ -377,19 +382,24 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+        if (isCheckMode)
+            addOrRemoveCheckedItem(messagePosition);
         else fileListener.onImageClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
     public void onFileClick(int messagePosition, int attachmentPosition, String messageUID) {
-        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+        if (isCheckMode)
+            addOrRemoveCheckedItem(messagePosition);
         else fileListener.onFileClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
-    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp) {
-        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID,
+                             Long timestamp) {
+
+        if (isCheckMode)
+            addOrRemoveCheckedItem(messagePosition);
         else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, timestamp);
     }
 
@@ -414,7 +424,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     /** Checked items */
-
     private void addOrRemoveCheckedItem(int position) {
         if (recyclerView.isComputingLayout() || recyclerView.isAnimating())
             return;
@@ -459,7 +468,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     /** Message Extra Data */
-
     public static class MessageExtraData {
 
         private final Context context;
@@ -582,4 +590,5 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 return 0;
         }
     }
+
 }

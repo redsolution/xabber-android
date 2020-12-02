@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -42,7 +43,6 @@ import com.xabber.android.ui.widget.ImageGridBuilder;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 public class FileMessageVH extends MessageVH
@@ -60,8 +60,8 @@ public class FileMessageVH extends MessageVH
     //public static final int IMAGE_ROUNDED_BORDER_CORNERS = 5;
     //public static final int IMAGE_ROUNDED_BORDER_WIDTH = 2;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private FileListener listener;
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final FileListener listener;
     private int imageCounter;
     private int imageCount;
     private int fileCounter;
@@ -349,6 +349,7 @@ public class FileMessageVH extends MessageVH
         listener.onDownloadError(error);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         int adapterPosition = getAdapterPosition();
@@ -359,6 +360,7 @@ public class FileMessageVH extends MessageVH
 
         switch (v.getId()) {
             case R.id.ivImage0:
+            case R.id.message_image:
                 listener.onImageClick(adapterPosition, 0, messageId);
                 break;
             case R.id.ivImage1:
@@ -376,9 +378,6 @@ public class FileMessageVH extends MessageVH
             case R.id.ivImage5:
                 listener.onImageClick(adapterPosition, 5, messageId);
                 break;
-            case R.id.message_image:
-                listener.onImageClick(adapterPosition, 0, messageId);
-                break;
             case R.id.ivCancelUpload:
                 listener.onUploadCancel();
                 break;
@@ -389,21 +388,16 @@ public class FileMessageVH extends MessageVH
 
     /** Upload progress subscription */
 
-    protected void subscribeForUploadProgress(final Context context) {
+    protected void subscribeForUploadProgress() {
         subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
-                .doOnNext(new Action1<HttpFileUploadManager.ProgressData>() {
-                    @Override
-                    public void call(HttpFileUploadManager.ProgressData progressData) {
-                        setUpProgress(context, progressData);
-                    }
-                }).subscribe());
+                .doOnNext(this::setUpProgress).subscribe());
     }
 
     protected void unsubscribeAll() {
         subscriptions.clear();
     }
 
-    private void setUpProgress(Context context, HttpFileUploadManager.ProgressData progressData) {
+    private void setUpProgress(HttpFileUploadManager.ProgressData progressData) {
         if (progressData != null && messageId.equals(progressData.getMessageId())) {
             if (progressData.isCompleted()) {
                 showProgress(false);
@@ -417,8 +411,6 @@ public class FileMessageVH extends MessageVH
             } else {
                 showProgress(true);
                 if (messageFileInfo != null) {
-                    /*messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
-                            progressData.getProgress() + "/" + progressData.getFileCount()));*/
                     messageFileInfo.setText(R.string.message_status_uploading);
                 }
                 if (progressData.getProgress()<=imageCount) {
@@ -438,7 +430,6 @@ public class FileMessageVH extends MessageVH
     }
 
     private void showProgress(boolean show) {
-        //if (ivCancelUpload != null) ivCancelUpload.setVisibility(show ? View.VISIBLE : View.GONE);
         if (messageFileInfo != null) {
             messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
         }
@@ -452,7 +443,7 @@ public class FileMessageVH extends MessageVH
         for (int i = 0;i<startAt;i++) {
             showFileUploadProgress(view.getChildAt(i), false);
         }
-        for (int j = (startAt>=0) ? startAt : 0; j<endAt; j++) {
+        for (int j = Math.max(startAt, 0); j<endAt; j++) {
             showFileUploadProgress(view.getChildAt(j), true);
         }
     }
@@ -522,4 +513,5 @@ public class FileMessageVH extends MessageVH
                 return view.findViewById(R.id.ivImage0Shadow);
         }
     }
+
 }

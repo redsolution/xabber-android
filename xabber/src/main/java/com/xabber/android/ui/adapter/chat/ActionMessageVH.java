@@ -15,7 +15,7 @@ import java.util.Date;
 
 public class ActionMessageVH extends BasicMessageVH {
 
-    private TextView messageTime;
+    private final TextView messageTime;
 
     public ActionMessageVH(View itemView) {
         super(itemView);
@@ -29,6 +29,7 @@ public class ActionMessageVH extends BasicMessageVH {
 
         String name = RosterManager.getInstance().getBestContact(account, messageRealmObject.getUser()).getName();
         messageText.setText(action.getText(context, name, MessageRealmObject.getSpannable(messageRealmObject).toString()));
+
         if (action == ChatAction.contact_deleted
                 || action == ChatAction.contact_blocked
                 || action == ChatAction.contact_unblocked) {
@@ -36,7 +37,9 @@ public class ActionMessageVH extends BasicMessageVH {
         } else {
             messageTime.setText(time);
         }
+
         this.needDate = needDate;
         date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
     }
+
 }

@@ -17,6 +17,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.groupchat.GroupPinMessageIQ;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
@@ -195,7 +196,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             ContactJid groupJid = ContactJid.from(inviteExtensionElement.getGroupJid());
             String reason = inviteExtensionElement.getReason();
 
-            // todo setup privacy
             GroupInviteRealmObject giro = new GroupInviteRealmObject();
             giro.setAccountJid(accountJid);
             giro.setAccountJid(accountJid);
@@ -237,6 +237,12 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             RosterManager.getInstance().createContact(accountJid, groupJid, name, new ArrayList<>());
             invitesMap.remove(accountJid.toString(), groupJid.toString());
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
+            BlockingManager.getInstance().blockContact(accountJid, groupJid, new BlockingManager.BlockContactListener() {
+                @Override
+                public void onSuccessBlock() { }
+                @Override
+                public void onErrorBlock() { }
+            });
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
@@ -256,6 +262,14 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                                 + " successfully declined.");
                                 invitesMap.remove(accountJid.toString(), groupJid.toString());
                                 GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
+                                ChatManager.getInstance().removeChat(groupChat);
+                                BlockingManager.getInstance().blockContact(accountJid, groupJid,
+                                        new BlockingManager.BlockContactListener() {
+                                    @Override
+                                    public void onSuccessBlock() { }
+                                    @Override
+                                    public void onErrorBlock() { }
+                                });
                             }
                         },
                         exception -> LogManager.e(LOG_TAG,

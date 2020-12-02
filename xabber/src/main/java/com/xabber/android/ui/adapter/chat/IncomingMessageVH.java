@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -28,7 +29,7 @@ public class IncomingMessageVH  extends FileMessageVH {
 
     public ImageView avatar;
     public ImageView avatarBackground;
-    private BindListener listener;
+    private final BindListener listener;
 
     public interface BindListener {
         void onBind(MessageRealmObject message);
@@ -59,8 +60,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         this.listener = listener;
     }
 
-    public void bind(final MessageRealmObject messageRealmObject,
-                     MessagesAdapter.MessageExtraData extraData) {
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void bind(final MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+
         super.bind(messageRealmObject, extraData);
 
         Context context = extraData.getContext();
@@ -115,8 +117,8 @@ public class IncomingMessageVH  extends FileMessageVH {
                             : (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black),
                 PorterDuff.Mode.MULTIPLY);
-        messageBalloon.setBackgroundDrawable(balloonDrawable);
-        messageShadow.setBackgroundDrawable(shadowDrawable);
+        messageBalloon.setBackground(balloonDrawable);
+        messageShadow.setBackground(shadowDrawable);
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -256,4 +258,5 @@ public class IncomingMessageVH  extends FileMessageVH {
             }
         }
     }
+
 }

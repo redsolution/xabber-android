@@ -17,14 +17,15 @@ public class BasicMessageVH extends RecyclerView.ViewHolder {
     BasicMessageVH(View itemView, @StyleRes int appearance) {
         super(itemView);
 
-        messageText = (TextView) itemView.findViewById(R.id.message_text);
+        messageText = itemView.findViewById(R.id.message_text);
         messageText.setTextAppearance(itemView.getContext(), appearance);
     }
 
     BasicMessageVH(View itemView) {
         super(itemView);
 
-        messageText = (TextView) itemView.findViewById(R.id.message_text);
+        messageText = itemView.findViewById(R.id.message_text);
     }
+
 }
 
