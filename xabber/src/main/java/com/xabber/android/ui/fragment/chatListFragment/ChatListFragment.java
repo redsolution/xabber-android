@@ -22,7 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -73,8 +72,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,9 +81,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
         OnStatusChangeListener, ChatListUpdateBackpressure.UpdatableObject {
 
-    public static final int NOT_SPECIFIED = 0;
-    public static final int SHOW_AVATARS = 1;
-    public static final int DO_NOT_SHOW_AVATARS = 2;
     private ChatListUpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
     private List<AbstractChat> items;
@@ -258,7 +252,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
         DividerItemDecoration divider = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
-        divider.setChatListOffsetMode(SettingsManager.contactsShowAvatars() ? SHOW_AVATARS : DO_NOT_SHOW_AVATARS);
+        divider.setChatListOffsetMode(SettingsManager.contactsShowAvatars() ? ChatListAvatarState.SHOW_AVATARS : ChatListAvatarState.DO_NOT_SHOW_AVATARS);
         recyclerView.addItemDecoration(divider);
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
@@ -510,15 +504,17 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatAvatarClick(@NotNull AbstractChat item) {
-        Intent intent;
-        try {
-            intent = ContactViewerActivity.createIntent(getActivity(), item.getAccount(),
-                    item.getContactJid());
-            getActivity().startActivity(intent);
-        } catch (Exception e) {
-            LogManager.exception(ChatListFragment.class.toString(), e);
+        if (GroupchatManager.getInstance().hasUnreadInvite(item.getAccount(), item.getContactJid()))
+            onChatItemClick(item);
+        else{
+            Intent intent;
+            try {
+                intent = ContactViewerActivity.createIntent(getActivity(), item.getAccount(), item.getContactJid());
+                getActivity().startActivity(intent);
+            } catch (Exception e) {
+                LogManager.exception(ChatListFragment.class.toString(), e);
+            }
         }
-
     }
 
     @Override
@@ -733,13 +729,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     public interface ChatListFragmentListener {
         void onChatClick(AbstractContact contact);
-
         void onChatListStateChanged(ChatListState chatListState);
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NOT_SPECIFIED, SHOW_AVATARS, DO_NOT_SHOW_AVATARS})
-    public @interface ChatListAvatarState {
+    public enum ChatListAvatarState{
+        NOT_SPECIFIED, SHOW_AVATARS, DO_NOT_SHOW_AVATARS
     }
 
 }

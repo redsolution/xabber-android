@@ -28,7 +28,7 @@ public class GroupInviteRepository {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                 RealmResults<GroupInviteRealmObject> currentInvites = realm.where(GroupInviteRealmObject.class)
-                        .equalTo(GroupInviteRealmObject.Fields.ACCOUNT_JID, accountJid.getBareJid().toString())
+                        .equalTo(GroupInviteRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
                         .findAll();
                 if (Looper.myLooper() == Looper.getMainLooper()){
                     result.addAll(currentInvites);

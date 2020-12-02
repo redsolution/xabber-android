@@ -46,7 +46,7 @@ public class GroupchatRepository {
                     GroupchatRealmObject groupchatRealmObject = realm1
                             .where(GroupchatRealmObject.class)
                             .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID,
-                                    groupChat.getAccount().getBareJid().toString())
+                                    groupChat.getAccount().toString())
                             .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID,
                                     groupChat.getContactJid().toString())
                             .findFirst();

@@ -16,6 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 
+import org.jetbrains.annotations.NotNull;
+
+import static com.xabber.android.ui.fragment.chatListFragment.ChatListFragment.ChatListAvatarState.DO_NOT_SHOW_AVATARS;
+import static com.xabber.android.ui.fragment.chatListFragment.ChatListFragment.ChatListAvatarState.NOT_SPECIFIED;
+import static com.xabber.android.ui.fragment.chatListFragment.ChatListFragment.ChatListAvatarState.SHOW_AVATARS;
+
 /**
  * DividerItemDecoration is a {@link RecyclerView.ItemDecoration} that can be used as a divider
  * between items of a {@link LinearLayoutManager}. It supports both {@link #HORIZONTAL} and
@@ -38,8 +44,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mDivider;
     private boolean skipDividerOnLastItem = false;
-    @ChatListFragment.ChatListAvatarState
-    private int chatListOffsetMode = 0;
+    private ChatListFragment.ChatListAvatarState chatListOffsetMode = NOT_SPECIFIED;
 
     /**
      * Current orientation. Either {@link #HORIZONTAL} or {@link #VERTICAL}.
@@ -84,7 +89,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         skipDividerOnLastItem = skip;
     }
 
-    public void setChatListOffsetMode(@ChatListFragment.ChatListAvatarState int offsetMode) {
+    public void setChatListOffsetMode(ChatListFragment.ChatListAvatarState offsetMode) {
         chatListOffsetMode = offsetMode;
     }
 
@@ -101,7 +106,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(@NotNull Canvas c, RecyclerView parent, @NotNull RecyclerView.State state) {
         if (parent.getLayoutManager() == null || mDivider == null) {
             return;
         }
@@ -128,10 +133,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             right = parent.getWidth();
         }
 
-        if (chatListOffsetMode != ChatListFragment.NOT_SPECIFIED) {
-            if (chatListOffsetMode == ChatListFragment.SHOW_AVATARS) {
+        if (chatListOffsetMode != NOT_SPECIFIED) {
+            if (chatListOffsetMode == SHOW_AVATARS) {
                 tempLeft += (int) (parent.getContext().getResources().getDisplayMetrics().density * 64f);
-            } else if (chatListOffsetMode == ChatListFragment.DO_NOT_SHOW_AVATARS) {
+            } else if (chatListOffsetMode == DO_NOT_SHOW_AVATARS) {
                 tempLeft += (int) (parent.getContext().getResources().getDisplayMetrics().density * 36f);
             }
         }
@@ -188,8 +193,8 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                               RecyclerView.State state) {
+    public void getItemOffsets(@NotNull Rect outRect, @NotNull View view, @NotNull RecyclerView parent,
+                               @NotNull RecyclerView.State state) {
         if (mDivider == null) {
             outRect.setEmpty();
             return;
@@ -202,7 +207,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             }
         }
 
-        if (chatListOffsetMode != 0) { // i.e. we have specified the offset mode, meaning this is ChatList
+        if (chatListOffsetMode != NOT_SPECIFIED) { // i.e. we have specified the offset mode, meaning this is ChatList
             outRect.setEmpty();
             return;
         }
@@ -213,4 +218,5 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             outRect.set(0, 0, mDivider.getIntrinsicWidth(), 0);
         }
     }
+
 }
