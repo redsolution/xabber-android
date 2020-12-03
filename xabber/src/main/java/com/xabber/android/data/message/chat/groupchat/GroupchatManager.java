@@ -41,6 +41,9 @@ import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
@@ -211,16 +214,30 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             invitesMap.put(accountJid.toString(), groupJid.toString(), giro);
             GroupInviteRepository.saveInviteToRealm(giro);
 
-            ChatManager.getInstance().createGroupChat(accountJid, groupJid);
+            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro);
 
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
 
+        EventBus.getDefault().post(new NewMessageEvent());
+        EventBus.getDefault().post(new MessageUpdateEvent());
+    }
+
+    public void readInvite(AccountJid accountJid, ContactJid groupJid){
+        GroupInviteRealmObject giro = invitesMap.get(accountJid.toString(), groupJid.toString());
+        giro.setRead(true);
+        GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
+        GroupInviteRepository.saveInviteToRealm(giro);
+        EventBus.getDefault().post(new NewMessageEvent());
+        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 
     public void processVcard(AccountJid accountJid, ContactJid groupJid, VCard vcard){
-        GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid);
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(accountJid, groupJid);
+        if (!(abstractChat instanceof GroupChat)) return;
+
+        GroupChat groupChat = (GroupChat) abstractChat;
         groupChat.setDescription(vcard.getDescription());
         groupChat.setPrivacyType(vcard.getPrivacyType());
         groupChat.setIndexType(vcard.getIndexType());
@@ -246,6 +263,9 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
+
+        EventBus.getDefault().post(new NewMessageEvent());
+        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 
     public void declineInvitation(AccountJid accountJid, ContactJid groupJid){
@@ -283,16 +303,17 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                 + e.getMessage());
             }
         });
-
+        EventBus.getDefault().post(new NewMessageEvent());
+        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 
-    public boolean hasUnreadInvite(AccountJid accountJid, ContactJid groupchatJid){
+    public boolean hasInvite(AccountJid accountJid, ContactJid groupchatJid){
         GroupInviteRealmObject giro = invitesMap.get(accountJid.toString(), groupchatJid.toString());
-        return giro != null && !giro.isRead();
+        return giro != null && !BlockingManager.getInstance().contactIsBlocked(accountJid, groupchatJid);
     }
 
     public GroupInviteRealmObject getInvite(AccountJid accountJid, ContactJid groupJid){
-        if (hasUnreadInvite(accountJid, groupJid))
+        if (hasInvite(accountJid, groupJid))
             return invitesMap.get(accountJid.toString(), groupJid.toString());
         else return null;
     }

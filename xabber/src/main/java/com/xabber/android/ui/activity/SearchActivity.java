@@ -95,6 +95,11 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         return intent;
     }
 
+    @Override
+    public void onChatListUpdated() {
+
+    }
+
     public static Intent createRoomInviteIntent(Context context, AccountJid account,
                                                 ContactJid room) {
 

@@ -152,7 +152,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
         holder.timeTV.visibility = View.VISIBLE
         when {
-            GroupchatManager.getInstance().hasUnreadInvite(chat.account, chat.contactJid) -> {
+            GroupchatManager.getInstance().hasInvite(chat.account, chat.contactJid) -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
                         Date(GroupchatManager.getInstance().getInvite(chat.account, chat.contactJid).date))
             }
@@ -167,8 +167,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
         val context = holder.itemView.context
 
-        if (GroupchatManager.getInstance().hasUnreadInvite(chat.account, chat.contactJid)
-                && chat is GroupChat){
+        if (chat is GroupChat
+                && chat.lastMessage == null
+                && GroupchatManager.getInstance().hasInvite(chat.account, chat.contactJid)){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
                     chat.privacyType.getLocalizedString().decapitalize())
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)

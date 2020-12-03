@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -402,6 +403,13 @@ public class GroupChat extends AbstractChat {
         this.listOfBlockedElements = listOfBlockedElements;
     }
 
+    public void createFakeMessageForInvite(GroupInviteRealmObject giro){
+        createAndSaveNewMessage(true, UUID.randomUUID().toString(), null, giro.getReason(), null,
+                null, new Date(giro.getDate()), null, true, !giro.isRead(), false,
+                false, giro.getId(), giro.getId(), null, null, null,
+                false, null, false, null, false);
+    }
+
     @Override
     public Date getLastTime() {
         MessageRealmObject lastMessage = getLastMessage();
@@ -411,16 +419,20 @@ public class GroupChat extends AbstractChat {
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            if (GroupchatManager.getInstance().hasUnreadInvite(account, contactJid))
+            if (GroupchatManager.getInstance().hasInvite(account, contactJid))
                 return new Date(GroupchatManager.getInstance().getInvite(account, contactJid).getDate());
             return null;
         }
     }
 
+
+
     @Override
     public int getUnreadMessageCount() {
-        if (GroupchatManager.getInstance().hasUnreadInvite(account, contactJid)) return super.getUnreadMessageCount() + 1;
-        else return super.getUnreadMessageCount();
+        if (GroupchatManager.getInstance().hasInvite(account, contactJid)
+                && !GroupchatManager.getInstance().getInvite(account, contactJid).isRead()){
+            return super.getUnreadMessageCount() + 1;
+        } else return super.getUnreadMessageCount();
     }
 
 }

@@ -504,7 +504,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatAvatarClick(@NotNull AbstractChat item) {
-        if (GroupchatManager.getInstance().hasUnreadInvite(item.getAccount(), item.getContactJid()))
+        if (GroupchatManager.getInstance().hasInvite(item.getAccount(), item.getContactJid()))
             onChatItemClick(item);
         else{
             Intent intent;
@@ -561,19 +561,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             if (currentChatsState == ChatListState.recent)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ( (abstractChat.getLastMessage() != null
-                            || GroupchatManager.getInstance().hasUnreadInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && !abstractChat.isArchived())
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.unread)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupchatManager.getInstance().hasUnreadInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.getUnreadMessageCount() != 0)
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.archived)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupchatManager.getInstance().hasUnreadInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupchatManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.isArchived())
                         newList.add(abstractChat);
 
@@ -603,6 +603,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         /* Update another elements */
         updateToolbar();
         updateItems(newList);
+        chatListFragmentListener.onChatListUpdated();
     }
 
     private ArrayList<AbstractChat> concatLists(ArrayList<AbstractChat> chatList,
@@ -730,6 +731,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public interface ChatListFragmentListener {
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
+        void onChatListUpdated();
     }
 
     public enum ChatListAvatarState{

@@ -47,10 +47,8 @@ public class BlockingManager {
     private final Map<AccountJid, List<ContactJid>> cachedBlockedContacts;
 
     public static BlockingManager getInstance() {
-        if (instance == null) {
+        if (instance == null)
             instance = new BlockingManager();
-        }
-
         return instance;
     }
 
@@ -147,7 +145,6 @@ public class BlockingManager {
                     : Application.getInstance().getUIListeners(OnBlockedListChangedListener.class)) {
                 onBlockedListChangedListener.onBlockedListChanged(account);
             }
-
             for (OnContactChangedListener onContactChangedListener
                     : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
                 onContactChangedListener.onContactsChanged(new ArrayList<>());
@@ -164,7 +161,6 @@ public class BlockingManager {
             supportForAccounts.remove(account);
             return null;
         }
-
         return supportForAccounts.get(account);
     }
 

@@ -520,6 +520,11 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     @Override
+    public void onChatListUpdated() {
+        updateUnreadCount();
+    }
+
+    @Override
     public void onChoose(AccountJid account, ContactJid user, String text) {
         openChat(account, user, text);
     }

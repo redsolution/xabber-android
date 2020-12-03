@@ -783,7 +783,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeInteractionPanel();
     }
 
-    public void onToolbarInteractionsEditClick(){
+    public void onToolbarInteractionsEditClick() {
         getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
     }
 
@@ -811,6 +811,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             });
             inflateIntroView(true);
         }
+
+        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser()))
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
                 this, this, this, this, this, this);
@@ -2085,7 +2087,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
-        if (GroupchatManager.getInstance().hasUnreadInvite(getAccount(), getUser())){
+        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())){
             show = true;
         }
 
@@ -2134,7 +2136,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             setNewContactSubscribeLayout();
                         } else {
                             // NONE = No current subscriptions or requests. Not in roster.
-                            if (GroupchatManager.getInstance().hasUnreadInvite(account, user))
+                            if (GroupchatManager.getInstance().hasInvite(account, user))
                                 setInvitedToGroupLayout();
                             else setNewContactAddLayout();
                         }
@@ -2162,7 +2164,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         addContact.setOnClickListener(v -> {
             Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
                 try {
-                    if (GroupchatManager.getInstance().hasUnreadInvite(account, user)){
+                    if (GroupchatManager.getInstance().hasInvite(account, user)){
                         GroupchatManager.getInstance().acceptInvitation(account, user);
                     } else {
                         if (!inRoster) {
@@ -2201,14 +2203,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(v -> {
             try {
                 // fully discard subscription
-                if (GroupchatManager.getInstance().hasUnreadInvite(account, user))
+                if (GroupchatManager.getInstance().hasInvite(account, user))
                     GroupchatManager.getInstance().declineInvitation(account, user);
                 PresenceManager.getInstance().discardSubscription(account, user);
                 PresenceManager.getInstance().unsubscribeFromPresence(account, user);
             } catch (NetworkException e) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
-            if (!GroupchatManager.getInstance().hasUnreadInvite(account, user))
+            if (!GroupchatManager.getInstance().hasInvite(account, user))
                 BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
                     @Override
                     public void onSuccessBlock() {
@@ -2247,6 +2249,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setInvitedToGroupLayout(){
         TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
+        if (!GroupchatManager.getInstance().getInvite(getAccount(), getUser()).isRead())
+            GroupchatManager.getInstance().readInvite(getAccount(), getUser());
 
         addContactMessage.setVisibility(View.GONE);
         addContact.setText(R.string.groupchat_join);

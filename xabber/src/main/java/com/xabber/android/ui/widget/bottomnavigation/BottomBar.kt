@@ -21,12 +21,11 @@ import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
 class BottomBar : Fragment(), View.OnClickListener {
 
     private var listener: OnClickListener? = null
-    private var chatsButton: RelativeLayout? = null
     private var contactsButton: ImageButton? = null
     private var discoverButton: ImageButton? = null
     private var callsButton: ImageButton? = null
     private var settingsButton: ImageButton? = null
-    private var unreadCoutTextView: TextView? = null
+    private var unreadCountTextView: TextView? = null
     private var chatsImage: ImageView? = null
 
     interface OnClickListener {
@@ -49,44 +48,45 @@ class BottomBar : Fragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.view_bottom_bar, container, false)
-        chatsButton = view.findViewById(R.id.show_chats_button)
+
+        view.findViewById<RelativeLayout>(R.id.show_chats_button).setOnClickListener(this)
+
         contactsButton = view.findViewById(R.id.show_contacts_button)
         callsButton = view.findViewById(R.id.show_calls_button)
         discoverButton = view.findViewById(R.id.show_discover_button)
         settingsButton = view.findViewById(R.id.show_settings_button)
         chatsImage = view.findViewById(R.id.show_chats_image)
-        chatsButton!!.setOnClickListener(this)
-        contactsButton!!.setOnClickListener(this)
-        discoverButton!!.setOnClickListener(this)
-        callsButton!!.setOnClickListener(this)
-        if (SettingsManager.interfaceTheme().equals(InterfaceTheme.dark))
-            callsButton!!.alpha = 0.5f
-        else callsButton!!.alpha = 0.4f
-        settingsButton!!.setOnClickListener(this)
-        unreadCoutTextView = view.findViewById(R.id.unread_count_textview)
+        contactsButton?.setOnClickListener(this)
+        discoverButton?.setOnClickListener(this)
+        callsButton?.setOnClickListener(this)
+        if (SettingsManager.interfaceTheme() == InterfaceTheme.dark)
+            callsButton?.alpha = 0.5f
+        else callsButton?.alpha = 0.4f
+        settingsButton?.setOnClickListener(this)
+        unreadCountTextView = view.findViewById(R.id.unread_count_textview)
         return view
     }
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.show_chats_button -> listener!!.onChatsClick()
-            R.id.show_calls_button -> listener!!.onCallsClick()
-            R.id.show_contacts_button -> listener!!.onContactsClick()
-            R.id.show_discover_button -> listener!!.onDiscoverClick()
-            R.id.show_settings_button -> listener!!.onSettingsClick()
+            R.id.show_chats_button -> listener?.onChatsClick()
+            R.id.show_calls_button -> listener?.onCallsClick()
+            R.id.show_contacts_button -> listener?.onContactsClick()
+            R.id.show_discover_button -> listener?.onDiscoverClick()
+            R.id.show_settings_button -> listener?.onSettingsClick()
         }
     }
 
     fun setUnreadMessages(count: Int) {
         if (count > 0) {
             if (count > 99) {
-                unreadCoutTextView?.text = "99"
-                unreadCoutTextView?.visibility = View.VISIBLE
+                unreadCountTextView?.text = "99"
+                unreadCountTextView?.visibility = View.VISIBLE
             }
-            unreadCoutTextView?.text = count.toString()
-            unreadCoutTextView?.visibility = View.VISIBLE
+            unreadCountTextView?.text = count.toString()
+            unreadCountTextView?.visibility = View.VISIBLE
         } else {
-            unreadCoutTextView?.visibility = View.GONE
+            unreadCountTextView?.visibility = View.GONE
         }
 
     }
