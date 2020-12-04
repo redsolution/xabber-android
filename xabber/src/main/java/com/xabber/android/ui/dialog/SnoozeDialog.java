@@ -91,4 +91,5 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
     public interface OnSnoozeListener {
         void onSnoozed();
     }
+
 }

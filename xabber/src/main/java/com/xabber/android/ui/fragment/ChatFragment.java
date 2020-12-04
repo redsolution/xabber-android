@@ -1730,7 +1730,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     public void clearHistory(AccountJid account, ContactJid user) {
-        ChatHistoryClearDialog.newInstance(account, user).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+        ChatHistoryClearDialog.newInstance(account, user)
+                .show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
     }
 
     public void callAttention() {
@@ -2085,7 +2086,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
-        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())){
+        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())
+                && !GroupchatManager.getInstance().getInvite(getAccount(), getUser()).isRead()){
             show = true;
         }
 
@@ -2098,8 +2100,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     }
 
-    private void inflateNewContactLayout(final SubscriptionState subscriptionState,
-                                         final boolean inRoster) {
+    private void inflateNewContactLayout(final SubscriptionState subscriptionState, final boolean inRoster) {
         if (newContactLayout == null) {
             newContactLayout = (ViewGroup) stubNewContact.inflate();
         } else {
