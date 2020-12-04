@@ -577,8 +577,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                             && abstractChat.isArchived())
                         newList.add(abstractChat);
 
-            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(),
-                    o1.getLastTime().getTime()));
+            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
         } else {
 

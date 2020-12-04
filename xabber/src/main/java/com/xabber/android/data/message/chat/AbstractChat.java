@@ -588,7 +588,7 @@ public abstract class AbstractChat extends BaseEntity implements
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            return null;
+            return new Date();
         }
     }
 

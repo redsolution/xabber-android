@@ -573,7 +573,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                             }
                             if (rotatedImage == null) return@runInBackgroundUserRequest
                             try {
-                                FileUtils.writeByteArrayToFile(File(newAvatarImageUri!!.path), data)
+                                FileUtils.writeByteArrayToFile(File(newAvatarImageUri?.path), data)
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }

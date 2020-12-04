@@ -214,7 +214,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             invitesMap.put(accountJid.toString(), groupJid.toString(), giro);
             GroupInviteRepository.saveInviteToRealm(giro);
 
-            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro);
+            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro);;
 
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);

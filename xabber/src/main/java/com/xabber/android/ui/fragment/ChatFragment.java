@@ -812,8 +812,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inflateIntroView(true);
         }
 
-        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser()))
-
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
                 this, this, this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
