@@ -298,14 +298,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public void onAttach(@NotNull Activity activity) {
-        super.onAttach(activity);
-
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
         try {
-            listener = (ChatViewerFragmentListener) activity;
+            listener = (ChatViewerFragmentListener) context;
             listener.registerChatFragment(this);
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement ChatViewerFragmentListener");
         }
         registerOpusBroadcastReceiver();
@@ -1605,16 +1604,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
         int size = ids.size();
         if (RewriteManager.getInstance().isSupported(account)) {
-            View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
+            View checkBoxView = View.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
             checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
                     RosterManager.getInstance().getBestContact(account, user).getName()));
             AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
                     .setTitle(size == 1 ? getString(R.string.delete_message_title) : getString(R.string.delete_messages_title, String.valueOf(size)))
                     .setMessage(size == 1 ? R.string.delete_message_question : R.string.delete_messages_question)
-                    .setPositiveButton(R.string.delete, (dialog14, which) -> {
-                        RewriteManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked());
-                    })
+                    .setPositiveButton(R.string.delete, (dialog14, which) ->
+                            RewriteManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked()))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
                     });
             if (onlyOutgoing) dialog.setView(checkBoxView);
@@ -2100,6 +2098,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void inflateNewContactLayout(final SubscriptionState subscriptionState, final boolean inRoster) {
         if (newContactLayout == null) {
             newContactLayout = (ViewGroup) stubNewContact.inflate();
@@ -2353,7 +2352,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
         } else
             stopRecordingAndSend(saveMessage);
-        cancelRecordingCompletely(true);
+        cancelRecordingCompletely();
     }
 
     private void stopRecording() {
@@ -2407,6 +2406,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     case MotionEvent.ACTION_UP:
                         if (VoiceManager.getInstance().playbackInProgress("", null))
                             VoiceManager.getInstance().seekAudioPlaybackTo("", null, (int) motionEvent.getX(), view.getWidth());
+                        view.performClick();
                         return super.onTouch(view, motionEvent);
 
                 }
@@ -2487,8 +2487,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 .start();
     }
 
-    private void cancelRecordingCompletely(boolean enableInputButtons) {
-        changeStateOfInputViewButtonsTo(enableInputButtons);
+    private void cancelRecordingCompletely() {
+        changeStateOfInputViewButtonsTo(true);
         currentVoiceRecordingState = VoiceRecordState.NotRecording;
         VoiceManager.getInstance().releaseMediaRecorder();
 
