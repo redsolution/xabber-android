@@ -195,8 +195,15 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public void processIncomingInvite(IncomingInviteExtensionElement inviteExtensionElement, AccountJid accountJid,
                                       ContactJid sender, long timestamp){
+
+
         try{
             ContactJid groupJid = ContactJid.from(inviteExtensionElement.getGroupJid());
+
+            if (BlockingManager.getInstance().contactIsBlocked(accountJid, groupJid)
+                    || RosterManager.getInstance().accountIsSubscribedTo(accountJid, groupJid))
+                return;
+
             String reason = inviteExtensionElement.getReason();
 
             GroupInviteRealmObject giro = new GroupInviteRealmObject();
@@ -254,12 +261,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             RosterManager.getInstance().createContact(accountJid, groupJid, name, new ArrayList<>());
             invitesMap.remove(accountJid.toString(), groupJid.toString());
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid);
-            BlockingManager.getInstance().blockContact(accountJid, groupJid, new BlockingManager.BlockContactListener() {
-                @Override
-                public void onSuccessBlock() { }
-                @Override
-                public void onErrorBlock() { }
-            });
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
