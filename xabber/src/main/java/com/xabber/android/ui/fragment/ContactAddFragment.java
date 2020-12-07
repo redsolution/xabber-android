@@ -283,7 +283,7 @@ public class ContactAddFragment extends CircleEditorFragment
         try {
             BareJid jid = JidCreate.bareFrom(contactString);
             user = ContactJid.from(jid);
-        } catch (XmppStringprepException | ContactJid.UserJidCreateException  e) {
+        } catch (XmppStringprepException | ContactJid.ContactJidCreateException e) {
             e.printStackTrace();
             setError(getString(R.string.INCORRECT_USER_NAME));
             return;

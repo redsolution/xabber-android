@@ -309,7 +309,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             stanzaID = enableIQ.getStanzaId();
             waitingIQs.put(stanzaID, true);
             accountItem.getConnection().sendStanza(enableIQ);
-        } catch (SmackException.NotConnectedException | InterruptedException | ContactJid.UserJidCreateException e) {
+        } catch (SmackException.NotConnectedException | InterruptedException | ContactJid.ContactJidCreateException e) {
             Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
             waitingIQs.remove(stanzaID);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);

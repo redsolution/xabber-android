@@ -252,7 +252,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                             ContactJid user = null;
                             try {
                                 user = ContactJid.from(xmppUri.getPath());
-                            } catch (ContactJid.UserJidCreateException e) {
+                            } catch (ContactJid.ContactJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 
@@ -272,7 +272,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                             try {
                                 ContactJid user = ContactJid.from(path.substring(1));
                                 openChat(user, null);
-                            } catch (ContactJid.UserJidCreateException e) {
+                            } catch (ContactJid.ContactJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
                         }

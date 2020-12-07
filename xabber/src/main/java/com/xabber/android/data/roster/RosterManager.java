@@ -108,7 +108,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
                 ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
 
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 e.printStackTrace();
             } catch (XmppStringprepException e) {
                 e.printStackTrace();
@@ -132,7 +132,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         ContactJid jid = null;
         try {
             jid = ContactJid.from(messageRealmObject.getOriginalFrom());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             e.printStackTrace();
         }
 
@@ -244,7 +244,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 if (VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
                     LastActivityInteractor.getInstance().requestLastActivityAsync(account, ContactJid.from(jid));
                 }
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
@@ -275,7 +275,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @NonNull
     private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry)
-            throws ContactJid.UserJidCreateException {
+            throws ContactJid.ContactJidCreateException {
         final RosterContact contact = RosterContact
                 .getRosterContact(account, ContactJid.from(rosterEntry.getJid()), rosterEntry.getName());
 

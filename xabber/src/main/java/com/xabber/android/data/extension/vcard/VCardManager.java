@@ -285,7 +285,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         } else {
             try {
                 RosterManager.onContactChanged(account, ContactJid.from(bareAddress));
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }

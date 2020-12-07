@@ -49,7 +49,7 @@ public class LastActivityInteractor implements OnPacketListener {
                     requestedLastActivity.remove(account);
                     requestNextContactLastActivity(account);
                 }
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 e.printStackTrace();
             }
         }

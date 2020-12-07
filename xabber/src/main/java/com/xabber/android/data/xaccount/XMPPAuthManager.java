@@ -207,7 +207,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                     "xabber", Collections.EMPTY_LIST);
             PresenceManager.getInstance().requestSubscription(account, user, false);
 
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException | InterruptedException |
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {
             LogManager.exception(this, e);
             return;

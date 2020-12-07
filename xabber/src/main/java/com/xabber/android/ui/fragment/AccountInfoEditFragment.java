@@ -361,7 +361,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         try {
             VCardManager.getInstance().requestByUser(account,
                     ContactJid.from(account.getFullJid().asBareJid()).getJid());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             e.printStackTrace();
         }
     }

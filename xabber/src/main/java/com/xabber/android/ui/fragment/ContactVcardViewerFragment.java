@@ -94,7 +94,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static ContactVcardViewerFragment newInstance(AccountJid account) {
         try {
             return newInstance(account, ContactJid.from(account.getFullJid().asBareJid()));
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             throw new IllegalStateException("Cannot convert account to user. Account: " + account, e);
         }
     }

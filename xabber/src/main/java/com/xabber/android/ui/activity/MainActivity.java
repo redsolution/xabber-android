@@ -307,7 +307,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                             ContactJid user = null;
                             try {
                                 user = ContactJid.from(xmppUri.getPath());
-                            } catch (ContactJid.UserJidCreateException e) {
+                            } catch (ContactJid.ContactJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 

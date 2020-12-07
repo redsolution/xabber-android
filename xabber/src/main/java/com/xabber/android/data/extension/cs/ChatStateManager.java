@@ -418,7 +418,7 @@ public class ChatStateManager implements OnDisconnectListener,
         final ContactJid bareContactJid;
         try {
             bareContactJid = ContactJid.from(stanza.getFrom()).getBareUserJid();
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             return;
         }
 

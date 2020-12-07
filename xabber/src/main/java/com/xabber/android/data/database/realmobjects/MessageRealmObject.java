@@ -230,7 +230,7 @@ public class MessageRealmObject extends RealmObject {
     public ContactJid getUser() {
         try {
             return ContactJid.from(user);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }

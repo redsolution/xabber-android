@@ -729,7 +729,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
                     try {
                         onPhotoReady(account, ContactJid.from(stanza.getFrom()), vCardUpdate);
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }

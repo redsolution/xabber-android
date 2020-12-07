@@ -80,7 +80,7 @@ public class BlockingManager {
                     }
 
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException
-                        | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
+                        | SmackException.NotConnectedException | ContactJid.ContactJidCreateException e) {
                     LogManager.exception(LOG_TAG, e);
                 }
                 // Cache block inside manager
@@ -212,7 +212,7 @@ public class BlockingManager {
                 }
 
             } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException
-                    | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
+                    | SmackException.NotConnectedException | ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }

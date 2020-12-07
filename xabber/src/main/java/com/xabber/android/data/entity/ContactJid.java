@@ -21,31 +21,31 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ContactJid implements Comparable<ContactJid>, Parcelable {
 
-    public static class UserJidCreateException extends IOException { }
+    public static class ContactJidCreateException extends IOException { }
 
     private final @NonNull Jid jid;
     private static final Map<Jid, WeakReference<ContactJid>> instances = new ConcurrentHashMap<>();
 
     public static @NonNull
-    ContactJid from(@Nullable String string) throws UserJidCreateException {
+    ContactJid from(@Nullable String string) throws ContactJidCreateException {
         if (string == null || string.isEmpty()) {
-            throw new UserJidCreateException();
+            throw new ContactJidCreateException();
         }
 
         Jid jid;
         try {
             jid = JidCreate.from(string);
         } catch (XmppStringprepException e) {
-            throw new UserJidCreateException();
+            throw new ContactJidCreateException();
         }
 
         return from(jid);
     }
 
     public static @NonNull
-    ContactJid from(@Nullable Jid jid) throws UserJidCreateException {
+    ContactJid from(@Nullable Jid jid) throws ContactJidCreateException {
         if (jid == null || jid.asBareJid() == null) {
-            throw new UserJidCreateException();
+            throw new ContactJidCreateException();
         }
 
         return getUserJid(jid);
@@ -120,7 +120,7 @@ public class ContactJid implements Comparable<ContactJid>, Parcelable {
         public ContactJid createFromParcel(Parcel parcel) {
             try {
                 return ContactJid.from(parcel.readString());
-            } catch (UserJidCreateException e) {
+            } catch (ContactJidCreateException e) {
                 LogManager.exception(this, e);
                 return null;
             }

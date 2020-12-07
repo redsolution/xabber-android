@@ -107,7 +107,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 for (String contactString : checkedContacts) {
                     try {
                         checkedJids.add(ContactJid.from(contactString));
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }

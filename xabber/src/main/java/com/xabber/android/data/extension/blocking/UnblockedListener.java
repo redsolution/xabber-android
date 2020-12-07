@@ -22,7 +22,7 @@ public class UnblockedListener implements JidsUnblockedListener {
         for (Jid jid : unblockedJids) {
             try {
                 blockedList.remove(ContactJid.from(jid));
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 e.printStackTrace();
             }
         }

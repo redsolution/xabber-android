@@ -198,7 +198,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         try {
             fakeAccountUser = ContactJid.from(account.getFullJid().asBareJid());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             throw new IllegalStateException();
         }
 

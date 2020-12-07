@@ -431,7 +431,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         if (parsedMessages.size() - oldSize > 0) {
                             chatsNeedUpdateLastMessageId.add(chat);
                         }
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         LogManager.d(LOG_TAG, e.toString());
                     }
                 }
@@ -492,7 +492,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         if (parsedMessages.size() - oldSize > 0) {
                             chatsNeedUpdateLastMessageId.add(chat);
                         }
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         LogManager.d(LOG_TAG, e.toString());
                     }
                 }
@@ -833,7 +833,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 saveOrUpdateMessages(realm, Collections.singletonList(messageRealmObject), true);
                 updateLastMessageId(chat, realm);
             }
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.d(LOG_TAG, e.toString());
         }
     }

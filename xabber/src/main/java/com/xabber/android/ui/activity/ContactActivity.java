@@ -146,7 +146,7 @@ public class ContactActivity extends ManagedActivity implements
         if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
             try {
                 user = ContactJid.from(accountItem.getRealJid().asBareJid());
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }

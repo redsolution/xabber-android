@@ -202,7 +202,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         try {
             return ContactJid.from(stringExtra);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }
@@ -510,7 +510,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                                 accountJid, contactJid, question != null, true, question));
                     }
                 }
-            } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+            } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
                 e.printStackTrace();
             }
         }

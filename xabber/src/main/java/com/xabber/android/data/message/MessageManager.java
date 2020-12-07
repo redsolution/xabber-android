@@ -379,7 +379,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         final ContactJid contactJid;
         try {
             contactJid = ContactJid.from(stanza.getFrom()).getBareUserJid();
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             return;
         }
         boolean processed = false;
@@ -507,7 +507,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             ContactJid companion;
             try {
                 companion = ContactJid.from(message.getTo()).getBareUserJid();
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
                 return;
             }
@@ -578,7 +578,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         ContactJid companion;
         try {
             companion = ContactJid.from(message.getFrom()).getBareUserJid();
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             return;
         }
 

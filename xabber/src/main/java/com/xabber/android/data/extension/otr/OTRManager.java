@@ -206,7 +206,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private AbstractChat getChat(String account, String user) {
         try {
             return ChatManager.getInstance().getChat(AccountJid.from(account), ContactJid.from(user));
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
             return null;
         }
@@ -410,7 +410,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     public void onContactChanged(SessionID sessionID) {
         try {
             RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), ContactJid.from(sessionID.getUserID()));
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -433,7 +433,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             // send event of adding auth request to fragment
             EventBus.getDefault().post(new AuthAskEvent(accountJid, contactJid));
 
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -649,7 +649,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void removeSMRequest(String account, String user) {
         try {
             removeSMRequest(AccountJid.from(account), ContactJid.from(user));
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -678,7 +678,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             // send event of cancel auth request to fragment
             EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(account), ContactJid.from(user)));
 
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }

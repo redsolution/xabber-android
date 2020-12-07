@@ -3,6 +3,7 @@ package com.xabber.android.data.database.realmobjects;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.NotificationState;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -23,8 +24,10 @@ public class RegularChatRealmObject extends RealmObject {
         public static final String UNREAD_MESSAGES_COUNT = "unreadMessagesCount";
         public static final String LAST_POSITION = "lastPosition";
         public static final String CHAT_NOTIFICATIONS_PREFERENCES = "chatNotificationsPreferences";
-        public static final String IS_HISTORY_REQUEST_AT_START = "isHistoryRequestAtStart"; //TODO REALM UPDATE is this important?
+        public static final String IS_HISTORY_REQUEST_AT_START = "isHistoryRequestAtStart";
         public static final String LAST_MESSAGE_TIMESTAMP = "lastMessageTimestamp";
+        public static final String NOTIFICATION_MODE = "notificationMode";
+        public static final String NOTIFICATION_TIMESTAMP = "notificationTimestamp";
     }
 
     @PrimaryKey
@@ -39,7 +42,8 @@ public class RegularChatRealmObject extends RealmObject {
     private boolean isHistoryRequestAtStart;
     private int unreadMessagesCount;
     private int lastPosition;
-    private ChatNotificationsPreferencesRealmObject chatNotificationsPreferences;
+    private String notificationMode;
+    private long notificationTimestamp;
 
     public RegularChatRealmObject(){
         this.id = UUID.randomUUID().toString();
@@ -54,7 +58,7 @@ public class RegularChatRealmObject extends RealmObject {
     public RegularChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                   MessageRealmObject lastMessage, boolean isArchived, boolean isBlocked,
                                   boolean isHistoryRequestAtStart, int unreadMessagesCount, int lastPosition,
-                                  ChatNotificationsPreferencesRealmObject chatNotificationsPreferencesRealmObject){
+                                  NotificationState notificationState){
         this.id = UUID.randomUUID().toString();
         this.accountJid = accountJid.toString();
         this.contactJid = contactJid.getBareJid().toString();
@@ -65,7 +69,8 @@ public class RegularChatRealmObject extends RealmObject {
         this.isHistoryRequestAtStart = isHistoryRequestAtStart;
         this.unreadMessagesCount = unreadMessagesCount;
         this.lastPosition = lastPosition;
-        this.chatNotificationsPreferences = chatNotificationsPreferencesRealmObject;
+        this.notificationMode = notificationState.getMode().toString();
+        this.notificationTimestamp = notificationState.getTimestamp();
     }
 
     public AccountJid getAccountJid(){
@@ -80,7 +85,7 @@ public class RegularChatRealmObject extends RealmObject {
     public ContactJid getContactJid(){
         try {
             return ContactJid.from(contactJid);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }
@@ -110,11 +115,15 @@ public class RegularChatRealmObject extends RealmObject {
     public int getUnreadMessagesCount() { return unreadMessagesCount; }
     public void setUnreadMessagesCount(int unreadMessagesCount) { this.unreadMessagesCount = unreadMessagesCount; }
 
-    public ChatNotificationsPreferencesRealmObject getChatNotificationsPreferences() {
-        return chatNotificationsPreferences;
+    public void setNotificationState(NotificationState notificationState) {
+        this.notificationMode = notificationState.getMode().toString();
+        this.notificationTimestamp = notificationState.getTimestamp();
     }
-    public void setChatNotificationsPreferences(ChatNotificationsPreferencesRealmObject chatNotificationsPreferences) {
-        this.chatNotificationsPreferences = chatNotificationsPreferences;
+    public NotificationState getNotificationState(){
+        if (notificationMode != null){
+            return new NotificationState(NotificationState.NotificationMode.valueOf(notificationMode),
+                    notificationTimestamp);
+        } else return new NotificationState(NotificationState.NotificationMode.byDefault, 0);
     }
 
 }

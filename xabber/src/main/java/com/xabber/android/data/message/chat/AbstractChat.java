@@ -1110,16 +1110,13 @@ public abstract class AbstractChat extends BaseEntity implements
         return notificationState;
     }
 
-    public void setNotificationState(NotificationState notificationState,
-                                     boolean needSaveToRealm) {
-
+    public void setNotificationState(NotificationState notificationState, boolean needSaveToRealm) {
         this.notificationState = notificationState;
 
-        if (notificationState.getMode() == NotificationState.NotificationMode.disabled
-                && needSaveToRealm)
+        if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm){
             NotificationManager.getInstance().removeMessageNotification(account, contactJid);
-
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+        }
     }
 
     public void setNotificationStateOrDefault(NotificationState notificationState,

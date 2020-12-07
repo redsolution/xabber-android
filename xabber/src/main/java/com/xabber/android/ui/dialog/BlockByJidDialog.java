@@ -98,7 +98,7 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
                 if (validationIsSuccess()) {
                     try {
                         BlockingManager.getInstance().blockContact(account, ContactJid.from(blockJid.getText().toString()), this);
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         e.printStackTrace();
                     }
                 }

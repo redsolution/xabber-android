@@ -64,7 +64,7 @@ public class EntityIntentBuilder extends
 
         try {
             return ContactJid.from(segment);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }

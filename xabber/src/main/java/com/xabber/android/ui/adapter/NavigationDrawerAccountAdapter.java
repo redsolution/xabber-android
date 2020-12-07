@@ -48,7 +48,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
 
         try {
             accountName.setText(RosterManager.getInstance().getBestContact(account, ContactJid.from(accountManager.getVerboseName(account))).getName());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
         }
         accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));

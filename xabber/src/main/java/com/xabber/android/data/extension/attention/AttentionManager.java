@@ -162,7 +162,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         ContactJid from;
         try {
             from = ContactJid.from(stanza.getFrom());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             e.printStackTrace();
             return;
         }

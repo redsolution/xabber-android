@@ -6,13 +6,13 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ChatNotificationsPreferencesRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.RegularChatRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.RegularChat;
 
 import java.util.ArrayList;
@@ -44,8 +44,7 @@ public class RegularChatRepository {
                                                           @Nullable MessageRealmObject lastMessage,
                                                           int lastPosition, boolean isBlocked,
                                                           boolean isArchived, boolean isHistoryRequestAtStart,
-                                                          int unreadCount,
-                                                          ChatNotificationsPreferencesRealmObject notificationsPreferences) {
+                                                          int unreadCount, NotificationState notificationState) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -81,8 +80,7 @@ public class RegularChatRepository {
 
                         RegularChatRealmObject newRegularChatRealmObject = new RegularChatRealmObject(accountJid, contactJid,
                                 lastMessage == null ? messageRealmObject : lastMessage, isArchived,
-                                isBlocked, isHistoryRequestAtStart, unreadCount, lastPosition,
-                                notificationsPreferences);
+                                isBlocked, isHistoryRequestAtStart, unreadCount, lastPosition, notificationState);
 
                         if (!contactRealmObject.getChats().contains(newRegularChatRealmObject))
                             contactRealmObject.getChats().add(newRegularChatRealmObject);
@@ -97,7 +95,7 @@ public class RegularChatRepository {
                         regularChatRealmObject.setArchived(isArchived);
                         regularChatRealmObject.setHistoryRequestAtStart(isHistoryRequestAtStart);
                         regularChatRealmObject.setUnreadMessagesCount(unreadCount); //TODO REALM UPDATE also unread and notif prefs!
-                        regularChatRealmObject.setChatNotificationsPreferences(notificationsPreferences);
+                        regularChatRealmObject.setNotificationState(notificationState);
 
                         if (!contactRealmObject.getChats().contains(regularChatRealmObject))
                             contactRealmObject.getChats().add(regularChatRealmObject);
@@ -130,6 +128,7 @@ public class RegularChatRepository {
             regularChat.setLastPosition(regularChatRealmObject.getLastPosition());
             regularChat.setHistoryRequestedWithoutRealm(regularChatRealmObject.isHistoryRequestAtStart());
             regularChat.setLastActionTimestamp(regularChatRealmObject.getLastMessageTimestamp());
+            regularChat.setNotificationState(regularChatRealmObject.getNotificationState(), false);
             result.add(regularChat);
         }
 
@@ -138,4 +137,5 @@ public class RegularChatRepository {
 
         return result;
     }
+
 }

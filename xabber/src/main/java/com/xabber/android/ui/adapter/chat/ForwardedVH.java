@@ -42,7 +42,7 @@ public class ForwardedVH extends FileMessageVH {
         ContactJid jid = null;
         try {
             jid = ContactJid.from(messageRealmObject.getOriginalFrom());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             e.printStackTrace();
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);

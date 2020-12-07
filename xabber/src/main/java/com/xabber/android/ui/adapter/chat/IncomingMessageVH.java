@@ -220,7 +220,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid,
                         groupchatMember.getNickname());
 
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
 
                placeholder = AvatarManager.getInstance().generateDefaultAvatar(
                        groupchatMember.getNickname(), groupchatMember.getNickname());
@@ -251,7 +251,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 avatar.setImageDrawable(AvatarManager.getInstance()
                         .getOccupantAvatar(contactJid, nick));
 
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
                 avatar.setImageDrawable(AvatarManager.getInstance()
                         .generateDefaultAvatar(nick, nick));

@@ -301,7 +301,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         ContactJid from;
         try {
             from = ContactJid.from(presence.getFrom());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             return;
         }
@@ -397,7 +397,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         try {
             from = ContactJid.from(stanza.getFrom());
             fromResource = stanza.getFrom().getResourceOrEmpty();
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             return;
         }
@@ -456,7 +456,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                     // and discard subscription
                     try {
                         discardSubscription(account, ContactJid.from(from.toString()));
-                    } catch (NetworkException | ContactJid.UserJidCreateException e) {
+                    } catch (NetworkException | ContactJid.ContactJidCreateException e) {
                         e.printStackTrace();
                     }
 
@@ -475,7 +475,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                             // discard subscription
                             try {
                                 discardSubscription(account, ContactJid.from(from.toString()));
-                            } catch (NetworkException | ContactJid.UserJidCreateException e) {
+                            } catch (NetworkException | ContactJid.ContactJidCreateException e) {
                                 e.printStackTrace();
                             }
                             return;
@@ -553,7 +553,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                     subscriptionRequestProvider.remove(account, user);
                     createChatForNewContact(account, user);
                 }
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 e.printStackTrace();
             }
         }

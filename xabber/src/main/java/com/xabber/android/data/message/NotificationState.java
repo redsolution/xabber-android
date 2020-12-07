@@ -9,8 +9,9 @@ import com.xabber.android.data.SettingsManager;
 public class NotificationState {
 
     private NotificationMode mode;
-    private int timestamp;
-    public NotificationState(NotificationMode mode, int timestamp) {
+    private long timestamp;
+
+    public NotificationState(NotificationMode mode, long timestamp) {
         this.mode = mode;
         this.timestamp = timestamp;
     }
@@ -18,16 +19,12 @@ public class NotificationState {
     public NotificationMode getMode() {
         return mode;
     }
-
     public void setMode(NotificationMode mode) {
         this.mode = mode;
     }
 
-    public int getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(int timestamp) {
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

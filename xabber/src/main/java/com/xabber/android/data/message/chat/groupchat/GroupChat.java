@@ -24,6 +24,7 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
@@ -84,13 +85,13 @@ public class GroupChat extends AbstractChat {
         super(account, user);
     }
 
-    public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user,
-                     GroupchatIndexType indexType, GroupchatMembershipType membershipType,
-                     GroupchatPrivacyType privacyType, String owner, String name,
-                     String description, int numberOfMembers,
-                     String pinnedMessageId, String membersListVersion, boolean canInvite,
-                     boolean canChangeSettings, boolean canChangeUsersSettings, boolean canChangeNicknames,
-                     boolean canChangeBadge, boolean canBlockUsers, boolean canChangeAvatars, String resource) {
+    public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user, GroupchatIndexType indexType,
+                     GroupchatMembershipType membershipType, GroupchatPrivacyType privacyType, String owner,
+                     String name, String description, int numberOfMembers, String pinnedMessageId,
+                     String membersListVersion, boolean canInvite, boolean canChangeSettings,
+                     boolean canChangeUsersSettings, boolean canChangeNicknames, boolean canChangeBadge,
+                     boolean canBlockUsers, boolean canChangeAvatars, String resource,
+                     NotificationState notificationState) {
         super(account, user);
         this.indexType = indexType;
         this.membershipType = membershipType;
@@ -109,6 +110,7 @@ public class GroupChat extends AbstractChat {
         this.canBlockUsers = canBlockUsers;
         this.canChangeAvatars = canChangeAvatars;
         this.resource = resource;
+        this.setNotificationState(notificationState, false);
     }
 
     @Override

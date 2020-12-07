@@ -152,7 +152,7 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
             try {
                 blocked.avatar.setImageDrawable(AvatarManager.getInstance()
                         .getUserAvatarForContactList(ContactJid.from(item.getBlockedItem()), item.getBlockedItem()));
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 e.printStackTrace();
             }
 

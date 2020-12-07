@@ -159,7 +159,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 ContactJid companion;
                 try {
                     companion = ContactJid.from(message.getTo()).getBareUserJid();
-                } catch (ContactJid.UserJidCreateException e) {
+                } catch (ContactJid.ContactJidCreateException e) {
                     return;
                 }
                 AbstractChat chat = ChatManager.getInstance().getChat(account, companion);
