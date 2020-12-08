@@ -595,7 +595,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItem.setConnectionIsOutdated(true);
             //accountItem.recreateConnectionWithEnable(accountItem.getAccount());
             AccountRepository.saveAccountToRealm(accountItem);
-        }
+        } else LogManager.d(LOG_TAG, "tried to update account with new xtoken, but account was null");
     }
 
     public void removeXToken(AccountJid account) {

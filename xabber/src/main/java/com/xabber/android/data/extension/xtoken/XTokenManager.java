@@ -41,6 +41,7 @@ public class XTokenManager implements OnPacketListener {
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
         if (packet instanceof XTokenIQ) {
+            LogManager.d(LOG_TAG, "Received new XToken");
             AccountManager.getInstance().updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
         } else if (packet instanceof Message && packet.hasExtension(NAMESPACE)) {
             EventBus.getDefault().post(new SessionsUpdateEvent());

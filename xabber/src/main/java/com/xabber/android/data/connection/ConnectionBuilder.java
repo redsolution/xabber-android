@@ -75,7 +75,6 @@ class ConnectionBuilder {
                 && connectionSettings.getPassword().isEmpty()) {
             // then enable only SASLXOauth2Mechanism
             builder.addEnabledSaslMechanism(SASLXOauth2Mechanism.NAME);
-
             // and set token as password
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
         }
@@ -86,6 +85,8 @@ class ConnectionBuilder {
             SASLAuthentication.registerSASLMechanism(new SASLXTOKENMechanism());
             builder.addEnabledSaslMechanism(SASLXTOKENMechanism.NAME);
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getXToken().getToken());
+        } else {
+            LogManager.d(LOG_TAG, "Token of account " + account.toString() + " null or expired!");
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
