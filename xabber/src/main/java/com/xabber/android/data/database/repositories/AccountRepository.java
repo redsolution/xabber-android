@@ -17,6 +17,8 @@ import io.realm.RealmResults;
 
 public class AccountRepository {
 
+    private static final String LOG_TAG = AccountRepository.class.getSimpleName();
+
     public static ArrayList<AccountRealmObject> getEnabledAccountsFromRealm(){
         ArrayList<AccountRealmObject> accounts = new ArrayList<>();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -107,12 +109,13 @@ public class AccountRepository {
                     accountRealmObject.setPushWasEnabled(accountItem.isPushWasEnabled());
 
                     realm1.copyToRealmOrUpdate(accountRealmObject);
-                    LogManager.d("AccountTable", "Account " + accountItem.getAccount().getBareJid() + " has been successfully saved with new settings");
+                    LogManager.d(LOG_TAG, "Account " + accountItem.getAccount().getBareJid() + " has been successfully " +
+                            "saved with new settings");
                 });
             } catch (Exception e) {
-                LogManager.exception("AccountTable", e);
+                LogManager.exception(LOG_TAG, e);
             } finally {
-                if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
+                if (realm != null) realm.close();
             }
         });
     }
@@ -122,13 +125,11 @@ public class AccountRepository {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(AccountRealmObject.class)
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
+                realm.executeTransaction(realm1 -> realm1.where(AccountRealmObject.class)
+                        .findAll()
+                        .deleteAllFromRealm());
             } catch (Exception e){
-                LogManager.exception("AccountRepository", e);
+                LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
     }
@@ -150,8 +151,9 @@ public class AccountRepository {
                     }
                 });
             } catch (Exception e) {
-                LogManager.exception("AccountTable", e);
+                LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
     }
+
 }
