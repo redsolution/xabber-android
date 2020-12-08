@@ -88,16 +88,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base entry point.
@@ -107,7 +102,6 @@ import java.util.concurrent.TimeUnit;
 public class Application extends android.app.Application {
 
     private static final String LOG_TAG = Application.class.getSimpleName();
-    private static final long backgroundTaskTimeout = 1000;
     private static final ThreadFactory backgroundThreadFactory = r -> {
         Thread thread = new Thread(r);
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -132,8 +126,8 @@ public class Application extends android.app.Application {
      * Unmodifiable collections of managers that implement some common
      * interface.
      */
-    private Map<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>> managerInterfaces;
-    private Map<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>> uiListeners;
+    private final Map<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>> managerInterfaces;
+    private final Map<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>> uiListeners;
     /**
      * Where data load was requested.
      */
@@ -227,14 +221,14 @@ public class Application extends android.app.Application {
         });
     }
 
-    private ExecutorService createMultiThreadCacheExecutor() {
+    /*private ExecutorService createMultiThreadCacheExecutor() {
         return new ThreadPoolExecutor(1, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(),
                 backgroundThreadFactory);
     }
 
-    /*private ExecutorService createFlexibleCacheExecutor() {
+    private ExecutorService createFlexibleCacheExecutor() {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 1, 20,
                 30L, TimeUnit.SECONDS,
@@ -242,7 +236,7 @@ public class Application extends android.app.Application {
                 backgroundThreadFactory);
         threadPoolExecutor.setRejectedExecutionHandler(onExecutionReject);
         return threadPoolExecutor;
-    }*/
+    }
 
     private ThreadPoolExecutor createFallbackExecutor() {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
@@ -259,7 +253,7 @@ public class Application extends android.app.Application {
         executor.setKeepAliveTime(60L, TimeUnit.SECONDS);
         executor.allowCoreThreadTimeOut(true);
         return executor;
-    }
+    } */
 
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
@@ -336,27 +330,21 @@ public class Application extends android.app.Application {
         }
         serviceStarted = true;
         LogManager.i(this, "onStart");
-        loadFuture = backgroundExecutor.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                try {
-                    onLoad();
-                } finally {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Throw exceptions in UI thread if any.
-                            try {
-                                loadFuture.get();
-                            } catch (InterruptedException | ExecutionException e) {
-                                throw new RuntimeException(e);
-                            }
-                            onInitialized();
-                        }
-                    });
-                }
-                return null;
+        loadFuture = backgroundExecutor.submit(() -> {
+            try {
+                onLoad();
+            } finally {
+                runOnUiThread(() -> {
+                    // Throw exceptions in UI thread if any.
+                    try {
+                        loadFuture.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                    onInitialized();
+                });
             }
+            return null;
         });
     }
 
@@ -382,7 +370,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
-            /** Leak Canary */
+            /* Leak Canary */
             if (LeakCanary.isInAnalyzerProcess(this)) {
                 // This process is dedicated to LeakCanary for heap analysis.
                 // You should not init your app in this process.
@@ -390,13 +378,13 @@ public class Application extends android.app.Application {
             }
             LeakCanary.install(this);
 
-            /** Block Canary */
+            /* Block Canary */
             BlockCanary.install(this, new AppBlockCanaryContext()).start();
 
-            /** Android Dev Metrics */
+            /* Android Dev Metrics */
             AndroidDevMetrics.initWith(this);
 
-            /** Strict Mode */
+            /* Strict Mode */
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectDiskWrites()
                     .detectNetwork()
@@ -491,12 +479,7 @@ public class Application extends android.app.Application {
 
         // use new thread instead of run in background to exit immediately
         // without waiting for possible other threads in executor
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                onUnload();
-            }
-        });
+        Thread thread = new Thread(this::onUnload);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -558,12 +541,7 @@ public class Application extends android.app.Application {
      * Request to clear application data.
      */
     public void requestToClear() {
-        runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                clear();
-            }
-        });
+        runInBackground(this::clear);
     }
 
     private void clear() {
@@ -590,7 +568,7 @@ public class Application extends android.app.Application {
     private <T extends BaseUIListener> Collection<T> getOrCreateUIListeners(Class<T> cls) {
         Collection<T> collection = (Collection<T>) uiListeners.get(cls);
         if (collection == null) {
-            collection = new ArrayList<T>();
+            collection = new ArrayList<>();
             uiListeners.put(cls, collection);
         }
         return collection;
@@ -610,7 +588,7 @@ public class Application extends android.app.Application {
     /**
      * Register new listener.
      * <p/>
-     * Should be called from {@link Activity#onResume()}.
+     * Should be called from {@link Activity@onResume()}.
      */
     public <T extends BaseUIListener> void addUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).add(listener);
@@ -619,7 +597,7 @@ public class Application extends android.app.Application {
     /**
      * Unregister listener.
      * <p/>
-     * Should be called from {@link Activity#onPause()}.
+     * Should be called from {@link Activity@onPause()}.
      */
     public <T extends BaseUIListener> void removeUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).remove(listener);
@@ -629,12 +607,9 @@ public class Application extends android.app.Application {
      * Notify about error.
      */
     public void onError(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
-                    onErrorListener.onError(resourceId);
-                }
+        runOnUiThread(() -> {
+            for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
+                onErrorListener.onError(resourceId);
             }
         });
     }
@@ -751,8 +726,8 @@ public class Application extends android.app.Application {
         handler.postDelayed(runnable, delayMillis);
     }
 
-    public boolean isServiceStarted() {
-        return serviceStarted;
+    public boolean isServiceNotStarted() {
+        return !serviceStarted;
     }
 
     public String getVersionName() {
@@ -766,9 +741,7 @@ public class Application extends android.app.Application {
     }
 
     public void resetApplication() {
-
         try {
-
             requestToWipe();
             //Deleting all user files
             File cacheDirectory = getCacheDir();
@@ -811,6 +784,5 @@ public class Application extends android.app.Application {
             LogManager.e(LOG_TAG, "Was not able to reset application");
         }
     }
-
 
 }

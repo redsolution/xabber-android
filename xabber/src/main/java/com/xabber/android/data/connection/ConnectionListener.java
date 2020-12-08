@@ -54,12 +54,9 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         UserAvatarManager.getInstanceFor(connection).enable();
         //
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
-                    listener.onConnected(connectionItem);
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
+                listener.onConnected(connectionItem);
             }
         });
     }
@@ -97,12 +94,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         //
         //
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AccountManager.getInstance().removeAccountError(connectionItem.getAccount());
-            }
-        });
+        Application.getInstance().runOnUiThread(
+                () -> AccountManager.getInstance().removeAccountError(connectionItem.getAccount()));
     }
 
     @Override
@@ -113,14 +106,10 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         NextMamManager.getInstance().resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.checkIfConnectionIsOutdated();
-                for (OnDisconnectListener listener
-                        : Application.getInstance().getManagers(OnDisconnectListener.class)) {
-                    listener.onDisconnect(connectionItem);
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            connectionItem.checkIfConnectionIsOutdated();
+            for (OnDisconnectListener listener : Application.getInstance().getManagers(OnDisconnectListener.class)) {
+                listener.onDisconnect(connectionItem);
             }
         });
     }
@@ -149,16 +138,13 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
             AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
         }
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.checkIfConnectionIsOutdated();
-                /*
-                  Send to chats action of disconnect
-                  Then RoomChat set state in "waiting" which need for rejoin to room
-                 */
-                ChatManager.getInstance().onDisconnect(connectionItem);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            connectionItem.checkIfConnectionIsOutdated();
+            /*
+              Send to chats action of disconnect
+              Then RoomChat set state in "waiting" which need for rejoin to room
+             */
+            ChatManager.getInstance().onDisconnect(connectionItem);
         });
     }
 
@@ -170,7 +156,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void reconnectingIn(final int seconds) {
         LogManager.i(getLogTag(), "reconnectionSuccessful");
-        if (connectionItem.getState() != ConnectionState.waiting && !connectionItem.getConnection().isAuthenticated()
+        if (connectionItem.getState() != ConnectionState.waiting
+                && !connectionItem.getConnection().isAuthenticated()
                 && !connectionItem.getConnection().isConnected()) {
             connectionItem.updateState(ConnectionState.waiting);
         }

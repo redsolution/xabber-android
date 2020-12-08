@@ -411,8 +411,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         if (getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE) != null){
             Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
             List<String> mechanismsList = mechanisms.getMechanisms();
-            if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
-                    !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
+            if (mechanismsList.contains(SASLXTOKENMechanism.NAME)
+                    && !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
                 XTokenManager.getInstance().sendXTokenRequest(this);
             }
         }

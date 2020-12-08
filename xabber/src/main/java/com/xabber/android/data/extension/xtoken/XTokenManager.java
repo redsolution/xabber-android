@@ -23,7 +23,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +41,7 @@ public class XTokenManager implements OnPacketListener {
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
         if (packet instanceof XTokenIQ) {
-            AccountManager.getInstance()
-                    .updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
+            AccountManager.getInstance().updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
         } else if (packet instanceof Message && packet.hasExtension(NAMESPACE)) {
             EventBus.getDefault().post(new SessionsUpdateEvent());
         }
@@ -83,12 +81,8 @@ public class XTokenManager implements OnPacketListener {
 
     public void requestSessions(final String currentTokenUID, final XMPPTCPConnection connection,
                                 final SessionsListener listener) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                sendSessionsRequestIQ(currentTokenUID, connection, new WeakReference<>(listener));
-            }
-        });
+        Application.getInstance().runInBackgroundNetworkUserRequest(
+                () -> sendSessionsRequestIQ(currentTokenUID, connection, new WeakReference<>(listener)));
     }
 
     public static XTokenRealmObject tokenToXTokenRealm(XToken token) {
@@ -112,12 +106,9 @@ public class XTokenManager implements OnPacketListener {
         SessionVO currentSession = null;
         List<SessionVO> result = new ArrayList<>();
         List<Session> sessions = iq.getSessions();
-        Collections.sort(sessions, Collections.reverseOrder(new Comparator<Session>() {
-            @Override
-            public int compare(Session session, Session t1) {
-                return (int)(session.getLastAuth() - t1.getLastAuth());
-            }
-        }));
+        Collections.sort(sessions, Collections.reverseOrder(
+                (session, t1) -> (int)(session.getLastAuth() - t1.getLastAuth())));
+
         for (Session session : sessions) {
             if (session.getUid().equals(currentSessionUID)) {
                 currentSession = new SessionVO(
@@ -141,8 +132,7 @@ public class XTokenManager implements OnPacketListener {
         return new Pair<>(currentSession, result);
     }
 
-    private void sendSessionsRequestIQ(final String currentTokenUID,
-                                       final XMPPTCPConnection connection,
+    private void sendSessionsRequestIQ(final String currentTokenUID, final XMPPTCPConnection connection,
                                        final WeakReference<SessionsListener> wrListener) {
         LogManager.d(LOG_TAG, "Request x-token list");
         SessionsRequestIQ requestIQ = new SessionsRequestIQ();
@@ -171,20 +161,17 @@ public class XTokenManager implements OnPacketListener {
         @Override
         public void processStanza(Stanza packet) {
             if (packet instanceof SessionsIQ) {
-                final Pair<SessionVO, List<SessionVO>> result =
-                        parseSessions(currentTokenUID, (SessionsIQ) packet);
+                final Pair<SessionVO, List<SessionVO>> result = parseSessions(currentTokenUID, (SessionsIQ) packet);
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        SessionsListener listener = wrListener.get();
-                        if (listener != null)
-                            listener.onResult(result.first, result.second);
-                    }
+                Application.getInstance().runOnUiThread(() -> {
+                    SessionsListener listener = wrListener.get();
+                    if (listener != null)
+                        listener.onResult(result.first, result.second);
                 });
             }
         }
     }
 
     public class SessionsUpdateEvent{    }
+
 }

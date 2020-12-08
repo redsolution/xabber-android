@@ -133,7 +133,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     public void onNewMessagePush(Context context, String node) {
         String message;
-        if (!Application.getInstance().isServiceStarted()
+        if (Application.getInstance().isServiceNotStarted()
                 && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
             message = "Starting service";

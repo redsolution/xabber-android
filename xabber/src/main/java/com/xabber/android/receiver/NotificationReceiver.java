@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.core.app.RemoteInput;
 
 import com.xabber.android.data.Application;
@@ -29,7 +30,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
-        if (!Application.getInstance().isServiceStarted()) {
+        if (Application.getInstance().isServiceNotStarted()) {
             MessageNotificationManager.getInstance().onDelayedNotificationAction(createAction(intent));
             if (accountJid != null)
                 Utils.startXabberServiceCompatWithSyncMode(context, accountJid);

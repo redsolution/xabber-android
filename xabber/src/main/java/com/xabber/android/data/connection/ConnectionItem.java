@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.connection;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
@@ -64,7 +62,6 @@ public abstract class ConnectionItem {
      */
     @NonNull
     XMPPTCPConnection connection;
-    Toast toast;
     /**
      * Current state.
      */
@@ -74,12 +71,12 @@ public abstract class ConnectionItem {
      */
     private boolean connectionIsOutdated;
     private ConnectionThread connectionThread;
-    private StanzaListener everyStanzaListener = stanza -> Application.getInstance().runOnUiThread(() -> {
+    private final StanzaListener everyStanzaListener = stanza -> Application.getInstance().runOnUiThread(() -> {
         for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
             listener.onStanza(ConnectionItem.this, stanza);
         }
     });
-    private PingFailedListener pingFailedListener = new PingFailedListener() {
+    private final PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
         public void pingFailed() {
             LogManager.i(this, "pingFailed for " + getAccount());
@@ -89,21 +86,18 @@ public abstract class ConnectionItem {
     };
 
 
-    public ConnectionItem(boolean custom,
-                          String host, int port, DomainBareJid serverName, Localpart userName,
-                          Resourcepart resource, boolean storePassword, String password, String token,
-                          XToken xToken, boolean saslEnabled, TLSMode tlsMode, boolean compression,
-                          ProxyType proxyType, String proxyHost, int proxyPort,
-                          String proxyUser, String proxyPassword) {
+    public ConnectionItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
+                          Resourcepart resource, boolean storePassword, String password, String token, XToken xToken,
+                          boolean saslEnabled, TLSMode tlsMode, boolean compression, ProxyType proxyType,
+                          String proxyHost, int proxyPort, String proxyUser, String proxyPassword) {
+
         this.account = AccountJid.from(userName, serverName, resource);
         this.logTag = getClass().getSimpleName() + ": " + account;
         rosterListener = new AccountRosterListener(getAccount());
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
-        connectionSettings = new ConnectionSettings(userName,
-                serverName, resource, custom, host, port, password, token, xToken,
-                saslEnabled, tlsMode, compression, proxyType, proxyHost,
-                proxyPort, proxyUser, proxyPassword);
+        connectionSettings = new ConnectionSettings(userName, serverName, resource, custom, host, port, password, token,
+                xToken, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         connection = createConnection();
 
         updateState(ConnectionState.offline);
@@ -212,7 +206,6 @@ public abstract class ConnectionItem {
                     LogManager.i(logTag, "already disconnected");
                 }
             }
-
         };
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
@@ -227,12 +220,10 @@ public abstract class ConnectionItem {
             public void run() {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
-
                 Application.getInstance().runOnUiThread(() -> createNewConnection());
-
             }
-
         };
+
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -247,16 +238,11 @@ public abstract class ConnectionItem {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createNewConnection();
-                        AccountManager.getInstance().setEnabled(account, true);
-                    }
+                Application.getInstance().runOnUiThread(() -> {
+                    createNewConnection();
+                    AccountManager.getInstance().setEnabled(account, true);
                 });
-
             }
-
         };
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
