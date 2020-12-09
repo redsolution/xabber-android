@@ -323,6 +323,14 @@ public class GroupChat extends AbstractChat {
         sendMessages();
     }
 
+    @Override
+    public void markAsReadAll(boolean trySendDisplay) {
+        super.markAsReadAll(trySendDisplay);
+        if (GroupchatManager.getInstance().hasInvite(account, contactJid)){
+            GroupchatManager.getInstance().readInvite(account, contactJid);
+        }
+    }
+
     /* Getters and setters */
     public GroupchatIndexType getIndexType() { return indexType; }
     public void setIndexType(GroupchatIndexType indexType) { this.indexType = indexType; }
