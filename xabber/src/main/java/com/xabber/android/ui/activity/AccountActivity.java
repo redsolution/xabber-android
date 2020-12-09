@@ -83,7 +83,6 @@ import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.Subscribe;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.pubsub.PubSubException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -957,8 +956,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                         mng.publishAvatar(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
                     } else mng.publishAvatarJPG(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
                     isAvatarSuccessful = true;
-                } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                        SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                        | InterruptedException | SmackException.NoResponseException e) {
                     e.printStackTrace();
                 }
 
@@ -968,7 +967,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     if (isSuccessfulFinal) {
                         Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "Avatar publishing failed", Toast.LENGTH_LONG).show();
                     }
                     showProgressBar(false);
                     updateTitle();
@@ -981,4 +980,5 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         Utils.lockScreenRotation(this, show);
     }
+
 }

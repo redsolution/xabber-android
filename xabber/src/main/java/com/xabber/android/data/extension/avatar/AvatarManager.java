@@ -1,19 +1,20 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * <p>
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- * <p>
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+  <p>
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+  <p>
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+  <p>
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.extension.avatar;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -138,7 +139,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Make {@link Bitmap} from array of bytes.
      *
-     * @param value
      * @return Bitmap. <code>null</code> can be returned if value is invalid or
      * is <code>null</code>.
      */
@@ -228,7 +228,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         final Canvas canvas = new Canvas(output);
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, size, size);
-        final float r = size / 2;
+        final float r = size >> 1;
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
@@ -289,7 +289,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Sets avatar's hash for user.
      *
-     * @param jid
      * @param hash can be <code>null</code>.
      */
     private void setHash(final BareJid jid, final String hash) {
@@ -309,7 +308,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Get avatar's value for user.
      *
-     * @param jid
      * @return avatar's value. <code>null</code> can be returned if user has no
      * avatar or avatar doesn't exists.
      */
@@ -364,10 +362,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /**
      * Sets avatar's value.
-     *
-     * @param hash
-     * @param value
-     * @param type
      */
     private void setValue(final String hash, final byte[] value, String type) {
         if (hash == null) {
@@ -452,13 +446,13 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     public Drawable getDefaultAccountAvatar(AccountJid account) {
         String name = AccountManager.getInstance().getVerboseName(account);
         int color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
-        return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
+        return generateDefaultAvatar(name, color);
     }
 
     @NonNull
     public Drawable getDefaultAccountAvatarForSync(AccountJid account, int color) {
         String name = AccountManager.getInstance().getVerboseName(account);
-        return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
+        return generateDefaultAvatar(name, color);
     }
 
     /**
@@ -558,19 +552,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /**
-     * Gets bitmap with avatar for room.
-     */
-    public Bitmap getRoomBitmap(ContactJid user) {
-        return getCircleBitmap(drawableToBitmap(getRoomAvatarForContactList(user)));
-    }
-
-    /** PRIVATE */
-
-    /**
      * Generate text-based avatar for regular user.
      */
     public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name) {
-        return generateDefaultAvatar(jid, name, ColorGenerator.MATERIAL.getColor(jid));
+        return generateDefaultAvatar(name, ColorGenerator.MATERIAL.getColor(jid));
     }
 
     /**
@@ -639,7 +624,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Generate text-based avatar for regular user.
      */
-    private Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
+    private Drawable generateDefaultAvatar(@NonNull String name, int color) {
         String[] words = name.split("\\s+");
         String chars = "";
 
@@ -657,6 +642,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Generate text-based avatar for room.
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     private Drawable generateDefaultRoomAvatar(@NonNull String jid) {
         Drawable[] layers = new Drawable[2];
         layers[0] = new ColorDrawable(ColorGenerator.MATERIAL.getColor(jid));
@@ -670,9 +656,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /**
      * Gets avatar for occupant in the room.
-     *
-     * @param user
-     * @return
      */
     public Drawable getOccupantAvatar(ContactJid user, String nick) {
         Bitmap value = getBitmap(user.getJid());
@@ -685,10 +668,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /**
      * Avatar was received.
-     *
-     * @param jid
-     * @param hash
-     * @param value
      */
     public void onAvatarReceived(Jid jid, String hash, byte[] value, String type) {
         if (hash != null) {
@@ -756,12 +735,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     private void loadBitmap(final AccountJid account, final Jid jid, final String hash) {
         final byte[] value = AvatarStorage.getInstance().read(hash);
         final Bitmap bitmap = makeBitmap(value);
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onBitmapLoaded(account, jid, hash, value, bitmap);
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> onBitmapLoaded(account, jid, hash, value, bitmap));
     }
 
     /**
@@ -780,7 +754,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     /**
-     * @param bitmap
      * @return Scaled bitmap to be used for shortcut.
      */
     public Bitmap createShortcutBitmap(Bitmap bitmap) {

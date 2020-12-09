@@ -959,8 +959,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                         mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
                     } else mng.publishAvatarJPG(avatarData, MAX_TEST, MAX_TEST);
                     isAvatarSuccessful = true;
-                } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                        SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                        | InterruptedException | SmackException.NoResponseException e) {
                     e.printStackTrace();
                 }
 
