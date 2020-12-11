@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.reliablemessagedelivery;
+package com.xabber.xmpp.sid;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -11,4 +11,5 @@ public class StanzaIdProvider extends ExtensionElementProvider<StanzaIdElement> 
         String id = parser.getAttributeValue("", "id");
         return new StanzaIdElement(name, id);
     }
+
 }

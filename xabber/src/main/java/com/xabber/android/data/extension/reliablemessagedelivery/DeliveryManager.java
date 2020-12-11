@@ -4,6 +4,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -17,7 +18,6 @@ import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.util.Date;
@@ -26,17 +26,16 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class ReliableMessageDeliveryManager implements OnPacketListener {
+public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/delivery";
-    public static final String LOG_TAG = ReliableMessageDeliveryManager.class.getSimpleName();
+    public static final String LOG_TAG = DeliveryManager.class.getSimpleName();
 
-    private static ReliableMessageDeliveryManager instance;
+    private static DeliveryManager instance;
 
-    public static ReliableMessageDeliveryManager getInstance() {
+    public static DeliveryManager getInstance() {
         if (instance == null)
-            instance = new ReliableMessageDeliveryManager();
-        ProviderManager.addExtensionProvider(ReceiptElement.ELEMENT, ReceiptElement.NAMESPACE, new ReceiptElement.ReceiptElementProvider());
+            instance = new DeliveryManager();
         return instance;
     }
 
@@ -51,7 +50,10 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
 
     public boolean isSupported(AccountItem accountItem) { return isSupported(accountItem.getConnection()); }
 
-    public boolean isSupported(AccountJid accountJid) { return isSupported(AccountManager.getInstance().getAccount(accountJid)); }
+    public boolean isSupported(AccountJid accountJid) {
+        return isSupported(AccountManager.getInstance().getAccount(accountJid));
+    }
+
 
     public void resendMessagesWithoutReceipt() {
         Application.getInstance().runInBackground(() -> {
@@ -61,8 +63,12 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 realm.executeTransaction(realm1 -> {
                     for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                        if (accountItem != null && accountItem.isSuccessfulConnectionHappened() && isSupported(accountItem)){
-                            RealmResults<MessageRealmObject> messagesUndelivered = realm1.where(MessageRealmObject.class)
+                        if (accountItem != null
+                                && accountItem.isSuccessfulConnectionHappened()
+                                && isSupported(accountItem)){
+
+                            RealmResults<MessageRealmObject> messagesUndelivered = realm1
+                                    .where(MessageRealmObject.class)
                                     .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
                                     .equalTo(MessageRealmObject.Fields.SENT, true)
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
@@ -72,13 +78,20 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
                                     .findAll()
                                     .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+
                             if (messagesUndelivered.size() != 0)
                                 for (MessageRealmObject messageRealmObject : messagesUndelivered){
                                     if (messageRealmObject != null
-                                            && !messageRealmObject.getStanzaId().equals(messageRealmObject.getOriginId())
-                                            && messageRealmObject.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
-                                        ChatManager.getInstance().getChat(messageRealmObject.getAccount(), messageRealmObject.getUser()).sendMessage(messageRealmObject);
-                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageRealmObject.getOriginalStanza());
+                                            && !messageRealmObject.getStanzaId().equals(
+                                                    messageRealmObject.getOriginId())
+                                            && messageRealmObject.getTimestamp() + 5000 <= new Date(
+                                                    System.currentTimeMillis()).getTime()) {
+
+                                        ChatManager.getInstance().getChat(messageRealmObject.getAccount(),
+                                                messageRealmObject.getUser()).sendMessage(messageRealmObject);
+
+                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: "
+                                                + messageRealmObject.getOriginalStanza());
                                     }
                                 }
                         }
@@ -113,12 +126,17 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     @Override
+    public void onConnected(ConnectionItem connection) {
+        resendMessagesWithoutReceipt();
+    }
+
+    @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (stanza instanceof Message
                 && ((Message) stanza).getType().equals(Message.Type.headline)
                 && stanza.hasExtension(NAMESPACE)) {
             try {
-                ReceiptElement receipt = (ReceiptElement) stanza.getExtension(NAMESPACE);
+                ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
                 String timestamp = receipt.getTimeElement().getStamp();
                 String originId = receipt.getOriginIdElement().getId();
                 String stanzaId = receipt.getStanzaIdElement().getId();

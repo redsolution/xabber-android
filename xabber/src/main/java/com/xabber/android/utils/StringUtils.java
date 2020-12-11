@@ -29,10 +29,12 @@ import com.xabber.android.data.log.LogManager;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.StringCharacterIterator;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -518,4 +520,17 @@ public class StringUtils {
         }
         return result.toString();
     }
+
+    public static String getHumanReadableFileSize(long bytes){
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
 }

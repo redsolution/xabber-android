@@ -18,7 +18,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
@@ -160,7 +160,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
             boolean rewrite = RewriteManager.getInstance().isSupported(connection);
-            boolean reliable = ReliableMessageDeliveryManager.getInstance().isSupported(connection);
+            boolean reliable = DeliveryManager.getInstance().isSupported(connection);
             boolean groupchats = GroupchatManager.getInstance().isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));

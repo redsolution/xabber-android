@@ -38,7 +38,7 @@ import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -52,7 +52,7 @@ import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.vcard.VCard;
 
@@ -112,7 +112,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             processPresence(connection, packet);
         } else if (packet instanceof Message
                 && ((Message) packet).getType().equals(Message.Type.headline)
-                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, ReliableMessageDeliveryManager.NAMESPACE)) {
+                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, DeliveryManager.NAMESPACE)) {
             processHeadlineEchoMessage(connection, packet);
         } else if (packet instanceof DiscoverItems) {
             processDiscoInfoIq(connection, packet);
@@ -142,8 +142,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             //if groupchat headlines aren't correctly parsed, must rewrite this
             StandardExtensionElement echoElement = (StandardExtensionElement) packet.getExtensions().get(0);
             Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
-            String originId = UniqStanzaHelper.getOriginId(message);
-            String stanzaId = UniqStanzaHelper.getContactStanzaId(message);
+            String originId = UniqueStanzaHelper.getOriginId(message);
+            String stanzaId = UniqueStanzaHelper.getContactStanzaId(message);
             MessageRepository.setStanzaIdByOriginId(originId, stanzaId);
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);

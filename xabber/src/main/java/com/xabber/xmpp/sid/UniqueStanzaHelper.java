@@ -1,8 +1,5 @@
 package com.xabber.xmpp.sid;
 
-import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
-import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
-
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 
@@ -13,21 +10,18 @@ import java.util.List;
  * Created by valery.miller on 20.04.18.
  */
 
-public class UniqStanzaHelper {
+public class UniqueStanzaHelper {
 
-    final static String ELEMENT_NAME_ORIGIN = "origin-id";
-    final static String ELEMENT_NAME = "stanza-id";
     final static String NAMESPACE = "urn:xmpp:sid:0";
-    final static String ATTRIBUTE_ID = "id";
 
     public static String getStanzaId(Message message) {
-        StanzaIdElement sidElement = message.getExtension(ELEMENT_NAME, NAMESPACE);
+        StanzaIdElement sidElement = message.getExtension(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE);
         if (sidElement != null) return sidElement.getId();
         else return null;
     }
 
     public static String getOriginId(Message message) {
-        OriginIdElement oidElement = message.getExtension(ELEMENT_NAME_ORIGIN, NAMESPACE);
+        OriginIdElement oidElement = message.getExtension(OriginIdElement.ELEMENT, OriginIdElement.NAMESPACE);
         if (oidElement != null) return oidElement.getId();
         else return message.getStanzaId();
     }
@@ -39,7 +33,7 @@ public class UniqStanzaHelper {
         for (ExtensionElement stanzaIdElement : stanzaIds) {
             if (stanzaIdElement instanceof StanzaIdElement) {
                 String idBy = ((StanzaIdElement) stanzaIdElement).getBy();
-                if (idBy != null && idBy.equals(message.getFrom())) {
+                if (idBy != null && idBy.equals(message.getFrom().toString())) {
                     messageId = ((StanzaIdElement) stanzaIdElement).getId();
                     break;
                 } else {

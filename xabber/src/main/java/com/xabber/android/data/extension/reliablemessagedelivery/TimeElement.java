@@ -1,15 +1,11 @@
 package com.xabber.android.data.extension.reliablemessagedelivery;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.provider.EmbeddedExtensionProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
-
-import java.util.List;
-import java.util.Map;
 
 public class TimeElement implements ExtensionElement {
 
-    public static final String NAMESPACE = ReliableMessageDeliveryManager.NAMESPACE;
+    public static final String NAMESPACE = null;
     public static final String ELEMENT = "time";
     public static final String ATTRIBUTE_BY = "by";
     public static final String ATTRIBUTE_STAMP = "stamp";
@@ -22,8 +18,7 @@ public class TimeElement implements ExtensionElement {
         this.stamp = timeStamp;
     }
 
-    public TimeElement() {
-    }
+    public TimeElement() { }
 
     @Override
     public String getNamespace() {
@@ -60,13 +55,4 @@ public class TimeElement implements ExtensionElement {
         return xmlStringBuilder;
     }
 
-    public static class TimeElementProvider extends EmbeddedExtensionProvider<TimeElement> {
-        @Override
-        protected TimeElement createReturnExtension(String currentElement, String currentNamespace, Map attributeMap, List content) {
-            TimeElement timeElement = new TimeElement();
-            timeElement.setBy((String) attributeMap.get(ATTRIBUTE_BY));
-            timeElement.setStamp((String) attributeMap.get(ATTRIBUTE_STAMP));
-            return timeElement;
-        }
-    }
 }

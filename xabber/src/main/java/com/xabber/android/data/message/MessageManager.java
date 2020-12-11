@@ -43,7 +43,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionEleme
 import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -54,7 +54,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -535,8 +535,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             String markupText = bodies.second;
 
             MessageRealmObject newMessageRealmObject = finalChat.createNewMessageItem(text);
-            newMessageRealmObject.setOriginId(UniqStanzaHelper.getOriginId(message));
-            if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
+            newMessageRealmObject.setOriginId(UniqueStanzaHelper.getOriginId(message));
+            if (DeliveryManager.getInstance().isSupported(account))
                 newMessageRealmObject.setAcknowledged(true);
             newMessageRealmObject.setSent(true);
             newMessageRealmObject.setForwarded(true);
@@ -557,7 +557,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             if (groupchatUser != null) {
                 GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
-                newMessageRealmObject.setStanzaId(UniqStanzaHelper.getContactStanzaId(message));
+                newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
             } else {
                 newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
             }

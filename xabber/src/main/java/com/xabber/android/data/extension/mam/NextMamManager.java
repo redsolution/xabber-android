@@ -41,7 +41,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import net.java.otr4j.io.SerializationUtils;
@@ -947,7 +947,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             messageRealmObject.setDelayTimestamp(messageDelay.getStamp().getTime());
         }
         messageRealmObject.setIncoming(incoming);
-        messageRealmObject.setOriginId(UniqStanzaHelper.getOriginId(message));
+        messageRealmObject.setOriginId(UniqueStanzaHelper.getOriginId(message));
         messageRealmObject.setPacketId(message.getStanzaId());
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
@@ -974,7 +974,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (groupchatUser != null) {
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
-            messageRealmObject.setStanzaId(UniqStanzaHelper.getContactStanzaId(message));
+            messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
         } else {
             messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }

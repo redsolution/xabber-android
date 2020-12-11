@@ -7,9 +7,8 @@ import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class ChangeGroupchatMemberPreferencesIQ(val groupchat: GroupChat, val memberId: String,
-                                         val badge: String? = null, val nickname: String? = null)
-    : GroupchatAbstractMembersIQ() {
+class ChangeGroupchatMemberPreferencesIQ(val groupchat: GroupChat, val memberId: String, val badge: String? = null,
+                                         val nickname: String? = null) : GroupchatAbstractMembersIQ() {
 
     init {
         this.type = Type.set

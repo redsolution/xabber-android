@@ -24,12 +24,10 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
                         case GroupchatMembersQueryIQ.ELEMENT:
-                            resultIQ.setQueryId(parser
-                                    .getAttributeValue("",
-                                            GroupchatMembersQueryIQ.MEMBER_ID));
-                            resultIQ.setQueryVersion(parser
-                                    .getAttributeValue("",
-                                            GroupchatMembersQueryIQ.VERSION));
+                            resultIQ.setQueryId(parser.getAttributeValue("",
+                                    GroupchatMembersQueryIQ.MEMBER_ID));
+                            resultIQ.setQueryVersion(parser.getAttributeValue("",
+                                    GroupchatMembersQueryIQ.VERSION));
 
                             parser.next();
                             break;
@@ -131,4 +129,5 @@ public class GroupchatMembersResultProvider extends IQProvider<GroupchatMembersQ
         }
         return null;
     }
+
 }

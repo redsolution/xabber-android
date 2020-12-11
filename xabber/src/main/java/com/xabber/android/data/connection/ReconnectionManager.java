@@ -9,7 +9,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
@@ -53,7 +53,7 @@ public class ReconnectionManager implements OnConnectedListener,
         tenSecondsCounter++;
         if (tenSecondsCounter >= 10){
             tenSecondsCounter = 0;
-            ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
+            DeliveryManager.getInstance().resendMessagesWithoutReceipt();
         }
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
 //        checkCarbonStatus();

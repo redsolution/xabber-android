@@ -43,8 +43,8 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.references.decoration.Markup;
-import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.xmpp.sid.OriginIdElement;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.BackpressureMessageSaver;
@@ -57,7 +57,7 @@ import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -141,13 +141,13 @@ public abstract class AbstractChat extends BaseEntity implements
     public static String getStanzaId(Message message) {
         String stanzaId;
 
-        stanzaId = UniqStanzaHelper.getStanzaId(message);
+        stanzaId = UniqueStanzaHelper.getStanzaId(message);
         if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
 
         stanzaId = message.getStanzaId();
         if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
 
-        stanzaId = UniqStanzaHelper.getOriginId(message);
+        stanzaId = UniqueStanzaHelper.getOriginId(message);
 
         return stanzaId;
     }
@@ -903,7 +903,7 @@ public abstract class AbstractChat extends BaseEntity implements
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getStanzaId()));
-            if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
+            if (DeliveryManager.getInstance().isSupported(account))
                 if (!messageRealmObject.isDelivered() && messageRealmObject.isSent()) {
                     message.addExtension(new RetryReceiptRequestElement());
                 }
@@ -921,7 +921,7 @@ public abstract class AbstractChat extends BaseEntity implements
                                 .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
                                 .findFirst();
 
-                        if (acknowledgedMessage != null && !ReliableMessageDeliveryManager
+                        if (acknowledgedMessage != null && !DeliveryManager
                                 .getInstance().isSupported(account)) {
                             acknowledgedMessage.setAcknowledged(true);
                         }

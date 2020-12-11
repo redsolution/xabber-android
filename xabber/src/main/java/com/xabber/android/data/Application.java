@@ -52,7 +52,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -445,7 +445,7 @@ public class Application extends android.app.Application {
         addManager(GroupchatManager.getInstance());
         addManager(GroupchatMemberManager.getInstance());
         addManager(RewriteManager.getInstance());
-        addManager(ReliableMessageDeliveryManager.getInstance());
+        addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
     }
 

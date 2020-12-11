@@ -177,13 +177,13 @@
     <extensionProvider>
         <elementName>stanza-id</elementName>
         <namespace>urn:xmpp:sid:0</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdProvider</className>
+        <className>com.xabber.xmpp.sid.StanzaIdProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>origin-id</elementName>
         <namespace>urn:xmpp:sid:0</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.OriginIdProvider</className>
+        <className>com.xabber.xmpp.sid.OriginIdProvider</className>
     </extensionProvider>
 
 
@@ -193,6 +193,13 @@
         <elementName>time</elementName>
         <namespace>https://xabber.com/protocol/delivery</namespace>
         <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
+    </extensionProvider>
+
+    <!--           Received element provider         -->
+    <extensionProvider>
+        <elementName>received</elementName>
+        <namespace>https://xabber.com/protocol/delivery</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.ReceivedExtensionElementProvider</className>
     </extensionProvider>
 
 </smackProviders>

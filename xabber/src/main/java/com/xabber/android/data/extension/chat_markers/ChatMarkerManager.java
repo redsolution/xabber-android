@@ -14,7 +14,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
-import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
+import com.xabber.xmpp.sid.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
