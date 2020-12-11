@@ -6,13 +6,17 @@ import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
+import org.jxmpp.jid.Jid
 
-class ChangeGroupchatMemberPreferencesIQ(val groupchat: GroupChat, val memberId: String, val badge: String? = null,
+class ChangeGroupchatMemberPreferencesIQ(val jid: Jid, private val memberId: String, val badge: String? = null,
                                          val nickname: String? = null) : GroupchatAbstractMembersIQ() {
+
+    constructor(groupChat:GroupChat, memberId: String, badge: String? = null, nickname: String? = null)
+            : this(groupChat.fullJidIfPossible ?: groupChat.contactJid.jid, memberId, badge, nickname)
 
     init {
         this.type = Type.set
-        this.to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
+        this.to = jid
     }
 
     companion object {

@@ -1,18 +1,21 @@
 package com.xabber.android.data.extension.groupchat
 
+import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
-import org.jxmpp.jid.FullJid
+import org.jxmpp.jid.Jid
 
-class GroupPinMessageIQ(from: FullJid, to: FullJid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
+class GroupPinMessageIQ(to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
 
     init {
         this.type = Type.set
-        this.from = from
         this.to = to
     }
+
+    constructor(groupChat: GroupChat, messageId: String)
+            : this(groupChat.fullJidIfPossible ?: groupChat.contactJid.jid, messageId)
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()

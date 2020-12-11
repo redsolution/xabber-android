@@ -23,7 +23,6 @@ public class CreateGroupchatTest {
     GroupchatMembershipType membershipType;
     GroupchatIndexType indexType;
     GroupchatPrivacyType privacyType;
-    String iqId = "iq_id";
 
     CreateGroupchatIQ iq;
 
@@ -51,7 +50,6 @@ public class CreateGroupchatTest {
 
         iq.setStanzaId("iq_id");
     }
-
 
     @Test
     public void testCreateGroupchatIqCreating(){

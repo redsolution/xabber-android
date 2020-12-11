@@ -3,14 +3,18 @@ package com.xabber.android.data.extension.groupchat.rights
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
+import org.jxmpp.jid.Jid
 
-internal class GroupchatMemberRightsQueryIQ(groupchat: GroupChat, private val memberId: String)
+internal class GroupchatMemberRightsQueryIQ(jid: Jid, private val memberId: String)
     : GroupchatAbstractRightsIQ() {
 
     init {
         type = Type.get
-        to = groupchat.fullJidIfPossible ?: groupchat.contactJid.jid
+        to = jid
     }
+
+    constructor(groupChat: GroupChat, memberId: String)
+            : this(groupChat.fullJidIfPossible ?: groupChat.contactJid.jid, memberId)
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()

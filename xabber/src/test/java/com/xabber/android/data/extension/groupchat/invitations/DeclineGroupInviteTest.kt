@@ -1,10 +1,10 @@
 package com.xabber.android.data.extension.groupchat.invitations
 
-import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groupchat.invite.incoming.DeclineGroupInviteIQ
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.jxmpp.jid.impl.JidCreate
 
 class DeclineGroupInviteTest {
 
@@ -16,7 +16,7 @@ class DeclineGroupInviteTest {
 
     @Before
     fun setup(){
-        val contactJid = ContactJid.from(referenceGroupJid)
+        val contactJid = JidCreate.fullFrom(referenceGroupJid)
         iq = DeclineGroupInviteIQ(contactJid)
         iq.stanzaId = referenceIqId
     }

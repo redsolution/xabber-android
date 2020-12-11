@@ -588,8 +588,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         //todo add privilege checking
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
-                GroupPinMessageIQ iq = new GroupPinMessageIQ(groupChat.getAccount().getFullJid(),
-                        groupChat.getFullJidIfPossible(), "");
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(groupChat.getFullJidIfPossible(), "");
 
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
@@ -619,9 +618,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
             try {
-                FullJid fullJid =
-                        ((GroupChat) ChatManager.getInstance().getChat(account, contact)).getFullJidIfPossible();
-                GroupPinMessageIQ iq = new GroupPinMessageIQ(account.getFullJid(), fullJid, messageId);
+                FullJid fullJid = ((GroupChat) ChatManager.getInstance().getChat(account, contact)).getFullJidIfPossible();
+                GroupPinMessageIQ iq = new GroupPinMessageIQ(fullJid, messageId);
 
                 AccountManager.getInstance().getAccount(account).getConnection()
                         .sendIqWithResponseCallback(iq, packet -> {
