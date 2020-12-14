@@ -5,7 +5,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class TimeElement implements ExtensionElement {
 
-    public static final String NAMESPACE = null;
+    public static final String NAMESPACE = "";
     public static final String ELEMENT = "time";
     public static final String ATTRIBUTE_BY = "by";
     public static final String ATTRIBUTE_STAMP = "stamp";

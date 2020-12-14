@@ -390,7 +390,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                         IncomingInviteExtensionElement.NAMESPACE);
                 long timestamp = 0;
                 if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                    TimeElement timeElement = (TimeElement) stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                    TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
                 GroupchatManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, timestamp);
