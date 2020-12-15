@@ -68,6 +68,10 @@ public class GroupchatBlocklistAdapter extends RecyclerView.Adapter<RecyclerView
         this.listener = listener;
     }
 
+    public void removeListener(){
+        this.listener = null;
+    }
+
     public void setBlockedItems(List<GroupchatBlocklistItemElement> blockedItems) {
         this.blockedItems.clear();
         this.blockedItems.addAll(blockedItems);

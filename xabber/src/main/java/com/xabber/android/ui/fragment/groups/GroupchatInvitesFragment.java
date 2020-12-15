@@ -78,6 +78,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
     public void onDetach() {
         super.onDetach();
         invitesListListener = null;
+        adapter.removeListener();
     }
 
     @Override

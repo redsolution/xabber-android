@@ -42,6 +42,10 @@ public class GroupchatInvitesAdapter extends RecyclerView.Adapter<GroupchatInvit
         this.listener = listener;
     }
 
+    public void removeListener(){
+        this.listener = null;
+    }
+
     public void setInvites(List<String> invites) {
         this.invites.clear();
         this.invites.addAll(invites);
@@ -59,10 +63,6 @@ public class GroupchatInvitesAdapter extends RecyclerView.Adapter<GroupchatInvit
             checkedInvites.remove(invalidInvite);
         }
         notifyDataSetChanged();
-    }
-
-    public List<String> getInvites() {
-        return invites;
     }
 
     public Set<String> getCheckedInvites() {
@@ -107,9 +107,9 @@ public class GroupchatInvitesAdapter extends RecyclerView.Adapter<GroupchatInvit
 
         private final String LOG_TAG = GroupchatInviteViewHolder.class.getSimpleName();
 
-        private ImageView avatar;
-        private TextView inviteJid;
-        private CheckBox inviteCheckBox;
+        private final ImageView avatar;
+        private final TextView inviteJid;
+        private final CheckBox inviteCheckBox;
 
         public GroupchatInviteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -151,4 +151,5 @@ public class GroupchatInvitesAdapter extends RecyclerView.Adapter<GroupchatInvit
             }
         }
     }
+
 }

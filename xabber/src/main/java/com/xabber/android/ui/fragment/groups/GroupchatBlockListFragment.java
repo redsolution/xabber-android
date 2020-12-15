@@ -77,6 +77,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
     public void onDetach() {
         super.onDetach();
         blockListListener = null;
+        adapter.removeListener();
     }
 
     @Override

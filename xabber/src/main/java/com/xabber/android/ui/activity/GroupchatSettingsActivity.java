@@ -109,7 +109,6 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
             Fragment fragment = null;
             switch (settingsType) {
                 case Settings:
-                    break;
                 case Restrictions:
                     break;
                 case Invitations:
@@ -145,17 +144,15 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_perform_on_selected:
-                Fragment fragment = getCurrentFragment();
-                if (fragment instanceof GroupchatSelectorListToolbarActions) {
-                    ((GroupchatSelectorListToolbarActions) fragment).actOnSelection();
-                    showToolbarProgress(true);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_perform_on_selected) {
+            Fragment fragment = getCurrentFragment();
+            if (fragment instanceof GroupchatSelectorListToolbarActions) {
+                ((GroupchatSelectorListToolbarActions) fragment).actOnSelection();
+                showToolbarProgress(true);
+            }
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void showToolbarProgress(boolean show) {
@@ -273,7 +270,7 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
 
     public interface GroupchatSelectorListToolbarActions {
         void actOnSelection();
-
         void cancelSelection();
     }
+
 }
