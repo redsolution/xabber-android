@@ -54,7 +54,6 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
         return isSupported(AccountManager.getInstance().getAccount(accountJid));
     }
 
-
     public void resendMessagesWithoutReceipt() {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
@@ -69,15 +68,14 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
                             RealmResults<MessageRealmObject> messagesUndelivered = realm1
                                     .where(MessageRealmObject.class)
-                                    .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                                    .equalTo(MessageRealmObject.Fields.SENT, true)
+                                    .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().toString())
+                                    //.equalTo(MessageRealmObject.Fields.SENT, true)
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
                                     .equalTo(MessageRealmObject.Fields.DELIVERED, false)
                                     .equalTo(MessageRealmObject.Fields.IS_RECEIVED_FROM_MAM, false)
-                                    .equalTo(MessageRealmObject.Fields.READ, false)
+                                    //.equalTo(MessageRealmObject.Fields.READ, false)
                                     .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
-                                    .findAll()
-                                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    .findAll();
 
                             if (messagesUndelivered.size() != 0)
                                 for (MessageRealmObject messageRealmObject : messagesUndelivered){
@@ -104,7 +102,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
-        Application.getInstance().runInBackgroundUserRequest(() -> {
+        Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -134,7 +132,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
     public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (stanza instanceof Message
                 && ((Message) stanza).getType().equals(Message.Type.headline)
-                && stanza.hasExtension(NAMESPACE)) {
+                && stanza.hasExtension(ReceivedExtensionElement.ELEMENT, ReceivedExtensionElement.NAMESPACE)) {
             try {
                 ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
                 String timestamp = receipt.getTimeElement().getStamp();

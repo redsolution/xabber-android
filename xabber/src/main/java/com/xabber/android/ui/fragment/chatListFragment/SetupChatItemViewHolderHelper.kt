@@ -8,7 +8,6 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
@@ -24,6 +23,7 @@ import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.color.ColorManager
+import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
 import java.util.*
@@ -251,30 +251,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupMessageStatus(holder: ChatViewHolder, chat: AbstractChat) {
-        val lastMessage = chat.lastMessage
-        holder.messageStatusTV.visibility = if (lastMessage?.text == null || lastMessage.isIncoming)
-            View.INVISIBLE else View.VISIBLE
-        if (lastMessage != null) {
-            holder.messageStatusTV.setImageResource(getMessageStatusImage(lastMessage))
+        if (chat.lastMessage != null) {
+            MessageDeliveryStatusHelper.setupStatusImageView(chat.lastMessage!!, holder.messageStatusTV)
         }
-    }
-
-    private fun getMessageStatusImage(messageRealmObject: MessageRealmObject): Int {
-        return if (!messageRealmObject.isIncoming) {
-            if (MessageRealmObject.isUploadFileMessage(messageRealmObject)
-                    && !messageRealmObject.isSent
-                    && System.currentTimeMillis() - messageRealmObject.timestamp > 1000)
-                R.drawable.ic_message_not_sent_14dp
-            else if (messageRealmObject.isDisplayed || messageRealmObject.isReceivedFromMessageArchive)
-                R.drawable.ic_message_displayed
-            else if (messageRealmObject.isDelivered)
-                R.drawable.ic_message_delivered_14dp
-            else if (messageRealmObject.isError)
-                R.drawable.ic_message_has_error_14dp
-            else if (messageRealmObject.isAcknowledged || messageRealmObject.isForwarded)
-                R.drawable.ic_message_acknowledged_14dp
-            else R.drawable.ic_message_not_sent_14dp
-        } else R.drawable.ic_message_not_sent_14dp
     }
 
 }
