@@ -28,11 +28,18 @@ import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
 
+import org.jetbrains.annotations.NotNull;
+import org.jivesoftware.smack.ExceptionCallback;
+import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Stanza;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class GroupchatInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions, OnGroupchatSelectorListToolbarActionResult {
+public class GroupchatInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions,
+        OnGroupchatSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
 
     private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_ACCOUNT";
     private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_GROUPCHAT_CONTACT";
@@ -57,7 +64,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (requireActivity() instanceof GroupchatSelectorListItemActions) {
             invitesListListener = (GroupchatSelectorListItemActions) requireActivity();
@@ -88,6 +95,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
+            GroupchatMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -121,15 +129,18 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         adapter = new GroupchatInvitesAdapter();
         adapter.setListener(invitesListListener);
         invitesList.setAdapter(adapter);
-        if (groupChat.getListOfInvites() != null && groupChat.getListOfInvites().size() > 0)
-            adapter.setInvites(groupChat.getListOfInvites());
-        setupPlaceholder();
+        setupList();
         return view;
     }
 
+    private void setupList(){
+        if (groupChat.getListOfInvites() != null && groupChat.getListOfInvites().size() > 0)
+            adapter.setInvites(groupChat.getListOfInvites());
+        setupPlaceholder();
+    }
+
     private void setupPlaceholder() {
-        if (groupChat.getListOfInvites() != null
-                && groupChat.getListOfInvites().size() > 0) {
+        if (groupChat.getListOfInvites() != null && groupChat.getListOfInvites().size() > 0) {
             invitesList.setVisibility(View.VISIBLE);
             placeholder.setVisibility(View.GONE);
         } else {
@@ -137,6 +148,33 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
             placeholder.setVisibility(View.VISIBLE);
             placeholder.setText(getString(R.string.groupchat_invite_lis_empty));
         }
+    }
+
+    private void setupError(String errorString){
+        if (groupChat.getListOfInvites() != null && groupChat.getListOfInvites().size() > 0) {
+            invitesList.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            invitesList.setVisibility(View.GONE);
+            placeholder.setVisibility(View.VISIBLE);
+            placeholder.setText(errorString);
+        }
+    }
+
+    @Override
+    public void processException(Exception exception) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (exception instanceof XMPPException.XMPPErrorException){
+                setupError(((XMPPException.XMPPErrorException)exception).getXMPPError().getCondition().name());
+            } else {
+                setupError(getContext().getText(R.string.groupchat_error).toString());
+            }
+        });
+    }
+
+    @Override
+    public void processStanza(Stanza packet) {
+        Application.getInstance().runOnUiThread(this::setupList);
     }
 
     public void actOnSelection() {

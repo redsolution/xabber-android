@@ -29,10 +29,16 @@ import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
+import org.jivesoftware.smack.ExceptionCallback;
+import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Stanza;
+
 import java.util.List;
 
-public class GroupchatBlockListFragment extends Fragment implements GroupchatSelectorListToolbarActions, OnGroupchatSelectorListToolbarActionResult {
+public class GroupchatBlockListFragment extends Fragment implements GroupchatSelectorListToolbarActions,
+        OnGroupchatSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
 
     private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_ACCOUNT";
     private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_GROUPCHAT_CONTACT";
@@ -57,7 +63,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (requireActivity() instanceof GroupchatSelectorListItemActions) {
             blockListListener = (GroupchatSelectorListItemActions) requireActivity();
@@ -88,6 +94,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
+            GroupchatMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -121,16 +128,46 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         adapter = new GroupchatBlocklistAdapter();
         adapter.setListener(blockListListener);
         blockList.setAdapter(adapter);
+        setupList();
+        return view;
+    }
+
+    private void setupList(){
         if (groupChat.getListOfBlockedElements() != null
                 && groupChat.getListOfBlockedElements().size() > 0)
             adapter.setBlockedItems(groupChat.getListOfBlockedElements());
         setupPlaceholder();
-        return view;
+    }
+
+    @Override
+    public void processStanza(Stanza packet) {
+        Application.getInstance().runOnUiThread(this::setupList);
+    }
+
+    @Override
+    public void processException(Exception exception) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (exception instanceof XMPPException.XMPPErrorException){
+                setupError(((XMPPException.XMPPErrorException)exception).getXMPPError().getCondition().name());
+            } else {
+                setupError(getContext().getText(R.string.groupchat_error).toString());
+            }
+        });
+    }
+
+    private void setupError(String text){
+        if (groupChat.getListOfBlockedElements() != null && groupChat.getListOfBlockedElements().size() > 0) {
+            blockList.setVisibility(View.VISIBLE);
+            placeholder.setVisibility(View.GONE);
+        } else {
+            blockList.setVisibility(View.GONE);
+            placeholder.setVisibility(View.VISIBLE);
+            placeholder.setText(text);
+        }
     }
 
     private void setupPlaceholder() {
-        if (groupChat.getListOfBlockedElements() != null
-                && groupChat.getListOfBlockedElements().size() > 0) {
+        if (groupChat.getListOfBlockedElements() != null && groupChat.getListOfBlockedElements().size() > 0) {
             blockList.setVisibility(View.VISIBLE);
             placeholder.setVisibility(View.GONE);
         } else {
@@ -138,22 +175,6 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
             placeholder.setVisibility(View.VISIBLE);
             placeholder.setText(getString(R.string.groupchat_blocklist_empty));
         }
-    }
-
-    private void prepopulateList() {
-        ArrayList<GroupchatBlocklistItemElement> prepopList = new ArrayList<>();
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.id, "I"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.domain, "1"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.jid, "two"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.domain, "3"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.jid, "one"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.id, "III"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.jid, "five"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.jid, "three"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.id, "II"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.domain, "2"));
-        prepopList.add(new GroupchatBlocklistItemElement(GroupchatBlocklistItemElement.ItemType.jid, "four"));
-        adapter.setBlockedItems(prepopList);
     }
 
     public void actOnSelection() {
@@ -202,4 +223,5 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         if (!account.getBareJid().equals(this.account.getBareJid())) return true;
         return !groupchatJid.getBareJid().equals(this.groupchatContact.getBareJid());
     }
+
 }

@@ -44,6 +44,7 @@ import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 
+import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -235,18 +236,34 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         });
     }
 
-    public void requestGroupchatInvitationsList(AccountJid account, ContactJid groupchatJid) {
+    public void requestGroupchatInvitationsList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
+                                                ExceptionCallback exceptionCallback) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
-
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
                     GroupchatInviteListQueryIQ queryIQ = new GroupchatInviteListQueryIQ((GroupChat) chat);
-                    GroupchatInvitesResultListener listener = new GroupchatInvitesResultListener(account, groupchatJid);
                     try {
-                        connection.sendIqWithResponseCallback(queryIQ, listener);
+                        connection.sendIqWithResponseCallback(queryIQ, packet -> {
+                            if (packet instanceof GroupchatInviteListResultIQ) {
+                                GroupchatInviteListResultIQ resultIQ = (GroupchatInviteListResultIQ) packet;
+
+                                if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
+                                        && account.getBareJid().equals(packet.getTo().asBareJid())) {
+
+                                    ArrayList<String> listOfInvites = resultIQ.getListOfInvitedJids();
+
+                                    if (listOfInvites != null) {
+                                        ((GroupChat) chat).setListOfInvites(listOfInvites);
+                                    } else {
+                                        ((GroupChat) chat).setListOfInvites(new ArrayList<>());
+                                    }
+                                }
+                            }
+                            listener.processStanza(packet);
+                        }, exceptionCallback::processException);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
                     } catch (InterruptedException e) {
@@ -257,7 +274,8 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         });
     }
 
-    public void requestGroupchatBlocklistList(AccountJid account, ContactJid groupchatJid) {
+    public void requestGroupchatBlocklistList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
+                                              ExceptionCallback exceptionCallback) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
@@ -266,9 +284,22 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
                     GroupchatBlocklistQueryIQ queryIQ = new GroupchatBlocklistQueryIQ((GroupChat) chat);
-                    GroupchatBlocklistResultListener listener = new GroupchatBlocklistResultListener(account, groupchatJid);
                     try {
-                        connection.sendIqWithResponseCallback(queryIQ, listener);
+                        connection.sendIqWithResponseCallback(queryIQ, packet -> {
+                            if (packet instanceof GroupchatBlocklistResultIQ) {
+                                GroupchatBlocklistResultIQ resultIQ = (GroupchatBlocklistResultIQ) packet;
+                                if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
+                                        && account.getBareJid().equals(packet.getTo().asBareJid())) {
+                                    ArrayList<GroupchatBlocklistItemElement> blockList = resultIQ.getBlockedItems();
+                                    if (blockList != null) {
+                                        ((GroupChat) chat).setListOfBlockedElements(blockList);
+                                    } else {
+                                        ((GroupChat) chat).setListOfBlockedElements(new ArrayList<>());
+                                    }
+                                }
+                            }
+                            listener.processStanza(packet);
+                        }, exceptionCallback);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
                     } catch (InterruptedException e) {
@@ -758,88 +789,6 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 for (GroupMemberRightsListener listener :
                         Application.getInstance().getUIListeners(GroupMemberRightsListener.class)) {
                     listener.onGroupchatMemberRightsFormReceived(((GroupChat)ChatManager.getInstance().getChat(account, groupchatJid)), (GroupchatMemberRightsReplyIQ) packet);
-                }
-            }
-        }
-    }
-
-    private static class GroupchatInvitesResultListener implements StanzaListener {
-        private final AccountJid account;
-        private final ContactJid groupchatJid;
-
-        GroupchatInvitesResultListener(AccountJid account, ContactJid groupchatJid) {
-            this.account = account;
-            this.groupchatJid = groupchatJid;
-        }
-
-        @Override
-        public void processStanza(Stanza packet) {
-            if (packet instanceof GroupchatInviteListResultIQ) {
-                GroupchatInviteListResultIQ resultIQ = (GroupchatInviteListResultIQ) packet;
-
-                if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
-                        && account.getBareJid().equals(packet.getTo().asBareJid())) {
-
-                    ArrayList<String> listOfInvites = resultIQ.getListOfInvitedJids();
-
-                    AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
-                    if (chat instanceof GroupChat) {
-                        if (listOfInvites != null) {
-                            ((GroupChat) chat).setListOfInvites(listOfInvites);
-                        } else {
-                            ((GroupChat) chat).setListOfInvites(new ArrayList<>());
-                        }
-                    }
-
-                    Application.getInstance().runOnUiThread(() -> {
-                        for (OnGroupchatRequestListener listener :
-                                Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatInvitesReceived(account, groupchatJid);
-                        }
-                    });
-
-                }
-
-            }
-        }
-    }
-
-    private static class GroupchatBlocklistResultListener implements StanzaListener {
-
-        private final AccountJid account;
-        private final ContactJid groupchatJid;
-
-        GroupchatBlocklistResultListener(AccountJid account, ContactJid groupchatJid) {
-            this.account = account;
-            this.groupchatJid = groupchatJid;
-        }
-
-        @Override
-        public void processStanza(Stanza packet) {
-            if (packet instanceof GroupchatBlocklistResultIQ) {
-                GroupchatBlocklistResultIQ resultIQ = (GroupchatBlocklistResultIQ) packet;
-
-                if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
-                        && account.getBareJid().equals(packet.getTo().asBareJid())) {
-
-                    ArrayList<GroupchatBlocklistItemElement> blockList = resultIQ.getBlockedItems();
-
-                    AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
-                    if (chat instanceof GroupChat) {
-                        if (blockList != null) {
-                            ((GroupChat) chat).setListOfBlockedElements(blockList);
-                        } else {
-                            ((GroupChat) chat).setListOfBlockedElements(new ArrayList<>());
-                        }
-                    }
-
-                    Application.getInstance().runOnUiThread(() -> {
-                        for (OnGroupchatRequestListener listener :
-                                Application.getInstance().getUIListeners(OnGroupchatRequestListener.class)) {
-                            listener.onGroupchatBlocklistReceived(account, groupchatJid);
-                        }
-                    });
-
                 }
             }
         }

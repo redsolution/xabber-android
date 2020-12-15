@@ -147,9 +147,6 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
         super.onPause()
     }
 
-    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
-
-    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
     override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String?) {
         if (isThisChat(accountJid, groupchatJid))

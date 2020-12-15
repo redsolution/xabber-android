@@ -40,7 +40,6 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
@@ -106,10 +105,6 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         }
 
     }
-
-    override fun onGroupchatBlocklistReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
-
-    override fun onGroupchatInvitesReceived(account: AccountJid?, groupchatJid: ContactJid?) {}
 
     override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
         if (account == groupchat?.account && groupchatJid == groupchat?.contactJid)

@@ -351,12 +351,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         //todo this
     }
 
-    @Override
-    public void onGroupchatInvitesReceived(AccountJid account, ContactJid groupchatJid) { }
-
-    @Override
-    public void onGroupchatBlocklistReceived(AccountJid account, ContactJid groupchatJid) { }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(
             GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
