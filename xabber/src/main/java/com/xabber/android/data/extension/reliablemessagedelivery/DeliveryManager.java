@@ -69,11 +69,11 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                             RealmResults<MessageRealmObject> messagesUndelivered = realm1
                                     .where(MessageRealmObject.class)
                                     .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().toString())
-                                    //.equalTo(MessageRealmObject.Fields.SENT, true)
+                                    .equalTo(MessageRealmObject.Fields.SENT, true)
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
                                     .equalTo(MessageRealmObject.Fields.DELIVERED, false)
                                     .equalTo(MessageRealmObject.Fields.IS_RECEIVED_FROM_MAM, false)
-                                    //.equalTo(MessageRealmObject.Fields.READ, false)
+                                    .equalTo(MessageRealmObject.Fields.READ, false)
                                     .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
                                     .findAll();
 
