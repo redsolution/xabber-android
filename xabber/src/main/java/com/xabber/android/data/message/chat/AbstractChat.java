@@ -1048,7 +1048,7 @@ public abstract class AbstractChat extends BaseEntity implements
         if (waitToMarkAsRead.add(messageRealmObject.getUniqueId())) {
             LogManager.d(LOG_TAG, "onBind called, first time trying to read this message with id = "
                     + messageRealmObject.getOriginId()
-                    + "\nand message timestamp = "
+                    + "and message timestamp = "
                     + messageRealmObject.getTimestamp());
             executeRead(messageRealmObject, trySendDisplay);
         }

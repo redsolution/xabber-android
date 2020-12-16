@@ -14,18 +14,16 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
-import com.xabber.xmpp.sid.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.sid.StanzaIdElement;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException;
@@ -68,18 +66,12 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     public ChatMarkerManager() {
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-            @Override
-            public void connectionCreated(final XMPPConnection connection) {
-                ServiceDiscoveryManager.getInstanceFor(connection).addFeature(ChatMarkersElements.NAMESPACE);
-                connection.addPacketInterceptor(new StanzaListener() {
-                    @Override
-                    public void processStanza(Stanza packet) {
-                        Message message = (Message) packet;
-                        message.addExtension(new ChatMarkersElements.MarkableExtension());
-                    }
-                }, OUTGOING_MESSAGE_FILTER);
-            }
+        XMPPConnectionRegistry.addConnectionCreationListener(connection -> {
+            ServiceDiscoveryManager.getInstanceFor(connection).addFeature(ChatMarkersElements.NAMESPACE);
+            connection.addPacketInterceptor(packet -> {
+                Message message = (Message) packet;
+                message.addExtension(new ChatMarkersElements.MarkableExtension());
+            }, OUTGOING_MESSAGE_FILTER);
         });
     }
 
@@ -98,7 +90,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 // displayed
                 markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message));
             } else if (ChatMarkersElements.AcknowledgedExtension.from(message) != null) {
-                // acknowledged
+                LogManager.i(LOG_TAG, "Got \"Acknowledged\" stanza, but no actions performed!");
             }
         }
     }
@@ -111,16 +103,20 @@ public class ChatMarkerManager implements OnPacketListener {
         try {
             originalMessage = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(LOG_TAG, e);
         }
 
         if (originalMessage == null) return;
 
         String messageId = originalMessage.getStanzaId();
-        List<ExtensionElement> stanzaIds = new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+        List<ExtensionElement> stanzaIds = new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT,
+                StanzaIdElement.NAMESPACE));
 
         if (messageId == null || messageId.isEmpty()) {
-            if (stanzaIds.isEmpty()) return;
+            if (stanzaIds.isEmpty()){
+                LogManager.exception(LOG_TAG, new NullPointerException("Can't find any stanza id in message!"));
+                return;
+            }
             for (ExtensionElement stanzaIdElement : stanzaIds) {
                 if (stanzaIdElement instanceof StanzaIdElement) {
                     String idBy = ((StanzaIdElement) stanzaIdElement).getBy();
@@ -144,7 +140,7 @@ public class ChatMarkerManager implements OnPacketListener {
             try {
                 StanzaSender.sendStanza(messageRealmObject.getAccount(), displayedNotification);
             } catch (NetworkException e) {
-                e.printStackTrace();
+                LogManager.exception(LOG_TAG, e);
             }
         } else {
             sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.getAccount());
@@ -230,7 +226,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 try {
                     StanzaSender.sendStanza(account, message);
                 } catch (NetworkException e) {
-                    LogManager.exception(this, e);
+                    LogManager.exception(LOG_TAG, e);
                 }
             }
         });
@@ -281,6 +277,7 @@ public class ChatMarkerManager implements OnPacketListener {
             }
         } else markAsDelivered(receivedExtension.getId());
     }
+
     private void markAsDelivered(final String stanzaID) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
@@ -312,6 +309,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 if (realm != null) realm.close();
             }
         });
-
     }
+
+
 }
