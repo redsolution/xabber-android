@@ -133,14 +133,24 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         try {
             jid = ContactJid.from(messageRealmObject.getOriginalFrom());
         } catch (ContactJid.ContactJidCreateException e) {
-            e.printStackTrace();
+            LogManager.e(LOG_TAG, "Can't get original from jid!");
+            LogManager.exception(LOG_TAG, e);
         }
 
-        String author;
+        String author = "";
 
-        if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
-            author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
-        else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
+        try{
+            if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
+                author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
+            else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
+        } catch (Exception e){
+            LogManager.e(LOG_TAG, "Can't get normal author name!");
+            LogManager.exception(LOG_TAG, e);
+            if (jid != null)
+                author = jid.getBareJid().toString();
+            else
+                author = messageRealmObject.getOriginalFrom();
+        }
 
         return author;
     }
