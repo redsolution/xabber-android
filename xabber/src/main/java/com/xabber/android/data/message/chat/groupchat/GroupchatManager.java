@@ -36,6 +36,7 @@ import com.xabber.android.data.extension.groupchat.status.GroupSetStatusRequestI
 import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
+import com.xabber.android.data.extension.groupchat.system_message.GroupSystemMessageExtensionElement;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
@@ -80,7 +81,7 @@ import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
 public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/groups";
-    public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + "#system-message";
+    public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + GroupSystemMessageExtensionElement.HASH_BLOCK;
     private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
     private static GroupchatManager instance;
 

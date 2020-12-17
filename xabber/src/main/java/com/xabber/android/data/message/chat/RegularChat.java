@@ -62,8 +62,6 @@ import java.util.UUID;
 
 import io.realm.RealmList;
 
-import static com.xabber.android.data.message.chat.groupchat.GroupchatManager.SYSTEM_MESSAGE_NAMESPACE;
-
 /**
  * Represents normal chat.
  *
@@ -250,7 +248,8 @@ public class RegularChat extends AbstractChat {
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
 
-            boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE);
+            boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT,
+                    GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
 
             // create message with file-attachments
             if (attachmentRealmObjects.size() > 0)
@@ -309,7 +308,8 @@ public class RegularChat extends AbstractChat {
         text = bodies.first;
         String markupText = bodies.second;
 
-        boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE);
+        boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT,
+                GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
 
         // create message with file-attachments
         if (attachmentRealmObjects.size() > 0)

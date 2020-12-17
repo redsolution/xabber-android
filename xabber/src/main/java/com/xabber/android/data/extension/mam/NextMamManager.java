@@ -86,8 +86,6 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-import static com.xabber.android.data.message.chat.groupchat.GroupchatManager.SYSTEM_MESSAGE_NAMESPACE;
-
 public class NextMamManager implements OnRosterReceivedListener, OnPacketListener {
 
     private static final String LOG_TAG = NextMamManager.class.getSimpleName();
@@ -979,7 +977,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }
 
-        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, SYSTEM_MESSAGE_NAMESPACE))
+        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatManager.SYSTEM_MESSAGE_NAMESPACE))
             messageRealmObject.setGroupchatSystem(true);
 
         return messageRealmObject;
