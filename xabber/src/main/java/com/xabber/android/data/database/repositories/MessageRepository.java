@@ -4,7 +4,6 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
@@ -69,10 +68,6 @@ public class MessageRepository {
         });
     }
 
-    public static void setMessagePinned(MessageRealmObject messagePinned){
-
-    }
-
     public static MessageRealmObject getMessageFromRealmByStanzaId(String stanzaId){
         if (Looper.getMainLooper() == Looper.myLooper())
             return DatabaseManager.getInstance().getDefaultRealmInstance()
@@ -86,35 +81,6 @@ public class MessageRepository {
                     .findFirst();
             return realm.copyFromRealm(messageRealmObject);
         }
-    }
-
-    public static void setStanzaIdByOriginId(String originId, String stanzaId){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try{
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    MessageRealmObject message = realm1.where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
-                            .findFirst();
-                    message.setStanzaId(stanzaId);
-                    realm1.insertOrUpdate(message);
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (Looper.getMainLooper() != Looper.myLooper() && realm != null)
-                    realm.close();
-            }
-        });
-    }
-
-    public static MessageRealmObject getLastMessageForContactChat(ContactRealmObject contactRealmObject){
-        return DatabaseManager.getInstance().getDefaultRealmInstance()
-                .where(MessageRealmObject.class)
-                //.equalTo(MessageRealmObject.Fields.ACCOUNT, contactRealmObject.getAccountJid()) //TODO REALM UPDATE change this to searching by full contact info
-                .equalTo(MessageRealmObject.Fields.USER, contactRealmObject.getContactJid())
-                .findFirst();
     }
 
 }

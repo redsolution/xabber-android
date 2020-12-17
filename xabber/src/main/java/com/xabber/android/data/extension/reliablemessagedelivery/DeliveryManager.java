@@ -9,22 +9,25 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
@@ -106,16 +109,15 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
                 realm.executeTransaction(realm1 -> {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
                             .findFirst();
                     messageRealmObject.setStanzaId(stanzaId);
-                    messageRealmObject.setTimestamp(millis);
                     messageRealmObject.setAcknowledged(true);
-                    LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageRealmObject.getOriginalStanza());
+                    if (time != null && !time.isEmpty())
+                        messageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(time).getTime());
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -130,20 +132,32 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
-        if (stanza instanceof Message
-                && ((Message) stanza).getType().equals(Message.Type.headline)
-                && stanza.hasExtension(ReceivedExtensionElement.ELEMENT, ReceivedExtensionElement.NAMESPACE)) {
-            try {
-                ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
-                String timestamp = receipt.getTimeElement().getStamp();
-                String originId = receipt.getOriginIdElement().getId();
-                String stanzaId = receipt.getStanzaIdElement().getId();
-                LogManager.d(LOG_TAG, "Received receipt: " + stanza.toString());
-                markMessageReceivedInDatabase(timestamp, originId, stanzaId);
-                EventBus.getDefault().post(new MessageUpdateEvent());
-            } catch (Exception e) {
+        if (stanza instanceof Message && ((Message) stanza).getType().equals(Message.Type.headline)) {
+            String timestamp = "";
+            String originId = "";
+            String stanzaId = "";
+            try{
+                if (stanza.hasExtension(ReceivedExtensionElement.ELEMENT, ReceivedExtensionElement.NAMESPACE)){
+                    ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
+                    timestamp = receipt.getTimeElement().getStamp();
+                    originId = receipt.getOriginIdElement().getId();
+                    stanzaId = receipt.getStanzaIdElement().getId();
+                } else if (stanza.hasExtension(GroupchatExtensionElement.ELEMENT, NAMESPACE)) {
+                    StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
+                    Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
+                    originId = UniqueStanzaHelper.getOriginId(message);
+                    stanzaId = UniqueStanzaHelper.getContactStanzaId(message);
+                    if (echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE) != null){
+                        timestamp = echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE)
+                                .getAttributeValue(TimeElement.ATTRIBUTE_STAMP);
+                    }
+                }
+            } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }
+            LogManager.d(LOG_TAG, "Received receipt to message with origin id : " + originId);
+            markMessageReceivedInDatabase(timestamp, originId, stanzaId);
+            EventBus.getDefault().post(new MessageUpdateEvent());
         }
     }
 

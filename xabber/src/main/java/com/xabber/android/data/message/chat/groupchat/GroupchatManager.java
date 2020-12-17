@@ -19,7 +19,6 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.groupchat.GroupPinMessageIQ;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
@@ -38,7 +37,6 @@ import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -52,7 +50,6 @@ import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.vcard.VCard;
 
@@ -60,11 +57,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
@@ -110,10 +104,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     public void onStanza(ConnectionItem connection, Stanza packet) {
         if (packet instanceof Presence && packet.hasExtension(GroupchatPresence.NAMESPACE)) {
             processPresence(connection, packet);
-        } else if (packet instanceof Message
-                && ((Message) packet).getType().equals(Message.Type.headline)
-                && packet.hasExtension(GroupchatExtensionElement.ELEMENT, DeliveryManager.NAMESPACE)) {
-            processHeadlineEchoMessage(connection, packet);
         } else if (packet instanceof DiscoverItems) {
             processDiscoInfoIq(connection, packet);
         }
@@ -132,19 +122,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                 if (NAMESPACE.equals(item.getNode()))
                     availableGroupchatServers.get(accountJid).add(ContactJid.from(item.getEntityID()).getBareJid());
             }
-        } catch (Exception e) {
-            LogManager.exception(LOG_TAG, e);
-        }
-    }
-
-    private void processHeadlineEchoMessage(ConnectionItem connectionItem, Stanza packet) {
-        try {
-            //if groupchat headlines aren't correctly parsed, must rewrite this
-            StandardExtensionElement echoElement = (StandardExtensionElement) packet.getExtensions().get(0);
-            Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
-            String originId = UniqueStanzaHelper.getOriginId(message);
-            String stanzaId = UniqueStanzaHelper.getContactStanzaId(message);
-            MessageRepository.setStanzaIdByOriginId(originId, stanzaId);
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
@@ -221,7 +198,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             invitesMap.put(accountJid.toString(), groupJid.toString(), giro);
             GroupInviteRepository.saveInviteToRealm(giro);
 
-            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro);;
+            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro);
 
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
