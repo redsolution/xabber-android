@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.reliablemessagedelivery;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -104,7 +106,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
         });
     }
 
-    private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
+    private void markMessageReceivedInDatabase(final String time, @NonNull final String originId, final String stanzaId) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -113,11 +115,18 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
+                            .or()
+                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, originId)
                             .findFirst();
-                    messageRealmObject.setStanzaId(stanzaId);
-                    messageRealmObject.setAcknowledged(true);
-                    if (time != null && !time.isEmpty())
-                        messageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(time).getTime());
+                    if (messageRealmObject == null){
+                        LogManager.exception(LOG_TAG, new NullPointerException("Warning! Got delivery receipt for " +
+                                "origin id: " + originId + ", but can't find message in database"));
+                    } else {
+                        messageRealmObject.setStanzaId(stanzaId);
+                        messageRealmObject.setAcknowledged(true);
+                        if (time != null && !time.isEmpty())
+                            messageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(time).getTime());
+                    }
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -132,7 +141,8 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
-        if (stanza instanceof Message && ((Message) stanza).getType().equals(Message.Type.headline)) {
+        if (stanza instanceof Message && ((Message) stanza).getType().equals(Message.Type.headline)
+                && stanza.hasExtension(ReceivedExtensionElement.NAMESPACE)) {
             String timestamp = "";
             String originId = "";
             String stanzaId = "";
