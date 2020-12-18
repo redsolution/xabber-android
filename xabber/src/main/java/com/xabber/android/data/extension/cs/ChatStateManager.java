@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -42,8 +42,6 @@ import com.xabber.xmpp.uuu.ChatState;
 import com.xabber.xmpp.uuu.ChatStateExtension;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -78,15 +76,12 @@ public class ChatStateManager implements OnDisconnectListener,
     private static final long SEND_REPEATED_COMPOSING_STATE_DELAY = 5 * 1000;
 
     static {
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final XMPPConnection connection) {
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature("http://jabber.org/protocol/chatstates");
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature("https://xabber.com/protocol/extended-chatstates");
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(connection -> {
+            ServiceDiscoveryManager.getInstanceFor(connection)
+                    .addFeature("http://jabber.org/protocol/chatstates");
+            ServiceDiscoveryManager.getInstanceFor(connection)
+                    .addFeature("https://xabber.com/protocol/extended-chatstates");
+        });
     }
 
     public static ChatStateManager getInstance() {
@@ -139,7 +134,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * Handler for sending composing states.
      */
     private final Handler stateSenderHandler;
-    private ArrayList<Runnable> stateSenders;
+    private final ArrayList<Runnable> stateSenders;
 
     private ChatStateManager() {
         chatStates = new NestedNestedMaps<>();
