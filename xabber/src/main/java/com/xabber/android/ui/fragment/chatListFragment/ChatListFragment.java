@@ -120,16 +120,22 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onAttach(@NotNull Context context) {
-        chatListFragmentListener = (ChatListFragmentListener) context;
-        chatListFragmentListener.onChatListStateChanged(currentChatsState);
-        updateBackpressure = new ChatListUpdateBackpressure(this);
+        if (getContext() instanceof ChatListFragmentListener){
+            chatListFragmentListener = (ChatListFragmentListener) context;
+            chatListFragmentListener.onChatListStateChanged(currentChatsState);
+            updateBackpressure = new ChatListUpdateBackpressure(this);
+        } else {
+            LogManager.exception(ChatListFragment.class.getSimpleName(), new Exception("Context must implement " +
+                    "ChatListFragmentListener"));
+        }
         super.onAttach(context);
     }
 
     @Override
-    public void onDetach() {
-        chatListFragmentListener = null;
-        super.onDetach();
+    public void onDestroy() {
+        if (chatListFragmentListener != null)
+            chatListFragmentListener = null;
+        super.onDestroy();
     }
 
     @Override
@@ -602,7 +608,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         /* Update another elements */
         updateToolbar();
         updateItems(newList);
-        chatListFragmentListener.onChatListUpdated();
+        if (chatListFragmentListener != null)
+            chatListFragmentListener.onChatListUpdated();
     }
 
     private ArrayList<AbstractChat> concatLists(ArrayList<AbstractChat> chatList,
