@@ -232,6 +232,15 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
     }
 
+    /**
+     * Call when account blocked or kicked from group
+     * @param accountJid account that got unavailable presence
+     * @param contactJid of group that sent unavailable presence
+     */
+    public void onUnavailablePresence(AccountJid accountJid, ContactJid contactJid){
+        ChatManager.getInstance().removeChat(accountJid, contactJid);
+    }
+
     public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
         try{
             String name = ((GroupChat) ChatManager.getInstance().getChat(accountJid, groupJid)).getName();

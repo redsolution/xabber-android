@@ -42,6 +42,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -172,31 +174,27 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     private void createChatForNewContact(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent),
-                ChatAction.subscription_sent);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent), ChatAction.subscription_sent);
     }
 
     private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received),
-                ChatAction.subscription_received);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received), ChatAction.subscription_received);
     }
 
     private void createChatForAcceptingIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name),
-                ChatAction.subscription_received_accepted);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name), ChatAction.subscription_received_accepted);
     }
 
     private void createChatForAcceptingOutgoingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name),
-                ChatAction.subscription_sent_accepted);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name), ChatAction.subscription_sent_accepted);
     }
 
     /**
@@ -244,10 +242,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void removeAutoAcceptSubscription(AccountJid account, ContactJid user) {
         removeRequestedSubscription(account, user);
     }
-
-    //public void addAutoAcceptSubscription(AccountJid account, UserJid user) {
-    //    addRequestedSubscription(account, user);
-    //}
 
     public boolean hasAutoAcceptSubscription(AccountJid account, ContactJid user) {
         Set<ContactJid> set = requestedSubscriptions.get(account);
@@ -422,6 +416,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 if (accountPresence) {
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
                 } else {
+//                    if (ChatManager.getInstance().getChat(connection.getAccount(), from) instanceof GroupChat){
+//                        GroupchatManager.getInstance().onUnavailablePresence(connection.getAccount(), from);
+//                        LogManager.d("PresenceManager", "Unsubscribed from group chat");
+//                    }
                     RosterManager.onContactChanged(connection.getAccount(), from);
                 }
                 break;
@@ -726,4 +724,5 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return AccountManager.getInstance().isAccountExist(from.toString())
                 && account.getFullJid().asBareJid().equals(from);
     }
+
 }
