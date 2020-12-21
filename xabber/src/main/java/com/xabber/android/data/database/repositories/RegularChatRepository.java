@@ -30,11 +30,17 @@ public class RegularChatRepository {
         Application.getInstance().runInBackground(() -> {
             try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
                 realm.executeTransaction(realm1 -> realm1.where(RegularChatRealmObject.class)
-                        .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
+                        .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().toString())
                         .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getContactJid().getBareJid().toString())
                         .findFirst()
                         .deleteFromRealm());
             } catch (Exception e) {
+                LogManager.exception(LOG_TAG,
+                        new Exception("Tried to remove regular chat with account jid "
+                                + groupChat.getAccount().toString()
+                                + "; and contact jid: "
+                                + groupChat.getContactJid()
+                                + "; but get following exception: "));
                 LogManager.exception(LOG_TAG, e);
             }
         });
@@ -53,7 +59,7 @@ public class RegularChatRepository {
 
                     ContactRealmObject contactRealmObject = realm1
                             .where(ContactRealmObject.class)
-                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().asBareJid().toString())
+                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.getFullJid().toString())
                             .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid.getBareJid().toString())
                             .findFirst();
 

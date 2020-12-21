@@ -95,7 +95,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         List<ContactRealmObject> contacts = ContactRepository.getContactsFromRealm();
         for (ContactRealmObject contactRealmObject : contacts) {
             try {
-                AccountJid account = AccountJid.from(contactRealmObject.getAccountJid()); //TODO REALM UPDATE possibly there we need there an account resource
+                AccountJid account = AccountJid.from(contactRealmObject.getAccountJid());
                 ContactJid contactJid = ContactJid.from(contactRealmObject.getContactJid());
                 RosterContact contact = RosterContact.getRosterContact(account, contactJid, contactRealmObject.getBestName());
 
@@ -137,7 +137,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             LogManager.exception(LOG_TAG, e);
         }
 
-        String author = "";
+        String author;
 
         try{
             if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
