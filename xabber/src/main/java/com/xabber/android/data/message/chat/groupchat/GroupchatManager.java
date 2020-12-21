@@ -238,7 +238,11 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
      * @param contactJid of group that sent unavailable presence
      */
     public void onUnavailablePresence(AccountJid accountJid, ContactJid contactJid){
+        LogManager.d(LOG_TAG, "Subscription state for contact "
+                        + contactJid.toString()
+                        + RosterManager.getInstance().getSubscriptionState(accountJid, contactJid).getSubscriptionType());
         ChatManager.getInstance().removeChat(accountJid, contactJid);
+        RosterManager.getInstance().removeContact(accountJid, contactJid);
     }
 
     public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
