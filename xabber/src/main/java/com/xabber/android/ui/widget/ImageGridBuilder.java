@@ -175,7 +175,7 @@ public class ImageGridBuilder {
                                             }
                                         });
                                         FileManager.scaleImage(layoutParams, height, width);
-                                        imageView.setImageBitmap(resource);
+                                        Application.getInstance().runOnUiThread(() -> imageView.setImageBitmap(resource));
                                     } catch (Exception e){
                                         LogManager.exception(ImageGridBuilder.class.getSimpleName(), e);
                                     } finally { if (realm != null) realm.close();}
