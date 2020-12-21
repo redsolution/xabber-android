@@ -1011,7 +1011,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         try {
             originalMessage = (Message) PacketParserUtils.parseStanza(message.getOriginalStanza());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.e(LOG_TAG, "Exception while parsing message with original stanza: " + originalMessage);
+            LogManager.exception(LOG_TAG, e);
         }
 
         AbstractChat chat = ChatManager.getInstance().getChat(message.getAccount(), message.getUser());

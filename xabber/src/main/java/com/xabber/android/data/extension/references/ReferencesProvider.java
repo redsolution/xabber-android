@@ -74,7 +74,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                 return null;
             }
         } catch (Exception e) {
-            LogManager.d(ReferencesProvider.class, e.toString());
+            LogManager.exception(ReferencesProvider.class, e);
             return null;
         }
     }
@@ -341,19 +341,25 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             user.setBadge(badge);
             user.setJid(jid);
             user.setLastPresent(present);
-            user.setAvatarInfo(avatar);
+            if (avatar != null)
+                user.setAvatarInfo(avatar);
             return user;
         } else return null;
     }
 
     private MetadataInfo parseAvatar(XmlPullParser parser) throws Exception {
-        parser.next();
-        if (parser.getEventType() == XmlPullParser.START_TAG) {
-            if (GroupchatMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
-                return MetadataProvider.parseInfo(parser);
+        try{
+            parser.next();
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
+                if (GroupchatMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
+                    return MetadataProvider.parseInfo(parser);
+                }
             }
+            return null;
+        } catch (Exception e){
+            LogManager.exception(ReferencesProvider.class, e);
+            return null;
         }
-        return null;
     }
 
 
