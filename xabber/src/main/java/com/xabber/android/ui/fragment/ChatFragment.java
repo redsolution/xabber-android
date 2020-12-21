@@ -670,7 +670,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     startActivity(MessagesActivity.createIntentShowPinned(getContext(),
                     message.getUniqueId(), user, account)));
 
-            pinnedRootView.setVisibility(View.VISIBLE);
+            if (message != null) pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
                 if (GroupchatMemberManager.getInstance().getGroupchatMemberById(message.getGroupchatUserId()) != null){
