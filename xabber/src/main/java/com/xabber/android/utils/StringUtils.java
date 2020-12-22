@@ -514,9 +514,10 @@ public class StringUtils {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < transliterated.length(); i++){
             char c = transliterated.charAt(i);
-            if (!Character.isLetterOrDigit(c))
-                result.append("_");
-            else result.append(c);
+            if (!Character.isLetterOrDigit(c)){
+                if (result.length() > 1 && result.charAt(result.length()-1) != '-')
+                    result.append("-");
+            } else result.append(c);
         }
         return result.toString();
     }
