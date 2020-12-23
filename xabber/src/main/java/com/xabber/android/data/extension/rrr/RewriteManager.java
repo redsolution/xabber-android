@@ -269,7 +269,6 @@ public class RewriteManager implements OnPacketListener {
         if (packet instanceof Message && ((Message) packet).getType().equals(Message.Type.headline)) {
             try {
                 if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
-                    LogManager.d(LOG_TAG, "Received retract request with stanza id" + packet.toString());
                     StandardExtensionElement retractElement = packet
                             .getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                     String by = retractElement.getAttributeValue(BY_ATTRIBUTE);
@@ -282,7 +281,6 @@ public class RewriteManager implements OnPacketListener {
                 }
 
                 if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
-                    LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
                     StandardExtensionElement rewriteElement = packet
                             .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                     StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);

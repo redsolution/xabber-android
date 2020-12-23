@@ -12,7 +12,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -167,7 +167,7 @@ public class GroupChat extends AbstractChat {
 
             // groupchat
             String gropchatUserId = null;
-            GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
+            GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
                 GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
@@ -283,7 +283,7 @@ public class GroupChat extends AbstractChat {
 
         // groupchat
         String groupchatUserId = null;
-        GroupchatMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             groupchatUserId = groupchatUser.getId();
             GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());

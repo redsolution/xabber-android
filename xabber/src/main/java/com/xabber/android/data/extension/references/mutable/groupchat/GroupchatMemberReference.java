@@ -1,24 +1,24 @@
 package com.xabber.android.data.extension.references.mutable.groupchat;
 
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.mutable.Mutable;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class GroupchatMemberReference extends Mutable {
 
-    private GroupchatMemberExtensionElement user;
+    private GroupMemberExtensionElement user;
 
-    public GroupchatMemberReference(int begin, int end, GroupchatMemberExtensionElement user) {
+    public GroupchatMemberReference(int begin, int end, GroupMemberExtensionElement user) {
         super(begin, end);
         this.user = user;
     }
 
-    public GroupchatMemberExtensionElement getUser() {
+    public GroupMemberExtensionElement getUser() {
         return user;
     }
 
-    public void setUser(GroupchatMemberExtensionElement user) {
+    public void setUser(GroupMemberExtensionElement user) {
         this.user = user;
     }
 

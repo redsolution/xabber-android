@@ -14,7 +14,7 @@ import com.xabber.android.data.database.repositories.GroupchatMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistQueryIQ;
@@ -83,22 +83,22 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
     }
 
     public static GroupchatMember getGroupchatMemberFromGroupchatMemberExtensionElement(
-            GroupchatMemberExtensionElement groupchatMemberExtensionElement, BareJid groupchatJid) {
+            GroupMemberExtensionElement groupMemberExtensionElement, BareJid groupchatJid) {
 
-        GroupchatMember user = new GroupchatMember(groupchatMemberExtensionElement.getId());
+        GroupchatMember user = new GroupchatMember(groupMemberExtensionElement.getId());
 
         if (groupchatJid != null) user.setGroupchatJid(groupchatJid.toString());
 
-        if (groupchatMemberExtensionElement.getAvatarInfo() != null) {
-            user.setAvatarHash(groupchatMemberExtensionElement.getAvatarInfo().getId());
-            user.setAvatarUrl(groupchatMemberExtensionElement.getAvatarInfo().getUrl().toString());
+        if (groupMemberExtensionElement.getAvatarInfo() != null) {
+            user.setAvatarHash(groupMemberExtensionElement.getAvatarInfo().getId());
+            user.setAvatarUrl(groupMemberExtensionElement.getAvatarInfo().getUrl().toString());
         }
 
-        user.setLastPresent(groupchatMemberExtensionElement.getLastPresent());
-        user.setBadge(groupchatMemberExtensionElement.getBadge());
-        user.setJid(groupchatMemberExtensionElement.getJid());
-        user.setNickname(groupchatMemberExtensionElement.getNickname());
-        user.setRole(groupchatMemberExtensionElement.getRole());
+        user.setLastPresent(groupMemberExtensionElement.getLastPresent());
+        user.setBadge(groupMemberExtensionElement.getBadge());
+        user.setJid(groupMemberExtensionElement.getJid());
+        user.setNickname(groupMemberExtensionElement.getNickname());
+        user.setRole(groupMemberExtensionElement.getRole());
 
         return user;
     }
@@ -193,11 +193,11 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         GroupchatMemberRepository.removeGroupchatMemberById(id);
     }
 
-    public void saveGroupchatUser(GroupchatMemberExtensionElement user, BareJid groupchatJid) {
+    public void saveGroupchatUser(GroupMemberExtensionElement user, BareJid groupchatJid) {
         saveGroupchatUser(user, groupchatJid, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(GroupchatMemberExtensionElement user, BareJid groupchatJid,
+    public void saveGroupchatUser(GroupMemberExtensionElement user, BareJid groupchatJid,
                                   long timestamp) {
 
         GroupchatMember groupchatMember = getGroupchatMemberFromGroupchatMemberExtensionElement(user,
@@ -815,7 +815,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                         return;
                     }
 
-                    for (GroupchatMemberExtensionElement memberExtension : groupchatMembersIQ.getListOfMembers()) {
+                    for (GroupMemberExtensionElement memberExtension : groupchatMembersIQ.getListOfMembers()) {
                         String id = memberExtension.getId();
 
                         if (getInstance().members.get(id) == null)
@@ -839,7 +839,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
 
                         getInstance().members.get(id).setMe(true);
 
-                        if (memberExtension.getSubscriprion() != null && !memberExtension.getSubscriprion().equals("both")){
+                        if (memberExtension.getSubscription() != null && !memberExtension.getSubscription().equals("both")){
                             getInstance().removeGroupchatMember(id);
                         } else GroupchatMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
 
@@ -874,7 +874,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
                         && account.getBareJid().equals(packet.getTo().asBareJid())) {
 
-                    for (GroupchatMemberExtensionElement memberExtension : groupchatMembersIQ.getListOfMembers()) {
+                    for (GroupMemberExtensionElement memberExtension : groupchatMembersIQ.getListOfMembers()) {
                         String id = memberExtension.getId();
 
                         if (getInstance().members.get(id) == null)
@@ -898,7 +898,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                             groupchatMember.setAvatarUrl(memberExtension.getAvatarInfo().getUrl().toString());
                         }
 
-                        if (memberExtension.getSubscriprion() != null && !memberExtension.getSubscriprion().equals("both")){
+                        if (memberExtension.getSubscription() != null && !memberExtension.getSubscription().equals("both")){
                             LogManager.exception(LOG_TAG, new Exception());
                         } else GroupchatMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
 

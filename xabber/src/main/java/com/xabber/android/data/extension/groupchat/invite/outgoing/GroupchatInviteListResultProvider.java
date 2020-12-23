@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.invite.outgoing;
 
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 
 import org.jivesoftware.smack.provider.IQProvider;
@@ -20,8 +20,8 @@ public class GroupchatInviteListResultProvider extends IQProvider<GroupchatInvit
             int event = parser.getEventType();
             switch (event) {
                 case XmlPullParser.START_TAG:
-                    if (GroupchatMemberExtensionElement.ELEMENT.equals(parser.getName())) {
-                        String inviteJid = parser.getAttributeValue("", GroupchatMemberExtensionElement.ELEMENT_JID);
+                    if (GroupMemberExtensionElement.ELEMENT.equals(parser.getName())) {
+                        String inviteJid = parser.getAttributeValue("", GroupMemberExtensionElement.ELEMENT_JID);
                         if (inviteJid != null) {
                             listOfInvites.add(inviteJid);
                         }

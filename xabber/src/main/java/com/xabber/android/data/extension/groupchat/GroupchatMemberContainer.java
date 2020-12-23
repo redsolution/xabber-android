@@ -15,7 +15,7 @@ public class GroupchatMemberContainer extends GroupchatExtensionElement {
         this.user = user;
     }
 
-    public GroupchatMemberExtensionElement getUser() {
+    public GroupMemberExtensionElement getUser() {
         return user != null ? user.getUser() : null;
     }
 

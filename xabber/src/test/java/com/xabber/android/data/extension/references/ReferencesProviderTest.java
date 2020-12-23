@@ -1,23 +1,8 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.android.data.TestApplication;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberContainer;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.GroupchatProvider;
-import com.xabber.android.data.extension.references.decoration.Markup;
-import com.xabber.android.data.extension.references.mutable.Forward;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -83,7 +83,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         List<FileSharingExtension> fileSharingExtensions = new ArrayList<>();
         List<VoiceMessageExtension> voiceMessageExtensions = new ArrayList<>();
         List<Forwarded> forwardedMessages = new ArrayList<>();
-        GroupchatMemberExtensionElement user = null;
+        GroupMemberExtensionElement user = null;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -102,8 +102,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                             && VoiceMessageExtension.VOICE_NAMESPACE.equals(parser.getNamespace())) {
                         VoiceMessageExtension voiceMessageExtension = parseVoiceSharing(parser);
                         if (voiceMessageExtension != null) voiceMessageExtensions.add(voiceMessageExtension);
-                    } else if (GroupchatMemberExtensionElement.ELEMENT.equals(parser.getName())
-                            && GroupchatMemberExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
+                    } else if (GroupMemberExtensionElement.ELEMENT.equals(parser.getName())
+                            && GroupMemberExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
                         user = parseUser(parser);
                         parser.next();
                     } else parser.next();
@@ -285,7 +285,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         return fileSources;
     }
 
-    private GroupchatMemberExtensionElement parseUser(XmlPullParser parser) throws Exception {
+    private GroupMemberExtensionElement parseUser(XmlPullParser parser) throws Exception {
         String id = null;
         String jid = null;
         String nickname = null;
@@ -299,27 +299,27 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
-                        case GroupchatMemberExtensionElement.ELEMENT:
-                            id = parser.getAttributeValue("", GroupchatMemberExtensionElement.ATTR_ID);
+                        case GroupMemberExtensionElement.ELEMENT:
+                            id = parser.getAttributeValue("", GroupMemberExtensionElement.ATTR_ID);
                             parser.next();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_JID:
+                        case GroupMemberExtensionElement.ELEMENT_JID:
                             jid = parser.nextText();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_BADGE:
+                        case GroupMemberExtensionElement.ELEMENT_BADGE:
                             badge = parser.nextText();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_NICKNAME:
+                        case GroupMemberExtensionElement.ELEMENT_NICKNAME:
                             nickname = parser.nextText();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_ROLE:
+                        case GroupMemberExtensionElement.ELEMENT_ROLE:
                             role = parser.nextText();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_PRESENT:
+                        case GroupMemberExtensionElement.ELEMENT_PRESENT:
                             present = parser.nextText();
                             break;
-                        case GroupchatMemberExtensionElement.ELEMENT_METADATA:
-                            if (GroupchatMemberExtensionElement.NAMESPACE_METADATA.equals(parser.getNamespace()))
+                        case GroupMemberExtensionElement.ELEMENT_METADATA:
+                            if (GroupMemberExtensionElement.NAMESPACE_METADATA.equals(parser.getNamespace()))
                             avatar = parseAvatar(parser);
                             parser.next();
                             break;
@@ -328,7 +328,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     }
                     break;
                 case XmlPullParser.END_TAG:
-                    if (GroupchatMemberExtensionElement.ELEMENT.equals(parser.getName())) {
+                    if (GroupMemberExtensionElement.ELEMENT.equals(parser.getName())) {
                         break outerloop;
                     } else parser.next();
                     break;
@@ -337,7 +337,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             }
         }
         if (id != null && nickname != null && role != null) {
-            GroupchatMemberExtensionElement user = new GroupchatMemberExtensionElement(id, nickname, role);
+            GroupMemberExtensionElement user = new GroupMemberExtensionElement(id, nickname, role);
             user.setBadge(badge);
             user.setJid(jid);
             user.setLastPresent(present);
@@ -347,11 +347,11 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         } else return null;
     }
 
-    private MetadataInfo parseAvatar(XmlPullParser parser) throws Exception {
+    private MetadataInfo parseAvatar(XmlPullParser parser) {
         try{
             parser.next();
             if (parser.getEventType() == XmlPullParser.START_TAG) {
-                if (GroupchatMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
+                if (GroupMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
                     return MetadataProvider.parseInfo(parser);
                 }
             }

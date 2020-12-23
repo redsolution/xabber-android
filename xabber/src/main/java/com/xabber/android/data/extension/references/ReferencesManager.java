@@ -10,7 +10,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberContainer;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -177,7 +177,7 @@ public class ReferencesManager {
     //}
 
     @Nullable
-    public static GroupchatMemberExtensionElement getGroupchatUserFromReferences(Stanza packet) {
+    public static GroupMemberExtensionElement getGroupchatUserFromReferences(Stanza packet) {
         GroupchatExtensionElement element = packet.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         if (element == null) return null;
         if (element instanceof GroupchatMemberContainer) {
