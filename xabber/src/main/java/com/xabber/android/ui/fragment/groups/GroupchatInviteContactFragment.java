@@ -31,7 +31,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.GroupchatInviteContactActivity;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
@@ -75,7 +74,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     private UpdateBackpressure updateBackpressure;
 
-    private boolean modeSelectMultipleAccounts = false;
+    private boolean modeSelectMultipleAccounts = true;
 
     private OnNumberOfSelectedInvitesChanged listener;
 
@@ -339,7 +338,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     public void cancelSelection() {
-        modeSelectMultipleAccounts = false;
+        //modeSelectMultipleAccounts = false;
         listOfSelectedContactJids.clear();
         adapter.clearSelection();
         update();
@@ -367,14 +366,14 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
             adapter.notifyItemChanged(position);
 
-            if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
+            //if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
 
         } else {
 
-            if (adapter.getItem(position) instanceof ContactVO) {
-                ((GroupchatInviteContactActivity) getActivity()).openInvitationDialogForContact(
-                        ((ContactVO) adapter.getItem(position)).getContactJid());
-            }
+//            if (adapter.getItem(position) instanceof ContactVO) {
+//                ((GroupchatInviteContactActivity) getActivity()).openInvitationDialogForContact(
+//                        ((ContactVO) adapter.getItem(position)).getContactJid());
+//            }
 
         }
 
@@ -383,7 +382,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     @Override
     public void onItemLongClick(int position) {
-        if (!modeSelectMultipleAccounts) modeSelectMultipleAccounts = true;
+        //if (!modeSelectMultipleAccounts) modeSelectMultipleAccounts = true;
 
         if (adapter.getItem(position) instanceof ContactVO) {
 
@@ -402,7 +401,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
             }
 
         }
-        if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
+        //if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
         adapter.notifyItemChanged(position);
     }
 
@@ -427,4 +426,5 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     public interface OnNumberOfSelectedInvitesChanged {
         void onInviteCountChange(int newCount);
     }
+
 }

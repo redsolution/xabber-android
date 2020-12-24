@@ -5,7 +5,7 @@ import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class InviteMessageExtensionElement(private val groupJid: ContactJid, private val reason: String)
+class InviteMessageExtensionElement(private val groupJid: ContactJid, private val reason: String?)
     : ExtensionElement {
 
     override fun getNamespace() = NAMESPACE
@@ -15,7 +15,7 @@ class InviteMessageExtensionElement(private val groupJid: ContactJid, private va
     override fun toXML() = XmlStringBuilder(this).apply {
         attribute(ATTRIBUTE_JID, groupJid.bareJid.toString())
         rightAngleBracket()
-        optElement(ELEMENT_REASON, reason)
+        if (!reason.isNullOrEmpty()) optElement(ELEMENT_REASON, reason)
         closeElement(ELEMENT)
     }
 

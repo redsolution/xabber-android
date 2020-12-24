@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
+import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
@@ -17,15 +18,12 @@ import com.xabber.android.data.intent.AccountIntentBuilder
 import com.xabber.android.data.intent.EntityIntentBuilder
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.ui.color.BarPainter
-import com.xabber.android.ui.dialog.GroupchatInviteReasonDialog
-import com.xabber.android.ui.dialog.GroupchatInviteReasonDialog.GroupchatInviteReasonListener
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.OnNumberOfSelectedInvitesChanged
 import org.jivesoftware.smack.packet.XMPPError
-import java.util.*
 
 class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener,
-        OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener, GroupchatInviteReasonListener {
+        OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener {
 
     private var account: AccountJid? = null
     private var groupchatContact: ContactJid? = null
@@ -70,23 +68,24 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_perform_on_selected) {
-            openInvitationDialog()
+            onInviteClick()
+        //openInvitationDialog()
         } else return super.onOptionsItemSelected(item)
         return true
     }
 
-    private fun openInvitationDialog() {
-        jidsToInvite = inviteFragment!!.selectedContacts
-        val dialog = GroupchatInviteReasonDialog()
-        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
-    }
+//    private fun openInvitationDialog() {
+//        jidsToInvite = inviteFragment!!.selectedContacts
+//        val dialog = GroupchatInviteReasonDialog()
+//        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
+//    }
 
-    fun openInvitationDialogForContact(contactJid: ContactJid) {
-        jidsToInvite = ArrayList()
-        jidsToInvite?.add(contactJid)
-        val dialog = GroupchatInviteReasonDialog()
-        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
-    }
+//    fun openInvitationDialogForContact(contactJid: ContactJid) {
+//        jidsToInvite = ArrayList()
+//        jidsToInvite?.add(contactJid)
+//        val dialog = GroupchatInviteReasonDialog()
+//        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
+//    }
 
     private fun updateMenu() {
         onPrepareOptionsMenu(toolbar!!.menu)
@@ -138,13 +137,22 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
             } else null
         }
 
-    override fun onReasonSelected(reason: String) {
+    private fun onInviteClick(){
         val fragment = inviteFragment
         if (fragment != null) {
+            jidsToInvite = fragment.selectedContacts
             GroupchatMemberManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite,
-                    reason.trim { it <= ' ' }, this)
+                    null, this)
         }
     }
+
+//    override fun onReasonSelected(reason: String) {
+//        val fragment = inviteFragment
+//        if (fragment != null) {
+//            GroupchatMemberManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite,
+//                    reason.trim { it <= ' ' }, this)
+//        }
+//    }
 
     override fun onResult() {
         //todo hiding progressbar
@@ -156,11 +164,15 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     }
 
     override fun onIqError(error: XMPPError) {
-        //todo hiding progressbar
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(this, error.descriptiveText, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onOtherError(exception: Exception?) {
-        //todo hiding progressbar
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(this, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
