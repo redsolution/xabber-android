@@ -102,4 +102,6 @@
     <string name="groupchat_you_have_no_permissions_to_do_it">You have no permissions to do it!</string>
     <string name="groupchat_error">Error!</string>
 
+    <string name="groupchat_legacy_invitation_body">To join group add %s to your contacts list</string>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat.invitations
+package com.xabber.android.data.extension.groupchat.invite.incoming
 
 import com.xabber.android.data.TestApplication
 import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElementProvider

@@ -6,7 +6,6 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
@@ -25,13 +24,16 @@ import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.OnNu
 import org.jivesoftware.smack.packet.XMPPError
 import java.util.*
 
-class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener, OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener, GroupchatInviteReasonListener {
+class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener,
+        OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener, GroupchatInviteReasonListener {
+
     private var account: AccountJid? = null
     private var groupchatContact: ContactJid? = null
     private var toolbar: Toolbar? = null
     private var barPainter: BarPainter? = null
     private var jidsToInvite: MutableList<ContactJid>? = null
     private var selectionCounter = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = intent
@@ -40,13 +42,14 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         setContentView(R.layout.activity_with_toolbar_and_container)
         val lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
         toolbar = findViewById(R.id.toolbar_default)
-        toolbar.setNavigationIcon(if (lightTheme) R.drawable.ic_arrow_left_grey_24dp else R.drawable.ic_arrow_left_white_24dp)
-        if (toolbar.getOverflowIcon() != null) {
-            toolbar.getOverflowIcon()!!.setColorFilter(if (lightTheme) resources.getColor(R.color.grey_900) else resources.getColor(R.color.white),
-                    PorterDuff.Mode.SRC_IN)
+        toolbar?.setNavigationIcon(if (lightTheme) R.drawable.ic_arrow_left_grey_24dp else
+            R.drawable.ic_arrow_left_white_24dp)
+        if (toolbar?.overflowIcon != null) {
+            toolbar?.overflowIcon?.setColorFilter(if (lightTheme) resources.getColor(R.color.grey_900) else
+                resources.getColor(R.color.white), PorterDuff.Mode.SRC_IN)
         }
-        toolbar.inflateMenu(R.menu.toolbar_groupchat_list_selector)
-        toolbar.setOnMenuItemClickListener(this)
+        toolbar?.inflateMenu(R.menu.toolbar_groupchat_list_selector)
+        toolbar?.setOnMenuItemClickListener(this)
         barPainter = BarPainter(this, toolbar)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(R.id.fragment_container,
@@ -72,7 +75,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         return true
     }
 
-    fun openInvitationDialog() {
+    private fun openInvitationDialog() {
         jidsToInvite = inviteFragment!!.selectedContacts
         val dialog = GroupchatInviteReasonDialog()
         dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
@@ -80,7 +83,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
 
     fun openInvitationDialogForContact(contactJid: ContactJid) {
         jidsToInvite = ArrayList()
-        jidsToInvite.add(contactJid)
+        jidsToInvite?.add(contactJid)
         val dialog = GroupchatInviteReasonDialog()
         dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
     }
@@ -102,20 +105,25 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
 
     private fun updateToolbar() {
         if (selectionCounter == 0) {
-            //todo change to resource
-            toolbar!!.title = getString(R.string.groupchat_invite_members)
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) toolbar!!.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp) else toolbar!!.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
-            barPainter!!.updateWithAccountName(account)
-            toolbar!!.setNavigationOnClickListener { v: View? -> finish() }
+
+            toolbar?.title = getString(R.string.groupchat_invite_members)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
+            else toolbar?.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+
+            barPainter?.updateWithAccountName(account)
+            toolbar?.setNavigationOnClickListener { finish() }
+
         } else {
-            toolbar!!.title = selectionCounter.toString()
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) toolbar!!.setNavigationIcon(R.drawable.ic_clear_grey_24dp) else toolbar!!.setNavigationIcon(R.drawable.ic_clear_white_24dp)
-            toolbar!!.setNavigationOnClickListener { v: View? ->
-                val fragment = inviteFragment
-                if (fragment != null) {
-                    fragment.cancelSelection()
-                    selectionCounter = 0
-                }
+            toolbar?.title = selectionCounter.toString()
+
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar?.setNavigationIcon(R.drawable.ic_clear_grey_24dp)
+            else toolbar?.setNavigationIcon(R.drawable.ic_clear_white_24dp)
+
+            toolbar?.setNavigationOnClickListener {
+                inviteFragment?.cancelSelection()
+                selectionCounter = 0
                 updateToolbar()
             }
         }
@@ -123,7 +131,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     }
 
     private val inviteFragment: GroupchatInviteContactFragment?
-        private get() {
+        get() {
             val fragment = supportFragmentManager.findFragmentByTag(GroupchatInviteContactFragment.LOG_TAG)
             return if (fragment is GroupchatInviteContactFragment) {
                 fragment
@@ -151,11 +159,12 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         //todo hiding progressbar
     }
 
-    override fun onOtherError() {
+    override fun onOtherError(exception: Exception?) {
         //todo hiding progressbar
     }
 
     companion object {
+        @JvmStatic
         fun createIntent(context: Context?, account: AccountJid?, groupchatJid: ContactJid?): Intent {
             return EntityIntentBuilder(context, GroupchatInviteContactActivity::class.java)
                     .setAccount(account)
@@ -171,4 +180,5 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
             return EntityIntentBuilder.getUser(intent)
         }
     }
+
 }

@@ -5,10 +5,12 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.BaseIqResultUiListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.repositories.GroupchatMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -22,10 +24,11 @@ import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResul
 import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistUnblockIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupInviteRequestIQ;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListQueryIQ;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListResultIQ;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListRevokeIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteRequestIQ;
+import com.xabber.android.data.extension.groupchat.invite.outgoing.InviteMessageExtensionElement;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
@@ -50,6 +53,7 @@ import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
@@ -207,8 +211,11 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         GroupchatMemberRepository.saveOrUpdateGroupchatMember(groupchatMember);
     }
 
-    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid,
-                                         List<ContactJid> contactsToInvite, String reason) {
+    /**
+     * Create and send IQ to group and Message with invitation to contact according to Direct Invitation.
+     */
+    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid, List<ContactJid> contactsToInvite,
+                                         String reason, BaseIqResultUiListener listener) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
@@ -217,23 +224,49 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                     XMPPConnection connection = accountItem.getConnection();
 
                     for (ContactJid invite : contactsToInvite) {
-                        GroupchatInviteRequestIQ requestIQ = new GroupchatInviteRequestIQ((GroupChat) chat, invite);
-                        requestIQ.setLetGroupchatSendInviteMessage(true);
-
+                        GroupInviteRequestIQ requestIQ = new GroupInviteRequestIQ((GroupChat) chat, invite);
+                        requestIQ.setLetGroupchatSendInviteMessage(false);
                         if (reason != null && !reason.isEmpty())
                             requestIQ.setReason(reason);
-
                         try {
-                            connection.sendStanza(requestIQ);
-                        } catch (SmackException.NotConnectedException e) {
+                            listener.onSend();
+                            connection.sendIqWithResponseCallback(requestIQ, packet -> {
+                                sendMessageWithInvite(account, groupchatJid, invite, reason, listener);
+                                listener.onResult();
+                            }, listener);
+                        } catch (Exception e) {
                             LogManager.exception(LOG_TAG, e);
-                        } catch (InterruptedException e) {
-                            LogManager.exception(LOG_TAG, e);
+                            listener.onOtherError(e);
                         }
                     }
                 }
             }
         });
+
+    }
+
+    /**
+     * Sends a message with invite to group as direct invitation
+     * Must be called only from @see #sendGroupchatInvitations
+     */
+    private void sendMessageWithInvite(AccountJid account, ContactJid groupchatJid, ContactJid contactToInviteJid,
+                                       String reason, BaseIqResultUiListener listener){
+        try{
+            Message inviteMessage = new Message();
+            inviteMessage.addBody(null, Application.getInstance().getApplicationContext()
+                    .getString(R.string.groupchat_legacy_invitation_body, groupchatJid.toString()));
+            inviteMessage.setTo(contactToInviteJid.getJid());
+            inviteMessage.setType(Message.Type.chat);
+            inviteMessage.addExtension(new InviteMessageExtensionElement(groupchatJid, reason));
+            StanzaSender.sendStanza(account, inviteMessage, packet1 -> {
+                if (packet1.getError() != null)
+                    listener.onOtherError(null);
+                else listener.onResult();
+            });
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+            listener.onOtherError(e);
+        }
     }
 
     public void requestGroupchatInvitationsList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
@@ -263,7 +296,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                                 }
                             }
                             listener.processStanza(packet);
-                        }, exceptionCallback::processException);
+                        }, exceptionCallback);
                     } catch (SmackException.NotConnectedException e) {
                         LogManager.exception(LOG_TAG, e);
                     } catch (InterruptedException e) {

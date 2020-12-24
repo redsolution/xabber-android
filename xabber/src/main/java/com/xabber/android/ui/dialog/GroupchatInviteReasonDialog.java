@@ -15,6 +15,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 
+import org.jetbrains.annotations.NotNull;
+
 public class GroupchatInviteReasonDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     public static final String LOG_TAG = GroupchatInviteReasonDialog.class.getSimpleName();
@@ -24,7 +26,7 @@ public class GroupchatInviteReasonDialog extends DialogFragment implements Dialo
     private EditText edtInviteReason;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (getActivity() instanceof GroupchatInviteReasonListener) {
             listener = (GroupchatInviteReasonListener) getActivity();
@@ -71,7 +73,6 @@ public class GroupchatInviteReasonDialog extends DialogFragment implements Dialo
                 break;
         }
     }
-
 
     public interface GroupchatInviteReasonListener {
         void onReasonSelected(String reason);
