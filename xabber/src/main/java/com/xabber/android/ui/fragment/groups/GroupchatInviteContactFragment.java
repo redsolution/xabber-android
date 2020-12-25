@@ -40,6 +40,8 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
 import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.utils.StringUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,8 +55,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class GroupchatInviteContactFragment extends Fragment implements FlexibleAdapter.OnItemClickListener,
-        FlexibleAdapter.OnItemLongClickListener, ContactVO.ContactClickListener, GroupVO.GroupClickListener,
-        UpdateBackpressure.UpdatableObject {
+        ContactVO.ContactClickListener, GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
 
     public static final String LOG_TAG = GroupchatInviteContactFragment.class.getSimpleName();
 
@@ -64,7 +65,6 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     private AccountJid account;
 
-    private RecyclerView contactList;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
     private ArrayList<String> listOfSelectedContactJids;
@@ -73,8 +73,6 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     private AppCompatTextView emptyListPlaceholder;
 
     private UpdateBackpressure updateBackpressure;
-
-    private boolean modeSelectMultipleAccounts = true;
 
     private OnNumberOfSelectedInvitesChanged listener;
 
@@ -88,7 +86,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (getActivity() instanceof OnNumberOfSelectedInvitesChanged) {
             listener = (OnNumberOfSelectedInvitesChanged) getActivity();
@@ -111,16 +109,15 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_groupchat_invite_contact_list, container, false);
 
         filterEt = view.findViewById(R.id.search_et);
         filterEt.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -131,9 +128,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) { }
         });
 
         clearIv = view.findViewById(R.id.groupchat_invites_clear_iv);
@@ -144,7 +139,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
         emptyListPlaceholder = view.findViewById(R.id.empty_placeholder);
 
-        contactList = view.findViewById(R.id.contact_list);
+        RecyclerView contactList = view.findViewById(R.id.contact_list);
         contactList.setLayoutManager(new LinearLayoutManager(getContext()));
 
         items = new ArrayList<>();
@@ -189,7 +184,8 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
         List<IFlexible> items = new ArrayList<>();
 
-        final Collection<RosterContact> accountRosterContacts = RosterManager.getInstance().getAccountRosterContacts(account);
+        final Collection<RosterContact> accountRosterContacts = RosterManager.getInstance()
+                .getAccountRosterContacts(account);
 
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
@@ -287,9 +283,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
         return selectedContacts;
     }
 
-    private void createContactListWithGroups(List<IFlexible> items, boolean showEmptyGroups,
-                                             Map<String, GroupConfiguration> groups,
-                                             Comparator<AbstractContact> comparator) {
+    private void createContactListWithGroups(List<IFlexible> items, boolean showEmptyGroups, Map<String,
+            GroupConfiguration> groups, Comparator<AbstractContact> comparator) {
+
         for (GroupConfiguration rosterConfiguration : groups.values()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
                 GroupVO group = GroupVO.convert(rosterConfiguration, false, this);
@@ -338,7 +334,6 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     public void cancelSelection() {
-        //modeSelectMultipleAccounts = false;
         listOfSelectedContactJids.clear();
         adapter.clearSelection();
         update();
@@ -346,46 +341,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
     @Override
     public boolean onItemClick(View view, int position) {
-        if (modeSelectMultipleAccounts) {
-
-            if (adapter.getItem(position) instanceof ContactVO) {
-                ContactVO clickedItem = (ContactVO) adapter.getItem(position);
-                adapter.toggleSelection(position);
-                ContactJid contactJid = clickedItem.getContactJid();
-                listener.onInviteCountChange(adapter.getSelectedItemCount());
-
-                if (listOfSelectedContactJids == null)
-                    listOfSelectedContactJids = new ArrayList<>();
-
-                if (!listOfSelectedContactJids.contains(contactJid.toString())) {
-                    if (adapter.isSelected(position))
-                        listOfSelectedContactJids.add(contactJid.toString());
-                    else listOfSelectedContactJids.remove(contactJid.toString());
-                }
-            }
-
-            adapter.notifyItemChanged(position);
-
-            //if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
-
-        } else {
-
-//            if (adapter.getItem(position) instanceof ContactVO) {
-//                ((GroupchatInviteContactActivity) getActivity()).openInvitationDialogForContact(
-//                        ((ContactVO) adapter.getItem(position)).getContactJid());
-//            }
-
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onItemLongClick(int position) {
-        //if (!modeSelectMultipleAccounts) modeSelectMultipleAccounts = true;
-
         if (adapter.getItem(position) instanceof ContactVO) {
-
             ContactVO clickedItem = (ContactVO) adapter.getItem(position);
             adapter.toggleSelection(position);
             ContactJid contactJid = clickedItem.getContactJid();
@@ -399,10 +355,9 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                     listOfSelectedContactJids.add(contactJid.toString());
                 else listOfSelectedContactJids.remove(contactJid.toString());
             }
-
         }
-        //if (adapter.getSelectedItemCount() == 0) modeSelectMultipleAccounts = false;
         adapter.notifyItemChanged(position);
+        return true;
     }
 
     @Override
@@ -412,16 +367,13 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
     }
 
     @Override
-    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-    }
+    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) { }
 
     @Override
-    public void onContactButtonClick(int adapterPosition) {
-    }
+    public void onContactButtonClick(int adapterPosition) { }
 
     @Override
-    public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
-    }
+    public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) { }
 
     public interface OnNumberOfSelectedInvitesChanged {
         void onInviteCountChange(int newCount);

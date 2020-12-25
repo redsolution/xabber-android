@@ -216,6 +216,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
      */
     public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid, List<ContactJid> contactsToInvite,
                                          String reason, BaseIqResultUiListener listener) {
+
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
@@ -223,24 +224,25 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 if (accountItem != null) {
                     XMPPConnection connection = accountItem.getConnection();
 
+                    listener.onSend();
+
                     for (ContactJid invite : contactsToInvite) {
                         GroupInviteRequestIQ requestIQ = new GroupInviteRequestIQ((GroupChat) chat, invite);
                         requestIQ.setLetGroupchatSendInviteMessage(false);
                         if (reason != null && !reason.isEmpty())
                             requestIQ.setReason(reason);
                         try {
-                            listener.onSend();
-                            connection.sendIqWithResponseCallback(requestIQ, packet -> {
-                                sendMessageWithInvite(account, groupchatJid, invite, reason, listener);
-                                listener.onResult();
-                            }, listener);
+                            connection.sendIqWithResponseCallback(requestIQ,
+                                    packet -> sendMessageWithInvite(account, groupchatJid, invite, reason, listener),
+                                    exception -> {
+                            });
                         } catch (Exception e) {
                             LogManager.exception(LOG_TAG, e);
-                            listener.onOtherError(e);
                         }
                     }
                 }
             }
+            listener.onOtherError(null);
         });
 
     }

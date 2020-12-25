@@ -59,7 +59,6 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     override fun onResume() {
         super.onResume()
         updateToolbar()
-        Toast.makeText(this, getString(R.string.groupchat_long_press_for_select_multiple_contacts), Toast.LENGTH_LONG).show()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -69,23 +68,9 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_perform_on_selected) {
             onInviteClick()
-        //openInvitationDialog()
         } else return super.onOptionsItemSelected(item)
         return true
     }
-
-//    private fun openInvitationDialog() {
-//        jidsToInvite = inviteFragment!!.selectedContacts
-//        val dialog = GroupchatInviteReasonDialog()
-//        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
-//    }
-
-//    fun openInvitationDialogForContact(contactJid: ContactJid) {
-//        jidsToInvite = ArrayList()
-//        jidsToInvite?.add(contactJid)
-//        val dialog = GroupchatInviteReasonDialog()
-//        dialog.show(supportFragmentManager, GroupchatInviteReasonDialog.LOG_TAG)
-//    }
 
     private fun updateMenu() {
         onPrepareOptionsMenu(toolbar!!.menu)
@@ -145,14 +130,6 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
                     null, this)
         }
     }
-
-//    override fun onReasonSelected(reason: String) {
-//        val fragment = inviteFragment
-//        if (fragment != null) {
-//            GroupchatMemberManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite,
-//                    reason.trim { it <= ' ' }, this)
-//        }
-//    }
 
     override fun onResult() {
         //todo hiding progressbar
