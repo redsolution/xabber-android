@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupchatMemberContainer;
-import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -54,34 +54,27 @@ public class ReferencesManager {
     }
 
     public static FileReference createMediaReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo();
-        FileSources fileSources = new FileSources();
+        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
+                attachmentRealmObject.getFileSize());
 
-        fileInfo.setName(attachmentRealmObject.getTitle());
-        fileInfo.setMediaType(attachmentRealmObject.getMimeType());
+        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
+
         fileInfo.setDuration(attachmentRealmObject.getDuration());
-        fileInfo.setSize(attachmentRealmObject.getFileSize());
         if (attachmentRealmObject.getImageHeight() != null)
             fileInfo.setHeight(attachmentRealmObject.getImageHeight());
         if (attachmentRealmObject.getImageWidth() != null)
             fileInfo.setWidth(attachmentRealmObject.getImageWidth());
-
-        fileSources.addSource(attachmentRealmObject.getFileUrl());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         return new FileReference(begin, end, fileSharingExtension);
     }
 
     public static VoiceReference createVoiceReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo();
-        FileSources fileSources = new FileSources();
+        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
+                attachmentRealmObject.getFileSize());
+        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
 
-        fileInfo.setName(attachmentRealmObject.getTitle());
-        fileInfo.setMediaType(attachmentRealmObject.getMimeType());
         fileInfo.setDuration(attachmentRealmObject.getDuration());
-        fileInfo.setSize(attachmentRealmObject.getFileSize());
-
-        fileSources.addSource(attachmentRealmObject.getFileUrl());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         VoiceMessageExtension voiceMessageExtension = new VoiceMessageExtension(fileSharingExtension);
@@ -194,7 +187,7 @@ public class ReferencesManager {
         if ((directReferenceElements == null || directReferenceElements.size() == 0)
                 && (groupchatWrappedElements == null || groupchatWrappedElements.size() == 0)) return new Pair<>(body, null);
 
-        List<ReferenceElement> references = new ArrayList<ReferenceElement>();
+        List<ReferenceElement> references = new ArrayList<>();
         if (directReferenceElements != null && directReferenceElements.size() != 0) {
             references.addAll(getReferences(directReferenceElements));
         }
@@ -215,7 +208,7 @@ public class ReferencesManager {
 
         // chars to string and decode from html
         String regularBody = Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString();
-        String markupBody = null;
+        String markupBody;
 
         // modify chars with markup and mention references
         for (ReferenceElement reference : references) {
@@ -250,9 +243,9 @@ public class ReferencesManager {
 
     private static String charsToString(String[] array) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
-            if (!array[i].equals(String.valueOf(Character.MIN_VALUE)))
-                builder.append(array[i]);
+        for (String s : array) {
+            if (!s.equals(String.valueOf(Character.MIN_VALUE)))
+                builder.append(s);
         }
         return builder.toString();
     }

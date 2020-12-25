@@ -158,7 +158,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
         FileSources fileSources = sharedFile.getFileSources();
 
-        String url = fileSources.getSources().get(0);
+        String url = fileSources.getUris().get(0);
         attachmentRealmObject.setFileUrl(url);
         attachmentRealmObject.setIsImage(FileManager.isImageUrl(url));
         attachmentRealmObject.setIsVoice(isVoice);

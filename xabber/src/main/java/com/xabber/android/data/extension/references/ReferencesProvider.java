@@ -212,7 +212,14 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
     }
 
     private FileInfo parseFileInfo(XmlPullParser parser) throws Exception {
-        FileInfo fileInfo = new FileInfo();
+        String mediaType = "";
+        String name = "";
+        long size = 0;
+
+        String description = "";
+        int height = 0;
+        int width = 0;
+        long duration = 0;
 
         parser.next();
         outerloop: while (true) {
@@ -221,25 +228,25 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
                         case FileInfo.ELEMENT_MEDIA_TYPE:
-                            fileInfo.setMediaType(parser.nextText());
+                            mediaType = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_NAME:
-                            fileInfo.setName(parser.nextText());
+                            name = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_DESC:
-                            fileInfo.setDesc(parser.nextText());
+                            description = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_HEIGHT:
-                            fileInfo.setHeight(Integer.parseInt(parser.nextText()));
+                            height = Integer.parseInt(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_WIDTH:
-                            fileInfo.setWidth(Integer.parseInt(parser.nextText()));
+                            width = Integer.parseInt(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_SIZE:
-                            fileInfo.setSize(Long.parseLong(parser.nextText()));
+                            size = Long.parseLong(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_DURATION:
-                            fileInfo.setDuration(Long.parseLong(parser.nextText()));
+                            duration = Long.parseLong(parser.nextText());
                             break;
                         default:
                             parser.next();
@@ -254,11 +261,19 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     parser.next();
             }
         }
+
+        FileInfo fileInfo = new FileInfo(mediaType, name, size);
+
+        if (!description.isEmpty()) fileInfo.setDesc(description);
+        if (height != 0) fileInfo.setHeight(height);
+        if (width != 0) fileInfo.setWidth(width);
+        if (duration != 0) fileInfo.setDuration(duration);
+
         return fileInfo;
     }
 
     private FileSources parseFileSources(XmlPullParser parser) throws XmlPullParserException, IOException {
-        FileSources fileSources = new FileSources();
+        List<String> uris = new ArrayList<>();
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -267,7 +282,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     if (FileSources.URI_ELEMENT.equals(parser.getName())) {
                         String uri = parser.nextText();
                         if (uri != null && !uri.isEmpty()) {
-                            fileSources.addSource(uri);
+                            uris.add(uri);
                         }
                     } else {
                         parser.next();
@@ -282,7 +297,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     parser.next();
             }
         }
-        return fileSources;
+        return new FileSources(uris);
     }
 
     private GroupMemberExtensionElement parseUser(XmlPullParser parser) throws Exception {

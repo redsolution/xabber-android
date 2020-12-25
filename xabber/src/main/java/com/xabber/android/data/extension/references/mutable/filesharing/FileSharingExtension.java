@@ -55,4 +55,5 @@ public class FileSharingExtension implements ExtensionElement {
         xml.closeElement(FILE_SHARING_ELEMENT);
         return xml;
     }
+
 }
