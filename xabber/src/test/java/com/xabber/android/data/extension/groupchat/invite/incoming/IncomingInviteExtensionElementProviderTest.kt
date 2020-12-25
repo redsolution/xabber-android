@@ -1,7 +1,6 @@
 package com.xabber.android.data.extension.groupchat.invite.incoming
 
 import com.xabber.android.data.TestApplication
-import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElementProvider
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
