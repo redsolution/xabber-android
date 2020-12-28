@@ -14,7 +14,7 @@ import com.xabber.android.data.extension.groupchat.rights.GroupMemberRightsListe
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -40,7 +40,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
+        GroupMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
                 groupchat.contactJid, groupMember)
 
         return view
@@ -69,7 +69,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
     override fun onSuccessfullyChanges(groupchat: GroupChat) {
         if (isTHisGroup(groupchat)){
             newFields.clear()
-            GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
+            GroupMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
                     groupchat.contactJid, groupMember)
             notifyActivityAboutNewFieldSizeChanged()
         }
@@ -161,7 +161,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
         return newDataForm
     }
 
-    fun sendSaveRequest() = GroupchatMemberManager.getInstance()
+    fun sendSaveRequest() = GroupMemberManager.getInstance()
             .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom())
 
     companion object {

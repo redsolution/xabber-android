@@ -13,7 +13,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -170,7 +170,7 @@ public class GroupChat extends AbstractChat {
             GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
-                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
+                GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
             }
 
             RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
@@ -286,7 +286,7 @@ public class GroupChat extends AbstractChat {
         GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             groupchatUserId = groupchatUser.getId();
-            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
+            GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)

@@ -1,11 +1,12 @@
-package com.xabber.android.data.extension.groupchat.block;
+package com.xabber.android.data.extension.groupchat.block.blocklist;
 
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ;
+import com.xabber.android.data.extension.groupchat.block.BlockGroupMemberIQ;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 
 public class GroupchatBlocklistQueryIQ extends GroupchatAbstractQueryIQ {
 
-    public static final String HASH_BLOCK = "#block";
+    public static final String HASH_BLOCK = BlockGroupMemberIQ.HASH_BLOCK;
 
     public GroupchatBlocklistQueryIQ(GroupChat groupChat) {
         super(NAMESPACE + HASH_BLOCK);

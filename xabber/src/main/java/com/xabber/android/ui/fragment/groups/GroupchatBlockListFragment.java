@@ -18,12 +18,12 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -95,7 +95,7 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
-            GroupchatMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact, this, this);
+            GroupMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -186,9 +186,9 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
             return;
         }
         if (selectedElements.size() == 1) {
-            GroupchatMemberManager.getInstance().unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
+            GroupMemberManager.getInstance().unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
         } else {
-            GroupchatMemberManager.getInstance().unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
+            GroupMemberManager.getInstance().unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
         }
     }
 

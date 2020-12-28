@@ -22,7 +22,7 @@ import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSe
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -96,7 +96,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
-            GroupchatMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact, this, this);
+            GroupMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -186,9 +186,9 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
             return;
         }
         if (checkedInvites.size() == 1) {
-            GroupchatMemberManager.getInstance().revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
+            GroupMemberManager.getInstance().revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
         } else {
-            GroupchatMemberManager.getInstance().revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
+            GroupMemberManager.getInstance().revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
         }
     }
 

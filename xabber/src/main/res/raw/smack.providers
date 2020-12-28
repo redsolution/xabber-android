@@ -69,7 +69,7 @@
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#block</namespace>
-        <className>com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultProvider</className>
+        <className>com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistResultProvider</className>
     </iqProvider>
 
 

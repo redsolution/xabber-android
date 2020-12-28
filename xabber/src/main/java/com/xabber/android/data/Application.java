@@ -63,7 +63,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -443,7 +443,7 @@ public class Application extends android.app.Application {
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
         addManager(GroupchatManager.getInstance());
-        addManager(GroupchatMemberManager.getInstance());
+        addManager(GroupMemberManager.getInstance());
         addManager(RewriteManager.getInstance());
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());

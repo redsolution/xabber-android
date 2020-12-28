@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat.block;
+package com.xabber.android.data.extension.groupchat.block.blocklist;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 

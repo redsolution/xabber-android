@@ -109,7 +109,7 @@ import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -676,8 +676,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                if (GroupchatMemberManager.getInstance().getGroupchatMemberById(message.getGroupchatUserId()) != null){
-                    pinnedMessageHeaderTv.setText(GroupchatMemberManager.getInstance()
+                if (GroupMemberManager.getInstance().getGroupchatMemberById(message.getGroupchatUserId()) != null){
+                    pinnedMessageHeaderTv.setText(GroupMemberManager.getInstance()
                             .getGroupchatMemberById(message.getGroupchatUserId()).getBestName());
                 } else {
                     pinnedMessageHeaderTv.setText(message.getUser().toString());
@@ -694,7 +694,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            GroupMember member = GroupchatMemberManager.getInstance()
+            GroupMember member = GroupMemberManager.getInstance()
                     .getGroupchatMemberById(message.getGroupchatUserId());
             if (member != null){
                 if (member.getBadge() != null){

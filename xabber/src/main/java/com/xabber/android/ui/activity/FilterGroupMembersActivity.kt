@@ -22,7 +22,7 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -111,7 +111,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
     private fun updateRecyclerView(){
         if (filterString.isNotEmpty()) {
             val newList = ArrayList<GroupMember>()
-            for (groupchatMember in GroupchatMemberManager.getInstance()
+            for (groupchatMember in GroupMemberManager.getInstance()
                     .getGroupchatMembers(groupchat.contactJid))
                 if (groupchatMember.nickname!!.toLowerCase().contains(filterString)
                         || groupchatMember.nickname!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))
@@ -120,7 +120,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
                     newList.add(groupchatMember)
             adapter.setItems(newList)
         } else {
-            val list = ArrayList(GroupchatMemberManager.getInstance()
+            val list = ArrayList(GroupMemberManager.getInstance()
                     .getGroupchatMembers(groupchat.contactJid))
             list.sortWith { o1: GroupMember, o2: GroupMember ->
                 if (o1.isMe && !o2.isMe) return@sortWith -1
@@ -135,7 +135,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
 
     override fun onResume() {
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupchatMemberManager.getInstance().requestGroupchatMembers(groupchat.account, groupchat.contactJid)
+        GroupMemberManager.getInstance().requestGroupchatMembers(groupchat.account, groupchat.contactJid)
         super.onResume()
     }
 

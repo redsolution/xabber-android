@@ -40,7 +40,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
@@ -296,7 +296,7 @@ public class RegularChat extends AbstractChat {
         GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
-            GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
+            GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)

@@ -30,7 +30,7 @@ import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
@@ -217,8 +217,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     private void requestLists() {
-        GroupchatMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
-        GroupchatMemberManager.getInstance().requestMe(account, groupchatContact);
+        GroupMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
+        GroupMemberManager.getInstance().requestMe(account, groupchatContact);
         membersProgress.setVisibility(View.VISIBLE);
     }
 
@@ -297,7 +297,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
 
-            ArrayList<GroupMember> list = new ArrayList<>(GroupchatMemberManager.getInstance()
+            ArrayList<GroupMember> list = new ArrayList<>(GroupMemberManager.getInstance()
                     .getGroupchatMembers(groupchatContact));
 
             Collections.sort(list, (o1, o2) -> {

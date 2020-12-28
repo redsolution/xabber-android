@@ -44,7 +44,7 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
 import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
@@ -126,7 +126,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        groupMember = GroupchatMemberManager.getInstance()
+        groupMember = GroupMemberManager.getInstance()
                 .getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
@@ -211,7 +211,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
-                GroupchatMemberManager.getInstance()
+                GroupMemberManager.getInstance()
                         .sendSetMemberNicknameIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()
@@ -245,7 +245,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupchatMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupMember?.id)
+        GroupMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupMember?.id)
         appBarResize()
     }
 
@@ -344,7 +344,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             if (newAvatarImageUri == null) {
                 try {
                     //publishing empty (avatar) metadata
-                    GroupchatMemberManager.getInstance().removeMemberAvatar(groupchat,
+                    GroupMemberManager.getInstance().removeMemberAvatar(groupchat,
                             groupMember?.id)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
@@ -353,7 +353,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 }
             } else if (avatarData != null) {
                 try {
-                    GroupchatMemberManager.getInstance().publishMemberAvatar(groupchat,
+                    GroupMemberManager.getInstance().publishMemberAvatar(groupchat,
                             groupMember?.id, avatarData, AccountActivity.FINAL_IMAGE_SIZE,
                             AccountActivity.FINAL_IMAGE_SIZE, imageFileType)
                     onAvatarSettingEnded(true)
@@ -656,7 +656,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this,
                         groupchat!!.account, contactJid), MainActivity.CODE_OPEN_CHAT)
             } else {
-                GroupchatMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupMember)
+                GroupMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupMember)
             }
         }
 
@@ -701,7 +701,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
-                GroupchatMemberManager.getInstance()
+                GroupMemberManager.getInstance()
                         .sendSetMemberBadgeIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()

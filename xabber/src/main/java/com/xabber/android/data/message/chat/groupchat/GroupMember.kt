@@ -1,6 +1,6 @@
 package com.xabber.android.data.message.chat.groupchat
 
-class GroupMember(val id: String) {
+data class GroupMember(val id: String) {
     var jid: String? = null
     var groupchatJid: String? = null
     var nickname: String? = null

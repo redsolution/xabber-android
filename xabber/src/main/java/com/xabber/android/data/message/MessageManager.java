@@ -50,7 +50,7 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -553,7 +553,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             // groupchat
             GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
-                GroupchatMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
+                GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
                 newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
             } else {

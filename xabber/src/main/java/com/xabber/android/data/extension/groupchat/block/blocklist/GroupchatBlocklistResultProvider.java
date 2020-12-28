@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.groupchat.block;
+package com.xabber.android.data.extension.groupchat.block.blocklist;
 
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 

@@ -9,19 +9,17 @@ import com.xabber.android.data.BaseIqResultUiListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.repositories.GroupMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistItemElement;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistQueryIQ;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistResultIQ;
-import com.xabber.android.data.extension.groupchat.block.GroupchatBlocklistUnblockIQ;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistQueryIQ;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistResultIQ;
+import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistUnblockIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupInviteRequestIQ;
@@ -74,19 +72,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
 import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
 
-public class GroupchatMemberManager implements OnLoadListener, OnPacketListener {
+public class GroupMemberManager implements OnLoadListener {
 
-    private static final String LOG_TAG = GroupchatMemberManager.class.getSimpleName();
+    private static final String LOG_TAG = GroupMemberManager.class.getSimpleName();
 
-    private static GroupchatMemberManager instance;
+    private static GroupMemberManager instance;
     private final Map<String, GroupMember> members = new HashMap<>();
 
-    public static GroupchatMemberManager getInstance() {
-        if (instance == null) instance = new GroupchatMemberManager();
+    public static GroupMemberManager getInstance() {
+        if (instance == null) instance = new GroupMemberManager();
         return instance;
     }
 
-    public static GroupMember getGroupchatMemberFromGroupchatMemberExtensionElement(
+    public static GroupMember getGroupMemberFromGroupMemberExtensionElement(
             GroupMemberExtensionElement groupMemberExtensionElement, BareJid groupchatJid) {
 
         GroupMember user = new GroupMember(groupMemberExtensionElement.getId());
@@ -112,16 +110,6 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
         for (GroupMember gm : GroupMemberRepository.getAllGroupchatMembersFromRealm()){
             this.members.put(gm.getId(), gm);
         }
-    }
-
-    @Override
-    public void onStanza(ConnectionItem connection, Stanza packet) {
-//        if (packet instanceof Message
-//                && packet.hasExtension(GroupchatExtensionElement.ELEMENT,
-//                GroupchatExtensionElement.SYSTEM_MESSAGE_NAMESPACE)){
-//            //GroupchatExtensionElement groupchatExtensionElement = packet
-//                    //.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.SYSTEM_MESSAGE_NAMESPACE);
-//        }
     }
 
     public void removeMemberAvatar(GroupChat groupChat, String memberId){
@@ -204,7 +192,7 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
     public void saveGroupchatUser(GroupMemberExtensionElement user, BareJid groupchatJid,
                                   long timestamp) {
 
-        GroupMember groupMember = getGroupchatMemberFromGroupchatMemberExtensionElement(user,
+        GroupMember groupMember = getGroupMemberFromGroupMemberExtensionElement(user,
                 groupchatJid);
 
         members.put(user.getId(), groupMember);
@@ -307,6 +295,14 @@ public class GroupchatMemberManager implements OnLoadListener, OnPacketListener 
                 }
             }
         });
+    }
+
+    public void kickMemberFromGroupByJid(){
+
+    }
+
+    public void kickMemberFromGroupById(){
+
     }
 
     public void requestGroupchatBlocklistList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
