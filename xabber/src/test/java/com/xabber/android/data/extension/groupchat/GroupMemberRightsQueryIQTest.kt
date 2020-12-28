@@ -5,7 +5,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.jxmpp.jid.impl.JidCreate
 
-class GroupchatMemberRightsQueryIQTest {
+class GroupMemberRightsQueryIQTest {
 
     @Test
     fun testGroupchatMemberRightsQueryIqBuilding() {

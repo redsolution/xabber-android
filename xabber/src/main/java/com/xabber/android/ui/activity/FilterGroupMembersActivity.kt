@@ -21,7 +21,7 @@ import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember
+import com.xabber.android.data.message.chat.groupchat.GroupMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter
@@ -104,28 +104,25 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
     private fun setupRecyclerView(){
         recyclerView = findViewById(R.id.filter_group_members_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter = GroupchatMembersAdapter(arrayListOf<GroupchatMember>(), groupchat, this)
+        adapter = GroupchatMembersAdapter(arrayListOf<GroupMember>(), groupchat, this)
         recyclerView.adapter = adapter
     }
 
     private fun updateRecyclerView(){
         if (filterString.isNotEmpty()) {
-            val newList = ArrayList<GroupchatMember>()
+            val newList = ArrayList<GroupMember>()
             for (groupchatMember in GroupchatMemberManager.getInstance()
                     .getGroupchatMembers(groupchat.contactJid))
-                if (groupchatMember.nickname.toLowerCase().contains(filterString)
-                        || groupchatMember.nickname.toLowerCase()
-                        .contains(StringUtils.translitirateToLatin(filterString))
-                        || (groupchatMember.jid != null && groupchatMember.jid
-                        .toLowerCase().contains(filterString))
-                        || (groupchatMember.jid != null && groupchatMember.jid
-                        .toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
-                    newList.add(groupchatMember);
+                if (groupchatMember.nickname!!.toLowerCase().contains(filterString)
+                        || groupchatMember.nickname!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))
+                        || (groupchatMember.jid != null && groupchatMember.jid!!.toLowerCase().contains(filterString))
+                        || (groupchatMember.jid != null && groupchatMember.jid!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
+                    newList.add(groupchatMember)
             adapter.setItems(newList)
         } else {
             val list = ArrayList(GroupchatMemberManager.getInstance()
                     .getGroupchatMembers(groupchat.contactJid))
-            list.sortWith { o1: GroupchatMember, o2: GroupchatMember ->
+            list.sortWith { o1: GroupMember, o2: GroupMember ->
                 if (o1.isMe && !o2.isMe) return@sortWith -1
                 if (o2.isMe && !o1.isMe) return@sortWith 1
                 0
@@ -162,8 +159,8 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
             Application.getInstance().runOnUiThread { updateRecyclerView() }
     }
 
-    override fun onMemberClick(groupchatMember: GroupchatMember?) = startActivity(
-            createIntentForGroupchatAndMemberId(this, groupchatMember!!.id, groupchat))
+    override fun onMemberClick(groupMember: GroupMember?) = startActivity(
+            createIntentForGroupchatAndMemberId(this, groupMember!!.id, groupchat))
 
     private fun isThisChat(account: AccountJid, contactJid: ContactJid) =
             groupchat.account == account && groupchat.contactJid == contactJid

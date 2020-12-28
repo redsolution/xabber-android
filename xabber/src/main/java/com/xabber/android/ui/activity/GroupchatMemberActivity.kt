@@ -43,7 +43,7 @@ import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember
+import com.xabber.android.data.message.chat.groupchat.GroupMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
 import com.xabber.android.ui.color.AccountPainter
@@ -70,7 +70,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private var accountJid: AccountJid? = null
     private var groupchatJid: ContactJid? = null
-    private var groupchatMember: GroupchatMember? = null
+    private var groupMember: GroupMember? = null
     private var groupchat: GroupChat? = null
 
     private var toolbar: Toolbar? = null
@@ -116,7 +116,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
     override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid,
                                           groupchatMemberId: String) {
         if (accountJid == this.accountJid && groupchatJid == this.groupchatJid
-                && groupchatMemberId == this.groupchatMember?.id) {
+                && groupchatMemberId == this.groupMember?.id) {
             Application.getInstance().runOnUiThread {
                 setupAvatar()
                 setupNameBlock()
@@ -126,7 +126,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        groupchatMember = GroupchatMemberManager.getInstance()
+        groupMember = GroupchatMemberManager.getInstance()
                 .getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
@@ -190,7 +190,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
         supportFragmentManager.beginTransaction()
                 .add(R.id.scrollable_container,
-                        GroupMemberRightsFragment(groupchatMember!!, groupchat!!),
+                        GroupMemberRightsFragment(groupMember!!, groupchat!!),
                         GroupMemberRightsFragment.TAG)
                 .commit()
 
@@ -198,7 +198,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private fun setupNameBlock() {
         val nameTv = findViewById<TextView>(R.id.name)
-        nameTv.text = (groupchatMember?.bestName + " " + groupchatMember?.badge)
+        nameTv.text = (groupMember?.bestName + " " + groupMember?.badge)
         nameTv.setOnClickListener {
             val adb = AlertDialog.Builder(this)
             adb.setTitle(getString(R.string.groupchat_member_nickname))
@@ -206,28 +206,28 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             val et = AppCompatEditText(this)
             et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
-            et.hint = groupchatMember?.nickname
+            et.hint = groupMember?.nickname
             adb.setView(et, 56, 0, 56, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
                 GroupchatMemberManager.getInstance()
-                        .sendSetMemberNicknameIqRequest(groupchat, groupchatMember, et.text.toString())
+                        .sendSetMemberNicknameIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()
         }
         if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
-            findViewById<TextView>(R.id.address_text).text = (groupchatMember!!.jid)
+            findViewById<TextView>(R.id.address_text).text = (groupMember!!.jid)
 
         findViewById<TextView>(R.id.groupchat_member_title).text = getString(R.string.groupchat_member_of_group_name,
-                groupchatMember?.role?.capitalize(Locale.getDefault()),
+                groupMember?.role?.capitalize(Locale.getDefault()),
                 groupchat?.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
                 groupchat?.name)
     }
 
     private fun setupAvatar() {
         var backgroundSource = AvatarManager.getInstance()
-                .getGroupchatMemberAvatar(groupchatMember, accountJid)
+                .getGroupchatMemberAvatar(groupMember, accountJid)
         if (backgroundSource == null) backgroundSource = resources.getDrawable(R.drawable.about_backdrop)
         Glide.with(this)
                 .load(backgroundSource)
@@ -245,7 +245,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupchatMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupchatMember?.id)
+        GroupchatMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupMember?.id)
         appBarResize()
     }
 
@@ -345,7 +345,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 try {
                     //publishing empty (avatar) metadata
                     GroupchatMemberManager.getInstance().removeMemberAvatar(groupchat,
-                            groupchatMember?.id)
+                            groupMember?.id)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
                     onAvatarSettingEnded(false)
@@ -354,7 +354,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             } else if (avatarData != null) {
                 try {
                     GroupchatMemberManager.getInstance().publishMemberAvatar(groupchat,
-                            groupchatMember?.id, avatarData, AccountActivity.FINAL_IMAGE_SIZE,
+                            groupMember?.id, avatarData, AccountActivity.FINAL_IMAGE_SIZE,
                             AccountActivity.FINAL_IMAGE_SIZE, imageFileType)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
@@ -651,12 +651,12 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
         imageButton.setOnClickListener {
             if (groupchat!!.privacyType != GroupchatPrivacyType.INCOGNITO
-                    && !groupchatMember!!.jid.isNullOrEmpty()) {
-                val contactJid = ContactJid.from(groupchatMember!!.jid)
+                    && !groupMember!!.jid.isNullOrEmpty()) {
+                val contactJid = ContactJid.from(groupMember!!.jid)
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this,
                         groupchat!!.account, contactJid), MainActivity.CODE_OPEN_CHAT)
             } else {
-                GroupchatMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupchatMember)
+                GroupchatMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupMember)
             }
         }
 
@@ -690,19 +690,19 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
         imageButton?.setOnClickListener {
             val adb = AlertDialog.Builder(this)
-            adb.setTitle(groupchatMember?.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
+            adb.setTitle(groupMember?.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
 
             val et = AppCompatEditText(this)
             et.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
             et.isSingleLine = true
-            et.hint = groupchatMember?.badge
+            et.hint = groupMember?.badge
             adb.setView(et, 64, 0, 64, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
                 GroupchatMemberManager.getInstance()
-                        .sendSetMemberBadgeIqRequest(groupchat, groupchatMember, et.text.toString())
+                        .sendSetMemberBadgeIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()
         }

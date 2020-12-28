@@ -46,7 +46,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.avatar.UserAvatarManager;
@@ -506,7 +506,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    public Drawable getGroupchatMemberAvatar(GroupchatMember member, AccountJid account) {
+    public Drawable getGroupchatMemberAvatar(GroupMember member, AccountJid account) {
         String avatarHash = member.getAvatarHash();
         Drawable drawable;
         if (avatarHash != null) {
@@ -530,7 +530,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupchatMember member, AccountItem accountItem) {
+    private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupMember member, AccountItem accountItem) {
         Application.getInstance().runInBackgroundUserRequest(() -> {
             byte[] avatarValue = AvatarStorage.getInstance().read(member.getAvatarHash());
             if (avatarValue != null) {
@@ -612,7 +612,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    private Drawable getDefaultMemberAvatar(GroupchatMember member) {
+    private Drawable getDefaultMemberAvatar(GroupMember member) {
         Drawable drawable = groupchatMemberDefaultDrawables.get(member.getBestName());
         if (drawable == null) {
             drawable = generateDefaultRoomAvatar(member.getBestName());

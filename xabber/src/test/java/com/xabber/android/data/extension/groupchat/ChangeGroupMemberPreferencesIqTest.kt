@@ -8,7 +8,7 @@ import org.jxmpp.jid.impl.JidCreate
 import org.robolectric.annotation.Config
 
 @Config(sdk = [28], application = TestApplication::class)
-class ChangeGroupchatMemberPreferencesIqTest {
+class ChangeGroupMemberPreferencesIqTest {
 
     @Test
     fun testIqCreatingSetBadge() {

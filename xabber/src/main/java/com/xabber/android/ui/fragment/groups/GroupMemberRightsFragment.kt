@@ -13,7 +13,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.extension.groupchat.rights.GroupMemberRightsListener
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember
+import com.xabber.android.data.message.chat.groupchat.GroupMember
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
@@ -21,7 +21,7 @@ import com.xabber.android.ui.color.ColorManager
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupchat: GroupChat)
+class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: GroupChat)
     : Fragment(), GroupMemberRightsListener, RightsFormListAdapter.Listener {
 
     var recyclerView: RecyclerView? = null
@@ -41,7 +41,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         }
 
         GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                groupchat.contactJid, groupchatMember)
+                groupchat.contactJid, groupMember)
 
         return view
     }
@@ -70,7 +70,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         if (isTHisGroup(groupchat)){
             newFields.clear()
             GroupchatMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                    groupchat.contactJid, groupchatMember)
+                    groupchat.contactJid, groupMember)
             notifyActivityAboutNewFieldSizeChanged()
         }
     }
@@ -84,7 +84,7 @@ class GroupMemberRightsFragment(val groupchatMember: GroupchatMember, val groupc
         if (isTHisGroup(groupchat))
             for (field in iq.dataFrom!!.fields)
                 if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
-                        && groupchatMember.id == field.values[0]) {
+                        && groupMember.id == field.values[0]) {
                     oldDataForm = iq.dataFrom
                     Application.getInstance().runOnUiThread {
                         setupRecyclerViewWithDataForm(iq.dataFrom!!)

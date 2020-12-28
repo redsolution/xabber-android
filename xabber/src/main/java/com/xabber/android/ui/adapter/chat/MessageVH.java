@@ -23,7 +23,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
@@ -95,8 +95,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageHeader.setVisibility(View.GONE);
 
         // groupchat
-        if (extraData.getGroupchatMember() != null) {
-            GroupchatMember user = extraData.getGroupchatMember();
+        if (extraData.getGroupMember() != null) {
+            GroupMember user = extraData.getGroupMember();
             messageHeader.setText(user.getNickname());
             messageHeader.setTextColor(ColorManager.changeColor(
                     ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));

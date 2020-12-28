@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class GroupchatMemberRealmObject extends RealmObject {
+public class GroupMemberRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
@@ -30,10 +30,11 @@ public class GroupchatMemberRealmObject extends RealmObject {
     private boolean isRestrictedToSendInvitations;
     private boolean isRestrictedToSendAudio;
     private boolean isRestrictedToSendImages;
-    public GroupchatMemberRealmObject(String uniqueId) {
+
+    public GroupMemberRealmObject(String uniqueId) {
         this.uniqueId = uniqueId;
     }
-    public GroupchatMemberRealmObject() {
+    public GroupMemberRealmObject() {
         this.uniqueId = UUID.randomUUID().toString();
     }
 
@@ -47,7 +48,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getJid() {
         return jid;
     }
-
     public void setJid(String jid) {
         this.jid = jid;
     }
@@ -55,7 +55,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getNickname() {
         return nickname;
     }
-
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -63,7 +62,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getRole() {
         return role;
     }
-
     public void setRole(String role) {
         this.role = role;
     }
@@ -71,7 +69,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getBadge() {
         return badge;
     }
-
     public void setBadge(String badge) {
         this.badge = badge;
     }
@@ -79,7 +76,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getGroupchatJid() {
         return groupchatJid;
     }
-
     public void setGroupchatJid(String groupchatJid) {
         this.groupchatJid = groupchatJid;
     }
@@ -87,7 +83,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getAvatarHash() {
         return avatarHash;
     }
-
     public void setAvatarHash(String avatarHash) {
         this.avatarHash = avatarHash;
     }
@@ -95,7 +90,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getAvatarUrl() {
         return avatarUrl;
     }
-
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
@@ -103,7 +97,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public String getLastPresent() {
         return lastPresent;
     }
-
     public void setLastPresent(String lastPresent) {
         this.lastPresent = lastPresent;
     }
@@ -111,7 +104,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isCanRestrictMembers() {
         return isCanRestrictMembers;
     }
-
     public void setCanRestrictMembers(boolean canRestrictMembers) {
         isCanRestrictMembers = canRestrictMembers;
     }
@@ -119,7 +111,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isCanBlockMembers() {
         return isCanBlockMembers;
     }
-
     public void setCanBlockMembers(boolean canBlockMembers) {
         isCanBlockMembers = canBlockMembers;
     }
@@ -127,7 +118,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isCanChangeBadge() {
         return isCanChangeBadge;
     }
-
     public void setCanChangeBadge(boolean canChangeBadge) {
         isCanChangeBadge = canChangeBadge;
     }
@@ -135,7 +125,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isCanChangeNickname() {
         return isCanChangeNickname;
     }
-
     public void setCanChangeNickname(boolean canChangeNickname) {
         isCanChangeNickname = canChangeNickname;
     }
@@ -143,7 +132,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isCanDeleteMessages() {
         return isCanDeleteMessages;
     }
-
     public void setCanDeleteMessages(boolean canDeleteMessages) {
         isCanDeleteMessages = canDeleteMessages;
     }
@@ -151,7 +139,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isRestrictedToSendMessages() {
         return isRestrictedToSendMessages;
     }
-
     public void setRestrictedToSendMessages(boolean restrictedToSendMessages) {
         isRestrictedToSendMessages = restrictedToSendMessages;
     }
@@ -159,7 +146,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isRestrictedToReadMessages() {
         return isRestrictedToReadMessages;
     }
-
     public void setRestrictedToReadMessages(boolean restrictedToReadMessages) {
         isRestrictedToReadMessages = restrictedToReadMessages;
     }
@@ -167,7 +153,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isRestrictedToSendInvitations() {
         return isRestrictedToSendInvitations;
     }
-
     public void setRestrictedToSendInvitations(boolean restrictedToSendInvitations) {
         isRestrictedToSendInvitations = restrictedToSendInvitations;
     }
@@ -175,7 +160,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isRestrictedToSendAudio() {
         return isRestrictedToSendAudio;
     }
-
     public void setRestrictedToSendAudio(boolean restrictedToSendAudio) {
         isRestrictedToSendAudio = restrictedToSendAudio;
     }
@@ -183,7 +167,6 @@ public class GroupchatMemberRealmObject extends RealmObject {
     public boolean isRestrictedToSendImages() {
         return isRestrictedToSendImages;
     }
-
     public void setRestrictedToSendImages(boolean restrictedToSendImages) {
         isRestrictedToSendImages = restrictedToSendImages;
     }
@@ -214,4 +197,5 @@ public class GroupchatMemberRealmObject extends RealmObject {
         public static final String IS_RESTRICTED_TO_SEND_AUDIO = "isRestrictedToSendAudio";
         public static final String IS_RESTRICTED_TO_SEND_IMAGES = "isRestrictedToSendImages";
     }
+
 }

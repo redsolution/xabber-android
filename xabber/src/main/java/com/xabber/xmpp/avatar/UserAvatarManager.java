@@ -3,7 +3,7 @@ package com.xabber.xmpp.avatar;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -177,17 +177,17 @@ public final class UserAvatarManager extends Manager {
         return null;
     }
 
-    public void requestAvatarOfGroupchatMember(GroupchatMember groupchatMember) {
-        if (groupchatMember == null
-                || groupchatMember.getGroupchatJid() == null
-                || groupchatMember.getAvatarHash() == null) {
+    public void requestAvatarOfGroupchatMember(GroupMember groupMember) {
+        if (groupMember == null
+                || groupMember.getGroupchatJid() == null
+                || groupMember.getAvatarHash() == null) {
             return;
         }
-        if (groupchatMemberAvatarRequests.contains(groupchatMember.getAvatarHash())) {
+        if (groupchatMemberAvatarRequests.contains(groupMember.getAvatarHash())) {
             return;
         }
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            String avatarHash = groupchatMember.getAvatarHash();
+            String avatarHash = groupMember.getAvatarHash();
             if (groupchatMemberAvatarRequests.contains(avatarHash)) {
                 return;
             }
@@ -195,11 +195,11 @@ public final class UserAvatarManager extends Manager {
 
             ItemsExtension itemsExtension =
                     new ItemsExtension(ItemsExtension.ItemsElementType.items,
-                            (DATA_NAMESPACE + "#" + groupchatMember.getId()),
+                            (DATA_NAMESPACE + "#" + groupMember.getId()),
                             Collections.singletonList(new Item(avatarHash)));
             BareJid groupchatJid = null;
             try {
-                groupchatJid = JidCreate.bareFrom(groupchatMember.getGroupchatJid());
+                groupchatJid = JidCreate.bareFrom(groupMember.getGroupchatJid());
             } catch (XmppStringprepException e) {
                 LogManager.exception(LOG_TAG, e);
                 groupchatMemberAvatarRequests.remove(avatarHash);

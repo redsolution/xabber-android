@@ -46,8 +46,8 @@ public class ForwardedVH extends FileMessageVH {
             e.printStackTrace();
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);
-        if (extraData.getGroupchatMember() != null)
-            author = extraData.getGroupchatMember().getNickname();
+        if (extraData.getGroupMember() != null)
+            author = extraData.getGroupMember().getNickname();
 
         if (author != null && !author.isEmpty()) {
             messageHeader.setText(author);

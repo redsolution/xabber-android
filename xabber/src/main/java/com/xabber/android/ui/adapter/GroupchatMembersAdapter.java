@@ -13,7 +13,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -21,26 +21,26 @@ import java.util.ArrayList;
 public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembersAdapter.GroupchatMemberViewHolder>
         implements View.OnClickListener {
 
-    private ArrayList<GroupchatMember> groupchatMembers;
+    private ArrayList<GroupMember> groupMembers;
     private final GroupChat chat;
     private final OnMemberClickListener listener;
     private RecyclerView recyclerView;
 
-    public GroupchatMembersAdapter(ArrayList<GroupchatMember> groupchatMembers, GroupChat chat,
+    public GroupchatMembersAdapter(ArrayList<GroupMember> groupMembers, GroupChat chat,
                                    OnMemberClickListener listener) {
-        this.groupchatMembers = groupchatMembers;
+        this.groupMembers = groupMembers;
         this.chat = chat;
         this.listener = listener;
     }
 
-    public void setItems(ArrayList<GroupchatMember> groupchatMembers) {
-        this.groupchatMembers = groupchatMembers;
+    public void setItems(ArrayList<GroupMember> groupMembers) {
+        this.groupMembers = groupMembers;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View v) {
-        listener.onMemberClick(groupchatMembers.get(recyclerView.getChildAdapterPosition(v)));
+        listener.onMemberClick(groupMembers.get(recyclerView.getChildAdapterPosition(v)));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     @Override
     public void onBindViewHolder(@NonNull GroupchatMemberViewHolder holder, int position) {
-        GroupchatMember bindMember = groupchatMembers.get(position);
+        GroupMember bindMember = groupMembers.get(position);
 
         holder.root.setOnClickListener(this);
 
@@ -104,7 +104,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     @Override
     public int getItemCount() {
-        return groupchatMembers.size();
+        return groupMembers.size();
     }
 
     static class GroupchatMemberViewHolder extends RecyclerView.ViewHolder {
@@ -128,6 +128,6 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
     }
 
     public interface OnMemberClickListener{
-        void onMemberClick(GroupchatMember groupchatMember);
+        void onMemberClick(GroupMember groupMember);
     }
 }

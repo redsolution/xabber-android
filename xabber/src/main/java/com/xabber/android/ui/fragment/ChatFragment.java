@@ -108,7 +108,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.notification.NotificationManager;
@@ -694,7 +694,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            GroupchatMember member = GroupchatMemberManager.getInstance()
+            GroupMember member = GroupchatMemberManager.getInstance()
                     .getGroupchatMemberById(message.getGroupchatUserId());
             if (member != null){
                 if (member.getBadge() != null){

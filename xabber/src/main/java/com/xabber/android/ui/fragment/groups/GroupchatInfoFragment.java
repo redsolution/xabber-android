@@ -29,7 +29,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
@@ -193,10 +193,10 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onMemberClick(GroupchatMember groupchatMember) {
+    public void onMemberClick(GroupMember groupMember) {
         Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(
                 getActivity(),
-                groupchatMember.getId(), (GroupChat) groupChat);
+                groupMember.getId(), (GroupChat) groupChat);
         startActivity(intent);
     }
 
@@ -297,7 +297,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
 
-            ArrayList<GroupchatMember> list = new ArrayList<>(GroupchatMemberManager.getInstance()
+            ArrayList<GroupMember> list = new ArrayList<>(GroupchatMemberManager.getInstance()
                     .getGroupchatMembers(groupchatContact));
 
             Collections.sort(list, (o1, o2) -> {

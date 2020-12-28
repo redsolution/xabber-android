@@ -18,7 +18,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMember;
+import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.data.message.chat.groupchat.GroupchatMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -239,19 +239,19 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageRealmObject.getUniqueId());
 
         // groupchat user
-        GroupchatMember groupchatMember =
+        GroupMember groupMember =
                 GroupchatMemberManager.getInstance().getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
 
         // need tail
         boolean needTail = false;
-        if (groupchatMember != null) {
+        if (groupMember != null) {
             MessageRealmObject nextMessage = getMessageItem(position + 1);
             if (nextMessage != null) {
-                GroupchatMember user2 =
+                GroupMember user2 =
                         GroupchatMemberManager.getInstance().getGroupchatMemberById(nextMessage.getGroupchatUserId());
 
                 if (user2 != null)
-                    needTail = !groupchatMember.getId().equals(user2.getId());
+                    needTail = !groupMember.getId().equals(user2.getId());
                 else needTail = true;
             } else needTail = true;
         } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
@@ -277,7 +277,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, context, userName, colorStateList,
-                groupchatMember, accountMainColor, mentionColor, mainMessageTimestamp, showOriginalOTR, unread, checked,
+                groupMember, accountMainColor, mentionColor, mainMessageTimestamp, showOriginalOTR, unread, checked,
                 needTail, needDate, needName);
 
         switch (viewType) {
@@ -478,7 +478,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         private final int accountMainColor;
         private final int mentionColor;
         private final Long mainTimestamp;
-        private final GroupchatMember groupchatMember;
+        private final GroupMember groupMember;
 
         private final boolean showOriginalOTR;
         private final boolean unread;
@@ -490,7 +490,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         public MessageExtraData(FileMessageVH.FileListener listener,
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
-                                GroupchatMember groupchatMember, int accountMainColor, int mentionColor, Long mainTimestamp,
+                                GroupMember groupMember, int accountMainColor, int mentionColor, Long mainTimestamp,
                                 boolean showOriginalOTR, boolean unread, boolean checked,
                                 boolean needTail, boolean needDate, boolean needName) {
             this.listener = listener;
@@ -505,7 +505,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             this.checked = checked;
             this.needTail = needTail;
             this.needDate = needDate;
-            this.groupchatMember = groupchatMember;
+            this.groupMember = groupMember;
             this.mainTimestamp = mainTimestamp;
             this.needName = needName;
         }
@@ -538,8 +538,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             return mentionColor;
         }
 
-        public GroupchatMember getGroupchatMember() {
-            return groupchatMember;
+        public GroupMember getGroupMember() {
+            return groupMember;
         }
 
         public Long getMainMessageTimestamp() {
