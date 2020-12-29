@@ -16,6 +16,8 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
+import com.xabber.android.data.extension.groupchat.block.BlockGroupMemberIQ;
+import com.xabber.android.data.extension.groupchat.block.KickGroupMemberIQ;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistQueryIQ;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistResultIQ;
@@ -59,6 +61,8 @@ import org.jivesoftware.smackx.pubsub.PublishItem;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -297,12 +301,42 @@ public class GroupMemberManager implements OnLoadListener {
         });
     }
 
-    public void kickMemberFromGroupByJid(){
-
+    public void kickMember(GroupMember groupMember, GroupChat groupChat, BaseIqResultUiListener listener){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(groupChat.getAccount());
+            try {
+                if (groupMember.getJid() != null && !groupMember.getJid().isEmpty()){
+                    Jid memberJid = JidCreate.bareFrom(groupMember.getJid());
+                    accountItem.getConnection().sendIqWithResponseCallback(new KickGroupMemberIQ(memberJid,
+                            groupChat.getFullJidIfPossible()), listener, listener);
+                } else {
+                    accountItem.getConnection().sendIqWithResponseCallback(new KickGroupMemberIQ(groupMember.getId(),
+                            groupChat.getFullJidIfPossible()), listener, listener);
+                }
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+                listener.onOtherError(e);
+            }
+        });
     }
 
-    public void kickMemberFromGroupById(){
-
+    public void kickAndBlockMember(GroupMember groupMember, GroupChat groupChat, BaseIqResultUiListener listener){
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(groupChat.getAccount());
+            try {
+                if (groupMember.getJid() != null && !groupMember.getJid().isEmpty()){
+                    Jid memberJid = JidCreate.bareFrom(groupMember.getJid());
+                    accountItem.getConnection().sendIqWithResponseCallback(new BlockGroupMemberIQ(groupChat.getFullJidIfPossible(),
+                            memberJid), listener, listener);
+                } else {
+                    accountItem.getConnection().sendIqWithResponseCallback(new BlockGroupMemberIQ(groupChat.getFullJidIfPossible(),
+                            groupMember.getId()), listener, listener);
+                }
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+                listener.onOtherError(e);
+            }
+        });
     }
 
     public void requestGroupchatBlocklistList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,

@@ -33,6 +33,7 @@ import com.soundcloud.android.crop.Crop
 import com.theartofdev.edmodo.cropper.CropImage
 import com.xabber.android.R
 import com.xabber.android.data.Application
+import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
@@ -57,7 +58,11 @@ import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALL
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import com.xabber.android.utils.Utils
 import com.xabber.xmpp.avatar.UserAvatarManager
+import kotlinx.android.synthetic.main.contact_edit_layout.*
+import kotlinx.android.synthetic.main.dialog.*
+import kotlinx.android.synthetic.main.dialog_block_jid.*
 import org.apache.commons.io.FileUtils
+import org.jivesoftware.smack.packet.XMPPError
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -718,9 +723,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         val imageButton = findViewById<ImageButton>(R.id.fourth_button)
         val textView = findViewById<TextView>(R.id.fourth_button_text)
 
-        imageButton.setOnClickListener {
-            //todo this
-        }
+        imageButton.setOnClickListener { showKickBlockDialog() }
 
         textView.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
         textView.setTextColor(resources.getColor(
@@ -735,6 +738,78 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             textView.visibility = View.GONE
         else textView.visibility = View.VISIBLE
+    }
+
+    private fun showKickBlockDialog(){
+        AlertDialog.Builder(this).create().apply {
+            title = context.getString(R.string.groupchat_kick_member)
+            setMessage(context.getString(R.string.groupchat_do_you_really_want_to_kick_membername, groupMember?.nickname))
+            setButton(AlertDialog.BUTTON_POSITIVE,
+                    "                                 " + context.getString(R.string.groupchat_kick))
+                    { _, _ -> GroupMemberManager.getInstance().kickMember(groupMember, groupchat,
+                            object: BaseIqResultUiListener {
+                                override fun onSend() {}
+                                override fun onIqError(error: XMPPError) {
+                                    Application.getInstance().runOnUiThread {
+                                        if (error.condition == XMPPError.Condition.not_allowed){
+                                            Toast.makeText(context,
+                                                    context.getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                                                    Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context,
+                                                    context.getString(R.string.groupchat_error),
+                                                    Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+
+                                override fun onOtherError(exception: Exception?) {
+                                    Application.getInstance().runOnUiThread {
+                                        Toast.makeText(context,
+                                                context.getString(R.string.groupchat_error),
+                                                Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onResult() {}
+                            })
+            }
+            setButton(AlertDialog.BUTTON_NEGATIVE,
+                    "                                 " + context.getString(R.string.groupchat_kick_and_block))
+                    { _, _ -> GroupMemberManager.getInstance().kickAndBlockMember(groupMember, groupchat,
+                            object: BaseIqResultUiListener {
+                                override fun onSend() {}
+
+                                override fun onIqError(error: XMPPError) {
+                                    Application.getInstance().runOnUiThread {
+                                        if (error.condition == XMPPError.Condition.not_allowed){
+                                            Toast.makeText(context,
+                                                    context.getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                                                    Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context,
+                                                    context.getString(R.string.groupchat_error),
+                                                    Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+
+                                override fun onOtherError(exception: Exception?) {
+                                    Application.getInstance().runOnUiThread {
+                                        Toast.makeText(context,
+                                                context.getString(R.string.groupchat_error),
+                                                Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onResult() {}
+                            })
+            }
+            setButton(AlertDialog.BUTTON_NEUTRAL,
+                    "                                  " + context.getString(R.string.cancel))
+                    { _, _ -> cancel() }
+            show()
+        }
     }
 
     private fun setupContactBar(color: Int, orientation: Int) {

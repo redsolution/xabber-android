@@ -50,6 +50,11 @@
     <string name="groupchat_member_edit_change_avatar">Change avatar</string>
     <string name="groupchat_member_edit_choose_from_gallery">Choose from gallery</string>
     <string name="groupchat_member_edit_remove_avatar">Remove avatar</string>
+    <string name="groupchat_kick_member">Kick member</string>
+    <string name="groupchat_do_you_really_want_to_kick_membername">Do you really want to kick member %1$s</string>
+    <string name="groupchat_kick">Kick</string>
+    <string name="groupchat_kick_and_block">Kick and block</string>
+
 
     <string name="groupchat_example_name">My group</string>
     <string name="groupchat_example_jid">developers_group</string>
