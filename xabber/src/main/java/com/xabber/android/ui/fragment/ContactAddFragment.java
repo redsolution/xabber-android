@@ -1,6 +1,6 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -70,9 +72,9 @@ public class ContactAddFragment extends CircleEditorFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        listenerActivity = (Listener)activity;
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        listenerActivity = (Listener) context;
     }
 
     @Override
@@ -83,8 +85,8 @@ public class ContactAddFragment extends CircleEditorFragment
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
             error = savedInstanceState.getString(SAVED_ERROR);
-            setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
-            setContactJid((ContactJid) savedInstanceState.getParcelable(SAVED_USER));
+            setAccount(savedInstanceState.getParcelable(SAVED_ACCOUNT));
+            setContactJid(savedInstanceState.getParcelable(SAVED_USER));
         } else {
             if (getAccount() == null || getContactJid() == null) {
                 name = null;
@@ -102,23 +104,23 @@ public class ContactAddFragment extends CircleEditorFragment
             }
         }
 
-        setUpAccountView((Spinner) view.findViewById(R.id.contact_account));
+        setUpAccountView(view.findViewById(R.id.contact_account));
 
         clearText = view.findViewById(R.id.imgCross);
         clearText.setOnClickListener(view1 -> userView.getText().clear());
 
-        errorView = (TextView) view.findViewById(R.id.error_view);
+        errorView = view.findViewById(R.id.error_view);
         if (error != null && !"".equals(error)) {
             oldError = true;
             setError(error);
         }
-        userView = (EditText) view.findViewById(R.id.contact_user);
+        userView = view.findViewById(R.id.contact_user);
         userView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -138,8 +140,8 @@ public class ContactAddFragment extends CircleEditorFragment
                 }
             }
         });
-        nameView = (EditText) view.findViewById(R.id.contact_name);
-        qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
+        nameView = view.findViewById(R.id.contact_name);
+        qrScan = view.findViewById(R.id.imgQRcode);
         qrScan.setOnClickListener(this);
 
         if (getContactJid() != null) {
@@ -174,20 +176,16 @@ public class ContactAddFragment extends CircleEditorFragment
 
     @Override
     public void onClick(View view){
-        switch (view.getId()){
-            case R.id.imgQRcode:
-                IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
-                integrator.setOrientationLocked(false)
-                        .setBeepEnabled(false)
-                        .setCameraId(0)
-                        .setPrompt("")
-                        .addExtra("caller","ContactAddFragment")
-                        .setCaptureActivity(QRCodeScannerActivity.class)
-                        .initiateScan(Collections.unmodifiableList(Collections
-                                .singletonList(IntentIntegrator.QR_CODE)));
-                break;
-            default:
-                break;
+        if (view.getId() == R.id.imgQRcode) {
+            IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
+            integrator.setOrientationLocked(false)
+                    .setBeepEnabled(false)
+                    .setCameraId(0)
+                    .setPrompt("")
+                    .addExtra("caller", "ContactAddFragment")
+                    .setCaptureActivity(QRCodeScannerActivity.class)
+                    .initiateScan(Collections.unmodifiableList(Collections
+                            .singletonList(IntentIntegrator.QR_CODE)));
         }
     }
 
@@ -262,8 +260,7 @@ public class ContactAddFragment extends CircleEditorFragment
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
+    public void onNothingSelected(AdapterView<?> parent) { }
 
     @Override
     public void addContact() {
@@ -443,4 +440,5 @@ public class ContactAddFragment extends CircleEditorFragment
         void onAccountSelected(AccountJid account);
         void showProgress(boolean show);
     }
+
 }

@@ -13,8 +13,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:civ_circle_background_color="@color/white"
-        tools:src="@tools:sample/avatars"
-        />
+        tools:src="@tools:sample/avatars" />
 
     <ImageView
         android:id="@+id/ivStatus"
@@ -23,6 +22,6 @@
         android:src="@drawable/ic_status_combined"
         android:layout_marginRight="-1dp"
         android:layout_marginBottom="-1dp"
-        android:layout_gravity="end|bottom"
-        />
+        android:layout_gravity="end|bottom" />
+
 </FrameLayout>
