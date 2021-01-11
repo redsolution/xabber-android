@@ -9,7 +9,7 @@
         android:id="@+id/contact_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:prompt="@string/choose_account"
+        android:prompt="@string/contact_account"
         android:minHeight="56dp"/>
 
 </LinearLayout>

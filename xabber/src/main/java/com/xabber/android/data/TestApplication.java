@@ -318,7 +318,6 @@ public class TestApplication extends android.app.Application {
         addManager(AvatarStorage.getInstance());
         addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());
         addManager(PatreonManager.getInstance());
