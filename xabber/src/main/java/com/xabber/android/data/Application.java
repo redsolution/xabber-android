@@ -1,16 +1,16 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * <p>
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- * <p>
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+  <p>
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+  <p>
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+  <p>
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data;
 
@@ -33,7 +33,6 @@ import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ScreenManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
@@ -62,8 +61,8 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -415,7 +414,6 @@ public class Application extends android.app.Application {
         addManager(ColorManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
-        addManager(ScreenManager.getInstance());
         addManager(PresenceManager.getInstance());
         addManager(RosterManager.getInstance());
         addManager(OTRManager.getInstance());
@@ -489,22 +487,6 @@ public class Application extends android.app.Application {
     public void onTerminate() {
         requestToClose();
         super.onTerminate();
-    }
-
-    public void onScreenPowerOn() {
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnScreenListener) {
-                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.ON);
-            }
-        }
-    }
-
-    public void onScreenPowerOff() {
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnScreenListener) {
-                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.OFF);
-            }
-        }
     }
 
     /**

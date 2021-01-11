@@ -5,10 +5,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnCloseListener;
-import com.xabber.android.data.OnScreenListener;
 import com.xabber.android.data.log.LogManager;
-
-import org.jetbrains.annotations.NotNull;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -16,7 +13,7 @@ import io.realm.RealmConfiguration;
 import rx.Emitter;
 import rx.Observable;
 
-public class DatabaseManager implements OnClearListener, OnCloseListener, OnScreenListener {
+public class DatabaseManager implements OnClearListener, OnCloseListener {
 
     private static final int CURRENT_DATABASE_VERSION = 0;
     private static final String DATABASE_NAME = "realm_db_xabber";
@@ -29,16 +26,10 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
 
     private Realm realmInstanceInUI;
 
-    private int prevGlobalInstCount;
-    private int prevLocalInstCount;
-
     private DatabaseManager(){
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
         Realm.setDefaultConfiguration(realmConfiguration);
-
-        prevGlobalInstCount = 0;
-        prevLocalInstCount = 0;
     }
 
     public static DatabaseManager getInstance(){
@@ -53,16 +44,6 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
             if (realmInstanceInUI == null) realmInstanceInUI = Realm.getInstance(Realm.getDefaultConfiguration());
             result = realmInstanceInUI;
         } else result = Realm.getDefaultInstance();
-
-//        int localInstances = Realm.getLocalInstanceCount(Realm.getDefaultConfiguration());
-//        int instances = Realm.getGlobalInstanceCount(Realm.getDefaultConfiguration());
-//        if (prevGlobalInstCount < instances || prevLocalInstCount < localInstances){
-//            LogManager.e("DatabaseManager AHTUNG! Instances count was changed! ", "");
-//            LogManager.exception("\t", new Exception());
-//        }
-//
-//        prevLocalInstCount = localInstances;
-//        prevGlobalInstCount = instances;
 
         return result;
     }
@@ -97,13 +78,6 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
     @Override
     public void onClose() { Realm.compactRealm(Realm.getDefaultConfiguration()); }
 
-    @Override
-    public void onScreenStateChanged(@NotNull ScreenState screenState) {
-        if (screenState == ScreenState.OFF)
-            LogManager.d(LOG_TAG, "Screen state changed! Running compacting Realm.");
-            Realm.compactRealm(Realm.getDefaultConfiguration());
-    }
-
     private RealmConfiguration createRealmConfiguration(){
         return new RealmConfiguration.Builder()
                 .name(DATABASE_NAME)
@@ -128,4 +102,5 @@ public class DatabaseManager implements OnClearListener, OnCloseListener, OnScre
     public RealmConfiguration getDefaultRealmConfig() {
         return realmConfiguration;
     }
+
 }
