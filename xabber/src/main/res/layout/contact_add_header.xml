@@ -19,8 +19,7 @@
     android:layout_height="wrap_content"
     android:paddingRight="16dp"
     android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    >
+    android:paddingTop="16dp">
 
     <include layout="@layout/account_select_spinner" />
 
@@ -32,7 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        />
+        android:layout_marginLeft="4dp" />
 
 </LinearLayout>

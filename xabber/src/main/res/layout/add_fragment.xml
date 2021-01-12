@@ -10,6 +10,7 @@
         android:id="@+id/add_contact_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -23,11 +24,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Add contact"
+            android:text="@string/add_contact"
             android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            android:paddingStart="20dp"
-            android:textSize="18sp"/>
+            android:paddingLeft="24dp"
+            android:paddingStart="24dp"
+            android:textSize="18sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -48,10 +49,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="@string/create_groupchat"
+            android:text="@string/create_group"
             android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            android:paddingStart="20dp"
+            android:paddingLeft="24dp"
+            android:paddingStart="24dp"
             android:textSize="18sp"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -73,10 +74,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="@string/create_incognito_groupchat"
+            android:text="@string/create_incognito_group"
             android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            android:paddingStart="20dp"
+            android:paddingLeft="24dp"
+            android:paddingStart="24dp"
             android:textSize="18sp"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
