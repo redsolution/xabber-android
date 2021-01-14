@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment.groups
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,21 +16,22 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener
 import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
 import com.xabber.android.data.message.chat.groupchat.GroupchatManager
 import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.CreateGroupchatActivity
-import com.xabber.android.ui.adapter.AccountChooseAdapter
-import com.xabber.android.ui.widget.NoDefaultSpinner
+import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
 
 
 class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
 
-    private lateinit var accountSp: NoDefaultSpinner
+    private lateinit var accountSp: AccountSpinner
     private lateinit var groupchatNameEt: EditText
     private lateinit var groupchatJidEt: EditText
     private lateinit var serversSp: Spinner
@@ -74,20 +76,35 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
     }
 
     private fun setupAccountSpinner() {
-        accountSp.adapter = AccountChooseAdapter(layoutInflater)
-
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
-            accountSp.setSelection(0)
             accountSp.visibility = View.GONE
-        }
+            settingsRootLl.visibility = View.VISIBLE
+            setupServerSp()
+        } else {
+            val jids = AccountManager.getInstance().enabledAccounts.toList()
 
-        accountSp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                setupServerSp()
-                settingsRootLl.visibility = View.VISIBLE
+            val avatars = mutableListOf<Drawable>()
+            for (jid in jids){
+                avatars.add(AvatarManager.getInstance().getAccountAvatar(jid))
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            val nicknames = mutableListOf<String?>()
+            for (jid in jids){
+                val name = RosterManager.getInstance().getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
+                if (!name.isNullOrEmpty()){
+                    nicknames.add(name)
+                } else {
+                    nicknames.add(null)
+                }
+            }
+
+            accountSp.setup(getString(R.string.create_to), getString(R.string.choose_account), jids, avatars, nicknames,
+                    object : AccountSpinner.Listener{
+                override fun onSelected(accountJid: AccountJid) {
+                    setupServerSp()
+                    settingsRootLl.visibility = View.VISIBLE
+                }
+            })
         }
     }
 
@@ -123,9 +140,8 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
                 for (jid in serversList)
                     list.add(jid.toString())
 
-        } else if (accountSp.selectedItem != null) {
-            for (jid in GroupchatManager.getInstance()
-                    .getAvailableGroupchatServersForAccountJid(accountSp.selectedItem as AccountJid))
+        } else if (accountSp.selected != null) {
+            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSp.selected))
                 list.add(jid.toString())
         }
 
@@ -137,7 +153,6 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
     }
 
     private fun setupServerSp() {
-
         serversSp.adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item,
                 createListOfServers())
 
@@ -177,11 +192,9 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
         val privacyType: GroupchatPrivacyType = if (isIncognito) GroupchatPrivacyType.INCOGNITO
         else GroupchatPrivacyType.PUBLIC
 
-        val accountJid = accountSp.selectedItem as AccountJid
-        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountJid,
-                serversSp.selectedItem.toString(), groupchatNameEt.text.toString(),
-                descriptionEt.text.toString(), groupchatJidEt.text.toString(), membershipType,
-                indexType, privacyType, this)
+        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountSp.selected, serversSp.selectedItem.toString(),
+                groupchatNameEt.text.toString(), descriptionEt.text.toString(), groupchatJidEt.text.toString(),
+                membershipType, indexType, privacyType, this)
 
         progressBar.visibility = View.VISIBLE
     }

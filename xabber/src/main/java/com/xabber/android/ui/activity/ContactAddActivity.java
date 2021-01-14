@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -51,8 +51,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     }
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ContactAddActivity.class)
-                .setAccount(account).setUser(user).build();
+        return new EntityIntentBuilder(context, ContactAddActivity.class).setAccount(account).setUser(user).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -70,14 +69,12 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         setContentView(R.layout.activity_with_toolbar_progress_and_container);
 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar = ToolbarHelper
-                    .setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
-        else toolbar = ToolbarHelper
-                .setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+            toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.toolbar_add_contact);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         View view = findViewById(R.id.action_add_contact);
-        if (view != null && view instanceof TextView)
+        if (view instanceof TextView)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(getResources().getColor(R.color.white));
@@ -93,8 +90,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.fragment_container, ContactAddFragment
-                            .newInstance(getAccount(intent), getUser(intent)))
+                    .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
                     .commit();
         }
 
@@ -114,13 +110,11 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_contact:
-                addContact();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_add_contact) {
+            addContact();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -140,7 +134,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active);
         View view = findViewById(R.id.action_add_contact);
         if (view instanceof TextView)
-            ((TextView) view).setTextColor(((TextView) view).getTextColors()
-                    .withAlpha(active ? 255 : 127));
+            ((TextView) view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));
     }
+
 }

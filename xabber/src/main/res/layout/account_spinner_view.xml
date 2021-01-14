@@ -1,50 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/transparent">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/primary_linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/grey_300"> <!-- TODO use attrs-->
 
         <TextView
+            android:id="@+id/account_spinner_hint_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:text="@string/account"
+            android:text="Hint text"
             android:layout_gravity="center_vertical"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="@drawable/choose_account_spinner_rounded_background">
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:background="@drawable/account_spinner_pill_background">
 
-            <include layout="@layout/avatar_view_without_status" />
+            <LinearLayout
+                android:id="@+id/account_spinner_promt_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/name"
+                <TextView
+                    android:id="@+id/promt_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginRight="12dp"
+                    android:gravity="center_vertical"
+                    android:text="promt text"
+                    app:drawableEndCompat="@drawable/ic_chevron_down"
+                    app:drawableRightCompat="@drawable/ic_chevron_down" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/account_spinner_selected_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="6dp"
-                android:layout_marginLeft="6dip"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:gravity="center_vertical"
-                android:background="@color/transparent"
-                android:text="account" />
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/selected_avatar"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_gravity="center_vertical"
+                    app:civ_circle_background_color="@color/white"
+                    android:scaleType="centerCrop"
+                    tools:src="@tools:sample/avatars" />
+
+                <TextView
+                    android:id="@+id/selected_jid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginRight="12dp"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="account@domain.com"
+                    app:drawableEndCompat="@drawable/ic_chevron_down"
+                    app:drawableRightCompat="@drawable/ic_chevron_down" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-</LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/account_spinner_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="48dp"/>
+
+</FrameLayout>

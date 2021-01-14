@@ -3,6 +3,9 @@
     <string name="add_contact">Add Contact</string>
     <string name="create_group">Create Group</string>
     <string name="create_incognito_group">Create Incognito Group</string>
+    <string name="choose_account">Choose account</string>
+    <string name="add_to">Add to</string>
+    <string name="create_to">Create to</string>
 
     <string name="motivating_oneliner">
 Ready to rock?\n
