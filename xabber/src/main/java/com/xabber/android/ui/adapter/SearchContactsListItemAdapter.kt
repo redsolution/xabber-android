@@ -80,8 +80,6 @@ class SearchContactsListItemAdapter(val items: MutableList<AbstractChat>,
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(items[position].account)
         val isGroupchat = items[position] is GroupChat
-        val rosterContact = RosterManager.getInstance()
-                .getRosterContact(items[position].account, items[position].contactJid)
 
         when {
             isBlocked -> statusLevel = 11

@@ -17,7 +17,7 @@ class OptionPickerDialog(private val formField: FormField, val listener: OptionP
             //.setView(createOptionsLinearLayout())
             .setSingleChoiceItems(getOptionsList(), getOptionsList().size-1) { _, i -> checkedItem = i }
             .setNegativeButton(getString(R.string.cancel)) { _, _ ->  }
-            .setPositiveButton(getString(R.string.set)) { _, index -> listener.onOptionPicked(formField, formField.options[checkedItem])}
+            .setPositiveButton(getString(R.string.set)) { _, _ -> listener.onOptionPicked(formField, formField.options[checkedItem])}
             .create()
 
     private fun getOptionsList(): Array<String>{

@@ -44,7 +44,7 @@ open class VCard : VCard() {
         if (hasContent()) {
             rightAngleBracket()
             for ((_, value) in mobilePhones) {
-                val number = value ?: continue
+                val number = value
                 openElement("TEL")
                 //xml.emptyElement(phone.getKey());
                 element("NUMBER", number)

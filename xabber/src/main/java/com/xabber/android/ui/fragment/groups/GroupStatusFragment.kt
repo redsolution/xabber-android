@@ -102,7 +102,7 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
             instructions = dataForm.instructions
         }
 
-        for (oldFormField in dataForm!!.fields) {
+        for (oldFormField in dataForm.fields) {
 
             if (oldFormField.variable == null) continue
 

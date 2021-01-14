@@ -45,7 +45,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     public boolean isUnread;
     public boolean needName;
 
-    TextView tvFirstUnread;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -74,7 +73,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.listener = listener;
         this.longClickListener = longClickListener;
 
-        tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
         messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
