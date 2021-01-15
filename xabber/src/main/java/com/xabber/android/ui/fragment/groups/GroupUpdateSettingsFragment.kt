@@ -44,7 +44,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
         }
         recyclerView.layoutManager = llm
 
-        view.findViewById<TextView>(R.id.tvCircles).setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
+        view.findViewById<TextView>(R.id.select_circles_text_view).setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
 
         return view
     }

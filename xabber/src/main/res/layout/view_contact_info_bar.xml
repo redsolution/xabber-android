@@ -17,7 +17,7 @@
         android:id="@+id/first_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/test_ripple"
+        android:background="@color/transparent"
         android:contentDescription="@string/contact_bar_chat"
         android:hapticFeedbackEnabled="true"
         app:srcCompat="@drawable/ic_chats_list_new" />
@@ -35,7 +35,7 @@
         android:id="@+id/second_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/test_ripple"
+        android:background="@color/transparent"
         android:contentDescription="@string/contact_bar_call"
         android:hapticFeedbackEnabled="true"
         app:srcCompat="@drawable/ic_call_white" />
@@ -52,7 +52,7 @@
         android:id="@+id/third_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/test_ripple"
+        android:background="@color/transparent"
         android:contentDescription="@string/category_message_notifications"
         android:hapticFeedbackEnabled="true"
         app:srcCompat="@drawable/ic_bell" />
@@ -70,7 +70,7 @@
         android:id="@+id/fourth_button"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/test_ripple"
+        android:background="@color/transparent"
         android:contentDescription="@string/contact_bar_block"
         android:tint="#FFFFF1"
         android:hapticFeedbackEnabled="true"

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,10 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +33,7 @@ import java.util.HashSet;
  * Contact's Circles adapter to any extending fragment.
  * <p>
  * For it to work properly, an extending fragment must have a RecyclerView
- * list in the layout file with id = "@+id/rvCircles", as well as the
+ * list in the layout file with id = "@+id/select_circles_text_view", as well as the
  * super() call in {@link #onActivityCreated(Bundle)}
  */
 public class CircleEditorFragment extends Fragment implements ContactCircleEditorAdapter.OnCircleActionListener {
@@ -45,6 +48,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     public AccountJid account;
     public ContactJid contactJid;
 
+    private TextView titleTv;
     private RecyclerView rvContactCircles;
     private ContactCircleEditorAdapter contactCircleEditorAdapter;
 
@@ -55,8 +59,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CircleEditorFragment() {
-    }
+    public CircleEditorFragment() { }
 
     public static CircleEditorFragment newInstance(AccountJid account, ContactJid user) {
         CircleEditorFragment fragment = new CircleEditorFragment();
@@ -86,6 +89,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             account = getArguments().getParcelable(ARG_ACCOUNT);
             contactJid = getArguments().getParcelable(ARG_USER);
         }
+
     }
 
     @Override
@@ -120,6 +124,8 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         rvContactCircles.setLayoutManager(new LinearLayoutManager(getContext()));
         rvContactCircles.setAdapter(contactCircleEditorAdapter);
         rvContactCircles.setNestedScrollingEnabled(false);
+
+        titleTv = rootView.findViewById(R.id.select_circles_text_view);
     }
 
     protected void setAccountCircles() {
@@ -143,6 +149,16 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             circles.add(new ContactCircleEditorAdapter.ContactCircle(circleName, selected.contains(circleName)));
         }
         if (circles.size() > 0) contactCircleEditorAdapter.add(circles);
+        setColor();
+    }
+
+    private void setColor(){
+        if (getAccount() != null){
+            titleTv.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
+        } else {
+            titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
+                    .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
+        }
     }
 
     @Override
@@ -209,4 +225,5 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     protected void setContactJid(ContactJid contactJid) {
         this.contactJid = contactJid;
     }
+
 }

@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
@@ -10,11 +11,15 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.NetworkException
+import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
@@ -25,6 +30,7 @@ import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ContactAddActivity
 import com.xabber.android.ui.activity.QRCodeScannerActivity
+import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.helper.ContactAdder
 import com.xabber.android.ui.widget.AccountSpinner
 import org.jivesoftware.smack.SmackException.*
@@ -37,11 +43,19 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
     private var listenerActivity: Listener? = null
     private var accountSpinner: AccountSpinner? = null
-    private var userView: EditText? = null
-    private var nameView: EditText? = null
+
+    private var userViewTv: TextView? = null
+    private var userViewEt: EditText? = null
+    private var userViewVw: View? = null
+
+    private var nameViewTv: TextView? = null
+    private var nameViewEt: EditText? = null
+    private var nameViewVw: View? = null
+
     private var errorView: TextView? = null
     private var error: String? = null
     private var oldError = false
+
     private var qrScan: ImageView? = null
     private var clearText: ImageView? = null
 
@@ -76,14 +90,16 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         }
         setUpAccountView(view)
         clearText = view.findViewById(R.id.imgCross)
-        clearText?.setOnClickListener { userView!!.text.clear() }
+        clearText?.setOnClickListener { userViewEt!!.text.clear() }
         errorView = view.findViewById(R.id.error_view)
         if (error != null && "" != error) {
             oldError = true
             setError(error!!)
         }
-        userView = view.findViewById(R.id.contact_user)
-        userView?.addTextChangedListener(object : TextWatcher {
+        userViewEt = view.findViewById(R.id.contact_user)
+        userViewTv = view.findViewById(R.id.contact_user_tv)
+        userViewVw = view.findViewById(R.id.contact_username_line_view)
+        userViewEt?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
@@ -103,16 +119,61 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                 }
             }
         })
-        nameView = view.findViewById(R.id.contact_name)
+        nameViewEt = view.findViewById(R.id.contact_name)
+        nameViewTv = view.findViewById(R.id.contact_name_tv)
+        nameViewVw = view.findViewById(R.id.contact_name_line_view)
         qrScan = view.findViewById(R.id.imgQRcode)
         qrScan?.setOnClickListener(this)
         if (getContactJid() != null) {
-            userView?.setText(getContactJid().bareJid.toString())
+            userViewEt?.setText(getContactJid().bareJid.toString())
         }
         if (name != null) {
-            nameView?.setText(name)
+            nameViewEt?.setText(name)
         }
+        setColor(AccountManager.getInstance().firstAccount)
         return view
+    }
+
+    private fun setColor(accountJid: AccountJid){
+        val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
+        val defaultLabelTextColor =
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
+        val defaultLineBackgroundColor =
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
+
+        userViewEt?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus){
+                userViewTv?.setTextColor(color)
+                userViewVw?.setBackgroundColor(color)
+            } else {
+                userViewTv?.setTextColor(defaultLabelTextColor)
+                userViewVw?.setBackgroundColor(defaultLineBackgroundColor)
+            }
+        }
+
+        if (userViewEt!!.isFocused){
+            userViewTv?.setTextColor(color)
+            userViewVw?.setBackgroundColor(color)
+        }
+
+        nameViewEt?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus){
+                userViewTv?.setTextColor(color)
+                userViewVw?.setBackgroundColor(color)
+            } else {
+                nameViewTv?.setTextColor(defaultLabelTextColor)
+                nameViewVw?.setBackgroundColor(defaultLineBackgroundColor)
+            }
+        }
+
+        if (nameViewEt!!.isFocused){
+            userViewTv?.setTextColor(color)
+            userViewVw?.setBackgroundColor(color)
+        }
     }
 
     private fun setUpAccountView(view: View) {
@@ -168,11 +229,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                 if (result.contents.length > 5) {
                     val s = result.contents.split(":").toTypedArray()
                     if ((s[0] == "xmpp" || s[0] == "xabber") && s.size >= 2) {
-                        userView!!.setText(s[1])
+                        userViewEt!!.setText(s[1])
                         if (validationIsNotSuccess()) {
                             (activity as ContactAddActivity?)!!.toolbarSetEnabled(false)
-                            userView!!.requestFocus()
-                        } else nameView!!.requestFocus()
+                            userViewEt!!.requestFocus()
+                        } else nameViewEt!!.requestFocus()
                     }
                 }
             }
@@ -189,8 +250,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(SAVED_ACCOUNT, getAccount())
-        outState.putString(SAVED_USER, userView!!.text.toString())
-        outState.putString(SAVED_NAME, nameView!!.text.toString())
+        outState.putString(SAVED_USER, userViewEt!!.text.toString())
+        outState.putString(SAVED_NAME, nameViewEt!!.text.toString())
         outState.putString(SAVED_ERROR, errorView!!.text.toString())
     }
 
@@ -203,6 +264,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (listenerActivity != null){
             listenerActivity?.onAccountSelected(accountJid)
         }
+
+        setColor(accountJid)
 
         if (accountJid != getAccount()) {
             setAccount(accountJid)
@@ -223,7 +286,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             Toast.makeText(activity, getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_LONG).show()
             return
         }
-        var contactString = userView!!.text.toString()
+        var contactString = userViewEt!!.text.toString()
         contactString = contactString.trim { it <= ' ' }
         if (validationIsNotSuccess()) return
         val user: ContactJid
@@ -240,7 +303,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             return
         }
         if (listenerActivity != null) listenerActivity!!.showProgress(true)
-        val name = nameView!!.text.toString()
+        val name = nameViewEt!!.text.toString()
         val groups = selected
         Application.getInstance().runInBackgroundNetworkUserRequest(object : Runnable {
             override fun run() {
@@ -272,7 +335,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     private fun validationIsNotSuccess(): Boolean {
-        var contactString = userView!!.text.toString()
+        var contactString = userViewEt!!.text.toString()
         contactString = contactString.trim { it <= ' ' }
         if (contactString.contains(" ")) {
             setError(getString(R.string.INCORRECT_USER_NAME))
@@ -370,7 +433,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
     private fun setError(error: String) {
         errorView!!.text = error
-        errorView!!.visibility = if ("" == error) View.INVISIBLE else View.VISIBLE
+        errorView!!.visibility = if ("" == error) View.GONE else View.VISIBLE
     }
 
     private fun stopAddContactProcess(success: Boolean) {
@@ -400,4 +463,5 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             return fragment
         }
     }
+
 }
