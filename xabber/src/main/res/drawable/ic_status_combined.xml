@@ -121,9 +121,7 @@
     <item android:minLevel="95" android:maxLevel="95"
         android:drawable="@drawable/ic_status_server_unavailable"/>
 
-
-    <item android:minLevel="8" android:maxLevel="8"
-        android:drawable="@drawable/ic_status_unsubscribed_18dp"/>
     <item android:minLevel="11" android:maxLevel="11"
         android:drawable="@drawable/ic_blocked_border"/>
+
 </level-list>

@@ -2,7 +2,6 @@ package com.xabber.android.data.roster
 
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
@@ -46,22 +45,6 @@ object StatusBadgeSetupHelper {
             statusLevel = 5
 
         //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
-
-        if (isBlocked || (!isRosterContact && statusLevel < 8)) {
-            if (imageView.visibility == View.VISIBLE && isBlocked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    imageView.imageAlpha = 128
-                } else {
-                    imageView.alpha = 0.5f
-                }
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                imageView.imageAlpha = 255
-            } else {
-                imageView.alpha = 1.0f
-            }
-        }
 
         // Hiding badges in disconnected\unavailable state only for regular chats
         imageView.visibility =
