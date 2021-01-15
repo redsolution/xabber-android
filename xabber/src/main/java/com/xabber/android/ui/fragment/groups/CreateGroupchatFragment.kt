@@ -81,7 +81,7 @@ class CreateGroupchatFragment : Fragment(), CreateGroupchatIqResultListener {
             settingsRootLl.visibility = View.VISIBLE
             setupServerSp()
         } else {
-            val jids = AccountManager.getInstance().enabledAccounts.toList()
+            val jids = AccountManager.getInstance().enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()
             for (jid in jids){

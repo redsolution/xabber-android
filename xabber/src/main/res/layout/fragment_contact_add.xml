@@ -13,10 +13,10 @@
             android:id="@+id/contact_account"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:outlineProvider="bounds"
-            android:elevation="16dp"/>
+            android:outlineProvider="bounds" />
 
         <LinearLayout
+            android:id="@+id/except_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
@@ -33,15 +33,12 @@
                 android:paddingEnd="16dp"
                 android:paddingRight="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/contact_select_circles"
-                android:textStyle="bold" />
+                android:text="@string/contact_circle"
+                android:textStyle="bold"
+                android:visibility="invisible"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCircles"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawSelectorOnTop="false" />

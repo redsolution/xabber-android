@@ -23,6 +23,8 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -125,7 +127,10 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         rvContactCircles.setAdapter(contactCircleEditorAdapter);
         rvContactCircles.setNestedScrollingEnabled(false);
 
+        rvContactCircles.setItemAnimator(null);
+
         titleTv = rootView.findViewById(R.id.select_circles_text_view);
+        setColor();
     }
 
     protected void setAccountCircles() {
@@ -135,7 +140,8 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     @Override
     public void onResume() {
         super.onResume();
-        if (circles != null) updateCircles();
+        if (circles != null)
+            updateCircles();
     }
 
     protected void updateCircles() {
@@ -143,12 +149,14 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         ArrayList<ContactCircleEditorAdapter.ContactCircle> circles = new ArrayList<>(this.circles.size());
         Collections.sort(list);
         contactCircleEditorAdapter.clear();
-
         for (int position = 0; position < list.size(); position++) {
             String circleName = list.get(position);
             circles.add(new ContactCircleEditorAdapter.ContactCircle(circleName, selected.contains(circleName)));
         }
-        if (circles.size() > 0) contactCircleEditorAdapter.add(circles);
+        if (circles.size() > 0){
+            contactCircleEditorAdapter.add(circles);
+            contactCircleEditorAdapter.notifyDataSetChanged();
+        }
         setColor();
     }
 
@@ -159,10 +167,17 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
                     .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
         }
+
+        if (AccountManager.getInstance().getEnabledAccounts().size() == 1) {
+            titleTv.setVisibility(View.VISIBLE);
+        }
+        if (account != null){
+            titleTv.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         selected = getSelected();

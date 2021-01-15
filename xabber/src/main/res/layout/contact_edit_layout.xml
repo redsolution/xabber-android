@@ -156,10 +156,11 @@
         android:layout_marginTop="8dp" />
 
     <TextView
-        android:id="@+id/tvCircles"
+        android:id="@+id/select_circles_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:text="@string/contact_circle"
         android:textStyle="bold" />

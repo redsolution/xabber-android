@@ -11,10 +11,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import com.google.zxing.integration.android.IntentIntegrator
 import com.xabber.android.R
 import com.xabber.android.data.Application
@@ -58,6 +56,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
     private var qrScan: ImageView? = null
     private var clearText: ImageView? = null
+
+    private var isAccountSelected = AccountManager.getInstance().enabledAccounts.size == 1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -113,7 +113,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                     clearText?.visibility = View.GONE
                     qrScan!!.visibility = View.VISIBLE
                 } else {
-                    (activity as ContactAddActivity?)!!.toolbarSetEnabled(true)
+                    (activity as ContactAddActivity?)!!.toolbarSetEnabled(isAccountSelected)
                     clearText?.visibility = View.VISIBLE
                     qrScan!!.visibility = View.GONE
                 }
@@ -162,8 +162,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
         nameViewEt?.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus){
-                userViewTv?.setTextColor(color)
-                userViewVw?.setBackgroundColor(color)
+                nameViewTv?.setTextColor(color)
+                nameViewVw?.setBackgroundColor(color)
             } else {
                 nameViewTv?.setTextColor(defaultLabelTextColor)
                 nameViewVw?.setBackgroundColor(defaultLineBackgroundColor)
@@ -171,8 +171,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         }
 
         if (nameViewEt!!.isFocused){
-            userViewTv?.setTextColor(color)
-            userViewVw?.setBackgroundColor(color)
+            nameViewTv?.setTextColor(color)
+            nameViewVw?.setBackgroundColor(color)
         }
     }
 
@@ -180,10 +180,13 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         accountSpinner = view.findViewById(R.id.contact_account)
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
-//            accountSpinner.visibility = View.GONE
-//            settingsRootLl.visibility = View.VISIBLE todo
+            accountSpinner?.visibility = View.GONE
+            val exceptSpinnerLinearLayout = view.findViewById<LinearLayout>(R.id.except_spinner)
+            val llm = exceptSpinnerLinearLayout.layoutParams as ViewGroup.MarginLayoutParams
+            llm.topMargin = 0
+            exceptSpinnerLinearLayout.requestLayout()
         } else {
-            val jids = AccountManager.getInstance().enabledAccounts.toList()
+            val jids = AccountManager.getInstance().enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()
             for (jid in jids){
@@ -242,11 +245,6 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        listView.visibility = View.GONE
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(SAVED_ACCOUNT, getAccount())
@@ -265,6 +263,17 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             listenerActivity?.onAccountSelected(accountJid)
         }
 
+        if (userViewEt!!.text != null && userViewEt!!.text.toString().isNotEmpty())
+            (activity as ContactAddActivity?)!!.toolbarSetEnabled(true)
+
+        isAccountSelected = true
+
+        userViewEt?.isFocusableInTouchMode = true
+        userViewEt?.requestFocusFromTouch()
+
+        (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                .showSoftInput(userViewEt, InputMethodManager.SHOW_IMPLICIT)
+
         setColor(accountJid)
 
         if (accountJid != getAccount()) {
@@ -276,8 +285,6 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (listView.visibility == View.GONE) {
             listView.visibility = View.VISIBLE
         }
-
-        //                    settingsRootLl.visibility = View.VISIBLE todo
     }
 
     override fun addContact() {
@@ -294,11 +301,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             val jid = JidCreate.bareFrom(contactString)
             ContactJid.from(jid)
         } catch (e: XmppStringprepException) {
-            e.printStackTrace()
+            LogManager.exception(LOG_TAG, e)
             setError(getString(R.string.INCORRECT_USER_NAME))
             return
         } catch (e: ContactJidCreateException) {
-            e.printStackTrace()
+            LogManager.exception(LOG_TAG, e)
             setError(getString(R.string.INCORRECT_USER_NAME))
             return
         }
@@ -433,7 +440,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
     private fun setError(error: String) {
         errorView!!.text = error
-        errorView!!.visibility = if ("" == error) View.GONE else View.VISIBLE
+        errorView!!.visibility = if ("" == error) View.INVISIBLE else View.VISIBLE
     }
 
     private fun stopAddContactProcess(success: Boolean) {
@@ -449,6 +456,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     companion object {
+        private const val LOG_TAG = "ContactAddFragment"
         private const val SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME"
         private const val SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT"
         private const val SAVED_USER = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER"

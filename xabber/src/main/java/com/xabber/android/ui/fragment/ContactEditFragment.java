@@ -28,6 +28,8 @@ import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +77,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
         int accountColor = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount());
         ((TextView) view.findViewById(R.id.tvNickname)).setTextColor(accountColor);
         ((TextView) view.findViewById(R.id.tvSubInfo)).setTextColor(accountColor);
-        ((TextView) view.findViewById(R.id.tvCircles)).setTextColor(accountColor);
+        ((TextView) view.findViewById(R.id.select_circles_text_view)).setTextColor(accountColor);
         return view;
     }
 
@@ -195,7 +197,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString(SAVED_CONTACT_NICKNAME, contactEditNickname.getText().toString());

@@ -10,8 +10,7 @@
         android:id="@+id/contact_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:outlineProvider="bounds"
-        android:elevation="16dp"/>
+        android:outlineProvider="bounds"/>
 
     <LinearLayout
         android:layout_width="match_parent"

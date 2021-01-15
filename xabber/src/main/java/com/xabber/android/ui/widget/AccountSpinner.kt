@@ -106,19 +106,19 @@ class AccountSpinner : LinearLayout {
 
         fun toggleChevron(textView: TextView){
             if (isExpanded){
+                val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_down)
                 if (Build.VERSION.SDK_INT >= 17){
-                    textView.setCompoundDrawablesRelative(null, null,
-                            ContextCompat.getDrawable(context, R.drawable.ic_chevron_down), null)
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
+                } else {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(null, null ,chevron, null)
                 }
-                textView.setCompoundDrawables(null, null,
-                        ContextCompat.getDrawable(context, R.drawable.ic_chevron_down), null)
             } else {
+                val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_up)
                 if (Build.VERSION.SDK_INT  >= 17){
-                    textView.setCompoundDrawablesRelative(null, null,
-                            ContextCompat.getDrawable(context, R.drawable.ic_chevron_up), null)
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
+                } else {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(null, null, chevron, null)
                 }
-                textView.setCompoundDrawables(null, null,
-                        ContextCompat.getDrawable(context, R.drawable.ic_chevron_up), null)
             }
         }
 
@@ -132,6 +132,9 @@ class AccountSpinner : LinearLayout {
 
                 override fun onAnimationEnd(animation: Animation?) {
                     recyclerView.visibility = View.GONE
+                    if (Build.VERSION.SDK_INT >= 21){
+                        elevation = 0f
+                    }
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {}
@@ -140,6 +143,9 @@ class AccountSpinner : LinearLayout {
         } else {
             recyclerView.visibility = View.VISIBLE
             recyclerView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_in_top))
+            if (Build.VERSION.SDK_INT >= 21){
+                elevation = 16f
+            }
         }
         isExpanded = !isExpanded
     }
