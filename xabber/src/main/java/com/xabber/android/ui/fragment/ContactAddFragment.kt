@@ -224,9 +224,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
-            if (result.contents == null) {
-                Toast.makeText(activity, "no-go", Toast.LENGTH_LONG).show()
-            } else {
+            if (result.contents != null) {
                 Toast.makeText(activity, "Scanned = " + result.contents,
                         Toast.LENGTH_LONG).show()
                 if (result.contents.length > 5) {
