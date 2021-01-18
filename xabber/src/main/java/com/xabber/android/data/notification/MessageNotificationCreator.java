@@ -31,6 +31,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
@@ -63,6 +64,17 @@ public class MessageNotificationCreator {
         this.messageHidden = context.getString(R.string.message_hidden);
     }
 
+    private int getUnreadCount(){
+        int unreadMessagesCount = 0;
+        for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts()){
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived()){
+                unreadMessagesCount += abstractChat.getUnreadMessageCount();
+            }
+        }
+        LogManager.d("UNREAD COUNT: ", Integer.toString(unreadMessagesCount));
+        return unreadMessagesCount;
+    }
+
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
 
@@ -78,6 +90,7 @@ public class MessageNotificationCreator {
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setNumber(getUnreadCount())
                 .setPriority((inForeground || inGracePeriod(chat)) ? NotificationCompat.PRIORITY_DEFAULT
                         : NotificationCompat.PRIORITY_HIGH);
 
