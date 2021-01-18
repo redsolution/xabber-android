@@ -242,7 +242,6 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                         + contactJid.toString()
                         + RosterManager.getInstance().getSubscriptionState(accountJid, contactJid).getSubscriptionType());
         ChatManager.getInstance().removeChat(accountJid, contactJid);
-        RosterManager.getInstance().removeContact(accountJid, contactJid);
     }
 
     public void acceptInvitation(AccountJid accountJid, ContactJid groupJid){
