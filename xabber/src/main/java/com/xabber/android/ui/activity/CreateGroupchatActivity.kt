@@ -5,28 +5,33 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.groups.CreateGroupchatFragment
 
-class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener {
+class CreateGroupchatActivity : ManagedActivity(), CreateGroupchatFragment.Listener, Toolbar.OnMenuItemClickListener {
 
     private var isIncognito = false
+    private lateinit var progressBar: ProgressBar
+    private lateinit var toolbar: Toolbar
+    private lateinit var barPainter: BarPainter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_with_toolbar_and_container)
+        setContentView(R.layout.activity_with_toolbar_progress_and_container)
 
         isIncognito = intent != null
                 && intent.action != null
                 && intent.action.equals(CREATE_INCOGNITO_GROUPCHAT_INTENT)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar_default)
+        toolbar = findViewById(R.id.toolbar_default)
 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp)
@@ -46,7 +51,8 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
 
         toolbar.setOnMenuItemClickListener(this)
 
-        BarPainter(this, toolbar).setDefaultColor()
+        barPainter = BarPainter(this, toolbar)
+        barPainter.setDefaultColor()
 
         supportFragmentManager
                 .beginTransaction()
@@ -58,6 +64,19 @@ class CreateGroupchatActivity : ManagedActivity(), Toolbar.OnMenuItemClickListen
         (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as CreateGroupchatFragment)
                 .createGroupchat(isIncognito)
         return true
+    }
+
+    override fun showProgress(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        //toolbar.menu.findItem(R.id.toolbar_create_groupchat).isVisible = !show
+    }
+
+    override fun onAccountSelected(account: AccountJid?) {
+        barPainter.updateWithAccountName(account)
+    }
+
+    private fun toolbarSetEnabled(enabled: Boolean){
+        //toolbar.menu.findItem(R.id.toolbar_create_groupchat)
     }
 
     companion object {

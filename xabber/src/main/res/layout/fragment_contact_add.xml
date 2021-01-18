@@ -24,24 +24,7 @@
 
             <include layout="@layout/contact_add_username_and_alias" />
 
-            <TextView
-                android:id="@+id/select_circles_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingLeft="16dp"
-                android:paddingEnd="16dp"
-                android:paddingRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/contact_circle"
-                android:textStyle="bold"
-                android:visibility="invisible"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCircles"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawSelectorOnTop="false" />
+            <include layout="@layout/circles_list_layout"/>
 
         </LinearLayout>
 

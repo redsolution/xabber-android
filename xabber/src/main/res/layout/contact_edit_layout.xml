@@ -155,19 +155,7 @@
         style="@style/Divider"
         android:layout_marginTop="8dp" />
 
-    <TextView
-        android:id="@+id/select_circles_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:text="@string/contact_circle"
-        android:textStyle="bold" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCircles"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <include layout="@layout/circles_list_layout"/>
+        
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

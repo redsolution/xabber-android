@@ -71,7 +71,6 @@ public class MessageNotificationCreator {
                 unreadMessagesCount += abstractChat.getUnreadMessageCount();
             }
         }
-        LogManager.d("UNREAD COUNT: ", Integer.toString(unreadMessagesCount));
         return unreadMessagesCount;
     }
 
