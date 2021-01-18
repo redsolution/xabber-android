@@ -168,11 +168,17 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
                     .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
         }
 
-        if (AccountManager.getInstance().getEnabledAccounts().size() == 1) {
+        toggleVisibility(AccountManager.getInstance().getEnabledAccounts().size() == 1 || getAccount() != null);
+
+    }
+
+    private void toggleVisibility(Boolean visible){
+        if (visible){
             titleTv.setVisibility(View.VISIBLE);
-        }
-        if (account != null){
-            titleTv.setVisibility(View.VISIBLE);
+            rvContactCircles.setVisibility(View.VISIBLE);
+        } else {
+            rvContactCircles.setVisibility(View.GONE);
+            titleTv.setVisibility(View.GONE);
         }
     }
 
