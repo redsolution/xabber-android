@@ -417,10 +417,13 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                     AccountManager.getInstance().onAccountChanged(connection.getAccount());
                 } else {
                     RosterManager.onContactChanged(connection.getAccount(), from);
-                    if (ChatManager.getInstance().getChat(connection.getAccount(), from) instanceof GroupChat){
-                        GroupchatManager.getInstance().onUnavailablePresence(connection.getAccount(), from);
-                        LogManager.d("PresenceManager", "Got unsubscribed from group chat");
-                    }
+                }
+                break;
+            case unsubscribe:
+            case unsubscribed:
+                if (ChatManager.getInstance().getChat(connection.getAccount(), from) instanceof GroupChat){
+                    GroupchatManager.getInstance().onUnsubscribePresence(connection.getAccount(), from);
+                    LogManager.d("PresenceManager", "Got unsubscribed from group chat");
                 }
                 break;
             case error:
