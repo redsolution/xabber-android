@@ -6,7 +6,7 @@
     <string name="create_incognito_groupchat">Create incognito group</string>
     <string name="groupchat_group_settings">Group Settings</string>
     <string name="groupchat_invite_members">Invite members</string>
-    <string name="groupchat_name">Name</string>
+    <string name="groupchat_name">Group name</string>
     <string name="groupchat_xmpp_jid">Group ID</string>
     <string name="groupchat_description">Description</string>
     <string name="groupchat_status">Status</string>
@@ -57,7 +57,6 @@
 
 
     <string name="groupchat_example_name">My group</string>
-    <string name="groupchat_example_jid">developers_group</string>
     <string name="groupchat_example_description">Best group ever!</string>
     <string name="groupchat_custom_server">custom…</string>
     <string name="groupchat_server">Groupchat server</string>

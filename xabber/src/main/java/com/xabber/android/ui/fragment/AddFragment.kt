@@ -8,7 +8,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.ui.activity.ContactAddActivity
-import com.xabber.android.ui.activity.CreateGroupchatActivity
+import com.xabber.android.ui.activity.CreateGroupActivity
 
 class AddFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -19,10 +19,10 @@ class AddFragment : Fragment() {
             startActivity(ContactAddActivity.createIntent(activity))}
 
         view.findViewById<LinearLayoutCompat>(R.id.create_groupchat_btn).setOnClickListener {
-            startActivity(CreateGroupchatActivity.createCreatePublicGroupchatIntent())}
+            startActivity(CreateGroupActivity.createCreatePublicGroupchatIntent())}
 
         view.findViewById<LinearLayoutCompat>(R.id.create_incognito_groupchat_btn).setOnClickListener {
-            startActivity(CreateGroupchatActivity.createCreateIncognitoGroupchatIntent())}
+            startActivity(CreateGroupActivity.createCreateIncognitoGroupchatIntent())}
         return view
     }
 }

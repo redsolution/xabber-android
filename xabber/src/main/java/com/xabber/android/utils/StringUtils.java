@@ -519,7 +519,7 @@ public class StringUtils {
                     result.append("-");
             } else result.append(c);
         }
-        return result.toString();
+        return result.toString().toLowerCase();
     }
 
     public static String getHumanReadableFileSize(long bytes){

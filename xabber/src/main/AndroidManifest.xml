@@ -144,7 +144,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.CreateGroupchatActivity"
+            android:name=".ui.activity.CreateGroupActivity"
             android:label="@string/add"
             android:parentActivityName=".ui.activity.AddActivity">
 

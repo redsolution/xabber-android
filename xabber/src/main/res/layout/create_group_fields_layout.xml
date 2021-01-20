@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat android:id="@+id/create_groupchat_group_setting_root"
+<androidx.appcompat.widget.LinearLayoutCompat
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
 
     <!-- Groupchat name -->
@@ -40,7 +40,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
-            android:hint="@string/groupchat_example_name"
+            android:hint="@string/groupchat_public_group"
             android:gravity="top"
             android:maxLines="1"
             android:background="@color/transparent"/>
@@ -93,7 +93,8 @@
                 android:layout_marginBottom="12dp"
                 android:gravity="top"
                 android:maxLines="1"
-                android:hint="groupchat_example_jid"
+                android:singleLine="true"
+                android:hint="public-group"
                 android:background="@color/transparent"/>
 
             <TextView
@@ -105,7 +106,8 @@
                 android:layout_marginLeft="2dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp"
-                android:textSize="20sp"
+                style="?attr/editTextStyle"
+                android:background="@color/transparent"
                 android:text="\@"/>
 
             <androidx.appcompat.widget.AppCompatSpinner
@@ -113,12 +115,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="choose server"
-                android:minHeight="18dp" />
+                android:layout_marginTop="4dp"
+                android:spinnerMode="dialog"
+                tools:listitem="@layout/group_server_spinner_item"/>
 
         </LinearLayout>
 
         <View
-            android:id="@+id/contact_name_line_view"
+            android:id="@+id/groupchat_jid_vw"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/grey_500"/>
@@ -126,134 +130,12 @@
     </LinearLayout>
 
 
-    <!-- Divider -->
-    <View
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"/>
-
-
-    <!-- Membership setting -->
-    <TextView
-        android:id="@+id/groupchat_membership_hint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingLeft="16dp"
-        android:paddingEnd="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="12dp"
-        android:text="@string/groupchat_membership"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp">
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/groupchat_membership_type_members_only" />
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/groupchat_membership_type_open" />
-
-    </RadioGroup>
-
-
-    <!-- Divider -->
-    <View
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"/>
-
-
-    <!-- Index type setting -->
-    <TextView
-        android:id="@+id/groupchat_indexed_hint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingLeft="16dp"
-        android:paddingEnd="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="12dp"
-        android:text="@string/groupchat_index"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp">
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/groupchat_index_type_none" />
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/groupchat_index_type_local" />
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/groupchat_index_type_global" />
-
-    </RadioGroup>
-
-
-    <!-- Divider -->
-    <View
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"/>
-
-
     <!-- Description -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
@@ -296,6 +178,126 @@
 
     </LinearLayout>
 
+
+    <!-- Membership setting -->
+    <TextView
+        android:id="@+id/groupchat_membership_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:text="@string/groupchat_membership"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/groupchat_membership_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp">
+
+        <RadioButton
+            android:id="@+id/group_membership_members_only_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_membership_type_members_only" />
+
+        <RadioButton
+            android:id="@+id/group_membership_open_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_membership_type_open" />
+
+    </RadioGroup>
+
+
+    <!-- Divider -->
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+
+    <!-- Index type setting -->
+    <TextView
+        android:id="@+id/groupchat_indexed_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:text="@string/groupchat_index"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/groupchat_indexed_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp">
+
+        <RadioButton
+            android:id="@+id/group_index_none_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_none" />
+
+        <RadioButton
+            android:id="@+id/group_index_local_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_local" />
+
+        <RadioButton
+            android:id="@+id/group_index_global_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_global" />
+
+    </RadioGroup>
+
+
+    <!-- Divider -->
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
 

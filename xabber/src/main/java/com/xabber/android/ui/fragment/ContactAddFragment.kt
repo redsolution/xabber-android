@@ -26,6 +26,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.ContactAddActivity
 import com.xabber.android.ui.activity.QRCodeScannerActivity
 import com.xabber.android.ui.color.ColorManager
@@ -71,7 +72,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             name = savedInstanceState.getString(SAVED_NAME)
             error = savedInstanceState.getString(SAVED_ERROR)
             setAccount(savedInstanceState.getParcelable(SAVED_ACCOUNT))
-            setContactJid(savedInstanceState.getParcelable(SAVED_USER))
+            setContactJid(savedInstanceState.getParcelable(SAVED_CONTACT))
         } else {
             if (getAccount() == null || getContactJid() == null) {
                 name = null
@@ -85,7 +86,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (getAccount() == null) {
             val accounts = AccountManager.getInstance().enabledAccounts
             if (accounts.size == 1) {
-                setAccount(accounts.iterator().next())
+                setAccount(AccountManager.getInstance().firstAccount)
             }
         }
         setUpAccountView(view)
@@ -246,7 +247,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(SAVED_ACCOUNT, getAccount())
-        outState.putString(SAVED_USER, userViewEt!!.text.toString())
+        outState.putString(SAVED_CONTACT, userViewEt!!.text.toString())
         outState.putString(SAVED_NAME, nameViewEt!!.text.toString())
         outState.putString(SAVED_ERROR, errorView!!.text.toString())
     }
@@ -286,8 +287,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     override fun addContact() {
-        val account = accountSpinner!!.selected
-        if (account == null || getAccount() == null) {
+        val account = accountSpinner!!.selected ?: getAccount()
+        if (account == null) {
             Toast.makeText(activity, getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_LONG).show()
             return
         }
@@ -315,6 +316,9 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                 try {
                     RosterManager.getInstance().createContact(account, user, name, groups)
                     PresenceManager.getInstance().requestSubscription(account, user)
+                    Application.getInstance().runOnUiThread {
+                        requireActivity().startActivity(ChatActivity.createSendIntent(context, account, contactJid, null))
+                    }
                 } catch (e: NotLoggedInException) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED)
                     stopAddContactProcess(false)
@@ -454,11 +458,14 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     companion object {
+
         private const val LOG_TAG = "ContactAddFragment"
+
         private const val SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME"
         private const val SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT"
-        private const val SAVED_USER = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER"
+        private const val SAVED_CONTACT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER"
         private const val SAVED_ERROR = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ERROR"
+
         @JvmStatic
         fun newInstance(account: AccountJid?, user: ContactJid?): ContactAddFragment {
             val fragment = ContactAddFragment()
@@ -468,6 +475,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             fragment.arguments = args
             return fragment
         }
+
     }
 
 }

@@ -93,6 +93,9 @@ class AccountSpinner : LinearLayout {
         val llm = LinearLayoutManager(this.context)
         llm.orientation = RecyclerView.VERTICAL
 
+        if (accountsList.size == 1)
+            selected = accountsList.first()
+
         recyclerView.layoutManager = llm
         recyclerView.adapter = AccountsAdapter(accountsList, avatarsList, names, object : AccountsAdapter.Listener {
             override fun onClick(accountJid: AccountJid, avatar: Drawable?) {

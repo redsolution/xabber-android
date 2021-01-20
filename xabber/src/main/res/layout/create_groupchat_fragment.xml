@@ -23,16 +23,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/create_groupchat_progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_gravity="center"/>
-
             <include layout="@layout/create_group_fields_layout"/>
 
-            <include layout="@layout/circles_list_layout"/>
+            <include
+                android:id="@+id/circles_layout"
+                layout="@layout/circles_list_layout"/>
 
         </LinearLayout>
 
