@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment.groups
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -34,6 +35,7 @@ import com.xabber.android.ui.fragment.CircleEditorFragment
 import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
 
+@SuppressLint("SetTextI18n")
 class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener {
 
     private var listenerActivity: Listener? = null
@@ -52,7 +54,9 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
     private lateinit var groupJidEt: EditText
     private lateinit var groupJidTv: TextView
     private lateinit var groupjidVw: View
-    private lateinit var serversSp: Spinner
+
+    private lateinit var serverTv: TextView
+    private lateinit var serverIv: ImageView
 
     private lateinit var groupDescriptionEt: EditText
     private lateinit var groupDescriptionTv: TextView
@@ -102,7 +106,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         setupGroupJidEt()
         setupMembership()
         setupIndex()
-        setupServerSp()
+        setupServerTv()
 
         return view
     }
@@ -119,7 +123,8 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         groupJidTv = view.findViewById(R.id.groupchat_jid_hint)
         groupjidVw = view.findViewById(R.id.groupchat_jid_vw)
 
-        serversSp = view.findViewById(R.id.create_groupchat_server_sp)
+        serverIv = view.findViewById(R.id.server_iv)
+        serverTv = view.findViewById(R.id.server_tv)
 
         membershipTv = view.findViewById(R.id.groupchat_membership_hint)
         membershipRg = view.findViewById(R.id.groupchat_membership_rg)
@@ -137,9 +142,6 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
     private fun setupAccountSpinner() {
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
             accountSpinner.visibility = View.GONE
-            setupServerSp()
-
-
             (exceptSpinnerLayout.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
             exceptSpinnerLayout.requestLayout()
 
@@ -172,7 +174,10 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             override fun afterTextChanged(s: Editable?) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                groupJidEt.setText(StringUtils.getLocalpartHintByString(s.toString()))
+                groupJidEt.setText(StringUtils.getLocalpartHintByString(s?.trim().toString()))
+                if (!s.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty() && getAccount() != null){
+                    listenerActivity?.toolbarSetEnabled(true)
+                } else listenerActivity?.toolbarSetEnabled(false)
             }
         })
 
@@ -184,6 +189,25 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
     private fun setupGroupJidEt(){
         groupJidEt.hint = if (isIncognito) "incognito-group" else "public-group"
+
+        groupJidEt.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrEmpty() && !groupNameEt.text.isNullOrEmpty() && getAccount() != null) {
+                    listenerActivity?.toolbarSetEnabled(true)
+                } else {
+                    listenerActivity?.toolbarSetEnabled(false)
+                }
+
+                if (s.isNullOrEmpty()){
+                    groupJidEt.hint = if (isIncognito) "incognito-group" else "public-group"
+                } else groupJidEt.hint = ""
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     private fun setupMembership() {
@@ -195,6 +219,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
     }
 
     private fun colorizeEverything(accountJid: AccountJid){
+
         val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
         val defaultLabelTextColor =
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
@@ -206,7 +231,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
 
         fun colorizeEt(editText: EditText, textView: TextView, view: View){
-            editText.setOnFocusChangeListener { v, hasFocus ->
+            editText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus){
                     textView.setTextColor(color)
                     view.setBackgroundColor(color)
@@ -216,18 +241,6 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                 }
             }
             if (editText.isFocused){
-                textView.setTextColor(color)
-                view.setBackgroundColor(color)
-            }
-        }
-
-        fun colorizeSpinnerEt(editText: EditText, textView: TextView, view: View, spinner: Spinner){
-            colorizeEt(editText, textView, view)
-//            spinner.onFocusChangeListener {
-//                textView.setTextColor(color)
-//                view.setBackgroundColor(color)
-//            }
-            if (spinner.isActivated){
                 textView.setTextColor(color)
                 view.setBackgroundColor(color)
             }
@@ -246,7 +259,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         }
 
         colorizeEt(groupNameEt, groupNameTv, groupNameVw)
-        colorizeSpinnerEt(groupJidEt, groupJidTv, groupjidVw, serversSp)
+        colorizeEt(groupJidEt, groupJidTv, groupjidVw)
         colorizeEt(groupDescriptionEt, groupDescriptionTv, groupDescriptionVw)
         colorizeRb(membershipTv, membershipRg)
         colorizeRb(indexTv, indexRg)
@@ -265,12 +278,15 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         }
         circlesLayout.visibility = View.VISIBLE
 
+        val serversList = GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
+        if (serversList != null && serversList.isNotEmpty()) serverTv.text = "\u200A@\u200A${serversList.first()}"
+
         isAccountSelected = true
-//        if (!groupNameEt.text.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty()) //todo check to not null server
-//            listenerActivity?. // todo this
+        if (!groupJidEt.text.isNullOrEmpty() && !groupNameEt.text.isNullOrEmpty())
+            listenerActivity?.toolbarSetEnabled(true)
     }
 
-    private fun createListOfServers(customServer: String = ""): List<String> {
+    private fun createListOfServers(): List<String> {
         val list = arrayListOf<String>()
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
@@ -290,42 +306,47 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                 list.add(jid.toString())
         }
 
-        if (customServer.isNotEmpty()) list.add(customServer)
-
+        list.add("hardcoded.org")
         list.add(getString(R.string.groupchat_custom_server))
 
         return list
     }
 
-    private fun setupServerSp() {
-        serversSp.adapter = ArrayAdapter(context!!, R.layout.group_server_spinner_item, createListOfServers()).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-        serversSp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int,
-                                        id: Long) {
-                if (serversSp.adapter.count > 1 && position == serversSp.adapter.count - 1
-                        || serversSp.adapter.count == 1 && position == 0) {
-                    val dialog = AlertDialog.Builder(context!!).apply {
-                        setTitle(getString(R.string.groupchat_server))
-                        val editText = EditText(activity?.baseContext)
-                        setView(editText)
-                        setPositiveButton(getString(R.string.groupchat_add_custom_server)) { _, _ ->
-                            serversSp.adapter = ArrayAdapter(context, R.layout.group_server_spinner_item,
-                                    createListOfServers(editText.text.toString())).apply {
-                                        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                            }
+    private fun openServerDialog(){
+        AlertDialog.Builder(context!!).apply {
+            setItems(createListOfServers().toTypedArray()) { _, which ->
+                if (which == createListOfServers().size-1){
+                    openAddCustomServerDialog()
+                } else serverTv.text = "\u200A@\u200A${createListOfServers()[which]}"
+            }
+        }.create().show()
+    }
 
-                            serversSp.setSelection(serversSp.adapter.count - 2)
-                        }
-                        setNegativeButton(R.string.cancel) { _, _ -> serversSp.setSelection(0) }
-                    }
-                    dialog.create().show()
+    private fun openAddCustomServerDialog(){
+        val dialog = AlertDialog.Builder(context!!).apply {
+            setTitle(getString(R.string.groupchat_server))
+            val editText = EditText(activity?.baseContext)
+            setView(editText)
+            setPositiveButton(getString(R.string.groupchat_add_custom_server)) { _, _ ->
+                serverTv.text = "\u200A@\u200A${editText.text}" //todo saving custom server to storage
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->  }
+        }
+        dialog.create().show()
+    }
+
+    private fun setupServerTv(){
+        serverTv.apply {
+            setOnClickListener { openServerDialog() }
+            if (AccountManager.getInstance().enabledAccounts.size == 1){
+                val servers = GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(
+                        AccountManager.getInstance().firstAccount)
+                if (servers != null && servers.size != 0){
+                    text = "\u200A@\u200A${servers.first()}"
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+        serverIv.setOnClickListener { openServerDialog() }
     }
 
     fun createGroupchat() {
@@ -343,12 +364,13 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
         val privacyType = if (isIncognito) GroupchatPrivacyType.INCOGNITO else GroupchatPrivacyType.PUBLIC
 
+        val server = serverTv.text.substring(3 until serverTv.text.length)
+
         GroupchatManager.getInstance().sendCreateGroupchatRequest(accountSpinner.selected,
-                serversSp.selectedItem.toString(), groupNameEt.text.toString(), groupDescriptionEt.text.toString(),
+                server, groupNameEt.text.toString(), groupDescriptionEt.text.toString(),
                 groupJidEt.text.toString(), membershipType, indexType, privacyType, this)
 
         //todo working with circles
-
     }
 
     override fun onSuccessfullyCreated(accountJid: AccountJid?, contactJid: ContactJid?) {
