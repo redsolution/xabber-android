@@ -26,8 +26,7 @@ public class ContactJid implements Comparable<ContactJid>, Parcelable {
     private final @NonNull Jid jid;
     private static final Map<Jid, WeakReference<ContactJid>> instances = new ConcurrentHashMap<>();
 
-    public static @NonNull
-    ContactJid from(@Nullable String string) throws ContactJidCreateException {
+    public static @NonNull ContactJid from(@Nullable String string) throws ContactJidCreateException {
         if (string == null || string.isEmpty()) {
             throw new ContactJidCreateException();
         }
@@ -42,8 +41,7 @@ public class ContactJid implements Comparable<ContactJid>, Parcelable {
         return from(jid);
     }
 
-    public static @NonNull
-    ContactJid from(@Nullable Jid jid) throws ContactJidCreateException {
+    public static @NonNull ContactJid from(@Nullable Jid jid) throws ContactJidCreateException {
         if (jid == null || jid.asBareJid() == null) {
             throw new ContactJidCreateException();
         }

@@ -28,6 +28,7 @@ import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.ContactAddActivity
+import com.xabber.android.ui.activity.MainActivity
 import com.xabber.android.ui.activity.QRCodeScannerActivity
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.helper.ContactAdder
@@ -308,6 +309,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             setError(getString(R.string.INCORRECT_USER_NAME))
             return
         }
+        contactJid = user
         if (listenerActivity != null) listenerActivity!!.showProgress(true)
         val name = nameViewEt!!.text.toString()
         val groups = selected
@@ -316,9 +318,6 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                 try {
                     RosterManager.getInstance().createContact(account, user, name, groups)
                     PresenceManager.getInstance().requestSubscription(account, user)
-                    Application.getInstance().runOnUiThread {
-                        requireActivity().startActivity(ChatActivity.createSendIntent(context, account, contactJid, null))
-                    }
                 } catch (e: NotLoggedInException) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED)
                     stopAddContactProcess(false)
@@ -448,7 +447,10 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     private fun stopAddContactProcess(success: Boolean) {
         Application.getInstance().runOnUiThread {
             if (listenerActivity != null) listenerActivity!!.showProgress(false)
-            if (success) activity!!.finish()
+            if (success){
+                startActivityForResult(ChatActivity.createSpecificChatIntent(context, account, contactJid),
+                        MainActivity.CODE_OPEN_CHAT)
+            }
         }
     }
 

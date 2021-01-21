@@ -47,6 +47,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:hint="@string/user_domain_name"
                 android:background="@color/transparent"/>
 
@@ -131,6 +132,7 @@
             android:layout_marginBottom="12dp"
             android:gravity="top"
             android:maxLines="1"
+            android:singleLine="true"
             android:background="@color/transparent"/>
 
         <View
