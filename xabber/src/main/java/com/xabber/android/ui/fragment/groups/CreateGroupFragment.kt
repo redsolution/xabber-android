@@ -101,6 +101,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
         colorizeEverything(AccountManager.getInstance().firstAccount)
 
+        if (!isInitialized) initRecyclerView(view)
         setupAccountSpinner()
         setupGroupNameEt()
         setupGroupJidEt()

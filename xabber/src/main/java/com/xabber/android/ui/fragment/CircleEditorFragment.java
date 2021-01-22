@@ -3,9 +3,7 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
@@ -112,7 +110,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         }
     }
 
-    void initRecyclerView(View rootView) {
+    protected void initRecyclerView(View rootView) {
         if (rootView == null) return;
 
         rvContactCircles = rootView.findViewById(R.id.rvCircles);
@@ -153,6 +151,10 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             contactCircleEditorAdapter.notifyDataSetChanged();
         }
         setColor();
+    }
+
+    protected boolean isInitialized(){
+        return contactCircleEditorAdapter != null;
     }
 
     private void setColor(){

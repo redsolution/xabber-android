@@ -90,7 +90,6 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
                 setAccount(AccountManager.getInstance().firstAccount)
             }
         }
-        setUpAccountView(view)
         clearText = view.findViewById(R.id.imgCross)
         clearText?.setOnClickListener { userViewEt!!.text.clear() }
         errorView = view.findViewById(R.id.error_view)
@@ -133,6 +132,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             nameViewEt?.setText(name)
         }
         setColor(AccountManager.getInstance().firstAccount)
+        if (!isInitialized) initRecyclerView(view)
+        setUpAccountView(view)
         return view
     }
 
@@ -179,6 +180,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     private fun setUpAccountView(view: View) {
+
         accountSpinner = view.findViewById(R.id.contact_account)
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
@@ -263,7 +265,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             listenerActivity?.onAccountSelected(accountJid)
         }
 
-        if (userViewEt!!.text != null && userViewEt!!.text.toString().isNotEmpty())
+        if (userViewEt != null && userViewEt!!.text != null && userViewEt!!.text.toString().isNotEmpty())
             (activity as ContactAddActivity?)!!.toolbarSetEnabled(true)
 
         isAccountSelected = true

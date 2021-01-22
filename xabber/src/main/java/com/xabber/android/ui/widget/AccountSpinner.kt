@@ -93,15 +93,16 @@ class AccountSpinner : LinearLayout {
         val llm = LinearLayoutManager(this.context)
         llm.orientation = RecyclerView.VERTICAL
 
-        if (accountsList.size == 1)
-            selected = accountsList.first()
-
         recyclerView.layoutManager = llm
         recyclerView.adapter = AccountsAdapter(accountsList, avatarsList, names, object : AccountsAdapter.Listener {
             override fun onClick(accountJid: AccountJid, avatar: Drawable?) {
                 onAccountSelected(accountJid, avatar)
+                toggleRecyclerExpanded()
             }
         })
+
+        onAccountSelected(accountsList.first(), avatarsList.first())
+
         recyclerView.addItemDecoration(DividerItemDecoration(this.context, llm.orientation))
     }
 
@@ -161,8 +162,6 @@ class AccountSpinner : LinearLayout {
         if (avatar != null) {
             findViewById<CircleImageView>(R.id.selected_avatar).setImageDrawable(avatar)
         }
-
-        toggleRecyclerExpanded()
 
         selected = accountJid
         listener?.onSelected(accountJid)
