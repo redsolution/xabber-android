@@ -280,7 +280,11 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         circlesLayout.visibility = View.VISIBLE
 
         val serversList = GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
-        if (serversList != null && serversList.isNotEmpty()) serverTv.text = "\u200A@\u200A${serversList.first()}"
+        if (serversList != null && serversList.isNotEmpty()){
+            serverTv.text = "\u200A@\u200A${serversList.first()}"
+        } else {
+            serverTv.text = "\u200A@\u200Ahardcoded.com"
+        }
 
         isAccountSelected = true
         if (!groupJidEt.text.isNullOrEmpty() && !groupNameEt.text.isNullOrEmpty())
