@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.NestedScrollView
 import com.xabber.android.R
 import com.xabber.android.data.Application
@@ -332,7 +333,14 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         val dialog = AlertDialog.Builder(context!!).apply {
             setTitle(getString(R.string.groupchat_server))
             val editText = EditText(activity?.baseContext)
-            setView(editText)
+            val linearLayout = LinearLayoutCompat(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                orientation = LinearLayoutCompat.VERTICAL
+                setPadding(64, 12, 64, 12)
+                addView(editText)
+            }
+
+            setView(linearLayout)
             setPositiveButton(getString(R.string.groupchat_add_custom_server)) { _, _ ->
                 serverTv.text = "\u200A@\u200A${editText.text}" //todo saving custom server to storage
             }

@@ -75,8 +75,7 @@ public class StringUtils {
     }
 
 
-    private StringUtils() {
-    }
+    private StringUtils() { }
 
     /**
      * @param resources
