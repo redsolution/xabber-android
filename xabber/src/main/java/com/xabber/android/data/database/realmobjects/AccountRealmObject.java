@@ -26,6 +26,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 import java.util.UUID;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -48,6 +49,7 @@ public class AccountRealmObject extends RealmObject {
         public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
         public static final String XTOKEN = "xToken";
         public static final String UPLOAD_SERVER = "uploadServer";
+        public static final String GROUP_SERVERS = "groupServers";
     }
 
     @PrimaryKey
@@ -59,6 +61,7 @@ public class AccountRealmObject extends RealmObject {
 
     private String serverName;
     private String uploadServer;
+    private RealmList<String> groupServers;
     private String userName;
     private String resource;
 
@@ -478,6 +481,10 @@ public class AccountRealmObject extends RealmObject {
 
     public void setUploadServer(String uploadServer) { this.uploadServer = uploadServer; }
 
+    public void setUploadServer(Jid server) {
+        this.uploadServer = server.toString();
+    }
+
     public AccountJid getAccountJid(){
         if (userName == null) return null;
         try {
@@ -498,7 +505,8 @@ public class AccountRealmObject extends RealmObject {
         }
     }
 
-    public void setUploadServer(Jid server) {
-        this.uploadServer = server.toString();
-    }
+    public RealmList<String> getGroupServers() { return groupServers; }
+
+    public void setGroupServers(RealmList<String> groupServers) { this.groupServers = groupServers; }
+
 }

@@ -306,7 +306,8 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                 list.add(jid.toString())
         }
 
-        list.add("hardcoded.org")
+        if (list.size == 0 )
+            list.add("hardcoded.org")
         list.add(getString(R.string.groupchat_custom_server))
 
         return list

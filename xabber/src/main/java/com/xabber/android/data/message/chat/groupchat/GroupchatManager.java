@@ -11,6 +11,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.database.repositories.GroupInviteRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -99,6 +100,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         for (GroupInviteRealmObject giro : GroupInviteRepository.getAllInvitationsForEnabledAccounts()){
             invitesMap.put(giro.getAccountJid().toString(), giro.getGroupJid().toString(), giro);
         }
+        availableGroupchatServers.clear();
+        availableGroupchatServers.putAll(AccountRepository.getGroupServers());
     }
 
     @Override
@@ -108,6 +111,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         } else if (packet instanceof DiscoverItems) {
             processDiscoInfoIq(connection, packet);
         }
+
     }
 
     private void processDiscoInfoIq(ConnectionItem connectionItem, Stanza packet) {
@@ -120,9 +124,15 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
             availableGroupchatServers.put(accountJid, new ArrayList<>());
 
             for (DiscoverItems.Item item : ((DiscoverItems) packet).getItems()) {
-                if (NAMESPACE.equals(item.getNode()))
-                    availableGroupchatServers.get(accountJid).add(ContactJid.from(item.getEntityID()).getBareJid());
+                if (NAMESPACE.equals(item.getNode())){
+                    Jid srvJid = ContactJid.from(item.getEntityID()).getBareJid();
+                    availableGroupchatServers.get(accountJid).add(srvJid);
+
+                }
             }
+
+            AccountRepository.saveOrUpdateGroupServers(accountJid, availableGroupchatServers.get(accountJid));
+            LogManager.d(LOG_TAG, "Got a group server list");
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }

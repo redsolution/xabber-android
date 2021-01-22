@@ -7,31 +7,24 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
+import io.realm.RealmList;
 
 public class AccountRepository {
 
     private static final String LOG_TAG = AccountRepository.class.getSimpleName();
-
-    public static ArrayList<AccountRealmObject> getEnabledAccountsFromRealm(){
-        ArrayList<AccountRealmObject> accounts = new ArrayList<>();
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<AccountRealmObject> results = realm
-                .where(AccountRealmObject.class)
-                .findAll();
-        for (AccountRealmObject accountRealmObject : results)
-            if (accountRealmObject.isEnabled())
-                accounts.add(accountRealmObject);
-        if (Looper.getMainLooper() != Looper.myLooper())
-            realm.close();
-        return accounts;
-    }
 
     public static void saveAccountToRealm(AccountItem accountItem) {
 
@@ -154,6 +147,59 @@ public class AccountRepository {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
+    }
+
+    public static void saveOrUpdateGroupServers(final AccountJid accountJid, final List<Jid> servers){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    RealmList<String> srvs = new RealmList<>();
+                    for (Jid jid : servers){
+                        srvs.add(jid.toString());
+                    }
+                    item.setGroupServers(srvs);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+    }
+
+    public static Map<AccountJid, List<Jid>> getGroupServers() {
+        Map<AccountJid, List<Jid>> result = new HashMap<>();
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            for (AccountRealmObject item : realm.where(AccountRealmObject.class).findAll()) {
+                if (item.getUploadServer() != null) {
+                    List<Jid> srvs = new ArrayList<>();
+                    for (String server : item.getGroupServers()){
+                        srvs.add(JidCreate.from(server));
+                    }
+                    result.put(item.getAccountJid(), srvs);
+                }
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                realm.close();
+        }
+        return result;
     }
 
 }
