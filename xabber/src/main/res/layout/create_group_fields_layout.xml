@@ -44,6 +44,7 @@
             android:gravity="top"
             android:maxLines="1"
             android:singleLine="true"
+            android:inputType="textNoSuggestions"
             android:background="@color/transparent"/>
 
         <View
@@ -115,11 +116,12 @@
                         android:maxLines="1"
                         android:singleLine="true"
                         android:hint="public-group"
+                        android:inputType="textNoSuggestions"
                         android:background="@color/transparent"/>
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/server_tv"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:singleLine="true"
