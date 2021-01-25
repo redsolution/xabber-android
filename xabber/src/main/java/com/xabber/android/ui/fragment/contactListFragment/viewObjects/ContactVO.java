@@ -294,11 +294,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
         }
 
-        if (adapter.isSelected(position)) {
-            LogManager.d("ListSelection", "item at pos = " + position + " is selected");
-            viewHolder.itemView.getBackground().setColorFilter(new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
-        } else {
-            viewHolder.itemView.getBackground().setColorFilter(null);
+        if (viewHolder.itemView.getBackground() != null){
+            if (adapter.isSelected(position)) {
+                LogManager.d("ListSelection", "item at pos = " + position + " is selected");
+                viewHolder.itemView.getBackground().setColorFilter(new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
+            } else {
+                viewHolder.itemView.getBackground().setColorFilter(null);
+            }
         }
 
         /** set up AVATAR */
