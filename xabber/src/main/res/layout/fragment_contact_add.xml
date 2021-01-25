@@ -24,6 +24,13 @@
 
             <include layout="@layout/contact_add_username_and_alias" />
 
+            <!-- Divider -->
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"/>
+
             <include layout="@layout/circles_list_layout"/>
 
         </LinearLayout>
