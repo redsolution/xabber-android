@@ -338,7 +338,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
     private fun openAddCustomServerDialog(){
         val dialog = AlertDialog.Builder(context!!).apply {
-            setTitle(getString(R.string.groupchat_server))
+            setTitle(getString(R.string.groupchat_custom_group_server))
             val editText = EditText(activity?.baseContext)
             val linearLayout = LinearLayoutCompat(requireContext()).apply {
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -348,7 +348,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             }
 
             setView(linearLayout)
-            setPositiveButton(getString(R.string.groupchat_add_custom_server)) { _, _ ->
+            setPositiveButton(getString(R.string.add)) { _, _ ->
                 serverTv.text = "\u200A@\u200A${editText.text}" //todo saving custom server to storage
             }
             setNegativeButton(R.string.cancel) { _, _ ->  }
