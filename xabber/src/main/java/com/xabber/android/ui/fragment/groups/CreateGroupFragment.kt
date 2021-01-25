@@ -88,8 +88,6 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             circlesLayout.visibility = View.VISIBLE
             setAccountCircles()
             updateCircles()
-        } else {
-            circlesLayout.visibility = View.GONE
         }
         super.onResume()
     }
