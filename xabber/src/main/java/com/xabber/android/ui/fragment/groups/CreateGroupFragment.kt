@@ -71,6 +71,8 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
     private lateinit var circlesLayout: LinearLayout
 
+    private var isEnteredManually = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is Listener){
@@ -176,7 +178,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             override fun afterTextChanged(s: Editable?) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                groupJidEt.setText(StringUtils.getLocalpartHintByString(s?.trim().toString()))
+                if (!isEnteredManually) groupJidEt.setText(StringUtils.getLocalpartHintByString(s?.trim().toString()))
                 if (!s.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty() && getAccount() != null){
                     listenerActivity?.toolbarSetEnabled(true)
                 } else listenerActivity?.toolbarSetEnabled(false)
@@ -198,13 +200,18 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (!s.isNullOrEmpty() && !groupNameEt.text.isNullOrEmpty() && getAccount() != null) {
                     listenerActivity?.toolbarSetEnabled(true)
-                } else {
-                    listenerActivity?.toolbarSetEnabled(false)
-                }
+                } else listenerActivity?.toolbarSetEnabled(false)
+
 
                 if (s.isNullOrEmpty()){
                     groupJidEt.hint = if (isIncognito) "incognito-group" else "public-group"
-                } else groupJidEt.hint = ""
+                    if (groupJidEt.hasFocus())
+                        isEnteredManually = false
+                } else {
+                    groupJidEt.hint = ""
+                    if (groupJidEt.hasFocus())
+                    isEnteredManually = true
+                }
 
             }
 
