@@ -27,11 +27,11 @@
             android:paddingLeft="16dp"
             android:paddingEnd="16dp"
             android:paddingRight="16dp"
-            android:autoLink="all"
             android:background="@drawable/groupchat_system_message_background"
             android:textSize="14sp"
             android:textStyle="normal|italic"
             android:textColor="@color/white"
+
             android:text="Incoming subscription request" />
 
     </com.xabber.android.ui.widget.CustomFlexboxLayout>
