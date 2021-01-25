@@ -230,11 +230,11 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
         val defaultLabelTextColor =
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
         val defaultLineBackgroundColor =
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
 
         fun colorizeEt(editText: EditText, textView: TextView, view: View){
@@ -250,6 +250,9 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
             if (editText.isFocused){
                 textView.setTextColor(color)
                 view.setBackgroundColor(color)
+            } else {
+                textView.setTextColor(defaultLabelTextColor)
+                view.setBackgroundColor(defaultLabelTextColor)
             }
         }
 

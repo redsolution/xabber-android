@@ -141,11 +141,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
         val defaultLabelTextColor =
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
         val defaultLineBackgroundColor =
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.1f)
+                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
                 else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
 
         userViewEt?.setOnFocusChangeListener { _, hasFocus ->
@@ -161,6 +161,9 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (userViewEt!!.isFocused){
             userViewTv?.setTextColor(color)
             userViewVw?.setBackgroundColor(color)
+        }else {
+            userViewTv?.setTextColor(defaultLabelTextColor)
+            userViewVw?.setBackgroundColor(defaultLabelTextColor)
         }
 
         nameViewEt?.setOnFocusChangeListener { _, hasFocus ->
@@ -176,6 +179,9 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (nameViewEt!!.isFocused){
             nameViewTv?.setTextColor(color)
             nameViewVw?.setBackgroundColor(color)
+        } else {
+            nameViewTv?.setTextColor(defaultLabelTextColor)
+            nameViewVw?.setBackgroundColor(defaultLineBackgroundColor)
         }
     }
 
