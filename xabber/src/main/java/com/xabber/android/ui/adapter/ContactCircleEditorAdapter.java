@@ -23,10 +23,10 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
     private static final int CONTACT_CIRCLE = 0;
     private static final int INPUT_FIELD = 1;
 
-    private ArrayList<ContactCircle> contactCircles = new ArrayList<>();
+    private final ArrayList<ContactCircle> contactCircles = new ArrayList<>();
     private String inputNewCircle;
 
-    private OnCircleActionListener listener;
+    private final OnCircleActionListener listener;
 
     public interface OnCircleActionListener {
         void onCircleAdded();
@@ -147,14 +147,10 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
         @Override
         public void afterTextChanged(Editable s) {
@@ -199,7 +195,7 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
 
     public static class ContactCircle {
 
-        private String circleName;
+        private final String circleName;
         private boolean isSelected;
 
         public ContactCircle(String name, boolean selected) {
@@ -223,4 +219,5 @@ public class ContactCircleEditorAdapter extends RecyclerView.Adapter {
             return isSelected;
         }
     }
+
 }

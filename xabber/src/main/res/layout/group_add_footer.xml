@@ -4,27 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
 
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
 
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    >
+    android:gravity="center_vertical">
 
     <EditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="@style/ChatText"
         android:id="@+id/group_add_input"
         android:layout_weight="1"
         android:hint="@string/add_new_circle"
-        android:textColorHint="@color/grey_400"
         android:singleLine="true" />
 
     <CheckBox
         android:id="@+id/group_add_checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
