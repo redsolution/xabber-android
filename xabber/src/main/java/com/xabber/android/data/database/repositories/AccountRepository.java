@@ -185,7 +185,7 @@ public class AccountRepository {
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             for (AccountRealmObject item : realm.where(AccountRealmObject.class).findAll()) {
-                if (item.getUploadServer() != null) {
+                if (item.getGroupServers() != null) {
                     List<Jid> srvs = new ArrayList<>();
                     for (String server : item.getGroupServers()){
                         srvs.add(JidCreate.from(server));
@@ -200,6 +200,78 @@ public class AccountRepository {
                 realm.close();
         }
         return result;
+    }
+
+    public static Map<AccountJid, List<String>> getCustomGroupServers() {
+        Map<AccountJid, List<String>> result = new HashMap<>();
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            for (AccountRealmObject item : realm.where(AccountRealmObject.class).findAll()) {
+                if (item.getCustomGroupServers() != null) {
+                    List<String> srvrs = new ArrayList<>(item.getCustomGroupServers());
+                    result.put(item.getAccountJid(), srvrs);
+                }
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                realm.close();
+        }
+        return result;
+    }
+
+    public static void saveCustomGroupServer(AccountJid accountJid, String customGroupServer){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    item.addCustomGroupServer(customGroupServer);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+    }
+
+    public static void removeCustomGroupServer(AccountJid accountJid, String customGroupServerToRemove){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    item.removeCustomGroupServer(customGroupServerToRemove);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
     }
 
 }

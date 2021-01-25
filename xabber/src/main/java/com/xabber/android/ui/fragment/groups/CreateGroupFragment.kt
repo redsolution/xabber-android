@@ -312,9 +312,12 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                 for (jid in serversList)
                     list.add(jid.toString())
 
+            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(accounts[0]))
+
         } else if (accountSpinner.selected != null) {
             for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSpinner.selected))
                 list.add(jid.toString())
+            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(accountSpinner.selected))
         }
 
         if (list.size == 0 )
@@ -347,7 +350,9 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
             setView(linearLayout)
             setPositiveButton(getString(R.string.add)) { _, _ ->
-                serverTv.text = "\u200A@\u200A${editText.text}" //todo saving custom server to storage
+                serverTv.text = "\u200A@\u200A${editText.text}"
+                GroupchatManager.getInstance()
+                        .saveCustomGroupServer(accountSpinner.selected ?: account, editText.text.toString())
             }
             setNegativeButton(R.string.cancel) { _, _ ->  }
         }
@@ -362,7 +367,12 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
                         AccountManager.getInstance().firstAccount)
                 if (servers != null && servers.size != 0){
                     text = "\u200A@\u200A${servers.first()}"
+                    return@apply
                 }
+                val customServers = GroupchatManager.getInstance().getCustomGroupServers(
+                        AccountManager.getInstance().firstAccount)
+                if (customServers != null && customServers.size != 0)
+                    text = "\u200A@\u200A${customServers.first()}"
             }
         }
         serverIv.setOnClickListener { openServerDialog() }

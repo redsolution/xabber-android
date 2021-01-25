@@ -50,6 +50,7 @@ public class AccountRealmObject extends RealmObject {
         public static final String XTOKEN = "xToken";
         public static final String UPLOAD_SERVER = "uploadServer";
         public static final String GROUP_SERVERS = "groupServers";
+        public static final String CUSTOM_GROUP_SERVERS = "customGroupServers";
     }
 
     @PrimaryKey
@@ -62,6 +63,7 @@ public class AccountRealmObject extends RealmObject {
     private String serverName;
     private String uploadServer;
     private RealmList<String> groupServers;
+    private RealmList<String> customGroupServers = new RealmList<String>();
     private String userName;
     private String resource;
 
@@ -506,7 +508,14 @@ public class AccountRealmObject extends RealmObject {
     }
 
     public RealmList<String> getGroupServers() { return groupServers; }
-
     public void setGroupServers(RealmList<String> groupServers) { this.groupServers = groupServers; }
+
+    public RealmList<String> getCustomGroupServers() { return customGroupServers; }
+    public void addCustomGroupServer(String customGroupServer) {
+        customGroupServers.add(customGroupServer);
+    }
+    public void removeCustomGroupServer(String customGroupServerToRemove){
+        customGroupServers.remove(customGroupServerToRemove);
+    }
 
 }

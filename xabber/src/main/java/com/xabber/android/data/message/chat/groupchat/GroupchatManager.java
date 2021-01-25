@@ -87,6 +87,7 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     private static GroupchatManager instance;
 
     private final Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
+    private final Map<AccountJid, List<String>> customGroupchatServers = new HashMap<>();
     private final NestedMap<GroupInviteRealmObject> invitesMap = new NestedMap<>();
 
     public static GroupchatManager getInstance() {
@@ -102,6 +103,9 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         }
         availableGroupchatServers.clear();
         availableGroupchatServers.putAll(AccountRepository.getGroupServers());
+
+        customGroupchatServers.clear();
+        customGroupchatServers.putAll(AccountRepository.getCustomGroupServers());
     }
 
     @Override
@@ -379,6 +383,23 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
 
     public List<Jid> getAvailableGroupchatServersForAccountJid(AccountJid accountJid) {
         return availableGroupchatServers.get(accountJid);
+    }
+
+    public List<String> getCustomGroupServers(AccountJid accountJid){
+        return customGroupchatServers.get(accountJid);
+    }
+
+    public void saveCustomGroupServer(AccountJid accountJid, String server){
+        if (customGroupchatServers.get(accountJid) == null){
+            customGroupchatServers.put(accountJid, new ArrayList<>());
+        }
+        customGroupchatServers.get(accountJid).add(server);
+        AccountRepository.saveCustomGroupServer(accountJid, server);
+    }
+
+    public void removeCustomGroupServer(AccountJid accountJid, String string){
+        customGroupchatServers.get(accountJid).remove(string);
+        AccountRepository.removeCustomGroupServer(accountJid, string);
     }
 
     public void requestGroupStatusForm(GroupChat groupchat) {
