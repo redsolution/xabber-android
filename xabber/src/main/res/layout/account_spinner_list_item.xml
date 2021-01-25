@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="4dip"
-    android:background="@color/white"> <!-- todo use attrs-->
+    android:background="?attr/contact_list_active_chat_subgroup_background">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
@@ -35,7 +35,7 @@
             android:ellipsize="marquee"
             android:gravity="center_vertical"
             android:text="Nick Name"
-            android:textColor="@color/black"/> <!-- Use attrs!-->
+            android:textColor="?attr/contact_list_contact_name_text_color"/>
 
         <TextView
             android:id="@+id/jid_tv"

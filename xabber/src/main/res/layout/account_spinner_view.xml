@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal"
-        android:background="@color/grey_300"> <!-- TODO use attrs-->
+        android:background="?attr/recent_chats_background">
 
         <TextView
             android:id="@+id/account_spinner_hint_text"
