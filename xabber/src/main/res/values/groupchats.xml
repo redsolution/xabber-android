@@ -88,8 +88,9 @@
     <string name="groupchat_unblock">Unblock</string>
     <string name="groupchat_invite">Invite</string>
 
-    <string name="groupchat_failed_to_create_groupchat_with_unknown_reason">Failed to create groupchat with unknown reason!</string>
-    <string name="groupchat_failed_to_create_groupchat_jid_already_exists">Failed to create groupchat! This group JID already exists!</string>
+    <string name="groupchat_invalid_group_id">Invalid group ID</string>
+    <string name="groupchat_failed_to_create_groupchat_with_unknown_reason">Failed to create group with unknown reason!</string>
+    <string name="groupchat_jid_already_exists">This group ID already exists!</string>
     <string name="groupchat_failed_to_revoke_invitation">Failed to revoke an invitation to</string>
     <string name="groupchat_failed_to_unblock">Failed to unblock</string>
     <string name="groupchat_failed_to_pin_message">Failed to pin message</string>

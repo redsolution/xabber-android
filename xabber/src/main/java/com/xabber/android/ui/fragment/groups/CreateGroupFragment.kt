@@ -35,6 +35,7 @@ import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.CircleEditorFragment
 import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
+import kotlinx.android.synthetic.main.activity_fingerprint.*
 
 @SuppressLint("SetTextI18n")
 class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener {
@@ -55,6 +56,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
     private lateinit var groupJidEt: EditText
     private lateinit var groupJidTv: TextView
     private lateinit var groupjidVw: View
+    private lateinit var errorTv: TextView
 
     private lateinit var serverTv: TextView
     private lateinit var serverIv: ImageView
@@ -113,6 +115,12 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         return view
     }
 
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        outState.putParcelable(SAVED_ACCOUNT, getAccount() ?: accountSpinner.selected)
+//        outState.putParcelable(SAVEDCON)
+//    }
+
     private fun initializeViewsVars(view: View){
         accountSpinner = view.findViewById(R.id.contact_account)
         exceptSpinnerLayout = view.findViewById(R.id.except_spinner)
@@ -124,6 +132,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         groupJidEt = view.findViewById(R.id.groupchat_jid_et)
         groupJidTv = view.findViewById(R.id.groupchat_jid_hint)
         groupjidVw = view.findViewById(R.id.groupchat_jid_vw)
+        errorTv = view.findViewById(R.id.error_view)
 
         serverIv = view.findViewById(R.id.server_iv)
         serverTv = view.findViewById(R.id.server_tv)
@@ -382,6 +391,9 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
     }
 
     fun createGroupchat() {
+
+        if (!isLocalpartCorrect(groupJidEt.text.toString())) return
+
         val membershipType = when (membershipRg.checkedRadioButtonId){
            R.id.group_membership_members_only_rb -> GroupchatMembershipType.MEMBER_ONLY
            R.id.group_membership_open_rb -> GroupchatMembershipType.OPEN
@@ -412,12 +424,40 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         }
     }
 
+    private fun isLocalpartCorrect(localpart: String): Boolean{
+        //Invalid when localPart is NOT empty, and HAS "." at the start/end
+        if (localpart[localpart.length - 1] == '.' || localpart[0] == '.') {
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+            return false
+        }
+        //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
+        if (localpart.contains(":")) {
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + String.format(getString(R.string
+                    .INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"))
+            return false
+        }
+
+        //Invalid when localPart is NOT empty, and has multiple dots in a row
+        if (localpart.contains("..")) {
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+            return false
+        }
+        if (localpart.isEmpty()){
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.empty_field))
+            return false
+        }
+        return true
+    }
+
+    private fun showErrorBelowJidEt(stringError: String){
+        errorTv.text = stringError
+        errorTv.visibility = if ("" == stringError) View.INVISIBLE else View.VISIBLE
+        groupJidEt.requestFocus()
+    }
+
     override fun onJidConflict() {
         Application.getInstance().runOnUiThread {
-            Toast.makeText(context,
-                    getString(R.string.groupchat_failed_to_create_groupchat_jid_already_exists),
-                    Toast.LENGTH_LONG).show()
-            //todo show as group jid field underline
+            showErrorBelowJidEt(requireContext().getString(R.string.groupchat_jid_already_exists))
             listenerActivity?.showProgress(false)
             listenerActivity?.toolbarSetEnabled(false)
         }
