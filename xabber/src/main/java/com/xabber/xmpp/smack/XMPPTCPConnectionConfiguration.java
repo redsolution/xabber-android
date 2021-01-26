@@ -110,4 +110,5 @@ public final class XMPPTCPConnectionConfiguration extends ConnectionConfiguratio
             return new XMPPTCPConnectionConfiguration(this);
         }
     }
+
 }
