@@ -18,8 +18,8 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -32,8 +32,8 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -362,8 +362,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private void loadNextLastMessageAsync(AccountItem accountItem) {
-        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
-                || !isSupported(accountItem.getAccount())) return;
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all || !isSupported(accountItem.getAccount())) {
+            return;
+        }
 
         Iterator<RosterContact> iterator = rosterItemIterators.get(accountItem);
         if (iterator != null) {
@@ -483,6 +484,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     try {
                         AbstractChat chat = ChatManager.getInstance()
                                 .getChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                        if (chat == null) chat = ChatManager.getInstance()
+                                .createRegularChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
 
                         int oldSize = parsedMessages.size();
                         parsedMessages.addAll(parseNewMessagesInChat(list, chat, accountItem));
@@ -524,8 +527,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     private List<MessageRealmObject> parseNewMessagesInChat(ArrayList<Forwarded> chatMessages, AbstractChat chat, AccountItem accountItem) {
         Collections.sort(chatMessages, archiveMessageTimeComparator);
-        return new ArrayList<>(parseMessage(accountItem, accountItem.getAccount(),
-                chat.getContactJid(), chatMessages, chat.getLastMessageId()));
+        return new ArrayList<>(parseMessage(accountItem, accountItem.getAccount(), chat.getContactJid(), chatMessages, chat.getLastMessageId()));
     }
 
     private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
@@ -951,7 +953,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
         LogManager.d(LOG_TAG, "message with stanzaId = " + messageRealmObject.getStanzaId() +
                 " originId = " + messageRealmObject.getOriginId() +
-                " messageId = " + message.getStanzaId() + " is set as read? - " + (timestamp <= accountItem.getStartHistoryTimestamp()));
+                " messageId = " + message.getStanzaId() + " is set as read? - " + messageRealmObject.isRead());
         messageRealmObject.setSent(true);
         messageRealmObject.setAcknowledged(true);
         messageRealmObject.setEncrypted(encrypted);

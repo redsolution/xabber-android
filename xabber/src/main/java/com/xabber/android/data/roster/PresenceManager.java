@@ -543,6 +543,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public void onHistoryLoaded(AccountItem accountItem){
+        LogManager.d(PresenceManager.class.getSimpleName(), "onHistoryLoaded");
         onAuthorized(accountItem);
     }
 
