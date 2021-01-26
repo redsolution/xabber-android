@@ -107,9 +107,9 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupMember;
 import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
 import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -1189,7 +1189,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Nullable
     private AbstractChat getChat() {
-        return ChatManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
+        if (abstractChat == null) {
+            return ChatManager.getInstance().createRegularChat(account, user);
+        } else return  abstractChat;
     }
 
 
