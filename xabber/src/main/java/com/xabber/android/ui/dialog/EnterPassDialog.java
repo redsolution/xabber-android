@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -76,7 +77,7 @@ public class EnterPassDialog extends DialogFragment implements DialogInterface.O
     @NonNull
     private View setUpDialogView() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_enter_pass, null);
-        edtPass = (EditText) view.findViewById(R.id.edtPass);
+        edtPass = view.findViewById(R.id.edtPass);
 
         return view;
     }
@@ -102,4 +103,5 @@ public class EnterPassDialog extends DialogFragment implements DialogInterface.O
             Application.getInstance().onError(e);
         }
     }
+
 }

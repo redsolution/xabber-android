@@ -6,12 +6,13 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountErrorEvent;
@@ -66,9 +67,9 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
     @NonNull
     private View setUpDialogView() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_account_enter_pass, null);
-        edtPass = (EditText) view.findViewById(R.id.edtPass);
-        TextView mainTextView = (TextView) view.findViewById(R.id.account_error_main_text);
-        final TextView detailTextView = (TextView) view.findViewById(R.id.account_error_detail_text);
+        edtPass = view.findViewById(R.id.edtPass);
+        TextView mainTextView = view.findViewById(R.id.account_error_main_text);
+        final TextView detailTextView = view.findViewById(R.id.account_error_detail_text);
 
         String message = getString(R.string.enter_password);
         if (accountErrorEvent!= null && accountErrorEvent.getType().equals(AUTHORIZATION)) {
@@ -79,21 +80,18 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
         detailTextView.setText(accountErrorEvent.getMessage());
         detailTextView.setVisibility(View.GONE);
 
-        final ImageView expandIcon = (ImageView) view.findViewById(R.id.account_error_expand_icon);
+        final ImageView expandIcon = view.findViewById(R.id.account_error_expand_icon);
 
         View mainTextPanel = view.findViewById(R.id.account_error_main_text_panel);
 
-        mainTextPanel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (detailTextView.getVisibility() == View.VISIBLE) {
-                    detailTextView.setVisibility(View.GONE);
-                    expandIcon.setImageResource(R.drawable.ic_expand_more_grey600_24dp);
-                } else {
-                    if (!detailTextView.getText().toString().isEmpty()) {
-                        detailTextView.setVisibility(View.VISIBLE);
-                        expandIcon.setImageResource(R.drawable.ic_expand_less_grey600_24dp);
-                    }
+        mainTextPanel.setOnClickListener(v -> {
+            if (detailTextView.getVisibility() == View.VISIBLE) {
+                detailTextView.setVisibility(View.GONE);
+                expandIcon.setImageResource(R.drawable.ic_expand_more_grey600_24dp);
+            } else {
+                if (!detailTextView.getText().toString().isEmpty()) {
+                    detailTextView.setVisibility(View.VISIBLE);
+                    expandIcon.setImageResource(R.drawable.ic_expand_less_grey600_24dp);
                 }
             }
         });
@@ -144,4 +142,5 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
             }
         }
     }
+
 }

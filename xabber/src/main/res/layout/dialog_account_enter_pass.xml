@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,18 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackground"
-        >
+        android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/account_error_expand_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:src="@drawable/ic_expand_more_grey600_24dp"
+            app:srcCompat="@drawable/ic_expand_more_grey600_24dp"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            />
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:id="@+id/account_error_main_text"
@@ -30,44 +29,45 @@
             android:layout_toStartOf="@id/account_error_expand_icon"
             android:gravity="center_vertical"
             android:minHeight="56dp"
-            android:paddingLeft="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
             android:paddingRight="16dp"
             android:text="text"
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
 
     </RelativeLayout>
-
 
     <ScrollView
         android:id="@+id/account_error_detail_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/account_error_main_text_panel"
-        >
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/account_error_detail_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:textSize="14sp"
             android:textIsSelectable="true"
             android:text="TextView"
             android:visibility="gone"/>
+
     </ScrollView>
 
     <EditText
         android:id="@+id/edtPass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:inputType="textPassword"
         android:fontFamily="sans-serif"
-        android:hint="@string/hint_pass"
-        />
+        android:hint="@string/hint_pass" />
 
 </LinearLayout>
