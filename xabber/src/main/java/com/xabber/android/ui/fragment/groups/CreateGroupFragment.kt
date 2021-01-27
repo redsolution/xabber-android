@@ -410,7 +410,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 
         val server = serverTv.text.substring(3 until serverTv.text.length)
 
-        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountSpinner.selected,
+        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountSpinner.selected ?: getAccount(),
                 server, groupNameEt.text.toString(), groupDescriptionEt.text.toString(),
                 groupJidEt.text.toString(), membershipType, indexType, privacyType, this)
 
