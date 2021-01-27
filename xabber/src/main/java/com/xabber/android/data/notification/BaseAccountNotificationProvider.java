@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -20,8 +20,7 @@ import java.util.Iterator;
 
 
 public class BaseAccountNotificationProvider<T extends AccountNotificationItem>
-        extends BaseNotificationProvider<T> implements
-        AccountNotificationProvider<T> {
+        extends BaseNotificationProvider<T> implements AccountNotificationProvider<T> {
 
     public BaseAccountNotificationProvider(int icon) {
         super(icon);

@@ -81,6 +81,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      */
     private final HashMap<AccountJid, Set<ContactJid>> requestedSubscriptions;
 
+    private final HashMap<AccountJid, Set<ContactJid>> createdGroupAutoSubscriptions;
+
     private final Map<BareJid, Map<Resourcepart, Presence>> accountsPresenceMap = new ConcurrentHashMap<>();
     private final Map<BareJid, Map<BareJid, Map<Resourcepart, Presence>>> presenceMap = new ConcurrentHashMap<>();
 
@@ -96,6 +98,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
         requestedSubscriptions = new HashMap<>();
+        createdGroupAutoSubscriptions = new HashMap<>();
     }
 
     @Override
@@ -225,6 +228,16 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         Presence packet = new Presence(Presence.Type.unsubscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
+    }
+
+    public void addAutoAcceptGroupSubscription(AccountJid account, ContactJid groupJid){
+        if (createdGroupAutoSubscriptions.get(account) == null){
+            Set<ContactJid> set = new HashSet<>();
+            set.add(groupJid);
+            createdGroupAutoSubscriptions.put(account, set);
+        } else {
+            createdGroupAutoSubscriptions.get(account).add(groupJid);
+        }
     }
 
     /**
@@ -423,7 +436,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             case unsubscribed:
                 if (ChatManager.getInstance().getChat(connection.getAccount(), from) instanceof GroupChat){
                     GroupchatManager.getInstance().onUnsubscribePresence(connection.getAccount(), from);
-                    LogManager.d("PresenceManager", "Got unsubscribed from group chat");
+                    LogManager.d(PresenceManager.class.getSimpleName(), "Got unsubscribed from group chat");
                 }
                 break;
             case error:
@@ -445,6 +458,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             case subscribe:
 
                 AccountJid account = connection.getAccount();
+
+                if (createdGroupAutoSubscriptions.get(account) != null
+                        && createdGroupAutoSubscriptions.get(account).contains(from.getBareUserJid())){
+                    autoAcceptCreatedGroupSubscribeRequest(account, from);
+                    return;
+                }
 
                 // check spam-filter settings
 
@@ -504,6 +523,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             case subscribed:
                 handleSubscriptionAccept(connection.getAccount(), from);
                 break;
+        }
+    }
+
+    private void autoAcceptCreatedGroupSubscribeRequest(AccountJid account, ContactJid groupJid){
+        try{
+            acceptSubscription(account, groupJid, false);
+            createdGroupAutoSubscriptions.get(account).remove(groupJid);
+        } catch (Exception e){
+            LogManager.exception(PresenceManager.class.getSimpleName(), e);
         }
     }
 
