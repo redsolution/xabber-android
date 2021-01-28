@@ -43,7 +43,6 @@ import org.jivesoftware.smack.packet.Presence;
  * Created by valery.miller on 26.10.17.
  */
 
-
 public class NewContactTitleInflater {
 
     private static final TypingDotsDrawable typingDotsDrawable = new TypingDotsDrawable();
@@ -87,9 +86,10 @@ public class NewContactTitleInflater {
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
                 isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getContactJid()));
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
-                || mode == NotificationState.NotificationMode.byDefault))
+                || mode == NotificationState.NotificationMode.byDefault)) {
             nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     resources.getDrawable(R.drawable.ic_notif_custom_large), null);
+        }
 
         // if it is account, not simple user contact
         if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {

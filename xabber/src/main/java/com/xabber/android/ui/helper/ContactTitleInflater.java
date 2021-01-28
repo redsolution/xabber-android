@@ -71,7 +71,7 @@ public class ContactTitleInflater {
             if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
                 avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatarNoDefault(abstractContact.getAccount()));
             } else {
-                avatarView.setImageDrawable(abstractContact.getAvatar(false));
+                avatarView.setImageDrawable(abstractContact.getAvatar(true));
             }
 
             /*in case qrcode-avatars will be needed, probably should migrate it into avatar manager
