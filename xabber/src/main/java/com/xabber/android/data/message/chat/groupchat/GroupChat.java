@@ -9,6 +9,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
@@ -48,6 +49,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class GroupChat extends AbstractChat {
 
@@ -109,6 +111,18 @@ public class GroupChat extends AbstractChat {
         this.canChangeAvatars = canChangeAvatars;
         this.resource = resource;
         this.setNotificationState(notificationState, false);
+    }
+
+    @Override
+    public RealmResults<MessageRealmObject> getMessages() {
+        if (messages == null) {
+            messages = MessageRepository.getGroupChatMessages(account, contactJid);
+            updateLastMessage();
+
+            messages.addChangeListener(this);
+        }
+
+        return messages;
     }
 
     @Override

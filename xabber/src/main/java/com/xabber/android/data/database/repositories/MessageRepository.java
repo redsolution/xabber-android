@@ -32,6 +32,21 @@ public class MessageRepository {
         return results;
     }
 
+    public static RealmResults<MessageRealmObject> getGroupChatMessages(AccountJid accountJid, ContactJid contactJid) {
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<MessageRealmObject> results = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.TEXT)
+                .isNull(MessageRealmObject.Fields.ACTION)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        return results;
+    }
+
     public static void removeAllAccountMessagesFromRealm(){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;

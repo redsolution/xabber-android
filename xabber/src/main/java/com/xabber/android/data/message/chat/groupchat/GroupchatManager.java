@@ -337,11 +337,9 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         return isSupported(AccountManager.getInstance().getAccount(accountJid).getConnection());
     }
 
-    public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName,
-                                           String description, String localpart,
-                                           GroupchatMembershipType membershipType,
-                                           GroupchatIndexType indexType,
-                                           GroupchatPrivacyType privacyType,
+    public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName, String description,
+                                           String localpart, GroupchatMembershipType membershipType,
+                                           GroupchatIndexType indexType, GroupchatPrivacyType privacyType,
                                            CreateGroupchatIqResultListener listener) {
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
@@ -357,7 +355,16 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
                                     ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
                                     AccountJid account = AccountJid.from(packet.getTo().toString());
                                     PresenceManager.getInstance().addAutoAcceptGroupSubscription(account, contactJid);
-                                    PresenceManager.getInstance().requestSubscription(account, contactJid);
+                                    PresenceManager.getInstance().requestSubscription(account, contactJid, false);
+
+                                    GroupChat createdGroup = ChatManager.getInstance().createGroupChat(account, contactJid);
+
+                                    createdGroup.setName(groupName);
+                                    createdGroup.setDescription(description);
+                                    createdGroup.setIndexType(indexType);
+                                    createdGroup.setMembershipType(membershipType);
+                                    createdGroup.setPrivacyType(privacyType);
+
                                     listener.onSuccessfullyCreated(accountJid, contactJid);
                                 } catch (Exception e) {
                                     LogManager.exception(LOG_TAG, e);

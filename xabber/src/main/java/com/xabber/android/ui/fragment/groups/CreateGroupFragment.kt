@@ -301,7 +301,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         if (serversList != null && serversList.isNotEmpty()){
             serverTv.text = "\u200A@\u200A${serversList.first()}"
         } else {
-            serverTv.text = "\u200A@\u200Ahardcoded.com"
+            serverTv.text = "\u200A@\u200Agc.xabber.com"
         }
 
         isAccountSelected = true
@@ -333,7 +333,7 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
         }
 
         if (list.size == 0 )
-            list.add("hardcoded.org")
+            list.add("gc.xabber.com")
         list.add(getString(R.string.groupchat_custom_server))
 
         return list

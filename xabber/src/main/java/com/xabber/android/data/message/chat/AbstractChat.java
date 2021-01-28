@@ -117,7 +117,7 @@ public abstract class AbstractChat extends BaseEntity implements
     private NotificationState notificationState;
     private final Set<String> waitToMarkAsRead = new HashSet<>();
     private MessageRealmObject lastMessage;
-    private RealmResults<MessageRealmObject> messages;
+    protected RealmResults<MessageRealmObject> messages;
     private RealmResults<MessageRealmObject> unreadMessages;
     private String lastMessageId = null;
     private boolean addContactSuggested = false;
@@ -573,7 +573,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return lastMessage;
     }
 
-    private void updateLastMessage() {
+    protected void updateLastMessage() {
         lastMessage = messages.last(null);
     }
 
