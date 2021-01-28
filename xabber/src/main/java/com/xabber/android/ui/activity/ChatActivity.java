@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -29,8 +29,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -85,6 +83,7 @@ import com.xabber.android.ui.widget.BottomMessagesPanel;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
@@ -140,14 +139,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private ContactJid user;
     private boolean exitOnSend = false;
 
-    private Animation shakeAnimation = null;
-
     @Nullable
     private ChatFragment chatFragment;
 
     private Toolbar toolbar;
     private View contactTitleView;
-    private ImageView toolbarBackIv;
     private ImageView toolbarOverflowIv;
 
     //toolbar interaction panel variables
@@ -293,7 +289,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account, user)));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbarBackIv = findViewById(R.id.toolbar_arrow_back_iv);
+        ImageView toolbarBackIv = findViewById(R.id.toolbar_arrow_back_iv);
         toolbarOverflowIv = findViewById(R.id.toolbar_overflow_iv);
         toolbarBackIv.setOnClickListener(v -> close());
         toolbarOverflowIv.setOnClickListener(v -> setUpOptionsMenu(toolbarOverflowIv));
@@ -338,7 +334,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
-        } else initChats(false);
+        } else initChats();
     }
 
     @Override
@@ -403,8 +399,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         // forward
         if (ACTION_FORWARD.equals(intent.getAction())) {
-            List<String> messages = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
-            forwardsIds = (ArrayList<String>) messages;
+            forwardsIds = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
             intent.removeExtra(KEY_MESSAGES_ID);
         }
 
@@ -534,7 +529,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         super.onBackPressed();
     }
 
-    private void initChats(boolean animated) {
+    private void initChats() {
         Fragment fragment;
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
 
@@ -546,7 +541,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             fragmentTransactionOld.commit();
         }
         FragmentTransaction fragmentTransactionNew = getSupportFragmentManager().beginTransaction();
-        if (animated) fragmentTransactionNew.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         fragmentTransactionNew.add(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG);
         fragmentTransactionNew.commit();
     }
@@ -562,7 +556,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (newUser != null) {
             this.user = newUser;
         }
-        initChats(false);
+        initChats();
         LogManager.i(LOG_TAG, "getInitialChatFromIntent " + this.user);
     }
 
@@ -573,7 +567,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(SAVE_SELECTED_ACCOUNT, account);
         outState.putParcelable(SAVE_SELECTED_USER, user);
@@ -900,14 +894,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             default:
                 return false;
         }
-    }
-
-    @Override
-    public void playIncomingAnimation() {
-        if (shakeAnimation == null) {
-            shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
-        }
-        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 
     private NotificationState.NotificationMode getNotifMode() {

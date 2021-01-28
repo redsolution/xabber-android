@@ -799,7 +799,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (abstractChat != null) {
             messageRealmObjects = abstractChat.getMessages();
         }
-        if (messageRealmObjects ==null || messageRealmObjects.size() > 0) {
+        if (messageRealmObjects == null || messageRealmObjects.size() > 0) {
             setIntroView();
             inflateIntroView(false);
         } else {
@@ -1246,7 +1246,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
-            listener.playIncomingAnimation();
             playMessageSound();
             NotificationManager.getInstance().removeMessageNotification(account, user);
         }
@@ -2610,7 +2609,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         void onMessageSent();
         void registerChatFragment(ChatFragment chatFragment);
         void unregisterChatFragment();
-        void playIncomingAnimation();
     }
 
 }
