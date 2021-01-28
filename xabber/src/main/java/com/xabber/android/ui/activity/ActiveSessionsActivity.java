@@ -24,6 +24,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.SessionVO;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
 import org.greenrobot.eventbus.Subscribe;

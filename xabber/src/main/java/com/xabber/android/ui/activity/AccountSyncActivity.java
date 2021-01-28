@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -41,7 +41,6 @@ import java.util.List;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -53,9 +52,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
     private final static String LOG_TAG = AccountSyncActivity.class.getSimpleName();
 
-    private Toolbar toolbar;
     private BarPainter barPainter;
-    private RelativeLayout rlSyncSwitch;
     private Button btnDeleteSettings;
     private Switch switchSync;
     private ProgressDialog progressDialog;
@@ -63,7 +60,6 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     private TextView tvJid;
     private TextView tvStatus;
     private ImageView ivStatus;
-    private LinearLayout syncStatusView;
     private ProgressBar progressBar;
 
     private AccountItem accountItem;
@@ -101,16 +97,11 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
         jid = accountItem.getAccount().getFullJid().asBareJid().toString();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle(R.string.account_sync);
 
         barPainter = new BarPainter(this, toolbar);
@@ -118,11 +109,11 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
         btnDeleteSettings = (Button) findViewById(R.id.btnDeleteSettings);
         switchSync = (Switch) findViewById(R.id.switchSync);
-        rlSyncSwitch = (RelativeLayout) findViewById(R.id.rlSyncSwitch);
+        RelativeLayout rlSyncSwitch = (RelativeLayout) findViewById(R.id.rlSyncSwitch);
         tvJid = (TextView) findViewById(R.id.tvJid);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         ivStatus = (ImageView) findViewById(R.id.ivStatus);
-        syncStatusView = (LinearLayout) findViewById(R.id.syncStatusView);
+        LinearLayout syncStatusView = (LinearLayout) findViewById(R.id.syncStatusView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         rlSyncSwitch.setOnClickListener(this);
@@ -188,17 +179,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> settings) {
-                        handleSuccessDelete(settings, deleteAccount);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorDelete(throwable);
-                    }
-                });
+                .subscribe(settings -> handleSuccessDelete(settings, deleteAccount), this::handleErrorDelete);
         compositeSubscription.add(deleteSubscription);
     }
 
@@ -253,7 +234,6 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         if (AccountManager.getInstance().getAccount(accountItem.getAccount()) == null) {
             // in case if account was removed
             finish();
-            return;
         }
     }
 
@@ -268,12 +248,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         builder.setTitle(R.string.progress_title_delete_settings)
                 .setMessage(R.string.delete_settings_summary)
                 .setView(view)
-                .setPositiveButton(R.string.delete_settings_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteAccountSettings(chbDeleteAccount.isChecked());
-                    }
-                })
+                .setPositiveButton(R.string.delete_settings_button, (dialog, which) -> deleteAccountSettings(chbDeleteAccount.isChecked()))
                 .setNegativeButton(R.string.cancel, null);
         Dialog dialog = builder.create();
         dialog.show();
@@ -297,20 +272,14 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> list) {
-                        handleSuccessGetSettings(list);
-                        ivStatus.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorGetSettings(throwable);
-                        ivStatus.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
+                .subscribe(list -> {
+                    handleSuccessGetSettings(list);
+                    ivStatus.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                }, throwable -> {
+                    handleErrorGetSettings(throwable);
+                    ivStatus.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
                 });
         compositeSubscription.add(getSettingsSubscription);
     }
@@ -340,16 +309,6 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
     private void setSyncStatus(XMPPAccountSettings.SyncStatus status) {
         switch (status) {
-            case local:
-                tvStatus.setText(R.string.sync_status_no);
-                ivStatus.setImageResource(R.drawable.ic_sync_disable);
-                btnDeleteSettings.setVisibility(View.GONE);
-                break;
-            case remote:
-                tvStatus.setText(R.string.sync_status_no);
-                ivStatus.setImageResource(R.drawable.ic_sync_disable);
-                btnDeleteSettings.setVisibility(View.GONE);
-                break;
             case localNewer:
                 tvStatus.setText(R.string.sync_status_local);
                 ivStatus.setImageResource(R.drawable.ic_sync_upload);
@@ -400,17 +359,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        handleSuccessUpdateSettings(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorUpdateSettings(throwable);
-                    }
-                });
+                .subscribe(this::handleSuccessUpdateSettings, this::handleErrorUpdateSettings);
         compositeSubscription.add(updateSettingsSubscription);
     }
 
@@ -441,14 +390,12 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     public void showAlert(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class);
-                        checkAccount();
-                    }
+                .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class);
+                    checkAccount();
                 });
         Dialog dialog = builder.create();
         dialog.show();
     }
+
 }

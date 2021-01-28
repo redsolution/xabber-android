@@ -21,6 +21,8 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountInfoEditFragment;
 
+import org.jetbrains.annotations.NotNull;
+
 public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditFragment.Listener {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.activity.AccountInfoEditor.ARG_VCARD";
@@ -50,7 +52,6 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         Intent intent = getIntent();
         AccountJid account = getAccount(intent);
-        String vCard = intent.getStringExtra(ARG_VCARD);
 
         if (AccountManager.getInstance().getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
@@ -90,7 +91,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(ARGUMENT_SAVE_BUTTON_ENABLED, toolbar.getMenu().findItem(R.id.action_save).isEnabled());
     }
@@ -109,13 +110,11 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_save) {
+            ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -139,10 +138,6 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     @Override
     public void toggleSave(boolean value) {
         enableSave(value);
-    }
-
-    private void enableSave() {
-        enableSave(!toolbar.getMenu().findItem(R.id.action_save).isEnabled());
     }
 
     private void enableSave(boolean enable) {

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.activity;
+package com.xabber.android.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,7 @@ import java.util.List;
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionHolder> {
 
     private List<SessionVO> items;
-    private Listener listener;
+    private final Listener listener;
 
     public interface Listener {
         void onItemClick(String tokenUID);
@@ -55,12 +55,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
         holder.tvDevice.setText(session.getDevice());
         holder.tvIPAddress.setText(session.getIp());
         holder.tvDate.setText(session.getLastAuth());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onItemClick(session.getUid());
-            }
-        });
+        holder.itemView.setOnClickListener(view -> listener.onItemClick(session.getUid()));
     }
 
     @Override

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -52,7 +51,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     private AccountListReorderAdapter accountListAdapter;
     private BarPainter barPainter;
     private ItemTouchHelper touchHelper;
-    private Toolbar toolbar;
     private TextView tvSummary;
 
     public static Intent createIntent(Context context) {
@@ -65,16 +63,11 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         setContentView(R.layout.activity_account_list);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(AccountListActivity.this);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(AccountListActivity.this));
         toolbar.setTitle(R.string.title_reordering_account);
         toolbar.inflateMenu(R.menu.toolbar_account_list);
         toolbar.setOnMenuItemClickListener(this);
@@ -96,10 +89,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void update() {
-        List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
-            accountItems.add(accountItem);
-        }
+        List<AccountItem> accountItems = new ArrayList<>(AccountManager.getInstance().getAllAccountItems());
 
         accountListAdapter.setAccountItems(accountItems);
 
@@ -150,6 +140,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
             case R.id.action_account_edit:
                 return true;
+
             case R.id.action_account_delete:
                 return true;
         }
@@ -198,4 +189,5 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         touchHelper.startDrag(viewHolder);
     }
+
 }

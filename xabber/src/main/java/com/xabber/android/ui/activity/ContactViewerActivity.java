@@ -272,4 +272,5 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             }
         }
     }
+
 }

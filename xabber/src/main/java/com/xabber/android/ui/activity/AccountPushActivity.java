@@ -23,7 +23,6 @@ import java.util.Collection;
 
 public class AccountPushActivity extends ManagedActivity implements OnAccountChangedListener {
 
-    private Toolbar toolbar;
     private BarPainter barPainter;
     private RelativeLayout rlPushSwitch;
     private Switch switchPush;
@@ -59,16 +58,11 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle(R.string.account_push);
 
         barPainter = new BarPainter(this, toolbar);
@@ -78,12 +72,9 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
         rlPushSwitch = findViewById(R.id.rlPushSwitch);
         tvPushState = findViewById(R.id.tvPushState);
 
-        rlPushSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AccountManager.getInstance().setPushEnabled(accountItem, !switchPush.isChecked());
-                updateSwitchButton();
-            }
+        rlPushSwitch.setOnClickListener(v -> {
+            AccountManager.getInstance().setPushEnabled(accountItem, !switchPush.isChecked());
+            updateSwitchButton();
         });
     }
 
@@ -128,4 +119,5 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
     private void updateTitle() {
         barPainter.updateWithAccountName(accountItem.getAccount());
     }
+
 }

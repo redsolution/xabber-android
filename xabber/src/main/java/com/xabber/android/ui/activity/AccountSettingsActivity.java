@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -33,8 +32,6 @@ public class AccountSettingsActivity extends ManagedActivity
     private static final String LOG_TAG = AccountSettingsActivity.class.getSimpleName();
     private AccountJid account;
     private AccountItem accountItem;
-    private Toolbar toolbar;
-    private BarPainter barPainter;
 
     private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
@@ -59,23 +56,18 @@ public class AccountSettingsActivity extends ManagedActivity
             return;
         }
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setTitle(R.string.account_connection_settings);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         toolbar.inflateMenu(R.menu.toolbar_account_connection_settings);
         //toolbar.setOnMenuItemClickListener(this);
         toolbar.getMenu().findItem(R.id.action_remove_account).setVisible(false);
 
-        barPainter = new BarPainter(this, toolbar);
+        BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
@@ -136,4 +128,5 @@ public class AccountSettingsActivity extends ManagedActivity
             }
         }
     }
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -96,8 +96,6 @@ public class ContactActivity extends ManagedActivity implements
     private View contactTitleView;
     private AbstractContact bestContact;
     private CollapsingToolbarLayout collapsingToolbar;
-    private AppBarLayout appBarLayout;
-    private ImageView QRgen;
     private ImageButton firstButton;
     private ImageButton secondButton;
     private ImageButton thirdButton;
@@ -261,7 +259,6 @@ public class ContactActivity extends ManagedActivity implements
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
-        appBarResize();
     }
 
     @Override
@@ -277,23 +274,9 @@ public class ContactActivity extends ManagedActivity implements
         super.onDestroy();
     }
 
-    private void appBarResize() {
-        ImageView avatar = findViewById(R.id.ivAvatar);
-        ImageView avatarQR = findViewById(R.id.ivAvatarQR);
-        if (avatar.getDrawable() == null) {
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                avatar.setVisibility(View.GONE);
-                avatarQR.setVisibility(View.GONE);
-            } else {
-                QRgen.setVisibility(View.GONE);
-                avatarQR.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     private void orientationPortrait() {
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
-        appBarLayout = findViewById(R.id.appbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -330,10 +313,9 @@ public class ContactActivity extends ManagedActivity implements
         if (toolbar.getOverflowIcon() != null)
             toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
 
-        QRgen = findViewById(R.id.generate_qrcode);
+        ImageView QRgen = findViewById(R.id.generate_qrcode);
         QRgen.setOnClickListener(this);
 
-        final NestedScrollView scrollView = findViewById(R.id.scroll_v_card);
         final LinearLayout ll = findViewById(R.id.scroll_v_card_child);
 
         nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -383,9 +365,7 @@ public class ContactActivity extends ManagedActivity implements
         secondButton.setEnabled(!blocked);
         fourthButton.setEnabled(!blocked);
 
-        if (isGroupchat) {
-
-        } else {
+        if (!isGroupchat) {
             thirdButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
             thirdButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
                     R.color.red_900 :
@@ -394,6 +374,7 @@ public class ContactActivity extends ManagedActivity implements
                             R.color.grey_400));
 
         }
+
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             firstButtonText.setVisibility(View.GONE);
             secondButtonText.setVisibility(View.GONE);
@@ -406,6 +387,7 @@ public class ContactActivity extends ManagedActivity implements
             fourthButtonText.setVisibility(View.VISIBLE);
             contactBarLayout.redrawText();
         }
+
     }
 
     public void manageAvailableUsernameSpace() {

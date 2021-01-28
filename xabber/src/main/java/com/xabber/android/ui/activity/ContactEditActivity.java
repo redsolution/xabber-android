@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -83,12 +83,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
         }
         tvSave.setPadding(tvSave.getPaddingLeft(), tvSave.getPaddingTop(), tvSave.getPaddingRight() + 20, tvSave.getPaddingBottom());
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         toolbarSetEnabled(false);
 
@@ -157,11 +152,11 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                ((ContactEditFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
-                finish();
+        if (item.getItemId() == R.id.action_save) {
+            ((ContactEditFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+            finish();
         }
         return false;
     }
+
 }
