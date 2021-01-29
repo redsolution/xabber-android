@@ -161,7 +161,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new ActionMessageVH(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_action_message, parent, false));
+                        .inflate(R.layout.item_system_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
@@ -209,7 +209,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
             case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
                 return new GroupchatSystemMessageVH(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_groupchat_system_message, parent, false));
+                        .inflate(R.layout.item_system_message, parent, false));
             default: return null;
         }
     }
