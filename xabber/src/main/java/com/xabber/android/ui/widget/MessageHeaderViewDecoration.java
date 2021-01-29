@@ -29,9 +29,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
 
-    @IntDef({DateState.SCROLL_ACTIVE, DateState.SCROLL_IDLE,
-            DateState.SCROLL_IDLE_NO_ANIMATION, DateState.INITIATED_ANIMATION,
-            DateState.ANIMATING, DateState.FINISHED_ANIMATING})
+    @IntDef({DateState.SCROLL_ACTIVE, DateState.SCROLL_IDLE, DateState.SCROLL_IDLE_NO_ANIMATION,
+            DateState.INITIATED_ANIMATION, DateState.ANIMATING, DateState.FINISHED_ANIMATING})
     @Retention(RetentionPolicy.SOURCE)
     @interface DateState {
         int SCROLL_ACTIVE = 0;
@@ -42,9 +41,9 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         int FINISHED_ANIMATING = 5;
     }
 
-    private Paint paintFont;
-    private Drawable drawable;
-    private Handler handler;
+    private final Paint paintFont;
+    private final Drawable drawable;
+    private final Handler handler;
     private RecyclerView parent;
 
     private int headerViewXMargin;
@@ -56,8 +55,8 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     private static final int dateTextBaseline = backgroundDrawableHeight * 3 / 11;
     private static final String unread = Application.getInstance().getResources().getString(R.string.unread_messages);
 
-    private int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
-    private int stickyDrawableBottomBound = dateLayoutHeight;
+    private final int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
+    private final int stickyDrawableBottomBound = dateLayoutHeight;
 
     @DateState
     private int currentDateState;
@@ -69,9 +68,10 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     private long frameTime;
 
     public MessageHeaderViewDecoration() {
-        drawable = Application.getInstance().getResources()
-                .getDrawable(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
-                        R.drawable.rounded_background_grey_transparent_dark : R.drawable.rounded_background_grey_transparent);
+        drawable = Application.getInstance().getResources().getDrawable(
+                SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
+                        R.drawable.rounded_background_grey_transparent_dark
+                        : R.drawable.rounded_background_grey_transparent);
 
         paintFont = new Paint();
         paintFont.setColor(Application.getInstance().getResources().getColor(R.color.white));
@@ -82,7 +82,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         handler = new Handler();
     }
 
-    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+    private final RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
@@ -103,7 +103,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         }
     };
 
-    private Runnable runAlphaAnimation = new Runnable() {
+    private final Runnable runAlphaAnimation = new Runnable() {
         @Override
         public void run() {
             currentDateState = DateState.ANIMATING;

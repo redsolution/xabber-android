@@ -859,13 +859,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void setIntroView() {
-        View introView = LayoutInflater.from(realmRecyclerView.getContext())
-                .inflate(R.layout.chat_intro_helper_view, null);
+        View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             introView.getBackground().setTint(accountColor);
         }
-
-        else realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, getIntroType()));
+        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, getIntroType()));
     }
 
     private void inflateIntroView(boolean show) {
@@ -2441,7 +2439,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void subscribeForRecordedAudioProgress() {
-        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
+        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress = VoiceManager
+                .PublishAudioProgress.getInstance().subscribeForProgress();
         audioProgressSubscription = audioProgress.doOnNext(this::setUpAudioProgress).subscribe();
     }
 

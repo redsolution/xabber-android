@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -103,7 +104,9 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
                 break;
             case REGULAR_CHAT:
                 textView.setText(R.string.intro_regular_chat_learn);
+                layout.setClickable(true);
                 layout.setOnClickListener(v -> {
+                    Toast.makeText(context, "YO SUKA", Toast.LENGTH_SHORT).show();
                     intent.setData(Uri.parse(context.getString(R.string.intro_regular_chat_link)));
                     context.startActivity(intent);
                 });
