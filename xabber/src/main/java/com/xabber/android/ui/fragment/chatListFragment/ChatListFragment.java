@@ -275,6 +275,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         toolbarAddIv.setOnClickListener(v -> startActivity(new Intent(getActivity(), AddActivity.class)));
+        if (AccountManager.getInstance().getEnabledAccounts().isEmpty()){
+            toolbarAddIv.setEnabled(false);
+            toolbarAddIv.setAlpha(0.5f);
+        }
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName()))
@@ -428,7 +432,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void search(String filterString) {
         this.filterString = filterString;
         update();
-        //TODO implement search
     }
 
     /**
