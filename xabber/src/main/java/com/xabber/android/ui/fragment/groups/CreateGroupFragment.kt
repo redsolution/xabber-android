@@ -323,17 +323,14 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
 
-            val accounts = arrayListOf<AccountJid>()
-            accounts.addAll(AccountManager.getInstance().enabledAccounts)
-
             val serversList = GroupchatManager.getInstance()
-                    .getAvailableGroupchatServersForAccountJid(accounts[0])
+                    .getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
 
             if (serversList != null && serversList.isNotEmpty())
                 for (jid in serversList)
                     list.add(jid.toString())
 
-            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(accounts[0]))
+            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(AccountManager.getInstance().firstAccount))
 
         } else if (accountSpinner.selected != null) {
             for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSpinner.selected))
