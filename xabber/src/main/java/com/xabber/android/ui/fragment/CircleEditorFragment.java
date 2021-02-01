@@ -161,8 +161,9 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         if (getAccount() != null){
             titleTv.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
         } else {
-            titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
-                    .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
+            if (!AccountManager.getInstance().getEnabledAccounts().isEmpty())
+                titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
+                        .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
         }
 
         toggleVisibility(AccountManager.getInstance().getEnabledAccounts().size() == 1 || getAccount() != null);

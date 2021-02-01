@@ -104,7 +104,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 
         colorizeEverything(AccountManager.getInstance().firstAccount)
 
-        if (!isInitialized) initRecyclerView(view)
+        if (!isInitialized && AccountManager.getInstance().enabledAccounts.isNotEmpty()) initRecyclerView(view)
         setupAccountSpinner()
         setupGroupNameEt()
         setupGroupJidEt()
@@ -242,7 +242,8 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         indexRg.check(R.id.group_index_none_rb)
     }
 
-    private fun colorizeEverything(accountJid: AccountJid){
+    private fun colorizeEverything(accountJid: AccountJid?){
+        if (accountJid == null) return
 
         val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
         val defaultLabelTextColor =
@@ -318,7 +319,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
     }
 
     private fun createListOfServers(): List<String> {
-        val list = arrayListOf<String>()
+        val list = mutableListOf<String>()
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
 
