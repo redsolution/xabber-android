@@ -38,7 +38,7 @@ import com.xabber.android.utils.StringUtils
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 
 @SuppressLint("SetTextI18n")
-class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener {
+class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener {
 
     private var listenerActivity: Listener? = null
 
@@ -118,7 +118,15 @@ class CreateGroupFragment private constructor(): CircleEditorFragment(), CreateG
 //    override fun onSaveInstanceState(outState: Bundle) {
 //        super.onSaveInstanceState(outState)
 //        outState.putParcelable(SAVED_ACCOUNT, getAccount() ?: accountSpinner.selected)
-//        outState.putParcelable(SAVEDCON)
+//        if (!errorTv.text.isNullOrEmpty()) outState.putString(SAVED_ERROR, errorTv.text.toString())
+//        outState.putString(SAVED_GROUP_DESCRIPTION, groupDescriptionEt.text.toString())
+//        outState.putString(SAVED_GROUP_JID, groupJidEt.text.toString())
+//        outState.putString(SAVED_GROUP_NAME, groupNameEt.text.toString())
+//        outState.putString(SAVED_GROUP_SERVER, serverTv.text.toString())
+//    }
+//
+//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+//        super.onViewStateRestored(savedInstanceState)
 //    }
 
     private fun initializeViewsVars(view: View){
