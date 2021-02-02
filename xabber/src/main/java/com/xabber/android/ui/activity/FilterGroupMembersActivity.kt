@@ -20,9 +20,9 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupMember
+import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -112,7 +112,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
         if (filterString.isNotEmpty()) {
             val newList = ArrayList<GroupMember>()
             for (groupchatMember in GroupMemberManager.getInstance()
-                    .getGroupchatMembers(groupchat.contactJid))
+                    .getGroupMembers(groupchat.contactJid))
                 if (groupchatMember.nickname!!.toLowerCase().contains(filterString)
                         || groupchatMember.nickname!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))
                         || (groupchatMember.jid != null && groupchatMember.jid!!.toLowerCase().contains(filterString))
@@ -121,7 +121,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
             adapter.setItems(newList)
         } else {
             val list = ArrayList(GroupMemberManager.getInstance()
-                    .getGroupchatMembers(groupchat.contactJid))
+                    .getGroupMembers(groupchat.contactJid))
             list.sortWith { o1: GroupMember, o2: GroupMember ->
                 if (o1.isMe && !o2.isMe) return@sortWith -1
                 if (o2.isMe && !o1.isMe) return@sortWith 1

@@ -3,9 +3,9 @@ package com.xabber.android.data.extension.groupchat;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
 import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -104,15 +104,15 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                             presence.setPresentMembers(Integer.parseInt(parser.nextText()));
                             break;
                         case GroupchatPresence.PRIVACY:
-                            presence.setPrivacy(GroupchatPrivacyType
+                            presence.setPrivacy(GroupPrivacyType
                                     .getPrivacyTypeFromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.MEMBERSHIP:
-                            presence.setMembership(GroupchatMembershipType
+                            presence.setMembership(GroupMembershipType
                                     .getMembershipTypeFromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.INDEX:
-                            presence.setIndex(GroupchatIndexType
+                            presence.setIndex(GroupIndexType
                                     .getIndexTypeFromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.STATUS:

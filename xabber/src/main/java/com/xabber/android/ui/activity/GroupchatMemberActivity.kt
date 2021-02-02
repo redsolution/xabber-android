@@ -43,10 +43,10 @@ import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupMember
+import com.xabber.android.data.groups.GroupMemberManager
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.AccountInfoEditFragment
@@ -132,7 +132,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         groupMember = GroupMemberManager.getInstance()
-                .getGroupchatMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
+                .getGroupMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
@@ -221,7 +221,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             }
             adb.show()
         }
-        if (groupchat!!.privacyType!! != GroupchatPrivacyType.INCOGNITO)
+        if (groupchat!!.privacyType!! != GroupPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupMember!!.jid)
 
         findViewById<TextView>(R.id.groupchat_member_title).text = getString(R.string.groupchat_member_of_group_name,
@@ -655,7 +655,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         val textView = findViewById<TextView>(R.id.first_button_text)
 
         imageButton.setOnClickListener {
-            if (groupchat!!.privacyType != GroupchatPrivacyType.INCOGNITO
+            if (groupchat!!.privacyType != GroupPrivacyType.INCOGNITO
                     && !groupMember!!.jid.isNullOrEmpty()) {
                 val contactJid = ContactJid.from(groupMember!!.jid)
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this,

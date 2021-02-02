@@ -12,9 +12,9 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.extension.groupchat.rights.GroupMemberRightsListener
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupMember
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupMember
+import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.ui.activity.GroupchatMemberActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager

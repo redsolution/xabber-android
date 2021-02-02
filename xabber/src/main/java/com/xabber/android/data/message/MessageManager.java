@@ -49,8 +49,8 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -391,7 +391,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                     TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
-                GroupchatManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, timestamp);
+                GroupsManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, timestamp);
                 return;
             } else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
                 AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
@@ -553,13 +553,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             // groupchat
             GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
             if (groupchatUser != null) {
-                GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getTo().asBareJid());
+                GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
                 newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
             } else {
                 newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
             }
-            if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatManager.SYSTEM_MESSAGE_NAMESPACE))
+            if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE))
                 newMessageRealmObject.setGroupchatSystem(true);
 
 

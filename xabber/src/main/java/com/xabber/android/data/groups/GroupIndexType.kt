@@ -1,9 +1,9 @@
-package com.xabber.android.data.message.chat.groupchat
+package com.xabber.android.data.groups
 
 import com.xabber.android.R
 import com.xabber.android.data.Application
 
-enum class GroupchatIndexType{
+enum class GroupIndexType{
     NONE,       // explicit "none"
     GLOBAL,     // explicit "global"
     LOCAL;      // explicit "local"
@@ -26,7 +26,7 @@ enum class GroupchatIndexType{
 
     companion object {
         @JvmStatic
-        fun getIndexTypeFromXml(text: String?): GroupchatIndexType {
+        fun getIndexTypeFromXml(text: String?): GroupIndexType {
             return when (text) {
                 "local" -> LOCAL
                 "global" -> GLOBAL
@@ -35,7 +35,7 @@ enum class GroupchatIndexType{
         }
 
         @JvmStatic
-        fun getIndexTypeByLocalizedString(text: String?) : GroupchatIndexType {
+        fun getIndexTypeByLocalizedString(text: String?) : GroupIndexType {
             return when (text) {
                 Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_local) -> LOCAL
                 Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_global) -> GLOBAL

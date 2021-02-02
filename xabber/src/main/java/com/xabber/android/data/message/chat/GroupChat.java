@@ -1,4 +1,4 @@
-package com.xabber.android.data.message.chat.groupchat;
+package com.xabber.android.data.message.chat;
 
 import android.util.Pair;
 
@@ -20,14 +20,17 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
@@ -55,9 +58,9 @@ public class GroupChat extends AbstractChat {
 
     private static final String LOG_TAG = GroupChat.class.getSimpleName();
 
-    private GroupchatIndexType indexType;
-    private GroupchatMembershipType membershipType;
-    private GroupchatPrivacyType privacyType = GroupchatPrivacyType.NONE;
+    private GroupIndexType indexType;
+    private GroupMembershipType membershipType;
+    private GroupPrivacyType privacyType = GroupPrivacyType.NONE;
 
     private String owner;
 
@@ -85,8 +88,8 @@ public class GroupChat extends AbstractChat {
         super(account, user);
     }
 
-    public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user, GroupchatIndexType indexType,
-                     GroupchatMembershipType membershipType, GroupchatPrivacyType privacyType, String owner,
+    public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user, GroupIndexType indexType,
+                     GroupMembershipType membershipType, GroupPrivacyType privacyType, String owner,
                      String name, String description, int numberOfMembers, String pinnedMessageId,
                      String membersListVersion, boolean canInvite, boolean canChangeSettings,
                      boolean canChangeUsersSettings, boolean canChangeNicknames, boolean canChangeBadge,
@@ -184,7 +187,7 @@ public class GroupChat extends AbstractChat {
             GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
             if (groupchatUser != null) {
                 gropchatUserId = groupchatUser.getId();
-                GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, contactJid.getBareJid());
+                GroupMemberManager.getInstance().saveGroupUser(groupchatUser, contactJid.getBareJid());
             }
 
             RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(packet);
@@ -213,7 +216,7 @@ public class GroupChat extends AbstractChat {
             }
 
             boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT,
-                    GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
+                    GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
             // create message with file-attachments
             if (attachmentRealmObjects.size() > 0)
@@ -300,7 +303,7 @@ public class GroupChat extends AbstractChat {
         GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             groupchatUserId = groupchatUser.getId();
-            GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
+            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)
@@ -313,7 +316,7 @@ public class GroupChat extends AbstractChat {
         String markupText = bodies.second;
 
         boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT,
-                GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
+                GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
         // create message with file-attachments
         if (attachmentRealmObjects.size() > 0)
@@ -342,24 +345,24 @@ public class GroupChat extends AbstractChat {
     @Override
     public void markAsReadAll(boolean trySendDisplay) {
         super.markAsReadAll(trySendDisplay);
-        if (GroupchatManager.getInstance().hasInvite(account, contactJid)){
-            GroupchatManager.getInstance().readInvite(account, contactJid);
+        if (GroupsManager.getInstance().hasInvite(account, contactJid)){
+            GroupsManager.getInstance().readInvite(account, contactJid);
         }
     }
 
     /* Getters and setters */
-    public GroupchatIndexType getIndexType() { return indexType; }
-    public void setIndexType(GroupchatIndexType indexType) { this.indexType = indexType; }
+    public GroupIndexType getIndexType() { return indexType; }
+    public void setIndexType(GroupIndexType indexType) { this.indexType = indexType; }
 
     public String getResource() { return resource; }
     public void setResource(String resource) { this.resource = resource; }
 
-    public GroupchatMembershipType getMembershipType() { return membershipType; }
-    public void setMembershipType(GroupchatMembershipType membershipType) { this.membershipType = membershipType; }
+    public GroupMembershipType getMembershipType() { return membershipType; }
+    public void setMembershipType(GroupMembershipType membershipType) { this.membershipType = membershipType; }
 
-    public GroupchatPrivacyType getPrivacyType() { return privacyType; }
+    public GroupPrivacyType getPrivacyType() { return privacyType; }
 
-    public void setPrivacyType(GroupchatPrivacyType privacyType) { this.privacyType = privacyType; }
+    public void setPrivacyType(GroupPrivacyType privacyType) { this.privacyType = privacyType; }
 
     public String getOwner() { return owner; }
     public void setOwner(String owner) { this.owner = owner; }
@@ -445,8 +448,8 @@ public class GroupChat extends AbstractChat {
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            if (GroupchatManager.getInstance().hasInvite(account, contactJid))
-                return new Date(GroupchatManager.getInstance().getInvite(account, contactJid).getDate());
+            if (GroupsManager.getInstance().hasInvite(account, contactJid))
+                return new Date(GroupsManager.getInstance().getInvite(account, contactJid).getDate());
             return null;
         }
     }
@@ -455,8 +458,8 @@ public class GroupChat extends AbstractChat {
 
     @Override
     public int getUnreadMessageCount() {
-        if (GroupchatManager.getInstance().hasInvite(account, contactJid)
-                && !GroupchatManager.getInstance().getInvite(account, contactJid).isRead()){
+        if (GroupsManager.getInstance().hasInvite(account, contactJid)
+                && !GroupsManager.getInstance().getInvite(account, contactJid).isRead()){
             return super.getUnreadMessageCount() + 1;
         } else return super.getUnreadMessageCount();
     }

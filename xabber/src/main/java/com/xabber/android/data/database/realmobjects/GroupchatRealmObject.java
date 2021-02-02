@@ -4,9 +4,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 
 import java.util.UUID;
 
@@ -33,9 +33,9 @@ public class GroupchatRealmObject extends RealmObject {
     private String accountJid;
     private String owner;
     private String name;
-    private String privacy = GroupchatPrivacyType.NONE.toString();
-    private String index = GroupchatIndexType.NONE.toString();
-    private String membership = GroupchatMembershipType.NONE.toString();
+    private String privacy = GroupPrivacyType.NONE.toString();
+    private String index = GroupIndexType.NONE.toString();
+    private String membership = GroupMembershipType.NONE.toString();
     private String description;
     private String pinnedMessageId;
     private String membersListVersion;
@@ -113,60 +113,60 @@ public class GroupchatRealmObject extends RealmObject {
         this.name = name;
     }
 
-    public GroupchatPrivacyType getPrivacy() {
+    public GroupPrivacyType getPrivacy() {
         if (privacy != null) {
             switch (privacy) {
                 case "incognitoGroupChat":
-                    return GroupchatPrivacyType.INCOGNITO;
+                    return GroupPrivacyType.INCOGNITO;
                 case "publicGroupChat":
-                    return GroupchatPrivacyType.PUBLIC;
+                    return GroupPrivacyType.PUBLIC;
                 default:
-                    return GroupchatPrivacyType.NONE;
+                    return GroupPrivacyType.NONE;
             }
         }
-        return GroupchatPrivacyType.NONE;
+        return GroupPrivacyType.NONE;
     }
-    public void setPrivacy(GroupchatPrivacyType privacy) {
+    public void setPrivacy(GroupPrivacyType privacy) {
         if (privacy != null)
             this.privacy = privacy.toString();
     }
 
-    public GroupchatIndexType getIndex() {
+    public GroupIndexType getIndex() {
         if (index != null) {
             switch (index) {
                 case "GLOBAL":
                 case "global":
-                    return GroupchatIndexType.GLOBAL;
+                    return GroupIndexType.GLOBAL;
                 case "LOCAL":
                 case "local":
-                    return GroupchatIndexType.LOCAL;
+                    return GroupIndexType.LOCAL;
                 default:
-                    return GroupchatIndexType.NONE;
+                    return GroupIndexType.NONE;
             }
         }
-        return GroupchatIndexType.NONE;
+        return GroupIndexType.NONE;
     }
-    public void setIndex(GroupchatIndexType index) {
+    public void setIndex(GroupIndexType index) {
         if (index != null)
             this.index = index.toString();
     }
 
-    public GroupchatMembershipType getMembership() {
+    public GroupMembershipType getMembership() {
         if (membership != null) {
             switch (membership) {
                 case "OPEN":
                 case "open":
-                    return GroupchatMembershipType.OPEN;
+                    return GroupMembershipType.OPEN;
                 case "memberOnly":
                 case "MEMBER_ONLY":
-                    return GroupchatMembershipType.MEMBER_ONLY;
+                    return GroupMembershipType.MEMBER_ONLY;
                 default:
-                    return GroupchatMembershipType.NONE;
+                    return GroupMembershipType.NONE;
             }
         }
-        return GroupchatMembershipType.NONE;
+        return GroupMembershipType.NONE;
     }
-    public void setMembership(GroupchatMembershipType membership) {
+    public void setMembership(GroupMembershipType membership) {
         if (membership != null)
             this.membership = membership.toString();
     }

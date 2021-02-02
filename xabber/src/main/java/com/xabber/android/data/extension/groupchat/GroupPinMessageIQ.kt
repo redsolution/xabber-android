@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupsManager
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
@@ -23,7 +23,7 @@ class GroupPinMessageIQ(to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME,
     }
 
     private companion object {
-        const val NAMESPACE = GroupchatManager.NAMESPACE
+        const val NAMESPACE = GroupsManager.NAMESPACE
         const val UPDATE_ELEMENT_NAME = "update"
     }
 

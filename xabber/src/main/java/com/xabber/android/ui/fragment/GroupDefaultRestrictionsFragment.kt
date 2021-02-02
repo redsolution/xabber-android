@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupsManager
 import com.xabber.android.ui.activity.GroupDefaultRestrictionsActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -38,7 +38,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupchatManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
+        GroupsManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
         if (activity != null && activity is GroupDefaultRestrictionsActivity)
             (activity as GroupDefaultRestrictionsActivity).showProgressBar(true)
 
@@ -164,7 +164,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
         return newDataForm
     }
 
-    fun sendSaveRequest() = GroupchatManager.getInstance()
+    fun sendSaveRequest() = GroupsManager.getInstance()
             .requestSetGroupDefaultRestrictions(groupchat, createNewDataFrom())
 
     companion object {

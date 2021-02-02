@@ -1,8 +1,8 @@
 package com.xabber.android.data.extension.groupchat;
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
@@ -25,9 +25,9 @@ public class GroupchatPresence extends GroupchatExtensionElement {
 
     private String name;
     private String description;
-    private GroupchatPrivacyType privacy;
-    private GroupchatMembershipType membership;
-    private GroupchatIndexType index;
+    private GroupPrivacyType privacy;
+    private GroupMembershipType membership;
+    private GroupIndexType index;
     private String pinnedMessageId;
     private boolean collect;
     private boolean p2p;
@@ -54,27 +54,27 @@ public class GroupchatPresence extends GroupchatExtensionElement {
         this.name = name;
     }
 
-    public GroupchatPrivacyType getPrivacy() {
+    public GroupPrivacyType getPrivacy() {
         return privacy;
     }
 
-    public void setPrivacy(GroupchatPrivacyType privacy) {
+    public void setPrivacy(GroupPrivacyType privacy) {
         this.privacy = privacy;
     }
 
-    public GroupchatMembershipType getMembership() {
+    public GroupMembershipType getMembership() {
         return membership;
     }
 
-    public void setMembership(GroupchatMembershipType membership) {
+    public void setMembership(GroupMembershipType membership) {
         this.membership = membership;
     }
 
-    public GroupchatIndexType getIndex() {
+    public GroupIndexType getIndex() {
         return index;
     }
 
-    public void setIndex(GroupchatIndexType index) {
+    public void setIndex(GroupIndexType index) {
         this.index = index;
     }
 

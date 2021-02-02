@@ -5,8 +5,8 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
+import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,22 +17,7 @@ public class GroupMemberRepository {
 
     public static final String LOG_TAG = GroupMemberRepository.class.getSimpleName();
 
-    public static GroupMemberRealmObject getGroupchatMemberRealmObjectById(String id) {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        GroupMemberRealmObject groupMemberRealmObject = realm
-                .where(GroupMemberRealmObject.class)
-                .equalTo(GroupMemberRealmObject.Fields.UNIQUE_ID, id)
-                .findFirst();
-        if (Looper.myLooper() == Looper.getMainLooper())
-            return groupMemberRealmObject;
-        else {
-            GroupMemberRealmObject result = realm.copyFromRealm(groupMemberRealmObject);
-            realm.close();
-            return result;
-        }
-    }
-
-    public static Collection<GroupMember> getAllGroupchatMembersFromRealm() {
+    public static Collection<GroupMember> getAllGroupMembersFromRealm() {
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
@@ -43,7 +28,7 @@ public class GroupMemberRepository {
         ArrayList<GroupMember> result = new ArrayList<>(groupMemberRealmObjects.size());
 
         for (GroupMemberRealmObject gro : groupMemberRealmObjects)
-            result.add(new GroupMember(gro.getUniqueId(), gro.getJid(), gro.getGroupchatJid(),
+            result.add(new GroupMember(gro.getUniqueId(), gro.getJid(), gro.getGroupJid(),
                     gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
                     gro.getAvatarUrl(), gro.getLastPresent(), gro.isMe(), gro.isCanRestrictMembers(),
                     gro.isCanBlockMembers(), gro.isCanChangeBadge(), gro.isCanChangeNickname(),
@@ -56,7 +41,7 @@ public class GroupMemberRepository {
         return result;
     }
 
-    public static void removeGroupchatMemberById(String id) {
+    public static void removeGroupMemberById(String id) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -77,11 +62,7 @@ public class GroupMemberRepository {
         });
     }
 
-    public static void removeGroupchatMember(GroupMember groupMember) {
-        removeGroupchatMemberById(groupMember.getId());
-    }
-
-    public static void saveOrUpdateGroupchatMember(GroupMember groupMember) {
+    public static void saveOrUpdateGroupMember(GroupMember groupMember) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -96,7 +77,7 @@ public class GroupMemberRepository {
                         gro = new GroupMemberRealmObject(groupMember.getId());
 
                     gro.setJid(groupMember.getJid());
-                    gro.setGroupchatJid(groupMember.getGroupchatJid());
+                    gro.setGroupJid(groupMember.getGroupJid());
                     gro.setNickname(groupMember.getNickname());
                     gro.setRole(groupMember.getRole());
                     gro.setBadge(groupMember.getBadge());

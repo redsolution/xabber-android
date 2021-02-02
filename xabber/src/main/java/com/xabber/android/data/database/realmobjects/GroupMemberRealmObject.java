@@ -12,7 +12,7 @@ public class GroupMemberRealmObject extends RealmObject {
     @Required
     private String uniqueId;
     private String jid;
-    private String groupchatJid;
+    private String groupJid;
     private String nickname;
     private String role;
     private String badge;
@@ -73,11 +73,11 @@ public class GroupMemberRealmObject extends RealmObject {
         this.badge = badge;
     }
 
-    public String getGroupchatJid() {
-        return groupchatJid;
+    public String getGroupJid() {
+        return groupJid;
     }
-    public void setGroupchatJid(String groupchatJid) {
-        this.groupchatJid = groupchatJid;
+    public void setGroupJid(String groupJid) {
+        this.groupJid = groupJid;
     }
 
     public String getAvatarHash() {
@@ -174,7 +174,7 @@ public class GroupMemberRealmObject extends RealmObject {
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
         public static final String JID = "jid";
-        public static final String GROUPCHAT_JID = "groupchatJid";
+        public static final String GROUP_JID = "groupJid";
         public static final String NICKNAME = "nickname";
         public static final String ROLE = "role";
         public static final String BADGE = "badge";

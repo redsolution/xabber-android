@@ -26,13 +26,13 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.activity.GroupStatusActivity;
@@ -227,7 +227,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         infoLayout.setVisibility(View.VISIBLE);
         infoProgress.setVisibility(View.GONE);
 
-        GroupchatIndexType indexType = groupChat.getIndexType();
+        GroupIndexType indexType = groupChat.getIndexType();
         if (indexType != null) {
             switch (indexType) {
                 case GLOBAL:
@@ -242,7 +242,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                     groupchatIndexLayout.setVisibility(View.GONE);
             }
         } else groupchatIndexLayout.setVisibility(View.GONE);
-        GroupchatMembershipType membershipType = groupChat.getMembershipType();
+        GroupMembershipType membershipType = groupChat.getMembershipType();
         if (membershipType != null) {
             switch (membershipType) {
                 case OPEN:
@@ -258,7 +258,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                     groupchatMembershipLayout.setVisibility(View.GONE);
             }
         } else groupchatMembershipLayout.setVisibility(View.GONE);
-        GroupchatPrivacyType privacyType = groupChat.getPrivacyType();
+        GroupPrivacyType privacyType = groupChat.getPrivacyType();
         groupchatAnonymityText.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         if (privacyType != null) {
             switch (privacyType) {
@@ -298,7 +298,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (membersAdapter != null) {
 
             ArrayList<GroupMember> list = new ArrayList<>(GroupMemberManager.getInstance()
-                    .getGroupchatMembers(groupchatContact));
+                    .getGroupMembers(groupchatContact));
 
             Collections.sort(list, (o1, o2) -> {
                 if (o1.isMe() && !o2.isMe()) return -1;
@@ -353,7 +353,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGroupchatPresenceUpdated(
-            GroupchatManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
+            GroupsManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
 
         if (isThisChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
             updateChatInfo((GroupChat) groupChat);

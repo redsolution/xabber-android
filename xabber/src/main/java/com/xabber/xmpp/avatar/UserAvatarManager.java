@@ -3,7 +3,7 @@ package com.xabber.xmpp.avatar;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
+import com.xabber.android.data.groups.GroupMember;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -179,7 +179,7 @@ public final class UserAvatarManager extends Manager {
 
     public void requestAvatarOfGroupchatMember(GroupMember groupMember) {
         if (groupMember == null
-                || groupMember.getGroupchatJid() == null
+                || groupMember.getGroupJid() == null
                 || groupMember.getAvatarHash() == null) {
             return;
         }
@@ -199,7 +199,7 @@ public final class UserAvatarManager extends Manager {
                             Collections.singletonList(new Item(avatarHash)));
             BareJid groupchatJid = null;
             try {
-                groupchatJid = JidCreate.bareFrom(groupMember.getGroupchatJid());
+                groupchatJid = JidCreate.bareFrom(groupMember.getGroupJid());
             } catch (XmppStringprepException e) {
                 LogManager.exception(LOG_TAG, e);
                 groupchatMemberAvatarRequests.remove(avatarHash);

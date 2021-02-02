@@ -106,11 +106,11 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -664,7 +664,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null){
             MessageRealmObject message = MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
 
-            pinnedMessageCrossIv.setOnClickListener(v -> GroupchatManager.getInstance()
+            pinnedMessageCrossIv.setOnClickListener(v -> GroupsManager.getInstance()
                     .sendUnPinMessageRequest((GroupChat)getChat()));
             pinnedRootView.setOnClickListener(v ->
                     startActivity(MessagesActivity.createIntentShowPinned(getContext(),
@@ -676,9 +676,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                if (GroupMemberManager.getInstance().getGroupchatMemberById(message.getGroupchatUserId()) != null){
+                if (GroupMemberManager.getInstance().getGroupMemberById(message.getGroupchatUserId()) != null){
                     pinnedMessageHeaderTv.setText(GroupMemberManager.getInstance()
-                            .getGroupchatMemberById(message.getGroupchatUserId()).getBestName());
+                            .getGroupMemberById(message.getGroupchatUserId()).getBestName());
                 } else {
                     pinnedMessageHeaderTv.setText(message.getUser().toString());
                 }
@@ -695,7 +695,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
 
             GroupMember member = GroupMemberManager.getInstance()
-                    .getGroupchatMemberById(message.getGroupchatUserId());
+                    .getGroupMemberById(message.getGroupchatUserId());
             if (member != null){
                 if (member.getBadge() != null){
                     pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
@@ -768,7 +768,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void onToolbarInteractionPinClick(){
         if (getChat() instanceof GroupChat){
-            GroupchatManager.getInstance().
+            GroupsManager.getInstance().
                     sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
             bottomPanelMessagesIds.clear();
             closeInteractionPanel();
@@ -851,7 +851,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         IntroViewDecoration.IntroType type = IntroViewDecoration.IntroType.REGULAR_CHAT;
         if (getChat() instanceof RegularChat) type = IntroViewDecoration.IntroType.REGULAR_CHAT;
         if (getChat() instanceof GroupChat){
-            if (((GroupChat) getChat()).getPrivacyType() == GroupchatPrivacyType.INCOGNITO)
+            if (((GroupChat) getChat()).getPrivacyType() == GroupPrivacyType.INCOGNITO)
                 type = IntroViewDecoration.IntroType.INCOGNITO_GROUP;
             else type = IntroViewDecoration.IntroType.PUBLIC_GROUP;
         }
@@ -1220,7 +1220,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(GroupchatManager.GroupchatPresenceUpdatedEvent event){
+    public void onEvent(GroupsManager.GroupchatPresenceUpdatedEvent event){
         if (event.getGroupJid().getBareJid().equals(user.toString()))
             setupPinnedMessageView();
     }
@@ -1883,7 +1883,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getReadyForMessageEditing(clickedMessageRealmObject);
                     break;
                 case "action_message_pin":
-                    GroupchatManager.getInstance().sendPinMessageRequest(clickedMessageRealmObject);
+                    GroupsManager.getInstance().sendPinMessageRequest(clickedMessageRealmObject);
                 default:
                     break;
             }
@@ -2085,8 +2085,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
-        if (GroupchatManager.getInstance().hasInvite(getAccount(), getUser())
-                && !GroupchatManager.getInstance().getInvite(getAccount(), getUser()).isRead()){
+        if (GroupsManager.getInstance().hasInvite(getAccount(), getUser())
+                && !GroupsManager.getInstance().getInvite(getAccount(), getUser()).isRead()){
             show = true;
         }
 
@@ -2135,7 +2135,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             setNewContactSubscribeLayout();
                         } else {
                             // NONE = No current subscriptions or requests. Not in roster.
-                            if (GroupchatManager.getInstance().hasInvite(account, user))
+                            if (GroupsManager.getInstance().hasInvite(account, user))
                                 setInvitedToGroupLayout();
                             else setNewContactAddLayout();
                         }
@@ -2163,8 +2163,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         addContact.setOnClickListener(v -> {
             Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
                 try {
-                    if (GroupchatManager.getInstance().hasInvite(account, user)){
-                        GroupchatManager.getInstance().acceptInvitation(account, user);
+                    if (GroupsManager.getInstance().hasInvite(account, user)){
+                        GroupsManager.getInstance().acceptInvitation(account, user);
                     } else {
                         if (!inRoster) {
                             RosterManager.getInstance()                                                            // Create contact if not in roster.
@@ -2202,14 +2202,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(v -> {
             try {
                 // fully discard subscription
-                if (GroupchatManager.getInstance().hasInvite(account, user))
-                    GroupchatManager.getInstance().declineInvitation(account, user);
+                if (GroupsManager.getInstance().hasInvite(account, user))
+                    GroupsManager.getInstance().declineInvitation(account, user);
                 PresenceManager.getInstance().discardSubscription(account, user);
                 PresenceManager.getInstance().unsubscribeFromPresence(account, user);
             } catch (NetworkException e) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
-            if (!GroupchatManager.getInstance().hasInvite(account, user))
+            if (!GroupsManager.getInstance().hasInvite(account, user))
                 BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
                     @Override
                     public void onSuccessBlock() {
@@ -2248,8 +2248,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setInvitedToGroupLayout(){
         TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
-        if (!GroupchatManager.getInstance().getInvite(getAccount(), getUser()).isRead())
-            GroupchatManager.getInstance().readInvite(getAccount(), getUser());
+        if (!GroupsManager.getInstance().getInvite(getAccount(), getUser()).isRead())
+            GroupsManager.getInstance().readInvite(getAccount(), getUser());
 
         addContactMessage.setVisibility(View.GONE);
         addContact.setText(R.string.groupchat_join);

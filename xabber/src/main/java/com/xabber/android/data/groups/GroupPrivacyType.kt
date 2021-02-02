@@ -1,9 +1,9 @@
-package com.xabber.android.data.message.chat.groupchat
+package com.xabber.android.data.groups
 
 import com.xabber.android.R
 import com.xabber.android.data.Application
 
-enum class GroupchatPrivacyType {
+enum class GroupPrivacyType {
     NONE,
     INCOGNITO,
     PUBLIC;
@@ -26,7 +26,7 @@ enum class GroupchatPrivacyType {
 
     companion object {
         @JvmStatic
-        fun getPrivacyTypeFromXml(text: String?): GroupchatPrivacyType {
+        fun getPrivacyTypeFromXml(text: String?): GroupPrivacyType {
             return when (text) {
                 "public" -> PUBLIC
                 "incognito" -> INCOGNITO

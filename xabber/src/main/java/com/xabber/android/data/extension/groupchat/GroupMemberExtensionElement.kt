@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.groups.GroupsManager
 import com.xabber.xmpp.avatar.MetadataInfo
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
@@ -58,7 +58,7 @@ class GroupMemberExtensionElement(val id: String, val nickname: String, val role
 
     companion object {
         const val ELEMENT = "user"
-        const val NAMESPACE = GroupchatManager.NAMESPACE
+        const val NAMESPACE = GroupsManager.NAMESPACE
         const val ATTR_ID = "id"
         const val ELEMENT_JID = "jid"
         const val ELEMENT_NICKNAME = "nickname"

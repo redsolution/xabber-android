@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;

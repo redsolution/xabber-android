@@ -2,9 +2,9 @@ package com.xabber.android.data.extension.groupchat;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType;
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType;
+import com.xabber.android.data.groups.GroupIndexType;
+import com.xabber.android.data.groups.GroupMembershipType;
+import com.xabber.android.data.groups.GroupPrivacyType;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +20,9 @@ public class CreateGroupchatTest {
     String description;
     String name;
     String groupJid;
-    GroupchatMembershipType membershipType;
-    GroupchatIndexType indexType;
-    GroupchatPrivacyType privacyType;
+    GroupMembershipType membershipType;
+    GroupIndexType indexType;
+    GroupPrivacyType privacyType;
 
     CreateGroupchatIQ iq;
 
@@ -41,9 +41,9 @@ public class CreateGroupchatTest {
         description = "Groupchat description";
         name = "Group Name";
         groupJid = "my_group";
-        membershipType = GroupchatMembershipType.OPEN;
-        indexType = GroupchatIndexType.LOCAL;
-        privacyType = GroupchatPrivacyType.INCOGNITO;
+        membershipType = GroupMembershipType.OPEN;
+        indexType = GroupIndexType.LOCAL;
+        privacyType = GroupPrivacyType.INCOGNITO;
 
         iq = new CreateGroupchatIQ(from.getFullJid(), to, name, groupJid, description,
                 membershipType, privacyType, indexType);

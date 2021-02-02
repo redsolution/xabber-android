@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.invite.incoming
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.groups.GroupsManager
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
@@ -36,7 +36,7 @@ class IncomingInviteExtensionElement: ExtensionElement {
 
     companion object{
         const val HASH_BLOCK = "#invite"
-        const val NAMESPACE = GroupchatManager.NAMESPACE + HASH_BLOCK
+        const val NAMESPACE = GroupsManager.NAMESPACE + HASH_BLOCK
         const val ELEMENT = "invite"
         const val JID_ATTRIBUTE = "jid"
     }

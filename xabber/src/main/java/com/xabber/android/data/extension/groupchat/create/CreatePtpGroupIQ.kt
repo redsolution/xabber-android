@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.create
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 

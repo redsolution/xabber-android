@@ -1,4 +1,4 @@
-package com.xabber.android.data.message.chat.groupchat;
+package com.xabber.android.data.groups;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -45,6 +45,7 @@ import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -79,20 +80,20 @@ import java.util.Map;
 import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
 import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
 
-public class GroupchatManager implements OnPacketListener, OnLoadListener {
+public class GroupsManager implements OnPacketListener, OnLoadListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/groups";
     public static final String SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + GroupSystemMessageExtensionElement.HASH_BLOCK;
-    private static final String LOG_TAG = GroupchatManager.class.getSimpleName();
-    private static GroupchatManager instance;
+    private static final String LOG_TAG = GroupsManager.class.getSimpleName();
+    private static GroupsManager instance;
 
-    private final Map<AccountJid, List<Jid>> availableGroupchatServers = new HashMap<>();
-    private final Map<AccountJid, List<String>> customGroupchatServers = new HashMap<>();
+    private final Map<AccountJid, List<Jid>> availableGroupServers = new HashMap<>();
+    private final Map<AccountJid, List<String>> customGroupServers = new HashMap<>();
     private final NestedMap<GroupInviteRealmObject> invitesMap = new NestedMap<>();
 
-    public static GroupchatManager getInstance() {
+    public static GroupsManager getInstance() {
         if (instance == null)
-            instance = new GroupchatManager();
+            instance = new GroupsManager();
         return instance;
     }
 
@@ -101,11 +102,11 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         for (GroupInviteRealmObject giro : GroupInviteRepository.getAllInvitationsForEnabledAccounts()){
             invitesMap.put(giro.getAccountJid().toString(), giro.getGroupJid().toString(), giro);
         }
-        availableGroupchatServers.clear();
-        availableGroupchatServers.putAll(AccountRepository.getGroupServers());
+        availableGroupServers.clear();
+        availableGroupServers.putAll(AccountRepository.getGroupServers());
 
-        customGroupchatServers.clear();
-        customGroupchatServers.putAll(AccountRepository.getCustomGroupServers());
+        customGroupServers.clear();
+        customGroupServers.putAll(AccountRepository.getCustomGroupServers());
     }
 
     @Override
@@ -122,20 +123,20 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
         try {
             AccountJid accountJid = connectionItem.getAccount();
 
-            if (availableGroupchatServers.get(accountJid) == null)
-                availableGroupchatServers.remove(accountJid);
+            if (availableGroupServers.get(accountJid) == null)
+                availableGroupServers.remove(accountJid);
 
-            availableGroupchatServers.put(accountJid, new ArrayList<>());
+            availableGroupServers.put(accountJid, new ArrayList<>());
 
             for (DiscoverItems.Item item : ((DiscoverItems) packet).getItems()) {
                 if (NAMESPACE.equals(item.getNode())){
                     Jid srvJid = ContactJid.from(item.getEntityID()).getBareJid();
-                    availableGroupchatServers.get(accountJid).add(srvJid);
+                    availableGroupServers.get(accountJid).add(srvJid);
 
                 }
             }
 
-            AccountRepository.saveOrUpdateGroupServers(accountJid, availableGroupchatServers.get(accountJid));
+            AccountRepository.saveOrUpdateGroupServers(accountJid, availableGroupServers.get(accountJid));
             LogManager.d(LOG_TAG, "Got a group server list");
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
@@ -338,8 +339,8 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     }
 
     public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName, String description,
-                                           String localpart, GroupchatMembershipType membershipType,
-                                           GroupchatIndexType indexType, GroupchatPrivacyType privacyType,
+                                           String localpart, GroupMembershipType membershipType,
+                                           GroupIndexType indexType, GroupPrivacyType privacyType,
                                            CreateGroupchatIqResultListener listener) {
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
@@ -388,23 +389,23 @@ public class GroupchatManager implements OnPacketListener, OnLoadListener {
     }
 
     public List<Jid> getAvailableGroupchatServersForAccountJid(AccountJid accountJid) {
-        return availableGroupchatServers.get(accountJid);
+        return availableGroupServers.get(accountJid);
     }
 
     public List<String> getCustomGroupServers(AccountJid accountJid){
-        return customGroupchatServers.get(accountJid);
+        return customGroupServers.get(accountJid);
     }
 
     public void saveCustomGroupServer(AccountJid accountJid, String server){
-        if (customGroupchatServers.get(accountJid) == null){
-            customGroupchatServers.put(accountJid, new ArrayList<>());
+        if (customGroupServers.get(accountJid) == null){
+            customGroupServers.put(accountJid, new ArrayList<>());
         }
-        customGroupchatServers.get(accountJid).add(server);
+        customGroupServers.get(accountJid).add(server);
         AccountRepository.saveCustomGroupServer(accountJid, server);
     }
 
     public void removeCustomGroupServer(AccountJid accountJid, String string){
-        customGroupchatServers.get(accountJid).remove(string);
+        customGroupServers.get(accountJid).remove(string);
         AccountRepository.removeCustomGroupServer(accountJid, string);
     }
 

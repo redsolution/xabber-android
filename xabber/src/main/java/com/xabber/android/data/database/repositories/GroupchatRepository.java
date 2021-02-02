@@ -6,7 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupchatRealmObject;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,13 +1,13 @@
 package com.xabber.android.data.extension.groupchat;
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.groups.GroupsManager;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class GroupchatExtensionElement implements ExtensionElement {
 
-    public static final String NAMESPACE = GroupchatManager.NAMESPACE;
+    public static final String NAMESPACE = GroupsManager.NAMESPACE;
     public static final String ELEMENT = "x";
 
     @Override

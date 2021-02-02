@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat.block.blocklist;
 
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 import org.jivesoftware.smack.packet.IQ;
 

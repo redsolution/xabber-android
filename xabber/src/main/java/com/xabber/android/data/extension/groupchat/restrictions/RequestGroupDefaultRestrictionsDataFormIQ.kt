@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.restrictions
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 
 class RequestGroupDefaultRestrictionsDataFormIQ(groupchat: GroupChat): AbstractGroupDefaultRestrictionsIQ() {
 

@@ -24,10 +24,10 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.groups.GroupIndexType
+import com.xabber.android.data.groups.GroupsManager
+import com.xabber.android.data.groups.GroupMembershipType
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.CreateGroupActivity
@@ -306,7 +306,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         }
         circlesLayout.visibility = View.VISIBLE
 
-        val serversList = GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
+        val serversList = GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
         if (serversList != null && serversList.isNotEmpty()){
             serverTv.text = "\u200A@\u200A${serversList.first()}"
         } else {
@@ -323,19 +323,19 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
 
-            val serversList = GroupchatManager.getInstance()
+            val serversList = GroupsManager.getInstance()
                     .getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
 
             if (serversList != null && serversList.isNotEmpty())
                 for (jid in serversList)
                     list.add(jid.toString())
 
-            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(AccountManager.getInstance().firstAccount))
+            list.addAll(GroupsManager.getInstance().getCustomGroupServers(AccountManager.getInstance().firstAccount))
 
         } else if (accountSpinner.selected != null) {
-            for (jid in GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSpinner.selected))
+            for (jid in GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSpinner.selected))
                 list.add(jid.toString())
-            list.addAll(GroupchatManager.getInstance().getCustomGroupServers(accountSpinner.selected))
+            list.addAll(GroupsManager.getInstance().getCustomGroupServers(accountSpinner.selected))
         }
 
         if (list.size == 0 )
@@ -369,7 +369,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
             setView(linearLayout)
             setPositiveButton(getString(R.string.add)) { _, _ ->
                 serverTv.text = "\u200A@\u200A${editText.text}"
-                GroupchatManager.getInstance()
+                GroupsManager.getInstance()
                         .saveCustomGroupServer(accountSpinner.selected ?: account, editText.text.toString())
             }
             setNegativeButton(R.string.cancel) { _, _ ->  }
@@ -381,13 +381,13 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         serverTv.apply {
             setOnClickListener { openServerDialog() }
             if (AccountManager.getInstance().enabledAccounts.size == 1){
-                val servers = GroupchatManager.getInstance().getAvailableGroupchatServersForAccountJid(
+                val servers = GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(
                         AccountManager.getInstance().firstAccount)
                 if (servers != null && servers.size != 0){
                     text = "\u200A@\u200A${servers.first()}"
                     return@apply
                 }
-                val customServers = GroupchatManager.getInstance().getCustomGroupServers(
+                val customServers = GroupsManager.getInstance().getCustomGroupServers(
                         AccountManager.getInstance().firstAccount)
                 if (customServers != null && customServers.size != 0)
                     text = "\u200A@\u200A${customServers.first()}"
@@ -401,22 +401,22 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         if (!isLocalpartCorrect(groupJidEt.text.toString())) return
 
         val membershipType = when (membershipRg.checkedRadioButtonId){
-           R.id.group_membership_members_only_rb -> GroupchatMembershipType.MEMBER_ONLY
-           R.id.group_membership_open_rb -> GroupchatMembershipType.OPEN
-           else -> GroupchatMembershipType.NONE
+           R.id.group_membership_members_only_rb -> GroupMembershipType.MEMBER_ONLY
+           R.id.group_membership_open_rb -> GroupMembershipType.OPEN
+           else -> GroupMembershipType.NONE
         }
 
         val indexType = when (indexRg.checkedRadioButtonId){
-            R.id.group_index_global_rb -> GroupchatIndexType.GLOBAL
-            R.id.group_index_local_rb -> GroupchatIndexType.LOCAL
-            else -> GroupchatIndexType.NONE
+            R.id.group_index_global_rb -> GroupIndexType.GLOBAL
+            R.id.group_index_local_rb -> GroupIndexType.LOCAL
+            else -> GroupIndexType.NONE
         }
 
-        val privacyType = if (isIncognito) GroupchatPrivacyType.INCOGNITO else GroupchatPrivacyType.PUBLIC
+        val privacyType = if (isIncognito) GroupPrivacyType.INCOGNITO else GroupPrivacyType.PUBLIC
 
         val server = serverTv.text.substring(3 until serverTv.text.length)
 
-        GroupchatManager.getInstance().sendCreateGroupchatRequest(accountSpinner.selected ?: getAccount(),
+        GroupsManager.getInstance().sendCreateGroupchatRequest(accountSpinner.selected ?: getAccount(),
                 server, groupNameEt.text.toString(), groupDescriptionEt.text.toString(),
                 groupJidEt.text.toString(), membershipType, indexType, privacyType, this)
 

@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupsManager
 import com.xabber.android.ui.activity.GroupStatusActivity
 import com.xabber.android.ui.adapter.groups.GroupStatusAdapter
 import org.jivesoftware.smackx.xdata.FormField
@@ -45,7 +45,7 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
 
     override fun onResume() {
         super.onResume()
-        GroupchatManager.getInstance().requestGroupStatusForm(groupchat)
+        GroupsManager.getInstance().requestGroupStatusForm(groupchat)
         (activity as GroupStatusActivity).showProgressBar(true)
 
         Application.getInstance().addUIListener(GroupStatusResultListener::class.java, this)
@@ -83,7 +83,7 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
         if (!isThisGroupChat(groupchat)) return
         Application.getInstance().runOnUiThread {
             (activity as GroupStatusActivity).showProgressBar(false)
-            GroupchatManager.getInstance().requestGroupStatusForm(groupchat)
+            GroupsManager.getInstance().requestGroupStatusForm(groupchat)
             Toast.makeText(context, R.string.groupchat_error, Toast.LENGTH_SHORT).show()
         }
     }
@@ -126,7 +126,7 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
     override fun onStatusClicked(option: FormField.Option) {
         (activity as GroupStatusActivity).showProgressBar(true)
 
-        GroupchatManager.getInstance().sendSetGroupchatStatusRequest(groupchat, createNewDataForm(option))
+        GroupsManager.getInstance().sendSetGroupchatStatusRequest(groupchat, createNewDataForm(option))
     }
 
 }

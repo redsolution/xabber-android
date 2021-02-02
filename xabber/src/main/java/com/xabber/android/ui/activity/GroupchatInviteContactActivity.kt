@@ -16,7 +16,7 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.intent.AccountIntentBuilder
 import com.xabber.android.data.intent.EntityIntentBuilder
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager
+import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.OnNumberOfSelectedInvitesChanged
@@ -126,7 +126,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         val fragment = inviteFragment
         if (fragment != null) {
             jidsToInvite = fragment.selectedContacts
-            GroupMemberManager.getInstance().sendGroupchatInvitations(account, groupchatContact, jidsToInvite,
+            GroupMemberManager.getInstance().sendGroupInvitations(account, groupchatContact, jidsToInvite,
                     null, this)
         }
     }

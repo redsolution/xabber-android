@@ -21,8 +21,8 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -96,7 +96,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
-            GroupMemberManager.getInstance().requestGroupchatInvitationsList(account, groupchatContact, this, this);
+            GroupMemberManager.getInstance().requestGroupInvitationsList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }

@@ -1,8 +1,8 @@
 package com.xabber.xmpp.vcard
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.groups.GroupIndexType
+import com.xabber.android.data.groups.GroupMembershipType
+import com.xabber.android.data.groups.GroupPrivacyType
 import org.jivesoftware.smack.provider.IQProvider
 import org.jivesoftware.smack.util.StringUtils
 import org.xmlpull.v1.XmlPullParser
@@ -49,15 +49,15 @@ open class VCardCustomProvider : IQProvider<VCard>() {
     }
 
     private fun parsePrivacy(parser: XmlPullParser, vCard: VCard){
-        vCard.privacyType = GroupchatPrivacyType.getPrivacyTypeFromXml(parser.nextText())
+        vCard.privacyType = GroupPrivacyType.getPrivacyTypeFromXml(parser.nextText())
     }
 
     private fun parseIndex(parser: XmlPullParser, vCard: VCard){
-        vCard.indexType = GroupchatIndexType.getIndexTypeFromXml(parser.nextText())
+        vCard.indexType = GroupIndexType.getIndexTypeFromXml(parser.nextText())
     }
 
     private fun parseMembership(parser: XmlPullParser, vCard: VCard){
-        vCard.membershipType = GroupchatMembershipType.getMembershipTypeFromXml(parser.nextText())
+        vCard.membershipType = GroupMembershipType.getMembershipTypeFromXml(parser.nextText())
     }
 
     private fun parseDescription(parser: XmlPullParser, vCard: VCard){

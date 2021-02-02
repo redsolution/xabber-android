@@ -39,8 +39,8 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
@@ -172,7 +172,7 @@ public class RegularChat extends AbstractChat {
                 this.resource = null;
             }
 
-            if (packet.hasExtension(GroupchatManager.NAMESPACE)){
+            if (packet.hasExtension(GroupsManager.NAMESPACE)){
                 return ChatManager.getInstance().convertRegularToGroup(bareAddress, packet, isCarbons, this);
             }
 
@@ -249,7 +249,7 @@ public class RegularChat extends AbstractChat {
             }
 
             boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT,
-                    GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
+                    GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
             // create message with file-attachments
             if (attachmentRealmObjects.size() > 0)
@@ -296,7 +296,7 @@ public class RegularChat extends AbstractChat {
         GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             gropchatUserId = groupchatUser.getId();
-            GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
+            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getFrom().asBareJid(), timestamp.getTime());
         }
 
         // forward comment (to support previous forwarded xep)
@@ -309,7 +309,7 @@ public class RegularChat extends AbstractChat {
         String markupText = bodies.second;
 
         boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT,
-                GroupchatManager.SYSTEM_MESSAGE_NAMESPACE);
+                GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
         // create message with file-attachments
         if (attachmentRealmObjects.size() > 0)

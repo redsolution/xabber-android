@@ -31,9 +31,9 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -251,7 +251,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                             TimeElement.NAMESPACE);
                                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                                 }
-                                GroupchatManager.getInstance().processIncomingInvite(inviteElement, connection.getAccount(),
+                                GroupsManager.getInstance().processIncomingInvite(inviteElement, connection.getAccount(),
                                         ContactJid.from(forwardedStanza.getFrom()), timestamp);
                             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                             return;
@@ -620,7 +620,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                 TimeElement.NAMESPACE);
                         timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                     }
-                    GroupchatManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                    GroupsManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
                             ContactJid.from(forwardedStanza.getFrom()), timestamp);
                 } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                 accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
@@ -883,7 +883,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
-                GroupchatManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                GroupsManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
                         ContactJid.from(message.getFrom()), timestamp);
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             return null;
@@ -972,14 +972,14 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         // groupchat
         GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
-            GroupMemberManager.getInstance().saveGroupchatUser(groupchatUser, user.getBareJid(), timestamp);
+            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
             messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
         } else {
             messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
         }
 
-        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatManager.SYSTEM_MESSAGE_NAMESPACE))
+        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE))
             messageRealmObject.setGroupchatSystem(true);
 
         return messageRealmObject;

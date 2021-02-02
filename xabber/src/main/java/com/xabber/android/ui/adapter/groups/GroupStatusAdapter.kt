@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.account.StatusMode
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import org.jivesoftware.smackx.xdata.FormField
 
@@ -44,7 +44,7 @@ class GroupStatusVH(itemView: View, val groupchat: GroupChat): RecyclerView.View
     fun bind(status: FormField.Option, description: FormField, listener: Listener){
         itemView.findViewById<TextView>(R.id.group_status_item_tv).text = status.label
 
-        val statusLevelOffset = if (groupchat.privacyType == GroupchatPrivacyType.INCOGNITO)
+        val statusLevelOffset = if (groupchat.privacyType == GroupPrivacyType.INCOGNITO)
             StatusMode.INCOGNITO_GROUP_OFFSET
         else StatusMode.PUBLIC_GROUP_OFFSET
 

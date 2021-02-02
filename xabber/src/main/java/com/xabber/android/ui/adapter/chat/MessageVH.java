@@ -23,7 +23,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
+import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;

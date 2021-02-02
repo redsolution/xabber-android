@@ -1,8 +1,8 @@
 package com.xabber.android.data.extension.groupchat.create
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.groups.GroupIndexType
+import com.xabber.android.data.groups.GroupMembershipType
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.NamedElement
@@ -10,8 +10,8 @@ import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.Jid
 
 class CreateGroupchatIQ(val contact: Jid, to: String, val groupName: String?, private val groupLocalpart: String?,
-                        val description: String?, private val membershipType: GroupchatMembershipType,
-                        private val privacyType: GroupchatPrivacyType, private val indexType: GroupchatIndexType)
+                        val description: String?, private val membershipType: GroupMembershipType,
+                        private val privacyType: GroupPrivacyType, private val indexType: GroupIndexType)
     : GroupchatCreateAbstractIQ() {
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {

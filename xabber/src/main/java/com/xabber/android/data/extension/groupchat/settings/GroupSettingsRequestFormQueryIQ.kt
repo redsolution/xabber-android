@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat.settings
 
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import org.jxmpp.jid.Jid
 
 class GroupSettingsRequestFormQueryIQ(jid: Jid) : GroupchatAbstractQueryIQ(NAMESPACE) {

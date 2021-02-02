@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat.restrictions
 
 import com.xabber.android.data.BaseUIListener
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
 interface GroupDefaultRestrictionsListener: BaseUIListener {

@@ -12,8 +12,8 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupPrivacyType
 
 object StatusBadgeSetupHelper {
 
@@ -35,10 +35,10 @@ object StatusBadgeSetupHelper {
         val isRosterContact = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
-                && (abstractChat.privacyType == GroupchatPrivacyType.PUBLIC
-                || abstractChat.privacyType == GroupchatPrivacyType.NONE)
+                && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
+                || abstractChat.privacyType == GroupPrivacyType.NONE)
         val isIncognitoGroupChat = abstractChat is GroupChat
-                && abstractChat.privacyType == GroupchatPrivacyType.INCOGNITO
+                && abstractChat.privacyType == GroupPrivacyType.INCOGNITO
 
         if (statusLevel == StatusMode.unavailable.statusLevel
                 || statusLevel == StatusMode.connection.statusLevel)

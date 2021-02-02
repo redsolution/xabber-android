@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat.invite.outgoing;
 
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 import org.jivesoftware.smack.packet.IQ;
 
@@ -31,7 +31,7 @@ public class GroupInviteRequestIQ extends IQ {
         this.reason = reason;
     }
 
-    public void setLetGroupchatSendInviteMessage(boolean letGroupchatSendInviteMessage) {
+    public void setLetGroupSendInviteMessage(boolean letGroupchatSendInviteMessage) {
         this.letGroupchatSendInviteMessage = letGroupchatSendInviteMessage;
     }
 

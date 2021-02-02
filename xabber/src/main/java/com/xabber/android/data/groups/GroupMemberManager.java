@@ -1,4 +1,4 @@
-package com.xabber.android.data.message.chat.groupchat;
+package com.xabber.android.data.groups;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -40,6 +40,7 @@ import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsR
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.xmpp.avatar.DataExtension;
@@ -89,11 +90,11 @@ public class GroupMemberManager implements OnLoadListener {
     }
 
     public static GroupMember getGroupMemberFromGroupMemberExtensionElement(
-            GroupMemberExtensionElement groupMemberExtensionElement, BareJid groupchatJid) {
+            GroupMemberExtensionElement groupMemberExtensionElement, BareJid groupJid) {
 
         GroupMember user = new GroupMember(groupMemberExtensionElement.getId());
 
-        if (groupchatJid != null) user.setGroupchatJid(groupchatJid.toString());
+        if (groupJid != null) user.setGroupJid(groupJid.toString());
 
         if (groupMemberExtensionElement.getAvatarInfo() != null) {
             user.setAvatarHash(groupMemberExtensionElement.getAvatarInfo().getId());
@@ -111,21 +112,21 @@ public class GroupMemberManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        for (GroupMember gm : GroupMemberRepository.getAllGroupchatMembersFromRealm()){
+        for (GroupMember gm : GroupMemberRepository.getAllGroupMembersFromRealm()){
             this.members.put(gm.getId(), gm);
         }
     }
 
-    public void removeMemberAvatar(GroupChat groupChat, String memberId){
+    public void removeMemberAvatar(GroupChat group, String memberId){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
                 PayloadItem<MetadataExtension> item = new PayloadItem<>(null, new MetadataExtension(null));
                 PublishItem<PayloadItem<MetadataExtension>> publishItem = new PublishItem<>(METADATA_NAMESPACE + "#" + memberId, item);
 
-                PubSub packet = PubSub.createPubsubPacket(groupChat.getContactJid().getBareJid(),
+                PubSub packet = PubSub.createPubsubPacket(group.getContactJid().getBareJid(),
                         IQ.Type.set, publishItem, null);
 
-                AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
+                AccountManager.getInstance().getAccount(group.getAccount()).getConnection()
                         .createStanzaCollectorAndSend(packet).nextResultOrThrow(45000);
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
@@ -133,12 +134,12 @@ public class GroupMemberManager implements OnLoadListener {
         });
     }
 
-    public void publishMemberAvatar(GroupChat groupChat, String memberId, byte[] data, int height,
+    public void publishMemberAvatar(GroupChat group, String memberId, byte[] data, int height,
                                     int width, UserAvatarManager.ImageType type){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{
                 XMPPConnection connectionItem = AccountManager.getInstance()
-                        .getAccount(groupChat.getAccount()).getConnection();
+                        .getAccount(group.getAccount()).getConnection();
 
                 String avatarHash = AvatarManager.getAvatarHash(data);
 
@@ -146,7 +147,7 @@ public class GroupMemberManager implements OnLoadListener {
                 PayloadItem<DataExtension> dataItem = new PayloadItem<>(avatarHash, dataExtension);
                 PublishItem<PayloadItem<DataExtension>> dataPublishItem = new PublishItem<>(
                         DATA_NAMESPACE + "#" + memberId, dataItem);
-                PubSub dataPacket = PubSub.createPubsubPacket(groupChat.getContactJid().getBareJid(),
+                PubSub dataPacket = PubSub.createPubsubPacket(group.getContactJid().getBareJid(),
                         IQ.Type.set, dataPublishItem, null);
 
                 connectionItem.createStanzaCollectorAndSend(dataPacket).nextResultOrThrow(60000);
@@ -160,7 +161,7 @@ public class GroupMemberManager implements OnLoadListener {
                 PublishItem<PayloadItem<MetadataExtension>> metadataPublishItem = new PublishItem<>(
                         METADATA_NAMESPACE + "#" + memberId, metadataItem);
                 PubSub metadataPacket = PubSub.createPubsubPacket(
-                        groupChat.getContactJid().getBareJid(), IQ.Type.set, metadataPublishItem,
+                        group.getContactJid().getBareJid(), IQ.Type.set, metadataPublishItem,
                         null);
 
                 connectionItem.createStanzaCollectorAndSend(metadataPacket).nextResultOrThrow(45000);
@@ -171,46 +172,45 @@ public class GroupMemberManager implements OnLoadListener {
         });
     }
 
-    public GroupMember getGroupchatMemberById(String id) {
+    public GroupMember getGroupMemberById(String id) {
         return members.get(id);
     }
 
-    public Collection<GroupMember> getGroupchatMembers(ContactJid groupchatJid){
+    public Collection<GroupMember> getGroupMembers(ContactJid groupJid){
         Collection<GroupMember> resultList = new ArrayList<>();
         for (Map.Entry<String, GroupMember> entry : members.entrySet()){
-            if (entry.getValue().getGroupchatJid().equals(groupchatJid.toString()))
+            if (entry.getValue().getGroupJid().equals(groupJid.toString())) {
                 resultList.add(entry.getValue());
+            }
         }
         return resultList;
     }
 
-    public void removeGroupchatMember(String id){
+    public void removeGroupMember(String id){
         members.remove(id);
-        GroupMemberRepository.removeGroupchatMemberById(id);
+        GroupMemberRepository.removeGroupMemberById(id);
     }
 
-    public void saveGroupchatUser(GroupMemberExtensionElement user, BareJid groupchatJid) {
-        saveGroupchatUser(user, groupchatJid, System.currentTimeMillis());
+    public void saveGroupUser(GroupMemberExtensionElement user, BareJid groupJid) {
+        saveGroupUser(user, groupJid, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(GroupMemberExtensionElement user, BareJid groupchatJid,
-                                  long timestamp) {
+    public void saveGroupUser(GroupMemberExtensionElement user, BareJid groupJid, long timestamp) {
 
-        GroupMember groupMember = getGroupMemberFromGroupMemberExtensionElement(user,
-                groupchatJid);
+        GroupMember groupMember = getGroupMemberFromGroupMemberExtensionElement(user, groupJid);
 
         members.put(user.getId(), groupMember);
-        GroupMemberRepository.saveOrUpdateGroupchatMember(groupMember);
+        GroupMemberRepository.saveOrUpdateGroupMember(groupMember);
     }
 
     /**
      * Create and send IQ to group and Message with invitation to contact according to Direct Invitation.
      */
-    public void sendGroupchatInvitations(AccountJid account, ContactJid groupchatJid, List<ContactJid> contactsToInvite,
-                                         String reason, BaseIqResultUiListener listener) {
+    public void sendGroupInvitations(AccountJid account, ContactJid groupJid, List<ContactJid> contactsToInvite,
+                                     String reason, BaseIqResultUiListener listener) {
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
+            AbstractChat chat = ChatManager.getInstance().getChat(account, groupJid);
             if (chat instanceof GroupChat) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem != null) {
@@ -220,12 +220,12 @@ public class GroupMemberManager implements OnLoadListener {
 
                     for (ContactJid invite : contactsToInvite) {
                         GroupInviteRequestIQ requestIQ = new GroupInviteRequestIQ((GroupChat) chat, invite);
-                        requestIQ.setLetGroupchatSendInviteMessage(false);
+                        requestIQ.setLetGroupSendInviteMessage(false);
                         if (reason != null && !reason.isEmpty())
                             requestIQ.setReason(reason);
                         try {
                             connection.sendIqWithResponseCallback(requestIQ,
-                                    packet -> sendMessageWithInvite(account, groupchatJid, invite, reason, listener),
+                                    packet -> sendMessageWithInvite(account, groupJid, invite, reason, listener),
                                     exception -> {
                             });
                         } catch (Exception e) {
@@ -241,17 +241,17 @@ public class GroupMemberManager implements OnLoadListener {
 
     /**
      * Sends a message with invite to group as direct invitation
-     * Must be called only from @see #sendGroupchatInvitations
+     * Must be called only from @see #sendGroupInvitations
      */
-    private void sendMessageWithInvite(AccountJid account, ContactJid groupchatJid, ContactJid contactToInviteJid,
+    private void sendMessageWithInvite(AccountJid account, ContactJid groupJid, ContactJid contactToInviteJid,
                                        String reason, BaseIqResultUiListener listener){
         try{
             Message inviteMessage = new Message();
             inviteMessage.addBody(null, Application.getInstance().getApplicationContext()
-                    .getString(R.string.groupchat_legacy_invitation_body, groupchatJid.toString()));
+                    .getString(R.string.groupchat_legacy_invitation_body, groupJid.toString()));
             inviteMessage.setTo(contactToInviteJid.getJid());
             inviteMessage.setType(Message.Type.chat);
-            inviteMessage.addExtension(new InviteMessageExtensionElement(groupchatJid, reason));
+            inviteMessage.addExtension(new InviteMessageExtensionElement(groupJid, reason));
             StanzaSender.sendStanza(account, inviteMessage, packet1 -> {
                 if (packet1.getError() != null)
                     listener.onOtherError(null);
@@ -263,8 +263,8 @@ public class GroupMemberManager implements OnLoadListener {
         }
     }
 
-    public void requestGroupchatInvitationsList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
-                                                ExceptionCallback exceptionCallback) {
+    public void requestGroupInvitationsList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
+                                            ExceptionCallback exceptionCallback) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
@@ -643,7 +643,7 @@ public class GroupMemberManager implements OnLoadListener {
                         .sendIqWithResponseCallback(iq, packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
                                 groupMember.setBadge(badge);
-                                GroupMemberRepository.saveOrUpdateGroupchatMember(groupMember);
+                                GroupMemberRepository.saveOrUpdateGroupMember(groupMember);
                                 for (OnGroupchatRequestListener listener : Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
                                     listener.onGroupchatMemberUpdated(groupChat.getAccount(), groupChat.getContactJid(), groupMember.getId());
                             }
@@ -673,7 +673,7 @@ public class GroupMemberManager implements OnLoadListener {
                         .sendIqWithResponseCallback(iq, packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
                                 groupMember.setNickname(nickname);
-                                GroupMemberRepository.saveOrUpdateGroupchatMember(groupMember);
+                                GroupMemberRepository.saveOrUpdateGroupMember(groupMember);
                                 for (OnGroupchatRequestListener listener : Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
                                     listener.onGroupchatMemberUpdated(groupChat.getAccount(), groupChat.getContactJid(), groupMember.getId());
                             }
@@ -695,7 +695,7 @@ public class GroupMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
             if (chat instanceof GroupChat) {
-                ArrayList<GroupMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
+                ArrayList<GroupMember> list = new ArrayList<>(getGroupMembers(groupchatJid));
                 if (list != null && list.size() > 0) {
                     Application.getInstance().runOnUiThread(() -> {
                         // notify listeners with the locally saved list of members
@@ -728,7 +728,7 @@ public class GroupMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
             if (chat instanceof GroupChat) {
-                ArrayList<GroupMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
+                ArrayList<GroupMember> list = new ArrayList<>(getGroupMembers(groupchatJid));
                 if (list != null && list.size() > 0) {
                     Application.getInstance().runOnUiThread(() -> {
                         // notify listeners with the locally saved list of members
@@ -766,7 +766,7 @@ public class GroupMemberManager implements OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AbstractChat chat = ChatManager.getInstance().getChat(accountJid, groupchatJid);
             if (chat instanceof GroupChat) {
-                ArrayList<GroupMember> list = new ArrayList<>(getGroupchatMembers(groupchatJid));
+                ArrayList<GroupMember> list = new ArrayList<>(getGroupMembers(groupchatJid));
                 if (list != null && list.size() > 0) {
                     Application.getInstance().runOnUiThread(() -> {
                         // notify listeners with the locally saved list of members
@@ -886,7 +886,7 @@ public class GroupMemberManager implements OnLoadListener {
                         if (getInstance().members.get(id) == null)
                             getInstance().members.put(id, new GroupMember(id));
 
-                        getInstance().members.get(id).setGroupchatJid(groupchatJid.toString());
+                        getInstance().members.get(id).setGroupJid(groupchatJid.toString());
                         if (memberExtension.getRole() != null)
                             getInstance().members.get(id).setRole(memberExtension.getRole());
                         if (memberExtension.getNickname() != null)
@@ -905,8 +905,8 @@ public class GroupMemberManager implements OnLoadListener {
                         getInstance().members.get(id).setMe(true);
 
                         if (memberExtension.getSubscription() != null && !memberExtension.getSubscription().equals("both")){
-                            getInstance().removeGroupchatMember(id);
-                        } else GroupMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
+                            getInstance().removeGroupMember(id);
+                        } else GroupMemberRepository.saveOrUpdateGroupMember(getInstance().members.get(id));
 
                     }
 
@@ -947,7 +947,7 @@ public class GroupMemberManager implements OnLoadListener {
 
                         GroupMember groupMember = getInstance().members.get(id);
 
-                        groupMember.setGroupchatJid(groupchatJid.toString());
+                        groupMember.setGroupJid(groupchatJid.toString());
                         if (memberExtension.getRole() != null)
                             groupMember.setRole(memberExtension.getRole());
                         if (memberExtension.getNickname() != null)
@@ -965,7 +965,7 @@ public class GroupMemberManager implements OnLoadListener {
 
                         if (memberExtension.getSubscription() != null && !memberExtension.getSubscription().equals("both")){
                             LogManager.exception(LOG_TAG, new Exception());
-                        } else GroupMemberRepository.saveOrUpdateGroupchatMember(getInstance().members.get(id));
+                        } else GroupMemberRepository.saveOrUpdateGroupMember(getInstance().members.get(id));
 
                     }
 

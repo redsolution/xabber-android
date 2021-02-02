@@ -22,7 +22,7 @@ import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -161,7 +161,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
             boolean rewrite = RewriteManager.getInstance().isSupported(connection);
             boolean reliable = DeliveryManager.getInstance().isSupported(connection);
-            boolean groupchats = GroupchatManager.getInstance().isSupported(connection);
+            boolean groupchats = GroupsManager.getInstance().isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
             serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));

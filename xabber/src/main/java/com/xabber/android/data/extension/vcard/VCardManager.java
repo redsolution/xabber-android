@@ -33,8 +33,8 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -296,7 +296,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         try {
             if(ChatManager.getInstance().getChat(account, ContactJid.from(bareAddress)) instanceof GroupChat){
-                GroupchatManager.getInstance().processVcard(account, ContactJid.from(bareAddress), vCard);
+                GroupsManager.getInstance().processVcard(account, ContactJid.from(bareAddress), vCard);
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);

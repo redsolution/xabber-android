@@ -1,8 +1,8 @@
 package com.xabber.xmpp.vcard
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatIndexType
-import com.xabber.android.data.message.chat.groupchat.GroupchatMembershipType
-import com.xabber.android.data.message.chat.groupchat.GroupchatPrivacyType
+import com.xabber.android.data.groups.GroupIndexType
+import com.xabber.android.data.groups.GroupMembershipType
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import java.util.*
@@ -24,9 +24,9 @@ open class VCard : VCard() {
         mobilePhones[phoneType] = phoneNum
     }
 
-    var privacyType = GroupchatPrivacyType.NONE
-    var indexType = GroupchatIndexType.NONE
-    var membershipType = GroupchatMembershipType.NONE
+    var privacyType = GroupPrivacyType.NONE
+    var indexType = GroupIndexType.NONE
+    var membershipType = GroupMembershipType.NONE
 
     var description = ""
     var membersCount = 0

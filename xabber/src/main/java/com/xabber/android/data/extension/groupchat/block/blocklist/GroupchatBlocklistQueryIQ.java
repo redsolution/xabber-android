@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.groupchat.block.blocklist;
 
 import com.xabber.android.data.extension.groupchat.GroupchatAbstractQueryIQ;
 import com.xabber.android.data.extension.groupchat.block.BlockGroupMemberIQ;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 public class GroupchatBlocklistQueryIQ extends GroupchatAbstractQueryIQ {
 

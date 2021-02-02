@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupsManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity
 import com.xabber.android.ui.adapter.groups.settings.GroupSettingsFormListAdapter
@@ -67,7 +67,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     override fun getContactJid() = groupchat.contactJid
 
     private fun sendRequestGroupSettingsDataForm() {
-        GroupchatManager.getInstance().requestGroupSettingsForm(groupchat)
+        GroupsManager.getInstance().requestGroupSettingsForm(groupchat)
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
@@ -77,7 +77,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     }
 
     private fun sendSetNewSettingsRequest() {
-        GroupchatManager.getInstance().sendSetGroupSettingsRequest(groupchat, createNewDataForm())
+        GroupsManager.getInstance().sendSetGroupSettingsRequest(groupchat, createNewDataForm())
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
@@ -197,7 +197,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
 
     override fun onGroupSettingsSuccessfullyChanged(groupchat: GroupChat) {
         if (!isThisGroup(groupchat)) return
-        GroupchatManager.getInstance().requestGroupSettingsForm(groupchat)
+        GroupsManager.getInstance().requestGroupSettingsForm(groupchat)
         Application.getInstance().runOnUiThread {
             Toast.makeText(context, R.string.groupchat_permissions_successfully_changed,
                     Toast.LENGTH_SHORT).show()

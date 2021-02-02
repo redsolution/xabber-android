@@ -1,8 +1,8 @@
-package com.xabber.android.data.message.chat.groupchat
+package com.xabber.android.data.groups
 
 data class GroupMember(val id: String) {
     var jid: String? = null
-    var groupchatJid: String? = null
+    var groupJid: String? = null
     var nickname: String? = null
     var role: String? = null
     var badge: String? = null
@@ -23,14 +23,14 @@ data class GroupMember(val id: String) {
     var isRestrictedToSendAudio = false
     var isRestrictedToSendImages = false
 
-    constructor(id: String, jid: String?, groupchatJid: String?, nickname: String?, role: String?, badge: String?,
+    constructor(id: String, jid: String?, groupJid: String?, nickname: String?, role: String?, badge: String?,
                 avatarHash: String?, avatarUrl: String?, lastPresent: String?, isMe: Boolean,
                 isCanRestrictMembers: Boolean, isCanBlockMembers: Boolean, isCanChangeBadge: Boolean,
                 isCanChangeNickname: Boolean, isCanDeleteMessages: Boolean, isRestrictedToSendMessages: Boolean,
                 isRestrictedToReadMessages: Boolean, isRestrictedToSendInvitations: Boolean,
                 isRestrictedToSendAudio: Boolean, isRestrictedToSendImages: Boolean) : this(id) {
         this.jid = jid
-        this.groupchatJid = groupchatJid
+        this.groupJid = groupJid
         this.nickname = nickname
         this.role = role
         this.badge = badge

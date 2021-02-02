@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.rights
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
 class GroupRequestMemberRightsChangeIQ(val groupchat: GroupChat, val dataForm: DataForm)

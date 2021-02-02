@@ -42,8 +42,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -435,7 +435,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             case unsubscribe:
             case unsubscribed:
                 if (ChatManager.getInstance().getChat(connection.getAccount(), from) instanceof GroupChat){
-                    GroupchatManager.getInstance().onUnsubscribePresence(connection.getAccount(), from);
+                    GroupsManager.getInstance().onUnsubscribePresence(connection.getAccount(), from);
                     LogManager.d(PresenceManager.class.getSimpleName(), "Got unsubscribed from group chat");
                 }
                 break;

@@ -14,7 +14,7 @@ import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.groups.GroupUpdateSettingsFragment
 

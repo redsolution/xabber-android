@@ -13,7 +13,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.intent.AccountIntentBuilder
 import com.xabber.android.data.intent.EntityIntentBuilder
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.groups.GroupStatusFragment
 

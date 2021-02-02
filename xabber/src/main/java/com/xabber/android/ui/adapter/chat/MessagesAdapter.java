@@ -18,8 +18,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
@@ -240,7 +240,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         // groupchat user
         GroupMember groupMember =
-                GroupMemberManager.getInstance().getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
+                GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId());
 
         // need tail
         boolean needTail = false;
@@ -248,7 +248,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             MessageRealmObject nextMessage = getMessageItem(position + 1);
             if (nextMessage != null) {
                 GroupMember user2 =
-                        GroupMemberManager.getInstance().getGroupchatMemberById(nextMessage.getGroupchatUserId());
+                        GroupMemberManager.getInstance().getGroupMemberById(nextMessage.getGroupchatUserId());
 
                 if (user2 != null)
                     needTail = !groupMember.getId().equals(user2.getId());

@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.members;
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 public class GroupchatMembersQueryIQ extends GroupchatAbstractMembersIQ {
     public static final String VERSION = "version";

@@ -11,8 +11,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
-import com.xabber.android.data.message.chat.groupchat.GroupMemberManager;
+import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.groups.GroupMemberManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -112,7 +112,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
 
         // groupchat user
         GroupMember groupMember = GroupMemberManager.getInstance()
-                .getGroupchatMemberById(messageRealmObject.getGroupchatUserId());
+                .getGroupMemberById(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),

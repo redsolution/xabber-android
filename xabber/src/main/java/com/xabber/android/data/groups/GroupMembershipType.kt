@@ -1,9 +1,9 @@
-package com.xabber.android.data.message.chat.groupchat
+package com.xabber.android.data.groups
 
 import com.xabber.android.R
 import com.xabber.android.data.Application
 
-enum class GroupchatMembershipType {
+enum class GroupMembershipType {
     NONE,
     OPEN,
     MEMBER_ONLY;
@@ -28,7 +28,7 @@ enum class GroupchatMembershipType {
 
     companion object {
         @JvmStatic
-        fun getMembershipTypeFromXml(text: String?): GroupchatMembershipType {
+        fun getMembershipTypeFromXml(text: String?): GroupMembershipType {
             return when (text) {
                 "open" -> OPEN
                 "member-only" -> MEMBER_ONLY
@@ -37,7 +37,7 @@ enum class GroupchatMembershipType {
         }
 
         @JvmStatic
-        fun getMembershipByLocalizedString(text: String?): GroupchatMembershipType {
+        fun getMembershipByLocalizedString(text: String?): GroupMembershipType {
             return when (text) {
                 Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_open) -> OPEN
                 Application.getInstance().applicationContext.getString(R.string.groupchat_membership_type_members_only) -> MEMBER_ONLY

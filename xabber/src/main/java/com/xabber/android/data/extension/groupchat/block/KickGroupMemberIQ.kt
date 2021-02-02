@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat.block
 
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.groups.GroupsManager
 import org.jivesoftware.smack.packet.IQ
 import org.jxmpp.jid.FullJid
 import org.jxmpp.jid.Jid
@@ -33,7 +33,7 @@ class KickGroupMemberIQ private constructor(groupChatFullJid: FullJid) : IQ(ELEM
     }
 
     private companion object {
-        const val NAMESPACE = GroupchatManager.NAMESPACE
+        const val NAMESPACE = GroupsManager.NAMESPACE
         const val ELEMENT = "kick"
         const val JID_ELEMENT = "jid"
         const val ID_ELEMENT = "id"

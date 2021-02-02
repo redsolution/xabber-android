@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat.members
 
-import com.xabber.android.data.message.chat.groupchat.GroupChat
-import com.xabber.android.data.message.chat.groupchat.GroupchatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.groups.GroupsManager
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
@@ -11,7 +11,7 @@ import org.jxmpp.jid.Jid
 class ChangeGroupchatMemberPreferencesIQ(val jid: Jid, private val memberId: String, val badge: String? = null,
                                          val nickname: String? = null) : GroupchatAbstractMembersIQ() {
 
-    constructor(groupChat:GroupChat, memberId: String, badge: String? = null, nickname: String? = null)
+    constructor(groupChat: GroupChat, memberId: String, badge: String? = null, nickname: String? = null)
             : this(groupChat.fullJidIfPossible ?: groupChat.contactJid.jid, memberId, badge, nickname)
 
     init {
@@ -44,7 +44,7 @@ class ChangeGroupchatMemberPreferencesIQ(val jid: Jid, private val memberId: Str
             const val ID_ATTRIBUTE = "id"
         }
 
-        override fun getNamespace() = GroupchatManager.NAMESPACE
+        override fun getNamespace() = GroupsManager.NAMESPACE
 
         override fun getElementName() = USER_ELEMENT
 

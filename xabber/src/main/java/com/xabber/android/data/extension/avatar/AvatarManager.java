@@ -46,7 +46,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.groupchat.GroupMember;
+import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.avatar.UserAvatarManager;

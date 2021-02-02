@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat.invite.outgoing
 
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.jxmpp.jid.impl.JidCreate
@@ -51,7 +51,7 @@ class GroupInviteRequestIqTest {
                         "<send>true</send>" +
                     "</invite>" +
                 "</iq>"
-        assertEquals(reference2, getBaseIq().apply { setLetGroupchatSendInviteMessage(true) }.toXML().toString())
+        assertEquals(reference2, getBaseIq().apply { setLetGroupSendInviteMessage(true) }.toXML().toString())
 
         val reference3 =
                 "<iq to='localpart@group.domain/resource' id='iqId' type='set'>" +
@@ -60,7 +60,7 @@ class GroupInviteRequestIqTest {
                         "<send>false</send>" +
                     "</invite>" +
                 "</iq>"
-        assertEquals(reference3, getBaseIq().apply { setLetGroupchatSendInviteMessage(false) }.toXML().toString())
+        assertEquals(reference3, getBaseIq().apply { setLetGroupSendInviteMessage(false) }.toXML().toString())
 
         val reference4 =
                 "<iq to='localpart@group.domain/resource' id='iqId' type='set'>" +
@@ -84,7 +84,7 @@ class GroupInviteRequestIqTest {
                 "</iq>"
         assertEquals(reference5, getBaseIq().apply {
             setReason("New reason!")
-            setLetGroupchatSendInviteMessage(true)
+            setLetGroupSendInviteMessage(true)
         }.toXML().toString())
 
     }

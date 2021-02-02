@@ -18,7 +18,7 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.message.chat.AbstractChat
-import com.xabber.android.data.message.chat.groupchat.GroupChat
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
 
