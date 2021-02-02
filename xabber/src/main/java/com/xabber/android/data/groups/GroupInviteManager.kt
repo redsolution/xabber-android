@@ -27,7 +27,6 @@ import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
 import org.greenrobot.eventbus.EventBus
 import org.jivesoftware.smack.ExceptionCallback
-import org.jivesoftware.smack.SmackException.NotConnectedException
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.packet.IQ
@@ -48,26 +47,26 @@ object GroupInviteManager: OnLoadListener {
         }
     }
 
-    fun processIncomingInvite(inviteExtensionElement: IncomingInviteExtensionElement, accountJid: AccountJid,
+    fun processIncomingInvite(inviteExtensionElement: IncomingInviteExtensionElement, account: AccountJid,
                               sender: ContactJid?, timestamp: Long) {
         try {
-            val groupJid = ContactJid.from(inviteExtensionElement.groupJid)
-            if (BlockingManager.getInstance().contactIsBlocked(accountJid, groupJid)
-                    || RosterManager.getInstance().accountIsSubscribedTo(accountJid, groupJid)) return
-            val reason = inviteExtensionElement.getReason()
-            val giro = GroupInviteRealmObject()
-            giro.accountJid = accountJid
-            giro.accountJid = accountJid
-            giro.isIncoming = true
-            giro.groupJid = groupJid
-            giro.senderJid = sender
-            giro.reason = reason
-            giro.date = timestamp
-            giro.isRead = false
-            VCardManager.getInstance().requestByUser(accountJid, groupJid.jid)
-            invitesMap.put(accountJid.toString(), groupJid.toString(), giro)
+            val groupContactJid = ContactJid.from(inviteExtensionElement.groupJid)
+            if (BlockingManager.getInstance().contactIsBlocked(account, groupContactJid)
+                    || RosterManager.getInstance().accountIsSubscribedTo(account, groupContactJid)) return
+            val inviteReason = inviteExtensionElement.getReason()
+            val giro = GroupInviteRealmObject().apply {
+                accountJid = account
+                isIncoming = true
+                groupJid = groupContactJid
+                senderJid = sender
+                reason = inviteReason
+                date = timestamp
+                isRead = false
+            }
+            VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
+            invitesMap.put(account.toString(), groupContactJid.toString(), giro)
             GroupInviteRepository.saveInviteToRealm(giro)
-            ChatManager.getInstance().createGroupChat(accountJid, groupJid).createFakeMessageForInvite(giro)
+            ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
         } catch (e: Exception) {
             LogManager.exception(LOG_TAG, e)
         }
@@ -177,13 +176,19 @@ object GroupInviteManager: OnLoadListener {
     private fun sendMessageWithInvite(account: AccountJid, groupJid: ContactJid, contactToInviteJid: ContactJid,
                                       reason: String?, listener: BaseIqResultUiListener) {
         try {
-            val inviteMessage = Message()
-            inviteMessage.addBody(null, Application.getInstance().applicationContext
-                    .getString(R.string.groupchat_legacy_invitation_body, groupJid.toString()))
-            inviteMessage.to = contactToInviteJid.jid
-            inviteMessage.type = Message.Type.chat
-            inviteMessage.addExtension(InviteMessageExtensionElement(groupJid, reason))
-            StanzaSender.sendStanza(account, inviteMessage) { packet1: Stanza -> if (packet1.error != null) listener.onOtherError(null) else listener.onResult() }
+            val inviteMessage = Message().apply {
+                addBody(null, Application.getInstance().applicationContext
+                        .getString(R.string.groupchat_legacy_invitation_body, groupJid.toString()))
+                to = contactToInviteJid.jid
+                type = Message.Type.chat
+                addExtension(InviteMessageExtensionElement(groupJid, reason))
+            }
+
+            StanzaSender.sendStanza(account, inviteMessage) { packet1: Stanza ->
+                if (packet1.error != null) {
+                    listener.onOtherError(null)
+                } else listener.onResult()
+            }
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
             listener.onOtherError(e)
@@ -207,22 +212,20 @@ object GroupInviteManager: OnLoadListener {
                                     val listOfInvites = packet.listOfInvitedJids
                                     if (listOfInvites != null) {
                                         chat.listOfInvites = listOfInvites
-                                    } else {
-                                        chat.listOfInvites = ArrayList()
-                                    }
+                                    } else chat.listOfInvites = ArrayList()
+
                                 }
                             }
                             listener.processStanza(packet)
                         }, exceptionCallback)
-                    } catch (e: NotConnectedException) {
-                        LogManager.exception(LOG_TAG, e)
-                    } catch (e: InterruptedException) {
+                    } catch (e: Exception) {
                         LogManager.exception(LOG_TAG, e)
                     }
                 }
             }
         }
     }
+
     fun revokeGroupchatInvitation(account: AccountJid?, groupchatJid: ContactJid?, inviteJid: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
@@ -234,26 +237,21 @@ object GroupInviteManager: OnLoadListener {
                         val success: Boolean
                         if (IQ.Type.result == packet.type) {
                             success = true
-                            val chat = ChatManager
-                                    .getInstance().getChat(account, groupchatJid)
-                            if (chat is GroupChat) {
-                                chat.listOfInvites.remove(inviteJid)
-                            }
-                        } else {
-                            success = false
-                        }
+                            val chat = ChatManager.getInstance().getChat(account, groupchatJid)
+                            if (chat is GroupChat) chat.listOfInvites.remove(inviteJid)
+
+                        } else success = false
+
                         Application.getInstance().runOnUiThread {
                             for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
                                 if (success) {
                                     listener.onActionSuccess(account, groupchatJid, listOf(inviteJid))
-                                } else {
-                                    listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
-                                }
+                                } else listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
+
                             }
                         }
                     }
-                }) { exception: java.lang.Exception? ->
-                    Application.getInstance().runOnUiThread {
+                }) { Application.getInstance().runOnUiThread {
                         for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
                             listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
                         }
@@ -276,9 +274,8 @@ object GroupInviteManager: OnLoadListener {
             val groupChat: GroupChat?
             groupChat = if (chat is GroupChat) {
                 chat
-            } else {
-                null
-            }
+            } else null
+
             for (inviteJid in inviteJids) {
                 try {
                     val revokeIQ = GroupchatInviteListRevokeIQ(groupChat, inviteJid)
@@ -289,29 +286,34 @@ object GroupInviteManager: OnLoadListener {
                             unfinishedRequestCount.getAndDecrement()
                             if (unfinishedRequestCount.get() == 0) {
                                 Application.getInstance().runOnUiThread {
-                                    for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
-                                        if (failedRevokeRequests.size == 0) {
-                                            listener.onActionSuccess(account, groupchatJid, successfulRevokeRequests)
-                                        } else if (successfulRevokeRequests.size > 0) {
-                                            listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests, failedRevokeRequests)
-                                        } else {
-                                            listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
+                                    for (listener in Application.getInstance()
+                                            .getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                                        when {
+                                            failedRevokeRequests.size == 0 -> {
+                                                listener.onActionSuccess(account, groupchatJid, successfulRevokeRequests)
+                                            }
+                                            successfulRevokeRequests.size > 0 -> {
+                                                listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests,
+                                                        failedRevokeRequests)
+                                            }
+                                            else -> {
+                                                listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }) { exception: java.lang.Exception? ->
-                        failedRevokeRequests.add(inviteJid)
+                    }) { failedRevokeRequests.add(inviteJid)
                         unfinishedRequestCount.getAndDecrement()
                         if (unfinishedRequestCount.get() == 0) {
                             Application.getInstance().runOnUiThread {
-                                for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                                for (listener in Application.getInstance()
+                                        .getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
                                     if (successfulRevokeRequests.size > 0) {
                                         listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests, failedRevokeRequests)
-                                    } else {
-                                        listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
-                                    }
+                                    } else listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
+
                                 }
                             }
                         }
