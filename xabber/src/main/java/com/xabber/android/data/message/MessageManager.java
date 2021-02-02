@@ -45,6 +45,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -391,7 +392,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                     TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
-                GroupsManager.getInstance().processIncomingInvite(inviteElement, account, contactJid, timestamp);
+                GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
                 return;
             } else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
                 AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);

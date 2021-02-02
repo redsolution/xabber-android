@@ -18,12 +18,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
+import com.xabber.android.ui.activity.GroupSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
@@ -38,8 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class GroupchatInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions,
-        OnGroupchatSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
+public class GroupInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions,
+        OnGroupSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
 
     private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_ACCOUNT";
     private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_GROUPCHAT_CONTACT";
@@ -54,8 +55,8 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
 
     private GroupchatSelectorListItemActions invitesListListener;
 
-    public static GroupchatInvitesFragment newInstance(AccountJid account, ContactJid groupchatContact) {
-        GroupchatInvitesFragment fragment = new GroupchatInvitesFragment();
+    public static GroupInvitesFragment newInstance(AccountJid account, ContactJid groupchatContact) {
+        GroupInvitesFragment fragment = new GroupInvitesFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
         args.putParcelable(ARG_GROUPCHAT_CONTACT, groupchatContact);
@@ -96,7 +97,7 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
-            GroupMemberManager.getInstance().requestGroupInvitationsList(account, groupchatContact, this, this);
+            GroupInviteManager.INSTANCE.requestGroupInvitationsList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -105,13 +106,13 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
     @Override
     public void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResult.class, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResult.class, this);
     }
 
     @Nullable
@@ -186,9 +187,9 @@ public class GroupchatInvitesFragment extends Fragment implements GroupchatSelec
             return;
         }
         if (checkedInvites.size() == 1) {
-            GroupMemberManager.getInstance().revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
+            GroupInviteManager.INSTANCE.revokeGroupchatInvitation(account, groupchatContact, checkedInvites.iterator().next());
         } else {
-            GroupMemberManager.getInstance().revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
+            GroupInviteManager.INSTANCE.revokeGroupchatInvitations(account, groupchatContact, checkedInvites);
         }
     }
 

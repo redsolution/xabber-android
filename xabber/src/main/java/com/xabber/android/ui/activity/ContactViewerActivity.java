@@ -170,13 +170,13 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
                 return true;
 
             case R.id.action_group_invitations:
-                startActivity(GroupchatSettingsActivity.createIntent(this, getAccount(),
-                        getUser(), GroupchatSettingsActivity.GroupchatSettingsType.Invitations));
+                startActivity(GroupSettingsActivity.createIntent(this, getAccount(),
+                        getUser(), GroupSettingsActivity.GroupchatSettingsType.Invitations));
                 return true;
 
             case R.id.action_group_blocked:
-                startActivity(GroupchatSettingsActivity.createIntent(this, getAccount(),
-                        getUser(), GroupchatSettingsActivity.GroupchatSettingsType.Blocked));
+                startActivity(GroupSettingsActivity.createIntent(this, getAccount(),
+                        getUser(), GroupSettingsActivity.GroupchatSettingsType.Blocked));
                 return true;
 
             case R.id.action_search_members:

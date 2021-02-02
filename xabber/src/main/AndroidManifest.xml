@@ -612,7 +612,7 @@
                 android:value="com.xabber.android.ui.activity.ContactViewerActivity"/>
         </activity>
 
-        <activity android:name=".ui.activity.GroupchatSettingsActivity" />
+        <activity android:name=".ui.activity.GroupSettingsActivity" />
 
         <activity android:name=".ui.activity.GroupchatUpdateSettingsActivity" />
 

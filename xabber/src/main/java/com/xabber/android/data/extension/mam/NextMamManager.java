@@ -26,6 +26,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewMessageEvent;
@@ -251,7 +252,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                             TimeElement.NAMESPACE);
                                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                                 }
-                                GroupsManager.getInstance().processIncomingInvite(inviteElement, connection.getAccount(),
+                                GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, connection.getAccount(),
                                         ContactJid.from(forwardedStanza.getFrom()), timestamp);
                             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                             return;
@@ -620,7 +621,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                 TimeElement.NAMESPACE);
                         timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                     }
-                    GroupsManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                    GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, accountItem.getAccount(),
                             ContactJid.from(forwardedStanza.getFrom()), timestamp);
                 } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                 accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
@@ -883,7 +884,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
-                GroupsManager.getInstance().processIncomingInvite(inviteElement, accountItem.getAccount(),
+                GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, accountItem.getAccount(),
                         ContactJid.from(message.getFrom()), timestamp);
             } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             return null;

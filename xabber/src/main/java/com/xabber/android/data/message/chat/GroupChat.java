@@ -20,6 +20,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.groups.GroupIndexType;
 import com.xabber.android.data.groups.GroupsManager;
@@ -345,8 +346,8 @@ public class GroupChat extends AbstractChat {
     @Override
     public void markAsReadAll(boolean trySendDisplay) {
         super.markAsReadAll(trySendDisplay);
-        if (GroupsManager.getInstance().hasInvite(account, contactJid)){
-            GroupsManager.getInstance().readInvite(account, contactJid);
+        if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid)){
+            GroupInviteManager.INSTANCE.readInvite(account, contactJid);
         }
     }
 
@@ -448,8 +449,8 @@ public class GroupChat extends AbstractChat {
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            if (GroupsManager.getInstance().hasInvite(account, contactJid))
-                return new Date(GroupsManager.getInstance().getInvite(account, contactJid).getDate());
+            if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid))
+                return new Date(GroupInviteManager.INSTANCE.getInvite(account, contactJid).getDate());
             return null;
         }
     }
@@ -458,8 +459,8 @@ public class GroupChat extends AbstractChat {
 
     @Override
     public int getUnreadMessageCount() {
-        if (GroupsManager.getInstance().hasInvite(account, contactJid)
-                && !GroupsManager.getInstance().getInvite(account, contactJid).isRead()){
+        if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid)
+                && !GroupInviteManager.INSTANCE.getInvite(account, contactJid).isRead()){
             return super.getUnreadMessageCount() + 1;
         } else return super.getUnreadMessageCount();
     }

@@ -17,20 +17,20 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
-import com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment;
+import com.xabber.android.ui.fragment.groups.GroupBlockListFragment;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
-import com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment;
+import com.xabber.android.ui.fragment.groups.GroupInvitesFragment;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class GroupchatSettingsActivity extends ManagedActivity implements
+public class GroupSettingsActivity extends ManagedActivity implements
         Toolbar.OnMenuItemClickListener, GroupchatSelectorListItemActions,
-        OnGroupchatSelectorListToolbarActionResult {
+        OnGroupSelectorListToolbarActionResult {
 
     private static final String GROUPCHAT_SETTINGS_TYPE = "GROUPCHAT_SETTINGS_TYPE";
     private AccountJid account;
@@ -45,7 +45,7 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
     private int selectionCounter = 0;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid groupchatJid, GroupchatSettingsType type) {
-        Intent intent = new EntityIntentBuilder(context, GroupchatSettingsActivity.class)
+        Intent intent = new EntityIntentBuilder(context, GroupSettingsActivity.class)
                 .setAccount(account)
                 .setUser(groupchatJid)
                 .build();
@@ -112,10 +112,10 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
                 case Restrictions:
                     break;
                 case Invitations:
-                    fragment = GroupchatInvitesFragment.newInstance(account, groupchatContact);
+                    fragment = GroupInvitesFragment.newInstance(account, groupchatContact);
                     break;
                 case Blocked:
-                    fragment = GroupchatBlockListFragment.newInstance(account, groupchatContact);
+                    fragment = GroupBlockListFragment.newInstance(account, groupchatContact);
                     break;
                 default:
                     finish();
@@ -127,14 +127,14 @@ public class GroupchatSettingsActivity extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResult.class, this);
         updateToolbar();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResult.class, this);
     }
 
     @Override

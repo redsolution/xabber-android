@@ -56,6 +56,7 @@ import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -445,6 +446,7 @@ public class Application extends android.app.Application {
         addManager(RewriteManager.getInstance());
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
+        addManager(GroupInviteManager.INSTANCE);
     }
 
     /**

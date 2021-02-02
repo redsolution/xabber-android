@@ -96,6 +96,7 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
@@ -2085,8 +2086,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
-        if (GroupsManager.getInstance().hasInvite(getAccount(), getUser())
-                && !GroupsManager.getInstance().getInvite(getAccount(), getUser()).isRead()){
+        if (GroupInviteManager.INSTANCE.hasInvite(getAccount(), getUser())
+                && !GroupInviteManager.INSTANCE.getInvite(getAccount(), getUser()).isRead()){
             show = true;
         }
 
@@ -2135,7 +2136,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             setNewContactSubscribeLayout();
                         } else {
                             // NONE = No current subscriptions or requests. Not in roster.
-                            if (GroupsManager.getInstance().hasInvite(account, user))
+                            if (GroupInviteManager.INSTANCE.hasInvite(account, user))
                                 setInvitedToGroupLayout();
                             else setNewContactAddLayout();
                         }
@@ -2163,8 +2164,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         addContact.setOnClickListener(v -> {
             Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
                 try {
-                    if (GroupsManager.getInstance().hasInvite(account, user)){
-                        GroupsManager.getInstance().acceptInvitation(account, user);
+                    if (GroupInviteManager.INSTANCE.hasInvite(account, user)){
+                        GroupInviteManager.INSTANCE.acceptInvitation(account, user);
                     } else {
                         if (!inRoster) {
                             RosterManager.getInstance()                                                            // Create contact if not in roster.
@@ -2202,14 +2203,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(v -> {
             try {
                 // fully discard subscription
-                if (GroupsManager.getInstance().hasInvite(account, user))
-                    GroupsManager.getInstance().declineInvitation(account, user);
+                if (GroupInviteManager.INSTANCE.hasInvite(account, user))
+                    GroupInviteManager.INSTANCE.declineInvitation(account, user);
                 PresenceManager.getInstance().discardSubscription(account, user);
                 PresenceManager.getInstance().unsubscribeFromPresence(account, user);
             } catch (NetworkException e) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
-            if (!GroupsManager.getInstance().hasInvite(account, user))
+            if (!GroupInviteManager.INSTANCE.hasInvite(account, user))
                 BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
                     @Override
                     public void onSuccessBlock() {
@@ -2248,8 +2249,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setInvitedToGroupLayout(){
         TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
-        if (!GroupsManager.getInstance().getInvite(getAccount(), getUser()).isRead())
-            GroupsManager.getInstance().readInvite(getAccount(), getUser());
+        if (!GroupInviteManager.INSTANCE.getInvite(getAccount(), getUser()).isRead())
+            GroupInviteManager.INSTANCE.readInvite(getAccount(), getUser());
 
         addContactMessage.setVisibility(View.GONE);
         addContact.setText(R.string.groupchat_join);

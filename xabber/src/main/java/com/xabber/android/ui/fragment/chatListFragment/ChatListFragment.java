@@ -45,6 +45,7 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -513,7 +514,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatAvatarClick(@NotNull AbstractChat item) {
-        if (GroupsManager.getInstance().hasInvite(item.getAccount(), item.getContactJid()))
+        if (GroupInviteManager.INSTANCE.hasInvite(item.getAccount(), item.getContactJid()))
             onChatItemClick(item);
         else{
             Intent intent;
@@ -570,19 +571,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             if (currentChatsState == ChatListState.recent)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ( (abstractChat.getLastMessage() != null
-                            || GroupsManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && !abstractChat.isArchived())
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.unread)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupsManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.getUnreadMessageCount() != 0)
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.archived)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupsManager.getInstance().hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.isArchived())
                         newList.add(abstractChat);
 

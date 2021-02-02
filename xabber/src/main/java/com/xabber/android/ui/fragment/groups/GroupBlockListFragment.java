@@ -19,12 +19,12 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.ui.activity.GroupchatSettingsActivity.GroupchatSelectorListToolbarActions;
+import com.xabber.android.ui.activity.GroupSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatBlocklistAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.widget.DividerItemDecoration;
@@ -37,8 +37,8 @@ import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.List;
 
-public class GroupchatBlockListFragment extends Fragment implements GroupchatSelectorListToolbarActions,
-        OnGroupchatSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
+public class GroupBlockListFragment extends Fragment implements GroupchatSelectorListToolbarActions,
+        OnGroupSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
 
     private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_ACCOUNT";
     private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatBlockListFragment.ARG_GROUPCHAT_CONTACT";
@@ -53,8 +53,8 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
 
     private GroupchatSelectorListItemActions blockListListener;
 
-    public static GroupchatBlockListFragment newInstance(AccountJid account, ContactJid groupchatContact) {
-        GroupchatBlockListFragment fragment = new GroupchatBlockListFragment();
+    public static GroupBlockListFragment newInstance(AccountJid account, ContactJid groupchatContact) {
+        GroupBlockListFragment fragment = new GroupBlockListFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
         args.putParcelable(ARG_GROUPCHAT_CONTACT, groupchatContact);
@@ -104,13 +104,13 @@ public class GroupchatBlockListFragment extends Fragment implements GroupchatSel
     @Override
     public void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResult.class, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnGroupchatSelectorListToolbarActionResult.class, this);
+        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResult.class, this);
     }
 
     @Nullable

@@ -9,7 +9,6 @@ import com.xabber.android.data.BaseIqResultUiListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.repositories.GroupMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -24,12 +23,7 @@ import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBloc
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistUnblockIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupInviteRequestIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListQueryIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListResultIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListRevokeIQ;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.InviteMessageExtensionElement;
-import com.xabber.android.data.extension.groupchat.invite.outgoing.OnGroupchatSelectorListToolbarActionResult;
+import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
@@ -54,7 +48,6 @@ import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
@@ -71,7 +64,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
@@ -203,104 +195,6 @@ public class GroupMemberManager implements OnLoadListener {
         GroupMemberRepository.saveOrUpdateGroupMember(groupMember);
     }
 
-    /**
-     * Create and send IQ to group and Message with invitation to contact according to Direct Invitation.
-     */
-    public void sendGroupInvitations(AccountJid account, ContactJid groupJid, List<ContactJid> contactsToInvite,
-                                     String reason, BaseIqResultUiListener listener) {
-
-        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            AbstractChat chat = ChatManager.getInstance().getChat(account, groupJid);
-            if (chat instanceof GroupChat) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-                if (accountItem != null) {
-                    XMPPConnection connection = accountItem.getConnection();
-
-                    listener.onSend();
-
-                    for (ContactJid invite : contactsToInvite) {
-                        GroupInviteRequestIQ requestIQ = new GroupInviteRequestIQ((GroupChat) chat, invite);
-                        requestIQ.setLetGroupSendInviteMessage(false);
-                        if (reason != null && !reason.isEmpty())
-                            requestIQ.setReason(reason);
-                        try {
-                            connection.sendIqWithResponseCallback(requestIQ,
-                                    packet -> sendMessageWithInvite(account, groupJid, invite, reason, listener),
-                                    exception -> {
-                            });
-                        } catch (Exception e) {
-                            LogManager.exception(LOG_TAG, e);
-                        }
-                    }
-                }
-            }
-            listener.onOtherError(null);
-        });
-
-    }
-
-    /**
-     * Sends a message with invite to group as direct invitation
-     * Must be called only from @see #sendGroupInvitations
-     */
-    private void sendMessageWithInvite(AccountJid account, ContactJid groupJid, ContactJid contactToInviteJid,
-                                       String reason, BaseIqResultUiListener listener){
-        try{
-            Message inviteMessage = new Message();
-            inviteMessage.addBody(null, Application.getInstance().getApplicationContext()
-                    .getString(R.string.groupchat_legacy_invitation_body, groupJid.toString()));
-            inviteMessage.setTo(contactToInviteJid.getJid());
-            inviteMessage.setType(Message.Type.chat);
-            inviteMessage.addExtension(new InviteMessageExtensionElement(groupJid, reason));
-            StanzaSender.sendStanza(account, inviteMessage, packet1 -> {
-                if (packet1.getError() != null)
-                    listener.onOtherError(null);
-                else listener.onResult();
-            });
-        } catch (Exception e){
-            LogManager.exception(LOG_TAG, e);
-            listener.onOtherError(e);
-        }
-    }
-
-    public void requestGroupInvitationsList(AccountJid account, ContactJid groupchatJid, StanzaListener listener,
-                                            ExceptionCallback exceptionCallback) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
-            if (chat instanceof GroupChat) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-                if (accountItem != null) {
-                    XMPPConnection connection = accountItem.getConnection();
-                    GroupchatInviteListQueryIQ queryIQ = new GroupchatInviteListQueryIQ((GroupChat) chat);
-                    try {
-                        connection.sendIqWithResponseCallback(queryIQ, packet -> {
-                            if (packet instanceof GroupchatInviteListResultIQ) {
-                                GroupchatInviteListResultIQ resultIQ = (GroupchatInviteListResultIQ) packet;
-
-                                if (groupchatJid.getBareJid().equals(packet.getFrom().asBareJid())
-                                        && account.getBareJid().equals(packet.getTo().asBareJid())) {
-
-                                    ArrayList<String> listOfInvites = resultIQ.getListOfInvitedJids();
-
-                                    if (listOfInvites != null) {
-                                        ((GroupChat) chat).setListOfInvites(listOfInvites);
-                                    } else {
-                                        ((GroupChat) chat).setListOfInvites(new ArrayList<>());
-                                    }
-                                }
-                            }
-                            listener.processStanza(packet);
-                        }, exceptionCallback);
-                    } catch (SmackException.NotConnectedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    } catch (InterruptedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
-                }
-            }
-        });
-    }
-
     public void kickMember(GroupMember groupMember, GroupChat groupChat, BaseIqResultUiListener listener){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             AccountItem accountItem = AccountManager.getInstance().getAccount(groupChat.getAccount());
@@ -375,117 +269,6 @@ public class GroupMemberManager implements OnLoadListener {
         });
     }
 
-    public void revokeGroupchatInvitation(AccountJid account, ContactJid groupchatJid, String inviteJid) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            try {
-                GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(account, groupchatJid);
-                GroupchatInviteListRevokeIQ revokeIQ = new GroupchatInviteListRevokeIQ(groupChat, inviteJid);
-
-                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-                if (accountItem != null) {
-                    accountItem.getConnection().sendIqWithResponseCallback(revokeIQ, packet -> {
-                        if (packet instanceof IQ) {
-                            final boolean success;
-                            if (IQ.Type.result.equals(((IQ) packet).getType())) {
-                                success = true;
-                                AbstractChat chat = ChatManager
-                                        .getInstance().getChat(account, groupchatJid);
-                                if (chat instanceof GroupChat) {
-                                    ((GroupChat) chat).getListOfInvites().remove(inviteJid);
-                                }
-                            } else {
-                                success = false;
-                            }
-                            Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupchatSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
-                                    if (success) {
-                                        listener.onActionSuccess(account, groupchatJid, Collections.singletonList(inviteJid));
-                                    } else {
-                                        listener.onActionFailure(account, groupchatJid, Collections.singletonList(inviteJid));
-                                    }
-                                }
-                            });
-                        }
-                    }, exception -> Application.getInstance().runOnUiThread(() -> {
-                        for (OnGroupchatSelectorListToolbarActionResult listener :
-                                Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
-                            listener.onActionFailure(account, groupchatJid, Collections.singletonList(inviteJid));
-                        }
-                    }));
-                }
-            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-        });
-    }
-
-    public void revokeGroupchatInvitations(AccountJid account, ContactJid groupchatJid, Set<String> inviteJids) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-
-            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-            if (accountItem == null) return;
-
-            ArrayList<String> failedRevokeRequests = new ArrayList<>();
-            ArrayList<String> successfulRevokeRequests = new ArrayList<>();
-
-            AtomicInteger unfinishedRequestCount = new AtomicInteger(inviteJids.size());
-            AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatJid);
-
-            final GroupChat groupChat;
-            if (chat instanceof GroupChat) {
-                groupChat = (GroupChat) chat;
-            } else {
-                groupChat = null;
-            }
-
-            for (String inviteJid : inviteJids) {
-                try {
-                    GroupchatInviteListRevokeIQ revokeIQ =
-                            new GroupchatInviteListRevokeIQ(groupChat, inviteJid);
-                    accountItem.getConnection().sendIqWithResponseCallback(revokeIQ, packet -> {
-                        if (packet instanceof IQ) {
-                            if (groupChat != null) groupChat.getListOfInvites().remove(inviteJid);
-                            successfulRevokeRequests.add(inviteJid);
-                            unfinishedRequestCount.getAndDecrement();
-                            if (unfinishedRequestCount.get() == 0) {
-                                Application.getInstance().runOnUiThread(() -> {
-                                    for (OnGroupchatSelectorListToolbarActionResult listener :
-                                            Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
-                                        if (failedRevokeRequests.size() == 0) {
-                                            listener.onActionSuccess(account, groupchatJid, successfulRevokeRequests);
-                                        } else if (successfulRevokeRequests.size() > 0) {
-                                            listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests, failedRevokeRequests);
-                                        } else {
-                                            listener.onActionFailure(account, groupchatJid, failedRevokeRequests);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }, exception -> {
-                        failedRevokeRequests.add(inviteJid);
-                        unfinishedRequestCount.getAndDecrement();
-                        if (unfinishedRequestCount.get() == 0) {
-                            Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupchatSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
-                                    if (successfulRevokeRequests.size() > 0) {
-                                        listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests, failedRevokeRequests);
-                                    } else {
-                                        listener.onActionFailure(account, groupchatJid, failedRevokeRequests);
-                                    }
-                                }
-                            });
-                        }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                    failedRevokeRequests.add(inviteJid);
-                    unfinishedRequestCount.getAndDecrement();
-                }
-            }
-        });
-    }
-
     public void unblockGroupchatBlockedElement(AccountJid account, ContactJid groupchatJid, GroupchatBlocklistItemElement blockedElement) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
@@ -509,8 +292,8 @@ public class GroupMemberManager implements OnLoadListener {
                                 success = false;
                             }
                             Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupchatSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
+                                for (OnGroupSelectorListToolbarActionResult listener :
+                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
                                     if (success) {
                                         listener.onActionSuccess(account, groupchatJid, Collections.singletonList(blockedElement.getBlockedItem()));
                                     } else {
@@ -520,8 +303,8 @@ public class GroupMemberManager implements OnLoadListener {
                             });
                         }
                     }, exception -> Application.getInstance().runOnUiThread(() -> {
-                        for (OnGroupchatSelectorListToolbarActionResult listener :
-                                Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
+                        for (OnGroupSelectorListToolbarActionResult listener :
+                                Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
                             listener.onActionFailure(account, groupchatJid, Collections.singletonList(blockedElement.getBlockedItem()));
                         }
                     }));
@@ -563,8 +346,8 @@ public class GroupMemberManager implements OnLoadListener {
                             unfinishedRequestCount.getAndDecrement();
                             if (unfinishedRequestCount.get() == 0) {
                                 Application.getInstance().runOnUiThread(() -> {
-                                    for (OnGroupchatSelectorListToolbarActionResult listener :
-                                            Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
+                                    for (OnGroupSelectorListToolbarActionResult listener :
+                                            Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
                                         if (failedUnblockRequests.size() == 0) {
                                             listener.onActionSuccess(account, groupchatJid, successfulUnblockRequests);
                                         } else if (successfulUnblockRequests.size() > 0) {
@@ -581,8 +364,8 @@ public class GroupMemberManager implements OnLoadListener {
                         unfinishedRequestCount.getAndDecrement();
                         if (unfinishedRequestCount.get() == 0) {
                             Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupchatSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupchatSelectorListToolbarActionResult.class)) {
+                                for (OnGroupSelectorListToolbarActionResult listener :
+                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
                                     if (successfulUnblockRequests.size() > 0) {
                                         listener.onPartialSuccess(account, groupchatJid, successfulUnblockRequests, failedUnblockRequests);
                                     } else {
@@ -859,7 +642,7 @@ public class GroupMemberManager implements OnLoadListener {
         }
     }
 
-    private static class GroupchatMeResultListener implements StanzaListener {
+    private class GroupchatMeResultListener implements StanzaListener {
         private final AccountJid accountJid;
         private final ContactJid groupchatJid;
 
@@ -886,13 +669,10 @@ public class GroupMemberManager implements OnLoadListener {
                         if (getInstance().members.get(id) == null)
                             getInstance().members.put(id, new GroupMember(id));
 
-                        getInstance().members.get(id).setGroupJid(groupchatJid.toString());
-                        if (memberExtension.getRole() != null)
-                            getInstance().members.get(id).setRole(memberExtension.getRole());
-                        if (memberExtension.getNickname() != null)
-                            getInstance().members.get(id).setNickname(memberExtension.getNickname());
-                        if (memberExtension.getBadge() != null)
-                            getInstance().members.get(id).setBadge(memberExtension.getBadge());
+                        members.get(id).setGroupJid(groupchatJid.toString());
+                        members.get(id).setRole(memberExtension.getRole());
+                        members.get(id).setNickname(memberExtension.getNickname());
+                        members.get(id).setBadge(memberExtension.getBadge());
                         if (memberExtension.getJid() != null)
                             getInstance().members.get(id).setJid(memberExtension.getJid());
                         if (memberExtension.getLastPresent() != null)
@@ -948,12 +728,9 @@ public class GroupMemberManager implements OnLoadListener {
                         GroupMember groupMember = getInstance().members.get(id);
 
                         groupMember.setGroupJid(groupchatJid.toString());
-                        if (memberExtension.getRole() != null)
-                            groupMember.setRole(memberExtension.getRole());
-                        if (memberExtension.getNickname() != null)
-                            groupMember.setNickname(memberExtension.getNickname());
-                        if (memberExtension.getBadge() != null)
-                            groupMember.setBadge(memberExtension.getBadge());
+                        groupMember.setRole(memberExtension.getRole());
+                        groupMember.setNickname(memberExtension.getNickname());
+                        groupMember.setBadge(memberExtension.getBadge());
                         if (memberExtension.getJid() != null)
                             groupMember.setJid(memberExtension.getJid());
                         if (memberExtension.getLastPresent() != null)

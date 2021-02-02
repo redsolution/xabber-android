@@ -12,6 +12,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.vcard.VCardManager
+import com.xabber.android.data.groups.GroupInviteManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
@@ -152,9 +153,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
         holder.timeTV.visibility = View.VISIBLE
         when {
-            GroupsManager.getInstance().hasInvite(chat.account, chat.contactJid) -> {
+            GroupInviteManager.hasInvite(chat.account, chat.contactJid) -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                        Date(GroupsManager.getInstance().getInvite(chat.account, chat.contactJid).date))
+                        Date(GroupInviteManager.getInvite(chat.account, chat.contactJid)!!.date))
             }
             chat.lastMessage != null -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
@@ -167,9 +168,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
         val context = holder.itemView.context
 
-        if (chat is GroupChat
-                && chat.lastMessage == null
-                && GroupsManager.getInstance().hasInvite(chat.account, chat.contactJid)){
+        if (chat is GroupChat && chat.lastMessage == null
+                && GroupInviteManager.hasInvite(chat.account, chat.contactJid)){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
                     chat.privacyType.getLocalizedString().decapitalize())
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
