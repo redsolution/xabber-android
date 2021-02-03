@@ -5,20 +5,15 @@
     android:layout_height="wrap_content"
     android:background="@drawable/chat_intro_background"
     android:orientation="vertical"
-    android:paddingLeft="12dp"
-    android:paddingTop="16dp"
-    android:paddingRight="12dp"
-    android:paddingBottom="12dp"
     app:layout_anchorGravity="center">
 
     <ImageView
         android:id="@+id/intro_image"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="6dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/ic_chats_list_new" />
+        android:src="@drawable/ic_group_public" />
 
     <TextView
         android:id="@+id/intro_title"
@@ -30,15 +25,17 @@
         android:textAppearance="@style/ChatText.Large"
         android:textColor="@color/white"
         android:layout_below="@id/intro_image"
-        android:textSize="16sp"/>
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/intro_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
         android:layout_below="@id/intro_title"
-        android:alpha="0.6"
+        android:alpha="0.9"
         android:text="@string/intro_public_group_text"
         android:textColor="@color/white"
         android:textSize="14sp"
@@ -48,25 +45,30 @@
     <RelativeLayout
         android:id="@+id/intro_link_layout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_below="@id/intro_text"
-        android:layout_marginTop="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:layout_below="@id/intro_text">
 
         <View
+            android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="8dp"
             android:background="@color/white"
             android:alpha="0.4"/>
 
         <TextView
             android:id="@+id/intro_learn_more"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/intro_public_group_learn"
-            android:alpha="0.6"
-            android:textColor="@color/cyan_700"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_centerVertical="true"
-            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/divider"
+            android:text="@string/intro_public_group_learn"
+            android:textColor="@color/cyan_700"
             android:textSize="14sp"/>
 
     </RelativeLayout>
