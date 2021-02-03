@@ -24,10 +24,7 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener
-import com.xabber.android.data.groups.GroupIndexType
-import com.xabber.android.data.groups.GroupsManager
-import com.xabber.android.data.groups.GroupMembershipType
-import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.groups.*
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.CreateGroupActivity
@@ -36,9 +33,11 @@ import com.xabber.android.ui.fragment.CircleEditorFragment
 import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
 import kotlinx.android.synthetic.main.activity_fingerprint.*
+import kotlinx.android.synthetic.main.dialog.*
 
 @SuppressLint("SetTextI18n")
-class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener {
+class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener,
+        ServersAdapter.OnClickListener {
 
     private var listenerActivity: Listener? = null
 
@@ -74,6 +73,8 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
     private lateinit var circlesLayout: LinearLayout
 
     private var isEnteredManually = false
+
+    private var serversDialog: AlertDialog? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -307,6 +308,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         circlesLayout.visibility = View.VISIBLE
 
         val serversList = GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
+                ?: GroupsManager.getInstance().getCustomGroupServers(accountJid)
         if (serversList != null && serversList.isNotEmpty()){
             serverTv.text = "\u200A@\u200A${serversList.first()}"
         } else {
@@ -318,41 +320,58 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
             listenerActivity?.toolbarSetEnabled(true)
     }
 
-    private fun createListOfServers(): List<String> {
-        val list = mutableListOf<String>()
+    private fun createListOfServers(): MutableList<Pair<String, GroupServerType>> {
+        val list = mutableListOf<Pair<String, GroupServerType>>()
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
 
             val serversList = GroupsManager.getInstance()
                     .getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
 
-            if (serversList != null && serversList.isNotEmpty())
-                for (jid in serversList)
-                    list.add(jid.toString())
+            if (serversList != null && serversList.isNotEmpty()){
+                for (jid in serversList){
+                    list.add(Pair(jid.toString(), GroupServerType.providedByOwnServer))
+                }
+            }
 
-            list.addAll(GroupsManager.getInstance().getCustomGroupServers(AccountManager.getInstance().firstAccount))
+            val customServersList = GroupsManager.getInstance()
+                    .getCustomGroupServers(AccountManager.getInstance().firstAccount)
+
+            if (customServersList != null && customServersList.isNotEmpty()){
+                for (jid in customServersList){
+                    list.add(Pair(jid, GroupServerType.custom))
+                }
+            }
 
         } else if (accountSpinner.selected != null) {
-            for (jid in GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(accountSpinner.selected))
-                list.add(jid.toString())
-            list.addAll(GroupsManager.getInstance().getCustomGroupServers(accountSpinner.selected))
+            val serversList = GroupsManager.getInstance()
+                    .getAvailableGroupchatServersForAccountJid(accountSpinner.selected)
+            if (serversList != null && serversList.isNotEmpty()){
+                for (jid in serversList) {
+                    list.add(Pair(jid.toString(), GroupServerType.providedByOwnServer))
+                }
+            }
+            val customServersList = GroupsManager.getInstance().getCustomGroupServers(accountSpinner.selected)
+            if (customServersList != null && customServersList.isNotEmpty()){
+                for (jid in customServersList){
+                    list.add(Pair(jid, GroupServerType.custom))
+                }
+            }
         }
 
         if (list.size == 0 )
-            list.add("gc.xabber.com")
-        list.add(getString(R.string.groupchat_custom_server))
+            list.add(Pair("gc.xabber.com",  GroupServerType.providedByXabber))
+
+        list.add(Pair(getString(R.string.groupchat_custom_server), GroupServerType.none))
 
         return list
     }
 
     private fun openServerDialog(){
-        AlertDialog.Builder(context!!).apply {
-            setItems(createListOfServers().toTypedArray()) { _, which ->
-                if (which == createListOfServers().size-1){
-                    openAddCustomServerDialog()
-                } else serverTv.text = "\u200A@\u200A${createListOfServers()[which]}"
-            }
-        }.create().show()
+        serversDialog = AlertDialog.Builder(context!!).apply {
+            setAdapter(ServersAdapter(createListOfServers(), this@CreateGroupFragment)) { _, _ -> }
+        }.create()
+        serversDialog?.show()
     }
 
     private fun openAddCustomServerDialog(){
@@ -479,6 +498,20 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         }
     }
 
+    override fun onServerClicked(server: String) {
+        serversDialog?.dismiss()
+        serverTv.text = "\u200A@\u200A$server"
+    }
+
+    override fun onCustomClicked() {
+        serversDialog?.dismiss()
+        openAddCustomServerDialog()
+    }
+
+    override fun onServerDeleted(server: String) {
+        GroupsManager.getInstance().removeCustomGroupServer(accountSpinner.selected ?: getAccount(), server)
+    }
+
     interface Listener {
         fun onAccountSelected(account: AccountJid?)
         fun showProgress(show: Boolean)
@@ -503,6 +536,89 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
             arguments = Bundle().apply { putBoolean(ARGUMENT_IS_INCOGNITO, isIncognito) }
         }
 
+    }
+
+}
+
+class ServersAdapter(private val serversMap: MutableList<Pair<String, GroupServerType>>,
+                             private val listener: OnClickListener): BaseAdapter(){
+
+    override fun getCount() = serversMap.size
+
+    override fun getItem(position: Int) = serversMap[position]
+
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+
+        fun getNoneView(): View {
+            val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.group_server_list_item_none, parent, false)
+            view.setOnClickListener { listener.onCustomClicked() }
+            return view
+        }
+
+        fun getAvailableView(): View {
+            val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.group_server_list_item_available, parent, false)
+            view.findViewById<TextView>(R.id.text_view).apply {
+                text = getItem(position).first
+                setOnClickListener { listener.onServerClicked(getItem(position).first) }
+            }
+            view.findViewById<ImageView>(R.id.image_view).setOnClickListener {
+                Toast.makeText(parent.context, parent.context.getString(R.string.groupchat_provided_by_your_server),
+                        Toast.LENGTH_SHORT).show()
+            }
+            return view
+        }
+
+        fun getCustomView(): View {
+            val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.group_server_list_item_custom, parent, false)
+            view.findViewById<TextView>(R.id.text_view).apply {
+                text = getItem(position).first
+                setOnClickListener { listener.onServerClicked(getItem(position).first) }
+            }
+            view.findViewById<ImageView>(R.id.image_view).setOnClickListener {
+                listener.onServerDeleted(getItem(position).first)
+                for (server in serversMap) {
+                    if (server.first == getItem(position).first) {
+                        serversMap.removeAt(position)
+                        break
+                    }
+                }
+                notifyDataSetChanged()
+            }
+            return view
+        }
+
+        fun getProvidedView(): View {
+            val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.group_server_list_item_available, parent, false)
+            view.findViewById<TextView>(R.id.text_view).apply {
+                text = getItem(position).first
+                setOnClickListener { listener.onServerClicked(getItem(position).first) }
+            }
+            view.findViewById<ImageView>(R.id.image_view).setOnClickListener {
+                Toast.makeText(parent.context, parent.context.getString(R.string.groupchat_provided_by_xabber),
+                        Toast.LENGTH_SHORT).show()
+            }
+            return view
+        }
+
+        return when (serversMap[position].second){
+            GroupServerType.none -> getNoneView()
+            GroupServerType.providedByXabber -> getProvidedView()
+            GroupServerType.custom -> getCustomView()
+            GroupServerType.providedByOwnServer -> getAvailableView()
+        }
+
+    }
+
+    interface OnClickListener {
+        fun onServerClicked(server: String)
+        fun onServerDeleted(server: String)
+        fun onCustomClicked()
     }
 
 }

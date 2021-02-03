@@ -60,6 +60,8 @@
     <string name="groupchat_example_description">Best group ever!</string>
     <string name="groupchat_custom_server">custom…</string>
     <string name="groupchat_custom_group_server">Custom group server</string>
+    <string name="groupchat_provided_by_xabber">Group server provided by xabber.org</string>
+    <string name="groupchat_provided_by_your_server">Provided by your server</string>
 
     <string name="groupchat_membership_type_none">None</string>
     <string name="groupchat_membership_type_open">Open</string>
