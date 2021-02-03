@@ -51,7 +51,6 @@ import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
@@ -276,10 +275,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         toolbarAddIv.setOnClickListener(v -> startActivity(new Intent(getActivity(), AddActivity.class)));
-        if (AccountManager.getInstance().getEnabledAccounts().isEmpty()){
-            toolbarAddIv.setEnabled(false);
-            toolbarAddIv.setAlpha(0.5f);
-        }
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName()))
