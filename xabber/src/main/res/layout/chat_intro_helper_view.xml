@@ -11,7 +11,7 @@
         android:id="@+id/intro_image"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_group_public" />
 
@@ -25,7 +25,7 @@
         android:textAppearance="@style/ChatText.Large"
         android:textColor="@color/white"
         android:layout_below="@id/intro_image"
-        android:textSize="18sp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/intro_text"
@@ -38,7 +38,6 @@
         android:alpha="0.9"
         android:text="@string/intro_public_group_text"
         android:textColor="@color/white"
-        android:textSize="14sp"
         android:gravity="center_horizontal"
         app:lineHeight="18dp" />
 
@@ -62,13 +61,14 @@
             android:id="@+id/intro_learn_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/divider"
             android:text="@string/intro_public_group_learn"
-            android:textColor="@color/cyan_700"
+            android:textColor="@color/white"
+            android:alpha="0.8"
             android:textSize="14sp"/>
 
     </RelativeLayout>

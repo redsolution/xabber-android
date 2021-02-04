@@ -3,6 +3,8 @@ package com.xabber.android.ui.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.view.View;
@@ -16,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 
 public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
@@ -75,6 +78,8 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     }
 
     public static void setupText(TextView textView, IntroType introType){
+        textView.setTextAppearance(textView.getContext(), SettingsManager.chatsAppearanceStyle());
+        textView.setTextColor(Color.WHITE);
         switch (introType){
             case PRIVATE_CHAT: textView.setText(R.string.intro_private_chat_text); break;
             case PUBLIC_GROUP: textView.setText(R.string.intro_public_group_text); break;
@@ -85,6 +90,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     }
 
     public static void setupLearnMore(TextView textView, RelativeLayout layout, IntroType introType){
+        textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         Context context = textView.getContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         switch (introType){
@@ -106,7 +112,6 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
                 textView.setText(R.string.intro_regular_chat_learn);
                 layout.setClickable(true);
                 layout.setOnClickListener(v -> {
-                    Toast.makeText(context, "YO SUKA", Toast.LENGTH_SHORT).show();
                     intent.setData(Uri.parse(context.getString(R.string.intro_regular_chat_link)));
                     context.startActivity(intent);
                 });
