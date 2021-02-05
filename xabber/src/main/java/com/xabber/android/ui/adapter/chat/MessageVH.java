@@ -22,8 +22,8 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
@@ -116,12 +116,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
         if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()){
-            SpannableStringBuilder spannable = (SpannableStringBuilder) Html.fromHtml(
-                    messageRealmObject.getMarkupText()
-                            .trim().replace("\n", "<br/>").concat("&zwj;"),
-                    null,
-                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount())
-            );
+            SpannableStringBuilder spannable = (SpannableStringBuilder) Html.fromHtml(messageRealmObject.getMarkupText()
+                            .trim().replace("\n", "<br/>").concat("&zwj;"), null,
+                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount()));
 
             int color;
             DisplayMetrics displayMetrics = itemView.getContext().getResources().getDisplayMetrics();
@@ -244,13 +241,12 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         return true;
     }
 
-
     protected void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
         final Drawable originalBackgroundDrawable = view.getBackground();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             originalBackgroundDrawable.setTintList(colorList);
-        else {
+        } else {
             Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
             DrawableCompat.setTintList(wrapDrawable, colorList);
 
@@ -261,7 +257,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 view.setBackground(wrapDrawable);
-            else view.setBackgroundDrawable(wrapDrawable);
+            else view.setBackground(wrapDrawable);
             view.setPadding(pL, pT, pR, pB);
         }
     }

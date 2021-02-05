@@ -59,12 +59,12 @@
 
         <TextView
             android:id="@+id/intro_learn_more"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
             android:layout_below="@id/divider"
             android:text="@string/intro_public_group_learn"
             android:textColor="@color/white"

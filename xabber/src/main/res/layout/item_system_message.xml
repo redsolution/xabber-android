@@ -5,9 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:orientation="horizontal"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp">
+    android:orientation="horizontal">
 
     <com.xabber.android.ui.widget.CustomFlexboxLayout
         android:layout_width="wrap_content"

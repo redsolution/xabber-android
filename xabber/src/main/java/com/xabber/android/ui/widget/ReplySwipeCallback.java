@@ -17,13 +17,15 @@ import com.xabber.android.ui.adapter.chat.ActionMessageVH;
 import com.xabber.android.ui.adapter.chat.GroupchatSystemMessageVH;
 import com.xabber.android.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
 public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View.OnTouchListener {
 
-    private SwipeAction swipeListener;
+    private final SwipeAction swipeListener;
     private ReplyArrowState currentReplyArrowState = ReplyArrowState.GONE;
 
     private static final Drawable replyIcon = Application.getInstance().getResources().getDrawable(R.drawable.ic_reply);
@@ -38,7 +40,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private boolean swipeEnabled = true;
     private boolean swipeBack;
     private boolean isAnimating = false;
-    private ArrayList<Float> scaleAnimationSteps = new ArrayList<>(8);
+    private final ArrayList<Float> scaleAnimationSteps = new ArrayList<>(8);
     private int currentAnimationStep = 0;
 
     private int left;
@@ -50,7 +52,6 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private float dXReleasedAt;
     private float dXModified;
     private float dXReal;
-    private float dY;
     private int actionState;
     private boolean isCurrentlyActive;
 
@@ -94,11 +95,9 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     }
 
     @Override
-    public void onChildDraw(Canvas c,
-                            RecyclerView recyclerView,
-                            RecyclerView.ViewHolder viewHolder,
-                            float dX, float dY,
-                            int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(@NotNull Canvas c, @NotNull RecyclerView recyclerView,
+                            @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState,
+                            boolean isCurrentlyActive) {
         setTouchListener(recyclerView);
 
         if (actionState == ACTION_STATE_SWIPE && isCurrentlyActive) {
@@ -106,7 +105,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         }
 
         updateViewHolderState(actionState, isCurrentlyActive);
-        updateTouchData(dX, dY);
+        updateTouchData(dX);
         currentItemViewHolder = viewHolder;
         super.onChildDraw(c, recyclerView, viewHolder, dXModified, dY, actionState, isCurrentlyActive);
     }
@@ -200,10 +199,9 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         this.isCurrentlyActive = isCurrentlyActive;
     }
 
-    private void updateTouchData(float dX, float dY) {
+    private void updateTouchData(float dX) {
         this.dXReal = dX;
         this.dXModified = updateModifiedTouchData(dX);
-        this.dY = dY;
     }
 
     private float updateModifiedTouchData(float dXReal) {
@@ -213,11 +211,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         if (isCurrentlyActive) {
             //View is being actively moved by the user.
 
-            if (dXReal < dXThreshold) {
-                dXModified = dXThreshold;
-            } else {
-                dXModified = dXReal;
-            }
+            dXModified = Math.max(dXReal, dXThreshold);
         } else {
             //View is in the restoration phase
 
@@ -316,4 +310,5 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         VISIBLE,
         ANIMATING_OUT
     }
+
 }
