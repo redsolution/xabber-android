@@ -60,13 +60,16 @@ object GroupInviteManager: OnLoadListener {
                 groupJid = groupContactJid
                 senderJid = sender
                 reason = inviteReason
-                date = timestamp
+                date = if (timestamp != 0.toLong()) timestamp else System.currentTimeMillis()
                 isRead = false
             }
             VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
             invitesMap.put(account.toString(), groupContactJid.toString(), giro)
             GroupInviteRepository.saveInviteToRealm(giro)
-            ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
+            if (inviteReason.isNotEmpty()){
+                ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
+            } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
+
         } catch (e: Exception) {
             LogManager.exception(LOG_TAG, e)
         }
@@ -86,7 +89,9 @@ object GroupInviteManager: OnLoadListener {
     fun acceptInvitation(accountJid: AccountJid, groupJid: ContactJid) {
         try {
             val name = (ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?)!!.name
+            PresenceManager.getInstance().addAutoAcceptGroupSubscription(accountJid, groupJid)
             PresenceManager.getInstance().acceptSubscription(accountJid, groupJid)
+            PresenceManager.getInstance().requestSubscription(accountJid, groupJid)
             RosterManager.getInstance().createContact(accountJid, groupJid, name, ArrayList())
             invitesMap.remove(accountJid.toString(), groupJid.toString())
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
@@ -271,10 +276,7 @@ object GroupInviteManager: OnLoadListener {
             val successfulRevokeRequests = ArrayList<String>()
             val unfinishedRequestCount = AtomicInteger(inviteJids.size)
             val chat = ChatManager.getInstance().getChat(account, groupchatJid)
-            val groupChat: GroupChat?
-            groupChat = if (chat is GroupChat) {
-                chat
-            } else null
+            val groupChat = if (chat is GroupChat) chat else null
 
             for (inviteJid in inviteJids) {
                 try {
