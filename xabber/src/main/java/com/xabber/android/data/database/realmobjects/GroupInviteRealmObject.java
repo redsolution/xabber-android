@@ -20,7 +20,8 @@ public class GroupInviteRealmObject extends RealmObject {
         public static final String DATE = "date";
         public static final String REASON = "reason";
         public static final String IS_INCOMING = "isIncoming";
-        public static final String IS_READ = "isRead";
+        public static final String IS_ACCEPTED = "isAccepted";
+        public static final String IS_DECLINED = "isDeclined";
     }
 
     @PrimaryKey
@@ -33,11 +34,17 @@ public class GroupInviteRealmObject extends RealmObject {
     private long date = 0;
     private String reason;
     private boolean isIncoming;
-    private boolean isRead;
+    private boolean isAccepted = false;
+    private boolean isDeclined = false;
 
     public GroupInviteRealmObject(){ this.id = UUID.randomUUID().toString(); }
 
-    public GroupInviteRealmObject(String id){ this.id = id; }
+    public GroupInviteRealmObject(AccountJid accountJid, ContactJid groupJid, ContactJid senderJid){
+        this.id = accountJid.toString() + "#" + groupJid.toString() + "#" + senderJid.toString();
+        this.accountJid = accountJid.toString();
+        this.groupJid = groupJid.toString();
+        this.senderJid = senderJid.toString();
+    }
 
     public String getId() { return id; }
 
@@ -49,7 +56,6 @@ public class GroupInviteRealmObject extends RealmObject {
             return null;
         }
     }
-    public void setAccountJid(AccountJid accountJid) { this.accountJid = accountJid.toString(); }
 
     public ContactJid getGroupJid() {
         try{
@@ -59,7 +65,6 @@ public class GroupInviteRealmObject extends RealmObject {
             return null;
         }
     }
-    public void setGroupJid(ContactJid groupJid) { this.groupJid = groupJid.toString(); }
 
     public ContactJid getSenderJid() {
         try{
@@ -69,7 +74,6 @@ public class GroupInviteRealmObject extends RealmObject {
             return null;
         }
     }
-    public void setSenderJid(ContactJid senderJid) { this.senderJid = senderJid.getBareJid().toString(); }
 
     public long getDate() { return date; }
     public void setDate(long date) { this.date = date; }
@@ -80,7 +84,10 @@ public class GroupInviteRealmObject extends RealmObject {
     public boolean isIncoming() { return isIncoming; }
     public void setIncoming(boolean incoming) { isIncoming = incoming; }
 
-    public boolean isRead() { return isRead; }
-    public void setRead(boolean read) { isRead = read; }
+    public boolean isAccepted() { return isAccepted; }
+    public void setAccepted(boolean accepted) { isAccepted = accepted; }
+
+    public boolean isDeclined() { return isDeclined; }
+    public void setDeclined(boolean declined) { isDeclined = declined; }
 
 }

@@ -10,10 +10,11 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.vcard.VCardManager
+import com.xabber.android.data.groups.GroupInviteManager
+import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.groups.GroupPrivacyType
 
 object StatusBadgeSetupHelper {
 
@@ -40,6 +41,8 @@ object StatusBadgeSetupHelper {
         val isIncognitoGroupChat = abstractChat is GroupChat
                 && abstractChat.privacyType == GroupPrivacyType.INCOGNITO
 
+        val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
+
         if (statusLevel == StatusMode.unavailable.statusLevel
                 || statusLevel == StatusMode.connection.statusLevel)
             statusLevel = 5
@@ -57,6 +60,7 @@ object StatusBadgeSetupHelper {
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 90
+            hasActiveIncomingInvite -> statusLevel = 12
             isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
             isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
             //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
@@ -64,7 +68,7 @@ object StatusBadgeSetupHelper {
 
         imageView.setImageLevel(statusLevel)
 
-        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected) {
+        if ((isServer || isPublicGroupChat || isIncognitoGroupChat || hasActiveIncomingInvite) && !isAccountConnected) {
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)

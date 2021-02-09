@@ -501,6 +501,9 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
     override fun onServerClicked(server: String) {
         serversDialog?.dismiss()
         serverTv.text = "\u200A@\u200A$server"
+        if (!groupJidEt.text.isNullOrEmpty() && !groupNameEt.text.isNullOrEmpty() && getAccount() != null) {
+            listenerActivity?.toolbarSetEnabled(true)
+        }
     }
 
     override fun onCustomClicked() {

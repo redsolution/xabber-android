@@ -127,7 +127,7 @@
                         android:singleLine="true"
                         style="?attr/editTextStyle"
                         android:background="@color/transparent"
-                        android:text="\u200A\@\u200Ahardcoded.com"/>
+                        android:text="\u200A\@\u200Agc.xabber.com"/>
 
                 </LinearLayout>
 

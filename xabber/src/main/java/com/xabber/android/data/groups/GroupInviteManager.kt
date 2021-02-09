@@ -10,7 +10,6 @@ import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject
 import com.xabber.android.data.database.repositories.GroupInviteRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.entity.NestedMap
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.blocking.BlockingManager.BlockContactListener
 import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult
@@ -39,11 +38,11 @@ object GroupInviteManager: OnLoadListener {
 
     private val LOG_TAG = GroupInviteManager.javaClass.simpleName
 
-    private val invitesMap = NestedMap<GroupInviteRealmObject>()
+    private val invitesMap = mutableListOf<GroupInviteRealmObject>()
 
     override fun onLoad() {
-        for (giro in GroupInviteRepository.getAllInvitationsForEnabledAccounts()) {
-            invitesMap.put(giro.accountJid.toString(), giro.groupJid.toString(), giro)
+        for (giro in GroupInviteRepository.getAllInvitationsFromRealm()) {
+            invitesMap.add(giro)
         }
     }
 
@@ -54,34 +53,22 @@ object GroupInviteManager: OnLoadListener {
             if (BlockingManager.getInstance().contactIsBlocked(account, groupContactJid)
                     || RosterManager.getInstance().accountIsSubscribedTo(account, groupContactJid)) return
             val inviteReason = inviteExtensionElement.getReason()
-            val giro = GroupInviteRealmObject().apply {
-                accountJid = account
-                isIncoming = true
-                groupJid = groupContactJid
-                senderJid = sender
-                reason = inviteReason
-                date = if (timestamp != 0.toLong()) timestamp else System.currentTimeMillis()
-                isRead = false
+            if (invitesMap.none { it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender }) {
+                val giro = GroupInviteRealmObject(account, groupContactJid, sender).apply {
+                    isIncoming = true
+                    reason = inviteReason
+                    date = if (timestamp != 0.toLong()) timestamp else System.currentTimeMillis()
+                }
+                invitesMap.add(giro)
+                GroupInviteRepository.saveOrUpdateInviteToRealm(giro)
+                if (inviteReason.isNotEmpty()){
+                    ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
+                } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
+                VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
             }
-            VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
-            invitesMap.put(account.toString(), groupContactJid.toString(), giro)
-            GroupInviteRepository.saveInviteToRealm(giro)
-            if (inviteReason.isNotEmpty()){
-                ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
-            } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
-
         } catch (e: Exception) {
             LogManager.exception(LOG_TAG, e)
         }
-        EventBus.getDefault().post(NewMessageEvent())
-        EventBus.getDefault().post(MessageUpdateEvent())
-    }
-
-    fun readInvite(accountJid: AccountJid, groupJid: ContactJid) {
-        val giro = invitesMap[accountJid.toString(), groupJid.toString()]
-        giro.isRead = true
-        GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
-        GroupInviteRepository.saveInviteToRealm(giro)
         EventBus.getDefault().post(NewMessageEvent())
         EventBus.getDefault().post(MessageUpdateEvent())
     }
@@ -93,8 +80,12 @@ object GroupInviteManager: OnLoadListener {
             PresenceManager.getInstance().acceptSubscription(accountJid, groupJid)
             PresenceManager.getInstance().requestSubscription(accountJid, groupJid)
             RosterManager.getInstance().createContact(accountJid, groupJid, name, ArrayList())
-            invitesMap.remove(accountJid.toString(), groupJid.toString())
-            GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
+            invitesMap
+                    .filter { it.accountJid == accountJid && it.groupJid == groupJid }
+                    .map {
+                        it.isAccepted = true
+                        GroupInviteRepository.saveOrUpdateInviteToRealm(it)
+                    }
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
         }
@@ -106,14 +97,16 @@ object GroupInviteManager: OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 val groupChat = ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?
-                AccountManager.getInstance().getAccount(accountJid)!!.connection.sendIqWithResponseCallback(
-                        DeclineGroupInviteIQ(groupChat!!),
+                val connection = AccountManager.getInstance().getAccount(accountJid)!!.connection;
+                connection.sendIqWithResponseCallback(DeclineGroupInviteIQ(groupChat!!),
                         { packet: Stanza? ->
                             if (packet is IQ && packet.type == IQ.Type.result) {
-                                LogManager.i(LOG_TAG, "Invite from group " + groupJid.toString()
-                                        + " to account " + accountJid.toString() + " successfully declined.")
-                                invitesMap.remove(accountJid.toString(), groupJid.toString())
-                                GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
+                                invitesMap
+                                        .filter { it.accountJid == accountJid && it.groupJid == groupJid }
+                                        .map {
+                                            it.isDeclined = true
+                                            GroupInviteRepository.saveOrUpdateInviteToRealm(it)
+                                        }
                                 ChatManager.getInstance().removeChat(groupChat)
                                 BlockingManager.getInstance().blockContact(accountJid, groupJid,
                                         object : BlockContactListener {
@@ -121,28 +114,30 @@ object GroupInviteManager: OnLoadListener {
                                             override fun onErrorBlock() {}
                                         })
                             }
+                        },
+                        { exception: java.lang.Exception ->
+                            LogManager.e(LOG_TAG, "Error to decline the invite from group $groupJid " +
+                                    "to account $accountJid!${exception.message}")
                         }
-                ) { exception: java.lang.Exception ->
-                    LogManager.e(LOG_TAG,
-                            """Error to decline the invite from group $groupJid to account $accountJid!${exception.message}""")
-                }
+                )
             } catch (e: java.lang.Exception) {
-                LogManager.e(LOG_TAG,
-                        """Error to decline the invite from group $groupJid to account $accountJid!${e.message}""")
+                LogManager.e(LOG_TAG, "Error to decline the invite from group $groupJid " +
+                        "to account $accountJid!${e.message}")
             }
         }
         EventBus.getDefault().post(NewMessageEvent())
         EventBus.getDefault().post(MessageUpdateEvent())
     }
 
-    fun hasInvite(accountJid: AccountJid, groupchatJid: ContactJid): Boolean {
-        val giro = invitesMap[accountJid.toString(), groupchatJid.toString()]
-        return giro != null && !BlockingManager.getInstance().contactIsBlocked(accountJid, groupchatJid)
-    }
+    fun hasActiveIncomingInvites(accountJid: AccountJid, groupchatJid: ContactJid) =
+            invitesMap.any{it.accountJid == accountJid && it.groupJid == groupchatJid && !it.isDeclined && !it.isAccepted}
+                    && !BlockingManager.getInstance().contactIsBlocked(accountJid, groupchatJid)
 
-    fun getInvite(accountJid: AccountJid, groupJid: ContactJid): GroupInviteRealmObject? {
-        return if (hasInvite(accountJid, groupJid)) invitesMap[accountJid.toString(), groupJid.toString()] else null
-    }
+    fun getLastInvite(accountJid: AccountJid, groupJid: ContactJid) =
+            invitesMap.lastOrNull { it.accountJid == accountJid && it.groupJid == groupJid }
+
+    fun getInvites(accountJid: AccountJid, groupJid: ContactJid) =
+            invitesMap.filter { it.accountJid == accountJid && it.groupJid == groupJid }
 
     /**
      * Create and send IQ to group and Message with invitation to contact according to Direct Invitation.

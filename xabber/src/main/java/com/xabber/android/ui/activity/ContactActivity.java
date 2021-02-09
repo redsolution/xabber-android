@@ -470,7 +470,7 @@ public class ContactActivity extends ManagedActivity implements
                 break;
             case R.id.second_button:
                 if (isGroupchat) {
-                    startActivity(GroupchatInviteContactActivity.createIntent(ContactActivity.this, account, user));
+                    startActivity(GroupInviteContactActivity.createIntent(ContactActivity.this, account, user));
                 } else {
                     Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
                 }

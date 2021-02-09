@@ -35,6 +35,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -308,6 +309,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
         LogManager.i(this, "removeChat " + chat.getContactJid());
+        MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         if (chat instanceof GroupChat){

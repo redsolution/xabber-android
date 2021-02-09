@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.Html
 import android.view.View
+import androidx.core.os.ConfigurationCompat
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
@@ -18,7 +19,6 @@ import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.groups.GroupsManager
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
@@ -153,9 +153,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupTime(holder: ChatViewHolder, chat: AbstractChat) {
         holder.timeTV.visibility = View.VISIBLE
         when {
-            GroupInviteManager.hasInvite(chat.account, chat.contactJid) -> {
+            GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid) -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                        Date(GroupInviteManager.getInvite(chat.account, chat.contactJid)!!.date))
+                        Date(GroupInviteManager.getLastInvite(chat.account, chat.contactJid)!!.date))
             }
             chat.lastMessage != null -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
@@ -169,9 +169,10 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val context = holder.itemView.context
 
         if (chat is GroupChat && chat.lastMessage == null
-                && GroupInviteManager.hasInvite(chat.account, chat.contactJid)){
+                && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid)){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
-                    chat.privacyType.getLocalizedString().decapitalize())
+                    chat.privacyType.getLocalizedString().decapitalize(ConfigurationCompat.getLocales(context.resources
+                            .configuration)[0]))
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
             return
         }

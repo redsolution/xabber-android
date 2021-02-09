@@ -616,7 +616,7 @@
 
         <activity android:name=".ui.activity.GroupchatUpdateSettingsActivity" />
 
-        <activity android:name=".ui.activity.GroupchatInviteContactActivity" />
+        <activity android:name=".ui.activity.GroupInviteContactActivity" />
 
         <!-- Services -->
         <service android:name=".service.XabberService" />

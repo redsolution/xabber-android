@@ -6,6 +6,8 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
@@ -22,22 +24,23 @@ import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.OnNumberOfSelectedInvitesChanged
 import org.jivesoftware.smack.packet.XMPPError
 
-class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener,
+class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener,
         OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener {
 
     private var account: AccountJid? = null
-    private var groupchatContact: ContactJid? = null
+    private var groupContactJid: ContactJid? = null
     private var toolbar: Toolbar? = null
     private var barPainter: BarPainter? = null
     private var jidsToInvite: MutableList<ContactJid>? = null
+    private var progressBar: ProgressBar? = null
     private var selectionCounter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = intent
         account = getAccount(intent)
-        groupchatContact = getGroupchatContact(intent)
-        setContentView(R.layout.activity_with_toolbar_and_container)
+        groupContactJid = getGroupchatContact(intent)
+        setContentView(R.layout.activity_with_toolbar_progress_and_container)
         val lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
         toolbar = findViewById(R.id.toolbar_default)
         toolbar?.setNavigationIcon(if (lightTheme) R.drawable.ic_arrow_left_grey_24dp else
@@ -51,9 +54,11 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         barPainter = BarPainter(this, toolbar)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(R.id.fragment_container,
-                    GroupchatInviteContactFragment.newInstance(account, groupchatContact),
+                    GroupchatInviteContactFragment.newInstance(account, groupContactJid),
                     GroupchatInviteContactFragment.LOG_TAG).commit()
         }
+
+        progressBar = findViewById(R.id.progressBar)
     }
 
     override fun onResume() {
@@ -77,8 +82,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.action_perform_on_selected)
-                .setVisible(selectionCounter > 0).title = getString(R.string.groupchat_invite)
+        menu.findItem(R.id.action_perform_on_selected).setVisible(selectionCounter > 0).title = getString(R.string.groupchat_invite)
         return true
     }
 
@@ -126,28 +130,30 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
         val fragment = inviteFragment
         if (fragment != null) {
             jidsToInvite = fragment.selectedContacts
-            if (account != null && groupchatContact != null && jidsToInvite != null){
-                GroupInviteManager.sendGroupInvitations(account!!, groupchatContact!!, jidsToInvite!!, null, this)
+            if (account != null && groupContactJid != null && jidsToInvite != null){
+                GroupInviteManager.sendGroupInvitations(account!!, groupContactJid!!, jidsToInvite!!, null, this)
             }
         }
     }
 
     override fun onResult() {
-        //todo hiding progressbar
+        progressBar?.visibility = View.INVISIBLE
         finish()
     }
 
     override fun onSend() {
-        //todo showing progressbar
+        progressBar?.visibility = View.VISIBLE
     }
 
     override fun onIqError(error: XMPPError) {
+        progressBar?.visibility = View.INVISIBLE
         Application.getInstance().runOnUiThread {
             Toast.makeText(this, error.descriptiveText, Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onOtherError(exception: Exception?) {
+        progressBar?.visibility = View.INVISIBLE
         Application.getInstance().runOnUiThread {
             Toast.makeText(this, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
         }
@@ -156,7 +162,7 @@ class GroupchatInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClic
     companion object {
         @JvmStatic
         fun createIntent(context: Context?, account: AccountJid?, groupchatJid: ContactJid?): Intent {
-            return EntityIntentBuilder(context, GroupchatInviteContactActivity::class.java)
+            return EntityIntentBuilder(context, GroupInviteContactActivity::class.java)
                     .setAccount(account)
                     .setUser(groupchatJid)
                     .build()

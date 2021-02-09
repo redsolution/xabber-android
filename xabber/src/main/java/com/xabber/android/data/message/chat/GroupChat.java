@@ -12,20 +12,20 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.groups.GroupIndexType;
 import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.data.groups.GroupIndexType;
-import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.groups.GroupMembershipType;
 import com.xabber.android.data.groups.GroupPrivacyType;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
@@ -253,8 +253,9 @@ public class GroupChat extends AbstractChat {
     @Nullable
     public FullJid getFullJidIfPossible(){
         try{
-            if (resource != null && !resource.isEmpty())
+            if (resource != null && !resource.isEmpty()) {
                 return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/" + resource);
+            } else return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/Group");
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
         }
@@ -343,14 +344,6 @@ public class GroupChat extends AbstractChat {
         sendMessages();
     }
 
-    @Override
-    public void markAsReadAll(boolean trySendDisplay) {
-        super.markAsReadAll(trySendDisplay);
-        if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid)){
-            GroupInviteManager.INSTANCE.readInvite(account, contactJid);
-        }
-    }
-
     /* Getters and setters */
     public GroupIndexType getIndexType() { return indexType; }
     public void setIndexType(GroupIndexType indexType) { this.indexType = indexType; }
@@ -435,7 +428,7 @@ public class GroupChat extends AbstractChat {
 
     public void createFakeMessageForInvite(GroupInviteRealmObject giro){
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), null, giro.getReason(), null,
-                null, new Date(giro.getDate()), null, true, !giro.isRead(), false,
+                null, new Date(giro.getDate()), null, true, false, false,
                 false, giro.getId(), giro.getId(), null, null, null,
                 false, null, false, null, false);
     }
@@ -449,20 +442,19 @@ public class GroupChat extends AbstractChat {
             if (lastActionTimestamp != null) {
                 return new Date(getLastActionTimestamp());
             }
-            if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid))
-                return new Date(GroupInviteManager.INSTANCE.getInvite(account, contactJid).getDate());
+            if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, contactJid))
+                return new Date(GroupInviteManager.INSTANCE.getLastInvite(account, contactJid).getDate());
             return null;
         }
     }
 
-
-
     @Override
     public int getUnreadMessageCount() {
-        if (GroupInviteManager.INSTANCE.hasInvite(account, contactJid)
-                && !GroupInviteManager.INSTANCE.getInvite(account, contactJid).isRead()){
-            return super.getUnreadMessageCount() + 1;
-        } else return super.getUnreadMessageCount();
+        int unreadMessagesCount = super.getUnreadMessageCount();
+        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, contactJid)){
+            int activeInvitesCount = GroupInviteManager.INSTANCE.getInvites(account, contactJid).size();
+            return unreadMessagesCount != 0 ? unreadMessagesCount : activeInvitesCount;
+        } else return unreadMessagesCount;
     }
 
 }

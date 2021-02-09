@@ -509,7 +509,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatAvatarClick(@NotNull AbstractChat item) {
-        if (GroupInviteManager.INSTANCE.hasInvite(item.getAccount(), item.getContactJid()))
+        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(item.getAccount(), item.getContactJid()))
             onChatItemClick(item);
         else{
             Intent intent;
@@ -566,19 +566,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             if (currentChatsState == ChatListState.recent)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ( (abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && !abstractChat.isArchived())
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.unread)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.getUnreadMessageCount() != 0)
                         newList.add(abstractChat);
             if (currentChatsState == ChatListState.archived)
                 for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
                     if ((abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasInvite(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
                             && abstractChat.isArchived())
                         newList.add(abstractChat);
 
