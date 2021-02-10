@@ -21,7 +21,7 @@ open class VCard : VCard() {
      * @param phoneNum  phone number
      */
     fun setPhoneMobile(phoneType: String, phoneNum: String) {
-        mobilePhones[phoneType] = phoneNum
+        if (phoneType != null && phoneNum != null && mobilePhones != null) mobilePhones[phoneType] = phoneNum
     }
 
     var privacyType = GroupPrivacyType.NONE
