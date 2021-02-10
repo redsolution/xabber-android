@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 932
-        versionName '3.0.1(932)'
+        versionCode 933
+        versionName '3.0.1(933)'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -26,8 +26,7 @@ android {
 
     subprojects {
         afterEvaluate {
-            if (getPlugins().hasPlugin('android') ||
-                    getPlugins().hasPlugin('android-library')) {
+            if (getPlugins().hasPlugin('android') || getPlugins().hasPlugin('android-library')) {
 
                 configure(android.lintOptions) {
                     abortOnError false
