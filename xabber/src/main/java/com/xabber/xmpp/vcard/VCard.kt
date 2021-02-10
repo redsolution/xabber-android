@@ -5,14 +5,13 @@ import com.xabber.android.data.groups.GroupMembershipType
 import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
-import java.util.*
 
 open class VCard : VCard() {
     /**
      * Phone types:
      * VOICE?, FAX?, PAGER?, MSG?, CELL?, VIDEO?, BBS?, MODEM?, ISDN?, PCS?, PREF?
      */
-    private val mobilePhones: MutableMap<String, String> = HashMap()
+    private val mobilePhones: MutableMap<String, String> = mutableMapOf()
 
     /**
      * Set work phone number.
@@ -20,7 +19,7 @@ open class VCard : VCard() {
      * @param phoneType one of VOICE, FAX, PAGER, MSG, CELL, VIDEO, BBS, MODEM, ISDN, PCS, PREF
      * @param phoneNum  phone number
      */
-    fun setPhoneMobile(phoneType: String, phoneNum: String) {
+    fun setPhoneMobile(phoneType: String?, phoneNum: String?) {
         if (phoneType != null && phoneNum != null && mobilePhones != null) mobilePhones[phoneType] = phoneNum
     }
 
