@@ -51,7 +51,7 @@ object StatusBadgeSetupHelper {
 
         // Hiding badges in disconnected\unavailable state only for regular chats
         imageView.visibility =
-                if (!isServer && !isPublicGroupChat && !isIncognitoGroupChat && !isBlocked
+                if (!isServer && !isPublicGroupChat && !isIncognitoGroupChat && !hasActiveIncomingInvite && !isBlocked
                         && (isUnavailable || !isAccountConnected))
                     View.INVISIBLE
                 else
