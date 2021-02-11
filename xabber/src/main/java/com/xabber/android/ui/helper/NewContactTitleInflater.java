@@ -20,6 +20,8 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.groups.GroupInviteManager;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -158,7 +160,18 @@ public class NewContactTitleInflater {
                     } else {
                         if (VCardManager.getInstance().isRosterOrHistoryLoaded(abstractContact.getAccount())) {
                             //Contact not in our roster, and no subscription requests.
-                            statusText = context.getString(R.string.contact_state_not_in_contact_list);
+
+                            if (chat != null && chat instanceof GroupChat){
+                                GroupPrivacyType privacyType = ((GroupChat) chat).getPrivacyType();
+                                if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractContact.getAccount(), abstractContact.getContactJid())){
+                                    statusText = context.getString(R.string.groupchat_invitation_to_group_chat,
+                                            StringUtils.decapitalize(privacyType.getLocalizedString()));
+                                } else {
+                                    if (privacyType == GroupPrivacyType.INCOGNITO){
+                                        statusText = context.getString(R.string.groupchat_public_group);
+                                    } else statusText = context.getString(R.string.groupchat_incognito_group);
+                                }
+                            } else statusText = context.getString(R.string.contact_state_not_in_contact_list);
                         } else {
                             //Contact state is undefined since roster is not loaded yet
                             statusText = context.getString(R.string.waiting_for_network);
