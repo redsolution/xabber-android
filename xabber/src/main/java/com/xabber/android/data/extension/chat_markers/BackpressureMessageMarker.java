@@ -13,7 +13,6 @@ import com.xabber.android.data.message.MessageUpdateEvent;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -32,9 +31,12 @@ public class BackpressureMessageMarker {
         return instance;
     }
 
-    public void markMessage(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
-        if (messageId != null && marker != null && accountJid != null)
+    public void markMessage(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker,
+                            AccountJid accountJid) {
+
+        if (messageId != null && marker != null && accountJid != null){
             subject.onNext(new MessageIdAndMarker(messageId, stanzaId, marker, accountJid));
+        }
     }
 
     private BackpressureMessageMarker() {
@@ -53,16 +55,16 @@ public class BackpressureMessageMarker {
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransaction(realm1 -> {
                             for (MessageIdAndMarker messageAndMarker : messageIdAndMarkers) {
-
                                 String headMessageId = messageAndMarker.messageId;
                                 ArrayList<String> altHeadMessageId = messageAndMarker.stanzaId;
                                 ChatMarkersState marker = messageAndMarker.marker;
                                 AccountJid accountJid = messageAndMarker.accountJid;
 
-                                MessageRealmObject headMessage = getMessageById(realm1, headMessageId,altHeadMessageId, accountJid);
+                                MessageRealmObject headMessage = getMessageById(realm1, headMessageId,altHeadMessageId,
+                                        accountJid);
                                 if (headMessage != null && marker != null) {
-                                    RealmResults<MessageRealmObject> messages = getPreviousUnmarkedMessages(realm1, headMessage, marker);
-                                    List<String> ids = new ArrayList<>();
+                                    RealmResults<MessageRealmObject> messages = getPreviousUnmarkedMessages(realm1,
+                                            marker, headMessage);
                                     if (messages != null) {
                                         for (MessageRealmObject mes : messages) {
                                             setMarkedState(mes, marker);
@@ -99,7 +101,9 @@ public class BackpressureMessageMarker {
         }
     }
 
-    private RealmResults<MessageRealmObject> getPreviousUnmarkedMessages(Realm realm, MessageRealmObject messageRealmObject, ChatMarkersState marker) {
+    private RealmResults<MessageRealmObject> getPreviousUnmarkedMessages(Realm realm, ChatMarkersState marker,
+                                                                         MessageRealmObject messageRealmObject) {
+
         String chatMarkerFieldState = null;
         switch (marker) {
             case received:
@@ -120,7 +124,9 @@ public class BackpressureMessageMarker {
                 .findAll();
     }
 
-    private MessageRealmObject getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
+    private MessageRealmObject getMessageById(Realm realm, String id, ArrayList<String> stanzaIds,
+                                              AccountJid accountJid) {
+
         int idFieldCounter = 0;
 
         RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
@@ -153,11 +159,13 @@ public class BackpressureMessageMarker {
         final ChatMarkersState marker;
         final AccountJid accountJid;
 
-        MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
+        MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker,
+                           AccountJid accountJid) {
             this.messageId = messageId;
             this.stanzaId = stanzaId;
             this.marker = marker;
             this.accountJid = accountJid;
         }
     }
+
 }

@@ -1,16 +1,16 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- *
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.database.realmobjects;
 
@@ -43,6 +43,7 @@ import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
+@SuppressWarnings("unused")
 public class MessageRealmObject extends RealmObject {
 
     public static class Fields {
@@ -350,14 +351,16 @@ public class MessageRealmObject extends RealmObject {
 
     public RealmList<AttachmentRealmObject> getAttachmentRealmObjects() { return attachmentRealmObjects; }
 
-    public void setAttachmentRealmObjects(RealmList<AttachmentRealmObject> attachmentRealmObjects) { this.attachmentRealmObjects = attachmentRealmObjects; }
+    public void setAttachmentRealmObjects(RealmList<AttachmentRealmObject> attachmentRealmObjects) {
+        this.attachmentRealmObjects = attachmentRealmObjects;
+    }
 
     public boolean haveAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
 
     public RealmList<ForwardIdRealmObject> getForwardedIds() { return forwardedIds; }
 
     public String[] getForwardedIdsAsArray() {
-        String forwardedIds[] = new String[getForwardedIds().size()];
+        String[] forwardedIds = new String[getForwardedIds().size()];
 
         int i = 0;
         for (ForwardIdRealmObject id : getForwardedIds()) {
@@ -406,7 +409,10 @@ public class MessageRealmObject extends RealmObject {
 
     public boolean isGroupchatSystem() { return isGroupchatSystem; }
 
-    public void setGroupchatSystem(boolean groupchatSystem) { isGroupchatSystem = groupchatSystem; }
+    public void setGroupchatSystem(boolean groupchatSystem) {
+        isGroupchatSystem = groupchatSystem;
+        read = true;
+    }
 
     public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
 

@@ -1036,8 +1036,8 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
         BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
+        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
     }
 
     public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
