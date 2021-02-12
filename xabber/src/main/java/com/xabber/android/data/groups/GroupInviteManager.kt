@@ -52,7 +52,10 @@ object GroupInviteManager: OnLoadListener {
         try {
             val groupContactJid = ContactJid.from(inviteExtensionElement.groupJid)
             if (BlockingManager.getInstance().contactIsBlocked(account, groupContactJid)
-                    || RosterManager.getInstance().accountIsSubscribedTo(account, groupContactJid)) return
+                    || RosterManager.getInstance().accountIsSubscribedTo(account, groupContactJid)) {
+                        LogManager.i(LOG_TAG, "Got incoming invite, but group is already in blocklist")
+                        return
+            }
             val inviteReason = inviteExtensionElement.getReason()
             if (invitesMap.none { it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender }) {
                 val giro = GroupInviteRealmObject(account, groupContactJid, sender).apply {
@@ -101,7 +104,7 @@ object GroupInviteManager: OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 val groupChat = ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?
-                val connection = AccountManager.getInstance().getAccount(accountJid)!!.connection;
+                val connection = AccountManager.getInstance().getAccount(accountJid)!!.connection
                 connection.sendIqWithResponseCallback(DeclineGroupInviteIQ(groupChat!!),
                         { packet: Stanza? ->
                             if (packet is IQ && packet.type == IQ.Type.result) {
