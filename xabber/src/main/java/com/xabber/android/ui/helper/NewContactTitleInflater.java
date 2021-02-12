@@ -161,7 +161,7 @@ public class NewContactTitleInflater {
                         if (VCardManager.getInstance().isRosterOrHistoryLoaded(abstractContact.getAccount())) {
                             //Contact not in our roster, and no subscription requests.
 
-                            if (chat != null && chat instanceof GroupChat){
+                            if (isGroupchat){
                                 GroupPrivacyType privacyType = ((GroupChat) chat).getPrivacyType();
                                 if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractContact.getAccount(), abstractContact.getContactJid())){
                                     statusText = context.getString(R.string.groupchat_invitation_to_group_chat,

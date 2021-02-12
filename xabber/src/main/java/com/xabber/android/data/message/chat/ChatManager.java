@@ -291,7 +291,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         saveOrUpdateChatDataToRealm(chat);
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
         LogManager.d(ChatManager.class.getSimpleName(), "Created group chat: " + groupJid);
-        LogManager.exception(ChatManager.class.getSimpleName(), new Exception());
         return chat;
     }
 

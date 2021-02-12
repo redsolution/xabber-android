@@ -49,15 +49,15 @@ open class VCardCustomProvider : IQProvider<VCard>() {
     }
 
     private fun parsePrivacy(parser: XmlPullParser, vCard: VCard){
-        vCard.privacyType = GroupPrivacyType.getPrivacyTypeFromXml(parser.nextText())
+        vCard.privacyType = GroupPrivacyType.fromXml(parser.nextText())
     }
 
     private fun parseIndex(parser: XmlPullParser, vCard: VCard){
-        vCard.indexType = GroupIndexType.getIndexTypeFromXml(parser.nextText())
+        vCard.indexType = GroupIndexType.fromXml(parser.nextText())
     }
 
     private fun parseMembership(parser: XmlPullParser, vCard: VCard){
-        vCard.membershipType = GroupMembershipType.getMembershipTypeFromXml(parser.nextText())
+        vCard.membershipType = GroupMembershipType.fromXml(parser.nextText())
     }
 
     private fun parseDescription(parser: XmlPullParser, vCard: VCard){

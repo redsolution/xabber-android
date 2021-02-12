@@ -22,6 +22,7 @@ import com.xabber.android.data.message.MessageUpdateEvent
 import com.xabber.android.data.message.NewMessageEvent
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
 import org.greenrobot.eventbus.EventBus
@@ -61,6 +62,9 @@ object GroupInviteManager: OnLoadListener {
                 }
                 invitesMap.add(giro)
                 GroupInviteRepository.saveOrUpdateInviteToRealm(giro)
+                if (ChatManager.getInstance().getChat(account, groupContactJid) is RegularChat){
+                    ChatManager.getInstance().removeChat(account, groupContactJid)
+                }
                 if (inviteReason.isNotEmpty()){
                     ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
                 } else ChatManager.getInstance().createGroupChat(account, groupContactJid)

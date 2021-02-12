@@ -26,12 +26,21 @@ enum class GroupPrivacyType {
 
     companion object {
         @JvmStatic
-        fun getPrivacyTypeFromXml(text: String?): GroupPrivacyType {
-            return when (text) {
-                "public" -> PUBLIC
-                "incognito" -> INCOGNITO
-                else -> NONE
-            }
-        }
+        fun fromXml(text: String?) =
+                when (text) {
+                    "public" -> PUBLIC
+                    "incognito" -> INCOGNITO
+                    else -> NONE
+                }
+
+        @JvmStatic
+        fun fromString(string: String?) =
+                when (string){
+                    INCOGNITO.toString() -> INCOGNITO
+                    PUBLIC.toString() -> PUBLIC
+                    else -> NONE
+                }
+
     }
+
 }

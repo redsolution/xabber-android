@@ -26,30 +26,21 @@ enum class GroupIndexType{
 
     companion object {
         @JvmStatic
-        fun getIndexTypeFromXml(text: String?): GroupIndexType {
-            return when (text) {
-                "local" -> LOCAL
-                "global" -> GLOBAL
-                else -> NONE
-            }
-        }
-
-        @JvmStatic
-        fun getIndexTypeByLocalizedString(text: String?) : GroupIndexType {
-            return when (text) {
-                Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_local) -> LOCAL
-                Application.getInstance().applicationContext.getString(R.string.groupchat_index_type_global) -> GLOBAL
-                else -> NONE
-            }
-        }
+        fun fromXml(text: String?) =
+                when (text) {
+                    "local" -> LOCAL
+                    "global" -> GLOBAL
+                    else -> NONE
+                }
 
 
         @JvmStatic
-        fun getLocalizedValues() : List<String>{
-            val result = mutableListOf<String>()
-            for (type in values())
-                result.add(type.getLocalizedString())
-            return result
-        }
+        fun fromString(string: String?) =
+                when (string){
+                    GLOBAL.toString() -> GLOBAL
+                    LOCAL.toString() -> LOCAL
+                    else -> NONE
+                }
     }
+
 }

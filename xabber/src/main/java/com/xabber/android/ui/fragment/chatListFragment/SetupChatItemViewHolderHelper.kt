@@ -157,7 +157,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
                         Date(GroupInviteManager.getLastInvite(chat.account, chat.contactJid)!!.date))
             }
-            chat.lastMessage != null -> {
+            chat.lastMessage != null && chat.lastMessage?.isValid ?: false -> {
                 holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
                         Date(chat.lastMessage!!.timestamp))
             }

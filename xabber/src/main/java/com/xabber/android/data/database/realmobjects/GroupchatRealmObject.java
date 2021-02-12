@@ -2,11 +2,11 @@ package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.groups.GroupIndexType;
 import com.xabber.android.data.groups.GroupMembershipType;
 import com.xabber.android.data.groups.GroupPrivacyType;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.NotificationState;
 
 import java.util.UUID;
 
@@ -98,7 +98,6 @@ public class GroupchatRealmObject extends RealmObject {
         this.accountJid = accountJid.toString();
     }
 
-    //TODO must change return type
     public String getOwner() {
         return owner;
     }
@@ -113,62 +112,17 @@ public class GroupchatRealmObject extends RealmObject {
         this.name = name;
     }
 
-    public GroupPrivacyType getPrivacy() {
-        if (privacy != null) {
-            switch (privacy) {
-                case "incognitoGroupChat":
-                    return GroupPrivacyType.INCOGNITO;
-                case "publicGroupChat":
-                    return GroupPrivacyType.PUBLIC;
-                default:
-                    return GroupPrivacyType.NONE;
-            }
-        }
-        return GroupPrivacyType.NONE;
-    }
+    public GroupPrivacyType getPrivacy() { return GroupPrivacyType.fromString(privacy); }
     public void setPrivacy(GroupPrivacyType privacy) {
-        if (privacy != null)
-            this.privacy = privacy.toString();
+        if (privacy != null) this.privacy = privacy.toString();
     }
 
-    public GroupIndexType getIndex() {
-        if (index != null) {
-            switch (index) {
-                case "GLOBAL":
-                case "global":
-                    return GroupIndexType.GLOBAL;
-                case "LOCAL":
-                case "local":
-                    return GroupIndexType.LOCAL;
-                default:
-                    return GroupIndexType.NONE;
-            }
-        }
-        return GroupIndexType.NONE;
-    }
-    public void setIndex(GroupIndexType index) {
-        if (index != null)
-            this.index = index.toString();
-    }
+    public GroupIndexType getIndex() { return GroupIndexType.fromString(index); }
+    public void setIndex(GroupIndexType index) { if (index != null) this.index = index.toString(); }
 
-    public GroupMembershipType getMembership() {
-        if (membership != null) {
-            switch (membership) {
-                case "OPEN":
-                case "open":
-                    return GroupMembershipType.OPEN;
-                case "memberOnly":
-                case "MEMBER_ONLY":
-                    return GroupMembershipType.MEMBER_ONLY;
-                default:
-                    return GroupMembershipType.NONE;
-            }
-        }
-        return GroupMembershipType.NONE;
-    }
+    public GroupMembershipType getMembership() { return  GroupMembershipType.fromString(membership); }
     public void setMembership(GroupMembershipType membership) {
-        if (membership != null)
-            this.membership = membership.toString();
+        if (membership != null) this.membership = membership.toString();
     }
 
     public String getDescription() {

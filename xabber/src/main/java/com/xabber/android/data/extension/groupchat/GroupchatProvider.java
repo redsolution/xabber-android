@@ -105,15 +105,15 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                             break;
                         case GroupchatPresence.PRIVACY:
                             presence.setPrivacy(GroupPrivacyType
-                                    .getPrivacyTypeFromXml(parser.nextText()));
+                                    .fromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.MEMBERSHIP:
                             presence.setMembership(GroupMembershipType
-                                    .getMembershipTypeFromXml(parser.nextText()));
+                                    .fromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.INDEX:
                             presence.setIndex(GroupIndexType
-                                    .getIndexTypeFromXml(parser.nextText()));
+                                    .fromXml(parser.nextText()));
                             break;
                         case GroupchatPresence.STATUS:
                             presence.setStatus(parser.nextText());
@@ -134,4 +134,5 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
 
         return presence;
     }
+
 }

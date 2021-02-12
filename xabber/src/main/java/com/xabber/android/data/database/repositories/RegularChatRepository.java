@@ -29,18 +29,14 @@ public class RegularChatRepository {
     public static void removeRegularChatFromRealm(RegularChat groupChat) {
         Application.getInstance().runInBackground(() -> {
             try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
-                realm.executeTransaction(realm1 -> realm1.where(RegularChatRealmObject.class)
-                        .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().toString())
-                        .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getContactJid().getBareJid().toString())
-                        .findFirst()
-                        .deleteFromRealm());
+                realm.executeTransaction(realm1 -> {
+                    RegularChatRealmObject regularChatRealmObject = realm1.where(RegularChatRealmObject.class)
+                            .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().toString())
+                            .equalTo(RegularChatRealmObject.Fields.CONTACT_JID, groupChat.getContactJid().getBareJid().toString())
+                            .findFirst();
+                    if (regularChatRealmObject != null) regularChatRealmObject.deleteFromRealm();
+                });
             } catch (Exception e) {
-                LogManager.exception(LOG_TAG,
-                        new Exception("Tried to remove regular chat with account jid "
-                                + groupChat.getAccount().toString()
-                                + "; and contact jid: "
-                                + groupChat.getContactJid()
-                                + "; but get following exception: "));
                 LogManager.exception(LOG_TAG, e);
             }
         });

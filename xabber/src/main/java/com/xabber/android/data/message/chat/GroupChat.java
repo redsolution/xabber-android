@@ -355,7 +355,6 @@ public class GroupChat extends AbstractChat {
     public void setMembershipType(GroupMembershipType membershipType) { this.membershipType = membershipType; }
 
     public GroupPrivacyType getPrivacyType() { return privacyType; }
-
     public void setPrivacyType(GroupPrivacyType privacyType) { this.privacyType = privacyType; }
 
     public String getOwner() { return owner; }
