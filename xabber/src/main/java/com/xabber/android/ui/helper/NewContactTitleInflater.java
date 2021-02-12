@@ -182,6 +182,11 @@ public class NewContactTitleInflater {
                     if (abstractContact instanceof RosterContact) {
                         SubscriptionState state = RosterManager.getInstance().getSubscriptionState(abstractContact.getAccount(), abstractContact.getContactJid());
                         switch (state.getSubscriptionType()) {
+                            case SubscriptionState.PENDING_OUT:
+                                if (isGroupchat) {
+                                    statusText = context.getString(R.string.groupchat_joining);
+                                    break;
+                                }
                             case SubscriptionState.BOTH:
                             case SubscriptionState.TO:
                                 //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
