@@ -43,7 +43,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.references.decoration.Markup;
-import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
@@ -57,6 +56,7 @@ import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
+import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -1012,7 +1012,8 @@ public abstract class AbstractChat extends BaseEntity implements
     public int getUnreadMessageCount() {
         int unread = getAllUnreadMessages().size() - waitToMarkAsRead.size();
         if (unread < 0) unread = 0;
-        if (getLastMessage() != null && !getLastMessage().isIncoming()) unread = 0;
+        MessageRealmObject lastMessage = getLastMessage();
+        if (lastMessage != null && lastMessage.isValid() && !lastMessage.isIncoming()) unread = 0;
         return unread;
     }
 
