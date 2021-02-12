@@ -261,6 +261,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         return chats.get(accountJid, contactJid) != null;
     }
 
+    public boolean hasChat(AccountJid accountJid, ContactJid contactJid){
+        return hasChat(accountJid.toString(), contactJid.toString());
+    }
+
     /**
      * Creates and adds new regular chat to be managed.
      */
@@ -269,17 +273,25 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        LogManager.d(ChatManager.class.getSimpleName(), "Created regular chat: " + user);
         return chat;
     }
 
     /**
      * Creates and adds new group chat to be managed.
      */
-    public GroupChat createGroupChat(AccountJid account, ContactJid user) {
-        GroupChat chat = new GroupChat(account, user);
+    public GroupChat createGroupChat(AccountJid account, ContactJid groupJid) {
+        if (hasChat(account, groupJid)){
+            if (getChat(account, groupJid) instanceof RegularChat){
+                removeChat(account, groupJid);
+            } else if (getChat(account, groupJid) instanceof GroupChat) return (GroupChat) getChat(account, groupJid);
+        }
+        GroupChat chat = new GroupChat(account, groupJid);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
         EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        LogManager.d(ChatManager.class.getSimpleName(), "Created group chat: " + groupJid);
+        LogManager.exception(ChatManager.class.getSimpleName(), new Exception());
         return chat;
     }
 
