@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="spam_filter_limit_message">This user has limited receiving messages from not-authorized users</string>
+    <string name="spam_filter_limit_subscription">This user has limited subscriptions. To request a subscription, solve captcha:</string>
+    <string name="spam_filter_ban_subscription">This user does not accept subscriptions. You can only chat with him if he adds you himself.</string>
+    <string name="spam_filter_captcha_correct">Correct answer. Subscription request showed to user.</string>
+    <string name="spam_filter_captcha_incorrect">Incorrect answer. You aren\'t a spambot, are you?</string>
+    <string name="spam_filter_captcha_many_attempts">To many attempts. Try request subscription again to generate new captcha</string>
+
+</resources>
