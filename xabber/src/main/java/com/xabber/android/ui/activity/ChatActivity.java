@@ -56,9 +56,9 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
@@ -81,8 +81,6 @@ import com.xabber.android.ui.helper.UpdateBackpressure;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -96,9 +94,9 @@ import java.util.List;
  *
  * @author alexander.ivanov
  */
-public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
+public class ChatActivity extends ManagedActivity implements OnContactChangedListener, OnMessageUpdatedListener,
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener,
-        OnBlockedListChangedListener, Toolbar.OnMenuItemClickListener,
+        OnBlockedListChangedListener, Toolbar.OnMenuItemClickListener, OnNewMessageListener,
         UpdateBackpressure.UpdatableObject, SnoozeDialog.OnSnoozeListener, SensorEventListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
@@ -359,6 +357,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
+        Application.getInstance().addUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
 
         this.showArchived = getIntent().getBooleanExtra(KEY_SHOW_ARCHIVED, false);
 
@@ -583,6 +583,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
 
         if (exitOnSend) ActivityManager.getInstance().cancelTask(this);
     }
@@ -599,13 +601,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         updateStatusBar();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
+    @Override
+    public void onNewMessage() {
         updateBackpressure.refreshRequest();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MessageUpdateEvent event) {
+    @Override
+    public void onMessageUpdated() {
         updateBackpressure.refreshRequest();
     }
 

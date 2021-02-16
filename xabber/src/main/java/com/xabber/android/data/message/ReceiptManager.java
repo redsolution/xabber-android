@@ -28,7 +28,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
@@ -139,7 +138,9 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     }
                 }
             });
-            EventBus.getDefault().post(new MessageUpdateEvent(account));
+            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onMessageUpdated();
+            }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
@@ -166,7 +167,9 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                 first.setDelivered(true);
             });
 
-            EventBus.getDefault().post(new MessageUpdateEvent());
+            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onMessageUpdated();
+            }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         } finally { if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close(); }

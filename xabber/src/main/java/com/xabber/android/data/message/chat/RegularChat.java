@@ -19,6 +19,7 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
@@ -26,28 +27,27 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
-import com.xabber.android.data.message.NewIncomingMessageEvent;
-import com.xabber.android.data.groups.GroupsManager;
-import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.message.OnNewIncomingMessageListener;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import net.java.otr4j.OtrException;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -266,7 +266,10 @@ public class RegularChat extends AbstractChat {
                     getStanzaId(message), UniqueStanzaHelper.getOriginId(message), originalStanza, null,
                     originalFrom, false, forwardIdRealmObjects, false, null, isSystem);
 
-            EventBus.getDefault().post(new NewIncomingMessageEvent(account, contactJid));
+            for (OnNewIncomingMessageListener listener :
+                    Application.getInstance().getUIListeners(OnNewIncomingMessageListener.class)){
+                listener.onNewIncomingMessage(account, contactJid);
+            }
         }
         return true;
     }

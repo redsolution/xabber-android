@@ -13,17 +13,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.color.ColorManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class ChatDeleteDialog extends DialogFragment implements View.OnClickListener {
 
@@ -82,7 +81,9 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
                 if (getActivity() instanceof ChatActivity) {
                     getActivity().finish();
                 }
-                EventBus.getDefault().post(new MessageUpdateEvent());
+                for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                    listener.onMessageUpdated();
+                }
             }
         }
         dismiss();

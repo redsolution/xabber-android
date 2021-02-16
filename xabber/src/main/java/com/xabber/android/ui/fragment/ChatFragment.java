@@ -101,13 +101,14 @@ import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.groups.OnGroupPresenceUpdatedListener;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewIncomingMessageEvent;
-import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.data.message.OnNewIncomingMessageListener;
+import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -142,7 +143,6 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
@@ -172,7 +172,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
         OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
-        IncomingMessageVH.OnMessageAvatarClickListener {
+        IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
+        OnGroupPresenceUpdatedListener, OnMessageUpdatedListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -899,7 +900,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
         NextMamManager.getInstance().onChatOpen(getChat());
     }
 
@@ -929,6 +929,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ChatManager.getInstance().setVisibleChat(getChat());
 
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnNewIncomingMessageListener.class, this);
+        Application.getInstance().addUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener.class, this);
+        Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
     }
 
     @Override
@@ -954,12 +958,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         ChatManager.getInstance().removeVisibleChat();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnNewIncomingMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
+        Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -1220,9 +1227,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(GroupsManager.GroupchatPresenceUpdatedEvent event){
-        if (event.getGroupJid().getBareJid().equals(user.toString()))
+    @Override
+    public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
+        if (groupJid.getBareJid().equals(user.toString()))
             setupPinnedMessageView();
     }
 
@@ -1235,23 +1242,21 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MessageUpdateEvent event) {
-        if (account.equals(event.getAccount()) && user.equals(event.getUser())) {
-            updateUnread();
-        }
+    @Override
+    public void onMessageUpdated() {
+        updateUnread();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NewIncomingMessageEvent event) {
-        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+    @Override
+    public void onNewIncomingMessage(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
+        if (accountJid.equals(account) && contactJid.equals(user)) {
             playMessageSound();
             NotificationManager.getInstance().removeMessageNotification(account, user);
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NewMessageEvent event) {
+    @Override
+    public void onNewMessage() {
         updateUnread();
     }
 

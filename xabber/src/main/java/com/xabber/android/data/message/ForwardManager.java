@@ -50,7 +50,9 @@ public class ForwardManager {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
                     realm1.copyToRealm(messageRealmObject);
-                    EventBus.getDefault().post(new NewMessageEvent());
+                    for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+                        listener.onNewMessage();
+                    }
                     chat.sendMessages();
                 });
             } catch (Exception e) {

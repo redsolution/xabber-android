@@ -17,12 +17,11 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
@@ -167,7 +166,9 @@ public class RewriteManager implements OnPacketListener {
                             message[0].setStanzaId(messageRealmObject.getStanzaId());
                             messageRealmObject.setText(text);
                             messageRealmObject.setOriginalStanza(message[0].toXML().toString());
-                            EventBus.getDefault().post(new MessageUpdateEvent());
+                            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                                listener.onMessageUpdated();
+                            }
                         }
                 });
             } catch (Exception e) {
@@ -220,7 +221,9 @@ public class RewriteManager implements OnPacketListener {
                                     .findFirst();
                             if (messageRealmObject != null)
                                 messageRealmObject.deleteFromRealm();
-                            EventBus.getDefault().post(new MessageUpdateEvent());
+                            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                                listener.onMessageUpdated();
+                            }
                     });
                 } catch (Exception e){
                     LogManager.exception(LOG_TAG, e);
@@ -255,7 +258,9 @@ public class RewriteManager implements OnPacketListener {
                             messageRealmObject.setEditedTimestamp(StringUtils
                                     .parseReceivedReceiptTimestampString(stamp).getTime());
                     }
-                    EventBus.getDefault().post(new MessageUpdateEvent());
+                    for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                        listener.onMessageUpdated();
+                    }
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);

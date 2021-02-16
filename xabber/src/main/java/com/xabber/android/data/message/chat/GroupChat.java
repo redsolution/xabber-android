@@ -5,6 +5,7 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
@@ -30,15 +31,14 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
-import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.OnNewIncomingMessageListener;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import net.java.otr4j.OtrException;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
@@ -234,7 +234,10 @@ public class GroupChat extends AbstractChat {
                     UniqueStanzaHelper.getContactStanzaId(message), UniqueStanzaHelper.getOriginId(message), originalStanza, null,
                     originalFrom, false, forwardIdRealmObjects, false, gropchatUserId, isSystem);
 
-            EventBus.getDefault().post(new NewIncomingMessageEvent(account, this.contactJid));
+            for (OnNewIncomingMessageListener listener :
+                    Application.getInstance().getUIListeners(OnNewIncomingMessageListener.class)){
+                listener.onNewIncomingMessage(account, contactJid);
+            }
         }
         return true;
     }

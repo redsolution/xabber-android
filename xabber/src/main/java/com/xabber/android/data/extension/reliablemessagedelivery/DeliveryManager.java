@@ -13,13 +13,12 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
@@ -167,7 +166,9 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             }
             LogManager.d(LOG_TAG, "Received receipt to message with origin id : " + originId);
             markMessageReceivedInDatabase(timestamp, originId, stanzaId);
-            EventBus.getDefault().post(new MessageUpdateEvent());
+            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onMessageUpdated();
+            }
         }
     }
 

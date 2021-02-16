@@ -24,15 +24,15 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.groups.GroupIndexType;
-import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.groups.GroupMembershipType;
 import com.xabber.android.data.groups.GroupPrivacyType;
+import com.xabber.android.data.groups.OnGroupPresenceUpdatedListener;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.activity.GroupStatusActivity;
@@ -41,9 +41,7 @@ import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.VCard;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 
@@ -51,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
-        GroupchatMembersAdapter.OnMemberClickListener, OnVCardListener {
+        GroupchatMembersAdapter.OnMemberClickListener, OnVCardListener, OnGroupPresenceUpdatedListener {
 
     private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
@@ -102,6 +100,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         super.onAttach(context);
         Application.getInstance().addUIListener(OnGroupchatRequestListener.class, this);
         Application.getInstance().addUIListener(OnVCardListener.class, this);
+        Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener.class, this);
     }
 
     @Override
@@ -109,13 +108,12 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         super.onDetach();
         Application.getInstance().removeUIListener(OnGroupchatRequestListener.class, this);
         Application.getInstance().removeUIListener(OnVCardListener.class, this);
+        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
 
         VCardManager.getInstance().requestByUser(account, groupchatContact.getJid());
 
@@ -133,8 +131,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onPause() {
         super.onPause();
-        if (EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().unregister(this);
 
         if (groupChat != null && groupChat instanceof GroupChat) {
             try {
@@ -351,12 +347,9 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         //todo this
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGroupchatPresenceUpdated(
-            GroupsManager.GroupchatPresenceUpdatedEvent presenceUpdatedEvent) {
-
-        if (isThisChat(presenceUpdatedEvent.getAccount(), presenceUpdatedEvent.getGroupJid()))
-            updateChatInfo((GroupChat) groupChat);
+    @Override
+    public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
+        if (groupchatContact == groupJid) updateChatInfo((GroupChat) groupChat);
     }
 
     private boolean isThisChat(AccountJid account, ContactJid contactJid) {

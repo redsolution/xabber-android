@@ -12,8 +12,8 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -35,10 +35,6 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.helper.UpdateBackpressure;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +51,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
         ContactVO.ContactClickListener, AccountVO.AccountClickListener, ContextMenuHelper.ListPresenter,
-        GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
+        GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject, OnNewMessageListener, OnMessageUpdatedListener {
 
     private static ContactListPresenter instance;
     private ContactListView view;
@@ -75,8 +71,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         this.view = view;
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
+        Application.getInstance().addUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
         updateBackpressure.build();
     }
 
@@ -87,7 +83,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         this.view = null;
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
-        EventBus.getDefault().unregister(this);
+        Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
         updateBackpressure.removeRefreshRequests();
     }
 
@@ -146,13 +143,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         updateBackpressure.refreshRequest();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
+    @Override
+    public void onNewMessage() {
         updateBackpressure.refreshRequest();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MessageUpdateEvent event) {
+    @Override
+    public void onMessageUpdated() {
         updateBackpressure.refreshRequest();
     }
 

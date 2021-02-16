@@ -45,7 +45,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -70,10 +70,6 @@ import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
 import com.xabber.xmpp.uri.XMPPUri;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -88,7 +84,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class MainActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ChatListFragment.ChatListFragmentListener,
+        ChatListFragment.ChatListFragmentListener, OnMessageUpdatedListener,
         MainActivitySettingsFragment.ContactListDrawerListener, BottomBar.OnClickListener {
 
     /**
@@ -284,6 +280,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
 
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
 
         if (action != null) {
             switch (action) {
@@ -347,9 +344,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showSavedOrCurrentFragment(currentActiveFragmentType);
         setStatusBarColor();
 
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
-
         updateUnreadCount();
     }
 
@@ -403,8 +397,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         super.onPause();
         hideKeyboard();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        if (EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().unregister(this);
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
     }
 
     private void hideKeyboard() {
@@ -506,8 +499,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         setStatusBarColor();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
+    @Override
+    public void onMessageUpdated() {
         updateUnreadCount();
     }
 

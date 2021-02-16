@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.listeners.OnConnectionStateChangedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XToken;
@@ -25,7 +26,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
@@ -269,7 +269,9 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
-            EventBus.getDefault().post(new ConnectionStateChangedEvent(newState));
+            for (OnConnectionStateChangedListener listener : Application.getInstance().getUIListeners(OnConnectionStateChangedListener.class)){
+                listener.onConnectionStateChanged(newState);
+            }
             if (newState == ConnectionState.connected) {
                 AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
             }
@@ -307,18 +309,6 @@ public abstract class ConnectionItem {
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
         if (register)
             PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
-    }
-
-    public static class ConnectionStateChangedEvent {
-        ConnectionState connectionState;
-
-        ConnectionStateChangedEvent(ConnectionState connectionState) {
-            this.connectionState = connectionState;
-        }
-
-        public ConnectionState getConnectionState() {
-            return connectionState;
-        }
     }
 
 }

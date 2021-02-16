@@ -18,14 +18,13 @@ import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInvit
 import com.xabber.android.data.extension.groupchat.invite.outgoing.*
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.MessageUpdateEvent
-import com.xabber.android.data.message.NewMessageEvent
+import com.xabber.android.data.message.OnMessageUpdatedListener
+import com.xabber.android.data.message.OnNewMessageListener
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
-import org.greenrobot.eventbus.EventBus
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.XMPPConnection
@@ -76,8 +75,10 @@ object GroupInviteManager: OnLoadListener {
         } catch (e: Exception) {
             LogManager.exception(LOG_TAG, e)
         }
-        EventBus.getDefault().post(NewMessageEvent())
-        EventBus.getDefault().post(MessageUpdateEvent())
+        for (listener in Application.getInstance().getUIListeners(OnNewMessageListener::class.java)) {
+            listener.onNewMessage()
+        }
+        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
     }
 
     fun acceptInvitation(accountJid: AccountJid, groupJid: ContactJid) {
@@ -89,15 +90,17 @@ object GroupInviteManager: OnLoadListener {
             RosterManager.getInstance().createContact(accountJid, groupJid, name, ArrayList())
             invitesMap
                     .filter { it.accountJid == accountJid && it.groupJid == groupJid }
-                    .map {
+                    .forEach {
                         it.isAccepted = true
                         GroupInviteRepository.saveOrUpdateInviteToRealm(it)
                     }
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
         }
-        EventBus.getDefault().post(NewMessageEvent())
-        EventBus.getDefault().post(MessageUpdateEvent())
+        for (listener in Application.getInstance().getUIListeners(OnNewMessageListener::class.java)) {
+            listener.onNewMessage()
+        }
+        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
     }
 
     fun declineInvitation(accountJid: AccountJid, groupJid: ContactJid) {
@@ -110,7 +113,7 @@ object GroupInviteManager: OnLoadListener {
                             if (packet is IQ && packet.type == IQ.Type.result) {
                                 invitesMap
                                         .filter { it.accountJid == accountJid && it.groupJid == groupJid }
-                                        .map {
+                                        .forEach {
                                             it.isDeclined = true
                                             GroupInviteRepository.saveOrUpdateInviteToRealm(it)
                                         }
@@ -132,8 +135,10 @@ object GroupInviteManager: OnLoadListener {
                         "to account $accountJid!${e.message}")
             }
         }
-        EventBus.getDefault().post(NewMessageEvent())
-        EventBus.getDefault().post(MessageUpdateEvent())
+        for (listener in Application.getInstance().getUIListeners(OnNewMessageListener::class.java)) {
+            listener.onNewMessage()
+        }
+        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
     }
 
     fun hasActiveIncomingInvites(accountJid: AccountJid, groupchatJid: ContactJid) =

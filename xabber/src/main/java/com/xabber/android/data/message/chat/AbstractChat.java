@@ -49,9 +49,9 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.BackpressureMessageSaver;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
@@ -59,7 +59,6 @@ import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
@@ -340,7 +339,9 @@ public abstract class AbstractChat extends BaseEntity implements
                 if (realm != null) realm.close();
             }
 
-            EventBus.getDefault().post(new NewMessageEvent());
+            for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+                listener.onNewMessage();
+            }
         }
     }
 
@@ -1026,19 +1027,26 @@ public abstract class AbstractChat extends BaseEntity implements
                     iterator.remove();
                 }
             }
-            EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
+            for (OnMessageUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onMessageUpdated();
+            }
         });
     }
 
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
+        for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+            listener.onMessageUpdated();
+        }
         BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,
                 trySendDisplay);
     }
 
     private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
         BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
-        EventBus.getDefault().post(new MessageUpdateEvent(account, contactJid));
+        for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+            listener.onMessageUpdated();
+        }
     }
 
     public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {

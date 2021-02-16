@@ -4,13 +4,12 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-
-import org.greenrobot.eventbus.EventBus;
+import com.xabber.android.data.message.OnMessageUpdatedListener;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +78,9 @@ public class BackpressureMessageMarker {
                         if (realm != null && Looper.myLooper() != Looper.getMainLooper())
                             realm.close();
                     }
-                    EventBus.getDefault().post(new MessageUpdateEvent());
+                    for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                        listener.onMessageUpdated();
+                    }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {

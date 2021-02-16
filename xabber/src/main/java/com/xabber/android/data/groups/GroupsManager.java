@@ -47,7 +47,6 @@ import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.vcard.VCard;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
@@ -165,7 +164,10 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
             groupChat.setName(presence.getName());
             groupChat.setNumberOfOnlineMembers(presence.getPresentMembers());
 
-            EventBus.getDefault().post(new GroupchatPresenceUpdatedEvent(accountJid, contactJid));
+            for (OnGroupPresenceUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener.class)){
+                listener.onGroupPresenceUpdated(contactJid);
+            }
             //todo etc...
             ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
         } catch (Exception e) {
@@ -539,24 +541,6 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                 LogManager.exception(LOG_TAG, e);
             }
         });
-    }
-
-    public static class GroupchatPresenceUpdatedEvent {
-        private final AccountJid account;
-        private final ContactJid groupJid;
-
-        GroupchatPresenceUpdatedEvent(AccountJid account, ContactJid groupchatJid) {
-            this.account = account;
-            this.groupJid = groupchatJid;
-        }
-
-        public AccountJid getAccount() {
-            return account;
-        }
-
-        public ContactJid getGroupJid() {
-            return groupJid;
-        }
     }
 
 }

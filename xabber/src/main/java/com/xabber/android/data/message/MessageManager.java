@@ -125,7 +125,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
-        EventBus.getDefault().post(new NewMessageEvent());
+        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+            listener.onNewMessage();
+        }
 
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         sendMessage(text, markupText, chat);

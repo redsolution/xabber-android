@@ -64,7 +64,9 @@ public class BackpressureMessageSaver {
                         realm.executeTransactionAsync(realm1 -> {
                             realm1.copyToRealm(messageRealmObjects);
                         }, () ->  {
-                            EventBus.getDefault().post(new NewMessageEvent());
+                            for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+                                listener.onNewMessage();
+                            }
                             SyncManager.getInstance().onMessageSaved();
                             checkForAttachmentsAndDownload(messageRealmObjects);
                         });

@@ -27,14 +27,14 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groups.GroupInviteManager;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
-import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
-import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -1005,7 +1005,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         realm.copyToRealmOrUpdate(messagesToSave);
         realm.commitTransaction();
         SyncManager.getInstance().onMessageSaved();
-        EventBus.getDefault().post(new NewMessageEvent());
+        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+            listener.onNewMessage();
+        }
         return messagesToSave;
     }
 
