@@ -39,7 +39,7 @@ import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbusbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -226,4 +226,5 @@ class ConnectionThread {
     public String toString() {
         return getClass().getSimpleName() + ": " + connectionItem.getAccount();
     }
+
 }

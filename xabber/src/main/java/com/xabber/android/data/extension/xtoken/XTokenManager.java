@@ -14,7 +14,6 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -44,7 +43,10 @@ public class XTokenManager implements OnPacketListener {
             LogManager.d(LOG_TAG, "Received new XToken");
             AccountManager.getInstance().updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
         } else if (packet instanceof Message && packet.hasExtension(NAMESPACE)) {
-            EventBus.getDefault().post(new SessionsUpdateEvent());
+            for (OnXTokenSessionsUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnXTokenSessionsUpdatedListener.class)){
+                listener.onXTokenSessionsUpdated();
+            }
         }
     }
 
@@ -172,7 +174,5 @@ public class XTokenManager implements OnPacketListener {
             }
         }
     }
-
-    public class SessionsUpdateEvent{    }
 
 }

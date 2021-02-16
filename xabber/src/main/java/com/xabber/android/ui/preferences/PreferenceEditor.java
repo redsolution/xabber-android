@@ -19,10 +19,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -37,15 +39,14 @@ import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
-import com.xabber.android.ui.widget.XMPPListPreference;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.xabber.android.ui.widget.OnAddAccountClickListener;
+import com.xabber.android.ui.widget.OnReorderClickListener;
 
 import rx.subscriptions.CompositeSubscription;
 
-public class PreferenceEditor extends ManagedActivity
-        implements PreferencesFragment.OnPreferencesFragmentInteractionListener, AccountListPreferenceAdapter.Listener {
+public class PreferenceEditor extends ManagedActivity implements OnAddAccountClickListener,
+        PreferencesFragment.OnPreferencesFragmentInteractionListener, OnReorderClickListener,
+        AccountListPreferenceAdapter.Listener {
 
     private BarPainter barPainter;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -82,6 +83,15 @@ public class PreferenceEditor extends ManagedActivity
     protected void onResume() {
         super.onResume();
         barPainter.setDefaultColor();
+        Application.getInstance().addUIListener(OnAddAccountClickListener.class, this);
+        Application.getInstance().addUIListener(OnReorderClickListener.class, this);
+    }
+
+    @Override
+    protected void onPause() {
+        Application.getInstance().removeUIListener(OnReorderClickListener.class, this);
+        Application.getInstance().removeUIListener(OnAddAccountClickListener.class, this);
+        super.onPause();
     }
 
     @Override
@@ -122,15 +132,11 @@ public class PreferenceEditor extends ManagedActivity
         startActivity(MainActivity.createIntent(this));
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAddAccountClick(XMPPListPreference.AddAccountClickEvent event) {
-        startActivity(AccountAddActivity.createIntent(this));
-    }
+    @Override
+    public void onAddAccountClick() { startActivity(AccountAddActivity.createIntent(this)); }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onReorderClick(XMPPListPreference.ReorderClickEvent event) {
-        startActivity(AccountListActivity.createIntent(this));
-    }
+    @Override
+    public void onReorderCLick() { startActivity(AccountListActivity.createIntent(this)); }
 
     @Override
     public void onAccountClick(AccountJid account) {

@@ -50,6 +50,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -67,8 +68,6 @@ import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
 import com.xabber.android.utils.StringUtils;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ import java.util.List;
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
         OnMessageUpdatedListener, OnStatusChangeListener, ChatListUpdateBackpressure.UpdatableObject,
-        OnConnectionStateChangedListener {
+        OnConnectionStateChangedListener, OnChatUpdatedListener {
 
     private ChatListUpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
@@ -144,6 +143,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Application.getInstance().removeUIListener(OnStatusChangeListener.class, this);
         Application.getInstance().removeUIListener(OnConnectionStateChangedListener.class, this);
         Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
+        Application.getInstance().removeUIListener(OnChatUpdatedListener.class, this);
         super.onStop();
     }
 
@@ -165,6 +165,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
         Application.getInstance().addUIListener(OnConnectionStateChangedListener.class, this);
         Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
+        Application.getInstance().addUIListener(OnChatUpdatedListener.class, this);
 
         MessageNotificationManager.getInstance().setShowBanners(false);
 
@@ -196,10 +197,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Application.getInstance().runOnUiThread(this::update);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChatsChanged(ChatManager.ChatUpdatedEvent chatUpdatedEvent) {
-        update();
-    }
+    @Override
+    public void onChatUpdated() { update(); }
 
     @Override
     public void onMessageUpdated() {

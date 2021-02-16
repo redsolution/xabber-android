@@ -2,8 +2,6 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.preference.Preference;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,15 +9,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.preferences.PreferenceEditor;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -91,14 +91,18 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rlReorder:
-                EventBus.getDefault().post(new ReorderClickEvent());
+                for (OnReorderClickListener listener :
+                        Application.getInstance().getUIListeners(OnReorderClickListener.class)){
+                    listener.onReorderCLick();
+                }
                 break;
             case R.id.btnAddAccount:
-                EventBus.getDefault().post(new AddAccountClickEvent());
+                for (OnAddAccountClickListener listener :
+                        Application.getInstance().getUIListeners(OnAddAccountClickListener.class)){
+                    listener.onAddAccountClick();
+                }
                 break;
         }
     }
 
-    public static class AddAccountClickEvent {}
-    public static class ReorderClickEvent {}
 }

@@ -11,8 +11,6 @@ import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

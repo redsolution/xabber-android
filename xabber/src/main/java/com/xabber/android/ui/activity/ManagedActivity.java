@@ -123,12 +123,8 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void showAlert(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class);
-                    }
-                });
+                .setPositiveButton(R.string.ok, (dialog, which) ->
+                        EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class));
         Dialog dialog = builder.create();
         dialog.show();
     }

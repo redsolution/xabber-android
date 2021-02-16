@@ -38,26 +38,26 @@ import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
 import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groups.GroupInviteManager;
+import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.groups.GroupsManager;
-import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
@@ -148,7 +148,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         // mark incoming messages as read
         chat.markAsReadAll(true);
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     public String createFileMessage(AccountJid account, ContactJid user, List<File> files) {

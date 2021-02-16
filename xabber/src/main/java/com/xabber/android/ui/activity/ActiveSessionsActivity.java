@@ -21,18 +21,17 @@ import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.xtoken.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.data.extension.xtoken.SessionVO;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.List;
 
-public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener {
+public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener,
+        OnXTokenSessionsUpdatedListener {
 
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -127,6 +126,18 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Application.getInstance().addUIListener(OnXTokenSessionsUpdatedListener.class, this);
+    }
+
+    @Override
+    protected void onPause() {
+        Application.getInstance().removeUIListener(OnXTokenSessionsUpdatedListener.class, this);
+        super.onPause();
+    }
+
     private void refreshData(){
         XTokenManager.getInstance().requestSessions(
                 accountItem.getConnectionSettings().getXToken().getUid(),
@@ -148,8 +159,10 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(XTokenManager.SessionsUpdateEvent sessionsUpdateEvent) { if (XTokenEnabled) refreshData(); }
+    @Override
+    public void onXTokenSessionsUpdated() {
+        if (XTokenEnabled) refreshData();
+    }
 
     private void getSessionsData() {
         progressBar.setVisibility(View.VISIBLE);

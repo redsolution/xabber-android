@@ -44,8 +44,8 @@ import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
-import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -68,7 +68,6 @@ import net.java.otr4j.session.SessionID;
 import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -431,7 +430,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             smRequestProvider.add(request, true);
 
             // send event of adding auth request to fragment
-            EventBus.getDefault().post(new AuthAskEvent(accountJid, contactJid));
+            for (OnAuthAskListener listener :
+                    Application.getInstance().getUIListeners(OnAuthAskListener.class)){
+                listener.onAuthAsk(accountJid, contactJid);
+            }
 
         } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
@@ -643,7 +645,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         setNotifyIntentToChat(null, account, user);
 
         // send event of cancel auth request to fragment
-        EventBus.getDefault().post(new AuthAskEvent(account, user));
+        for (OnAuthAskListener listener :
+                Application.getInstance().getUIListeners(OnAuthAskListener.class)){
+            listener.onAuthAsk(account, user);
+        }
     }
 
     private void removeSMRequest(String account, String user) {
@@ -664,7 +669,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 account, user);
 
         // send event of auth progress to fragment
-        EventBus.getDefault().post(new AuthAskEvent(account, user));
+        for (OnAuthAskListener listener :
+                Application.getInstance().getUIListeners(OnAuthAskListener.class)){
+            listener.onAuthAsk(account, user);
+        }
     }
 
     private void removeSMProgress(String account, String user) {
@@ -676,7 +684,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             setNotifyIntentToChat(null, AccountJid.from(account), ContactJid.from(user));
 
             // send event of cancel auth request to fragment
-            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(account), ContactJid.from(user)));
+            for (OnAuthAskListener listener :
+                    Application.getInstance().getUIListeners(OnAuthAskListener.class)){
+                listener.onAuthAsk(AccountJid.from(account), ContactJid.from(user));
+            }
 
         } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);

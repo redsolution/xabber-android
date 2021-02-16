@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Environment;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -40,7 +41,6 @@ import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Stanza;
 
 import java.io.BufferedWriter;
@@ -108,7 +108,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
 
     @Override
     public void onLoad() {
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     @Override
@@ -121,7 +123,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     @Override
     public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     @Override
@@ -138,7 +142,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     /**
@@ -188,7 +194,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
-        EventBus.getDefault().post(new ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
 
         if (chat instanceof RegularChat){
             RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getContactJid(), null,
@@ -272,7 +280,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
         LogManager.d(ChatManager.class.getSimpleName(), "Created regular chat: " + user);
         return chat;
     }
@@ -289,7 +299,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         GroupChat chat = new GroupChat(account, groupJid);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
         LogManager.d(ChatManager.class.getSimpleName(), "Created group chat: " + groupJid);
         return chat;
     }
@@ -311,7 +323,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         }
         chats.put(chat.getAccount().toString(), chat.getContactJid().toString(), chat);
 
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     /**
@@ -322,7 +336,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         LogManager.i(this, "removeChat " + chat.getContactJid());
         MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
         } else if (chat instanceof RegularChat){
@@ -334,7 +350,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         AbstractChat chat = getChat(accountJid, contactJid);
         LogManager.i(this, "removeChat " + contactJid);
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
         } else if (chat instanceof RegularChat){
@@ -408,7 +426,5 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
         }
         return file;
     }
-
-    public static class ChatUpdatedEvent { }
 
 }

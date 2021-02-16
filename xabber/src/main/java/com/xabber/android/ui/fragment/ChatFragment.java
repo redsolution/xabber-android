@@ -84,13 +84,11 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
-import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
-import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
-import com.xabber.android.data.extension.otr.AuthAskEvent;
+import com.xabber.android.data.extension.mam.OnLastHistoryLoadFinishedListener;
+import com.xabber.android.data.extension.mam.OnLastHistoryLoadStartedListener;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.otr.OnAuthAskListener;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
@@ -143,8 +141,6 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
@@ -173,7 +169,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
         OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
         IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
-        OnGroupPresenceUpdatedListener, OnMessageUpdatedListener {
+        OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
+        OnLastHistoryLoadFinishedListener, OnAuthAskListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -933,6 +930,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Application.getInstance().addUIListener(OnNewMessageListener.class, this);
         Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener.class, this);
         Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
+        Application.getInstance().addUIListener(OnLastHistoryLoadStartedListener.class, this);
+        Application.getInstance().addUIListener(OnLastHistoryLoadFinishedListener.class, this);
+        Application.getInstance().addUIListener(OnAuthAskListener.class, this);
     }
 
     @Override
@@ -962,6 +962,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
         Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
         Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnLastHistoryLoadStartedListener.class, this);
+        Application.getInstance().removeUIListener(OnLastHistoryLoadFinishedListener.class, this);
+        Application.getInstance().removeUIListener(OnAuthAskListener.class, this);
     }
 
     @Override
@@ -1201,29 +1204,19 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         } else return  abstractChat;
     }
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(LastHistoryLoadStartedEvent event) {
-        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+    @Override
+    public void onLastHistoryLoadStarted(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
+        if (accountJid.equals(account) && user.equals(user)) {
             lastHistoryProgressBar.setVisibility(View.VISIBLE);
             historyIsLoading = true;
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(LastHistoryLoadFinishedEvent event) {
-        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+    @Override
+    public void onLastHistoryLoadFinished(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
+        if (accountJid.equals(account) && contactJid.equals(user)) {
             lastHistoryProgressBar.setVisibility(View.GONE);
             historyIsLoading = false;
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(PreviousHistoryLoadStartedEvent event) {
-        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
-            LogManager.i(this, "PreviousHistoryLoadStartedEvent");
-            previousHistoryProgressBar.setVisibility(View.VISIBLE);
-            historyIsLoading = true;
         }
     }
 
@@ -1231,15 +1224,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
         if (groupJid.getBareJid().equals(user.toString()))
             setupPinnedMessageView();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(PreviousHistoryLoadFinishedEvent event) {
-        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
-            LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
-            historyIsLoading = false;
-            previousHistoryProgressBar.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -1260,9 +1244,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         updateUnread();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(AuthAskEvent event) {
-        if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
+    @Override
+    public void onAuthAsk(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
+        if (accountJid == getAccount() && contactJid == getUser()) {
             showHideNotifyIfNeed();
         }
     }

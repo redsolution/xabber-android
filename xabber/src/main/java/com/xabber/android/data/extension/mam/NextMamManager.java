@@ -48,7 +48,6 @@ import com.xabber.xmpp.smack.XMPPTCPConnection;
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -163,9 +162,15 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             // load prev page if history is not enough
             if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
-                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+                for (OnLastHistoryLoadStartedListener listener :
+                        Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener.class)){
+                    listener.onLastHistoryLoadStarted(chat.getAccount(), chat.getContactJid());
+                }
                 loadNextHistory(realm, accountItem, chat);
-                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+                for (OnLastHistoryLoadFinishedListener listener :
+                        Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener.class)){
+                    listener.onLastHistoryLoadFinished(chat.getAccount(), chat.getContactJid());
+                }
             }
 
             // load missed messages if need
@@ -194,11 +199,17 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 if (isRequested) return;
                 else isRequested = true;
             }
-            EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+            for (OnLastHistoryLoadStartedListener listener :
+                    Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener.class)){
+                listener.onLastHistoryLoadStarted(chat.getAccount(), chat.getContactJid());
+            }
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             loadNextHistory(realm, accountItem, chat);
             if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-            EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+            for (OnLastHistoryLoadFinishedListener listener :
+                    Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener.class)){
+                listener.onLastHistoryLoadFinished(chat.getAccount(), chat.getContactJid());
+            }
             synchronized (lock) {
                 isRequested = false;
             }

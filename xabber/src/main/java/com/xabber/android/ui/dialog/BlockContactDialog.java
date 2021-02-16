@@ -26,13 +26,12 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class BlockContactDialog extends DialogFragment implements BlockingManager.BlockContactListener, View.OnClickListener {
 
@@ -114,7 +113,9 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         if (andDelete){
             deleteContact();
         }
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onChatUpdated();
+        }
     }
 
     @Override
