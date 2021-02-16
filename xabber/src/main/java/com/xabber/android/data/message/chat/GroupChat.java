@@ -438,7 +438,7 @@ public class GroupChat extends AbstractChat {
     @Override
     public Date getLastTime() {
         MessageRealmObject lastMessage = getLastMessage();
-        if (lastMessage != null) {
+        if (lastMessage != null && lastMessage.isValid()) {
             return new Date(lastMessage.getTimestamp());
         } else {
             if (lastActionTimestamp != null) {

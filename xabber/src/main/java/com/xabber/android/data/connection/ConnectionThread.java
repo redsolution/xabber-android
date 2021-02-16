@@ -39,7 +39,8 @@ import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.greenrobot.eventbusbus.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -222,6 +223,7 @@ class ConnectionThread {
         LogManager.i(this, "Connection thread finished");
     }
 
+    @NotNull
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": " + connectionItem.getAccount();

@@ -20,7 +20,6 @@ import android.os.Environment;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
@@ -62,7 +61,7 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnLoadListener, OnAccountRemovedListener, OnRosterReceivedListener,
+public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener,
         OnAccountDisabledListener, OnDisconnectListener {
 
     public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
@@ -104,13 +103,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener, On
             instance = new ChatManager();
         }
         return instance;
-    }
-
-    @Override
-    public void onLoad() {
-        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
-        }
     }
 
     @Override

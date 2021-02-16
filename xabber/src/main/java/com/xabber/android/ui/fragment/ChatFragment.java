@@ -1241,7 +1241,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onNewMessage() {
-        updateUnread();
+        Application.getInstance().runOnUiThread(this::updateUnread);
     }
 
     @Override

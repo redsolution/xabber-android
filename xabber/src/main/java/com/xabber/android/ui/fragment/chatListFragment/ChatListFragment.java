@@ -198,7 +198,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatUpdated() { update(); }
+    public void onChatUpdated() { Application.getInstance().runOnUiThread(this::update); }
 
     @Override
     public void onMessageUpdated() {
