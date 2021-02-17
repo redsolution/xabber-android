@@ -184,32 +184,34 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, String statusText) {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, StatusMode statusMode, String statusText) {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
     public void onConnectionStateChanged(@NotNull ConnectionState newConnectionState) {
-        Application.getInstance().runOnUiThread(this::update);
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
-    public void onChatUpdated() { Application.getInstance().runOnUiThread(this::update); }
+    public void onChatUpdated() {
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+    }
 
     @Override
     public void onMessageUpdated() {
-        update();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
-        update();
+        updateBackpressure.refreshRequest();
         closeSnackbar();
     }
 
@@ -457,7 +459,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
-        update();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     /**
@@ -580,15 +582,15 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         } else {
 
             ArrayList<AbstractChat> chatsList = new ArrayList<>(
-                    getFilteredChatsOfEnabledAccountsByString(ChatManager.getInstance()
-                            .getChatsOfEnabledAccounts(), filterString));
+                    getFilteredChatsOfEnabledAccountsByString(
+                            ChatManager.getInstance().getChatsOfEnabledAccounts(), filterString));
 
-            Collections.sort(chatsList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(),
-                    o1.getLastTime().getTime()));
+            Collections.sort(chatsList, (o1, o2) ->
+                    Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
             ArrayList<AbstractChat> contactList = new ArrayList<>(
-                    getFilteredContactsOfEnabledAccountsByString(RosterManager.getInstance()
-                            .getAllContactsForEnabledAccounts(), filterString));
+                    getFilteredContactsOfEnabledAccountsByString(
+                            RosterManager.getInstance().getAllContactsForEnabledAccounts(), filterString));
 
             newList.clear();
             newList.addAll(concatLists(chatsList, contactList));
@@ -623,15 +625,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private void setupMarkAllTheReadButton(int listSize) {
         if (currentChatsState == ChatListState.unread && listSize > 0 && getContext() != null) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter()
-                        .getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
-                markAllAsReadButton.setTextColor(getContext().getResources()
-                        .getColor(R.color.white));
+                markAllReadBackground.setColorFilter(
+                        ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
+                markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
             } else {
-                markAllReadBackground.setColorFilter(getContext().getResources()
-                        .getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP);
-                markAllAsReadButton.setTextColor(ColorManager.getInstance().getAccountPainter()
-                        .getDefaultMainColor());
+                markAllReadBackground.setColorFilter(
+                        getContext().getResources().getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP);
+                markAllAsReadButton.setTextColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             }
 
             markAllAsReadButton.setVisibility(View.VISIBLE);
