@@ -137,12 +137,14 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
     }
 
     override fun onResult() {
-        progressBar?.visibility = View.INVISIBLE
-        finish()
+        Application.getInstance().runOnUiThread {
+            progressBar?.visibility = View.INVISIBLE
+            finish()
+        }
     }
 
     override fun onSend() {
-        progressBar?.visibility = View.VISIBLE
+        Application.getInstance().runOnUiThread { progressBar?.visibility = View.VISIBLE }
     }
 
     override fun onIqError(error: XMPPError) {

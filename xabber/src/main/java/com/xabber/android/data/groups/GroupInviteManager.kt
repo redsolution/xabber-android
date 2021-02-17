@@ -170,14 +170,17 @@ object GroupInviteManager: OnLoadListener {
                         try {
                             connection.sendIqWithResponseCallback(requestIQ,
                                     { sendMessageWithInvite(account, groupJid, invite, reason, listener) }
-                            ) { exception: java.lang.Exception? -> LogManager.exception(LOG_TAG, exception)}
+                            ) { exception: java.lang.Exception? -> {
+                                LogManager.exception(LOG_TAG, exception)
+                                listener.onOtherError(null)
+                            }}
                         } catch (e: java.lang.Exception) {
                             LogManager.exception(LOG_TAG, e)
+                            listener.onOtherError(null)
                         }
                     }
                 }
             }
-            listener.onOtherError(null)
         }
     }
 
@@ -198,7 +201,7 @@ object GroupInviteManager: OnLoadListener {
 
             StanzaSender.sendStanza(account, inviteMessage) { packet1: Stanza ->
                 if (packet1.error != null) {
-                    listener.onOtherError(null)
+                    listener.onIqError(packet1.error)
                 } else listener.onResult()
             }
         } catch (e: java.lang.Exception) {
