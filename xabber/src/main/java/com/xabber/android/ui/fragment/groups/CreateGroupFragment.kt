@@ -480,6 +480,13 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         groupJidEt.requestFocus()
     }
 
+    override fun onSend() {
+        Application.getInstance().runOnUiThread {
+            listenerActivity?.toolbarSetEnabled(false)
+            listenerActivity?.showProgress(true)
+        }
+    }
+
     override fun onJidConflict() {
         Application.getInstance().runOnUiThread {
             showErrorBelowJidEt(requireContext().getString(R.string.groupchat_jid_already_exists))

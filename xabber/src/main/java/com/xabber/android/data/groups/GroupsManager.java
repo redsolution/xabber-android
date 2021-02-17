@@ -223,6 +223,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
 
         try {
+            listener.onSend();
             AccountManager.getInstance().getAccount(accountJid).getConnection()
                     .sendIqWithResponseCallback(iq, packet -> {
                         if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result) {
