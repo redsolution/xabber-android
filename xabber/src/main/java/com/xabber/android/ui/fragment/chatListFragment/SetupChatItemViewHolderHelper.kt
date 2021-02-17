@@ -167,74 +167,82 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
         val context = holder.itemView.context
+        val lastMessage = chat.lastMessage
+        val text = lastMessage?.text
+        val forwardedCount = lastMessage?.forwardedIds?.size
+        val isGroup = chat is GroupChat
 
+        fun setItalicTypeface(){
+            holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
+        }
+
+        fun setDefaultTypeface(){
+            holder.messageTextTV.typeface = Typeface.DEFAULT
+        }
+
+        // If group and has incoming invite
         if (chat is GroupChat && chat.lastMessage == null
                 && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid)){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
                     chat.privacyType.getLocalizedString().decapitalize(ConfigurationCompat.getLocales(context.resources
                             .configuration)[0]))
-            holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
+            setItalicTypeface()
             return
         }
 
-        val lastMessage = chat.lastMessage
-        val text = lastMessage?.text
-        val forwardedCount = lastMessage?.forwardedIds?.size
+        // If has chat state (eg typing... etc)
+        if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
+            val chatState = ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
+            if (holder.accountColorIndicator != null) {
+                holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
+            } else holder.messageTextTV.text = chatState
+            setDefaultTypeface()
+            return
+        }
+
+        fun setToForwarded(){
+            holder.messageTextTV.text = String.format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
+            setItalicTypeface()
+            return
+        }
+
+        fun setToAttachments(){
+            if (holder.accountColorIndicator != null){
+                holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context,
+                        lastMessage!!.attachmentRealmObjects[0], holder.accountColorIndicator!!))
+            } else holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context,
+                    lastMessage!!.attachmentRealmObjects[0])
+
+            setDefaultTypeface()
+        }
+
+        fun setNoMessages(){
+            holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
+            setItalicTypeface()
+        }
+
         if (text.isNullOrEmpty()) {
-
-            if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
-                val chatState = ChatStateManager.getInstance()
-                        .getFullChatStateString(chat.account, chat.contactJid)
-                holder.messageTextTV.text = if (holder.accountColorIndicator != null)
-                    Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
-                else chatState
-                holder.messageTextTV.typeface = Typeface.DEFAULT
-                return
-            } else if (forwardedCount != null && forwardedCount > 0) holder.messageTextTV.text = String
-                    .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            else if (lastMessage != null && lastMessage.haveAttachments()) {
-                holder.messageTextTV.text = if (holder.accountColorIndicator != null)
-                    Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context,
-                            lastMessage.attachmentRealmObjects[0], holder.accountColorIndicator!!))
-                else
-                    StringUtils.getAttachmentDisplayName(context, lastMessage.attachmentRealmObjects[0])
-                holder.messageTextTV.typeface = Typeface.DEFAULT
-                return
-            } else
-                holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
-
-            holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
+            when {
+                forwardedCount != null && forwardedCount > 0 -> setToForwarded()
+                lastMessage != null && lastMessage.haveAttachments() -> setToAttachments()
+                else -> setNoMessages()
+            }
         } else {
-            holder.messageTextTV.typeface = Typeface.DEFAULT
-            holder.messageTextTV.visibility = View.VISIBLE
             if (OTRManager.getInstance().isEncrypted(text)) {
                 holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
-                holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
+                setItalicTypeface()
             } else {
-                if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
-                    val chatState = ChatStateManager.getInstance()
-                            .getFullChatStateString(chat.account, chat.contactJid)
-                    holder.messageTextTV.text = if (holder.accountColorIndicator != null)
-                        Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
-                    else chatState
-                } else if (lastMessage.resource.equals("Groupchat") || (lastMessage.action != null
-                                && lastMessage.action.isNotEmpty())) {
-                    if (holder.accountColorIndicator != null
-                            && (lastMessage.action != null
-                                    && lastMessage.action != ChatAction.contact_deleted.toString())) {
-                        holder.messageTextTV.text = Html.fromHtml(StringUtils
-                                .getColoredText(lastMessage.text, holder.accountColorIndicator!!))
-                    } else {
-                        holder.messageTextTV.text = lastMessage.text
-                    }
+                if (isGroup || (lastMessage.action != null && lastMessage.action.isNotEmpty())) {
+                    if (holder.accountColorIndicator != null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString()) {
+                        holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredText(lastMessage.text, holder.accountColorIndicator!!))
+                    } else holder.messageTextTV.text = lastMessage.text
                     holder.messageTextTV.alpha = 0.6f
                     return
                 } else {
                     try {
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                             try {
-                                holder.messageTextTV.text = Html
-                                        .fromHtml(Utils.getDecodedSpannable(text).toString())
+                                holder.messageTextTV.text = Html.fromHtml(Utils.getDecodedSpannable(text).toString())
                             } catch (e: Exception) {
                                 holder.messageTextTV.text = Html.fromHtml(text)
                             }
@@ -246,7 +254,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                         holder.messageTextTV.alpha = 1f
                     }
                 }
-                holder.messageTextTV.typeface = Typeface.DEFAULT
+                setDefaultTypeface()
             }
         }
     }
