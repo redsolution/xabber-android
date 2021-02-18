@@ -14,6 +14,7 @@ import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.groups.GroupInviteManager
+import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
@@ -194,7 +195,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             holder.messageTextTV.typeface = Typeface.DEFAULT
         }
 
-        // If group and has incoming invite
         fun setIncomingInvite(){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
                     (chat as GroupChat).privacyType.getLocalizedString()
@@ -202,6 +202,17 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
             colorizeIfPossible()
             setItalicTypeface()
+        }
+
+        fun setGroupSystem(){
+            holder.messageTextTV.text = lastMessage?.text
+            setItalicTypeface()
+        }
+
+        fun setGroupRegular(){
+            val nickname = GroupMemberManager.getInstance().getGroupMemberById(lastMessage!!.groupchatUserId)?.nickname
+            val sender = StringUtils.getColoredText((nickname ?: "") + ":", holder.accountColorIndicator!!)
+            holder.messageTextTV.text = Html.fromHtml("$sender ${getDecodedTextIfPossible()}")
         }
 
         fun setChatState(){
@@ -216,7 +227,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
             colorizeIfPossible()
             setDefaultTypeface()
-            return
         }
 
         fun setToAttachments(){
@@ -228,11 +238,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
         fun setNoMessages(){
             holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
-            setItalicTypeface()
-        }
-
-        fun setGroupSystem(){
-            holder.messageTextTV.text = lastMessage?.text
             setItalicTypeface()
         }
 
@@ -251,23 +256,49 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             setDefaultTypeface()
         }
 
-        when {
-            chat is GroupChat && chat.lastMessage == null && GroupInviteManager.hasActiveIncomingInvites(chat
-                    .account, chat.contactJid) -> setIncomingInvite()
-            ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null -> setChatState()
-            text.isNullOrEmpty() ->
-                when {
-                forwardedCount != null && forwardedCount > 0 -> setToForwarded()
-                lastMessage != null && lastMessage.haveAttachments() -> setToAttachments()
+        if (chat is GroupChat){
+            when {
+                lastMessage == null && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid) -> {
+                    setIncomingInvite()
+                    return
+                }
+                lastMessage != null && lastMessage.isGroupchatSystem -> {
+                    setGroupSystem()
+                    return
+                }
+                //todo group message with attachment
+                //todo group message with fwr
+                lastMessage != null -> setGroupRegular()
                 else -> setNoMessages()
             }
-            else ->
-                when {
-                    OTRManager.getInstance().isEncrypted(text) -> setEncrypted()
-                    lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> setAction()
-                    lastMessage.isGroupchatSystem -> setGroupSystem()
-                    else -> setRegular()
+        } else {
+            when{
+                ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null -> {
+                    setChatState()
+                    return
                 }
+                forwardedCount != null && forwardedCount > 0 -> {
+                    setToForwarded()
+                    return
+                }
+                lastMessage != null && lastMessage.haveAttachments() -> {
+                    setToAttachments()
+                    return
+                }
+                OTRManager.getInstance().isEncrypted(text) -> {
+                    setEncrypted()
+                    return
+                }
+                lastMessage!= null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> {
+                    setAction()
+                    return
+                }
+                lastMessage == null -> {
+                    setNoMessages()
+                    return
+                }
+                else -> setRegular()
+            }
         }
     }
 
