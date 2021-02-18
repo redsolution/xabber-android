@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -51,7 +51,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * Helper class to get plural forms.
+ * Helper class to perform different actions with strings
  *
  * @author alexander.ivanov
  */
@@ -59,10 +59,8 @@ public class StringUtils {
 
     private static final DateFormat DATE_TIME;
     private static final DateFormat TIME;
-    private static final String LOG_DATE_TIME_FORMAT = "HH:mm:ss yyyy-MM-dd";
 
     private static final SimpleDateFormat groupchatMemberPresenceTimeFormat;
-    private static SimpleDateFormat logDateTimeFormat;
     private static final DateFormat timeFormat;
 
     static {
@@ -74,63 +72,22 @@ public class StringUtils {
         groupchatMemberPresenceTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-
     private StringUtils() { }
 
-    /**
-     * @param resources
-     * @param stringArrayResourceId
-     * @param quantity
-     * @return Plural string for the given quantity.
-     */
-    public static String getQuantityString(Resources resources,
-                                           int stringArrayResourceId, long quantity) {
-        String[] strings = resources.getStringArray(stringArrayResourceId);
-        String lang = resources.getConfiguration().locale.getLanguage();
-        if ("ru".equals(lang) && strings.length == 3) {
-            quantity = quantity % 100;
-            if (quantity >= 20)
-                quantity = quantity % 10;
-            if (quantity == 1)
-                return strings[0];
-            if (quantity >= 2 && quantity < 5)
-                return strings[1];
-            return strings[2];
-        } else if (("cs".equals(lang) || "pl".equals(lang))
-                && strings.length == 3) {
-            if (quantity == 1) {
-                return strings[0];
-            } else if (quantity >= 2 && quantity <= 4) {
-                return strings[1];
-            } else {
-                return strings[2];
-            }
-        } else {
-            if (quantity == 1) {
-                return strings[0];
-            } else {
-                return strings[1];
-            }
-        }
-    }
     public static String decapitalize(String string) {
         if (string == null || string.length() == 0) {
             return string;
         }
 
-        char c[] = string.toCharArray();
+        char[] c = string.toCharArray();
         c[0] = Character.toLowerCase(c[0]);
 
         return new String(c);
     }
 
-
-
     /**
      * Escape input chars to be shown in html.
      *
-     * @param input
-     * @return
      */
     public static String escapeHtml(String input) {
         StringBuilder builder = new StringBuilder();
@@ -158,7 +115,6 @@ public class StringUtils {
     }
 
     /**
-     * @param timeStamp
      * @return String with date and time to be display.
      */
     public static String getDateTimeText(Date timeStamp) {
@@ -207,14 +163,6 @@ public class StringUtils {
         else return new SimpleDateFormat("dd MM yyyy HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
     }
 
-    public static SimpleDateFormat getLogDateTimeFormat() {
-        if (logDateTimeFormat == null) {
-            logDateTimeFormat = new SimpleDateFormat(LOG_DATE_TIME_FORMAT, Locale.ENGLISH);
-        }
-
-        return logDateTimeFormat;
-    }
-
     @NonNull
     public static String getLastPresentString(String lastPresent) {
         String result = null;
@@ -229,7 +177,6 @@ public class StringUtils {
                     long time;
                     String sTime;
                     Date date = new Date(lastActivityTime);
-                    Date today = new Date();
                     Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
                     if (timeAgo < 60) {
@@ -258,12 +205,12 @@ public class StringUtils {
                         result = Application.getInstance().getString(R.string.last_seen_on_week,
                                 getDayOfWeek(date, locale), sTime);
 
-                    } else if (date.getYear() == today.getYear()) {
+                    } else if (isCurrentYear(date)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
                         sTime = pattern.format(date);
                         result = Application.getInstance().getString(R.string.last_seen_date, sTime);
 
-                    } else if (date.getYear() < today.getYear()) {
+                    } else if (!isCurrentYear(date)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
                         sTime = pattern.format(date);
                         result = Application.getInstance().getString(R.string.last_seen_date, sTime);
@@ -279,6 +226,14 @@ public class StringUtils {
              result = Application.getInstance().getString(R.string.unavailable);
         }
         return result;
+    }
+
+    public static boolean isCurrentYear(Date date){
+        Calendar calendarOne = Calendar.getInstance();
+        Calendar calendarTwo = Calendar.getInstance();
+        calendarOne.setTime(date);
+        calendarTwo.setTime(new Date());
+        return calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
     }
 
     public static boolean isToday(Date date) {
@@ -316,7 +271,6 @@ public class StringUtils {
         return pattern.format(date);
     }
 
-    //todo change this to use string resources
     public static String getStringForGroupMemberRights(Long expireUnixTime){
         if(expireUnixTime < 0) throw new IllegalArgumentException("Duration must be greater than zero!");
 
@@ -450,8 +404,6 @@ public class StringUtils {
 
     /**
      * Beautify XML string
-     * @param xmlData
-     * @return
      */
     public static String getPrettyXmlString(String xmlData){
         try {
@@ -488,7 +440,6 @@ public class StringUtils {
      *               or yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'
      *               or yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
      *               or yyyy-MM-dd'T'HH:mm:ss'Z'
-     * @return
      */
     public static Date parseReceivedReceiptTimestampString(String string){
         try {
@@ -503,16 +454,6 @@ public class StringUtils {
             return simpleDateFormat.parse(string);
         } catch (Exception e) { LogManager.exception(StringUtils.class.getSimpleName(), e); }
         return null;
-    }
-
-    public static boolean isBasicLatin(String string){
-        char[] array = string.toCharArray();
-        boolean result = true;
-        for (int i = 0; i < array.length; i++){
-            if (!Character.UnicodeBlock.BASIC_LATIN.equals(Character.UnicodeBlock.of(array[i])))
-                result = false;
-        }
-        return result;
     }
 
     public static String translitirateToLatin(String string){
