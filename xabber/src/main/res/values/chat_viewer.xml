@@ -179,7 +179,6 @@
     <string name="xabber_chat_title">Xabber official</string>
     <string name="xabber_chat_description">News feed</string>
     <string name="xabber_join_button">Support Xabber</string>
-    <string name="action_incoming_subscription"></string>
     <string name="action_new_contact">New contact</string>
     <string name="action_new_subscription_request">New subscription request</string>
     <string name="open_this_link">Open this link?</string>
