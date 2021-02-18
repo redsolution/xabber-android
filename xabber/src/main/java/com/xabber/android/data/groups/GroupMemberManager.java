@@ -109,6 +109,10 @@ public class GroupMemberManager implements OnLoadListener {
         }
     }
 
+    public void createFakeMemberForIncomingInvite(){
+
+    }
+
     public void removeMemberAvatar(GroupChat group, String memberId){
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try{

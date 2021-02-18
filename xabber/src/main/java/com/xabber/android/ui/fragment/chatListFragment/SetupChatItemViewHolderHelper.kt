@@ -14,7 +14,6 @@ import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.groups.GroupInviteManager
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
@@ -170,7 +169,22 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val lastMessage = chat.lastMessage
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
-        val isGroup = chat is GroupChat
+
+        fun getDecodedTextIfPossible() =
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    try {
+                        Html.fromHtml(Utils.getDecodedSpannable(text).toString())
+                    } catch (e: Exception) {
+                        Html.fromHtml(text)
+                    }
+                } else text
+
+        fun colorizeIfPossible(){
+            if (holder.accountColorIndicator != null){
+                holder.messageTextTV.text = Html.fromHtml(
+                        StringUtils.getColoredText(holder.messageTextTV.text.toString(), holder.accountColorIndicator!!))
+            }
+        }
 
         fun setItalicTypeface(){
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
@@ -181,38 +195,34 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
 
         // If group and has incoming invite
-        if (chat is GroupChat && chat.lastMessage == null
-                && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid)){
+        fun setIncomingInvite(){
             holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
-                    chat.privacyType.getLocalizedString().decapitalize(ConfigurationCompat.getLocales(context.resources
-                            .configuration)[0]))
+                    (chat as GroupChat).privacyType.getLocalizedString()
+                    .decapitalize(ConfigurationCompat.getLocales(context.resources.configuration)[0]))
+
+            colorizeIfPossible()
             setItalicTypeface()
-            return
         }
 
-        // If has chat state (eg typing... etc)
-        if (ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null) {
-            val chatState = ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
-            if (holder.accountColorIndicator != null) {
-                holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredText(chatState, holder.accountColorIndicator!!))
-            } else holder.messageTextTV.text = chatState
+        fun setChatState(){
+            holder.messageTextTV.text = ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
+
+            colorizeIfPossible()
             setDefaultTypeface()
-            return
         }
 
         fun setToForwarded(){
             holder.messageTextTV.text = String.format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
-            setItalicTypeface()
+
+            colorizeIfPossible()
+            setDefaultTypeface()
             return
         }
 
         fun setToAttachments(){
-            if (holder.accountColorIndicator != null){
-                holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredAttachmentDisplayName(context,
-                        lastMessage!!.attachmentRealmObjects[0], holder.accountColorIndicator!!))
-            } else holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context,
-                    lastMessage!!.attachmentRealmObjects[0])
+            holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context, lastMessage!!.attachmentRealmObjects[0])
 
+            colorizeIfPossible()
             setDefaultTypeface()
         }
 
@@ -221,41 +231,43 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             setItalicTypeface()
         }
 
-        if (text.isNullOrEmpty()) {
-            when {
+        fun setGroupSystem(){
+            holder.messageTextTV.text = lastMessage?.text
+            setItalicTypeface()
+        }
+
+        fun setAction(){
+            holder.messageTextTV.text = lastMessage?.text
+            setItalicTypeface()
+        }
+
+        fun setEncrypted(){
+            holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
+            setItalicTypeface()
+        }
+
+        fun setRegular(){
+            holder.messageTextTV.text = getDecodedTextIfPossible()
+            setDefaultTypeface()
+        }
+
+        when {
+            chat is GroupChat && chat.lastMessage == null && GroupInviteManager.hasActiveIncomingInvites(chat
+                    .account, chat.contactJid) -> setIncomingInvite()
+            ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null -> setChatState()
+            text.isNullOrEmpty() ->
+                when {
                 forwardedCount != null && forwardedCount > 0 -> setToForwarded()
                 lastMessage != null && lastMessage.haveAttachments() -> setToAttachments()
                 else -> setNoMessages()
             }
-        } else {
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
-                setItalicTypeface()
-            } else {
-                if (isGroup || (lastMessage.action != null && lastMessage.action.isNotEmpty())) {
-                    if (holder.accountColorIndicator != null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString()) {
-                        holder.messageTextTV.text = Html.fromHtml(StringUtils.getColoredText(lastMessage.text, holder.accountColorIndicator!!))
-                    } else holder.messageTextTV.text = lastMessage.text
-                    holder.messageTextTV.alpha = 0.6f
-                    return
-                } else {
-                    try {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                            try {
-                                holder.messageTextTV.text = Html.fromHtml(Utils.getDecodedSpannable(text).toString())
-                            } catch (e: Exception) {
-                                holder.messageTextTV.text = Html.fromHtml(text)
-                            }
-                        } else holder.messageTextTV.text = text
-                    } catch (e: Throwable) {
-                        LogManager.exception(this.javaClass.simpleName, e)
-                        holder.messageTextTV.text = text
-                    } finally {
-                        holder.messageTextTV.alpha = 1f
-                    }
+            else ->
+                when {
+                    OTRManager.getInstance().isEncrypted(text) -> setEncrypted()
+                    lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> setAction()
+                    lastMessage.isGroupchatSystem -> setGroupSystem()
+                    else -> setRegular()
                 }
-                setDefaultTypeface()
-            }
         }
     }
 

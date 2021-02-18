@@ -170,10 +170,12 @@ object GroupInviteManager: OnLoadListener {
                         try {
                             connection.sendIqWithResponseCallback(requestIQ,
                                     { sendMessageWithInvite(account, groupJid, invite, reason, listener) }
-                            ) { exception: java.lang.Exception? -> {
-                                LogManager.exception(LOG_TAG, exception)
-                                listener.onOtherError(null)
-                            }}
+                            ) { exception: java.lang.Exception? ->
+                                run {
+                                    LogManager.exception(LOG_TAG, exception)
+                                    listener.onOtherError(null)
+                                }
+                            }
                         } catch (e: java.lang.Exception) {
                             LogManager.exception(LOG_TAG, e)
                             listener.onOtherError(null)
