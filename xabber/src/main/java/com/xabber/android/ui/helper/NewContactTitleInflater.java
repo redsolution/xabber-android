@@ -284,7 +284,7 @@ public class NewContactTitleInflater {
 //            RosterContact rosterContact = (RosterContact) contact;
 //            if (!rosterContact.getStatusMode().isOnline())
 //                return rosterContact.getLastActivity();
-//        } //TODO REALM UPDATE
+//        }
         return "";
     }
 

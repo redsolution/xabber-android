@@ -34,6 +34,7 @@ import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 import kotlinx.android.synthetic.main.dialog.*
+import java.util.*
 
 @SuppressLint("SetTextI18n")
 class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener,
@@ -194,8 +195,8 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
             override fun afterTextChanged(s: Editable?) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!isEnteredManually) groupJidEt.setText(StringUtils.getLocalpartHintByString(s?.trim().toString()))
-                if (!s.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty() && getAccount() != null){
+                if (!isEnteredManually) groupJidEt.setText(getLocalpartHintByString(s?.trim().toString()))
+                if (!s.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty() && getAccount() != null) {
                     listenerActivity?.toolbarSetEnabled(true)
                 } else listenerActivity?.toolbarSetEnabled(false)
             }
@@ -207,10 +208,21 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 
     }
 
+    private fun getLocalpartHintByString(string: String?): String? {
+        val transliterated = StringUtils.translitirateToLatin(string)
+        val result = StringBuilder()
+        for (c in transliterated) {
+            if (!Character.isLetterOrDigit(c)) {
+                if (result.length > 1 && result[result.length - 1] != '-') result.append("-")
+            } else result.append(c)
+        }
+        return result.toString().toLowerCase(Locale.getDefault())
+    }
+
     private fun setupGroupJidEt(){
         groupJidEt.hint = if (isIncognito) "incognito-group" else "public-group"
 
-        groupJidEt.addTextChangedListener(object : TextWatcher{
+        groupJidEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -219,14 +231,14 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
                 } else listenerActivity?.toolbarSetEnabled(false)
 
 
-                if (s.isNullOrEmpty()){
+                if (s.isNullOrEmpty()) {
                     groupJidEt.hint = if (isIncognito) "incognito-group" else "public-group"
                     if (groupJidEt.hasFocus())
                         isEnteredManually = false
                 } else {
                     groupJidEt.hint = ""
                     if (groupJidEt.hasFocus())
-                    isEnteredManually = true
+                        isEnteredManually = true
                 }
 
             }
@@ -280,9 +292,9 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
             for (iterator in 0 until radioGroup.childCount){
                 if (radioGroup.getChildAt(iterator) is RadioButton && Build.VERSION.SDK_INT >= 21){
                     (radioGroup.getChildAt(iterator) as RadioButton).buttonTintList = ColorStateList(
-                                arrayOf(intArrayOf(-android.R.attr.state_checked),
-                                        intArrayOf(android.R.attr.state_checked)),
-                                intArrayOf( Color.GRAY, color))
+                            arrayOf(intArrayOf(-android.R.attr.state_checked),
+                                    intArrayOf(android.R.attr.state_checked)),
+                            intArrayOf(Color.GRAY, color))
                 }
             }
         }
@@ -360,7 +372,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         }
 
         if (list.size == 0 )
-            list.add(Pair("gc.xabber.com",  GroupServerType.providedByXabber))
+            list.add(Pair("gc.xabber.com", GroupServerType.providedByXabber))
 
         list.add(Pair(getString(R.string.groupchat_custom_server), GroupServerType.none))
 
@@ -420,8 +432,8 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         if (!isLocalpartCorrect(groupJidEt.text.toString())) return
 
         val membershipType = when (membershipRg.checkedRadioButtonId){
-           R.id.group_membership_members_only_rb -> GroupMembershipType.MEMBER_ONLY
-           R.id.group_membership_open_rb -> GroupMembershipType.OPEN
+            R.id.group_membership_members_only_rb -> GroupMembershipType.MEMBER_ONLY
+            R.id.group_membership_open_rb -> GroupMembershipType.OPEN
            else -> GroupMembershipType.NONE
         }
 
@@ -551,7 +563,7 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 }
 
 class ServersAdapter(private val serversMap: MutableList<Pair<String, GroupServerType>>,
-                             private val listener: OnClickListener): BaseAdapter(){
+                     private val listener: OnClickListener): BaseAdapter(){
 
     override fun getCount() = serversMap.size
 

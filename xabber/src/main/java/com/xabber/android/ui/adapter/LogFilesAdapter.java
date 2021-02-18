@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.utils.StringUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -50,7 +51,7 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         final File file = files[position];
 
-        fileHolder.fileName.setText(file.getName().concat(" ").concat(StringUtils.getHumanReadableFileSize(file.length())));
+        fileHolder.fileName.setText(file.getName().concat(" ").concat(getHumanReadableFileSize(file.length())));
 
         TypedValue typedValue = new TypedValue();
         holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
@@ -75,6 +76,18 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             popup.show();
 
         });
+    }
+
+    private String getHumanReadableFileSize(long bytes){
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
     }
 
     private void viewFile(File file, Context context) {

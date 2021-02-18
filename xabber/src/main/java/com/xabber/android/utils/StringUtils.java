@@ -15,7 +15,6 @@
 package com.xabber.android.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.icu.text.Transliterator;
 
 import androidx.annotation.NonNull;
@@ -27,28 +26,16 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.log.LogManager;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.text.StringCharacterIterator;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * Helper class to perform different actions with strings
@@ -71,8 +58,6 @@ public class StringUtils {
         groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         groupchatMemberPresenceTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
-
-    private StringUtils() { }
 
     public static String decapitalize(String string) {
         if (string == null || string.length() == 0) {
@@ -264,16 +249,7 @@ public class StringUtils {
     public static String getDateStringForMessage(Long timestamp) {
         Date date = new Date(timestamp);
         String strPattern = "d MMMM";
-        if (date.getYear() != new Date().getYear()) strPattern = "d MMMM yyyy";
-
-        SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
-                Application.getInstance().getResources().getConfiguration().locale);
-        return pattern.format(date);
-    }
-
-    public static String getDateStringForClipboard(Long timestamp) {
-        Date date = new Date(timestamp);
-        String strPattern = "EEEE, d MMMM, yyyy";
+        if (!isCurrentYear(date)) strPattern = "d MMMM yyyy";
 
         SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
                 Application.getInstance().getResources().getConfiguration().locale);
@@ -375,37 +351,6 @@ public class StringUtils {
     }
 
     /**
-     * Beautify XML string
-     */
-    public static String getPrettyXmlString(String xmlData){
-        try {
-            int xmlMarkupStartsAtIndex = xmlData.indexOf("<");
-            String data = xmlData.substring(xmlMarkupStartsAtIndex-1);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-            StringWriter stringWriter = new StringWriter();
-            StreamResult xmlOutput = new StreamResult(stringWriter);
-
-            Source xmlInput = new StreamSource(new StringReader(data));
-            transformer.transform(xmlInput, xmlOutput);
-
-            String result = xmlOutput.getWriter().toString();
-            return xmlData.substring(0, xmlMarkupStartsAtIndex) + "\n" + result.substring(0, result.length()-1);
-        } catch (Exception e) {
-            if (!((e instanceof TransformerException) || (e instanceof StringIndexOutOfBoundsException))) {
-                LogManager.exception(StringUtils.class.getSimpleName(), e);
-            }
-            return xmlData;
-        }
-    }
-
-    /**
      * Convert date time string to Date.
      * (Mostly for XEP-0XXX Reliable Message Delivery)
      * @param string can be three formats:
@@ -431,31 +376,6 @@ public class StringUtils {
     public static String translitirateToLatin(String string){
         //TODO add detecting language and make this more flexible
         return Transliterator.getInstance("Cyrillic-Latin").transliterate(string);
-    }
-
-    public static String getLocalpartHintByString(String string){
-        String transliterated = translitirateToLatin(string);
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < transliterated.length(); i++){
-            char c = transliterated.charAt(i);
-            if (!Character.isLetterOrDigit(c)){
-                if (result.length() > 1 && result.charAt(result.length()-1) != '-')
-                    result.append("-");
-            } else result.append(c);
-        }
-        return result.toString().toLowerCase();
-    }
-
-    public static String getHumanReadableFileSize(long bytes){
-        if (-1000 < bytes && bytes < 1000) {
-            return bytes + " B";
-        }
-        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
     }
 
 }

@@ -12,6 +12,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class ClipManager {
 
         final String name = RosterManager.getDisplayAuthorName(message);
 
-        final String date = StringUtils.getDateStringForClipboard(message.getTimestamp());
+        final String date = getDateStringForClipboard(message.getTimestamp());
         if (!Utils.isSameDay(message.getTimestamp(), previousMessageTimestamp)) {
             stringBuilder.append("\n");
             stringBuilder.append(space);
@@ -106,6 +107,15 @@ public class ClipManager {
         }
 
         return stringBuilder.toString();
+    }
+
+    private static String getDateStringForClipboard(Long timestamp) {
+        Date date = new Date(timestamp);
+        String strPattern = "EEEE, d MMMM, yyyy";
+
+        SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
+                Application.getInstance().getResources().getConfiguration().locale);
+        return pattern.format(date);
     }
 
     private static String getSpace(int level) {
