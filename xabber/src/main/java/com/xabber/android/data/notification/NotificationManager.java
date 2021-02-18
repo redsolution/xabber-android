@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 
@@ -45,7 +46,6 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -343,45 +343,20 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private String getConnectionState(int waiting, int connecting, int connected, int accountCount) {
-
-        String accountQuantity;
-        String connectionState;
         if (connected > 0) {
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_connected, connected);
-
-            connectionState = String.format(connectionFormat, connected, accountCount, accountQuantity);
+            return application.getResources().getQuantityString(R.plurals.accounts_of_online, connected,
+                    connected, accountCount);
 
         } else if (connecting > 0) {
-
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_connecting, connecting);
-
-            connectionState = String.format(connectionFormat, connecting, accountCount, accountQuantity);
+            return application.getResources().getQuantityString(R.plurals.accounts_of_connecting,
+                    connecting, connecting, accountCount);
 
         } else if (waiting > 0 && application.isInitialized()) {
+            return application.getResources().getQuantityString(R.plurals.accounts_of_waiting_to_connect,
+                    waiting, waiting, accountCount);
 
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_waiting, waiting);
-
-            connectionState = String.format(connectionFormat, waiting, accountCount, accountQuantity);
-
-        } else {
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity_offline, accountCount);
-            connectionState = application.getString(
-                    R.string.connection_state_offline, accountCount, accountQuantity);
-        }
-        return connectionState;
+        } else return application.getResources().getQuantityString(R.plurals.accounts_offline, accountCount,
+             accountCount);
     }
 
     private void notify(int id, Notification notification) {

@@ -23,12 +23,8 @@
     <string name="groupchat_search_members">Search members</string>
 
     <plurals name="groupchat_number_of_members">
-        <item quantity="one">member</item>
-        <item quantity="zero">members</item>
-        <item quantity="two">members</item>
-        <item quantity="few">members</item>
-        <item quantity="many">members</item>
-        <item quantity="other">members</item>
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
     </plurals>
 
 

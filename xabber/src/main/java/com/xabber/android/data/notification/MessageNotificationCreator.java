@@ -31,7 +31,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
@@ -41,7 +40,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.MainActivity;
-import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -205,14 +203,13 @@ public class MessageNotificationCreator {
     }
 
     private CharSequence createNewMessagesTitle(int messageCount) {
-        return context.getString(R.string.new_chat_messages, messageCount,
-                StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount));
+        return context.getResources().getQuantityString(R.plurals.new_chat_messages, messageCount, messageCount);
     }
 
     private CharSequence createTitleSingleChat(int messageCount, CharSequence chatTitle) {
         if (messageCount == 1) return chatTitle;
-        else return context.getString(R.string.new_chat_messages_from_contact, messageCount,
-                StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount), chatTitle);
+        else return context.getResources().getQuantityString(R.plurals.new_chat_messages_from_contact, messageCount,
+                messageCount, chatTitle);
     }
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {

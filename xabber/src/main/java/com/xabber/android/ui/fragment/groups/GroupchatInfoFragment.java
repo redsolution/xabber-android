@@ -285,7 +285,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                 startActivity(GroupStatusActivity.Companion.createIntent(getContext(), account,
                         groupchatContact)));
 
-        membersHeader.setText(groupChat.getNumberOfMembers() + " " + getResources().getQuantityString(R.plurals.groupchat_number_of_members, groupChat.getNumberOfMembers()));
+        membersHeader.setText(getResources().getQuantityString(R.plurals.groupchat_number_of_members,
+                groupChat.getNumberOfMembers(), groupChat.getNumberOfMembers()));
         membersHeader.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         membersLayout.setVisibility(View.VISIBLE);
     }
