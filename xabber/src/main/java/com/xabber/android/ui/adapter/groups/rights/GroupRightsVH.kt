@@ -42,7 +42,7 @@ class FieldVH(itemView: View, val listener: Listener) : GroupRightsVH(itemView),
         if (field.values != null && field.values.size > 0){
             checkBox.isChecked = true
             if (field.values[0] != "0") {
-                timeTv.text = field.values[0]
+                timeTv.text = field.values[0].toLong().getHumanReadableEstimatedTime()
                 timeTv.visibility = View.VISIBLE
             }
         }
@@ -72,6 +72,35 @@ class FieldVH(itemView: View, val listener: Listener) : GroupRightsVH(itemView),
 
     interface Listener {
         fun onPicked(formField: FormField, option: FormField.Option?, isChecked: Boolean)
+    }
+
+    private fun Long.getHumanReadableEstimatedTime(): String{
+        require(this >= 0) { "Duration must be greater than zero!" }
+
+        val currentTime = System.currentTimeMillis() / 1000
+        var secondsLeft: Long = this - currentTime
+
+        val MILLIS_IN_DAY: Long = 86400
+        val MILLIS_IN_HOUR: Long = 3600
+        val MILLIS_IN_MINUTE: Long = 60
+
+        val days = secondsLeft / MILLIS_IN_DAY
+        secondsLeft -= days * MILLIS_IN_DAY
+
+        val hours = secondsLeft / MILLIS_IN_HOUR
+        secondsLeft -= hours * MILLIS_IN_HOUR
+
+        val minutes = (secondsLeft / MILLIS_IN_MINUTE).toInt()
+
+        val resources = itemView.resources
+
+        return when {
+            days >= 1 -> resources.getQuantityString(R.plurals.estimated_in_days, days.toInt(), days)
+            hours >= 1 -> resources.getQuantityString(R.plurals.estimated_in_hours, hours.toInt(), hours)
+            minutes >= 1 -> resources.getQuantityString(R.plurals.estimated_in_minutes, minutes, minutes)
+            secondsLeft >= 1 -> resources.getQuantityString(R.plurals.estimated_in_seconds, secondsLeft.toInt(), secondsLeft)
+            else -> ""
+        }
     }
 
 }

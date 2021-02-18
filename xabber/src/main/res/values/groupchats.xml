@@ -106,4 +106,24 @@
 
     <string name="groupchat_legacy_invitation_body">To join group add %s to your contacts list</string>
 
+    <plurals name="estimated_in_seconds">
+        <item quantity="one">in %1$d second</item>
+        <item quantity="other">in %1d$ seconds</item>
+    </plurals>
+
+    <plurals name="estimated_in_minutes">
+        <item quantity="one">in %1$d minute</item>
+        <item quantity="other">in %1$d minutes</item>
+    </plurals>
+
+    <plurals name="estimated_in_hours">
+        <item quantity="one">in %1$d hour</item>
+        <item quantity="other">in %1$d hours</item>
+    </plurals>
+
+    <plurals name="estimated_in_days">
+        <item quantity="one">in %1$d day</item>
+        <item quantity="other">in %1$d days</item>
+    </plurals>
+
 </resources>

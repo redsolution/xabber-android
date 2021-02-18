@@ -45,8 +45,4 @@
     <string name="groupchat_bar_invite">Invite</string>
     <string name="groupchat_bar_leave">Leave</string>
 
-    <string name="in">in</string>
-    <string name="days">days</string>
-    <string name="hours">hours</string>
-    <string name="minutes">minutes</string>
 </resources>

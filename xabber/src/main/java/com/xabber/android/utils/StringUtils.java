@@ -271,34 +271,6 @@ public class StringUtils {
         return pattern.format(date);
     }
 
-    public static String getStringForGroupMemberRights(Long expireUnixTime){
-        if(expireUnixTime < 0) throw new IllegalArgumentException("Duration must be greater than zero!");
-
-        long currentTime = System.currentTimeMillis() / 1000;
-        long timeLeft = expireUnixTime - currentTime;
-
-        final long MILLIS_IN_DAY = 86400;
-        final long MILLIS_IN_HOUR = 3600;
-        final long MILLIS_IN_MINUTE = 60;
-
-        long days = timeLeft / MILLIS_IN_DAY;
-        timeLeft -= days * MILLIS_IN_DAY;
-
-        long hours = timeLeft / MILLIS_IN_HOUR;
-        timeLeft-= hours * MILLIS_IN_HOUR;
-
-        long minutes = timeLeft / MILLIS_IN_MINUTE;
-
-        Resources resources = Application.getInstance().getApplicationContext().getResources();
-        String inString = resources.getString(R.string.in);
-
-        if (days >= 1) return inString + " " + days + " " + resources.getString(R.string.days);
-        if (hours >= 1) return inString + " " + hours + " " + resources.getString(R.string.hours);
-        if (minutes >= 1) return inString + " " + minutes + " " + resources.getString(R.string.minutes);
-
-        return "";
-    }
-
     public static String getDateStringForClipboard(Long timestamp) {
         Date date = new Date(timestamp);
         String strPattern = "EEEE, d MMMM, yyyy";
