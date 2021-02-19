@@ -1206,37 +1206,44 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onLastHistoryLoadStarted(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
-        if (accountJid.equals(account) && user.equals(user)) {
-            lastHistoryProgressBar.setVisibility(View.VISIBLE);
-            historyIsLoading = true;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (accountJid.equals(account) && user.equals(contactJid)) {
+                lastHistoryProgressBar.setVisibility(View.VISIBLE);
+                historyIsLoading = true;
+            }
+        });
     }
 
     @Override
     public void onLastHistoryLoadFinished(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
-        if (accountJid.equals(account) && contactJid.equals(user)) {
-            lastHistoryProgressBar.setVisibility(View.GONE);
-            historyIsLoading = false;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (accountJid.equals(account) && contactJid.equals(user)) {
+                lastHistoryProgressBar.setVisibility(View.GONE);
+                historyIsLoading = false;
+            }
+        });
     }
 
     @Override
     public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
-        if (groupJid.getBareJid().equals(user.toString()))
-            setupPinnedMessageView();
+        Application.getInstance().runOnUiThread(() -> {
+            if (groupJid.getBareJid().equals(user.toString())) {
+                setupPinnedMessageView();
+            }
+        });
     }
 
     @Override
-    public void onMessageUpdated() {
-        updateUnread();
-    }
+    public void onMessageUpdated() { Application.getInstance().runOnUiThread(this::updateUnread); }
 
     @Override
     public void onNewIncomingMessage(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
-        if (accountJid.equals(account) && contactJid.equals(user)) {
-            playMessageSound();
-            NotificationManager.getInstance().removeMessageNotification(account, user);
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (accountJid.equals(account) && contactJid.equals(user)) {
+                playMessageSound();
+                NotificationManager.getInstance().removeMessageNotification(account, user);
+            }
+        });
     }
 
     @Override
@@ -1246,9 +1253,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onAuthAsk(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
-        if (accountJid == getAccount() && contactJid == getUser()) {
-            showHideNotifyIfNeed();
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (accountJid == getAccount() && contactJid == getUser()) {
+                showHideNotifyIfNeed();
+            }
+        });
     }
 
     @Override
