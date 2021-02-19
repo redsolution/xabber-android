@@ -961,7 +961,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Application.getInstance().removeUIListener(OnNewIncomingMessageListener.class, this);
         Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
         Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
-        Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
         Application.getInstance().removeUIListener(OnLastHistoryLoadStartedListener.class, this);
         Application.getInstance().removeUIListener(OnLastHistoryLoadFinishedListener.class, this);
         Application.getInstance().removeUIListener(OnAuthAskListener.class, this);
