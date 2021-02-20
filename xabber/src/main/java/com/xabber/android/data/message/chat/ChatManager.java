@@ -326,7 +326,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
         LogManager.i(this, "removeChat " + chat.getContactJid());
-        MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
+        //MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
             listener.onChatUpdated();
