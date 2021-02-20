@@ -11,15 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener
-import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.groups.GroupsManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.ui.OnGroupStatusResultListener
 import com.xabber.android.ui.activity.GroupStatusActivity
 import com.xabber.android.ui.adapter.groups.GroupStatusAdapter
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusResultListener,
+class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), OnGroupStatusResultListener,
         GroupStatusAdapter.Listener {
 
     private lateinit var recyclerView: RecyclerView
@@ -48,12 +48,12 @@ class GroupStatusFragment(val groupchat: GroupChat) : Fragment(), GroupStatusRes
         GroupsManager.getInstance().requestGroupStatusForm(groupchat)
         (activity as GroupStatusActivity).showProgressBar(true)
 
-        Application.getInstance().addUIListener(GroupStatusResultListener::class.java, this)
+        Application.getInstance().addUIListener(OnGroupStatusResultListener::class.java, this)
     }
 
     override fun onPause() {
         super.onPause()
-        Application.getInstance().removeUIListener(GroupStatusResultListener::class.java, this)
+        Application.getInstance().removeUIListener(OnGroupStatusResultListener::class.java, this)
     }
 
     override fun onStatusDataFormReceived(groupchat: GroupChat, dataForm: DataForm) {

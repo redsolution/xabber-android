@@ -53,12 +53,10 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
@@ -67,6 +65,8 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -495,19 +495,19 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        LogManager.i(LOG_TAG, "onAccountsChanged " + accounts);
-
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
         if (accounts.contains(account)) {
-            updateTitle();
-            updateOptions();
+            Application.getInstance().runOnUiThread(() -> {
+                updateTitle();
+                updateOptions();
+            });
         }
     }
 
     @Override
     public void onBlockedListChanged(AccountJid account) {
         if (this.account.equals(account)) {
-            updateBlockListOption();
+            Application.getInstance().runOnUiThread(this::updateBlockListOption);
         }
     }
 

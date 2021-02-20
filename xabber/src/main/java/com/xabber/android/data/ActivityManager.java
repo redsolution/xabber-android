@@ -25,6 +25,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.OnErrorListener;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.LoadActivity;
 import com.xabber.android.ui.activity.MainActivity;
@@ -195,8 +196,7 @@ public class ActivityManager implements OnUnloadListener {
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);
         }
-        onErrorListener = resourceId
-                -> Toast.makeText(activity, activity.getString(resourceId), Toast.LENGTH_LONG).show();
+        onErrorListener = resourceId -> Toast.makeText(activity, activity.getString(resourceId), Toast.LENGTH_LONG).show();
         application.addUIListener(OnErrorListener.class, onErrorListener);
 
         CertificateManager.getInstance().registerActivity(activity);

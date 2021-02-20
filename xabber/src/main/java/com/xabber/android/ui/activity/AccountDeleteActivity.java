@@ -16,12 +16,14 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountDeleteFragment;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -108,12 +110,14 @@ public class AccountDeleteActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
-            if (accountItem == null) {
-                finish();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (accounts.contains(account)) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+                if (accountItem == null) {
+                    finish();
+                }
             }
-        }
+        });
     }
 }

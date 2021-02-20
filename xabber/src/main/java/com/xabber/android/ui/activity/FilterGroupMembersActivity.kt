@@ -17,12 +17,12 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
+import com.xabber.android.data.groups.GroupMember
+import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.groups.GroupMember
-import com.xabber.android.data.groups.GroupMemberManager
+import com.xabber.android.ui.OnGroupchatRequestListener
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -145,18 +145,18 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
     }
 
 
-    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String?) {
+    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String) {
         if (isThisChat(accountJid, groupchatJid))
-            Application.getInstance().runOnUiThread { updateRecyclerView() }
+            Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
-    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
-        updateRecyclerView()
+    override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
+        Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
     override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {
         if (isThisChat(accountJid, groupchatJid))
-            Application.getInstance().runOnUiThread { updateRecyclerView() }
+            Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
     override fun onMemberClick(groupMember: GroupMember?) = startActivity(

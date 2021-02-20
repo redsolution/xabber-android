@@ -18,12 +18,12 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.listeners.OnConnectionStateChangedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XToken;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
+import com.xabber.android.ui.OnConnectionStateChangedListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.StanzaListener;
@@ -269,7 +269,8 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
-            for (OnConnectionStateChangedListener listener : Application.getInstance().getUIListeners(OnConnectionStateChangedListener.class)){
+            for (OnConnectionStateChangedListener listener :
+                    Application.getInstance().getUIListeners(OnConnectionStateChangedListener.class)){
                 listener.onConnectionStateChanged(newState);
             }
             if (newState == ConnectionState.connected) {

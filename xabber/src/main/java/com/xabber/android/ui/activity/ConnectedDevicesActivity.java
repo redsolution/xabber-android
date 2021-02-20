@@ -19,16 +19,17 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
 
+import org.jetbrains.annotations.Nullable;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -255,9 +256,12 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts != null && accounts.size() > 0 && accounts.contains(account)) {
-            showOnlineAccounts();
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (accounts != null && accounts.size() > 0 && accounts.contains(account)) {
+                showOnlineAccounts();
+            }
+        });
     }
+
 }

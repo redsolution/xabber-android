@@ -13,6 +13,7 @@ import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.ui.OnNewMessageListener;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
@@ -49,7 +50,8 @@ public class ForwardManager {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
                     realm1.copyToRealm(messageRealmObject);
-                    for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+                    for (OnNewMessageListener listener :
+                            Application.getInstance().getUIListeners(OnNewMessageListener.class)){
                         listener.onNewMessage();
                     }
                     chat.sendMessages();

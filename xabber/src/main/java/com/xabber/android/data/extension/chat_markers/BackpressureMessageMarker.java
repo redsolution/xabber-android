@@ -9,7 +9,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +78,8 @@ public class BackpressureMessageMarker {
                         if (realm != null && Looper.myLooper() != Looper.getMainLooper())
                             realm.close();
                     }
-                    for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                    for (OnMessageUpdatedListener listener :
+                            Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                         listener.onMessageUpdated();
                     }
                 }, new Action1<Throwable>() {

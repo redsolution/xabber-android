@@ -12,19 +12,19 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.blocking.BlockingManager.BlockContactListener
-import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult
 import com.xabber.android.data.extension.groupchat.invite.incoming.DeclineGroupInviteIQ
 import com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElement
 import com.xabber.android.data.extension.groupchat.invite.outgoing.*
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.OnMessageUpdatedListener
-import com.xabber.android.data.message.OnNewMessageListener
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener
+import com.xabber.android.ui.OnMessageUpdatedListener
+import com.xabber.android.ui.OnNewMessageListener
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.XMPPConnection
@@ -243,7 +243,7 @@ object GroupInviteManager: OnLoadListener {
         }
     }
 
-    fun revokeGroupchatInvitation(account: AccountJid?, groupchatJid: ContactJid?, inviteJid: String) {
+    fun revokeGroupchatInvitation(account: AccountJid, groupchatJid: ContactJid, inviteJid: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 val groupChat = ChatManager.getInstance().getChat(account, groupchatJid) as GroupChat?
@@ -260,7 +260,7 @@ object GroupInviteManager: OnLoadListener {
                         } else success = false
 
                         Application.getInstance().runOnUiThread {
-                            for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                            for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
                                 if (success) {
                                     listener.onActionSuccess(account, groupchatJid, listOf(inviteJid))
                                 } else listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
@@ -269,7 +269,7 @@ object GroupInviteManager: OnLoadListener {
                         }
                     }
                 }) { Application.getInstance().runOnUiThread {
-                        for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                        for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
                             listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
                         }
                     }
@@ -280,7 +280,7 @@ object GroupInviteManager: OnLoadListener {
         }
     }
 
-    fun revokeGroupchatInvitations(account: AccountJid?, groupchatJid: ContactJid?, inviteJids: Set<String>) {
+    fun revokeGroupchatInvitations(account: AccountJid, groupchatJid: ContactJid, inviteJids: Set<String>) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             val accountItem = AccountManager.getInstance().getAccount(account)
                     ?: return@runInBackgroundNetworkUserRequest
@@ -301,7 +301,7 @@ object GroupInviteManager: OnLoadListener {
                             if (unfinishedRequestCount.get() == 0) {
                                 Application.getInstance().runOnUiThread {
                                     for (listener in Application.getInstance()
-                                            .getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                                            .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
                                         when {
                                             failedRevokeRequests.size == 0 -> {
                                                 listener.onActionSuccess(account, groupchatJid, successfulRevokeRequests)
@@ -323,7 +323,7 @@ object GroupInviteManager: OnLoadListener {
                         if (unfinishedRequestCount.get() == 0) {
                             Application.getInstance().runOnUiThread {
                                 for (listener in Application.getInstance()
-                                        .getUIListeners(OnGroupSelectorListToolbarActionResult::class.java)) {
+                                        .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
                                     if (successfulRevokeRequests.size > 0) {
                                         listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests, failedRevokeRequests)
                                     } else listener.onActionFailure(account, groupchatJid, failedRevokeRequests)

@@ -17,8 +17,8 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.notification.MessageNotificationManager;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -166,7 +166,8 @@ public class RewriteManager implements OnPacketListener {
                             message[0].setStanzaId(messageRealmObject.getStanzaId());
                             messageRealmObject.setText(text);
                             messageRealmObject.setOriginalStanza(message[0].toXML().toString());
-                            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                            for (OnMessageUpdatedListener listener :
+                                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                                 listener.onMessageUpdated();
                             }
                         }

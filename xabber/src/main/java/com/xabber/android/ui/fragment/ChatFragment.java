@@ -73,7 +73,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -85,10 +84,7 @@ import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.mam.OnLastHistoryLoadFinishedListener;
-import com.xabber.android.data.extension.mam.OnLastHistoryLoadStartedListener;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.OnAuthAskListener;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
@@ -99,14 +95,10 @@ import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.groups.GroupsManager;
-import com.xabber.android.data.groups.OnGroupPresenceUpdatedListener;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
-import com.xabber.android.data.message.OnNewIncomingMessageListener;
-import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -116,6 +108,14 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnAuthAskListener;
+import com.xabber.android.ui.OnGroupPresenceUpdatedListener;
+import com.xabber.android.ui.OnLastHistoryLoadFinishedListener;
+import com.xabber.android.ui.OnLastHistoryLoadStartedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnNewIncomingMessageListener;
+import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.GroupchatMemberActivity;
@@ -1907,8 +1907,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        chatMessageAdapter.notifyDataSetChanged();
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(chatMessageAdapter::notifyDataSetChanged);
     }
 
     public void playMessageSound() {

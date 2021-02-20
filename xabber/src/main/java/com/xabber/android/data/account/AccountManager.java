@@ -29,7 +29,6 @@ import com.xabber.android.data.OnUnloadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.account.listeners.OnAccountOfflineListener;
@@ -60,6 +59,7 @@ import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smack.util.StringUtils;
@@ -1247,13 +1247,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public void onAccountsChanged(final Collection<AccountJid> accounts) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnAccountChangedListener accountListener
-                        : Application.getInstance().getUIListeners(OnAccountChangedListener.class)) {
-                    accountListener.onAccountsChanged(accounts);
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnAccountChangedListener accountListener
+                    : Application.getInstance().getUIListeners(OnAccountChangedListener.class)) {
+                accountListener.onAccountsChanged(accounts);
             }
         });
     }

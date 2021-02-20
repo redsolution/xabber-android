@@ -42,7 +42,9 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.OnChatUpdatedListener;
+import com.xabber.android.ui.OnChatStateListener;
+import com.xabber.android.ui.OnChatUpdatedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -450,7 +452,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             try {
                 roster.removeEntry(entry);
                 PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
-                for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                for (OnChatUpdatedListener listener :
+                        Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
                     listener.onChatUpdated();
                 }
             } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {

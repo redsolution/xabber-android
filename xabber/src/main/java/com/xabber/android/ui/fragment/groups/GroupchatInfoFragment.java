@@ -21,20 +21,20 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
-import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groups.GroupIndexType;
 import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.groups.GroupMembershipType;
 import com.xabber.android.data.groups.GroupPrivacyType;
-import com.xabber.android.data.groups.OnGroupPresenceUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.StatusBadgeSetupHelper;
+import com.xabber.android.ui.OnGroupPresenceUpdatedListener;
+import com.xabber.android.ui.OnGroupchatRequestListener;
+import com.xabber.android.ui.OnVCardListener;
 import com.xabber.android.ui.activity.GroupStatusActivity;
 import com.xabber.android.ui.activity.GroupchatMemberActivity;
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter;
@@ -96,7 +96,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         Application.getInstance().addUIListener(OnGroupchatRequestListener.class, this);
         Application.getInstance().addUIListener(OnVCardListener.class, this);
@@ -311,7 +311,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onMeReceived(AccountJid accountJid, ContactJid groupchatJid) {
         if (isThisChat(accountJid, groupchatJid))
-            updateViewsWithMemberList();
+            Application.getInstance().runOnUiThread(this::updateViewsWithMemberList);
     }
 
     @Override
@@ -324,33 +324,39 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onGroupchatMembersReceived(AccountJid account, ContactJid groupchatJid) {
         if (isThisChat(account, groupchatJid))
-            updateViewsWithMemberList();
+            Application.getInstance().runOnUiThread(this::updateViewsWithMemberList);
     }
 
     @Override
     public void onVCardReceived(AccountJid account, Jid jid, VCard vCard) {
-        if (account.toString().equals(this.account.toString())
-                && jid.toString().equals(this.groupchatContact.getJid().toString())){
-            ((GroupChat)groupChat).setDescription(vCard.getDescription());
-            ((GroupChat)groupChat).setPrivacyType(vCard.getPrivacyType());
-            ((GroupChat)groupChat).setIndexType(vCard.getIndexType());
-            ((GroupChat)groupChat).setMembershipType(vCard.getMembershipType());
-            if (vCard.getNickName() != null && !vCard.getNickName().isEmpty())
-                ((GroupChat)groupChat).setName(vCard.getNickName());
-            ((GroupChat)groupChat).setNumberOfMembers(vCard.getMembersCount());
-            ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
-            updateChatInfo(((GroupChat)groupChat));
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (account.toString().equals(this.account.toString())
+                    && jid.toString().equals(this.groupchatContact.getJid().toString())){
+                ((GroupChat)groupChat).setDescription(vCard.getDescription());
+                ((GroupChat)groupChat).setPrivacyType(vCard.getPrivacyType());
+                ((GroupChat)groupChat).setIndexType(vCard.getIndexType());
+                ((GroupChat)groupChat).setMembershipType(vCard.getMembershipType());
+                if (vCard.getNickName() != null && !vCard.getNickName().isEmpty())
+                    ((GroupChat)groupChat).setName(vCard.getNickName());
+                ((GroupChat)groupChat).setNumberOfMembers(vCard.getMembersCount());
+                ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat);
+                updateChatInfo(((GroupChat)groupChat));
+            }
+        });
     }
 
     @Override
     public void onVCardFailed(AccountJid account, Jid jid) {
-        //todo this
+        Application.getInstance().runOnUiThread(() -> {
+            //todo this
+        });
     }
 
     @Override
     public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
-        if (groupchatContact == groupJid) updateChatInfo((GroupChat) groupChat);
+        if (groupchatContact == groupJid) {
+            Application.getInstance().runOnUiThread(() -> updateChatInfo((GroupChat) groupChat));
+        }
     }
 
     private boolean isThisChat(AccountJid account, ContactJid contactJid) {

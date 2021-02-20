@@ -15,11 +15,11 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.sid.StanzaIdElement;
 
 import org.jivesoftware.smack.SmackException;
@@ -259,7 +259,8 @@ public class ChatMarkerManager implements OnPacketListener {
 
                             if (results != null) {
                                 results.setBoolean(MessageRealmObject.Fields.DISPLAYED, true);
-                                for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                                for (OnMessageUpdatedListener listener :
+                                        Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                                     listener.onMessageUpdated();
                                 }
                             }

@@ -29,6 +29,8 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnAddAccountClickListener;
+import com.xabber.android.ui.OnReorderClickListener;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
@@ -39,8 +41,6 @@ import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
-import com.xabber.android.ui.widget.OnAddAccountClickListener;
-import com.xabber.android.ui.widget.OnReorderClickListener;
 
 import rx.subscriptions.CompositeSubscription;
 
@@ -133,10 +133,14 @@ public class PreferenceEditor extends ManagedActivity implements OnAddAccountCli
     }
 
     @Override
-    public void onAddAccountClick() { startActivity(AccountAddActivity.createIntent(this)); }
+    public void onAddAccountClick() {
+        Application.getInstance().runOnUiThread(() -> startActivity(AccountAddActivity.createIntent(this)));
+    }
 
     @Override
-    public void onReorderCLick() { startActivity(AccountListActivity.createIntent(this)); }
+    public void onReorderCLick() {
+        Application.getInstance().runOnUiThread(() -> startActivity(AccountListActivity.createIntent(this)));
+    }
 
     @Override
     public void onAccountClick(AccountJid account) {

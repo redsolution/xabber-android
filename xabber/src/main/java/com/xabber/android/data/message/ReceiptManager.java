@@ -27,6 +27,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -138,7 +139,8 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     }
                 }
             });
-            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+            for (OnMessageUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                 listener.onMessageUpdated();
             }
         } catch (Exception e) {

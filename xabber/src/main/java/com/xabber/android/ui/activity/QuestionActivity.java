@@ -26,7 +26,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
@@ -34,11 +33,14 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
@@ -164,21 +166,19 @@ public class QuestionActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         BareJid thisBareAddress = user.getBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
-                update();
+                Application.getInstance().runOnUiThread(this::update);
                 break;
             }
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            update();
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override

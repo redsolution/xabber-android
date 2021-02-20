@@ -50,10 +50,10 @@ import com.xabber.android.data.message.BackpressureMessageSaver;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
-import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
@@ -1035,7 +1035,8 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+        for (OnMessageUpdatedListener listener :
+                Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
             listener.onMessageUpdated();
         }
         BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,

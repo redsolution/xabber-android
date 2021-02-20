@@ -22,14 +22,16 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.ColorManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -170,13 +172,13 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        update();
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
 }

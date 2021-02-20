@@ -23,9 +23,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 

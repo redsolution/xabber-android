@@ -23,9 +23,9 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -117,7 +117,8 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 if (chat != null && !deleteHistory.isChecked()) {
                     chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
                 }
-                for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                for (OnChatUpdatedListener listener :
+                        Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
                     listener.onChatUpdated();
                 }
 

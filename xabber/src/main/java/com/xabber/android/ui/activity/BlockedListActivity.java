@@ -21,9 +21,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.BlockByJidDialog;
@@ -266,7 +266,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public void onBlockedListChanged(AccountJid account) {
-        update();
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     public void update() {

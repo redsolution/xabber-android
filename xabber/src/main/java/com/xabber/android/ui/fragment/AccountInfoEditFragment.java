@@ -41,10 +41,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.vcard.OnVCardListener;
-import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnVCardListener;
+import com.xabber.android.ui.OnVCardSaveListener;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.avatar.UserAvatarManager;
@@ -56,7 +56,6 @@ import com.xabber.xmpp.vcard.VCardProperty;
 import org.apache.commons.io.FileUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.pubsub.PubSubException;
 import org.jxmpp.jid.Jid;
 
 import java.io.ByteArrayOutputStream;
@@ -72,7 +71,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AccountInfoEditFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener, TextWatcher {
+public class AccountInfoEditFragment extends Fragment implements OnVCardSaveListener, OnVCardListener,
+        DatePickerDialog.OnDateSetListener, TextWatcher {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_USER";
@@ -1008,63 +1008,71 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     @Override
     public void onVCardSaveSuccess(AccountJid account) {
-        if (!this.account.equals(account)) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account)) {
+                return;
+            }
 
-        enableProgressMode(getString(R.string.saving));
-        VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
-        isSaveSuccess = true;
+            enableProgressMode(getString(R.string.saving));
+            VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
+            isSaveSuccess = true;
+        });
     }
 
     @Override
     public void onVCardSaveFailed(AccountJid account) {
-        if (!this.account.equals(account)) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account)) {
+                return;
+            }
 
-        disableProgressMode();
-        listener.toggleSave(true);
-        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
-        isSaveSuccess = false;
+            disableProgressMode();
+            listener.toggleSave(true);
+            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
+            isSaveSuccess = false;
+        });
     }
 
     @Override
     public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
-        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+                return;
+            }
 
-        if (isSaveSuccess) {
-            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
-            isSaveSuccess = false;
+            if (isSaveSuccess) {
+                Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+                isSaveSuccess = false;
 
-            Intent data = new Intent();
-            data.putExtra(ARGUMENT_VCARD, vCard.getChildElementXML().toString());
-            getActivity().setResult(Activity.RESULT_OK, data);
+                Intent data = new Intent();
+                data.putExtra(ARGUMENT_VCARD, vCard.getChildElementXML().toString());
+                getActivity().setResult(Activity.RESULT_OK, data);
 
-            getActivity().finish();
-        } else {
-            disableProgressMode();
-            this.vCard = vCard;
-            updateFromVCardFlag = true;
-            setFieldsFromVCard();
-            updateFromVCardFlag = false;
-        }
+                getActivity().finish();
+            } else {
+                disableProgressMode();
+                this.vCard = vCard;
+                updateFromVCardFlag = true;
+                setFieldsFromVCard();
+                updateFromVCardFlag = false;
+            }
+        });
     }
 
     @Override
     public void onVCardFailed(AccountJid account, Jid bareAddress) {
-        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+                return;
+            }
 
-        if (isSaveSuccess) {
-            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
-            isSaveSuccess = false;
-            getActivity().setResult(REQUEST_NEED_VCARD);
-            getActivity().finish();
-        }
+            if (isSaveSuccess) {
+                Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+                isSaveSuccess = false;
+                getActivity().setResult(REQUEST_NEED_VCARD);
+                getActivity().finish();
+            }
+        });
     }
 
     @Override

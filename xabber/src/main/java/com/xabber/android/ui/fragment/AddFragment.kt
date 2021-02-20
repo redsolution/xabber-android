@@ -10,8 +10,8 @@ import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.account.listeners.OnAccountChangedListener
 import com.xabber.android.data.entity.AccountJid
+import com.xabber.android.ui.OnAccountChangedListener
 import com.xabber.android.ui.activity.ContactAddActivity
 import com.xabber.android.ui.activity.CreateGroupActivity
 
@@ -45,8 +45,10 @@ class AddFragment : Fragment(), OnAccountChangedListener {
         super.onPause()
     }
 
-    override fun onAccountsChanged(accounts: MutableCollection<AccountJid>?) {
-        if (AccountManager.getInstance().enabledAccounts.isEmpty()) showPlaceholder(true)
+    override fun onAccountsChanged(accounts: Collection<AccountJid?>?) {
+        if (AccountManager.getInstance().enabledAccounts.isEmpty()) {
+            Application.getInstance().runOnUiThread { showPlaceholder(true) }
+        }
     }
 
     private fun showPlaceholder(show: Boolean){

@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener
-import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.groups.GroupsManager
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.OnGroupSettingsResultsListener
 import com.xabber.android.ui.activity.GroupchatUpdateSettingsActivity
 import com.xabber.android.ui.adapter.groups.settings.GroupSettingsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -23,7 +23,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm
 import java.util.*
 
 class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEditorFragment(),
-        GroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
+        OnGroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
 
     init {
         account = groupchat.account
@@ -51,7 +51,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
 
     override fun onResume() {
         super.onResume()
-        Application.getInstance().addUIListener(GroupSettingsResultsListener::class.java, this)
+        Application.getInstance().addUIListener(OnGroupSettingsResultsListener::class.java, this)
         sendRequestGroupSettingsDataForm()
         contactCircles = ArrayList(RosterManager.getInstance().getCircles(groupchat.account, groupchat.contactJid))
         if (circles != null) updateCircles()
@@ -59,7 +59,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     }
 
     override fun onPause() {
-        Application.getInstance().removeUIListener(GroupSettingsResultsListener::class.java, this)
+        Application.getInstance().removeUIListener(OnGroupSettingsResultsListener::class.java, this)
         super.onPause()
     }
 

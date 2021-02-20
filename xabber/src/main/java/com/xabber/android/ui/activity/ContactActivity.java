@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -51,12 +50,10 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
@@ -65,9 +62,11 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnBlockedListChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
@@ -78,6 +77,9 @@ import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -246,7 +248,7 @@ public class ContactActivity extends ManagedActivity implements
         Glide.with(this)
                 .load(backgroundSource)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
+                .transform(new MultiTransformation<>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
                 .into(background);
 
     }
@@ -424,10 +426,11 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
-                ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
+                Application.getInstance().runOnUiThread(() ->
+                        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true));
                 break;
             }
         }
@@ -438,10 +441,9 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() ->
+                ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true));
     }
 
     protected AccountJid getAccount() {
@@ -540,8 +542,10 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onBlockedListChanged(AccountJid account) {
         if (account.getFullJid().asBareJid().equals(getAccount().getFullJid().asBareJid())) {
-            checkForBlockedStatus();
-            setContactBar(accountMainColor, orientation);
+            Application.getInstance().runOnUiThread(() -> {
+                checkForBlockedStatus();
+                setContactBar(accountMainColor, orientation);
+            });
         }
     }
 

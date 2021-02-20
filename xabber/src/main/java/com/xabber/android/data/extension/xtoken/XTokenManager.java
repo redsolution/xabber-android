@@ -10,6 +10,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;

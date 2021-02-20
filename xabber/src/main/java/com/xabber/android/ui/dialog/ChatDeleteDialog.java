@@ -17,10 +17,10 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -81,7 +81,8 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
                 if (getActivity() instanceof ChatActivity) {
                     getActivity().finish();
                 }
-                for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                for (OnMessageUpdatedListener listener :
+                        Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                     listener.onMessageUpdated();
                 }
             }

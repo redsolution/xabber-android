@@ -40,13 +40,13 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
-import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener
-import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.groups.GroupMember
 import com.xabber.android.data.groups.GroupMemberManager
 import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.ui.OnGroupchatRequestListener
 import com.xabber.android.ui.color.AccountPainter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.AccountInfoEditFragment
@@ -111,12 +111,14 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     }
 
-    override fun onGroupchatMembersReceived(account: AccountJid?, groupchatJid: ContactJid?) {
-        if (account == groupchat?.account && groupchatJid == groupchat?.contactJid)
-            setupNameBlock()
+    override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
+        if (account == groupchat?.account && groupchatJid == groupchat?.contactJid) {
+            Application.getInstance()
+                    .runOnUiThread(::setupNameBlock)
+        }
     }
 
-    override fun onMeReceived(accountJid: AccountJid?, groupchatJid: ContactJid?) {}
+    override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {}
 
     override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid,
                                           groupchatMemberId: String) {

@@ -18,12 +18,11 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
-import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
 import com.xabber.android.ui.activity.GroupSettingsActivity.GroupchatSelectorListToolbarActions;
 import com.xabber.android.ui.adapter.GroupchatInvitesAdapter;
 import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.Set;
 
 public class GroupInvitesFragment extends Fragment implements GroupchatSelectorListToolbarActions,
-        OnGroupSelectorListToolbarActionResult, StanzaListener, ExceptionCallback {
+        OnGroupSelectorListToolbarActionResultListener, StanzaListener, ExceptionCallback {
 
     private static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_ACCOUNT";
     private static final String ARG_GROUPCHAT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInvitesFragment.ARG_GROUPCHAT_CONTACT";
@@ -106,13 +105,13 @@ public class GroupInvitesFragment extends Fragment implements GroupchatSelectorL
     @Override
     public void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResult.class, this);
+        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResultListener.class, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResult.class, this);
+        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResultListener.class, this);
     }
 
     @Nullable
@@ -200,23 +199,29 @@ public class GroupInvitesFragment extends Fragment implements GroupchatSelectorL
     @Override
     public void onActionSuccess(AccountJid account, ContactJid groupchatJid, List<String> successfulJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
-        adapter.setInvites(groupChat.getListOfInvites());
-        adapter.removeCheckedInvites(successfulJids);
-        adapter.disableItemClicks(false);
-        setupPlaceholder();
+        Application.getInstance().runOnUiThread(() -> {
+            adapter.setInvites(groupChat.getListOfInvites());
+            adapter.removeCheckedInvites(successfulJids);
+            adapter.disableItemClicks(false);
+            setupPlaceholder();
+        });
     }
 
     @Override
     public void onPartialSuccess(AccountJid account, ContactJid groupchatJid, List<String> successfulJids, List<String> failedJids) {
-        onActionSuccess(account, groupchatJid, successfulJids);
-        onActionFailure(account, groupchatJid, failedJids);
+        Application.getInstance().runOnUiThread(() -> {
+            onActionSuccess(account, groupchatJid, successfulJids);
+            onActionFailure(account, groupchatJid, failedJids);
+        });
     }
 
     @Override
     public void onActionFailure(AccountJid account, ContactJid groupchatJid, List<String> failedJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
-        adapter.disableItemClicks(false);
-        Toast.makeText(getContext(), getString(R.string.groupchat_failed_to_revoke_invitation) + failedJids, Toast.LENGTH_SHORT).show();
+        Application.getInstance().runOnUiThread(() -> {
+            adapter.disableItemClicks(false);
+            Toast.makeText(getContext(), getString(R.string.groupchat_failed_to_revoke_invitation) + failedJids, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private boolean checkIfWrongEntity(AccountJid account, ContactJid groupchatJid) {

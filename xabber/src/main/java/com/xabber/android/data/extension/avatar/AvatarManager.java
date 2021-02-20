@@ -45,9 +45,9 @@ import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.groups.GroupMember;
-import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
@@ -280,8 +280,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         this.XEPHashes.putAll(XEPHashes);
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
-        for (OnContactChangedListener onContactChangedListener : Application
-                .getInstance().getUIListeners(OnContactChangedListener.class)) {
+        for (OnContactChangedListener onContactChangedListener :
+                Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
             onContactChangedListener.onContactsChanged(Collections.emptyList());
         }
     }

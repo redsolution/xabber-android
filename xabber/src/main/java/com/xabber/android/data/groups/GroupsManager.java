@@ -20,17 +20,14 @@ import com.xabber.android.data.extension.groupchat.GroupchatPresence;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener;
 import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
-import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener;
 import com.xabber.android.data.extension.groupchat.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
 import com.xabber.android.data.extension.groupchat.restrictions.RequestToChangeGroupDefaultRestrictionsIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsDataFormResultIQ;
 import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ;
-import com.xabber.android.data.extension.groupchat.settings.GroupSettingsResultsListener;
 import com.xabber.android.data.extension.groupchat.settings.SetGroupSettingsRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupSetStatusRequestIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIQ;
 import com.xabber.android.data.extension.groupchat.status.GroupStatusFormRequestIQ;
-import com.xabber.android.data.extension.groupchat.status.GroupStatusResultListener;
 import com.xabber.android.data.extension.groupchat.system_message.GroupSystemMessageExtensionElement;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
@@ -40,6 +37,10 @@ import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnGroupDefaultRestrictionsListener;
+import com.xabber.android.ui.OnGroupPresenceUpdatedListener;
+import com.xabber.android.ui.OnGroupSettingsResultsListener;
+import com.xabber.android.ui.OnGroupStatusResultListener;
 import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
@@ -294,18 +295,18 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .sendIqWithResponseCallback(new GroupStatusFormRequestIQ(groupchat), packet -> {
                             if (packet instanceof GroupStatusDataFormIQ
                                     && ((GroupStatusDataFormIQ) packet).getType() == IQ.Type.result)
-                                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                for (OnGroupStatusResultListener listener : Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                                     listener.onStatusDataFormReceived(groupchat, ((GroupStatusDataFormIQ) packet).getDataForm());
                                 }
                         }, exception -> {
-                            for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                            for (OnGroupStatusResultListener listener : Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                                 listener.onError(groupchat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                for (OnGroupStatusResultListener listener : Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                     listener.onError(groupchat);
                 }
             }
@@ -318,18 +319,19 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupSetStatusRequestIQ(groupChat, dataForm), packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
-                                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                                for (OnGroupStatusResultListener listener : Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                                     listener.onStatusSuccessfullyChanged(groupChat);
                                 }
                         }, exception -> {
-                            for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                            for (OnGroupStatusResultListener listener :
+                                    Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                                 listener.onError(groupChat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupStatusResultListener listener : Application.getInstance().getUIListeners(GroupStatusResultListener.class)) {
+                for (OnGroupStatusResultListener listener : Application.getInstance().getUIListeners(OnGroupStatusResultListener.class)) {
                     listener.onError(groupChat);
                 }
             }
@@ -343,18 +345,19 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .sendIqWithResponseCallback(new RequestGroupDefaultRestrictionsDataFormIQ(groupchat), packet -> {
                             if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
                                     && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
-                                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                for (OnGroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                                     listener.onDataFormReceived(groupchat, ((GroupDefaultRestrictionsDataFormResultIQ) packet).getDataForm());
                                 }
                         }, exception -> {
-                            for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                            for (OnGroupDefaultRestrictionsListener listener :
+                                    Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                                 listener.onError(groupchat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                for (OnGroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                     listener.onError(groupchat);
                 }
             }
@@ -368,18 +371,18 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .sendIqWithResponseCallback(new RequestToChangeGroupDefaultRestrictionsIQ(groupChat, dataForm), packet -> {
                             if (packet instanceof GroupDefaultRestrictionsDataFormResultIQ
                                     && ((GroupDefaultRestrictionsDataFormResultIQ) packet).getType() == IQ.Type.result)
-                                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                                for (OnGroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                                     listener.onSuccessful(groupChat);
                                 }
                         }, exception -> {
-                            for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                            for (OnGroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                                 listener.onError(groupChat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(GroupDefaultRestrictionsListener.class)) {
+                for (OnGroupDefaultRestrictionsListener listener : Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener.class)) {
                     listener.onError(groupChat);
                 }
             }
@@ -393,18 +396,19 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .sendIqWithResponseCallback(new GroupSettingsRequestFormQueryIQ(groupchat), packet -> {
                             if (packet instanceof GroupSettingsDataFormResultIQ
                                     && ((GroupSettingsDataFormResultIQ) packet).getType() == IQ.Type.result)
-                                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                                for (OnGroupSettingsResultsListener listener : Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                                     listener.onDataFormReceived(groupchat, ((GroupSettingsDataFormResultIQ) packet).getDataFrom());
                                 }
                         }, exception -> {
-                            for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                            for (OnGroupSettingsResultsListener listener :
+                                    Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                                 listener.onErrorAtDataFormRequesting(groupchat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                for (OnGroupSettingsResultsListener listener : Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                     listener.onErrorAtDataFormRequesting(groupchat);
                 }
             }
@@ -417,18 +421,18 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                 AccountManager.getInstance().getAccount(groupchat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new SetGroupSettingsRequestIQ(groupchat, dataForm), packet -> {
                             if (packet instanceof IQ && ((IQ) packet).getType() == IQ.Type.result)
-                                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                                for (OnGroupSettingsResultsListener listener : Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                                     listener.onGroupSettingsSuccessfullyChanged(groupchat);
                                 }
                         }, exception -> {
-                            for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                            for (OnGroupSettingsResultsListener listener : Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                                 listener.onErrorAtSettingsSetting(groupchat);
                             }
                         });
 
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-                for (GroupSettingsResultsListener listener : Application.getInstance().getUIListeners(GroupSettingsResultsListener.class)) {
+                for (OnGroupSettingsResultsListener listener : Application.getInstance().getUIListeners(OnGroupSettingsResultsListener.class)) {
                     listener.onErrorAtSettingsSetting(groupchat);
                 }
             }

@@ -17,9 +17,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -91,7 +91,8 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
 
                 // remove groupchat from roster
                 RosterManager.getInstance().removeContact(account, groupchatJid);
-                for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                for (OnChatUpdatedListener listener :
+                        Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
                     listener.onChatUpdated();
                 }
 

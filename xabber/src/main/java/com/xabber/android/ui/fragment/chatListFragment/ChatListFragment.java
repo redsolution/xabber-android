@@ -42,23 +42,23 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.connection.listeners.OnConnectionStateChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.OnChatUpdatedListener;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnChatStateListener;
-import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnChatStateListener;
+import com.xabber.android.ui.OnChatUpdatedListener;
+import com.xabber.android.ui.OnConnectionStateChangedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnStatusChangeListener;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
@@ -459,7 +459,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatStateChanged(Collection<RosterContact> entities) {
+    public void onChatStateChanged(@NotNull Collection<? extends RosterContact> entities) {
         Application.getInstance().runOnUiThread(this::update);
     }
 

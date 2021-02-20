@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsListener
-import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.groups.GroupsManager
+import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.ui.OnGroupDefaultRestrictionsListener
 import com.xabber.android.ui.activity.GroupDefaultRestrictionsActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
@@ -20,7 +20,7 @@ import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
 class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragment(),
-        RightsFormListAdapter.Listener, GroupDefaultRestrictionsListener {
+        RightsFormListAdapter.Listener, OnGroupDefaultRestrictionsListener {
 
     var recyclerView: RecyclerView? = null
     var adapter: RightsFormListAdapter? = null
@@ -46,12 +46,12 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
     }
 
     override fun onResume() {
-        Application.getInstance().addUIListener(GroupDefaultRestrictionsListener::class.java, this)
+        Application.getInstance().addUIListener(OnGroupDefaultRestrictionsListener::class.java, this)
         super.onResume()
     }
 
     override fun onPause() {
-        Application.getInstance().removeUIListener(GroupDefaultRestrictionsListener::class.java, this)
+        Application.getInstance().removeUIListener(OnGroupDefaultRestrictionsListener::class.java, this)
         super.onPause()
     }
 
@@ -74,13 +74,15 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
     }
 
     override fun onSuccessful(groupchat: GroupChat) {
-        activity?.finish()
+        Application.getInstance().runOnUiThread { activity?.finish() }
     }
 
     override fun onError(groupchat: GroupChat) {
-        Toast.makeText(context, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
-        if (activity != null && activity is GroupDefaultRestrictionsActivity)
-            (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(context, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
+            if (activity != null && activity is GroupDefaultRestrictionsActivity)
+                (activity as GroupDefaultRestrictionsActivity).showProgressBar(false)
+        }
     }
 
     override fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm) {

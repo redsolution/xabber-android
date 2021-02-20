@@ -58,6 +58,8 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.BaseUIListener;
+import com.xabber.android.ui.OnErrorListener;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -505,12 +507,9 @@ public class TestApplication extends android.app.Application {
      * Notify about error.
      */
     public void onError(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
-                    onErrorListener.onError(resourceId);
-                }
+        runOnUiThread(() -> {
+            for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
+                onErrorListener.onError(resourceId);
             }
         });
     }

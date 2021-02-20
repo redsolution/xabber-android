@@ -32,8 +32,8 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUtils;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.OnNewIncomingMessageListener;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
+import com.xabber.android.ui.OnNewIncomingMessageListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 

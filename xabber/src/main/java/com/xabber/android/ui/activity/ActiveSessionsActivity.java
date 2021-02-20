@@ -21,10 +21,10 @@ import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.xtoken.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.data.extension.xtoken.SessionVO;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
@@ -161,7 +161,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
     @Override
     public void onXTokenSessionsUpdated() {
-        if (XTokenEnabled) refreshData();
+        Application.getInstance().runOnUiThread(() -> {if (XTokenEnabled) refreshData();});
     }
 
     private void getSessionsData() {

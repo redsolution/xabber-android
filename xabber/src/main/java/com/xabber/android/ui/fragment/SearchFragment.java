@@ -20,7 +20,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.realmobjects.RecentSearchRealmObject;
 import com.xabber.android.data.database.repositories.RecentSearchRealmObjectRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -28,12 +27,13 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.adapter.SearchContactsListItemAdapter;
@@ -88,7 +88,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
         searchListRecyclerView = view.findViewById(R.id.search_list);
         searchListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false));
-        searchChatListAdapter = new ChatListAdapter(new ArrayList<AbstractChat>(), this, false);
+        searchChatListAdapter = new ChatListAdapter(new ArrayList<>(), this, false);
         searchListRecyclerView.setAdapter(searchChatListAdapter);
 
         initContactsList(view);
@@ -179,13 +179,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        update();
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     private void initContactsList(View view) {

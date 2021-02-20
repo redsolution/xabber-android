@@ -46,27 +46,27 @@ import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
-import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
-import com.xabber.android.data.roster.OnChatStateListener;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnBlockedListChangedListener;
+import com.xabber.android.ui.OnChatStateListener;
+import com.xabber.android.ui.OnContactChangedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
@@ -603,38 +603,38 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onNewMessage() {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
     public void onMessageUpdated() {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onChatStateChanged(@NotNull Collection<? extends RosterContact> entities) {
+        for (RosterContact contact : entities) {
+            if (contact.getContactJid().getBareJid().equals(user.getBareJid())) {
+                Application.getInstance().runOnUiThread(this::updateToolbar);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
-                updateBackpressure.refreshRequest();
+                Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
                 break;
             }
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
         if (accounts.contains(account)) {
-            updateBackpressure.refreshRequest();
-        }
-    }
-
-    @Override
-    public void onChatStateChanged(Collection<RosterContact> entities) {
-        for (RosterContact contact : entities) {
-            if (contact.getContactJid().getBareJid().equals(user.getBareJid())) {
-                updateToolbar();
-                return;
-            }
+            Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
         }
     }
 
@@ -736,11 +736,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
-        final Collection<ContactJid> blockedContacts = BlockingManager.getInstance()
-                .getCachedBlockedContacts(account);
-        if (blockedContacts.contains(user)) {
-            close();
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            final Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+            if (blockedContacts.contains(user)) {
+                close();
+            }
+        });
     }
 
     @Override

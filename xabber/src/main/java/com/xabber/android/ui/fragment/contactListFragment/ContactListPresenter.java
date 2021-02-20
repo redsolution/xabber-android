@@ -8,19 +8,19 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
-import com.xabber.android.data.message.OnNewMessageListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
@@ -34,6 +34,9 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContact
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.helper.UpdateBackpressure;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,23 +137,23 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        updateBackpressure.refreshRequest();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        updateBackpressure.refreshRequest();
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
     public void onNewMessage() {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override
     public void onMessageUpdated() {
-        updateBackpressure.refreshRequest();
+        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 
     @Override

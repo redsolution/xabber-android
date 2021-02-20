@@ -10,6 +10,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
+import com.xabber.android.ui.OnNewMessageListener;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +63,8 @@ public class BackpressureMessageSaver {
                         realm.executeTransactionAsync(realm1 -> {
                             realm1.copyToRealm(messageRealmObjects);
                         }, () ->  {
-                            for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+                            for (OnNewMessageListener listener :
+                                    Application.getInstance().getUIListeners(OnNewMessageListener.class)){
                                 listener.onNewMessage();
                             }
                             SyncManager.getInstance().onMessageSaved();

@@ -34,7 +34,6 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -43,9 +42,12 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -405,7 +407,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
         handler.post(this);
     }
 

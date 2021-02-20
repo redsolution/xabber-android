@@ -4,16 +4,17 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
@@ -133,9 +134,12 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        Preference mamPreference = findPreference(getString(R.string.account_mam_default_behavior_key));
-        setUpMamPreference(mamPreference, null);
-
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            Preference mamPreference = findPreference(getString(R.string.account_mam_default_behavior_key));
+            setUpMamPreference(mamPreference, null);
+        });
     }
+
+
 }

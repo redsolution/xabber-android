@@ -20,11 +20,11 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -389,11 +389,12 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(getAccount(), getContactJid())) {
-                updateContact();
+                Application.getInstance().runOnUiThread(this::updateContact);
             }
         }
     }
+
 }

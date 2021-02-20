@@ -39,13 +39,11 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.OnMessageUpdatedListener;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -54,6 +52,8 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
@@ -69,6 +69,8 @@ import com.xabber.android.ui.fragment.contactListFragment.ContactListFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
 import com.xabber.xmpp.uri.XMPPUri;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -494,14 +496,16 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        getBottomBarFragment().setColoredButton(currentActiveFragmentType);
-        setStatusBarColor();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            getBottomBarFragment().setColoredButton(currentActiveFragmentType);
+            setStatusBarColor();
+        });
     }
 
     @Override
     public void onMessageUpdated() {
-        updateUnreadCount();
+        Application.getInstance().runOnUiThread(this::updateUnreadCount);
     }
 
     private void updateUnreadCount() {

@@ -17,20 +17,22 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.groups.GroupBlockListFragment;
-import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
 import com.xabber.android.ui.fragment.groups.GroupInvitesFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.GroupchatSelectorListItemActions;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class GroupSettingsActivity extends ManagedActivity implements
         Toolbar.OnMenuItemClickListener, GroupchatSelectorListItemActions,
-        OnGroupSelectorListToolbarActionResult {
+        OnGroupSelectorListToolbarActionResultListener {
 
     private static final String GROUPCHAT_SETTINGS_TYPE = "GROUPCHAT_SETTINGS_TYPE";
     private AccountJid account;
@@ -127,14 +129,14 @@ public class GroupSettingsActivity extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResult.class, this);
+        Application.getInstance().addUIListener(OnGroupSelectorListToolbarActionResultListener.class, this);
         updateToolbar();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResult.class, this);
+        Application.getInstance().removeUIListener(OnGroupSelectorListToolbarActionResultListener.class, this);
     }
 
     @Override
@@ -240,21 +242,26 @@ public class GroupSettingsActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onActionSuccess(AccountJid account, ContactJid groupchatJid, List<String> successfulJids) {
+    public void onActionSuccess(@NotNull AccountJid account, @NotNull ContactJid groupchatJid,
+                                @NotNull List<String> successfulJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
-        selectionCounter -= successfulJids.size();
-        showToolbarProgress(false);
+        Application.getInstance().runOnUiThread(() -> {
+            selectionCounter -= successfulJids.size();
+            showToolbarProgress(false);
+        });
     }
 
     @Override
-    public void onPartialSuccess(AccountJid account, ContactJid groupchatJid, List<String> successfulJids, List<String> failedJids) {
-        onActionSuccess(account, groupchatJid, successfulJids);
+    public void onPartialSuccess(@NotNull AccountJid account, @NotNull ContactJid groupchatJid,
+                                 @NotNull List<String> successfulJids, @NotNull List<String> failedJids) {
+        Application.getInstance().runOnUiThread(() -> onActionSuccess(account, groupchatJid, successfulJids));
     }
 
     @Override
-    public void onActionFailure(AccountJid account, ContactJid groupchatJid, List<String> failedJids) {
+    public void onActionFailure(@NotNull AccountJid account, @NotNull ContactJid groupchatJid,
+                                @NotNull List<String> failedJids) {
         if (checkIfWrongEntity(account, groupchatJid)) return;
-        showToolbarProgress(false);
+        Application.getInstance().runOnUiThread(() -> showToolbarProgress(false));
     }
 
     private boolean checkIfWrongEntity(AccountJid account, ContactJid groupchatJid) {

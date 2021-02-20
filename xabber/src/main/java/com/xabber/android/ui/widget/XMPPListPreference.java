@@ -16,20 +16,19 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.OnAddAccountClickListener;
+import com.xabber.android.ui.OnReorderClickListener;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by valery.miller on 29.08.17.
  */
 
-public class XMPPListPreference extends Preference implements OnAccountChangedListener, View.OnClickListener {
+public class XMPPListPreference extends Preference implements View.OnClickListener {
 
     private AccountListPreferenceAdapter accountListAdapter;
     private RelativeLayout rlReorder;
@@ -80,11 +79,6 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
 
         if (accountItems.size() > 1) rlReorder.setVisibility(View.VISIBLE);
         else rlReorder.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
     }
 
     @Override

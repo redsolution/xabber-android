@@ -26,12 +26,14 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.SingleActivity;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -77,8 +79,8 @@ public class LoadActivity extends SingleActivity implements OnAccountChangedList
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override

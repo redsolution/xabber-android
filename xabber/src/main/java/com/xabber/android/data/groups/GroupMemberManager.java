@@ -14,7 +14,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
-import com.xabber.android.data.extension.groupchat.OnGroupchatRequestListener;
 import com.xabber.android.data.extension.groupchat.block.BlockGroupMemberIQ;
 import com.xabber.android.data.extension.groupchat.block.KickGroupMemberIQ;
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistItemElement;
@@ -23,11 +22,9 @@ import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBloc
 import com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistUnblockIQ;
 import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.extension.groupchat.create.CreatePtpGroupIQ;
-import com.xabber.android.data.extension.groupchat.OnGroupSelectorListToolbarActionResult;
 import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersQueryIQ;
 import com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultIQ;
-import com.xabber.android.data.extension.groupchat.rights.GroupMemberRightsListener;
 import com.xabber.android.data.extension.groupchat.rights.GroupRequestMemberRightsChangeIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ;
 import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ;
@@ -36,6 +33,9 @@ import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.OnGroupMemberRightsListener;
+import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
+import com.xabber.android.ui.OnGroupchatRequestListener;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
@@ -296,8 +296,8 @@ public class GroupMemberManager implements OnLoadListener {
                                 success = false;
                             }
                             Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
+                                for (OnGroupSelectorListToolbarActionResultListener listener :
+                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener.class)) {
                                     if (success) {
                                         listener.onActionSuccess(account, groupchatJid, Collections.singletonList(blockedElement.getBlockedItem()));
                                     } else {
@@ -307,8 +307,8 @@ public class GroupMemberManager implements OnLoadListener {
                             });
                         }
                     }, exception -> Application.getInstance().runOnUiThread(() -> {
-                        for (OnGroupSelectorListToolbarActionResult listener :
-                                Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
+                        for (OnGroupSelectorListToolbarActionResultListener listener :
+                                Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener.class)) {
                             listener.onActionFailure(account, groupchatJid, Collections.singletonList(blockedElement.getBlockedItem()));
                         }
                     }));
@@ -350,8 +350,8 @@ public class GroupMemberManager implements OnLoadListener {
                             unfinishedRequestCount.getAndDecrement();
                             if (unfinishedRequestCount.get() == 0) {
                                 Application.getInstance().runOnUiThread(() -> {
-                                    for (OnGroupSelectorListToolbarActionResult listener :
-                                            Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
+                                    for (OnGroupSelectorListToolbarActionResultListener listener :
+                                            Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener.class)) {
                                         if (failedUnblockRequests.size() == 0) {
                                             listener.onActionSuccess(account, groupchatJid, successfulUnblockRequests);
                                         } else if (successfulUnblockRequests.size() > 0) {
@@ -368,8 +368,8 @@ public class GroupMemberManager implements OnLoadListener {
                         unfinishedRequestCount.getAndDecrement();
                         if (unfinishedRequestCount.get() == 0) {
                             Application.getInstance().runOnUiThread(() -> {
-                                for (OnGroupSelectorListToolbarActionResult listener :
-                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResult.class)) {
+                                for (OnGroupSelectorListToolbarActionResultListener listener :
+                                        Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener.class)) {
                                     if (successfulUnblockRequests.size() > 0) {
                                         listener.onPartialSuccess(account, groupchatJid, successfulUnblockRequests, failedUnblockRequests);
                                     } else {
@@ -431,7 +431,8 @@ public class GroupMemberManager implements OnLoadListener {
                             if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result)){
                                 groupMember.setBadge(badge);
                                 GroupMemberRepository.saveOrUpdateGroupMember(groupMember);
-                                for (OnGroupchatRequestListener listener : Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
+                                for (OnGroupchatRequestListener listener :
+                                        Application.getInstance().getUIListeners(OnGroupchatRequestListener.class))
                                     listener.onGroupchatMemberUpdated(groupChat.getAccount(), groupChat.getContactJid(), groupMember.getId());
                             }
                         }, exception -> {
@@ -588,15 +589,17 @@ public class GroupMemberManager implements OnLoadListener {
                 AccountManager.getInstance().getAccount(groupChat.getAccount()).getConnection()
                         .sendIqWithResponseCallback(new GroupRequestMemberRightsChangeIQ(
                                 groupChat, dataForm), packet -> {
-                            for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                            for (OnGroupMemberRightsListener listener :
+                                    Application.getInstance().getUIListeners(OnGroupMemberRightsListener.class))
                                 listener.onSuccessfullyChanges(groupChat);
 
                         }, exception -> {
-                            for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                            for (OnGroupMemberRightsListener listener :
+                                    Application.getInstance().getUIListeners(OnGroupMemberRightsListener.class))
                                 listener.onError(groupChat);
                         });
             } catch (Exception e) {
-                for (GroupMemberRightsListener listener : Application.getInstance().getUIListeners(GroupMemberRightsListener.class))
+                for (OnGroupMemberRightsListener listener : Application.getInstance().getUIListeners(OnGroupMemberRightsListener.class))
                     listener.onError(groupChat);
             }
         });
@@ -638,8 +641,8 @@ public class GroupMemberManager implements OnLoadListener {
         @Override
         public void processStanza(Stanza packet) {
             if (packet instanceof GroupchatMemberRightsReplyIQ){
-                for (GroupMemberRightsListener listener :
-                        Application.getInstance().getUIListeners(GroupMemberRightsListener.class)) {
+                for (OnGroupMemberRightsListener listener :
+                        Application.getInstance().getUIListeners(OnGroupMemberRightsListener.class)) {
                     listener.onGroupchatMemberRightsFormReceived(((GroupChat)ChatManager.getInstance().getChat(account, groupchatJid)), (GroupchatMemberRightsReplyIQ) packet);
                 }
             }
