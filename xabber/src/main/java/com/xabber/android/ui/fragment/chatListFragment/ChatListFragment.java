@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -459,7 +460,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
-        Application.getInstance().runOnUiThread(() -> update());
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     /**
@@ -556,26 +557,33 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         List<AbstractChat> newList = new ArrayList<>();
 
+        if (Looper.myLooper() != Looper.getMainLooper()) LogManager.e("PROBLEMKI", "Incorrect thread");
+
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")) {
-            if (currentChatsState == ChatListState.recent)
-                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if ((abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                            && !abstractChat.isArchived())
-                        newList.add(abstractChat);
-            if (currentChatsState == ChatListState.unread)
-                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if ((abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                            && abstractChat.getUnreadMessageCount() != 0)
-                        newList.add(abstractChat);
-            if (currentChatsState == ChatListState.archived)
-                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                    if ((abstractChat.getLastMessage() != null
-                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                            && abstractChat.isArchived())
-                        newList.add(abstractChat);
+            Collection<AbstractChat> allChats = ChatManager.getInstance().getChatsOfEnabledAccounts();
+            switch (currentChatsState){
+                case recent:
+                    for (AbstractChat abstractChat : allChats)
+                        if ((abstractChat.getLastMessage() != null
+                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                                && !abstractChat.isArchived())
+                            newList.add(abstractChat);
+                    break;
+                case unread:
+                    for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                        if ((abstractChat.getLastMessage() != null
+                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                                && abstractChat.getUnreadMessageCount() != 0)
+                            newList.add(abstractChat);
+                    break;
+                case archived:
+                    for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                        if ((abstractChat.getLastMessage() != null
+                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                                && abstractChat.isArchived())
+                            newList.add(abstractChat);
+            }
 
             Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
