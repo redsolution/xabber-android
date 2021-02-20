@@ -47,9 +47,9 @@ public class MessageNotificationManager implements OnLoadListener {
     private final NotificationManager notificationManager;
     private final MessageNotificationCreator creator;
     private static MessageNotificationManager instance;
-    private List<Chat> chats = new ArrayList<>();
+    private final List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
-    private HashMap<Integer, Action> delayedActions = new HashMap<>();
+    private final HashMap<Integer, Action> delayedActions = new HashMap<>();
     private long lastNotificationTime = 0;
 
     private boolean isShowBanners;
@@ -88,7 +88,6 @@ public class MessageNotificationManager implements OnLoadListener {
         this.lastNotificationTime = System.currentTimeMillis();
     }
 
-    public boolean isShowBanners() { return isShowBanners; }
     public void setShowBanners(boolean showBanners) { isShowBanners = showBanners; }
 
     /** LISTENER */
@@ -127,7 +126,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     /** PUBLIC METHODS */
 
-    public void onNewMessage(MessageRealmObject messageRealmObject) {
+    synchronized public void onNewMessage(MessageRealmObject messageRealmObject) {
         String chatTitle = RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
         Chat chat = getChat(messageRealmObject.getAccount(), messageRealmObject.getUser());
         if (chat == null) {
@@ -145,7 +144,7 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chat != null) chat.startRemoveTimer();
     }
 
-    public void removeChat(final AccountJid account, final ContactJid user) {
+    synchronized public void removeChat(final AccountJid account, final ContactJid user) {
         Chat chat = getChat(account, user);
         if (chat != null) {
             chats.remove(chat);
@@ -154,7 +153,7 @@ public class MessageNotificationManager implements OnLoadListener {
         }
     }
 
-    public void removeChat(int notificationId) {
+    synchronized public void removeChat(int notificationId) {
         Chat chat = getChat(notificationId);
         if (chat != null) {
             chats.remove(chat);
@@ -165,7 +164,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void removeNotificationsForAccount(final AccountJid account) {
         List<Chat> chatsToRemove = new ArrayList<>();
-        Iterator it = chats.iterator();
+        Iterator<Chat> it = chats.iterator();
         while (it.hasNext()) {
             Chat chat = (Chat) it.next();
             if (chat.getAccountJid().equals(account)) {
@@ -179,7 +178,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void removeAllMessageNotifications() {
         List<Chat> chatsToRemove = new ArrayList<>();
-        Iterator it = chats.iterator();
+        Iterator<Chat> it = chats.iterator();
         while (it.hasNext()) {
             Chat chat = (Chat) it.next();
             chatsToRemove.add(chat);
@@ -332,7 +331,7 @@ public class MessageNotificationManager implements OnLoadListener {
     private void callUiUpdate() {
         for (OnContactChangedListener onContactChangedListener : Application
                 .getInstance().getUIListeners(OnContactChangedListener.class)) {
-            onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
+            onContactChangedListener.onContactsChanged(new ArrayList<>());
         }
     }
 
@@ -364,7 +363,6 @@ public class MessageNotificationManager implements OnLoadListener {
         return text;
     }
 
-    /** REALM */
 
     /** Called not from Main thread */
     private List<Chat> loadNotifChatsFromRealm() {
@@ -486,13 +484,13 @@ public class MessageNotificationManager implements OnLoadListener {
     /** INTERNAL CLASSES */
 
     public class Chat {
-        private String id;
-        private AccountJid accountJid;
-        private ContactJid contactJid;
-        private int notificationId;
-        private CharSequence chatTitle;
-        private boolean isGroupChat;
-        private List<Message> messages = new ArrayList<>();
+        private final String id;
+        private final AccountJid accountJid;
+        private final ContactJid contactJid;
+        private final int notificationId;
+        private final CharSequence chatTitle;
+        private final boolean isGroupChat;
+        private final List<Message> messages = new ArrayList<>();
         private Handler removeTimer;
 
         public Chat(AccountJid accountJid, ContactJid contactJid, int notificationId,
@@ -519,7 +517,7 @@ public class MessageNotificationManager implements OnLoadListener {
             return id;
         }
 
-        public void addMessage(Message message) {
+        synchronized public void addMessage(Message message) {
             messages.add(message);
         }
 
@@ -539,7 +537,7 @@ public class MessageNotificationManager implements OnLoadListener {
             return chatTitle;
         }
 
-        public List<Message> getMessages() {
+        synchronized public List<Message> getMessages() {
             return messages;
         }
 
@@ -547,36 +545,23 @@ public class MessageNotificationManager implements OnLoadListener {
             return isGroupChat;
         }
 
-        public long getLastMessageTimestamp() {
-            return messages.get(messages.size() - 1).getTimestamp();
+        synchronized public long getLastMessageTimestamp() {
+            return getLastMessage().getTimestamp();
         }
 
-        public Message getLastMessage() {
-            return messages.get(messages.size() - 1);
-        }
+        synchronized public Message getLastMessage() { return messages.get(messages.size() - 1); }
 
         public boolean equals(AccountJid account, ContactJid user) {
             return this.accountJid.equals(account) && this.contactJid.equals(user);
         }
 
         public void startRemoveTimer() {
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    stopRemoveTimer();
-                    removeTimer = new Handler();
-                    removeTimer.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Application.getInstance().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    removeChat(notificationId);
-                                }
-                            });
-                        }
-                    }, 500);
-                }
+            Application.getInstance().runOnUiThread(() -> {
+                stopRemoveTimer();
+                removeTimer = new Handler();
+                removeTimer.postDelayed(() ->
+                        Application.getInstance().runOnUiThread(() ->
+                                removeChat(notificationId)), 500);
             });
         }
 
@@ -587,10 +572,10 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     public class Message {
-        private String id;
-        private CharSequence author;
+        private final String id;
+        private final CharSequence author;
         private CharSequence messageText;
-        private long timestamp;
+        private final long timestamp;
 
         public Message(CharSequence author, CharSequence messageText, long timestamp) {
             this.author = author;
@@ -629,4 +614,5 @@ public class MessageNotificationManager implements OnLoadListener {
             return id;
         }
     }
+
 }
