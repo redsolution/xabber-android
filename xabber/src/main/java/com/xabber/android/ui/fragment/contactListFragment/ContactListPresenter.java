@@ -299,10 +299,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             }
         //}
 
-        if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts);
-
-        view.updateItems(items);
-        view.updateAccountsList();
+        if (view != null) {
+            view.onContactListChanged(commonState, hasContacts, hasVisibleContacts);
+            view.updateItems(items);
+            view.updateAccountsList();
+        }
     }
 
     private void createContactListWithAccountsAndGroups(List<IFlexible> items, AccountConfiguration rosterAccount,
