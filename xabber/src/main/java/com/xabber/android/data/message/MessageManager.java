@@ -539,6 +539,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             String markupText = bodies.second;
 
             MessageRealmObject newMessageRealmObject = finalChat.createNewMessageItem(text);
+            if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)){
+                String timestamp =
+                        ((TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)).getStamp();
+                newMessageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(timestamp).getTime());
+            }
             newMessageRealmObject.setOriginId(UniqueStanzaHelper.getOriginId(message));
             if (DeliveryManager.getInstance().isSupported(account))
                 newMessageRealmObject.setAcknowledged(true);
