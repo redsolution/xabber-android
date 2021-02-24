@@ -90,4 +90,10 @@ object StatusBadgeSetupHelper {
         imageView.setImageLevel(statusMode.statusLevel + offset)
     }
 
+    fun setupDefaultGroupBadge(imageView: ImageView){
+        imageView.setImageDrawable(ResourcesCompat.getDrawable(imageView.context.resources,
+        R.drawable.ic_status_combined, null))
+        imageView.setImageLevel(25)
+    }
+
 }
