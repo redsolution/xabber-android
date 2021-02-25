@@ -11,10 +11,10 @@
     <string name="account_server_name">Servidor</string>
     <string name="account_xmpp_register_warning">Você deve <a href="http://www.google.com/#q=register an XMPP account">criar uma conta XMPP</a> antes de adicioná-la ao Xabber!</string>
     <string name="account_user_name">Nome de usuário</string>
-    <string name="EMPTY_SERVER_NAME">O nome do servidor não foi informado</string>
-    <string name="EMPTY_USER_NAME">O usuário não foi informado</string>
-    <string name="CONFIRM_PASSWORD">As senhas não conferem</string>
-    <string name="ACCOUNT_EXIST">Essa conta já existe</string>
+    <string name="settings_account__alert_server_not_specified">O nome do servidor não foi informado</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">O usuário não foi informado</string>
+    <string name="settings_account__alert_passwords_do_not_match">As senhas não conferem</string>
+    <string name="settings_account__alert_account_exists">Essa conta já existe</string>
     <string name="account_compression_summary">Seleção para ativar a compactação de dados</string>
     <string name="account_custom">Host personalizado</string>
     <string name="account_custom_summary">Usar configurações de host personalizado em vez de registro SRV</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">Requerer criptografia TLS quando conectar ao servidor</string>
     <string name="account_enable_tls">Habilitar o protocolo de criptografia TLS</string>
     <string name="account_use_tor">Usar rede TOR de anonimato (requer proxy Orbot)</string>
-    <string name="INCORRECT_USER_NAME">Nome de usuário incorreto. Confira o texto de ajuda abaixo para obter detalhes.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Nome de usuário incorreto. Confira o texto de ajuda abaixo para obter detalhes.</string>
     <string name="orbot_required_message">Para usar o TOR você deve possuir o Orbot instalado e ativado para tráfego de proxy nele. Você gostaria de instalá-lo pelo Google Play?</string>
     <string name="orbot_required_title">Instalar Orbot?</string>
     <string name="install_orbot">Instalar Orbot ?</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Falhou ao registrar conta no servidor.</string>
-    <string name="SERVER_INFO_ERROR">Não foi possível obter a informação do servidor.</string>
+    <string name="account_add__alert_registration_failed">Falhou ao registrar conta no servidor.</string>
+    <string name="account_add__alert_no_server_info">Não foi possível obter a informação do servidor.</string>
     <string name="account_color">Cor da conta</string>
     <string name="account_color_name_green">Verde</string>
     <string name="account_color_name_orange">Laranja</string>

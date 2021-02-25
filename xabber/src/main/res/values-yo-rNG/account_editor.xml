@@ -10,7 +10,7 @@
     <string name="account_server_name">A pé ranse</string>
     <string name="account_xmpp_register_warning">O gbodo ni ohun ìgbà ní wọlé lórí XMPP kò tó fi sì Xabber </string>
     <string name="account_user_name">Oruko ti o fẹ je </string>
-    <string name="EMPTY_SERVER_NAME">Oruko ifiranse kò ṣe tokasi</string>
-    <string name="EMPTY_USER_NAME">Oruko ti o njẹ kò ṣe ń tokasi </string>
-    <string name="CONFIRM_PASSWORD">Ohun ìgbà ní wọlé kò dọ́gba </string>
+    <string name="settings_account__alert_server_not_specified">Oruko ifiranse kò ṣe tokasi</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Oruko ti o njẹ kò ṣe ń tokasi </string>
+    <string name="settings_account__alert_passwords_do_not_match">Ohun ìgbà ní wọlé kò dọ́gba </string>
 </resources>

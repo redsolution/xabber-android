@@ -11,10 +11,10 @@
     <string name="account_server_name">Εξυπηρετητής</string>
     <string name="account_xmpp_register_warning">Πρέπει να<a href="http://www.google.com/#q=register an XMPP account">καταχωρήσετε έναν λογαριασμό XMPP</a> πριν τον προσθέσετε στο Xabber!</string>
     <string name="account_user_name">Όνομα χρήστη</string>
-    <string name="EMPTY_SERVER_NAME">Το όνομα του εξυπηρετητή δεν έχει καθοριστεί</string>
-    <string name="EMPTY_USER_NAME">Το όνομα χρήστη δεν έχει καθοριστεί</string>
-    <string name="CONFIRM_PASSWORD">Οι κωδικοί πρόσβασης δεν ταιριάζουν</string>
-    <string name="ACCOUNT_EXIST">Αυτός ο λογαριασμός υπάρχει ήδη</string>
+    <string name="settings_account__alert_server_not_specified">Το όνομα του εξυπηρετητή δεν έχει καθοριστεί</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Το όνομα χρήστη δεν έχει καθοριστεί</string>
+    <string name="settings_account__alert_passwords_do_not_match">Οι κωδικοί πρόσβασης δεν ταιριάζουν</string>
+    <string name="settings_account__alert_account_exists">Αυτός ο λογαριασμός υπάρχει ήδη</string>
     <string name="account_compression_summary">Μαρκάρετε για να ενεργοποιήσετε τη συμπίεση δεδομένων</string>
     <string name="account_custom">Προσαρμοσμένος διακομιστής</string>
     <string name="account_custom_summary">Χρησιμοποιήστε τις προσαρμοσμένες ρυθμίσεις διακομιστή αντί για της εγγραφής SRV</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">Απαίτησε κρυπτογράφηση TLS όταν γίνεται η σύνδεση στον διακομιστή</string>
     <string name="account_enable_tls">Ενεργοποίηση πρωτοκόλλου κρυπτογράφησης TLS</string>
     <string name="account_use_tor">Χρήση δικτύου ανωνυμίας TOR (απαιτεί διακομιστής μεσολάβησης Orbot)</string>
-    <string name="INCORRECT_USER_NAME">Λανθασμένο όνομα χρήστη. Ελέγξτε το κείμενο βοήθειας παρακάτω για λεπτομέρειες.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Λανθασμένο όνομα χρήστη. Ελέγξτε το κείμενο βοήθειας παρακάτω για λεπτομέρειες.</string>
     <string name="orbot_required_message">Προκειμένου να γίνει επεξεργασία με χρήση TOR πρέπει να έχετε εγκαταστημένο και ενεργοποιημένο το Orbot ώστε να γίνεται κυκλοφορία στον μεσολαβητή μέσω αυτού. Θα θέλατε να το εγκαταστήσετε από το Google Play;</string>
     <string name="orbot_required_title">Εγκατάσταση Orbot;</string>
     <string name="install_orbot">Εγκατέστησε το Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Αποτυχία κατοχύρωσης λογαριασμού στον εξυπηρετητή.</string>
-    <string name="SERVER_INFO_ERROR">Αδυναμία λήψης πληροφοριών διακομιστή.</string>
+    <string name="account_add__alert_registration_failed">Αποτυχία κατοχύρωσης λογαριασμού στον εξυπηρετητή.</string>
+    <string name="account_add__alert_no_server_info">Αδυναμία λήψης πληροφοριών διακομιστή.</string>
     <string name="account_color">Χρώμα λογαριασμού</string>
     <string name="account_color_name_green">Πράσινο</string>
     <string name="account_color_name_orange">Πορτοκαλί</string>

@@ -10,10 +10,10 @@
     <string name="account_server_name">Server</string>
     <string name="account_xmpp_register_warning">You must&#160;<a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
     <string name="account_user_name">Username</string>
-    <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
-    <string name="EMPTY_USER_NAME">Username is not specified</string>
-    <string name="CONFIRM_PASSWORD">Passwords do not match</string>
-    <string name="ACCOUNT_EXIST">This account already exist</string>
+    <string name="settings_account__alert_server_not_specified">Server name is not specified</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Username is not specified</string>
+    <string name="settings_account__alert_passwords_do_not_match">Passwords do not match</string>
+    <string name="settings_account__alert_account_exists">This account already exist</string>
     <string name="account_compression_summary">Check to enable data compression</string>
     <string name="account_custom">Custom host</string>
     <string name="account_custom_summary">Use custom host settings instead of SRV record</string>
@@ -45,15 +45,15 @@
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
-    <string name="SERVER_INFO_ERROR">Could not get server info.</string>
-    <string name="INCORRECT_USER_NAME">Incorrect user name</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_DOMAIN">: invalid domain</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_AT">: multiple \"@\"-symbols present</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT">: \"@\" is present without local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL">: \"%s\" symbol is not accepted in the local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: \"/\" character is not accepted</string>
+    <string name="account_add__alert_registration_failed">Failed to register account on the server.</string>
+    <string name="account_add__alert_no_server_info">Could not get server info.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Incorrect user name</string>
+    <string name="account_add__alert_invalid_domain">: invalid domain</string>
+    <string name="account_add__alert_invalid_symbols_at">: multiple \"@\"-symbols present</string>
+    <string name="account_add__alert_localpart_invalid">: invalid local part</string>
+    <string name="account_add__alert_localpart_absent">: \"@\" is present without local part</string>
+    <string name="account_add__alert_localpart_invalid_symbols">: \"%s\" symbol is not accepted in the local part</string>
+    <string name="account_add__alert_invalid_slash">: \"/\" character is not accepted</string>
 
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>

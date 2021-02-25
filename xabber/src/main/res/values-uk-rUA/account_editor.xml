@@ -11,10 +11,10 @@
     <string name="account_server_name">Сервер</string>
     <string name="account_xmpp_register_warning">Ви повинні<a href="http://www.google.com/#q=register an XMPP account">зареєструвати обліковий запис XMMP</a> перед тим як додати її до Xabber!</string>
     <string name="account_user_name">Ім’я користувача</string>
-    <string name="EMPTY_SERVER_NAME">Не вказано ім’я сервера</string>
-    <string name="EMPTY_USER_NAME">Не вказано ім’я користувача</string>
-    <string name="CONFIRM_PASSWORD">Паролі не збігаються</string>
-    <string name="ACCOUNT_EXIST">Такий акаунт вже існує</string>
+    <string name="settings_account__alert_server_not_specified">Не вказано ім’я сервера</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Не вказано ім’я користувача</string>
+    <string name="settings_account__alert_passwords_do_not_match">Паролі не збігаються</string>
+    <string name="settings_account__alert_account_exists">Такий акаунт вже існує</string>
     <string name="account_compression_summary">Позначте для включення стиснення даних</string>
     <string name="account_custom">Вказати хост вручну</string>
     <string name="account_custom_summary">Вказати хост для підключення вручну, замість використання SRV запису</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">Вимагати TLS шифрування при підключені до серверу</string>
     <string name="account_enable_tls">Увімкнути протокол шифрування TLS</string>
     <string name="account_use_tor">Підключатися через анонімну мережу TOR (необхідний Orbot proxy)</string>
-    <string name="INCORRECT_USER_NAME">Неправильне ім’я користувача. Перегляньте підказку в нижній частині екрану</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Неправильне ім’я користувача. Перегляньте підказку в нижній частині екрану</string>
     <string name="orbot_required_message">Для використання TOR має бути встановлений Orbot і використаний як проксі сервер. Бажаєте встановити його із Google Play?</string>
     <string name="orbot_required_title">Встановити Orbot?</string>
     <string name="install_orbot">Встановити Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Не вдалося зареєструвати обліковий запис на сервері.</string>
-    <string name="SERVER_INFO_ERROR">Не вдалося отримати відомості про сервер.</string>
+    <string name="account_add__alert_registration_failed">Не вдалося зареєструвати обліковий запис на сервері.</string>
+    <string name="account_add__alert_no_server_info">Не вдалося отримати відомості про сервер.</string>
     <string name="account_color">Колір облікового запису</string>
     <string name="account_color_name_green">Зелений</string>
     <string name="account_color_name_orange">Помаранчевий</string>

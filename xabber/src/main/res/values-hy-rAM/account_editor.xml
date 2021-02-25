@@ -5,7 +5,7 @@
     <string name="confirm_password">Գաղտնաբառի հաստատում</string>
     <string name="account_priority">Առաջնություն</string>
     <string name="account_user_name">Օգտանուն</string>
-    <string name="CONFIRM_PASSWORD">Գաղտնաբառերը չեն համընկնում</string>
+    <string name="settings_account__alert_passwords_do_not_match">Գաղտնաբառերը չեն համընկնում</string>
     <string name="account_compression_summary">Ընտրիր՝ թույլատրելու տվյալների խտացումը</string>
     <string name="account_invalid_priority">Առաջնության արժեքը պետք է լինի -128-ից 127 թվերի միջակայքում (լռելյայն` 0)</string>
     <string name="account_color">Հաշվի գույնը</string>

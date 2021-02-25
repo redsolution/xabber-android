@@ -11,9 +11,9 @@
   <string name="account_server_name">Сървър</string>
     <string name="account_xmpp_register_warning"><a href="http://www.google.com/#q=register an XMPP account">Регистрирайте XMPP профил</a> преди да го добавите в Xabber!</string>
     <string name="account_user_name">Потребител</string>
-  <string name="EMPTY_SERVER_NAME">Името на сървъра не е въведено</string>
-  <string name="EMPTY_USER_NAME">Потребителското име не е въведено</string>
-  <string name="CONFIRM_PASSWORD">Паролите не съответстват</string>
+  <string name="settings_account__alert_server_not_specified">Името на сървъра не е въведено</string>
+  <string name="settings_account__alert_xmpp_id_not_specified">Потребителското име не е въведено</string>
+  <string name="settings_account__alert_passwords_do_not_match">Паролите не съответстват</string>
     <string name="account_compression_summary">Избери за активиране на компресиране на данните</string>
   <string name="account_custom">Персонализиран хост</string>
   <string name="account_custom_summary">Използване на персонални сървърни настройки вместо SRV запис</string>
@@ -39,12 +39,12 @@
   <string name="account_tls_mode">TLS/SSL употреба</string>
   <string name="account_tls_require">Изискване на TLS</string>
   <string name="account_tls_require_summary">Използване на TLS шифриране при връзка със сървъра</string>
-    <string name="INCORRECT_USER_NAME">Неправилно потребителско име. Вижте текста отдолу за детайли.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Неправилно потребителско име. Вижте текста отдолу за детайли.</string>
   <string name="orbot_required_message">За да използвате TOR е нужно да имате инсталиран Orbot и той да е активиран, за да се проксира трафик през него. Желаете ли да го инсталирате чрез Google Play?</string>
   <string name="orbot_required_title">Да се инсталира ли Orbot?</string>
   <string name="install_orbot">Инсталиране на Orbot</string>
-  <string name="ACCOUNT_REGISTER_FAILED">Грешка при регистриране на профила на сървъра.</string>
-  <string name="SERVER_INFO_ERROR">Няма информация за сървъра.</string>
+  <string name="account_add__alert_registration_failed">Грешка при регистриране на профила на сървъра.</string>
+  <string name="account_add__alert_no_server_info">Няма информация за сървъра.</string>
   <string name="account_color">Цвят на профила</string>
   <string name="account_color_name_green">Зелен</string>
   <string name="account_color_name_orange">Оранжев</string>

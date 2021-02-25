@@ -10,9 +10,9 @@
     <string name="account_resource">Recurso</string>
     <string name="account_server_name">Servidor</string>
     <string name="account_user_name">Nome de utilizador</string>
-    <string name="EMPTY_SERVER_NAME">Nome do servidor não especificado</string>
-    <string name="EMPTY_USER_NAME">Nome de utilizador não especificado</string>
-    <string name="CONFIRM_PASSWORD">As senhas não coincidem</string>
+    <string name="settings_account__alert_server_not_specified">Nome do servidor não especificado</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Nome de utilizador não especificado</string>
+    <string name="settings_account__alert_passwords_do_not_match">As senhas não coincidem</string>
     <string name="account_compression_summary">Selecione para ativar a compressão dos dados</string>
     <string name="account_custom">Hospedeiro personalizado</string>
     <string name="account_custom_summary">Usar definições de hospedeiro personalizado em vez de registo SRV</string>
@@ -38,11 +38,11 @@
     <string name="account_tls_mode">Usar TLS/SSL</string>
     <string name="account_tls_require">Requer TLS</string>
     <string name="account_tls_require_summary">Requer encriptação TLS quando liga ao servidor</string>
-    <string name="INCORRECT_USER_NAME">Nome de utilizador incorreto. Selecione em baixo o texto de ajuda para detalhes.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Nome de utilizador incorreto. Selecione em baixo o texto de ajuda para detalhes.</string>
     <string name="orbot_required_message">Para poder processar usando o TOR, deve instalar o Orbot e ativar o tráfego de proxy. Gostaria de instalá-lo a partir do Google Play?</string>
     <string name="orbot_required_title">Instalar Orbot?</string>
     <string name="install_orbot">Instalar Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Não foi possível registar a conta no servidor.</string>
+    <string name="account_add__alert_registration_failed">Não foi possível registar a conta no servidor.</string>
     <string name="account_color">Cor da conta</string>
     <string name="account_color_name_green">Verde</string>
     <string name="account_color_name_orange">Cor de laranja</string>

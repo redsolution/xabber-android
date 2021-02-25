@@ -10,9 +10,9 @@
     <string name="account_resource">Рэсурс</string>
     <string name="account_server_name">Сэрвер</string>
     <string name="account_user_name">Імя карыстальніка</string>
-    <string name="EMPTY_SERVER_NAME">Пустая назва сэрвера</string>
-    <string name="EMPTY_USER_NAME">Пустое імя карыстальніка</string>
-    <string name="CONFIRM_PASSWORD">Паролі не супадаюць</string>
+    <string name="settings_account__alert_server_not_specified">Пустая назва сэрвера</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Пустое імя карыстальніка</string>
+    <string name="settings_account__alert_passwords_do_not_match">Паролі не супадаюць</string>
     <string name="account_compression_summary">Пазначце, каб уключыць сцісканьне дадзеных</string>
     <string name="account_custom">Увесь хост уручную</string>
     <string name="account_custom_summary">Выкарыстоўваць наладкі адмысловага хаста замест SRV запісу</string>
@@ -38,11 +38,11 @@
     <string name="account_tls_mode">Выкарыстоўваньне TLS/SSL</string>
     <string name="account_tls_require">Патрабаваць TLS</string>
     <string name="account_tls_require_summary">Патрабаваць TLS шыфраваньне падчас падлучэньня да сервера</string>
-    <string name="INCORRECT_USER_NAME">Няправільнае імя карыстальніка. Паглядзіце на падказку ўнізе экрана</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Няправільнае імя карыстальніка. Паглядзіце на падказку ўнізе экрана</string>
     <string name="orbot_required_message">Для выкарыстаньня TOR неабходна усталяваць праграму Orbot і актываваць ў ім перадачу дадзеных (праксіяваньне). Ці хочаце вы ўсталяваць яго праз Google Play?</string>
     <string name="orbot_required_title">Усталяваць Orbot?</string>
     <string name="install_orbot">Усталяваць Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Не атрымалася зарэгістраваць рахунак на сервары.</string>
+    <string name="account_add__alert_registration_failed">Не атрымалася зарэгістраваць рахунак на сервары.</string>
     <string name="account_color">Колер рахунку</string>
     <string name="account_color_name_green">Заляёны</string>
     <string name="account_color_name_orange">Аранджавы</string>

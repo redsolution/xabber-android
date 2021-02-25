@@ -11,10 +11,10 @@
     <string name="account_server_name">Server</string>
     <string name="account_xmpp_register_warning">Du måste <a href="http://www.google.com/#q=register an XMPP account"> registrera ett XMPP-konto</a> innan du lägger till det i Xabber!</string>
     <string name="account_user_name">Användarnamn</string>
-    <string name="EMPTY_SERVER_NAME">Servernamn har inte angetts</string>
-    <string name="EMPTY_USER_NAME">Användarnamn saknas</string>
-    <string name="CONFIRM_PASSWORD">Lösenorden stämmer inte överens</string>
-    <string name="ACCOUNT_EXIST">Det angivna kontot finns redan</string>
+    <string name="settings_account__alert_server_not_specified">Servernamn har inte angetts</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Användarnamn saknas</string>
+    <string name="settings_account__alert_passwords_do_not_match">Lösenorden stämmer inte överens</string>
+    <string name="settings_account__alert_account_exists">Det angivna kontot finns redan</string>
     <string name="account_compression_summary">Markera för att aktivera datakomprimering</string>
     <string name="account_custom">Anpassad värd</string>
     <string name="account_custom_summary">Använd den anpassade värdens inställningar istället för SRV-post</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">Kräv TLS vid anslutning till server</string>
     <string name="account_enable_tls">Aktivera TLS-kryptering</string>
     <string name="account_use_tor">Använd TOR-nätverket för anonymisering (kräver Orbot proxy)</string>
-    <string name="INCORRECT_USER_NAME">Felaktigt användarnamn. Läs hjälptexten nedan för mer information.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Felaktigt användarnamn. Läs hjälptexten nedan för mer information.</string>
     <string name="orbot_required_message">För att kunna använda TOR måste du ha Orbot installerad och aktiverad. Vill du installera Orbot från Google Play?</string>
     <string name="orbot_required_title">Installera Orbot?</string>
     <string name="install_orbot">Installera Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Det gick inte att registrera kontot på servern.</string>
-    <string name="SERVER_INFO_ERROR">Kunde inte hämta information om servern.</string>
+    <string name="account_add__alert_registration_failed">Det gick inte att registrera kontot på servern.</string>
+    <string name="account_add__alert_no_server_info">Kunde inte hämta information om servern.</string>
     <string name="account_color">Kontofärg</string>
     <string name="account_color_name_green">Grön</string>
     <string name="account_color_name_orange">Orange</string>

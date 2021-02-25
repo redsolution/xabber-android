@@ -11,10 +11,10 @@
     <string name="account_server_name">Server</string>
     <string name="account_xmpp_register_warning">Du musst <a href="http://www.google.de/#q=XMPP+Account+erstellen">ein XMPP Bentzerkonto erstellen</a> um Xabber zu nutzen!</string>
     <string name="account_user_name">Benutzername</string>
-    <string name="EMPTY_SERVER_NAME">Servername nicht angegeben</string>
-    <string name="EMPTY_USER_NAME">Benutzername nicht angegeben</string>
-    <string name="CONFIRM_PASSWORD">Die Passwörter stimmen nicht überein</string>
-    <string name="ACCOUNT_EXIST">Dieses Benutzerkonto existiert bereits</string>
+    <string name="settings_account__alert_server_not_specified">Servername nicht angegeben</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Benutzername nicht angegeben</string>
+    <string name="settings_account__alert_passwords_do_not_match">Die Passwörter stimmen nicht überein</string>
+    <string name="settings_account__alert_account_exists">Dieses Benutzerkonto existiert bereits</string>
     <string name="account_compression_summary">Auswählen um die Datenkomprimierung zu aktivieren</string>
     <string name="account_custom">Benutzerdefinierter Server</string>
     <string name="account_custom_summary">Benutzerdefinierte Einstellungen statt SRV-Eintrag nutzen</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">TLS-Verschlüsselung für Verbindung zum Server verlangen</string>
     <string name="account_enable_tls">TLS-Verschlüsselungsprotokoll verwenden</string>
     <string name="account_use_tor">TOR-Anonymitätsnetzwerk verwenden (erfordert Orbot-Proxy)</string>
-    <string name="INCORRECT_USER_NAME">Überprüfen Sie den Benutzernamen. Details finden Sie unten im Hilfetext.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Überprüfen Sie den Benutzernamen. Details finden Sie unten im Hilfetext.</string>
     <string name="orbot_required_message">Für die Nutzung von TOR muss Orbot installiert sein und die Proxy-Verbindung darüber laufen. Möchten Sie die App von Google Play herunterladen?</string>
     <string name="orbot_required_title">Soll Orbot installiert werden?</string>
     <string name="install_orbot">Orbot installieren</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Das Konto konnte nicht auf dem Server angelegt werden.</string>
-    <string name="SERVER_INFO_ERROR">Medieninformationen konnten nicht abgerufen werden.</string>
+    <string name="account_add__alert_registration_failed">Das Konto konnte nicht auf dem Server angelegt werden.</string>
+    <string name="account_add__alert_no_server_info">Medieninformationen konnten nicht abgerufen werden.</string>
     <string name="account_color">Kontofarbe</string>
     <string name="account_color_name_green">Grün</string>
     <string name="account_color_name_orange">Orange</string>

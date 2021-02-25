@@ -11,10 +11,10 @@
     <string name="account_server_name">域</string>
     <string name="account_xmpp_register_warning">在添加到 Xabber 之前，你必须 <a href="http://www.google.com/#q=register XMPP account"> 注册 XMPP 帐户</a>！</string>
     <string name="account_user_name">用户名</string>
-    <string name="EMPTY_SERVER_NAME">域未指定</string>
-    <string name="EMPTY_USER_NAME">用户名未指定</string>
-    <string name="CONFIRM_PASSWORD">密码不匹配</string>
-    <string name="ACCOUNT_EXIST">此帐户已存在</string>
+    <string name="settings_account__alert_server_not_specified">域未指定</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">用户名未指定</string>
+    <string name="settings_account__alert_passwords_do_not_match">密码不匹配</string>
+    <string name="settings_account__alert_account_exists">此帐户已存在</string>
     <string name="account_compression_summary">勾选以启用数据压缩</string>
     <string name="account_custom">自定义服务器</string>
     <string name="account_custom_summary">使用自定义服务器而不是SRV记录</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">在连接服务器时要求TLS加密</string>
     <string name="account_enable_tls">启用 TLS 加密协议</string>
     <string name="account_use_tor">使用 TOR 匿名网络 (需要 Orbot 代理)</string>
-    <string name="INCORRECT_USER_NAME">错误的用户名，请参考下方的帮助文本。</string>
+    <string name="account_add__alert_incorrect_xmpp_id">错误的用户名，请参考下方的帮助文本。</string>
     <string name="orbot_required_message">要使用TOR，你必须安装并激活Orbot。想要从Google Play安装吗？</string>
     <string name="orbot_required_title">安装Orbot？</string>
     <string name="install_orbot">安装Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">未能在服务器上注册账户。</string>
-    <string name="SERVER_INFO_ERROR">无法获取服务器信息。</string>
+    <string name="account_add__alert_registration_failed">未能在服务器上注册账户。</string>
+    <string name="account_add__alert_no_server_info">无法获取服务器信息。</string>
     <string name="account_color">账户颜色</string>
     <string name="account_color_name_green">绿色</string>
     <string name="account_color_name_orange">橙色</string>

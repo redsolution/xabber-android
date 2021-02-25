@@ -11,10 +11,10 @@
     <string name="account_server_name">Server</string>
     <string name="account_xmpp_register_warning">Anda harus <a href="http://www.google.com/#q=register an XMPP account">mendaftar akun XMPP</a> sebelum menambahkan ke Xabber!</string>
     <string name="account_user_name">Nama pengguna</string>
-    <string name="EMPTY_SERVER_NAME">Nama server belum ditentukan</string>
-    <string name="EMPTY_USER_NAME">Nama pengguna belum ditentukan</string>
-    <string name="CONFIRM_PASSWORD">Kata sandi tidak cocok</string>
-    <string name="ACCOUNT_EXIST">Akun ini sudah ada</string>
+    <string name="settings_account__alert_server_not_specified">Nama server belum ditentukan</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Nama pengguna belum ditentukan</string>
+    <string name="settings_account__alert_passwords_do_not_match">Kata sandi tidak cocok</string>
+    <string name="settings_account__alert_account_exists">Akun ini sudah ada</string>
     <string name="account_compression_summary">Centang untuk mengaktifkan kompresi data</string>
     <string name="account_custom">Custom host</string>
     <string name="account_custom_summary">Gunakan pengaturan custom host sebagai ganti rekaman SRV</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">Memerlukan enkripsi TLS ketika terhubung ke server</string>
     <string name="account_enable_tls">Aktifkan protokol kriptografi TLS</string>
     <string name="account_use_tor">Gunakan jaringan TOR anonimitas (membutuhkan perantara Orbot)</string>
-    <string name="INCORRECT_USER_NAME">Nama pengguna salah. Baca bantuan di bawah ini untuk penjelasan lebih lanjut.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Nama pengguna salah. Baca bantuan di bawah ini untuk penjelasan lebih lanjut.</string>
     <string name="orbot_required_message">Untuk proses menggunakan TOR, Anda harus memiliki Orbot yang terpasang dan aktif untuk lalu lintas proxy yang dilaluinya. Anda ingin memasangnya dari Google Play?</string>
     <string name="orbot_required_title">Pasang Orbot?</string>
     <string name="install_orbot">Memasang Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Gagal mendaftarkan akun di server.</string>
-    <string name="SERVER_INFO_ERROR">Tidak bisa mendapatkan informasi server.</string>
+    <string name="account_add__alert_registration_failed">Gagal mendaftarkan akun di server.</string>
+    <string name="account_add__alert_no_server_info">Tidak bisa mendapatkan informasi server.</string>
     <string name="account_color">Warna akun</string>
     <string name="account_color_name_green">Hijau</string>
     <string name="account_color_name_orange">Orange</string>

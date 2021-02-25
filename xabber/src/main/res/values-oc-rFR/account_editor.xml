@@ -10,9 +10,9 @@
     <string name="account_resource">Ressorsa</string>
     <string name="account_server_name">Servidor</string>
     <string name="account_user_name">Identificant</string>
-    <string name="EMPTY_SERVER_NAME">Lo nom del servidor es mancant</string>
-    <string name="EMPTY_USER_NAME">Identificant mancant</string>
-    <string name="CONFIRM_PASSWORD">Los senhals correspondon pas</string>
+    <string name="settings_account__alert_server_not_specified">Lo nom del servidor es mancant</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Identificant mancant</string>
+    <string name="settings_account__alert_passwords_do_not_match">Los senhals correspondon pas</string>
     <string name="account_compression_summary">Marcatz per activar la compression de las donadas</string>
     <string name="account_custom">Òste personalizat</string>
     <string name="account_custom_summary">Utilizar los paramètres d\'òste personalizats al luòc de las donadas SRV</string>
@@ -38,11 +38,11 @@
     <string name="account_tls_mode">Utilizacion de TLS/SSL</string>
     <string name="account_tls_require">TLS requesit</string>
     <string name="account_tls_require_summary">Chiframent TLS obligatòri per la connexion</string>
-    <string name="INCORRECT_USER_NAME">Identificant incorrècte. Consultatz lo messatge çaijós per mai de detalhs.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Identificant incorrècte. Consultatz lo messatge çaijós per mai de detalhs.</string>
     <string name="orbot_required_message">Per fin d\'utilizar TOR, Orbot deu èsser installat e activat per relaiar las comunicacions. Lo volètz installar a partir de Google Play?</string>
     <string name="orbot_required_title">Installar Orbot ?</string>
     <string name="install_orbot">Installar Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">L\'enregistrament sul servidor a fracassat.</string>
+    <string name="account_add__alert_registration_failed">L\'enregistrament sul servidor a fracassat.</string>
     <string name="account_color">Color del compte</string>
     <string name="account_color_name_green">Verd</string>
     <string name="account_color_name_orange">Irange</string>

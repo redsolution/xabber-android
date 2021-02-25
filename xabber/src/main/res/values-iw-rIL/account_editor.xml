@@ -11,10 +11,10 @@
     <string name="account_server_name">שרת</string>
     <string name="account_xmpp_register_warning">עליך <a href="http://www.google.com/#q=register an XMPP account">לרשום חשבון XMPP</a> בטרם הוספתו ל־Xabber!</string>
     <string name="account_user_name">שם משתמש</string>
-    <string name="EMPTY_SERVER_NAME">שם שרת לא צוין</string>
-    <string name="EMPTY_USER_NAME">שם משתמש לא צוין</string>
-    <string name="CONFIRM_PASSWORD">הסיסמאות אינן תואמות</string>
-    <string name="ACCOUNT_EXIST">חשבון זה כבר קיים</string>
+    <string name="settings_account__alert_server_not_specified">שם שרת לא צוין</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">שם משתמש לא צוין</string>
+    <string name="settings_account__alert_passwords_do_not_match">הסיסמאות אינן תואמות</string>
+    <string name="settings_account__alert_account_exists">חשבון זה כבר קיים</string>
     <string name="account_compression_summary">סמן כדי לאפשר דחיסת נתונים</string>
     <string name="account_custom">מארח מותאם</string>
     <string name="account_custom_summary">השתמש בהגדרות שרת מותאמות במקום ברשומת SRV</string>
@@ -42,12 +42,12 @@
     <string name="account_tls_require_summary">דרוש הצפנת TLS בעת התחברות אל השרת</string>
     <string name="account_enable_tls">הפעלת פרוטוקול הצפנה מסוג TLS</string>
     <string name="account_use_tor">שימוש ברשת האלמוניות TOR (נדרש מתווך Orbot)</string>
-    <string name="INCORRECT_USER_NAME">שם משתמש לא תקין. למידע נוסף בדוק בטקסט עזרה בהמשך.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">שם משתמש לא תקין. למידע נוסף בדוק בטקסט עזרה בהמשך.</string>
     <string name="orbot_required_message">על מנת להתקדם באמצעות TOR, על המכשיר שלך חייבת להיות מותקנת תוכנת Orbot ופועלת כדי להעביר את המידע דרכו. האם ברצונך להתקינו מתוך Google Play?</string>
     <string name="orbot_required_title">האם להתקין Orbot?</string>
     <string name="install_orbot">מתקין Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">רישום החשבון בשרת נכשל.</string>
-    <string name="SERVER_INFO_ERROR">לא היתה אפשרות לקבל את פרטי השרת.</string>
+    <string name="account_add__alert_registration_failed">רישום החשבון בשרת נכשל.</string>
+    <string name="account_add__alert_no_server_info">לא היתה אפשרות לקבל את פרטי השרת.</string>
     <string name="account_color">צבע חשבון</string>
     <string name="account_color_name_green">ירוק</string>
     <string name="account_color_name_orange">כתום</string>

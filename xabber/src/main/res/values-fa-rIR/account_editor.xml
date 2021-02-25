@@ -9,7 +9,7 @@
     <string name="account_resource">وسیله</string>
     <string name="account_server_name">سرور</string>
     <string name="account_user_name">نام کاربری</string>
-    <string name="EMPTY_SERVER_NAME">نام سرور مشخص نشده است.</string>
-    <string name="EMPTY_USER_NAME">نام کاربری مشخص نشده است</string>
-    <string name="INCORRECT_USER_NAME">نام کاربری نادرست.برای جزئیات بیشترمتن راهنمای زیر را مطالعه کنید.</string>
+    <string name="settings_account__alert_server_not_specified">نام سرور مشخص نشده است.</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">نام کاربری مشخص نشده است</string>
+    <string name="account_add__alert_incorrect_xmpp_id">نام کاربری نادرست.برای جزئیات بیشترمتن راهنمای زیر را مطالعه کنید.</string>
 </resources>
