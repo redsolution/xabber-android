@@ -310,11 +310,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             ContactJid.from(jid)
         } catch (e: XmppStringprepException) {
             LogManager.exception(LOG_TAG, e)
-            setError(getString(R.string.INCORRECT_USER_NAME))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id))
             return
         } catch (e: ContactJidCreateException) {
             LogManager.exception(LOG_TAG, e)
-            setError(getString(R.string.INCORRECT_USER_NAME))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id))
             return
         }
         contactJid = user
@@ -354,11 +354,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         var contactString = userViewEt!!.text.toString()
         contactString = contactString.trim { it <= ' ' }
         if (contactString.contains(" ")) {
-            setError(getString(R.string.INCORRECT_USER_NAME))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id))
             return true
         }
         if (TextUtils.isEmpty(contactString)) {
-            setError(getString(R.string.EMPTY_USER_NAME))
+            setError(getString(R.string.settings_account__alert_xmpp_id_not_specified))
             return true
         }
         val atChar = contactString.indexOf('@')
@@ -388,59 +388,59 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
         //
         if (resourceName != "") {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_RESOURCE))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_slash))
             return true
         }
         //Invalid when domain is empty
         if (domainName == "") {
-            setError(getString(R.string.INCORRECT_USER_NAME))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id))
             return true
         }
 
         //Invalid when "@" is present but localPart is empty
         if (atChar == 0) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_absent))
             return true
         }
 
         //Invalid when "@" is present in a domainPart
         if (atChar > 0) {
             if (domainName.contains("@")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_AT))
+                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_symbols_at))
                 return true
             }
         }
 
         //Invalid when domain has "." at the start/end
         if (domainName[domainName.length - 1] == '.' || domainName[0] == '.') {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain))
             return true
         }
         //Invalid when domain does not have a "." in the middle, when paired with the last check
         if (!domainName.contains(".")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain))
             return true
         }
         //Invalid when domain has multiple dots in a row
         if (domainName.contains("..")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN))
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain))
             return true
         }
         if (localName != "") {
             //Invalid when localPart is NOT empty, and HAS "." at the start/end
             if (localName[localName.length - 1] == '.' || localName[0] == '.') {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_invalid))
                 return true
             }
             //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
             if (localName.contains(":")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"))
+                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), ":"))
                 return true
             }
 
             //Invalid when localPart is NOT empty, and has multiple dots in a row
             if (localName.contains("..")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_invalid))
                 return true
             }
         }

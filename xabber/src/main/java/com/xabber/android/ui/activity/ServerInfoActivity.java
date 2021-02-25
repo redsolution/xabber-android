@@ -224,7 +224,7 @@ public class ServerInfoActivity extends ManagedActivity {
         }
 
         if (serverInfoList.isEmpty()) {
-            serverInfoList.add(getString(R.string.SERVER_INFO_ERROR));
+            serverInfoList.add(getString(R.string.account_add__alert_no_server_info));
         }
 
         return serverInfoList;

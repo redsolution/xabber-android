@@ -464,19 +464,19 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
     private fun isLocalpartCorrect(localpart: String): Boolean{
         //Invalid when localPart is NOT empty, and HAS "." at the start/end
         if (localpart[localpart.length - 1] == '.' || localpart[0] == '.') {
-            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.account_add__alert_localpart_invalid))
             return false
         }
         //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
         if (localpart.contains(":")) {
             showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + String.format(getString(R.string
-                    .INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"))
+                    .account_add__alert_localpart_invalid_symbols), ":"))
             return false
         }
 
         //Invalid when localPart is NOT empty, and has multiple dots in a row
         if (localpart.contains("..")) {
-            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL))
+            showErrorBelowJidEt(getString(R.string.groupchat_invalid_group_id) + getString(R.string.account_add__alert_localpart_invalid))
             return false
         }
         if (localpart.isEmpty()){

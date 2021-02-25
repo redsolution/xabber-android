@@ -260,12 +260,12 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         contactString = contactString.trim();
 
         if (contactString.contains(" ")) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return true;
         }
 
         if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -298,22 +298,22 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         }
 
         if (domainName.equals("")) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return true;
         }
 
         if (slashIndex != -1) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return true;
         }
 
         if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return true;
         }
 

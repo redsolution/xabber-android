@@ -436,28 +436,28 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                                  boolean registerNewAccount, boolean enabled, boolean tlsRequired)
             throws NetworkException {
         if (user == null) {
-            throw new NetworkException(R.string.EMPTY_USER_NAME);
+            throw new NetworkException(R.string.settings_account__alert_xmpp_id_not_specified);
         }
 
         if (user.contains(" ")) {
-            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+            throw new NetworkException(R.string.account_add__alert_incorrect_xmpp_id);
         }
 
         DomainBareJid serverName;
         try {
             serverName = JidCreate.domainBareFrom(user);
         } catch (XmppStringprepException e) {
-            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+            throw new NetworkException(R.string.account_add__alert_incorrect_xmpp_id);
         }
         Localpart userName;
         try {
             userName = Localpart.from(XmppStringUtils.parseLocalpart(user));
         } catch (XmppStringprepException e) {
-            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+            throw new NetworkException(R.string.account_add__alert_incorrect_xmpp_id);
         }
 
         if (isAccountExist(user))
-            throw new NetworkException(R.string.ACCOUNT_EXIST);
+            throw new NetworkException(R.string.settings_account__alert_account_exists);
 
         Resourcepart resource = null;
         String resourceString = XmppStringUtils.parseResource(user).trim();
@@ -490,7 +490,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);
         if (accountItem == null) {
-            throw new NetworkException(R.string.ACCOUNT_REGISTER_FAILED);
+            throw new NetworkException(R.string.account_add__alert_registration_failed);
         }
 
         onAccountChanged(accountItem.getAccount());

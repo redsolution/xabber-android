@@ -190,12 +190,12 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         contactString = contactString.trim();
 
         if (contactString.contains(" ")) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -203,12 +203,12 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         int atChar = contactString.indexOf('@');
 
         if (atChar<=0) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (slashIndex != -1) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -216,12 +216,12 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         String localName = contactString.substring(0, atChar);
 
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -236,7 +236,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
         if (createAccountCheckBox.isChecked() &&
                 !passwordView.getText().toString().contentEquals(passwordConfirmEditText.getText().toString())) {
-            Toast.makeText(getActivity(), getString(R.string.CONFIRM_PASSWORD), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.settings_account__alert_passwords_do_not_match), Toast.LENGTH_LONG).show();
             return;
         }
 
