@@ -124,21 +124,21 @@ public class MessageNotificationManager implements OnLoadListener {
         AbstractChat abstractChat = ChatManager.getInstance().getChat(messageRealmObject.getAccount(),
                 messageRealmObject.getUser());
         boolean isGroup = abstractChat instanceof GroupChat;
-        String chatTitle = RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(),
-                messageRealmObject.getUser()).getName();
+        String chatTitle = isGroup ?
+                RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName()
+                : "";
         Chat chat = getChat(messageRealmObject.getAccount(), messageRealmObject.getUser());
         if (chat == null) {
             chat = new Chat(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                    getNextChatNotificationId(), isGroup ? chatTitle : "", isGroup);
+                    getNextChatNotificationId(), chatTitle, isGroup);
             chats.add(chat);
         }
 
-        String sender = "";
-        if (isGroup){
-            sender = GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId())
-                    .getNickname();
-        }
-        addMessage(chat, isGroup ? sender : chatTitle, getNotificationText(messageRealmObject), true);
+        String sender = isGroup ?
+                GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId()).getNickname()
+                : RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
+
+        addMessage(chat, sender + ":", getNotificationText(messageRealmObject), true);
         NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
     }
 
