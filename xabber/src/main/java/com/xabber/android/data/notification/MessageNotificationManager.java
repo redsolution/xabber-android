@@ -4,25 +4,24 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.realmobjects.NotificationChatRealmObject;
-import com.xabber.android.data.database.realmobjects.NotificationMessageRealmObject;
+import com.xabber.android.data.database.repositories.NotificationChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.filedownload.FileCategory;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.utils.StringUtils;
@@ -34,10 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 
 public class MessageNotificationManager implements OnLoadListener {
 
@@ -100,7 +95,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 // update notification
                 if (action.getActionType() == Action.ActionType.reply) {
                     addMessage(chat, "", action.getReplyText(), false);
-                    saveNotifChatToRealm(chat);
+                    NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
                 }
             }
         }
@@ -119,23 +114,32 @@ public class MessageNotificationManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        final List<Chat> chats = loadNotifChatsFromRealm();
+        final List<Chat> chats = NotificationChatRepository.INSTANCE.getAllNotificationChatsFromRealm();
         Application.getInstance().runOnUiThread(() -> onLoaded(chats));
     }
 
     /** PUBLIC METHODS */
 
     synchronized public void onNewMessage(MessageRealmObject messageRealmObject) {
-        String chatTitle = RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(messageRealmObject.getAccount(),
+                messageRealmObject.getUser());
+        boolean isGroup = abstractChat instanceof GroupChat;
+        String chatTitle = RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(),
+                messageRealmObject.getUser()).getName();
         Chat chat = getChat(messageRealmObject.getAccount(), messageRealmObject.getUser());
         if (chat == null) {
             chat = new Chat(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                    getNextChatNotificationId(), chatTitle, false);
+                    getNextChatNotificationId(), isGroup ? chatTitle : "", isGroup);
             chats.add(chat);
         }
 
-        addMessage(chat, chatTitle, getNotificationText(messageRealmObject), true);
-        saveNotifChatToRealm(chat);
+        String sender = "";
+        if (isGroup){
+            sender = GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId())
+                    .getNickname();
+        }
+        addMessage(chat, isGroup ? sender : chatTitle, getNotificationText(messageRealmObject), true);
+        NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
     }
 
     public void removeChatWithTimer(final AccountJid account, final ContactJid user) {
@@ -148,7 +152,7 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chat != null) {
             chats.remove(chat);
             removeNotification(chat);
-            removeNotifChatFromRealm(account, user);
+            NotificationChatRepository.INSTANCE.removeNotificationChatsForAccountAndContactInRealm(account, user);
         }
     }
 
@@ -157,7 +161,8 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chat != null) {
             chats.remove(chat);
             removeNotification(chat);
-            removeNotifChatFromRealm(chat.accountJid, chat.contactJid);
+            NotificationChatRepository.INSTANCE
+                    .removeNotificationChatsForAccountAndContactInRealm(chat.accountJid, chat.contactJid);
         }
     }
 
@@ -172,7 +177,7 @@ public class MessageNotificationManager implements OnLoadListener {
             }
         }
         removeNotifications(chatsToRemove);
-        removeNotifChatFromRealm(account);
+        NotificationChatRepository.INSTANCE.removeNotificationChatsByAccountInRealm(account);
     }
 
     public void removeAllMessageNotifications() {
@@ -184,7 +189,7 @@ public class MessageNotificationManager implements OnLoadListener {
             it.remove();
         }
         removeNotifications(chatsToRemove);
-        removeAllNotifChatFromRealm();
+        NotificationChatRepository.INSTANCE.removeAllNotificationChatInRealm();
     }
 
     public void rebuildAllNotifications() {
@@ -240,7 +245,8 @@ public class MessageNotificationManager implements OnLoadListener {
                     notificationManager.cancel(action.getNotificationID());
                     DelayedNotificationActionManager.getInstance().addAction(
                             new FullAction(action, chat.getAccountJid(), chat.getContactJid()));
-                    removeNotifChatFromRealm(chat.accountJid, chat.contactJid);
+                    NotificationChatRepository.INSTANCE
+                            .removeNotificationChatsForAccountAndContactInRealm(chat.accountJid, chat.contactJid);
                 }
             } else chats.add(chat);
         }
@@ -281,20 +287,18 @@ public class MessageNotificationManager implements OnLoadListener {
     private void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
-            if (isShowBanners)
+            if (isShowBanners){
                 creator.createNotification(chat, alert);
-            else
-                creator.createNotificationWithoutBannerJustSound();
+            } else creator.createNotificationWithoutBannerJustSound();
         } else {
             if (chats.size() > 1) {
                 if (chats.size() == 2) {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                if (isShowBanners)
+                if (isShowBanners) {
                     creator.createNotification(chat, alert);
-                else
-                    creator.createNotificationWithoutBannerJustSound();
+                } else creator.createNotificationWithoutBannerJustSound();
             }
             else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }
@@ -362,124 +366,6 @@ public class MessageNotificationManager implements OnLoadListener {
         return text;
     }
 
-
-    /** Called not from Main thread */
-    private List<Chat> loadNotifChatsFromRealm() {
-        List<Chat> results = new ArrayList<>();
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<NotificationChatRealmObject> items = realm
-                .where(NotificationChatRealmObject.class)
-                .findAll();
-        for (NotificationChatRealmObject item : items) {
-            Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
-                    item.getNotificationID(), item.getChatTitle(), item.isGroupChat());
-            for (NotificationMessageRealmObject message : item.getMessages()) {
-                chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(),
-                        message.getTimestamp()));
-            }
-            results.add(chat);
-        }
-
-        if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
-        return results;
-    }
-
-    private void removeNotifChatFromRealm(final AccountJid accountJid, final ContactJid contactJid) {
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<NotificationChatRealmObject> items = realm1
-                            .where(NotificationChatRealmObject.class)
-                            .equalTo(NotificationChatRealmObject.Fields.ACCOUNT, accountJid.toString())
-                            .equalTo(NotificationChatRealmObject.Fields.USER, contactJid.toString())
-                            .findAll();
-                    for (NotificationChatRealmObject item : items) {
-                        item.getMessages().deleteAllFromRealm();
-                        item.deleteFromRealm();
-                    }
-                });
-            } catch (Exception e) {
-                LogManager.exception("MessageNotificationManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    private void removeNotifChatFromRealm(final AccountJid accountJid) {
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<NotificationChatRealmObject> items = realm1
-                            .where(NotificationChatRealmObject.class)
-                            .equalTo(NotificationChatRealmObject.Fields.ACCOUNT, accountJid.toString())
-                            .findAll();
-                    for (NotificationChatRealmObject item : items) {
-                        item.getMessages().deleteAllFromRealm();
-                        item.deleteFromRealm();
-                    }
-                });
-            } catch (Exception e) {
-                LogManager.exception("MessageNotificationManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    private void removeAllNotifChatFromRealm() {
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    RealmResults<NotificationChatRealmObject> items = realm1
-                            .where(NotificationChatRealmObject.class)
-                            .findAll();
-                    for (NotificationChatRealmObject item : items) {
-                        item.getMessages().deleteAllFromRealm();
-                        item.deleteFromRealm();
-                    }
-                });
-            } catch (Exception e) {
-                LogManager.exception("MessageNotificationManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    private void saveNotifChatToRealm(final Chat chat) {
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    NotificationChatRealmObject chatRealm = new NotificationChatRealmObject(chat.getId());
-                    chatRealm.setAccount(chat.getAccountJid());
-                    chatRealm.setUser(chat.getContactJid());
-                    chatRealm.setChatTitle(chat.getChatTitle().toString());
-                    chatRealm.setNotificationID(chat.getNotificationId());
-                    chatRealm.setGroupChat(chat.isGroupChat);
-                    RealmList<NotificationMessageRealmObject> messages = new RealmList<>();
-                    for (Message message : chat.getMessages()) {
-                        messages.add(messageToRealm(message));
-                    }
-                    chatRealm.setMessages(messages);
-                    realm1.copyToRealmOrUpdate(chatRealm);
-                });
-            } catch (Exception e){
-                LogManager.exception("MessageNotificationManager", e);
-            } finally { if (realm != null) realm.close(); }
-        });
-    }
-
-    private NotificationMessageRealmObject messageToRealm(Message message) {
-        NotificationMessageRealmObject messageRealm = new NotificationMessageRealmObject(message.getId());
-        messageRealm.setAuthor(message.getAuthor().toString());
-        messageRealm.setText(message.getMessageText().toString());
-        messageRealm.setTimestamp(message.getTimestamp());
-        return messageRealm;
-    }
-
     /** INTERNAL CLASSES */
 
     public class Chat {
@@ -492,8 +378,8 @@ public class MessageNotificationManager implements OnLoadListener {
         private final List<Message> messages = new ArrayList<>();
         private Handler removeTimer;
 
-        public Chat(AccountJid accountJid, ContactJid contactJid, int notificationId,
-                    CharSequence chatTitle, boolean isGroupChat) {
+        public Chat(AccountJid accountJid, ContactJid contactJid, int notificationId, CharSequence chatTitle,
+                    boolean isGroupChat) {
             this.accountJid = accountJid;
             this.contactJid = contactJid;
             this.notificationId = notificationId;
@@ -502,8 +388,8 @@ public class MessageNotificationManager implements OnLoadListener {
             this.isGroupChat = isGroupChat;
         }
 
-        public Chat(String id, AccountJid accountJid, ContactJid contactJid, int notificationId,
-                    CharSequence chatTitle, boolean isGroupChat) {
+        public Chat(String id, AccountJid accountJid, ContactJid contactJid, int notificationId, CharSequence chatTitle,
+                    boolean isGroupChat) {
             this.id = id;
             this.accountJid = accountJid;
             this.contactJid = contactJid;
@@ -512,43 +398,26 @@ public class MessageNotificationManager implements OnLoadListener {
             this.isGroupChat = isGroupChat;
         }
 
-        public String getId() {
-            return id;
-        }
+        public String getId() { return id; }
 
-        synchronized public void addMessage(Message message) {
-            messages.add(message);
-        }
+        public void addMessage(Message message) { messages.add(message); }
 
-        public int getNotificationId() {
-            return notificationId;
-        }
+        public int getNotificationId() { return notificationId; }
 
-        public AccountJid getAccountJid() {
-            return accountJid;
-        }
+        public AccountJid getAccountJid() { return accountJid; }
 
-        public ContactJid getContactJid() {
-            return contactJid;
-        }
+        public ContactJid getContactJid() { return contactJid; }
 
-        public CharSequence getChatTitle() {
-            return chatTitle;
-        }
+        public CharSequence getChatTitle() { return chatTitle; }
 
-        synchronized public List<Message> getMessages() {
-            return messages;
-        }
+        public List<Message> getMessages() { return messages; }
 
-        public boolean isGroupChat() {
-            return isGroupChat;
-        }
+        public boolean isGroupChat() { return isGroupChat; }
 
-        synchronized public long getLastMessageTimestamp() {
-            return getLastMessage().getTimestamp();
-        }
+        public long getLastMessageTimestamp() { return messages.get(messages.size() - 1).getTimestamp(); }
 
-        synchronized public Message getLastMessage() { return messages.get(messages.size() - 1); }
+        public Message getLastMessage() { return messages.get(messages.size() - 1); }
+
 
         public boolean equals(AccountJid account, ContactJid user) {
             return this.accountJid.equals(account) && this.contactJid.equals(user);
@@ -558,15 +427,12 @@ public class MessageNotificationManager implements OnLoadListener {
             Application.getInstance().runOnUiThread(() -> {
                 stopRemoveTimer();
                 removeTimer = new Handler();
-                removeTimer.postDelayed(() ->
-                        Application.getInstance().runOnUiThread(() ->
-                                removeChat(notificationId)), 500);
+                removeTimer.postDelayed(() -> Application.getInstance().runOnUiThread(
+                        () -> removeChat(notificationId)), 500);
             });
         }
 
-        public void stopRemoveTimer() {
-            if (removeTimer != null) removeTimer.removeCallbacksAndMessages(null);
-        }
+        public void stopRemoveTimer() { if (removeTimer != null) removeTimer.removeCallbacksAndMessages(null); }
 
     }
 
@@ -590,9 +456,7 @@ public class MessageNotificationManager implements OnLoadListener {
             this.timestamp = timestamp;
         }
 
-        public CharSequence getAuthor() {
-            return author;
-        }
+        public CharSequence getAuthor() { return author; }
 
         public CharSequence getMessageText() {
             try {

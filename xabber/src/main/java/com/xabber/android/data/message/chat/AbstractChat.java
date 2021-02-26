@@ -441,11 +441,6 @@ public abstract class AbstractChat extends BaseEntity implements
         messageRealmObject.setParentMessageId(parentMessageId);
         messageRealmObject.setForwarded(isForwarded);
 
-        // notification
-        enableNotificationsIfNeed();
-        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem)
-            NotificationManager.getInstance().onMessageNotification(messageRealmObject);
-
         // remove notifications if get outgoing message with 2 sec delay
         if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, contactJid);
 
@@ -466,6 +461,11 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setGroupchatSystem(true);
             messageRealmObject.setRead(true);
         }
+
+        // notification
+        enableNotificationsIfNeed();
+        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem)
+            NotificationManager.getInstance().onMessageNotification(messageRealmObject);
 
         if (action != null && (groupchatUserId != null || isGroupchatSystem))
             return null;

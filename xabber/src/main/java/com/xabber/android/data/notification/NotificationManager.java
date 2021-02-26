@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -91,8 +91,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     /**
      * List of
      */
-    private NotificationCompat.Builder persistentNotificationBuilder;
-    private int persistentNotificationColor;
+    private final NotificationCompat.Builder persistentNotificationBuilder;
+    private final int persistentNotificationColor;
 
     public static NotificationManager getInstance() {
         if (instance == null) {
@@ -174,8 +174,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     /**
      * Register new provider for notifications.
-     *
-     * @param provider
      */
     public void registerNotificationProvider(NotificationProvider<? extends NotificationItem> provider) {
         providers.add(provider);
@@ -184,8 +182,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     /**
      * Update notifications for specified provider.
      *
-     * @param <T>
-     * @param provider
      * @param notify   Ticker to be shown. Can be <code>null</code>.
      */
     public <T extends NotificationItem> void updateNotifications(
@@ -250,9 +246,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     /**
      * Sound, vibration and lightning flags.
-     *
-     * @param notificationBuilder
-     * @param streamType
      */
     public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean led, Uri sound, int streamType) {
         notificationBuilder.setSound(sound, streamType);
@@ -429,7 +422,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void run() {
         handler.removeCallbacks(this);
-        //updateMessageNotification(null);
         updatePersistentNotification();
     }
 
@@ -438,8 +430,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     @Override
-    public void onClose() {
-        //notificationManager.cancelAll();
-        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
-    }
+    public void onClose() { notificationManager.cancel(PERSISTENT_NOTIFICATION_ID); }
+
 }

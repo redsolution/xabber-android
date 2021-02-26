@@ -30,6 +30,13 @@ public class NotificationMessageRealmObject extends RealmObject {
         this.id = id;
     }
 
+    public NotificationMessageRealmObject(String id, String author, String text, long timestamp){
+        this.id = id;
+        this.author = author;
+        this.text = text;
+        this.timestamp = timestamp;
+    }
+
     public String getId() {
         return id;
     }

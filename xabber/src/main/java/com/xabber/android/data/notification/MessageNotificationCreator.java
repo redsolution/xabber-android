@@ -54,7 +54,7 @@ public class MessageNotificationCreator {
 
     private final Application context;
     private final NotificationManager notificationManager;
-    private CharSequence messageHidden;
+    private final CharSequence messageHidden;
 
     public MessageNotificationCreator(Application context, NotificationManager notificationManager) {
         this.context = context;
