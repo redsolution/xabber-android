@@ -95,8 +95,10 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         }
         final Message message = (Message) packet;
         if (message.getType() == Message.Type.error) {
-            Application.getInstance().runInBackgroundUserRequest(() -> markAsError(account, message));
-
+            if (message.getError().getCondition().equals(XMPPError.Condition.service_unavailable)){
+                LogManager.e(LOG_TAG, "Got service unavailable error to message! But message status <b>WAS NOT<b> "
+                        + "set to error");
+            } else Application.getInstance().runInBackground(() -> markAsError(account, message));
         } else {
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {

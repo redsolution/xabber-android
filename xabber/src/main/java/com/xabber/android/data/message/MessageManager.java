@@ -258,26 +258,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransactionAsync(realm1 -> updateMessageWithError(realm1, messageId, errorDescription));
-        } else {
-            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransaction(realm1 -> updateMessageWithError(realm1, messageId, errorDescription));
-            realm.close();
-        }
-    }
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        realm.executeTransactionAsync(realm1 -> {
+            MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .findFirst();
 
-    private void updateMessageWithError(Realm realm, final String messageId, final String errorDescription) {
-        MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
-                .findFirst();
+            if (messageRealmObject != null) {
+                messageRealmObject.setError(true);
+                messageRealmObject.setErrorDescription(errorDescription);
+                messageRealmObject.setInProgress(false);
+            }
+        });
 
-        if (messageRealmObject != null) {
-            messageRealmObject.setError(true);
-            messageRealmObject.setErrorDescription(errorDescription);
-            messageRealmObject.setInProgress(false);
-        }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     public void removeErrorAndResendMessage(AccountJid account, ContactJid user, final String messageId) {

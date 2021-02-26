@@ -458,10 +458,9 @@ public class MessageRealmObject extends RealmObject {
     public boolean isAttachmentImageOnly(){
         if(attachmentRealmObjects !=null && attachmentRealmObjects.size()>0) {
             for (AttachmentRealmObject a : attachmentRealmObjects) {
-                if (!a.isImage()) {
-                    return false;
-                }
-            } return true;
+                if (!a.isImage()) return false;
+            }
+            return true;
         }
         return false;
     }
