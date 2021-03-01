@@ -506,7 +506,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
 
     public String getNewFilePath() {
         File file;
-        file = FileManager.createAudioFile("Voice Message.ogg");
+        file = FileManager.getInstance().createAudioFile("Voice Message.ogg");
         FileManager.copy(new File(tempOpusPath), file);
 
         if (file == null)
@@ -517,7 +517,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
 
     public String getStoppedRecordingNewFilePath(String path) {
         File file;
-        file = FileManager.createAudioFile("Voice Message.ogg");
+        file = FileManager.getInstance().createAudioFile("Voice Message.ogg");
         FileManager.copy(new File(path), file);
         if (file == null)
             return null;

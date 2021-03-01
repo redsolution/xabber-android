@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ResultReceiver;
 import android.webkit.MimeTypeMap;
 
@@ -343,29 +342,23 @@ public class UploadService extends IntentService {
         else throw new IOException("Upload failed: failed to create httpclient");
     }
 
-    private static String getCompressedDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_COMPRESSED_DIR;
-        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-        //        + File.separator + XABBER_COMPRESSED_DIR;
+    private String getCompressedDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_COMPRESSED_DIR;
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_DIR;
-        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-        //        + File.separator + XABBER_DIR;
+    private String getDownloadDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_DIR;
     }
 
-    private static String getAudioDownloadDirPath() {
+    private String getAudioDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
-    private static String getDocumentsDownloadDirPath() {
+    private String getDocumentsDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
     }
 
-    private static String getImagesDownloadDirPath() {
+    private String getImagesDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 

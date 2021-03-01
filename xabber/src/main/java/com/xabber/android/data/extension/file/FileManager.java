@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -372,7 +371,7 @@ public class FileManager {
         return File.createTempFile(name, ".opus", Application.getInstance().getCacheDir());
     }
 
-    public static File createAudioFile(String name) {
+    public File createAudioFile(String name) {
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists()) {
@@ -453,12 +452,12 @@ public class FileManager {
         }
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
+    private String getDownloadDirPath() {
+        return Application.getInstance().getExternalFilesDir(null).getPath()
                 + File.separator + XABBER_DIR;
     }
 
-    private static String getSpecificDownloadDirPath() {
+    private String getSpecificDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
