@@ -3,7 +3,6 @@ package com.xabber.android.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Looper;
 import android.os.ResultReceiver;
 import android.util.Log;
@@ -217,20 +216,19 @@ public class DownloadService extends IntentService {
         receiver.send(ERROR_CODE, resultData);
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_DIR;
+    private String getDownloadDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_DIR;
     }
 
-    private static String getAudioDownloadDirPath() {
+    private String getAudioDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
-    private static String getDocumentsDownloadDirPath() {
+    private String getDocumentsDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
     }
 
-    private static String getImagesDownloadDirPath() {
+    private String getImagesDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 }
