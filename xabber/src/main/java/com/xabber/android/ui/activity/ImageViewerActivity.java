@@ -34,11 +34,12 @@ import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.ui.fragment.ImageViewerFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 public class ImageViewerActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
@@ -50,14 +51,14 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
 
     private AccountJid accountJid;
-    private RealmList<AttachmentRealmObject> imageAttachmentRealmObjects = new RealmList<>();
+    private final RealmList<AttachmentRealmObject> imageAttachmentRealmObjects = new RealmList<>();
     private Toolbar toolbar;
     private ViewPager viewPager;
     private ProgressBar progressBar;
     private ImageView ivCancelDownload;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
     private boolean waitForSharing;
     private boolean isDownloading;
 
@@ -103,12 +104,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.inflateMenu(R.menu.menu_image_viewer);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(ImageViewerActivity.this);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(ImageViewerActivity.this));
 
         // get imageAttachments
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -137,12 +133,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         // find views
         progressBar = findViewById(R.id.progressBar);
         ivCancelDownload = findViewById(R.id.ivCancelDownload);
-        ivCancelDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCancelDownloadClick();
-            }
-        });
+        ivCancelDownload.setOnClickListener(v -> onCancelDownloadClick());
 
         viewPager = findViewById(R.id.viewPager);
         PagerAdapter pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -174,7 +165,9 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             @Override
             public void onPageScrollStateChanged(int state) { }
         });
-        if (imageAttachmentRealmObjects.size() > imagePosition) subscribeForAttachment(imageAttachmentRealmObjects.get(imagePosition));
+        if (imageAttachmentRealmObjects.size() > imagePosition) {
+            subscribeForAttachment(imageAttachmentRealmObjects.get(imagePosition));
+        }
     }
 
     @Override
@@ -210,17 +203,15 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    downloadImage();
-                } else {
-                    onNoWritePermissionError();
-                }
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_DOWNLOAD_FILE) {
+            if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                downloadImage();
+            } else {
+                onNoWritePermissionError();
+            }
         }
     }
 
@@ -252,9 +243,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         if (path != null) {
             File file = new File(path);
             if (file.exists()) {
-                startActivityForResult(FileManager.getIntentForShareFile(file),
-                        SHARE_ACTIVITY_REQUEST_CODE);
-                return;
+                startActivityForResult(FileManager.getIntentForShareFile(file), SHARE_ACTIVITY_REQUEST_CODE);
             } else Toast.makeText(this, R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
         } else {
             waitForSharing = true;
@@ -273,8 +262,9 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     private void onImageDownloadClick() {
-        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
-                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE)) downloadImage();
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_DOWNLOAD_FILE)){
+            downloadImage();
+        }
     }
 
     private void downloadImage() {
@@ -294,12 +284,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void subscribeForDownloadProgress() {
         subscriptions.add(DownloadManager.getInstance().subscribeForProgress()
-            .doOnNext(new Action1<DownloadManager.ProgressData>() {
-                @Override
-                public void call(DownloadManager.ProgressData progressData) {
-                    onProgressUpdated(progressData);
-                }
-            }).subscribe());
+            .doOnNext(this::onProgressUpdated).subscribe());
     }
 
     private void onProgressUpdated(DownloadManager.ProgressData progressData) {
@@ -370,4 +355,5 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     private void unsubscribeAttachmentState() {
         attachmentStateSubscription.clear();
     }
+
 }

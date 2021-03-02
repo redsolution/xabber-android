@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
@@ -70,8 +69,9 @@ public class DownloadService extends IntentService {
         OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
-        if (client != null) requestFileDownload(fileName, fileSize, url, client);
-        else publishError("Downloading not started");
+        if (client != null) {
+            requestFileDownload(fileName, fileSize, url, client);
+        } else publishError("Downloading not started");
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DownloadService extends IntentService {
         try {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                Log.d(LOG_TAG, "download onFailure " + response.toString());
+                LogManager.e(LOG_TAG, "download onFailure " + response.toString());
                 publishError(response.toString());
                 return;
             }
@@ -174,7 +174,7 @@ public class DownloadService extends IntentService {
             } else publishError("File not created");
 
         } catch (IOException e) {
-            Log.d(LOG_TAG, "download onFailure " + e.getMessage());
+           LogManager.exception(LOG_TAG, e);
             publishError(e.getMessage());
         }
     }
@@ -231,4 +231,5 @@ public class DownloadService extends IntentService {
     private String getImagesDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
+
 }

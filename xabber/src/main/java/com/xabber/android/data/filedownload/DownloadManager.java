@@ -59,8 +59,9 @@ public class DownloadManager {
                 if (attachmentId != null && attachmentId.equals(attachmentRealmObject.getUniqueId()))
                     duplicate = true; //already downloading this file
 
-                if (duplicate) return;
-                else {
+                if (duplicate) {
+                    return;
+                } else {
                     downloadQueue.offer(attachmentRealmObject);
                     accountAttachments.put(attachmentRealmObject.getUniqueId(), accountJid);
                     LogManager.d(LOG_TAG + "/PUT_IN_QUEUE", "attachment id = " + attachmentRealmObject.getUniqueId() + " account = " + accountJid);
