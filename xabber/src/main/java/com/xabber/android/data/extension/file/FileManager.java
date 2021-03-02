@@ -53,18 +53,18 @@ public class FileManager {
     private static final String XABBER_DIR = "Xabber";
     private static final String XABBER_AUDIO_DIR = "Xabber Audio";
 
-    private static int maxImageSize;
-    private static int maxImageHeightSize;
-    private static int minImageSize;
+    private static final int MAX_IMAGE_SIZE;
+    private static final int MAX_IMAGE_HEIGHT_SIZE;
+    private static final int MIN_IMAGE_SIZE;
 
 
     static {
         instance = new FileManager();
 
         Resources resources = Application.getInstance().getResources();
-        maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
-        maxImageHeightSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_height_size);
-        minImageSize = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
+        MAX_IMAGE_SIZE = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
+        MAX_IMAGE_HEIGHT_SIZE = resources.getDimensionPixelSize(R.dimen.max_chat_image_height_size);
+        MIN_IMAGE_SIZE = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
     }
 
     public static FileManager getInstance() {
@@ -102,12 +102,6 @@ public class FileManager {
             return false;
         }
 
-        /*if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
-                int tempWidth = layoutParams.height;
-                int tempHeight = layoutParams.width;
-                layoutParams.width = tempWidth;
-                layoutParams.height = tempHeight;
-        }*/
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
@@ -176,29 +170,29 @@ public class FileManager {
         int scaledHeight;
 
         if (width <= height) {
-            if (height > maxImageHeightSize) {
-                scaledWidth = (int) (width / ((double) height / maxImageHeightSize));
-                scaledHeight = maxImageHeightSize;
-            } else if (width < minImageSize) {
-                scaledWidth = minImageSize;
-                scaledHeight = (int) (height / ((double) width / minImageSize));
-                if (scaledHeight > maxImageHeightSize) {
-                    scaledHeight = maxImageHeightSize;
+            if (height > MAX_IMAGE_HEIGHT_SIZE) {
+                scaledWidth = (int) (width / ((double) height / MAX_IMAGE_HEIGHT_SIZE));
+                scaledHeight = MAX_IMAGE_HEIGHT_SIZE;
+            } else if (width < MIN_IMAGE_SIZE) {
+                scaledWidth = MIN_IMAGE_SIZE;
+                scaledHeight = (int) (height / ((double) width / MIN_IMAGE_SIZE));
+                if (scaledHeight > MAX_IMAGE_HEIGHT_SIZE) {
+                    scaledHeight = MAX_IMAGE_HEIGHT_SIZE;
                 }
             } else {
                 scaledWidth = width;
                 scaledHeight = height;
             }
         } else {
-            if (width > maxImageSize) {
-                scaledWidth = maxImageSize;
-                scaledHeight = (int) (height / ((double) width / maxImageSize));
-            } else if (height < minImageSize) {
-                scaledWidth = (int) (width / ((double) height / minImageSize));
-                if (scaledWidth > maxImageSize) {
-                    scaledWidth = maxImageSize;
+            if (width > MAX_IMAGE_SIZE) {
+                scaledWidth = MAX_IMAGE_SIZE;
+                scaledHeight = (int) (height / ((double) width / MAX_IMAGE_SIZE));
+            } else if (height < MIN_IMAGE_SIZE) {
+                scaledWidth = (int) (width / ((double) height / MIN_IMAGE_SIZE));
+                if (scaledWidth > MAX_IMAGE_SIZE) {
+                    scaledWidth = MAX_IMAGE_SIZE;
                 }
-                scaledHeight = minImageSize;
+                scaledHeight = MIN_IMAGE_SIZE;
             } else {
                 scaledWidth = width;
                 scaledHeight = height;
@@ -248,8 +242,7 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif
-                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
         switch (orientation) {
             case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
@@ -282,8 +275,8 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif
-                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
         switch (orientation) {
             case ExifInterface.ORIENTATION_TRANSPOSE:
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -310,7 +303,6 @@ public class FileManager {
             bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
             bos.write(data);
 
-
         } catch (IOException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
@@ -336,7 +328,6 @@ public class FileManager {
             bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
             bos.write(data);
 
-
         } catch (IOException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
@@ -354,8 +345,7 @@ public class FileManager {
     }
 
     public static Uri getFileUri(File file) {
-        return FileProvider.getUriForFile(Application.getInstance(),
-                BuildConfig.APPLICATION_ID + ".provider", file);
+        return FileProvider.getUriForFile(Application.getInstance(), BuildConfig.APPLICATION_ID + ".provider", file);
     }
 
     public static File createTempImageFile(String name) throws IOException {
@@ -516,8 +506,10 @@ public class FileManager {
         if (file != null) {
             if (file.isDirectory()) {
                 String[] children = file.list();
-                for (int i = 0; i < children.length; i++) {
-                    deletedAll = deleteFile(new File(file, children[i])) && deletedAll;
+                if (children != null) {
+                    for (String child : children) {
+                        deletedAll = deleteFile(new File(file, child)) && deletedAll;
+                    }
                 }
             } else {
                 deletedAll = file.delete();

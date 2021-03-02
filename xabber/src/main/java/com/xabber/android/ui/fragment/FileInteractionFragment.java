@@ -14,7 +14,6 @@ import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
@@ -39,13 +38,15 @@ import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
+import com.xabber.android.ui.activity.MessagesActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.VoiceDownloadDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -57,7 +58,6 @@ import java.util.Locale;
 import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Subscription;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import top.oply.opuslib.OpusEvent;
 
@@ -88,8 +88,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     boolean sendImmediately = false;
     boolean ignoreReceiver = true;
 
-    private OpusReceiver opusReceiver = new OpusReceiver();
-    private PublishSubject<DownloadManager.ProgressData> voiceDownload;
+    private final OpusReceiver opusReceiver = new OpusReceiver();
     private Subscription voiceDownloadSubscription;
 
     protected AccountJid account;
@@ -106,7 +105,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(SAVE_ACCOUNT, account);
         outState.putParcelable(SAVE_USER, user);
@@ -182,7 +181,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
      */
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
@@ -268,7 +267,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     protected void subscribeForVoiceDownloadProgress() {
-        voiceDownload = DownloadManager.getInstance().subscribeForProgress();
+        PublishSubject<DownloadManager.ProgressData> voiceDownload = DownloadManager.getInstance().subscribeForProgress();
         if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
         voiceDownloadSubscription = voiceDownload.doOnNext(this::waitForVoiceDownloadFinish).subscribe();
     }
@@ -428,15 +427,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     void unregisterOpusBroadcastReceiver() {
         getActivity().unregisterReceiver(opusReceiver);
     }
-
-    //void stopRecordingIfPossibleAsync(final boolean saveFile) {
-    //    Application.getInstance().runInBackground(new Runnable() {
-    //        @Override
-    //        public void run() {
-    //            stopRecordingAndSend(saveFile);
-    //        }
-    //    });
-    //}
 
     private void startCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -623,9 +613,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void manageOpeningFile(AttachmentRealmObject attachmentRealmObject) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         String path = attachmentRealmObject.getFilePath();
-        i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                getActivity().getApplicationContext().getPackageName()
-                        + ".provider", new File(path)), attachmentRealmObject.getMimeType());
+        i.setDataAndType(FileProvider.getUriForFile(requireActivity(),
+                requireActivity().getApplicationContext().getPackageName() + ".provider",
+                new File(path)), attachmentRealmObject.getMimeType());
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {
@@ -638,7 +628,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     private void waitForVoiceDownloadFinish(DownloadManager.ProgressData progressData) {
         if (progressData.isCompleted()) {
-            if (progressData.getAttachmentId() != null && clickedAttachmentUID != null && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
+            if (progressData.getAttachmentId() != null
+                    && clickedAttachmentUID != null
+                    && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
                 VoiceManager.getInstance().voiceClicked(clickedMessageUID, clickedAttachmentPos, messageTimestamp);
             }
         }
@@ -654,15 +646,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             if (bundle != null) {
                 int type = bundle.getInt(OpusEvent.EVENT_TYPE, 0);
                 switch (type) {
-                    case OpusEvent.CONVERT_STARTED:
-                    case OpusEvent.RECORD_STARTED:
-                    case OpusEvent.PLAY_PROGRESS_UPDATE:
-                    case OpusEvent.PLAY_GET_AUDIO_TRACK_INFO:
-                    case OpusEvent.PLAYING_PAUSED:
-                    case OpusEvent.PLAYING_STARTED:
-                    case OpusEvent.RECORD_PROGRESS_UPDATE:
-                        break;
-
                     case OpusEvent.RECORD_FINISHED:
                         if (sendImmediately) {
                             String path = VoiceManager.getInstance().getNewFilePath();
@@ -688,4 +671,5 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             }
         }
     }
+
 }

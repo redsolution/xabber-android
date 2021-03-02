@@ -32,12 +32,12 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     private static final String LOG_TAG = VoiceManager.class.getSimpleName();
 
     private static VoiceManager instance;
-    private AudioManager audioManager;
+    private final AudioManager audioManager;
     private AudioAttributes audioAttributes;
     private AudioFocusRequest audioFocusRequest;
     private MediaPlayer mp;
     //private MediaRecorder mr;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private String currentPlayingMessageId;
     private String currentPlayingAttachmentId;
     private Long messageTimestamp;
@@ -74,17 +74,13 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         audioManager = (AudioManager) Application.getInstance().getSystemService(Context.AUDIO_SERVICE);
     }
 
-    private Runnable updateAudioProgress = new Runnable() {
+    private final Runnable updateAudioProgress = new Runnable() {
         @Override
         public void run() {
             publishAudioProgressWithCustomCode(NORMAL_AUDIO_PROGRESS);
             mHandler.postDelayed(this, 100);
         }
     };
-
-    public void voiceClicked(MessageRealmObject message) {
-        voiceClicked(message, 0, null);
-    }
 
     public void voiceClicked(String filePath) {
         File file = new File(filePath);
@@ -212,25 +208,21 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 if (currentPlayingAttachmentId != null &&
                         currentPlayingAttachmentId.equals(clickedAttachmentId)) {
                     manageSameVoicePlaybackControls(clickedFilePath);
-                    checkDuration(clickedDuration, clickedFilePath, clickedAttachmentId);
-                    currentPlayingAttachmentId = clickedAttachmentId;
                 } else {
                     manageDiffVoicePlaybackControl(clickedFilePath);
-                    checkDuration(clickedDuration, clickedFilePath, clickedAttachmentId);
-                    currentPlayingAttachmentId = clickedAttachmentId;
                 }
+                checkDuration(clickedDuration, clickedFilePath, clickedAttachmentId);
+                currentPlayingAttachmentId = clickedAttachmentId;
                 currentPlayingMessageId = clickedMessageId;
-                alreadySent = clickedAlreadySent;
-                messageTimestamp = clickedTimestamp;
 
             } else {
                 manageDiffVoicePlaybackControl(clickedFilePath);
                 checkDuration(clickedDuration, clickedFilePath, clickedAttachmentId);
                 currentPlayingMessageId = clickedMessageId;
                 currentPlayingAttachmentId = clickedAttachmentId;
-                alreadySent = clickedAlreadySent;
-                messageTimestamp = clickedTimestamp;
             }
+            alreadySent = clickedAlreadySent;
+            messageTimestamp = clickedTimestamp;
         }
     }
 
@@ -444,15 +436,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
 
-    public void releaseMediaRecorder() {
-        //mHandler.removeCallbacks(createLocalWaveform);
-        stopRecording(false);
-        //if (mr != null) {
-        //    mr.reset();
-        //    mr.release();
-        //    mr = null;
-        //}
-    }
+    public void releaseMediaRecorder() { stopRecording(false); }
 
     public void updateAudioProgressBar() {
         mHandler.postDelayed(updateAudioProgress, 100);
@@ -586,7 +570,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     private void publishCompletedAudioProgress(int attachmentIdHash) {
-        PublishAudioProgress.getInstance().updateAudioProgress(0, getOptimalVoiceDuration(), attachmentIdHash, COMPLETED_AUDIO_PROGRESS, messageTimestamp);
+        PublishAudioProgress.getInstance().updateAudioProgress(0, getOptimalVoiceDuration(),
+                attachmentIdHash, COMPLETED_AUDIO_PROGRESS, messageTimestamp);
     }
 
     public static class PublishAudioProgress {
