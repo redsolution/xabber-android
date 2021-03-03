@@ -64,7 +64,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import kotlin.collections.CollectionsKt;
 
 import static com.xabber.xmpp.avatar.UserAvatarManager.DATA_NAMESPACE;
 import static com.xabber.xmpp.avatar.UserAvatarManager.METADATA_NAMESPACE;
@@ -170,6 +173,14 @@ public class GroupMemberManager implements OnLoadListener {
 
     public GroupMember getGroupMemberById(String id) {
         return members.get(id);
+    }
+
+    public GroupMember getMe(ContactJid groupJid){
+        try {
+            return CollectionsKt.first(getGroupMembers(groupJid), GroupMember::isMe);
+        } catch (NoSuchElementException e){
+            return null;
+        }
     }
 
     public Collection<GroupMember> getGroupMembers(ContactJid groupJid){

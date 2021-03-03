@@ -59,6 +59,8 @@
     <string name="groupchat_custom_group_server">Custom group server</string>
     <string name="groupchat_provided_by_xabber">Group server provided by xabber.org</string>
     <string name="groupchat_provided_by_your_server">Provided by your server</string>
+    <string name="groupchat_incognito_reply">Incognito reply</string>
+    <string name="groupchat_reply_as">Reply as %s</string>
 
     <string name="groupchat_membership_type_none">None</string>
     <string name="groupchat_membership_type_open">Open</string>

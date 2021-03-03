@@ -32,6 +32,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -95,7 +96,7 @@ public class MessageNotificationCreator {
 
         boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.addAction(createReplyAction(chat.getNotificationId(), chat.getAccountJid()))
+            builder.addAction(createReplyAction(chat, chat.getAccountJid()))
                     .setStyle(createMessageStyle(chat, showText));
         } else {
             builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
@@ -398,13 +399,20 @@ public class MessageNotificationCreator {
 
     /** ACTIONS */
 
-    private NotificationCompat.Action createReplyAction(int notificationId, AccountJid accountJid) {
+    private NotificationCompat.Action createReplyAction(MessageNotificationManager.Chat chat, AccountJid accountJid) {
+        String label;
+        if (chat.isGroupChat() && chat.getPrivacyType().equals(GroupPrivacyType.INCOGNITO)){
+            GroupMember me = GroupMemberManager.getInstance().getMe(chat.getContactJid());
+            if ( me != null){
+                label = context.getString(R.string.groupchat_reply_as, me.getNickname());
+            } else label = context.getString(R.string.groupchat_incognito_reply);
+        } else label = context.getString(R.string.chat_input_hint);
         RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_REPLY_TEXT)
-                .setLabel(context.getString(R.string.chat_input_hint))
+                .setLabel(label)
                 .build();
 
         return new NotificationCompat.Action.Builder(R.drawable.ic_message_forwarded_14dp,
-                context.getString(R.string.action_reply), NotificationReceiver.createReplyIntent(context, notificationId, accountJid))
+                context.getString(R.string.action_reply), NotificationReceiver.createReplyIntent(context, chat.getNotificationId(), accountJid))
                 .addRemoteInput(remoteInput)
                 .build();
     }
