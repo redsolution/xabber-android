@@ -99,7 +99,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
             holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
         else holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
 
-        holder.avatar.setImageDrawable(AvatarManager.getInstance().getGroupchatMemberAvatar(bindMember, chat.getAccount()));
+        holder.avatar.setImageDrawable(AvatarManager.getInstance().getGroupMemberAvatar(bindMember, chat.getAccount()));
     }
 
     @Override

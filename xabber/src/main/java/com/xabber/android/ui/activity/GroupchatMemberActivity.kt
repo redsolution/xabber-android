@@ -234,7 +234,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private fun setupAvatar() {
         var backgroundSource = AvatarManager.getInstance()
-                .getGroupchatMemberAvatar(groupMember, accountJid)
+                .getGroupMemberAvatar(groupMember, accountJid)
         if (backgroundSource == null) backgroundSource = resources.getDrawable(R.drawable.about_backdrop)
         Glide.with(this)
                 .load(backgroundSource)

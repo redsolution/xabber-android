@@ -28,6 +28,7 @@ object NotificationChatRepository {
                             chatTitle = chat.chatTitle.toString()
                             notificationID = chat.notificationId
                             isGroupChat = chat.isGroupChat
+                            privacyType = chat.privacyType
                             messages = RealmList<NotificationMessageRealmObject>().apply {
                                 addAll(chat.messages.map { it.toRealmMessage() })
                             }
@@ -50,11 +51,11 @@ object NotificationChatRepository {
                         .findAll()
                         .map { realmObject -> MessageNotificationManager.getInstance().Chat(
                                 realmObject.id, realmObject.account, realmObject.user, realmObject.notificationID,
-                                realmObject.chatTitle, realmObject.isGroupChat)
+                                realmObject.chatTitle, realmObject.isGroupChat, realmObject.privacyType)
                                 .apply {
                                     messages.addAll(realmObject.messages.map { message ->
-                                        MessageNotificationManager.getInstance().Message(
-                                            message.id, message.author, message.text, message.timestamp)
+                                        MessageNotificationManager.getInstance().Message(message.id, message.author,
+                                                message.text, message.timestamp, message.memberId)
                                     })
                                 }
                         }
@@ -130,6 +131,7 @@ object NotificationChatRepository {
     }
 
     private fun MessageNotificationManager.Message.toRealmMessage() =
-            NotificationMessageRealmObject(this.id, this.author.toString(), this.messageText.toString(), this.timestamp)
+            NotificationMessageRealmObject(this.id, this.author.toString(), this.messageText.toString(),
+                    this.timestamp, this.groupMemberId)
 
 }

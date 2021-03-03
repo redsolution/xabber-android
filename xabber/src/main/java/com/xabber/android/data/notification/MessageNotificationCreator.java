@@ -30,6 +30,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -258,8 +260,15 @@ public class MessageNotificationCreator {
     }
 
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
-        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
-        return AvatarManager.getInstance().getUserBitmap(chat.getContactJid(), name);
+        if (chat.isGroupChat()){
+            List<MessageNotificationManager.Message> messages = chat.getMessages();
+            GroupMember member = GroupMemberManager.getInstance()
+                    .getGroupMemberById(messages.get(messages.size() - 1).getGroupMemberId());
+            return AvatarManager.getInstance().getGroupMemberCircleBitmap(member, chat.getAccountJid());
+        } else {
+            String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
+            return AvatarManager.getInstance().getContactCircleBitmap(chat.getContactJid(), name);
+        }
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
@@ -284,7 +293,7 @@ public class MessageNotificationCreator {
     }
 
     private String createMessageLine(MessageNotificationManager.Message message, boolean isGroupChat, boolean showText) {
-        return (isGroupChat ? message.getAuthor() + ": " : "") + (showText ? message.getMessageText() : messageHidden);
+        return (isGroupChat ? message.getAuthor().toString() : "") + (showText ? message.getMessageText() : messageHidden);
     }
 
     private Spannable createChatLine(MessageNotificationManager.Chat chat) {
@@ -292,7 +301,7 @@ public class MessageNotificationCreator {
         CharSequence chatTitle = chat.getChatTitle();
         CharSequence author = chat.getLastMessage().getAuthor();
         CharSequence message = showText ? chat.getLastMessage().getMessageText() : messageHidden;
-        String contactAndMessage = (chat.isGroupChat() ? chatTitle + ": " : "") + author + " " + message;
+        String contactAndMessage = (chat.isGroupChat() ? chatTitle.toString() : "") + author + " " + message;
         Spannable spannable =  new SpannableString(contactAndMessage);
         spannable.setSpan(new ForegroundColorSpan(Color.DKGRAY), 0,
                 contactAndMessage.length() - message.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -442,4 +451,5 @@ public class MessageNotificationCreator {
             return (int) (chatA.getLastMessageTimestamp() - chatB.getLastMessageTimestamp());
         }
     }
+
 }

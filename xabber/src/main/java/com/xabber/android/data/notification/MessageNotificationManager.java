@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -16,6 +18,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -94,7 +97,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
                 // update notification
                 if (action.getActionType() == Action.ActionType.reply) {
-                    addMessage(chat, "", action.getReplyText(), false);
+                    addMessage(chat, "", action.getReplyText(), false, null);
                     NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
                 }
             }
@@ -127,10 +130,11 @@ public class MessageNotificationManager implements OnLoadListener {
         String chatTitle = isGroup ?
                 RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName()
                 : "";
+        GroupPrivacyType privacyType = isGroup ? ((GroupChat) abstractChat).getPrivacyType() : null;
         Chat chat = getChat(messageRealmObject.getAccount(), messageRealmObject.getUser());
         if (chat == null) {
             chat = new Chat(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                    getNextChatNotificationId(), chatTitle, isGroup);
+                    getNextChatNotificationId(), chatTitle, isGroup, privacyType);
             chats.add(chat);
         }
 
@@ -138,7 +142,8 @@ public class MessageNotificationManager implements OnLoadListener {
                 GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId()).getNickname()
                 : RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
 
-        addMessage(chat, sender + ":", getNotificationText(messageRealmObject), true);
+        addMessage(chat, sender + ":", getNotificationText(messageRealmObject), true,
+                messageRealmObject.getGroupchatUserId());
         NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
     }
 
@@ -261,8 +266,9 @@ public class MessageNotificationManager implements OnLoadListener {
         }
     }
 
-    private void addMessage(Chat notification, CharSequence author, CharSequence messageText, boolean alert) {
-        lastMessage = new Message(author, messageText, System.currentTimeMillis());
+    private void addMessage(Chat notification, CharSequence author, CharSequence messageText, boolean alert,
+                            @Nullable String groupMemberId) {
+        lastMessage = new Message(author, messageText, System.currentTimeMillis(), groupMemberId);
         notification.addMessage(lastMessage);
         notification.stopRemoveTimer();
         addNotification(notification, alert);
@@ -375,27 +381,30 @@ public class MessageNotificationManager implements OnLoadListener {
         private final int notificationId;
         private final CharSequence chatTitle;
         private final boolean isGroupChat;
+        private final GroupPrivacyType privacyType;
         private final List<Message> messages = new ArrayList<>();
         private Handler removeTimer;
 
         public Chat(AccountJid accountJid, ContactJid contactJid, int notificationId, CharSequence chatTitle,
-                    boolean isGroupChat) {
+                    boolean isGroupChat, @Nullable GroupPrivacyType groupPrivacyType) {
             this.accountJid = accountJid;
             this.contactJid = contactJid;
             this.notificationId = notificationId;
             this.chatTitle = chatTitle;
             this.id = UUID.randomUUID().toString();
             this.isGroupChat = isGroupChat;
+            this.privacyType = groupPrivacyType;
         }
 
         public Chat(String id, AccountJid accountJid, ContactJid contactJid, int notificationId, CharSequence chatTitle,
-                    boolean isGroupChat) {
+                    boolean isGroupChat, @Nullable GroupPrivacyType groupPrivacyType) {
             this.id = id;
             this.accountJid = accountJid;
             this.contactJid = contactJid;
             this.notificationId = notificationId;
             this.chatTitle = chatTitle;
             this.isGroupChat = isGroupChat;
+            this.privacyType = groupPrivacyType;
         }
 
         public String getId() { return id; }
@@ -431,8 +440,9 @@ public class MessageNotificationManager implements OnLoadListener {
                         () -> removeChat(notificationId)), 500);
             });
         }
-
         public void stopRemoveTimer() { if (removeTimer != null) removeTimer.removeCallbacksAndMessages(null); }
+
+        public GroupPrivacyType getPrivacyType() { return privacyType; }
 
     }
 
@@ -441,19 +451,23 @@ public class MessageNotificationManager implements OnLoadListener {
         private final CharSequence author;
         private CharSequence messageText;
         private final long timestamp;
+        private final String groupMemberId;
 
-        public Message(CharSequence author, CharSequence messageText, long timestamp) {
+        public Message(CharSequence author, CharSequence messageText, long timestamp, @Nullable String groupMemberId) {
             this.author = author;
             this.messageText = messageText;
             this.timestamp = timestamp;
             this.id = UUID.randomUUID().toString();
+            this.groupMemberId = groupMemberId;
         }
 
-        public Message(String id, CharSequence author, CharSequence messageText, long timestamp) {
+        public Message(String id, CharSequence author, CharSequence messageText, long timestamp,
+                       @Nullable String groupMemberId) {
             this.id = id;
             this.author = author;
             this.messageText = messageText;
             this.timestamp = timestamp;
+            this.groupMemberId = groupMemberId;
         }
 
         public CharSequence getAuthor() { return author; }
@@ -476,6 +490,8 @@ public class MessageNotificationManager implements OnLoadListener {
         public String getId() {
             return id;
         }
+
+        public String getGroupMemberId() { return groupMemberId; }
     }
 
 }

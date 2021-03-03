@@ -8,6 +8,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
@@ -206,8 +207,13 @@ public class NotificationChannelUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void resetNotificationChannel(NotificationManager notifManager, String channelID) {
-        if (getChannelID(ChannelType.privateChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.privateChat);
-        else if (getChannelID(ChannelType.groupChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.groupChat);
-        else if (getChannelID(ChannelType.attention).equals(channelID)) resetMessageChannel(notifManager, ChannelType.attention);
+        if (getChannelID(ChannelType.privateChat).equals(channelID)) {
+            resetMessageChannel(notifManager, ChannelType.privateChat);
+        } else if (getChannelID(ChannelType.groupChat).equals(channelID)){
+            resetMessageChannel(notifManager, ChannelType.groupChat);
+        } else if (getChannelID(ChannelType.attention).equals(channelID)) {
+            resetMessageChannel(notifManager, ChannelType.attention);
+        }
     }
+
 }

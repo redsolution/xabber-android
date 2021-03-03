@@ -227,7 +227,7 @@ public class IncomingMessageVH  extends FileMessageVH {
 
             }
             Glide.with(context)
-                    .load(AvatarManager.getInstance().getGroupchatMemberAvatar(groupMember,
+                    .load(AvatarManager.getInstance().getGroupMemberAvatar(groupMember,
                             messageRealmObject.getAccount()))
                     .centerCrop()
                     .placeholder(placeholder)

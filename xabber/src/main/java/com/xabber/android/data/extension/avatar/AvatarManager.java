@@ -506,7 +506,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    public Drawable getGroupchatMemberAvatar(GroupMember member, AccountJid account) {
+    public Drawable getGroupMemberAvatar(GroupMember member, AccountJid account) {
         String avatarHash = member.getAvatarHash();
         Drawable drawable;
         if (avatarHash != null) {
@@ -547,8 +547,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Gets bitmap with avatar for regular user.
      */
-    public Bitmap getUserBitmap(ContactJid user, String name) {
+    public Bitmap getContactCircleBitmap(ContactJid user, String name) {
         return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
+    }
+
+    public Bitmap getGroupMemberCircleBitmap(GroupMember groupMember, AccountJid accountJid){
+        return getCircleBitmap(drawableToBitmap(getGroupMemberAvatar(groupMember, accountJid)));
     }
 
     /**

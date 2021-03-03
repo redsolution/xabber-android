@@ -64,7 +64,7 @@ public class ShortcutBuilder {
     }
 
     private static Bitmap getAvatar(AbstractContact abstractContact) {
-        Bitmap bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getContactJid(), abstractContact.getName());
+        Bitmap bitmap = AvatarManager.getInstance().getContactCircleBitmap(abstractContact.getContactJid(), abstractContact.getName());
         return AvatarManager.getInstance().createShortcutBitmap(bitmap);
     }
 
