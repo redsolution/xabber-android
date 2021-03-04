@@ -216,11 +216,21 @@ public class MessageNotificationCreator {
     }
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
-        NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(
-                new Person.Builder()
-                        .setName(context.getString(R.string.sender_is_you))
-                        .setIcon(IconCompat.createWithBitmap(getMyAvatarBitmap(chat)))
-                        .build());
+        NotificationCompat.MessagingStyle messageStyle;
+        try {
+            messageStyle = new NotificationCompat.MessagingStyle(
+                    new Person.Builder()
+                            .setName(context.getString(R.string.sender_is_you))
+                            .setIcon(IconCompat.createWithBitmap(getMyAvatarBitmap(chat)))
+                            .build());
+        } catch (NullPointerException npe){
+            LogManager.exception(MessageNotificationCreator.class.getSimpleName(), npe);
+            messageStyle = new NotificationCompat.MessagingStyle(
+                    new Person.Builder()
+                            .setName(context.getString(R.string.sender_is_you))
+                            .build());
+        }
+
         for (MessageNotificationManager.Message message : chat.getMessages()) {
             Person person = null;
             if (message.getAuthor() != null && message.getAuthor().length() > 0) {
