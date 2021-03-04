@@ -1,6 +1,5 @@
 package com.xabber.android.ui.fragment.groups;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -96,24 +95,12 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onAttach(@NotNull Context context) {
-        super.onAttach(context);
+    public void onResume() {
+        super.onResume();
+
         Application.getInstance().addUIListener(OnGroupchatRequestListener.class, this);
         Application.getInstance().addUIListener(OnVCardListener.class, this);
         Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener.class, this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Application.getInstance().removeUIListener(OnGroupchatRequestListener.class, this);
-        Application.getInstance().removeUIListener(OnVCardListener.class, this);
-        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 
         VCardManager.getInstance().requestByUser(account, groupchatContact.getJid());
 
@@ -131,6 +118,10 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onPause() {
         super.onPause();
+
+        Application.getInstance().removeUIListener(OnGroupchatRequestListener.class, this);
+        Application.getInstance().removeUIListener(OnVCardListener.class, this);
+        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
 
         if (groupChat != null && groupChat instanceof GroupChat) {
             try {
