@@ -293,6 +293,8 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private void addNotification(Chat chat, boolean alert) {
+        if (chat.isGroupChat()) GroupMemberManager.getInstance().requestMe(chat.getAccountJid(), chat.getContactJid());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
             if (isShowBanners){
