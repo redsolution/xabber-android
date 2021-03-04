@@ -97,7 +97,9 @@ public class MessageNotificationManager implements OnLoadListener {
 
                 // update notification
                 if (action.getActionType() == Action.ActionType.reply) {
-                    addMessage(chat, "", action.getReplyText(), false, null);
+                    String groupMemberId = chat.isGroupChat() ?
+                            GroupMemberManager.getInstance().getMe(chat.contactJid).getId() : null;
+                    addMessage(chat, "", action.getReplyText(), false, groupMemberId);
                     NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
                 }
             }

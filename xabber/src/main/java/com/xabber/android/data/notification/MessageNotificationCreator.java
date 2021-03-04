@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -96,8 +97,7 @@ public class MessageNotificationCreator {
 
         boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.addAction(createReplyAction(chat, chat.getAccountJid()))
-                    .setStyle(createMessageStyle(chat, showText));
+            builder.addAction(createReplyAction(chat, chat.getAccountJid())).setStyle(createMessageStyle(chat, showText));
         } else {
             builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
                     .setContentText(createMessageLine(chat.getLastMessage(), chat.isGroupChat(), showText))
@@ -217,7 +217,10 @@ public class MessageNotificationCreator {
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
         NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(
-                new Person.Builder().setName(context.getString(R.string.sender_is_you)).build());
+                new Person.Builder()
+                        .setName(context.getString(R.string.sender_is_you))
+                        .setIcon(IconCompat.createWithBitmap(getMyAvatarBitmap(chat)))
+                        .build());
         for (MessageNotificationManager.Message message : chat.getMessages()) {
             Person person = null;
             if (message.getAuthor() != null && message.getAuthor().length() > 0) {
@@ -270,6 +273,13 @@ public class MessageNotificationCreator {
             String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
             return AvatarManager.getInstance().getContactCircleBitmap(chat.getContactJid(), name);
         }
+    }
+
+    private Bitmap getMyAvatarBitmap(MessageNotificationManager.Chat chat){
+        if (chat.isGroupChat()){
+            return AvatarManager.getInstance().getGroupMemberCircleBitmap(
+                    GroupMemberManager.getInstance().getMe(chat.getContactJid()), chat.getAccountJid());
+        } else return AvatarManager.getInstance().getAccountCircleBitmapAvatar(chat.getAccountJid());
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
@@ -407,6 +417,7 @@ public class MessageNotificationCreator {
                 label = context.getString(R.string.groupchat_reply_as, me.getNickname());
             } else label = context.getString(R.string.groupchat_incognito_reply);
         } else label = context.getString(R.string.chat_input_hint);
+
         RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_REPLY_TEXT)
                 .setLabel(label)
                 .build();

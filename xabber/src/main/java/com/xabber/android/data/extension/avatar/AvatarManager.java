@@ -555,6 +555,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return getCircleBitmap(drawableToBitmap(getGroupMemberAvatar(groupMember, accountJid)));
     }
 
+    public Bitmap getAccountCircleBitmapAvatar(AccountJid accountJid) {
+        return getCircleBitmap(drawableToBitmap(getAccountAvatar(accountJid)));
+    }
+
     /**
      * Generate text-based avatar for regular user.
      */

@@ -73,8 +73,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_REPLY);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createMarkAsReadIntent(Context context, int notificationId, AccountJid accountJid) {
@@ -82,8 +81,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_MARK_AS_READ);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createMuteIntent(Context context, int notificationId, AccountJid accountJid) {
@@ -91,15 +89,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_MUTE);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createDeleteIntent(Context context, int notificationId) {
         Intent intent = new Intent(context, NotificationReceiver.class);
         intent.setAction(NotificationReceiver.ACTION_CANCEL);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
+
 }
