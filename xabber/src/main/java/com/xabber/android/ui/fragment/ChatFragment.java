@@ -190,7 +190,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageButton attachButton;
     private ImageButton recordButton;
     private View lastHistoryProgressBar;
-    private View previousHistoryProgressBar;
     private TextView blockedView;
     private ViewStub stubNotify;
     private RelativeLayout notifyLayout;
@@ -525,8 +524,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordLockChevronImage = view.findViewById(R.id.iv_record_chevron_lock);
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
-        previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
-
 
         securityButton = view.findViewById(R.id.button_security);
         securityButton.setOnClickListener(v -> showSecurityMenu());
@@ -573,7 +570,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         realmRecyclerView.setLayoutManager(layoutManager);
 
         layoutManager.setStackFromEnd(true);
-
 
         realmRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -847,14 +843,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private IntroViewDecoration.IntroType getIntroType(){
-        IntroViewDecoration.IntroType type = IntroViewDecoration.IntroType.REGULAR_CHAT;
-        if (getChat() instanceof RegularChat) type = IntroViewDecoration.IntroType.REGULAR_CHAT;
         if (getChat() instanceof GroupChat){
-            if (((GroupChat) getChat()).getPrivacyType() == GroupPrivacyType.INCOGNITO)
-                type = IntroViewDecoration.IntroType.INCOGNITO_GROUP;
-            else type = IntroViewDecoration.IntroType.PUBLIC_GROUP;
-        }
-        return type;
+            if (((GroupChat) getChat()).getPrivacyType() == GroupPrivacyType.INCOGNITO){
+                return IntroViewDecoration.IntroType.INCOGNITO_GROUP;
+            } else return IntroViewDecoration.IntroType.PUBLIC_GROUP;
+        } else return IntroViewDecoration.IntroType.REGULAR_CHAT;
     }
 
     private void setIntroView() {
@@ -1053,23 +1046,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
 
         inputView.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!skipOnTextChanges && stopTypingTimer != null) {
                     stopTypingTimer.cancel();
                 }
             }
-
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override
             public void afterTextChanged(Editable text) {
                 ChatFragment.this.afterTextChanged(text);
             }
-
         });
     }
 
@@ -1089,7 +1077,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 Application.getInstance().runOnUiThread(() ->
                         ChatStateManager.getInstance().onPaused(account, user));
             }
-
         }, STOP_TYPING_DELAY);
     }
 
@@ -1118,12 +1105,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         //If the text keyboard closes, also dismiss the emoji popup
         popup.setOnSoftKeyboardOpenCloseListener(new EmojiconsPopup.OnSoftKeyboardOpenCloseListener() {
-
             @Override
-            public void onKeyboardOpen(int keyBoardHeight) {
-
-            }
-
+            public void onKeyboardOpen(int keyBoardHeight) { }
             @Override
             public void onKeyboardClose() {
                 if (popup.isShowing())
@@ -1287,9 +1270,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (securityLevel == SecurityLevel.plain) {
             menu.findItem(R.id.action_start_encryption).setVisible(true)
                     .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled);
-        } else {
-            menu.findItem(R.id.action_restart_encryption).setVisible(true);
-        }
+        } else menu.findItem(R.id.action_restart_encryption).setVisible(true);
+
 
         boolean isEncrypted = securityLevel != SecurityLevel.plain;
 
@@ -1305,9 +1287,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         boolean empty = inputView.getText().toString().trim().isEmpty();
         if (empty) empty = (bottomPanelMessagesIds.isEmpty() || isReply);
 
-        if (empty != isInputEmpty) {
-            isInputEmpty = empty;
-        }
+        if (empty != isInputEmpty) isInputEmpty = empty;
 
         if (isInputEmpty) {
             sendButton.setVisibility(View.GONE);
@@ -1336,9 +1316,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         skipOnTextChanges = false;
 
-        if (!inputView.getText().toString().isEmpty()) {
-            inputView.requestFocus();
-        }
+        if (!inputView.getText().toString().isEmpty()) inputView.requestFocus();
     }
 
     private void saveInputState() {
@@ -1463,13 +1441,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void scrollDown() {
-
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
     private void scrollToFirstUnread(int unreadCount) {
-        layoutManager.scrollToPositionWithOffset(
-                chatMessageAdapter.getItemCount() - unreadCount, 200);
+        layoutManager.scrollToPositionWithOffset(chatMessageAdapter.getItemCount() - unreadCount, 200);
     }
 
     private void updateSecurityButton() {
@@ -1518,8 +1494,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         skipOnTextChanges = true;
         int spanStart = 0;
         int spanEnd;
-        if (bottomMessagesPanel != null
-                && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
+        if (bottomMessagesPanel != null && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING) {
             setInputTextAtCursor(quote);
             return;
         }
@@ -1563,7 +1538,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
             showExportChatDialog();
         }
-
     }
 
     private void showExportChatDialog() {
@@ -1599,8 +1573,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         boolean onlyOutgoing = true;
         for (MessageRealmObject messageRealmObject : messages) {
             ids.add(messageRealmObject.getUniqueId());
-            if (messageRealmObject.isIncoming())
-                onlyOutgoing = false;
+            if (messageRealmObject.isIncoming()) onlyOutgoing = false;
         }
         int size = ids.size();
         if (RewriteManager.getInstance().isSupported(account)) {
@@ -1713,12 +1686,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.avatar) {
-            showContactInfo();
-        }
-        if (v.getId() == R.id.btnScrollDown) {
-            onScrollDownClick();
-        }
+        if (v.getId() == R.id.avatar)  showContactInfo();
+        else if (v.getId() == R.id.btnScrollDown) onScrollDownClick();
     }
 
     public void showContactInfo() {
@@ -1980,9 +1949,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void setupNotifyLayout(Intent notifyIntent) {
-        if (notifyLayout == null || tvNotifyTitle == null || tvNotifyAction == null) {
-            inflateNotifyLayout();
-        }
+        if (notifyLayout == null || tvNotifyTitle == null || tvNotifyAction == null) inflateNotifyLayout();
 
         if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
             tvNotifyTitle.setText(R.string.otr_verification_progress_title);
@@ -2018,9 +1985,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void showBlockedBar() {
         for (int i = 0; i < inputPanel.getChildCount(); i++) {
             View view = inputPanel.getChildAt(i);
-            if (view != null && view.getVisibility() == View.VISIBLE) {
-                view.setVisibility(View.GONE);
-            }
+            if (view != null && view.getVisibility() == View.VISIBLE) view.setVisibility(View.GONE);
+
         }
         if (blockedView == null) {
             blockedView = new TextView(getContext());
@@ -2052,9 +2018,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return;
         }
 
-        if (!VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
-            return;
-        }
+        if (!VCardManager.getInstance().isRosterOrHistoryLoaded(account)) return;
+
 
         AbstractChat chat = getChat();
         SubscriptionState subscriptionState = RosterManager.getInstance().getSubscriptionState(account, user);
@@ -2084,9 +2049,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 break;
         }
 
-        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())){
-            show = true;
-        }
+        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())) show = true;
+
 
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
@@ -2165,8 +2129,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         GroupInviteManager.INSTANCE.acceptInvitation(account, user);
                     } else {
                         if (!inRoster) {
-                            RosterManager.getInstance()                                                            // Create contact if not in roster.
-                                    .createContact(getAccount(), getUser(), name, new ArrayList<>());        // (subscription request is sent automatically)
+                            RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<>());// Create contact if not in roster. (subscription request is sent automatically)
                         } else {
                             if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                  // Either only an active subscription to us OR
                                     || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {        // No active subscriptions.
@@ -2316,9 +2279,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void updateNewReceivedMessageCounter(int count) {
         tvNewReceivedCount.setText(String.valueOf(count));
-        if (count > 0)
+        if (count > 0) {
             tvNewReceivedCount.setVisibility(View.VISIBLE);
-        else tvNewReceivedCount.setVisibility(View.GONE);
+        } else tvNewReceivedCount.setVisibility(View.GONE);
     }
 
     private void setFirstUnreadMessageId(String id) {
@@ -2346,8 +2309,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         handler.removeCallbacks(timer);
         if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
-        } else
-            stopRecordingAndSend(saveMessage);
+        } else stopRecordingAndSend(saveMessage);
         cancelRecordingCompletely();
     }
 
@@ -2449,9 +2411,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (info.getAttachmentIdHash() == 0) {
             recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration(), false);
             if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS
-                    || info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS)
+                    || info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS){
                 recordingPlayButton.setImageResource(R.drawable.ic_play);
-            else recordingPlayButton.setImageResource(R.drawable.ic_pause);
+            } else recordingPlayButton.setImageResource(R.drawable.ic_pause);
         }
     }
 
@@ -2533,9 +2495,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getActivity() != null) {
             if (keepScreenOn) {
                 getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            } else {
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }
+            } else getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
@@ -2551,8 +2511,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void hideBottomMessagePanel() {
         bottomPanelMessagesIds.clear();
         setUpInputViewButtons();
-        if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING))
-            inputView.setText("");
+        if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) inputView.setText("");
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();

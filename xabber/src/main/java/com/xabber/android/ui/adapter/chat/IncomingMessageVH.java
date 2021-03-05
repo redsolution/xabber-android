@@ -19,8 +19,8 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 
 import org.jxmpp.jid.parts.Resourcepart;
@@ -95,13 +95,11 @@ public class IncomingMessageVH  extends FileMessageVH {
             for (AttachmentRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
-                } else {
-                    imageOnly = false;
-                }
-                if(imageOnly) needTail = false;
+                } else imageOnly = false;
+
+                if (imageOnly) needTail = false;
             }
-        } else if (messageRealmObject.hasImage()
-                && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
+        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
             if (messageText.getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
@@ -139,15 +137,15 @@ public class IncomingMessageVH  extends FileMessageVH {
                 Utils.dipToPx(8f, context));
 
         if(imageAttached) {
-        float border = 3.5f;
+            float border = 3.5f;
             messageBalloon.setPadding(
                     Utils.dipToPx(needTail ? border + 8f : border, context),
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context));
-            if(messageText.getText().toString().trim().isEmpty()
-                    && messageRealmObject.isAttachmentImageOnly())
+            if(messageText.getText().toString().trim().isEmpty() && messageRealmObject.isAttachmentImageOnly()) {
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
+            }
         }
 
         needTail = extraData.isNeedTail(); //restoring the original tail value for the interaction with avatars
@@ -177,7 +175,6 @@ public class IncomingMessageVH  extends FileMessageVH {
             public void onViewAttachedToWindow(View view) {
                 if (listener != null) listener.onBind(messageRealmObject);
             }
-
             @Override
             public void onViewDetachedFromWindow(View v) {
                 unsubscribeAll();

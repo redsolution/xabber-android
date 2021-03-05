@@ -16,10 +16,10 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
@@ -250,8 +250,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 GroupMember user2 =
                         GroupMemberManager.getInstance().getGroupMemberById(nextMessage.getGroupchatUserId());
 
-                if (user2 != null)
-                    needTail = !groupMember.getId().equals(user2.getId());
+                if (user2 != null) needTail = !groupMember.getId().equals(user2.getId());
                 else needTail = true;
             } else needTail = true;
         } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
@@ -264,11 +263,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         MessageRealmObject previousMessage = getMessageItem(position - 1);
         if (previousMessage != null) {
             needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
-            if (messageRealmObject.getGroupchatUserId() != null && !messageRealmObject.getGroupchatUserId().isEmpty()
-                    && previousMessage.getGroupchatUserId() != null && !previousMessage.getGroupchatUserId().isEmpty()){
+            if (messageRealmObject.getGroupchatUserId() != null
+                    && !messageRealmObject.getGroupchatUserId().isEmpty()
+                    && previousMessage.getGroupchatUserId() != null
+                    && !previousMessage.getGroupchatUserId().isEmpty()){
                 needName = !messageRealmObject.getGroupchatUserId().equals(previousMessage.getGroupchatUserId());
-            } else { needName = true; }
-        } else{
+            } else needName = true;
+        } else {
             needDate = true;
             needName = true;
         }
@@ -330,11 +331,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         int itemCount = getItemCount();
         if (prevItemCount != itemCount) {
-            if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId))
+            if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId)) {
                 listener.scrollTo(lastPosition + (itemCount - prevItemCount));
-            else if (lastPosition == prevItemCount - 1)
-                listener.scrollTo(itemCount - 1);
-
+            } else if (lastPosition == prevItemCount - 1) listener.scrollTo(itemCount - 1);
             prevItemCount = itemCount;
             prevFirstItemId = firstMessageId;
         }
@@ -343,17 +342,15 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     @Nullable
     public MessageRealmObject getMessageItem(int position) {
         if (position == RecyclerView.NO_POSITION) return null;
-
-        if (position < realmResults.size())
-            return realmResults.get(position);
+        if (position < realmResults.size()) return realmResults.get(position);
         else return null;
     }
 
     @Override
     public void onMessageClick(View caller, int position) {
-        if (isCheckMode && !recyclerView.isComputingLayout())
+        if (isCheckMode && !recyclerView.isComputingLayout()) {
             addOrRemoveCheckedItem(position);
-        else messageListener.onMessageClick(caller, position);
+        } else messageListener.onMessageClick(caller, position);
     }
 
     @Override
@@ -363,9 +360,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     @Override
     public void onMessageAvatarClick(int position) {
-        if (isCheckMode && !recyclerView.isComputingLayout())
+        if (isCheckMode && !recyclerView.isComputingLayout()) {
             addOrRemoveCheckedItem(position);
-        else onMessageAvatarClickListener.onMessageAvatarClick(position);
+        } else onMessageAvatarClickListener.onMessageAvatarClick(position);
     }
 
     public void setFirstUnreadMessageId(String id) {
@@ -373,34 +370,33 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {
-        if (itemsNeedOriginalText.contains(messageId))
+        if (itemsNeedOriginalText.contains(messageId)) {
             itemsNeedOriginalText.remove(messageId);
-        else itemsNeedOriginalText.add(messageId);
+        } else itemsNeedOriginalText.add(messageId);
     }
 
     /** File listener */
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        if (isCheckMode)
+        if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onImageClick(messagePosition, attachmentPosition, messageUID);
+        } else fileListener.onImageClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
     public void onFileClick(int messagePosition, int attachmentPosition, String messageUID) {
-        if (isCheckMode)
+        if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onFileClick(messagePosition, attachmentPosition, messageUID);
+        } else fileListener.onFileClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
     public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID,
                              Long timestamp) {
-
-        if (isCheckMode)
+        if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, timestamp);
+        } else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, timestamp);
     }
 
     @Override
@@ -425,8 +421,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     /** Checked items */
     private void addOrRemoveCheckedItem(int position) {
-        if (recyclerView.isComputingLayout() || recyclerView.isAnimating())
-            return;
+        if (recyclerView.isComputingLayout() || recyclerView.isAnimating()) return;
+
         recyclerView.stopScroll();
         MessageRealmObject messageRealmObject = getItem(position);
         String uniqueId = messageRealmObject.getUniqueId();
@@ -442,9 +438,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean isCheckModePrevious = isCheckMode;
         isCheckMode = checkedItemIds.size() > 0;
 
-        if (isCheckMode != isCheckModePrevious)
+        if (isCheckMode != isCheckModePrevious) {
             notifyDataSetChanged();
-        else notifyItemChanged(position);
+        } else notifyItemChanged(position);
 
         listener.onChangeCheckedItems(checkedItemIds.size());
     }

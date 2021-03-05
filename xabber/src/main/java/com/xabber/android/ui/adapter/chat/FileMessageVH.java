@@ -318,10 +318,9 @@ public class FileMessageVH extends MessageVH
             LogManager.w(LOG_TAG, "onClick: no position");
             return;
         }
-        if (!saved)
+        if (!saved) {
             listener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageId, mainMessageTimestamp);
-        else
-            VoiceManager.getInstance().voiceClicked(messageId, attachmentPosition, mainMessageTimestamp);
+        } else VoiceManager.getInstance().voiceClicked(messageId, attachmentPosition, mainMessageTimestamp);
     }
 
     @Override
@@ -390,7 +389,8 @@ public class FileMessageVH extends MessageVH
 
     protected void subscribeForUploadProgress() {
         subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
-                .doOnNext(this::setUpProgress).subscribe());
+                .doOnNext(this::setUpProgress)
+                .subscribe());
     }
 
     protected void unsubscribeAll() {
@@ -410,11 +410,8 @@ public class FileMessageVH extends MessageVH
                 listener.onDownloadError(progressData.getError());
             } else {
                 showProgress(true);
-                if (messageFileInfo != null) {
-                    messageFileInfo.setText(R.string.message_status_uploading);
-                }
-                if (progressData.getProgress()<=imageCount) {
-                    if (imageGridContainer != null)
+                if (messageFileInfo != null) messageFileInfo.setText(R.string.message_status_uploading);
+                if (progressData.getProgress()<=imageCount && imageGridContainer != null){
                         showProgressModified(true, progressData.getProgress() - 1, imageCount);
                 }
                 if (progressData.getProgress() - imageCount <= fileCount) {
@@ -430,13 +427,8 @@ public class FileMessageVH extends MessageVH
     }
 
     private void showProgress(boolean show) {
-        if (messageFileInfo != null) {
-            messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-        if (messageTime != null) {
-            messageTime.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-
+        if (messageFileInfo != null) messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (messageTime != null) messageTime.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     private void showFileProgressModified(RecyclerView view, int startAt, int endAt) {

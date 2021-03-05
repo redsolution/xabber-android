@@ -108,9 +108,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         if (messageRealmObject.isEncrypted()) {
             ivEncrypted.setVisibility(View.VISIBLE);
-        } else {
-            ivEncrypted.setVisibility(View.GONE);
-        }
+        } else ivEncrypted.setVisibility(View.GONE);
+
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
@@ -134,15 +133,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 messageText.setText(Utils.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
                         TextView.BufferType.SPANNABLE);
-            } else {
-                messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
-            }
+            } else messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+
         }
 
         if (OTRManager.getInstance().isEncrypted(messageRealmObject.getText())) {
-            if (extraData.isShowOriginalOTR())
+            if (extraData.isShowOriginalOTR()) {
                 messageText.setVisibility(View.VISIBLE);
-            else messageText.setVisibility(View.GONE);
+            } else messageText.setVisibility(View.GONE);
             messageNotDecrypted.setVisibility(View.VISIBLE);
         } else {
             messageText.setVisibility(View.VISIBLE);
@@ -182,10 +180,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         if (!needName) messageHeader.setVisibility(View.GONE);
 
         // setup CHECKED
-        if (extraData.isChecked())
+        if (extraData.isChecked()){
             itemView.setBackgroundColor(extraData.getContext().getResources()
                     .getColor(R.color.unread_messages_background));
-        else itemView.setBackground(null);
+        } else itemView.setBackground(null);
     }
 
     void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
@@ -258,6 +256,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 view.setBackground(wrapDrawable);
             else view.setBackground(wrapDrawable);
+
             view.setPadding(pL, pT, pR, pB);
         }
     }

@@ -30,8 +30,7 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
         super(context, attrs);
     }
 
-    public CorrectlyTouchEventTextView(
-            Context context, AttributeSet attrs, int defStyle) {
+    public CorrectlyTouchEventTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -48,8 +47,7 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
         private boolean isUrlHighlighted;
 
         public static LocalLinkMovementMethod getInstance() {
-            if (instance == null)
-                instance = new LocalLinkMovementMethod();
+            if (instance == null) instance = new LocalLinkMovementMethod();
             return instance;
         }
 
@@ -79,24 +77,17 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
                         AlertDialog alertDialog = new AlertDialog.Builder(tv.getContext()).create();
                         alertDialog.setTitle(R.string.open_this_link);
                         alertDialog.setMessage(link[0].getURL());
-                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, tv.getContext().getString(R.string.open), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                link[0].onClick(tv);
-                            }
-                        });
-                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, tv.getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, tv.getContext().getString(R.string.open),
+                                (dialog, which) -> link[0].onClick(tv));
+
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, tv.getContext().getString(R.string.cancel),
+                                (dialog, which) -> dialog.dismiss());
+
                         alertDialog.show();
                         removeUrlHighlightColor(widget);
-                    } else if (action == MotionEvent.ACTION_DOWN) {
-                        Selection.setSelection(buffer,
-                                buffer.getSpanStart(link[0]),
-                                buffer.getSpanEnd(link[0]));
+                    } else {
+                        Selection.setSelection(buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
                         highlightUrl(widget, link[0], buffer);
                     }
 
@@ -116,6 +107,7 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
 
         protected void highlightUrl(TextView textView, ClickableSpan clickableSpan, Spannable text) {
             if (isUrlHighlighted) return;
+
             isUrlHighlighted = true;
 
             int spanStart = text.getSpanStart(clickableSpan);
@@ -132,6 +124,7 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
 
         protected void removeUrlHighlightColor(TextView textView) {
             if (!isUrlHighlighted) return;
+
             isUrlHighlighted = false;
 
             Spannable text = (Spannable) textView.getText();
@@ -140,4 +133,5 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
             Selection.removeSelection(text);
         }
     }
+
 }

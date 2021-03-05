@@ -63,11 +63,7 @@ public class OutgoingMessageVH extends FileMessageVH {
             forwardLayout.setLayoutParams(forwardedParams);
         } else if (forwardLayout != null) forwardLayout.setVisibility(View.GONE);
 
-        if(messageRealmObject.haveAttachments()) {
-            if (messageRealmObject.hasImage()) {
-                needTail = false;
-            }
-        }
+        if(messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) needTail = false;
 
         // setup BACKGROUND
         Drawable shadowDrawable = context.getResources().getDrawable(
@@ -108,7 +104,13 @@ public class OutgoingMessageVH extends FileMessageVH {
                         Utils.dipToPx(border, context));
                 if (messageRealmObject.isAttachmentImageOnly()) {
                     messageTime.setTextColor(context.getResources().getColor(R.color.white));
-                } else messageInfo.setPadding(0, 0, Utils.dipToPx(border+1.5f, context), Utils.dipToPx(4.7f, context));
+                } else {
+                    messageInfo.setPadding(
+                            0,
+                            0,
+                            Utils.dipToPx(border+1.5f, context),
+                            Utils.dipToPx(4.7f, context));
+                }
             }
         }
 
@@ -121,14 +123,9 @@ public class OutgoingMessageVH extends FileMessageVH {
         // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
-            public void onViewAttachedToWindow(View view) {
-                subscribeForUploadProgress();
-            }
-
+            public void onViewAttachedToWindow(View view) { subscribeForUploadProgress(); }
             @Override
-            public void onViewDetachedFromWindow(View v) {
-                unsubscribeAll();
-            }
+            public void onViewDetachedFromWindow(View v) { unsubscribeAll(); }
         });
     }
 
@@ -150,25 +147,26 @@ public class OutgoingMessageVH extends FileMessageVH {
         } else if (messageRealmObject.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (messageRealmObject.isDisplayed() || messageRealmObject.isReceivedFromMessageArchive()) {
-            if(messageRealmObject.isAttachmentImageOnly())
+            if(messageRealmObject.isAttachmentImageOnly()) {
                 messageIcon = R.drawable.ic_message_displayed_image;
-            else messageIcon = R.drawable.ic_message_displayed;
+            } else messageIcon = R.drawable.ic_message_displayed;
         } else if (messageRealmObject.isDelivered()) {
-            if(messageRealmObject.isAttachmentImageOnly())
+            if(messageRealmObject.isAttachmentImageOnly()) {
                 messageIcon = R.drawable.ic_message_delivered_image_14dp;
-            else messageIcon = R.drawable.ic_message_delivered_14dp;
+            } else messageIcon = R.drawable.ic_message_delivered_14dp;
         } else if (messageRealmObject.isAcknowledged() || messageRealmObject.isForwarded()) {
-            if(messageRealmObject.isAttachmentImageOnly())
+            if(messageRealmObject.isAttachmentImageOnly()) {
                 messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
-            else{
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            } else{
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                     messageIcon = R.drawable.ic_message_acknowledged_14dp;
-                else messageIcon = R.drawable.ic_message_acknowledged_dark_14dp;
+                } else messageIcon = R.drawable.ic_message_acknowledged_dark_14dp;
             }
         }
 
-        if (messageIcon != 0) statusIcon.setImageResource(messageIcon);
-        else statusIcon.setVisibility(View.GONE);
+        if (messageIcon != 0) {
+            statusIcon.setImageResource(messageIcon);
+        } else statusIcon.setVisibility(View.GONE);
     }
 
 }

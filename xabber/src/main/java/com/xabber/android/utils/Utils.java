@@ -38,13 +38,10 @@ import java.util.Date;
 
 public class Utils {
 
-    public static int dipToPx(float dip, Context context) {
-        return (int) dipToPxFloat(dip, context);
-    }
+    public static int dipToPx(float dip, Context context) { return (int) dipToPxFloat(dip, context); }
 
     public static float dipToPxFloat(float dip, Context context) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dip, context.getResources().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
     }
 
     public static int spToPx(float sp, Context context) {
@@ -52,16 +49,15 @@ public class Utils {
     }
 
     public static float spToPxFloat(float sp, Context context) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                sp, context.getResources().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
 
     public static int longToInt(long number) {
-        if (number > Integer.MAX_VALUE)
+        if (number > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
-        else if (number < Integer.MIN_VALUE)
+        } else if (number < Integer.MIN_VALUE) {
             return Integer.MIN_VALUE;
-        else return (int) number;
+        } else return (int) number;
     }
 
     public static boolean isSameDay(Long date1, Long date2) {
@@ -78,19 +74,17 @@ public class Utils {
     }
 
     public static void startXabberServiceCompatWithSyncMode(Context context, String pushNode) {
-        startXabberServiceCompat(context,
-                SyncManager.createXabberServiceIntentWithSyncMode(context, pushNode));
+        startXabberServiceCompat(context, SyncManager.createXabberServiceIntentWithSyncMode(context, pushNode));
     }
 
     public static void startXabberServiceCompatWithSyncMode(Context context, AccountJid accountJid) {
-        startXabberServiceCompat(context,
-                SyncManager.createXabberServiceIntentWithSyncMode(context, accountJid));
+        startXabberServiceCompat(context, SyncManager.createXabberServiceIntentWithSyncMode(context, accountJid));
     }
 
     private static void startXabberServiceCompat(Context context, Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
-        else context.startService(intent);
+        } else context.startService(intent);
     }
 
     public static String xmlEncode(String s) {
@@ -129,7 +123,7 @@ public class Utils {
         if (Linkify.addLinks(originalSpannable, Linkify.WEB_URLS)) {
             // get all url spans if addLinks() returned true, meaning that it found web urls
             URLSpan[] originalURLSpans = originalSpannable.getSpans(0, originalSpannable.length(), URLSpan.class);
-            ArrayList<URLSpanContainer> urlSpanContainers = new ArrayList<URLSpanContainer>(originalURLSpans.length);
+            ArrayList<URLSpanContainer> urlSpanContainers = new ArrayList<>(originalURLSpans.length);
             for (URLSpan originalUrl : originalURLSpans) {
                 // save the original url span data
                 urlSpanContainers.add(new URLSpanContainer(originalUrl, originalSpannable.getSpanStart(originalUrl), originalSpannable.getSpanEnd(originalUrl)));
@@ -162,10 +156,8 @@ public class Utils {
                     e.printStackTrace();
                 }
             }
-            return originalSpannable;
-        } else {
-            return originalSpannable;
         }
+        return originalSpannable;
     }
 
     public static void modifySpannableWithCustomQuotes(SpannableStringBuilder spannable, DisplayMetrics displayMetrics, int color) {
@@ -289,15 +281,13 @@ public class Utils {
     }
 
     public static void performHapticFeedback(View view, int feedbackType, int flag) {
-        if (view != null)
-            view.performHapticFeedback(feedbackType, flag);
+        if (view != null) view.performHapticFeedback(feedbackType, flag);
     }
 
     @ColorInt
     public static int getAttrColor(Context context, int attrId) {
-        if (context == null) {
-            return 0;
-        }
+        if (context == null) return 0;
+
         TypedValue value = new TypedValue();
         Resources.Theme theme = context.getTheme();
         theme.resolveAttribute(attrId, value, true);
