@@ -9,7 +9,6 @@ import com.xabber.android.R
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.groups.GroupInviteManager
 import com.xabber.android.data.groups.GroupPrivacyType
 import com.xabber.android.data.message.chat.AbstractChat
@@ -24,7 +23,6 @@ object StatusBadgeSetupHelper {
 
         val accountJid = abstractContact.account
         val contactJid = abstractContact.contactJid
-        val rosterContact = RosterManager.getInstance().getRosterContact(accountJid, contactJid)
 
         var statusLevel = abstractContact.statusMode.statusLevel
         val isServer = abstractContact.contactJid.jid.isDomainBareJid
@@ -33,8 +31,6 @@ object StatusBadgeSetupHelper {
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
                 .contains(accountJid)
-        val isRosterContact = (rosterContact != null && !rosterContact.isDirtyRemoved)
-                || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
                 || abstractChat.privacyType == GroupPrivacyType.NONE)
@@ -43,8 +39,7 @@ object StatusBadgeSetupHelper {
 
         val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
 
-        if (statusLevel == StatusMode.unavailable.statusLevel
-                || statusLevel == StatusMode.connection.statusLevel)
+        if (statusLevel == StatusMode.unavailable.statusLevel || statusLevel == StatusMode.connection.statusLevel)
             statusLevel = 5
 
         //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
@@ -60,7 +55,6 @@ object StatusBadgeSetupHelper {
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 90
-            hasActiveIncomingInvite -> statusLevel = 12
             isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
             isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
             //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc

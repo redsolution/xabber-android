@@ -71,7 +71,5 @@
     <item android:minLevel="95" android:maxLevel="95" android:drawable="@drawable/ic_status_server_unavailable"/>
 
     <item android:minLevel="11" android:maxLevel="11" android:drawable="@drawable/ic_blocked_border"/>
-    <item android:minLevel="12" android:maxLevel="12" android:drawable="@drawable/ic_status_active_invite"/>
-
 
 </level-list>
