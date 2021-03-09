@@ -27,6 +27,18 @@ public class GroupInviteRequestIQ extends IQ {
         jid = inviteJid.getBareJid().toString();
     }
 
+    public GroupInviteRequestIQ(GroupChat groupchat, ContactJid inviteJid, boolean letGroupchatSendInviteMessage,
+                                String reason){
+        super(ELEMENT, NAMESPACE);
+        setType(Type.set);
+        if (groupchat.getFullJidIfPossible() != null)
+            setTo(groupchat.getFullJidIfPossible());
+        else setTo(groupchat.getContactJid().getJid());
+        jid = inviteJid.getBareJid().toString();
+        setLetGroupSendInviteMessage(letGroupchatSendInviteMessage);
+        setReason(reason);
+    }
+
     public void setReason(String reason) {
         this.reason = reason;
     }
