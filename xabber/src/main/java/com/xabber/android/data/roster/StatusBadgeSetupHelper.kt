@@ -39,6 +39,8 @@ object StatusBadgeSetupHelper {
 
         val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
 
+        if (hasActiveIncomingInvite) statusLevel = StatusMode.available.statusLevel
+
         if (statusLevel == StatusMode.unavailable.statusLevel || statusLevel == StatusMode.connection.statusLevel)
             statusLevel = 5
 
@@ -62,7 +64,7 @@ object StatusBadgeSetupHelper {
 
         imageView.setImageLevel(statusLevel)
 
-        if ((isServer || isPublicGroupChat || isIncognitoGroupChat || hasActiveIncomingInvite) && !isAccountConnected) {
+        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected) {
             val colorMatrix = ColorMatrix()
             colorMatrix.setSaturation(0f)
             val colorFilter = ColorMatrixColorFilter(colorMatrix)
