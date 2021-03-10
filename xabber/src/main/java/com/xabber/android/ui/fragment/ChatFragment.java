@@ -92,7 +92,6 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.groups.GroupInviteManager;
 import com.xabber.android.data.groups.GroupMember;
 import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.data.groups.GroupPrivacyType;
 import com.xabber.android.data.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
@@ -158,7 +157,6 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
@@ -790,17 +788,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (abstractChat != null) {
             messageRealmObjects = abstractChat.getMessages();
         }
-        if (messageRealmObjects == null || messageRealmObjects.size() > 0) {
-            setIntroView();
-        } else {
-            messageRealmObjects.addChangeListener(new RealmChangeListener<RealmResults<MessageRealmObject>>() {
-                @Override
-                public void onChange(@NotNull RealmResults<MessageRealmObject> element) {
-                    setIntroView();
-                    messageRealmObjects.removeChangeListener(this);
-                }
-            });
-        }
+
+        IntroViewDecoration.decorateRecyclerViewWithChatIntroView(realmRecyclerView, getChat(), accountColor);
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
                 this, this, this, this, this, this);
@@ -833,22 +822,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         restoreInputState();
 
         updateContact();
-    }
-
-    private IntroViewDecoration.IntroType getIntroType(){
-        if (getChat() instanceof GroupChat){
-            if (((GroupChat) getChat()).getPrivacyType() == GroupPrivacyType.INCOGNITO){
-                return IntroViewDecoration.IntroType.INCOGNITO_GROUP;
-            } else return IntroViewDecoration.IntroType.PUBLIC_GROUP;
-        } else return IntroViewDecoration.IntroType.REGULAR_CHAT;
-    }
-
-    private void setIntroView() {
-        View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            introView.getBackground().setTint(accountColor);
-        }
-        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, getIntroType()));
     }
 
     @Override

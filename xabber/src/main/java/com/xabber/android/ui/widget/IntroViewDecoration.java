@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -18,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.groups.GroupPrivacyType;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.GroupChat;
 
 public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
@@ -25,8 +30,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     private final IntroType introType;
     private final int distanceFromMessage = 60;
 
-
-    public IntroViewDecoration(View introView, IntroType introType) {
+    private IntroViewDecoration(View introView, IntroType introType) {
         this.introView = introView;
         this.introType = introType;
     }
@@ -66,7 +70,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
     }
 
-    public static void setupTitle(TextView textView, IntroType introType){
+    private void setupTitle(TextView textView, IntroType introType){
         switch (introType){
             case PRIVATE_CHAT: textView.setText(R.string.intro_private_chat); break;
             case PUBLIC_GROUP: textView.setText(R.string.intro_public_group); break;
@@ -76,7 +80,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public static void setupText(TextView textView, IntroType introType){
+    private void setupText(TextView textView, IntroType introType){
         textView.setTextAppearance(textView.getContext(), SettingsManager.chatsAppearanceStyle());
         textView.setTextColor(Color.WHITE);
         switch (introType){
@@ -88,7 +92,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public static void setupLearnMore(TextView textView, RelativeLayout layout, IntroType introType){
+    private void setupLearnMore(TextView textView, RelativeLayout layout, IntroType introType){
         textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         Context context = textView.getContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -132,7 +136,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public static void setupIcon(ImageView imageView, IntroType introType){
+    private void setupIcon(ImageView imageView, IntroType introType){
         Context context = imageView.getContext();
         switch (introType){
             case PRIVATE_CHAT: imageView.setImageDrawable(ContextCompat.getDrawable(context,
@@ -159,7 +163,26 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public enum IntroType{
+    public static void decorateRecyclerViewWithChatIntroView(RecyclerView recyclerView, AbstractChat abstractChat,
+                                                             int accountTintColor){
+        View introView = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.chat_intro_helper_view,
+                null);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            introView.getBackground().setTint(accountTintColor);
+        }
+
+        IntroViewDecoration.IntroType introViewType;
+        if (abstractChat instanceof GroupChat) {
+            if (((GroupChat) abstractChat).getPrivacyType() == GroupPrivacyType.INCOGNITO){
+                introViewType = IntroViewDecoration.IntroType.INCOGNITO_GROUP;
+            } else introViewType = IntroViewDecoration.IntroType.PUBLIC_GROUP;
+        } else introViewType = IntroViewDecoration.IntroType.REGULAR_CHAT;
+
+        recyclerView.addItemDecoration(new IntroViewDecoration(introView, introViewType));
+    }
+
+    private enum IntroType{
         REGULAR_CHAT,
         PUBLIC_GROUP,
         INCOGNITO_GROUP,
