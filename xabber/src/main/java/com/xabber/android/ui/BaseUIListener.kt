@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui
 
+import com.xabber.android.data.Application
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.connection.ConnectionState
 import com.xabber.android.data.entity.AccountJid
@@ -35,6 +36,12 @@ import org.jxmpp.jid.Jid
  * @author alexander.ivanov
  */
 interface BaseUIListener
+
+inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit): Unit {
+    Application.getInstance().runOnUiThread{
+        for (element in this) action(element)
+    }
+}
 
 interface OnXTokenSessionsUpdatedListener: BaseUIListener {
     fun onXTokenSessionsUpdated()

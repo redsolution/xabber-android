@@ -25,6 +25,7 @@ import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener
 import com.xabber.android.ui.OnMessageUpdatedListener
 import com.xabber.android.ui.OnNewMessageListener
+import com.xabber.android.ui.forEachOnUi
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.IQ
@@ -223,34 +224,30 @@ object GroupInviteManager: OnLoadListener {
     fun revokeGroupchatInvitation(account: AccountJid, groupchatJid: ContactJid, inviteJid: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                val groupChat = ChatManager.getInstance().getChat(account, groupchatJid) as GroupChat?
-                val revokeIQ = GroupchatInviteListRevokeIQ(groupChat, inviteJid)
-                val accountItem = AccountManager.getInstance().getAccount(account)
-                accountItem?.connection?.sendIqWithResponseCallback(revokeIQ, { packet: Stanza? ->
-                    if (packet is IQ) {
-                        val success: Boolean
-                        if (IQ.Type.result == packet.type) {
-                            success = true
-                            val chat = ChatManager.getInstance().getChat(account, groupchatJid)
-                            if (chat is GroupChat) chat.listOfInvites.remove(inviteJid)
+                val groupChat = ChatManager.getInstance().getChat(account, groupchatJid) as? GroupChat?
 
-                        } else success = false
-
-                        Application.getInstance().runOnUiThread {
-                            for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
-                                if (success) {
-                                    listener.onActionSuccess(account, groupchatJid, listOf(inviteJid))
-                                } else listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
-
-                            }
-                        }
-                    }
-                }) { Application.getInstance().runOnUiThread {
-                        for (listener in Application.getInstance().getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)) {
-                            listener.onActionFailure(account, groupchatJid, listOf(inviteJid))
-                        }
+                val stanzaResultListener: (packet: Stanza) -> Unit = { packet ->
+                    if (packet is IQ && packet.type == IQ.Type.result) {
+                        groupChat?.listOfInvites?.remove(inviteJid)
+                        Application.getInstance()
+                                .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                                .forEachOnUi { it.onActionSuccess(account, groupchatJid, listOf(inviteJid)) }
+                    } else {
+                        Application.getInstance()
+                                .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                                .forEachOnUi { it.onActionFailure(account, groupchatJid, listOf(inviteJid)) }
                     }
                 }
+
+                val stanzaErrorListener: (exception: java.lang.Exception) -> Unit = {
+                    Application.getInstance()
+                            .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                            .forEachOnUi { it.onActionFailure(account, groupchatJid, listOf(inviteJid)) }
+                }
+
+                AccountManager.getInstance().getAccount(account)?.connection?.sendIqWithResponseCallback(
+                        GroupchatInviteListRevokeIQ(groupChat, inviteJid), stanzaResultListener, stanzaErrorListener)
+
             } catch (e: java.lang.Exception) {
                 LogManager.exception(LOG_TAG, e)
             }
@@ -259,8 +256,6 @@ object GroupInviteManager: OnLoadListener {
 
     fun revokeGroupchatInvitations(account: AccountJid, groupchatJid: ContactJid, inviteJids: Set<String>) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            val accountItem = AccountManager.getInstance().getAccount(account)
-                    ?: return@runInBackgroundNetworkUserRequest
             val failedRevokeRequests = ArrayList<String>()
             val successfulRevokeRequests = ArrayList<String>()
             val unfinishedRequestCount = AtomicInteger(inviteJids.size)
@@ -268,58 +263,59 @@ object GroupInviteManager: OnLoadListener {
             val groupChat = if (chat is GroupChat) chat else null
 
             inviteJids.forEach { inviteJid ->
-                try {
-                    accountItem.connection.sendIqWithResponseCallback(
-                            GroupchatInviteListRevokeIQ(groupChat, inviteJid),
-                            { packet: Stanza? ->
-                                if (packet is IQ) {
-                                    groupChat?.listOfInvites?.remove(inviteJid)
-                                    successfulRevokeRequests.add(inviteJid)
-                                    unfinishedRequestCount.getAndDecrement()
-                                    if (unfinishedRequestCount.get() == 0) {
-                                        Application.getInstance().runOnUiThread {
-                                            Application.getInstance()
-                                                    .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
-                                                    .forEach { listener ->
-                                                        when {
-                                                            failedRevokeRequests.size == 0 ->
-                                                                listener.onActionSuccess(account, groupchatJid,
-                                                                        successfulRevokeRequests)
 
-                                                            successfulRevokeRequests.size > 0 ->
-                                                                listener.onPartialSuccess(account, groupchatJid,
-                                                                        successfulRevokeRequests, failedRevokeRequests)
+                val stanzaResultListener: (packet: Stanza?) -> Unit = { packet ->
+                    if (packet is IQ) {
+                        groupChat?.listOfInvites?.remove(inviteJid)
+                        successfulRevokeRequests.add(inviteJid)
+                        unfinishedRequestCount.getAndDecrement()
+                        if (unfinishedRequestCount.get() == 0) {
+                            Application.getInstance()
+                                    .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        when {
+                                            failedRevokeRequests.size == 0 ->
+                                                listener.onActionSuccess(account, groupchatJid, successfulRevokeRequests)
 
-                                                            else ->
-                                                                listener.onActionFailure(account, groupchatJid,
-                                                                    failedRevokeRequests)
-                                                        }
-                                                    }
+                                            successfulRevokeRequests.size > 0 ->
+                                                listener.onPartialSuccess(account, groupchatJid,
+                                                        successfulRevokeRequests, failedRevokeRequests)
+
+                                            else -> listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
                                         }
                                     }
+                        }
+                    }
+                }
+
+                val stanzaErrorListener: (exception: java.lang.Exception) -> Unit = {
+                    failedRevokeRequests.add(inviteJid)
+                    unfinishedRequestCount.getAndDecrement()
+                    if (unfinishedRequestCount.get() == 0) {
+                        Application.getInstance()
+                                .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                                .forEachOnUi { listener ->
+                                    if (successfulRevokeRequests.isNotEmpty()) {
+                                        listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests,
+                                                failedRevokeRequests)
+                                    } else listener.onActionFailure(account, groupchatJid, failedRevokeRequests)
                                 }
-                            },
-                            {
-                                failedRevokeRequests.add(inviteJid)
-                                unfinishedRequestCount.getAndDecrement()
-                                if (unfinishedRequestCount.get() == 0) {
-                                    Application.getInstance().runOnUiThread {
-                                        Application.getInstance()
-                                                .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
-                                                .forEach {
-                                                    if (successfulRevokeRequests.isNotEmpty()) {
-                                                        it.onPartialSuccess(account, groupchatJid,
-                                                                successfulRevokeRequests, failedRevokeRequests)
-                                                    } else it.onActionFailure(account, groupchatJid,
-                                                            failedRevokeRequests)
-                                                }
-                                    }
-                                }
-                            })
+                    }
+                }
+
+                try {
+                    AccountManager.getInstance().getAccount(account)?.connection?.sendIqWithResponseCallback(
+                            GroupchatInviteListRevokeIQ(groupChat, inviteJid), stanzaResultListener, stanzaErrorListener)
                 } catch (e: java.lang.Exception) {
                     LogManager.exception(LOG_TAG, e)
                     failedRevokeRequests.add(inviteJid)
                     unfinishedRequestCount.getAndDecrement()
+                    Application.getInstance()
+                            .getUIListeners(OnGroupSelectorListToolbarActionResultListener::class.java)
+                            .forEachOnUi { listener ->
+                                listener.onPartialSuccess(account, groupchatJid, successfulRevokeRequests,
+                                        failedRevokeRequests)
+                            }
                 }
             }
         }
