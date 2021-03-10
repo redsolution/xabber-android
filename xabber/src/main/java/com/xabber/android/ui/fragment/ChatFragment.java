@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
@@ -201,8 +200,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private LinearLayoutManager layoutManager;
     private ReplySwipeCallback replySwipe;
     private LinearLayout inputLayout;
-    private ViewStub stubIntro;
-    private ViewGroup chatIntroLayout;
     private ViewStub stubNewContact;
     private ViewGroup newContactLayout;
     private TextView addContact;
@@ -583,7 +580,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         stubNotify = view.findViewById(R.id.stubNotify);
         stubNewContact = view.findViewById(R.id.stubNewContact);
-        stubIntro = view.findViewById(R.id.stubIntro);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
         if (savedInstanceState != null) {
@@ -796,17 +792,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
         if (messageRealmObjects == null || messageRealmObjects.size() > 0) {
             setIntroView();
-            inflateIntroView(false);
         } else {
             messageRealmObjects.addChangeListener(new RealmChangeListener<RealmResults<MessageRealmObject>>() {
                 @Override
                 public void onChange(@NotNull RealmResults<MessageRealmObject> element) {
                     setIntroView();
-                    inflateIntroView(false);
                     messageRealmObjects.removeChangeListener(this);
                 }
             });
-            inflateIntroView(true);
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
@@ -856,35 +849,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             introView.getBackground().setTint(accountColor);
         }
         realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView, getIntroType()));
-    }
-
-    private void inflateIntroView(boolean show) {
-        if (chatIntroLayout == null) {
-            if (show) {
-                chatIntroLayout = (ViewGroup) stubIntro.inflate();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    chatIntroLayout.getBackground().setTint(accountColor);
-                }
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) chatIntroLayout.getLayoutParams();
-                Point size = new Point();
-                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-                lp.leftMargin = size.x / 20;
-                lp.rightMargin = size.x / 20;
-                chatIntroLayout.setLayoutParams(lp);
-
-                IntroViewDecoration.setupTitle(chatIntroLayout.findViewById(R.id.intro_title), getIntroType());
-                IntroViewDecoration.setupLearnMore(chatIntroLayout.findViewById(R.id.intro_learn_more),
-                        chatIntroLayout.findViewById(R.id.intro_link_layout), getIntroType());
-                IntroViewDecoration.setupText(chatIntroLayout.findViewById(R.id.intro_text), getIntroType());
-                IntroViewDecoration.setupIcon(chatIntroLayout.findViewById(R.id.intro_image), getIntroType());
-            }
-        } else {
-            if (show) {
-                chatIntroLayout.setVisibility(View.VISIBLE);
-            } else {
-                chatIntroLayout.setVisibility(View.GONE);
-            }
-        }
     }
 
     @Override
