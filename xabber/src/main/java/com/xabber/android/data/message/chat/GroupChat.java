@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
-import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -426,13 +425,6 @@ public class GroupChat extends AbstractChat {
     }
     public void setListOfBlockedElements(ArrayList<GroupchatBlocklistItemElement> listOfBlockedElements) {
         this.listOfBlockedElements = listOfBlockedElements;
-    }
-
-    public void createFakeMessageForInvite(GroupInviteRealmObject giro){
-        createAndSaveNewMessage(true, UUID.randomUUID().toString(), null, giro.getReason(), null,
-                null, new Date(giro.getDate()), null, true, false, false,
-                false, giro.getId(), giro.getId(), null, null, null,
-                false, null, false, null, false);
     }
 
     @Override

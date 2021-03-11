@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -72,11 +73,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
@@ -157,6 +160,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
@@ -189,6 +193,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private View lastHistoryProgressBar;
     private TextView blockedView;
     private ViewStub stubNotify;
+    private ViewStub stubInvite;
+    private ViewStub stubIntro;
+    private ViewGroup chatIntroLayout;
     private RelativeLayout notifyLayout;
     private TextView tvNotifyTitle;
     private TextView tvNotifyAction;
@@ -531,6 +538,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         // interaction view
         interactionView = view.findViewById(R.id.interactionView);
 
+        stubIntro = view.findViewById(R.id.stubIntro);
 
         view.findViewById(R.id.reply_tv).setOnClickListener(v -> {
             bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
@@ -578,6 +586,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         stubNotify = view.findViewById(R.id.stubNotify);
         stubNewContact = view.findViewById(R.id.stubNewContact);
+        stubInvite = view.findViewById(R.id.stubInvite);
+
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
         if (savedInstanceState != null) {
@@ -790,6 +800,29 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         IntroViewDecoration.decorateRecyclerViewWithChatIntroView(realmRecyclerView, getChat(), accountColor);
+
+        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())
+                && GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser()).getReason() != null
+                && !GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser()).getReason().isEmpty()){
+
+            GroupInviteRealmObject invite = GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser());
+            String senderName = RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid());
+            Drawable senderAvatar = AvatarManager.getInstance().getUserAvatarForContactList(invite.getSenderJid(), senderName);
+
+            inflateIncomingInvite(senderAvatar, senderName, invite.getReason(), accountColor);
+        }
+
+        if (messageRealmObjects == null || messageRealmObjects.size() == 0){
+            inflateIntroView();
+            messageRealmObjects.addChangeListener(
+                    new RealmChangeListener<RealmResults<MessageRealmObject>>() {
+                        @Override
+                        public void onChange(@NotNull RealmResults<MessageRealmObject> messageRealmObjects) {
+                            if (chatIntroLayout != null) chatIntroLayout.setVisibility(View.GONE);
+                            messageRealmObjects.removeChangeListener(this);
+                        }
+                    });
+        }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageRealmObjects, abstractChat,
                 this, this, this, this, this, this);
@@ -1898,6 +1931,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         notifyLayout.setVisibility(View.VISIBLE);
     }
 
+    private void inflateIntroView() {
+        if (chatIntroLayout == null) {
+            chatIntroLayout = (ViewGroup) stubIntro.inflate();
+            chatIntroLayout.setVisibility(View.VISIBLE);
+            IntroViewDecoration.setupView(chatIntroLayout, getActivity(), getChat(), accountColor);
+        }
+    }
+
     private void inflateNotifyLayout() {
         View view = stubNotify.inflate();
         tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle);
@@ -1907,6 +1948,52 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (notifyIntent != null) startActivity(notifyIntent);
             notifyLayout.setVisibility(View.GONE);
         });
+    }
+
+    private void inflateIncomingInvite(Drawable senderAvatar, String senderName, String reasonText, int balloonColor) {
+        View view = stubInvite.inflate();
+        ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(senderAvatar);
+        ((TextView) view.findViewById(R.id.message_text)).setText(reasonText);
+        ((TextView) view.findViewById(R.id.message_header)).setText(senderName);
+        view.findViewById(R.id.message_status_icon).setVisibility(View.GONE);
+        view.findViewById(R.id.message_encrypted_icon).setVisibility(View.GONE);
+
+        View messageBalloon = view.findViewById(R.id.message_balloon);
+        View messageShadow = view.findViewById(R.id.message_shadow);
+
+        Drawable balloonDrawable = getContext().getResources().getDrawable((R.drawable.msg_in));
+        Drawable shadowDrawable = getContext().getResources().getDrawable(R.drawable.msg_in_shadow);
+        shadowDrawable.setColorFilter(getContext().getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        messageBalloon.setBackground(balloonDrawable);
+        messageShadow.setBackground(shadowDrawable);
+
+        // setup BALLOON margins
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        layoutParams.setMargins(
+                Utils.dipToPx(3f, getContext()),
+                Utils.dipToPx(0f, getContext()),
+                Utils.dipToPx(0f, getContext()),
+                Utils.dipToPx(3f, getContext()));
+        messageShadow.setLayoutParams(layoutParams);
+
+        // setup MESSAGE padding
+        messageBalloon.setPadding(
+                Utils.dipToPx(20f, getContext()),
+                Utils.dipToPx(8f, getContext()),
+                Utils.dipToPx(12f, getContext()),
+                Utils.dipToPx(8f, getContext()));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            messageBalloon.getBackground()
+                    .setTintList(ColorManager.getInstance().getChatIncomingBalloonColorsStateList(getAccount()));
+        }
+
+    }
+
+    private void deflateIncomingInvite(){
+        Application.getInstance().runOnUiThread(() -> stubInvite.setVisibility(View.GONE));
     }
 
     private void updateBlockedState() {
@@ -2064,6 +2151,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 try {
                     if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user)){
                         GroupInviteManager.INSTANCE.acceptInvitation(account, user);
+                        deflateIncomingInvite();
                     } else {
                         if (!inRoster) {
                             RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<>());// Create contact if not in roster. (subscription request is sent automatically)

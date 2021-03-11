@@ -1,15 +1,18 @@
 package com.xabber.android.ui.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,7 +73,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
 
     }
 
-    private void setupTitle(TextView textView, IntroType introType){
+    private static void setupTitle(TextView textView, IntroType introType){
         switch (introType){
             case PRIVATE_CHAT: textView.setText(R.string.intro_private_chat); break;
             case PUBLIC_GROUP: textView.setText(R.string.intro_public_group); break;
@@ -80,7 +83,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    private void setupText(TextView textView, IntroType introType){
+    private static void setupText(TextView textView, IntroType introType){
         textView.setTextAppearance(textView.getContext(), SettingsManager.chatsAppearanceStyle());
         textView.setTextColor(Color.WHITE);
         switch (introType){
@@ -92,7 +95,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    private void setupLearnMore(TextView textView, RelativeLayout layout, IntroType introType){
+    private static void setupLearnMore(TextView textView, RelativeLayout layout, IntroType introType){
         textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         Context context = textView.getContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -136,7 +139,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    private void setupIcon(ImageView imageView, IntroType introType){
+    private static void setupIcon(ImageView imageView, IntroType introType){
         Context context = imageView.getContext();
         switch (introType){
             case PRIVATE_CHAT: imageView.setImageDrawable(ContextCompat.getDrawable(context,
@@ -168,18 +171,43 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
         View introView = LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.chat_intro_helper_view,
                 null);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            introView.getBackground().setTint(accountTintColor);
-        }
+        colorizeBackground(introView, accountTintColor);
 
-        IntroViewDecoration.IntroType introViewType;
+        recyclerView.addItemDecoration(new IntroViewDecoration(introView, getIntroType(abstractChat)));
+    }
+
+    public static void setupView(ViewGroup viewGroup, Activity activity, AbstractChat abstractChat,
+                                 int accountColorTint){
+        colorizeBackground(viewGroup, accountColorTint);
+
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewGroup.getLayoutParams();
+        Point size = new Point();
+        activity.getWindowManager().getDefaultDisplay().getSize(size);
+        lp.leftMargin = size.x / 20;
+        lp.rightMargin = size.x / 20;
+        viewGroup.setLayoutParams(lp);
+
+        IntroType introType = getIntroType(abstractChat);
+
+        setupTitle(viewGroup.findViewById(R.id.intro_title), introType);
+        setupLearnMore(viewGroup.findViewById(R.id.intro_learn_more),
+                viewGroup.findViewById(R.id.intro_link_layout), introType);
+        setupText(viewGroup.findViewById(R.id.intro_text), introType);
+        setupIcon(viewGroup.findViewById(R.id.intro_image), introType);
+    }
+
+    private static void colorizeBackground(View view, int color){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.getBackground().setTint(color);
+        }
+    }
+
+    private static IntroType getIntroType(AbstractChat abstractChat){
         if (abstractChat instanceof GroupChat) {
             if (((GroupChat) abstractChat).getPrivacyType() == GroupPrivacyType.INCOGNITO){
-                introViewType = IntroViewDecoration.IntroType.INCOGNITO_GROUP;
-            } else introViewType = IntroViewDecoration.IntroType.PUBLIC_GROUP;
-        } else introViewType = IntroViewDecoration.IntroType.REGULAR_CHAT;
-
-        recyclerView.addItemDecoration(new IntroViewDecoration(introView, introViewType));
+                return IntroViewDecoration.IntroType.INCOGNITO_GROUP;
+            } else return IntroViewDecoration.IntroType.PUBLIC_GROUP;
+        } else return IntroViewDecoration.IntroType.REGULAR_CHAT;
     }
 
     private enum IntroType{

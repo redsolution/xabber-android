@@ -63,9 +63,10 @@ object GroupInviteManager: OnLoadListener {
                 if (ChatManager.getInstance().getChat(account, groupContactJid) is RegularChat){
                     ChatManager.getInstance().removeChat(account, groupContactJid)
                 }
-                if (inviteReason.isNotEmpty()){
-                    ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
-                } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
+//                if (inviteReason.isNotEmpty()){
+//                    ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
+//                } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
+                ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
             }
         } catch (e: Exception) {
