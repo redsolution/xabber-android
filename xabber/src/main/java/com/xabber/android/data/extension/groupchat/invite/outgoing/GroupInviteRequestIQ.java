@@ -11,11 +11,9 @@ public class GroupInviteRequestIQ extends IQ {
     public static final String ELEMENT = "invite";
     public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE;
     public static final String CHILD_ELEMENT_JID = "jid";
-    public static final String CHILD_ELEMENT_REASON = "reason";
     public static final String CHILD_ELEMENT_SEND = "send";
 
     private final String jid;
-    private String reason;
     private boolean letGroupchatSendInviteMessage = false;
 
     public GroupInviteRequestIQ(GroupChat groupchat, ContactJid inviteJid) {
@@ -27,8 +25,7 @@ public class GroupInviteRequestIQ extends IQ {
         jid = inviteJid.getBareJid().toString();
     }
 
-    public GroupInviteRequestIQ(GroupChat groupchat, ContactJid inviteJid, boolean letGroupchatSendInviteMessage,
-                                String reason){
+    public GroupInviteRequestIQ(GroupChat groupchat, ContactJid inviteJid, boolean letGroupchatSendInviteMessage){
         super(ELEMENT, NAMESPACE);
         setType(Type.set);
         if (groupchat.getFullJidIfPossible() != null)
@@ -36,11 +33,6 @@ public class GroupInviteRequestIQ extends IQ {
         else setTo(groupchat.getContactJid().getJid());
         jid = inviteJid.getBareJid().toString();
         setLetGroupSendInviteMessage(letGroupchatSendInviteMessage);
-        setReason(reason);
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 
     public void setLetGroupSendInviteMessage(boolean letGroupchatSendInviteMessage) {
@@ -51,7 +43,6 @@ public class GroupInviteRequestIQ extends IQ {
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
         xml.rightAngleBracket();
         xml.element(CHILD_ELEMENT_JID, jid);
-        xml.optElement(CHILD_ELEMENT_REASON, reason);
         xml.optElement(CHILD_ELEMENT_SEND, letGroupchatSendInviteMessage ? "true" : "false");
         return xml;
     }

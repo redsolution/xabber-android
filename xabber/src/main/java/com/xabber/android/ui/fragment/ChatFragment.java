@@ -806,7 +806,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && !GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser()).getReason().isEmpty()){
 
             GroupInviteRealmObject invite = GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser());
-            String senderName = RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid());
+            String senderName = invite.getSenderJid().toString();
+            if (VCardManager.getInstance().getName(invite.getSenderJid().getJid()) != null
+                    && !VCardManager.getInstance().getName(invite.getSenderJid().getJid()).isEmpty()) {
+                senderName = VCardManager.getInstance().getName(invite.getSenderJid().getJid());
+            } else if (RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid()) != null
+                    && !RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid()).isEmpty()){
+                senderName = RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid());
+            }
+
             Drawable senderAvatar = AvatarManager.getInstance().getUserAvatarForContactList(invite.getSenderJid(), senderName);
 
             inflateIncomingInvite(senderAvatar, senderName, invite.getReason(), accountColor);

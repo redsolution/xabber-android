@@ -139,6 +139,9 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
     override fun onResult() {
         Application.getInstance().runOnUiThread {
             progressBar?.visibility = View.INVISIBLE
+            Toast.makeText(applicationContext, R.string.group__invite_contact__toast_successful_text,
+                    Toast.LENGTH_SHORT)
+                    .show()
             finish()
         }
     }

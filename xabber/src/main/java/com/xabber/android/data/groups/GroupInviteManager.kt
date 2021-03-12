@@ -28,6 +28,7 @@ import com.xabber.android.ui.OnNewMessageListener
 import com.xabber.android.ui.forEachOnUi
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
+import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
@@ -63,9 +64,6 @@ object GroupInviteManager: OnLoadListener {
                 if (ChatManager.getInstance().getChat(account, groupContactJid) is RegularChat){
                     ChatManager.getInstance().removeChat(account, groupContactJid)
                 }
-//                if (inviteReason.isNotEmpty()){
-//                    ChatManager.getInstance().createGroupChat(account, groupContactJid).createFakeMessageForInvite(giro)
-//                } else ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
             }
@@ -156,20 +154,22 @@ object GroupInviteManager: OnLoadListener {
                     listener.onSend()
                     contactsToInvite.forEach { contact ->
                         accountItem.connection.sendIqWithResponseCallback(
-                                GroupInviteRequestIQ(chat as GroupChat?, contact, false, reason ?: ""),
-                                { sendMessageWithInvite(account, groupJid, contact, reason, listener) },
+                                GroupInviteRequestIQ(chat as GroupChat?, contact, false),
+                                { sendMessageWithInvite(account, groupJid, contact, reason, listener) })
                                 { exception: java.lang.Exception? ->
                                     run {
                                         LogManager.exception(LOG_TAG, exception)
-                                        listener.onOtherError(null)
+                                        if (exception is XMPPException.XMPPErrorException){
+                                            listener.onIqError(exception.xmppError)
+                                        } else listener.onOtherError(exception)
                                     }
-                                })
+                                }
                     }
                 }
             }
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
-            listener.onOtherError(null)
+            listener.onOtherError(e)
         }
     }
 
@@ -187,9 +187,14 @@ object GroupInviteManager: OnLoadListener {
                                 .getString(R.string.groupchat_legacy_invitation_body, groupJid.toString()))
                         to = contactToInviteJid.jid
                         type = Message.Type.chat
-                        addExtension(InviteMessageExtensionElement(groupJid, reason)) },
-                    { packet1: Stanza -> if (packet1.error != null) listener.onIqError(packet1.error)else listener.onResult() }
-            )
+                        addExtension(InviteMessageExtensionElement(groupJid, reason)) })
+                    { packet1: Stanza ->
+                        run {
+                            if (packet1.error != null) {
+                                listener.onIqError(packet1.error)
+                            } else listener.onResult()
+                        }
+                    }
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
             listener.onOtherError(e)
