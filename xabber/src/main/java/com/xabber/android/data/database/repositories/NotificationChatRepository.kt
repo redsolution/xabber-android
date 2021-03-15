@@ -21,8 +21,8 @@ object NotificationChatRepository {
             var realm: Realm? = null
             try {
                 realm = DatabaseManager.getInstance().defaultRealmInstance
-                realm?.executeTransaction { realm1: Realm -> realm1.copyToRealmOrUpdate(
-                        NotificationChatRealmObject(chat.id).apply {
+                realm?.executeTransaction { realm1: Realm ->
+                    realm1.copyToRealmOrUpdate(NotificationChatRealmObject(chat.id).apply {
                             account = chat.accountJid
                             user = chat.contactJid
                             chatTitle = chat.chatTitle.toString()
@@ -30,7 +30,9 @@ object NotificationChatRepository {
                             isGroupChat = chat.isGroupChat
                             privacyType = chat.privacyType
                             messages = RealmList<NotificationMessageRealmObject>().apply {
-                                addAll(chat.messages.map { it.toRealmMessage() })
+                                synchronized(chat.messages){
+                                    addAll(chat.messages.map { chatMessage -> chatMessage.toRealmMessage() } )
+                                }
                             }
                         })
                 }
