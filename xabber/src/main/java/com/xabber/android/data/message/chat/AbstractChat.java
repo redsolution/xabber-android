@@ -649,7 +649,7 @@ public abstract class AbstractChat extends BaseEntity implements
      */
     public Message createMessagePacket(String body) {
         Message message = new Message();
-        message.setTo(getTo());
+        message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setBody(body);
         message.setThread(threadId);
@@ -661,7 +661,7 @@ public abstract class AbstractChat extends BaseEntity implements
                                                       String[] forwardIds, String text) {
 
         Message message = new Message();
-        message.setTo(getTo());
+        message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
@@ -683,7 +683,7 @@ public abstract class AbstractChat extends BaseEntity implements
                                             String body) {
 
         Message message = new Message();
-        message.setTo(getTo());
+        message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
@@ -697,7 +697,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     private Message createForwardMessagePacket(String stanzaId, String[] forwardIds, String text) {
         Message message = new Message();
-        message.setTo(getTo());
+        message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
@@ -713,7 +713,7 @@ public abstract class AbstractChat extends BaseEntity implements
     private Message createForwardMessageWithMarkupPacket(String stanzaId, String[] forwardIds,
                                                          String text, String markupText) {
         Message message = new Message();
-        message.setTo(getTo());
+        message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
