@@ -428,13 +428,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     private String getConnectedDevicesDescription() {
         int connectedDevices = PresenceManager.getInstance().getAvailableAccountPresences(account).size();
-        if (connectedDevices == 0) {
-            return getResources().getString(R.string.account_connected_devices_none);
-        } else if (connectedDevices == 1) {
-            return getResources().getString(R.string.account_connected_devices_singular);
-        } else {
-            return getResources().getString(R.string.account_connected_devices_plural, connectedDevices);
-        }
+        if (connectedDevices != 0) {
+            return getResources().getQuantityString(R.plurals.account_connected_devices, connectedDevices, connectedDevices);
+        } else return getResources().getString(R.string.account_connected_devices_none);
     }
 
     @Override

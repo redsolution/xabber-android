@@ -87,9 +87,10 @@ public class BottomMessagesPanel extends Fragment {
             String text = messages.get(0).getText();
             if (messages.size() > 1 || text.trim().isEmpty()) {
                 Context context = getContext();
-                if (context != null && purpose.equals(Purposes.FORWARDING))
-                    tvText.setText(String.format(context.getResources()
-                        .getString(R.string.forwarded_messages_count), messages.size()));
+                if (context != null && purpose.equals(Purposes.FORWARDING)){
+                    tvText.setText(context.getResources().getQuantityString(
+                            R.plurals.forwarded_messages_count, messages.size(), messages.size()));
+                }
             } else tvText.setText(text);
         }
 

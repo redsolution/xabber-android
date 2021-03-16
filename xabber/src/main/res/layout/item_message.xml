@@ -59,7 +59,6 @@
             android:id="@+id/tvForwardedCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/forwarded_messages_count"
             tools:text="3 forwarded message"
             android:drawableLeft="@drawable/ic_message_forwarded_14dp"
             android:drawablePadding="2dp"

@@ -61,8 +61,9 @@ public class ForwardedVH extends FileMessageVH {
         boolean haveForwarded = messageRealmObject.haveForwardedMessages();
         if (haveForwarded) {
             forwardLayout.setVisibility(View.VISIBLE);
-            tvForwardedCount.setText(String.format(extraData.getContext()
-                    .getResources().getString(R.string.forwarded_messages_count), messageRealmObject.getForwardedIds().size()));
+            int forwardedCount = messageRealmObject.getForwardedIds().size();
+            tvForwardedCount.setText(extraData.getContext().getResources().getQuantityString(
+                    R.plurals.forwarded_messages_count, forwardedCount, forwardedCount));
             tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){

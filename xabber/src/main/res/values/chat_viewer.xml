@@ -17,8 +17,10 @@
     <string name="clear_chat_history_dialog_warning">This operation can not be undone.</string>
     <string name="clear_chat_history_for_companion_checkbox">Attempt to retract your messages from your chat partner\'s archive</string>
     <string name="waiting_for_network">Waiting for network…</string>
-    <string name="contact_groupchat_status_member">1 member</string>
-    <string name="contact_groupchat_status_members">%d members</string>
+    <plurals name="contact_groupchat_status_member">
+        <item quantity="one">1 member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
     <string name="contact_groupchat_status_online">, %d online</string>
     <string name="contact_state_not_in_contact_list">Not in your contacts</string>
     <string name="contact_state_no_subscriptions">No subscriptions</string>
@@ -42,7 +44,7 @@
     <string name="message_quote">Quote</string>
     <string name="message_remove">Remove from history</string>
     <string name="message_repeat">Retry sending</string>
-    <string name="message_pin">Pin message</string>
+    <string name="message_pin">Pin</string>
     <string name="message_otr_show_original">Show message</string>
     <string name="save_history">Save local history\nStore message history locally</string>
     <string name="action_attention_called">Call attention was sent</string>
@@ -101,8 +103,8 @@
     <string name="export_chat_send">Send after export</string>
     <string name="export_chat_title">Enter file name</string>
     <string name="muc_invite">Invite to chat</string>
-    <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>
-    //<string name="occupant_list">List of occupants</string>
+    <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>    //
+    <string name="occupant_list">List of occupants</string>
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
     <string name="otr_refresh">Restart encryption</string>
@@ -110,8 +112,10 @@
     <string name="otr_start">Start encryption</string>
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
     <string name="otr_not_decrypted_message">Message cannot be decrypted</string>
-    <string name="forwarded_messages_count">%d forwarded message</string>
-    <string name="forwarded_messages_count_plural">%d forwarded messages</string>
+    <plurals name="forwarded_messages_count">
+        <item quantity="one">%d forwarded message</item>
+        <item quantity="other">%d forwarded messages</item>
+    </plurals>
     <string name="forwarded_support_text" translatable="false">%d forwarded messages. Use advanced client like Xabber to view them.</string>
     <string name="pinned_message">Pinned message</string>
     <string name="otr_verification">OTR verification</string>
@@ -126,11 +130,9 @@
     <string name="otr_verification_notify_button">OPEN</string>
     <string name="otr_verification_notify_button_cancel">CANCEL</string>
     <string name="message_hidden">Message hidden</string>
-
     <string name="chat_events_show_text_global">Use global settings</string>
     <string name="chat_events_show_text_always">Show message text</string>
     <string name="chat_events_show_text_never">Hide message text</string>
-
     <string name="error_sending_file">Error sending file %s</string>
     <string name="could_not_get_path_to_file">Could not get path to file</string>
     <string name="message_open_private_chat">Open private chat</string>
@@ -148,34 +150,26 @@
     <string name="message_status_not_sent">Sending</string>
     <string name="message_status_uploading">Sending..</string>
     <string name="too_many_files_at_once">You cannot send more than 10 items at once</string>
-
     <string name="toast_no_history">There are no more messages in the history</string>
-
     <string name="message_by_me">Me</string>
-
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_member">Member</string>
     <string name="muc_role_visitor">Visitor</string>
     <string name="toast_archived_show">Archive chats shown</string>
     <string name="toast_archived_hide">Archive chats hidden</string>
-
     <string name="chat_notification_settings_title">Notification for this chat</string>
     <string name="error_file_upload_not_support">%1$s server does not seem to support file transfer. This may happen because Xabber didn\'t yet receive server capabilities, or because of some glitch.\n\nRefresh server info in Account settings → Server info. If that does not help, consider using a server that definitely does support file transfer. One such server is xabber.org</string>
     <string name="error_file_upload_disco_in_progress">We\'re still determining whether or not %1$s server supports file transfer.</string>
     <string name="button_join_conference">Join conference</string>
-
     <string name="showcase_chat_text_1">Swipe right to open recent chats</string>
     <string name="showcase_chat_text_2">Swipe left to open contact information</string>
-
     <string name="action_copy_link">Copy link</string>
     <string name="action_download">Download</string>
     <string name="action_image_saved">Image saved</string>
     <string name="toast_link_copied">Link copied to clipboard</string>
     <string name="toast_could_not_open_file">Could not open file</string>
-
     <string name="uploaded_files_count">Uploading.. %s</string>
     <string name="unread_messages">Unread messages</string>
-
     <string name="xabber_chat_title">Xabber official</string>
     <string name="xabber_chat_description">News feed</string>
     <string name="xabber_join_button">Support Xabber</string>
@@ -192,5 +186,43 @@
     <string name="cancel_action">Cancel</string>
     <string name="delete">Delete</string>
     <string name="edited">(edited at %s)</string>
-
+    <string name="search__header_chats" comment="Header of searched chats in left panel">Chats</string>
+    <string name="search__header_messages" comment="Header of searched messages in left panel">Messages</string>
+    <string name="saved_messages__header">Saved messages</string>
+    <string name="chat_settings__button_delete_all">Delete all</string>
+    <string name="dialog_forward_message__header">Forward message</string>
+    <string name="chat_list__placeholder">Please select a chat to start messaging</string>
+    <string name="chat_settings__button_unblock_contact">Unblock contact</string>
+    <string name="chat_settings__button_delete_contact">Delete contact</string>
+    <string name="chat__search_messages_panel__placeholder">Search messages</string>
+    <string name="chat__placeholder_participant_messages__messages_by">Messages by</string>
+    <string name="chat_bottom__placeholder__cancel_write_voice">Release outside this form to cancel</string>
+    <string name="chat_bottom__tooltip_send_file">Send file</string>
+    <string name="chat_bottom__placeholder__blocked">blocked</string>
+    <string name="mentions_list__placeholder">Please select mention to view in chat</string>
+    <string name="delete_messages__header">Clear message archive</string>
+    <string name="delete_messages__confirm">Do you want to delete all messages from archive?</string>
+    <string name="loading_history">Loading history...</string>
+    <string name="loading_archived_messages_error">Error while loading archived messages</string>
+    <string name="chat_state_composing_upload_filetype">sending %s...</string>
+    <string name="dialog_clear_chat_history__warning_deletion_not_supported">Warning! <b>%s</b> server does not support message deletion. Only local message history will be deleted.</string>
+    <string name="dialog_clear_chat_history__button_delete_locally">delete locally</string>
+    <string name="dialog_clear_chat_history__option_delete_for_all">Delete for all</string>
+    <string name="message__error_big_stanza">Too big xml-stanza</string>
+    <string name="file_upload__text_progress">%1s of %2s</string>
+    <string name="file_upload__error_default">File uploading error</string>
+    <string name="file_upload__error">Error: %s</string>
+    <string name="groupchat__incognito_group__text_invitation">You are invited to incognito group chat. If you join it, you won\'t see real XMPP IDs of other members</string>
+    <string name="dialog_delete_saved_messages__header">Delete saved messages</string>
+    <string name="dialog_delete_saved_messages__confirm">Are you sure you want to <b>delete all saved messages</b>? This operation can not be undone.</string>
+    <string name="dialog_group_remove__confirm">If you delete a group chat, you won\'t receive messages from it</string>
+    <string name="chat_bottom__drag_and_drop__text_drop_files_here">Drop files here to send</string>
+    <string name="chat_bottom__hint_default">Write a message...</string>
+    <string name="chat_bottom__hint_default_encrypted">Write an encrypted message...</string>
+    <string name="chat_bottom__mentions_list__item_everyone">Everyone</string>
+    <string name="dialog_send_image_from_clipboard__header">Send Image from Clipboard</string>
+    <string name="dialog_send_image_from_clipboard__confirm">Do you want to send Image from Clipboard?</string>
+    <string name="chat_bottom__placeholder__cancel_write_voice_short">Release to cancel record</string>
+    <string name="edit_message__header">Edit message</string>
+    <string name="dialog_delete_messages__header">Delete messages</string>
 </resources>

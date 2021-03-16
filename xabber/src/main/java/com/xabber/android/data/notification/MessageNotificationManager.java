@@ -370,8 +370,13 @@ public class MessageNotificationManager implements OnLoadListener {
         }
         if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0 && text.isEmpty()) {
             String forwardText = message.getFirstForwardedMessageText();
-            if (forwardText != null && !forwardText.isEmpty()) text = forwardText;
-            else text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
+            if (forwardText != null && !forwardText.isEmpty()) {
+                text = forwardText;
+            } else {
+                int forwardedCount = message.getForwardedIds().size();
+                text = context.getResources().getQuantityString(
+                        R.plurals.forwarded_messages_count, forwardedCount, forwardedCount);
+            }
         }
         return text;
     }

@@ -36,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="@string/forwarded_messages_count"
                 android:textColor="@color/forwarded_background_color"
                 tools:text="3 forwarded message" />
 

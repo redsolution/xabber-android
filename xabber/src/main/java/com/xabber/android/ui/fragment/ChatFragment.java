@@ -721,17 +721,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         String text = message.getText();
         int forwardedCount = message.getForwardedIds().size();
         if (text == null || text.isEmpty()) {
-            if (forwardedCount > 0)pinnedMessageTv.setText(String.format(this.getResources()
-                    .getString(R.string.forwarded_messages_count), forwardedCount));
-
-            else if (message != null && message.haveAttachments()) {
+            if (forwardedCount > 0){
+                pinnedMessageTv.setText(getResources().getQuantityString(R.plurals.forwarded_messages_count,
+                        forwardedCount, forwardedCount));
+            } else if (message != null && message.haveAttachments()) {
                 pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
                         message.getAttachmentRealmObjects().get(0)));
-
                 pinnedMessageTv.setTypeface(Typeface.DEFAULT);
                 return;
-            } else
-                pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
+            } else pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
 
             pinnedMessageTv.setTypeface(pinnedMessageTv.getTypeface(), Typeface.ITALIC);
         } else {

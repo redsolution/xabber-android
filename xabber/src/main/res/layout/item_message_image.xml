@@ -240,7 +240,6 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_message_forwarded_14dp"
             android:drawablePadding="2dp"
-            android:text="@string/forwarded_messages_count"
             android:textColor="@color/forwarded_background_color"
             android:visibility="gone" />
 

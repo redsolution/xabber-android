@@ -304,15 +304,9 @@ public class StringUtils {
 
     public static String getDisplayStatusForGroupchat(int members, int online, Context context) {
         if (members != 0) {
-            StringBuilder sb;
-            if (members == 1) {
-                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_member));
-            } else {
-                sb = new StringBuilder(context.getString(R.string.contact_groupchat_status_members, members));
-            }
-            if (online > 0) {
-                sb.append(context.getString(R.string.contact_groupchat_status_online, online));
-            }
+            StringBuilder sb  = new StringBuilder(context.getResources().getQuantityString(
+                    R.plurals.contact_groupchat_status_member, members, members));
+            if (online > 0) sb.append(context.getString(R.string.contact_groupchat_status_online, online));
             return sb.toString();
         }
         return null;

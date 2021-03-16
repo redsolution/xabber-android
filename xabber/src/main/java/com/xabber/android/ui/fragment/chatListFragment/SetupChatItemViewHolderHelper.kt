@@ -223,7 +223,9 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
 
         fun setToForwarded(){
-            holder.messageTextTV.text = String.format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
+            holder.messageTextTV.text = String.format(context.resources.getQuantityString(
+                    R.plurals.forwarded_messages_count, forwardedCount ?: 0),
+                    forwardedCount)
 
             colorizeIfPossible()
             setDefaultTypeface()

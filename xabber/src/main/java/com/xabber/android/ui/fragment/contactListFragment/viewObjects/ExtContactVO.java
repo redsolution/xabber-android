@@ -92,12 +92,11 @@ public class ExtContactVO extends ContactVO {
         /** set up MESSAGE TEXT */
         String text = getMessageText();
         if (text.isEmpty()) {
-            if (forwardedCount > 0)
-                viewHolder.tvMessageText.setText(String.format(context.getResources()
-                        .getString(R.string.forwarded_messages_count), forwardedCount));
-            else viewHolder.tvMessageText.setText(R.string.no_messages);
-            viewHolder.tvMessageText.
-                    setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
+            if (forwardedCount > 0){
+                viewHolder.tvMessageText.setText(context.getResources().getQuantityString(
+                        R.plurals.forwarded_messages_count, forwardedCount, forwardedCount));
+            } else viewHolder.tvMessageText.setText(R.string.no_messages);
+            viewHolder.tvMessageText.setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
         } else {
             viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             viewHolder.tvMessageText.setVisibility(View.VISIBLE);

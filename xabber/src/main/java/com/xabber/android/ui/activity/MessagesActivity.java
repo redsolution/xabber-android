@@ -103,11 +103,10 @@ public class MessagesActivity extends ManagedActivity {
     }
 
     public void setToolbar(int forwardedCount) {
-        if (action.equals(ACTION_SHOW_FORWARDED))
-            toolbar.setTitle(String.format(forwardedCount > 1 ?
-                    getString(R.string.forwarded_messages_count_plural) : getString(R.string.forwarded_messages_count) ,
-                    forwardedCount));
-        else if (action.equals(ACTION_SHOW_PINNED))
-            toolbar.setTitle(getString(R.string.pinned_message));
+        if (action.equals(ACTION_SHOW_FORWARDED)) {
+            toolbar.setTitle(getResources().getQuantityString(
+                    R.plurals.forwarded_messages_count, forwardedCount, forwardedCount));
+        }
+        else if (action.equals(ACTION_SHOW_PINNED)) toolbar.setTitle(getString(R.string.pinned_message));
     }
 }
