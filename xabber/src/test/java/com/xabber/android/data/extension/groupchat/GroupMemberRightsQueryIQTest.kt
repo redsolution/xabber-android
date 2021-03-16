@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat
 
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsQueryIQ
+import com.xabber.android.data.extension.android.groupchat.rights.GroupchatMemberRightsQueryIQ
 import org.junit.Assert
 import org.junit.Test
 import org.jxmpp.jid.impl.JidCreate

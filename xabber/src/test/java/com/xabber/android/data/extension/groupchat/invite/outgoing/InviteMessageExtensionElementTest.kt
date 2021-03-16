@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.groupchat.invite.outgoing
 
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.android.groupchat.invite.outgoing.InviteMessageExtensionElement
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

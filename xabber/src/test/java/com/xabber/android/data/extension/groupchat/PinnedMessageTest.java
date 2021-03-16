@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.groupchat;
 
+import com.xabber.android.data.extension.android.groupchat.GroupPinMessageIQ;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.jxmpp.jid.impl.JidCreate;

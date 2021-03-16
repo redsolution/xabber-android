@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.groupchat
 
+import com.xabber.android.data.extension.android.groupchat.GroupMemberExtensionElement
 import com.xabber.xmpp.avatar.MetadataInfo
 import org.junit.Assert.assertEquals
 import org.junit.Test

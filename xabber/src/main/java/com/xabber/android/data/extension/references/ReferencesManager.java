@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatMemberContainer;
+import com.xabber.android.data.extension.android.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.android.groupchat.GroupchatExtensionElement;
+import com.xabber.android.data.extension.android.groupchat.GroupchatMemberContainer;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;

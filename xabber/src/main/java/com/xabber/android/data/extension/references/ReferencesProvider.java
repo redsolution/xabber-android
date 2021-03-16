@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.android.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;

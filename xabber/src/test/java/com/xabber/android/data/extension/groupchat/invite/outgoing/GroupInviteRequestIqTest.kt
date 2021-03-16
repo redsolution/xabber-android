@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.groupchat.invite.outgoing
 
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.android.groupchat.invite.outgoing.GroupInviteRequestIQ
 import com.xabber.android.data.message.chat.GroupChat
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -10,7 +11,7 @@ import org.mockito.Mockito.mock
 
 class GroupInviteRequestIqTest {
 
-    private fun getBaseIq(): GroupInviteRequestIQ{
+    private fun getBaseIq(): GroupInviteRequestIQ {
         val group = mock(GroupChat::class.java)
         val groupFullJid = JidCreate.fullFrom("localpart@group.domain/resource")
         val whomInviteJid = ContactJid.from("memberToInvite@server.domain")
@@ -70,9 +71,7 @@ class GroupInviteRequestIqTest {
                         "<send>false</send>" +
                     "</invite>" +
                 "</iq>"
-        assertEquals(reference4, getBaseIq().apply {
-            setReason("This is reason to get invite to group chat")
-        }.toXML().toString())
+        assertEquals(reference4, getBaseIq().toXML().toString())
 
         val reference5 =
                 "<iq to='localpart@group.domain/resource' id='iqId' type='set'>" +
@@ -83,7 +82,6 @@ class GroupInviteRequestIqTest {
                     "</invite>" +
                 "</iq>"
         assertEquals(reference5, getBaseIq().apply {
-            setReason("New reason!")
             setLetGroupSendInviteMessage(true)
         }.toXML().toString())
 

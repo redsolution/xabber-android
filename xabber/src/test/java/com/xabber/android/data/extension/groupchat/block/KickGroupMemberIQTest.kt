@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.groupchat.block
 
+import com.xabber.android.data.extension.android.groupchat.block.KickGroupMemberIQ
 import junit.framework.TestCase
 import org.jxmpp.jid.impl.JidCreate
 

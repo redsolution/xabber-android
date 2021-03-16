@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIQ;
+import com.xabber.android.data.extension.android.groupchat.create.CreateGroupchatIQ;
 import com.xabber.android.data.groups.GroupIndexType;
 import com.xabber.android.data.groups.GroupMembershipType;
 import com.xabber.android.data.groups.GroupPrivacyType;

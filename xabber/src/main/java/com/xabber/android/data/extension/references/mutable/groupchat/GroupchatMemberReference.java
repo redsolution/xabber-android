@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.references.mutable.groupchat;
 
-import com.xabber.android.data.extension.groupchat.GroupMemberExtensionElement;
+import com.xabber.android.data.extension.android.groupchat.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.mutable.Mutable;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;

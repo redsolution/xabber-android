@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.groupchat
 
-import com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestFormQueryIQ
+import com.xabber.android.data.extension.android.groupchat.settings.GroupSettingsRequestFormQueryIQ
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.jxmpp.jid.impl.JidCreate

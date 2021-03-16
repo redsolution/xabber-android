@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.groupchat
 
 import com.xabber.android.data.TestApplication
-import com.xabber.android.data.extension.groupchat.members.ChangeGroupchatMemberPreferencesIQ
+import com.xabber.android.data.extension.android.groupchat.members.ChangeGroupchatMemberPreferencesIQ
 import org.junit.Assert
 import org.junit.Test
 import org.jxmpp.jid.impl.JidCreate

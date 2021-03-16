@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.android.data.extension.groupchat.GroupchatProvider;
+import com.xabber.android.data.extension.android.groupchat.GroupchatProvider;
 
 import org.xmlpull.v1.XmlPullParserFactory;
 

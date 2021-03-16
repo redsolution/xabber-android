@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.groupchat.invite.incoming
 
+import com.xabber.android.data.extension.android.groupchat.invite.incoming.DeclineGroupInviteIQ
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

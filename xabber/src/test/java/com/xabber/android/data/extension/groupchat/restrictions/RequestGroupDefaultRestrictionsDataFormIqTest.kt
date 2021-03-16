@@ -1,9 +1,5 @@
 package com.xabber.android.data.extension.groupchat.restrictions
 
-import com.xabber.android.data.entity.ContactJid
-import org.junit.Assert
-import org.junit.Test
-
 class RequestGroupDefaultRestrictionsDataFormIqTest {
 
 //    @Test
