@@ -2095,8 +2095,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void inflateNewContactLayout(final SubscriptionState subscriptionState, final boolean inRoster) {
         if (newContactLayout == null) {
             newContactLayout = (ViewGroup) stubNewContact.inflate();
-        } else {
-            newContactLayout.setVisibility(View.VISIBLE);
         }
         //intercept touch events to avoid clicking on the messages behind the panel.
         newContactLayout.setOnTouchListener((v, event) -> true);
@@ -2127,9 +2125,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             setNewContactSubscribeLayout();
                         } else {
                             // NONE = No current subscriptions or requests. Not in roster.
-                            if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user))
+                            if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user)) {
                                 setInvitedToGroupLayout();
-                            else setNewContactAddLayout();
+                            } else setNewContactAddLayout();
                         }
                         break;
 
@@ -2150,8 +2148,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 }
         }
 
-        addContact.setTextColor(ColorManager.getInstance().getAccountPainter()
-                .getAccountMainColor(account));
+        addContact.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         addContact.setOnClickListener(v -> {
             Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
                 try {
@@ -2194,8 +2191,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(v -> {
             try {
                 // fully discard subscription
-                if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user))
+                if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user)){
                     GroupInviteManager.INSTANCE.declineInvitation(account, user);
+                }
                 PresenceManager.getInstance().discardSubscription(account, user);
                 PresenceManager.getInstance().unsubscribeFromPresence(account, user);
             } catch (NetworkException e) {

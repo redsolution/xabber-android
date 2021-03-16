@@ -75,6 +75,15 @@ object GroupInviteManager: OnLoadListener {
         Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
     }
 
+    fun onContactAddedToRoster(accountJid: AccountJid, contactJid: ContactJid){
+        if (hasActiveIncomingInvites(accountJid, contactJid)){
+            getInvites(accountJid,contactJid).forEach {
+                it.isAccepted = true
+                GroupInviteRepository.saveOrUpdateInviteToRealm(it)
+            }
+        }
+    }
+
     fun acceptInvitation(accountJid: AccountJid, groupJid: ContactJid) {
         try {
             val name = (ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?)!!.name
