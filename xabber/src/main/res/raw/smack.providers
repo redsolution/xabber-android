@@ -110,7 +110,7 @@
 
     <!-- XEP-SYNC(0CCC) -->
     <iqProvider>
-        <elementName>conversation</elementName>
+        <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/synchronization</namespace>
         <className>com.xabber.xmpp.ccc.IncomingSetSyncIqProvider</className>
     </iqProvider>

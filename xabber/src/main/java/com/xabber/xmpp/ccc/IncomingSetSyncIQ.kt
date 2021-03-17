@@ -1,6 +1,5 @@
 package com.xabber.xmpp.ccc
 
-import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.ccc.CccSyncManager
 import org.jivesoftware.smack.packet.ExtensionElement

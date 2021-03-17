@@ -39,9 +39,9 @@ object GroupInviteManager: OnLoadListener {
 
     private val LOG_TAG = GroupInviteManager.javaClass.simpleName
 
-    private val invitesMap = mutableListOf<GroupInviteRealmObject>()
+    private val invitesList = mutableListOf<GroupInviteRealmObject>()
 
-    override fun onLoad() { GroupInviteRepository.getAllInvitationsFromRealm().forEach { invitesMap.add(it) } }
+    override fun onLoad() { GroupInviteRepository.getAllInvitationsFromRealm().forEach { invitesList.add(it) } }
 
     fun processIncomingInvite(inviteExtensionElement: IncomingInviteExtensionElement, account: AccountJid,
                               sender: ContactJid?, timestamp: Long) {
@@ -53,13 +53,13 @@ object GroupInviteManager: OnLoadListener {
                         return
             }
             val inviteReason = inviteExtensionElement.getReason()
-            if (invitesMap.none { it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender }) {
+            if (invitesList.none { it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender }) {
                 val giro = GroupInviteRealmObject(account, groupContactJid, sender).apply {
                     isIncoming = true
                     reason = inviteReason
                     date = if (timestamp != 0.toLong()) timestamp else System.currentTimeMillis()
                 }
-                invitesMap.add(giro)
+                invitesList.add(giro)
                 GroupInviteRepository.saveOrUpdateInviteToRealm(giro)
                 if (ChatManager.getInstance().getChat(account, groupContactJid) is RegularChat){
                     ChatManager.getInstance().removeChat(account, groupContactJid)
@@ -84,6 +84,14 @@ object GroupInviteManager: OnLoadListener {
         }
     }
 
+    fun onConversationDeleted(accountJid: AccountJid, groupJid: ContactJid){
+        if (hasActiveIncomingInvites(accountJid, groupJid)){
+            GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
+            invitesList.removeAll { it.accountJid == accountJid && it.groupJid == groupJid }
+            ChatManager.getInstance().removeChat(accountJid, groupJid)
+        }
+    }
+
     fun acceptInvitation(accountJid: AccountJid, groupJid: ContactJid) {
         try {
             val name = (ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?)!!.name
@@ -91,7 +99,7 @@ object GroupInviteManager: OnLoadListener {
             PresenceManager.getInstance().acceptSubscription(accountJid, groupJid)
             PresenceManager.getInstance().requestSubscription(accountJid, groupJid)
             RosterManager.getInstance().createContact(accountJid, groupJid, name, ArrayList())
-            invitesMap
+            invitesList
                     .filter { it.accountJid == accountJid && it.groupJid == groupJid }
                     .forEach {
                         it.isAccepted = true
@@ -112,7 +120,7 @@ object GroupInviteManager: OnLoadListener {
                 connection.sendIqWithResponseCallback(DeclineGroupInviteIQ(groupChat!!),
                         { packet: Stanza? ->
                             if (packet is IQ && packet.type == IQ.Type.result) {
-                                invitesMap
+                                invitesList
                                         .filter { it.accountJid == accountJid && it.groupJid == groupJid }
                                         .forEach {
                                             it.isDeclined = true
@@ -141,14 +149,14 @@ object GroupInviteManager: OnLoadListener {
     }
 
     fun hasActiveIncomingInvites(accountJid: AccountJid, groupchatJid: ContactJid) =
-            invitesMap.any{it.accountJid == accountJid && it.groupJid == groupchatJid && !it.isDeclined && !it.isAccepted}
+            invitesList.any{it.accountJid == accountJid && it.groupJid == groupchatJid && !it.isDeclined && !it.isAccepted}
                     && !BlockingManager.getInstance().contactIsBlocked(accountJid, groupchatJid)
 
     fun getLastInvite(accountJid: AccountJid, groupJid: ContactJid) =
-            invitesMap.lastOrNull { it.accountJid == accountJid && it.groupJid == groupJid }
+            invitesList.lastOrNull { it.accountJid == accountJid && it.groupJid == groupJid }
 
     fun getInvites(accountJid: AccountJid, groupJid: ContactJid) =
-            invitesMap.filter { it.accountJid == accountJid && it.groupJid == groupJid }
+            invitesList.filter { it.accountJid == accountJid && it.groupJid == groupJid }
 
     /**
      * Create and send IQ to group and Message with invitation to contact according to Direct Invitation.

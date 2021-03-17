@@ -84,7 +84,8 @@ public class GroupInviteRepository {
                     realm1.where(GroupInviteRealmObject.class)
                             .equalTo(GroupInviteRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
                             .equalTo(GroupInviteRealmObject.Fields.GROUP_JID, groupJid.toString())
-                            .findAll().deleteAllFromRealm();
+                            .findAll()
+                            .deleteAllFromRealm();
                 });
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
