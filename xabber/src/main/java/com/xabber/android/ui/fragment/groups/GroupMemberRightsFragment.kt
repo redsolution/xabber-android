@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
-import com.xabber.android.data.groups.GroupMember
-import com.xabber.android.data.groups.GroupMemberManager
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
+import com.xabber.android.data.extension.groups.GroupMember
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupMemberRightsListener
 import com.xabber.android.ui.activity.GroupchatMemberActivity

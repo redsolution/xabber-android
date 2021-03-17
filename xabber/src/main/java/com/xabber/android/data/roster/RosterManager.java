@@ -38,7 +38,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.chat.AbstractChat;

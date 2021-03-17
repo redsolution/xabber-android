@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.android.groupchat.GroupMemberExtensionElement;
-import com.xabber.android.data.extension.android.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.android.groupchat.GroupchatMemberContainer;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupchatMemberContainerExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -134,7 +134,7 @@ public class ReferencesManager {
 
         List<ExtensionElement> groupchatElements = message.getExtensions(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         for (ExtensionElement groupchatElement : groupchatElements) {
-            if (groupchatElement instanceof GroupchatMemberContainer) {
+            if (groupchatElement instanceof GroupchatMemberContainerExtensionElement) {
                 return true;
             }
         }
@@ -173,8 +173,8 @@ public class ReferencesManager {
     public static GroupMemberExtensionElement getGroupchatUserFromReferences(Stanza packet) {
         GroupchatExtensionElement element = packet.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
         if (element == null) return null;
-        if (element instanceof GroupchatMemberContainer) {
-            return ((GroupchatMemberContainer) element).getUser();
+        if (element instanceof GroupchatMemberContainerExtensionElement) {
+            return ((GroupchatMemberContainerExtensionElement) element).getUser();
         }
         return null;
     }
@@ -233,8 +233,8 @@ public class ReferencesManager {
     private static List<ReferenceElement> getGroupchatUserReferences(List<ExtensionElement> elements) {
         List<ReferenceElement> references = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof GroupchatMemberContainer) {
-                GroupchatMemberReference userReference = ((GroupchatMemberContainer) element).getUserReference();
+            if (element instanceof GroupchatMemberContainerExtensionElement) {
+                GroupchatMemberReference userReference = ((GroupchatMemberContainerExtensionElement) element).getUserReference();
                 if (userReference != null) references.add(userReference);
             }
         }

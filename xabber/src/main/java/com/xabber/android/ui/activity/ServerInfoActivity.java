@@ -22,7 +22,7 @@ import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;

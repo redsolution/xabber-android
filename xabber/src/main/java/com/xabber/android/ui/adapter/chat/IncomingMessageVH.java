@@ -19,7 +19,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 

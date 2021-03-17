@@ -23,8 +23,8 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
-import com.xabber.android.data.extension.groupchat.create.CreateGroupchatIqResultListener
-import com.xabber.android.data.groups.*
+import com.xabber.xmpp.groups.create.CreateGroupchatIqResultListener
+import com.xabber.android.data.extension.groups.*
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.CreateGroupActivity

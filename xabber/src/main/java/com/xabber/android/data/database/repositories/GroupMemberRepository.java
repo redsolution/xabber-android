@@ -5,7 +5,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
-import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;

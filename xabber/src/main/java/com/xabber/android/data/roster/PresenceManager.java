@@ -32,12 +32,12 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
-import com.xabber.android.data.extension.groupchat.GroupchatPresence;
-import com.xabber.android.data.extension.groupchat.GroupchatPresenceNotification;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
+import com.xabber.xmpp.groups.GroupchatPresenceNotificationExtensionElement;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -276,11 +276,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         Presence presence = getPresence(account, user);
         if (presence != null && presence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
 
-            GroupchatPresence groupchatPresence = presence
+            GroupchatPresenceExtensionElement groupchatPresenceExtensionElement = presence
                     .getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
 
-            if (groupchatPresence.getStatus() != null && !groupchatPresence.getStatus().isEmpty())
-                return StatusMode.fromString(groupchatPresence.getStatus());
+            if (groupchatPresenceExtensionElement.getStatus() != null && !groupchatPresenceExtensionElement.getStatus().isEmpty())
+                return StatusMode.fromString(groupchatPresenceExtensionElement.getStatus());
             else return StatusMode.createStatusMode(presence);
 
         } else return StatusMode.createStatusMode(presence);
@@ -373,7 +373,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         VCardManager.getInstance().addVCardUpdateToPresence(accountPresence,
                 AvatarManager.getInstance().getHash(abstractChat.getAccount().getBareJid()));
 
-        GroupchatPresenceNotification groupchatExtension = new GroupchatPresenceNotification(isPresent);
+        GroupchatPresenceNotificationExtensionElement groupchatExtension = new GroupchatPresenceNotificationExtensionElement(isPresent);
         accountPresence.addExtension(groupchatExtension);
         accountPresence.setTo(abstractChat.getTo());
 

@@ -3,7 +3,7 @@ package com.xabber.xmpp.avatar;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.groups.GroupMember;
+import com.xabber.android.data.extension.groups.GroupMember;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;

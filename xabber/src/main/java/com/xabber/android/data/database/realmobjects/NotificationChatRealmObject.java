@@ -2,7 +2,7 @@ package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.groups.GroupPrivacyType;
+import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;

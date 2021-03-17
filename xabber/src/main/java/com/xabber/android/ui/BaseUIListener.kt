@@ -19,7 +19,7 @@ import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.connection.ConnectionState
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIQ
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterContact
 import com.xabber.xmpp.vcard.VCard

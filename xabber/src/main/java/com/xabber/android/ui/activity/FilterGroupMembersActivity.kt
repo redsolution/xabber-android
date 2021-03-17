@@ -17,8 +17,8 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.groups.GroupMember
-import com.xabber.android.data.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.GroupMember
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat

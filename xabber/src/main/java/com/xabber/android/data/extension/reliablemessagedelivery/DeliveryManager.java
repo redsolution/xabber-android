@@ -11,7 +11,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.groupchat.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;

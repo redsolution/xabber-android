@@ -40,9 +40,9 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
-import com.xabber.android.data.groups.GroupMember
-import com.xabber.android.data.groups.GroupMemberManager
-import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.extension.groups.GroupMember
+import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat

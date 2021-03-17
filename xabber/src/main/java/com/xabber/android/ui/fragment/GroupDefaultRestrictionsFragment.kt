@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.groups.GroupsManager
+import com.xabber.android.data.extension.groups.GroupsManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupDefaultRestrictionsListener
 import com.xabber.android.ui.activity.GroupDefaultRestrictionsActivity

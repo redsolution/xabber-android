@@ -15,61 +15,61 @@
     <extensionProvider>
         <elementName>x</elementName>
         <namespace>https://xabber.com/protocol/groups</namespace>
-        <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
+        <className>com.xabber.xmpp.groups.GroupchatProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>invite</elementName>
         <namespace>https://xabber.com/protocol/groups#invite</namespace>
-        <className>com.xabber.android.data.extension.groupchat.invite.incoming.IncomingInviteExtensionElementProvider</className>
+        <className>com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElementProvider</className>
     </extensionProvider>
 
     <iqProvider>
             <elementName>query</elementName>
             <namespace>https://xabber.com/protocol/groups</namespace>
-            <className>com.xabber.android.data.extension.groupchat.settings.GroupSettingsRequestDataFormResultProvider</className>
+            <className>com.xabber.xmpp.groups.settings.GroupSettingsRequestDataFormResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#status</namespace>
-        <className>com.xabber.android.data.extension.groupchat.status.GroupStatusDataFormIqProvider</className>
+        <className>com.xabber.xmpp.groups.status.GroupStatusDataFormIqProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#create</namespace>
-        <className>com.xabber.android.data.extension.groupchat.create.GroupchatCreateIqResultProvider</className>
+        <className>com.xabber.xmpp.groups.create.GroupchatCreateIqResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#rights</namespace>
-        <className>com.xabber.android.data.extension.groupchat.rights.GroupchatMemberRightsReplyIqProvider</className>
+        <className>com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#default-rights</namespace>
-        <className>com.xabber.android.data.extension.groupchat.restrictions.GroupDefaultRestrictionsResultIqProvider</className>
+        <className>com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsResultIqProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#members</namespace>
-        <className>com.xabber.android.data.extension.groupchat.members.GroupchatMembersResultProvider</className>
+        <className>com.xabber.xmpp.groups.members.GroupchatMembersResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#invite</namespace>
-        <className>com.xabber.android.data.extension.groupchat.invite.outgoing.GroupchatInviteListResultProvider</className>
+        <className>com.xabber.xmpp.groups.invite.outgoing.GroupchatInviteListResultProvider</className>
     </iqProvider>
 
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/groups#block</namespace>
-        <className>com.xabber.android.data.extension.groupchat.block.blocklist.GroupchatBlocklistResultProvider</className>
+        <className>com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistResultProvider</className>
     </iqProvider>
 
 
@@ -106,6 +106,13 @@
         <elementName>vCard</elementName>
         <namespace>vcard-temp</namespace>
         <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
+    </iqProvider>
+
+    <!-- XEP-SYNC(0CCC) -->
+    <iqProvider>
+        <elementName>conversation</elementName>
+        <namespace>https://xabber.com/protocol/synchronization</namespace>
+        <className>com.xabber.xmpp.ccc.IncomingSetSyncIqProvider</className>
     </iqProvider>
 
 

@@ -56,9 +56,9 @@ import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
-import com.xabber.android.data.groups.GroupInviteManager;
-import com.xabber.android.data.groups.GroupMemberManager;
-import com.xabber.android.data.groups.GroupsManager;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -73,6 +73,7 @@ import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.extension.ccc.CccSyncManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
@@ -449,6 +450,7 @@ public class Application extends android.app.Application {
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
         addManager(GroupInviteManager.INSTANCE);
+        addManager(CccSyncManager.INSTANCE);
     }
 
     /**

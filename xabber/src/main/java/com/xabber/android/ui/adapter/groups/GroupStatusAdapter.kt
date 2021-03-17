@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import org.jivesoftware.smackx.xdata.FormField
 

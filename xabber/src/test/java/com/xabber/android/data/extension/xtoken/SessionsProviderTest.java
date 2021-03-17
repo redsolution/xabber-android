@@ -87,4 +87,5 @@ public class SessionsProviderTest {
         }
         return result;
     }
+
 }

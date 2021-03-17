@@ -13,8 +13,8 @@ import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.vcard.VCardManager
-import com.xabber.android.data.groups.GroupInviteManager
-import com.xabber.android.data.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.GroupInviteManager
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction

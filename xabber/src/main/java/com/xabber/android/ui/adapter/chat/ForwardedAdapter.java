@@ -11,8 +11,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.groups.GroupMember;
-import com.xabber.android.data.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupMember;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
 
 import org.jetbrains.annotations.NotNull;
 

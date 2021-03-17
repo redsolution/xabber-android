@@ -9,8 +9,8 @@ import com.xabber.android.R
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.groups.GroupInviteManager
-import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.extension.groups.GroupInviteManager
+import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat

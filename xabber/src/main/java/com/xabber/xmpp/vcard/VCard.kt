@@ -1,8 +1,8 @@
 package com.xabber.xmpp.vcard
 
-import com.xabber.android.data.groups.GroupIndexType
-import com.xabber.android.data.groups.GroupMembershipType
-import com.xabber.android.data.groups.GroupPrivacyType
+import com.xabber.android.data.extension.groups.GroupIndexType
+import com.xabber.android.data.extension.groups.GroupMembershipType
+import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 
