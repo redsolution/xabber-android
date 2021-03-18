@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_contact">Add Contact</string>
-    <string name="create_group">Create Group</string>
-    <string name="create_incognito_group">Create Incognito Group</string>
-    <string name="choose_account">Choose account</string>
-    <string name="add_to">Add to</string>
-    <string name="create_to">Create to</string>
-
-    <string name="motivating_oneliner">
-Ready to rock?\n
+    <string name="add_contact" comment="dialog_add__label_add_contact">Add Contact</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Create Group</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Create Incognito Group</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Select account</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Add to</string>
+    <string name="create_to" comment="dialog_add__label_create_to">Create to</string>
+    <string name="motivating_oneliner" comment="general__text_motivating_oneliners">Ready to rock?\n
 Groovy!\n
 Be the change!\n
 Believe in yourself!\n
@@ -175,5 +173,11 @@ I, for one, like Roman numerals\n
 We\'ll bang, OK?\n
 Throw it out the airlock\n
 I don\'t need luck. I have ammo.</string>
-
+    <string name="dialog_add__label_add_account">Add Account</string>
+    <string name="toolbar__button_add_tooltip">Add group, contact or account</string>
+    <string name="dialog_add_contact__error__text_no_accounts">No connected accounts found.</string>
+    <string name="dialog_add_contact__error__text_input_username">Input username!</string>
+    <string name="dialog_add_contact__error__text_can_not_add_youself">Can not add yourself to contacts!</string>
+    <string name="dialog_add_contact__error__text_invalid_jid">Invalid jid</string>
+    <string name="dialog_add_contact__error__text_already_in_roster">Contact is already in your roster!</string>
 </resources>

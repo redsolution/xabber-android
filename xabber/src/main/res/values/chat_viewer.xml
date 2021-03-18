@@ -104,6 +104,25 @@
     <string name="export_chat_title">Enter file name</string>
     <string name="muc_invite">Invite to chat</string>
     <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>    //
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <string name="occupant_list">List of occupants</string>
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
@@ -209,7 +228,7 @@
     <string name="dialog_clear_chat_history__button_delete_locally">delete locally</string>
     <string name="dialog_clear_chat_history__option_delete_for_all">Delete for all</string>
     <string name="message__error_big_stanza">Too big xml-stanza</string>
-    <string name="file_upload__text_progress">%1s of %2s</string>
+    <string name="file_upload__text_progress">%1$s of %2$s</string>
     <string name="file_upload__error_default">File uploading error</string>
     <string name="file_upload__error">Error: %s</string>
     <string name="groupchat__incognito_group__text_invitation">You are invited to incognito group chat. If you join it, you won\'t see real XMPP IDs of other members</string>
@@ -225,4 +244,19 @@
     <string name="chat_bottom__placeholder__cancel_write_voice_short">Release to cancel record</string>
     <string name="edit_message__header">Edit message</string>
     <string name="dialog_delete_messages__header">Delete messages</string>
+    <string name="message__delivering_state__error">Message error</string>
+    <string name="message__delivering_state__pending">Message not sent</string>
+    <string name="message__delivering_state__sent">Message sent</string>
+    <string name="message__delivering_state__delivered">Message delivered to user</string>
+    <string name="message__delivering_state__displayed">Message read</string>
+    <string name="message__delivering_state__archived">Message from archive</string>
+    <string name="message__delivering_state__saved">Message saved</string>
+    <string name="emoji_list__catelory_name__smiles_and_people">Smiles and people</string>
+    <string name="emoji_list__catelory_name__body_and_clothes">Body and clothes</string>
+    <string name="emoji_list__catelory_name__animals_and_nature">Animals and nature</string>
+    <string name="emoji_list__catelory_name__food_and_drinks">Food and drinks</string>
+    <string name="emoji_list__catelory_name__travel_and_places">Travel and places</string>
+    <string name="emoji_list__catelory_name__events">Events</string>
+    <string name="emoji_list__catelory_name__objects">Objects</string>
+    <string name="emoji_list__catelory_name__signs">Signs</string>
 </resources>

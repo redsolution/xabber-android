@@ -132,7 +132,8 @@
     <string name="group_settings__invitations__no_pending_invitations">No pending invitations</string>
     <string name="groupchat__dialog_block_member__header">Block member</string>
     <string name="groupchat__dialog_block_member__confirm">Do you really want to block member %s?</string>
-    <string name="groupchat__private_chat__text_message_init">Initiating private chat with %1s from %2s. If your invitation is accepted, you won\'t see each other\'s real XMPP IDs.</string>
+    <string name="groupchat__private_chat__text_message_init">Initiating private chat with %1$s from %2$s. If your
+        invitation is accepted, you won\'t see each other\'s real XMPP IDs.</string>
     <string name="groupchat__set_badge__error_length">Badge can\'t be longer than 32 symbols</string>
     <string name="groupchat__rights_timer__indefinitely">Indefinitely</string>
     <string name="groupchat__rights_timer__text_expire">For %d</string>
@@ -140,6 +141,13 @@
     <string name="dialog_delete_user_messages__header">Delete user messages</string>
     <string name="dialog_delete_user_messages__confirm">Delete all <b>%s</b> messages in this group chat?</string>
     <string name="groupchat__invitation__error_already_invited"> %s already invited in group</string>
-
+    <string name="groupchat__hint_domain">domain</string>
     <string name="group__invite_contact__toast_successful_text">Invitations sent successfully</string>
+    <string name="groupchat__toast_invitations_sent_with_count">%1$d/%2$d invitations were sent</string>
+    <string name="groupchat__toast_invitation_sent">Invitation was sent</string>
+    <plurals name="groupchat__toast_invitation_not_sent">
+        <item quantity="one">Invitation wasn\'t sent</item>
+        <item quantity="other">Invitations weren\'t sent</item>
+    </plurals>
+    <string name="groupchat__toast_all_invitations_sent">Invitations were sent</string>
 </resources>

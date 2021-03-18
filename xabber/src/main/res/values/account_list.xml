@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="account_delete_confirm">Do you really want to delete account %s?\n(it won\'t be deleted from server, just from Xabber)</string>
-    <string name="account_delete_confirmation_question">Do you really want to delete account %s?\n</string>
-    <string name="account_delete_confirmation_explanation">Account will not be deleted from server, just from Xabber</string>
-    <string name="account">Account</string>
-    <string name="account_add">Add account</string>
-    <string name="account_register">Register new account</string>
-    <string name="account_delete">Delete account</string>
-    <string name="account_editor">Account settings</string>
-    <string name="account_state_registration">Registering</string>
-    <string name="account_state_authentication">Authorizing</string>
-    <string name="account_state_connected">Online</string>
-    <string name="account_state_connecting">Connecting...</string>
-    <string name="account_state_disconnecting">Disconnecting</string>
-    <string name="account_state_offline">Offline</string>
-    <string name="account_state_waiting">Waiting to reconnect</string>
-
-    <string name="account_push_state_disabled">Push-notifications disabled</string>
-    <string name="account_push_state_not_support">Push-notifications not supported</string>
-    <string name="account_push_state_enabled">Push-notifications enabled</string>
+    <string name="account_delete_confirm" comment="settings_account__dialog_delete_account__text_delete">Do you
+        really want to delete account %1$s?\n(it won\'t be deleted from server, just from %2$s)</string>
+    <string name="account_delete_confirmation_question" comment="settings_account__dialog_delete_account__header_delete">Do you really want to delete account %s?\n</string>
+    <string name="account_delete_confirmation_explanation" comment="settings_account__dialog_delete_account__text_explanation">Account will not be deleted from server, just from Xabber</string>
+    <string name="account" comment="settings_account__label_account">Account</string>
+    <string name="account_add" comment="account_add__button_add_account">Add account</string>
+    <string name="account_register" comment="account_add__label_register_account">Register new account</string>
+    <string name="account_delete" comment="settings_account__label_delete_account">Delete account</string>
+    <string name="account_editor" comment="settings_account__label_account_settings">Account settings</string>
+    <string name="account_state_registration" comment="settings_account__label_state_registration">Registration</string>
+    <string name="account_state_authentication" comment="settings_account__label_state_authentication">Authentication</string>
+    <string name="account_state_connected" comment="settings_account__label_state_connected">Online</string>
+    <string name="account_state_connecting" comment="settings_account__label_state_connecting">Connecting...</string>
+    <string name="account_state_disconnecting" comment="settings_account__label_state_disconnecting">Disconnecting...</string>
+    <string name="account_state_offline" comment="settings_account__label_state_offline">Offline</string>
+    <string name="account_state_waiting" comment="settings_account__label_state_waiting">Waiting to reconnect</string>
+    <string name="account_push_state_disabled" comment="settings_account__label_push_notifications_hint_disabled">Push-notifications disabled</string>
+    <string name="account_push_state_not_support" comment="settings_account__label_push_notifications_hint_unsupported">Push-notifications not supported</string>
+    <string name="account_push_state_enabled" comment="settings_account__label_push_notifications_hint_enabled">Push-notifications enabled</string>
+    <string name="account__toolbar_item__button_filter_chats">Filter chats</string>
+    <string name="settings_account__label_state_disconnected">Disconnected</string>
 </resources>

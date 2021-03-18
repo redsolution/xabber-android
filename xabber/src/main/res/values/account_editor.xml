@@ -135,14 +135,14 @@
     <string name="settings_account__label_client">Client</string>
     <string name="settings_account__label_status">Status</string>
     <string name="account_color_scheme">Color scheme</string>
-    <string name="account_xmpp_resources">XMPP Resources</string>
+    <string name="account_xmpp_resources">XMPP resources</string>
     <string name="settings_account__section_header_vcard">vCard</string>
     <string name="settings_account__section_header_server_info">Server information</string>
     <string name="settings_account__section_header_circles">Circles</string>
     <string name="settings_account__button_quit_account">Quit account</string>
     <string name="settings_account__button_reconnect">Reconnect</string>
     <string name="settings_account__blocklist__button_block">Block</string>
-    <string name="dialog_block_xmpp_address__text">Block a specific xmpp address</string>
+    <string name="dialog_block_xmpp_address__text">Block a specific XMPP address</string>
     <string name="dialog_block_xmpp_address__hint_address">name@example.com</string>
     <string name="dialog_quit_account__confirm">Do you want to quit this account from Xabber Web? Account will not be deleted from the server.</string>
     <string name="settings_account__dialog_terminate_sessions__header">Terminate sessions</string>
@@ -152,4 +152,6 @@
     <string name="account_auth__error__text_input_username">Please input username!</string>
     <string name="account_auth__error__text_wrong_username">Wrong username format!</string>
     <string name="account_auth__feedback__text_authentication">Authentication...</string>
+    <string name="account_color_name_grey">Grey</string>
+    <string name="account_color_name_yellow">Yellow</string>
 </resources>

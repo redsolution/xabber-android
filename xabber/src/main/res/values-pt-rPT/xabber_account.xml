@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email_hint">Email</string>
+    <string name="progress_title_quit">Sair</string>
+    <string name="progress_title_login">Iniciar sessão</string>
+    <string name="hint_username">Nome de utilizador</string>
+    <string name="title_login_xabber_account">Entrar</string>
+    <string name="title_register_xabber_account">Registo</string>
+    <string name="button_connect">CONECTAR</string>
+    <string name="button_quit">Sair</string>
+    <string name="button_login">ENTRAR</string>
+    <string name="button_registration">Inscrição</string>
+    <string name="button_confirm">Verificar</string>
+    <string name="button_sync">Sincronizar agora</string>
+    <string name="btn_done">Terminado</string>
+    <string name="last_sync_date_never">Nunca</string>
+    <string name="action_connect">LINK</string>
+    <string name="action_disconnect">DESVINCULAR</string>
+    <string name="action_verify">VERIFICAR</string>
+</resources>

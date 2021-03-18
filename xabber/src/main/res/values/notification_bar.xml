@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <plurals name="accounts_offline">
         <item quantity="one">%1$d account offline</item>
         <item quantity="other">%1$d accounts offline</item>
     </plurals>
-
     <plurals name="new_chat_messages">
         <item quantity="one">%1$d new message</item>
         <item quantity="other">%1$d new messages</item>
     </plurals>
-
     <plurals name="new_chat_messages_from_contact">
         <item quantity="one">%1$d new message from %3$s</item>
         <item quantity="other">%1$d new messages from %3$s</item>
     </plurals>
-
     <plurals name="accounts_of_online">
         <item quantity="one">%1$d of %2$d account online</item>
         <item quantity="other">%1$d of %2$d accounts online</item>
     </plurals>
-
     <plurals name="accounts_of_connecting">
         <item quantity="one">%1$d of %2$d account connecting</item>
         <item quantity="other">%1$d of %2$d accounts connecting</item>
     </plurals>
-
     <plurals name="accounts_of_waiting_to_connect">
         <item quantity="one">%1$d of %2$d account waiting to connect</item>
         <item quantity="other">%1$d of %2$d accounts waiting to connect</item>
     </plurals>
-
     <string name="AUTHENTICATION_FAILED">Authorization error</string>
     <string name="connection_state_sync">Synchronization in progress</string>
     <string name="otr_verification_in_progress">Click here to abort it.</string>
@@ -40,7 +33,6 @@
     <string name="action_reply">Reply</string>
     <string name="action_snooze">Snooze</string>
     <string name="action_mark_as_read">Mark as read</string>
-
     <string name="channel_custom_name_default">Custom notification channel</string>
     <string name="channel_custom_chat_description">Custom notification channel for chat:</string>
     <string name="channel_custom_group_description">Custom notification channel for group:</string>
@@ -58,5 +50,29 @@
     <string name="channel_silent_title">Silent message notifications</string>
     <string name="channel_events_description">Notifications for events like: group chat invites, subscription requests, OTR requests</string>
     <string name="channel_silent_description">Silent notifications about messages</string>
-
+    <string name="connection__error__text_timeout_expired">Connection timeout expired</string>
+    <string name="connection__error__text_disconnected">Disconnected</string>
+    <string name="connection__error__text_authentication_failed">Authentication failed for account %s</string>
+    <string name="connection__error__text_authentication_failed_short">Authentication failed</string>
+    <string name="connection__error__connection_lost">Connection lost!</string>
+    <string name="connection__error__text_token_invalidated">Token was invalidated for account %s</string>
+    <string name="connection__error__text_token_invalidated_short">Token was invalidated</string>
+    <string name="connection_status__you_are_offline">You are offline</string>
+    <string name="notification__text_sent_a_message">sent you a message</string>
+    <string name="desktop_notifications__alert_enable__link_text">enable desktop notifications</string>
+    <string name="desktop_notifications__alert_enable__text">%s needs your permission to</string>
+    <string name="notifications__toast_notifications_not_supported">Browser doesn\'t support notifications</string>
+    <string name="notofications__desktop_notification__text">Messages (%d)</string>
+    <string name="notifications__error__text_could_not_open_new_tab">Could not open new tab. Please allow popups</string>
+    <string name="warning__client_not_support_android_browser">You should use Xabber for Android client.</string>
+    <string name="warning__client_not_support_ios_browser">Sorry, but %s does not support iOS browsers.</string>
+    <string name="warning__client_not_support_mobile">Sorry, but %s may not work correctly on your device.</string>
+    <string name="client_error__missing_connection_url">Missing connection URL!</string>
+    <string name="client_warning__no_local_storage">Your web browser does not support storing data locally. In Safari, the most common cause of this is using \"Private Browsing Mode\". So, you will need log in after page refresh again.</string>
+    <string name="client_error__option_show_msg_again">Don\'t show this message again</string>
+    <string name="dialog_version_update__header">Update %s</string>
+    <string name="dialog_version_update__confirm_text__new_version">New version %s is available.</string>
+    <string name="dialog_version_update__confirm_text__question_reload_page">Reload page to fetch these changes?</string>
+    <string name="dialog_version_update__button_reload">reload</string>
+    <string name="dialog_version_update__option_not_now">not now</string>
 </resources>
