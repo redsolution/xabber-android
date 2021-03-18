@@ -38,16 +38,13 @@ import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
-import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.groups.GroupMemberManager;
-import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -57,6 +54,9 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.jivesoftware.smack.packet.Message;
@@ -381,24 +381,25 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             return;
         }
         boolean processed = false;
-        if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)){
-            if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT,
-                    IncomingInviteExtensionElement.NAMESPACE)){
-                IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
-                        IncomingInviteExtensionElement.NAMESPACE);
-                long timestamp = 0;
-                if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                    TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
-                    timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
-                }
-                GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
-                return;
-            } else if (ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
-                AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
-                if (abstractChat instanceof RegularChat){
-                    ChatManager.getInstance().removeChat(abstractChat);
-                    ChatManager.getInstance().createGroupChat(account, contactJid);
-                }
+
+        if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)) {
+            IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
+                    IncomingInviteExtensionElement.NAMESPACE);
+            long timestamp = 0;
+            if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+            }
+            GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
+            return;
+        }
+
+        if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)
+                && ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
+            AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
+            if (abstractChat instanceof RegularChat){
+                ChatManager.getInstance().removeChat(abstractChat);
+                ChatManager.getInstance().createGroupChat(account, contactJid);
             }
         }
 
