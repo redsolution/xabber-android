@@ -79,11 +79,14 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupMember;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -92,10 +95,6 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.groups.GroupMember;
-import com.xabber.android.data.extension.groups.GroupMemberManager;
-import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
@@ -813,7 +812,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 senderName = RosterManager.getInstance().getName(invite.getAccountJid(), invite.getSenderJid());
             }
 
-            Drawable senderAvatar = AvatarManager.getInstance().getUserAvatarForContactList(invite.getSenderJid(), senderName);
+            Drawable senderAvatar = RosterManager.getInstance()
+                    .getAbstractContact(account, invite.getSenderJid().getBareUserJid())
+                    .getAvatar(true);
 
             inflateIncomingInvite(senderAvatar, senderName, invite.getReason(), accountColor);
         }
