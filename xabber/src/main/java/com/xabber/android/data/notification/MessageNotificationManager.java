@@ -144,7 +144,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 GroupMemberManager.getInstance().getGroupMemberById(messageRealmObject.getGroupchatUserId()).getNickname()
                 : RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
 
-        addMessage(chat, sender + ":", getNotificationText(messageRealmObject), true,
+        addMessage(chat, sender, getNotificationText(messageRealmObject), true,
                 messageRealmObject.getGroupchatUserId());
         NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
     }
