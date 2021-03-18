@@ -28,7 +28,7 @@ public class SmackDebugger extends AbstractDebugger {
 
     @Override
     protected void log(String logMessage) {
-        LogManager.i(LOG_TAG, logMessage, replaceMessageBody(getPrettyXmlString(logMessage)));
+        LogManager.i(LOG_TAG, logMessage, replaceVcardBase64Hash(replaceMessageBody(getPrettyXmlString(logMessage))));
     }
 
     @Override
@@ -84,6 +84,20 @@ public class SmackDebugger extends AbstractDebugger {
                 }
             } else return sourceMsg;
         else return sourceMsg;
+    }
+
+    private static String replaceVcardBase64Hash(String source){
+        if (source.contains("</vCard>")) {
+            try {
+                int s = source.indexOf("<BINVAL>");
+                int f = source.indexOf("</BINVAL>");
+                if (s != -1 && f != -1)
+                    return source.substring(0, s + 6) + "*** base 64 here ***" + source.substring(f);
+                else return source;
+            } catch (Exception e) {
+                return source;
+            }
+        } else return source;
     }
 
 }
