@@ -12,20 +12,17 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement;
-import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.OTRUnencryptedException;
-import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.groups.GroupIndexType;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupMembershipType;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.extension.groups.GroupsManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.otr.OTRUnencryptedException;
+import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
@@ -34,6 +31,9 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.ui.OnNewIncomingMessageListener;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import net.java.otr4j.OtrException;
@@ -444,11 +444,9 @@ public class GroupChat extends AbstractChat {
 
     @Override
     public int getUnreadMessageCount() {
-        int unreadMessagesCount = super.getUnreadMessageCount();
         if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, contactJid)){
-            int activeInvitesCount = GroupInviteManager.INSTANCE.getInvites(account, contactJid).size();
-            return unreadMessagesCount != 0 ? unreadMessagesCount : activeInvitesCount;
-        } else return unreadMessagesCount;
+            return 1;
+        } else return super.getUnreadMessageCount();
     }
 
 }

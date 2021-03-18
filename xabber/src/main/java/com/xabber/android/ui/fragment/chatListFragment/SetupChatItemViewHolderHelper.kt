@@ -11,10 +11,10 @@ import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.cs.ChatStateManager
-import com.xabber.android.data.extension.otr.OTRManager
-import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.otr.OTRManager
+import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatAction
@@ -305,9 +305,11 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupMessageStatus(holder: ChatViewHolder, chat: AbstractChat) {
-        if (chat.lastMessage != null) {
+        if (chat.lastMessage != null
+                && !(chat is GroupChat && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid))) {
             MessageDeliveryStatusHelper.setupStatusImageView(chat.lastMessage!!, holder.messageStatusTV)
-        }
+        } else holder.messageStatusTV.visibility = View.GONE
+
     }
 
 }
