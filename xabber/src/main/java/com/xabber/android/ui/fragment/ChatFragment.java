@@ -181,7 +181,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private static final String FORWARD_PURPOSE = "FORWARD_PURPOSE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
+    @SuppressWarnings("FieldCanBeLocal")
     private final long STOP_TYPING_DELAY = 2500; // in ms
+
     private boolean isInputEmpty = true;
     private FrameLayout inputPanel;
     private EditText inputView;
@@ -262,8 +264,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
             recordButtonExpanded.show();
 
-            recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity()
-                    .getApplication(), R.anim.fade_in_200));
+            recordLockView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fade_in_200));
 
             recordLockView.animate()
                     .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
@@ -303,8 +304,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             listener = (ChatViewerFragmentListener) context;
             listener.registerChatFragment(this);
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement ChatViewerFragmentListener");
+            throw new ClassCastException(context.toString() + " must implement ChatViewerFragmentListener");
         }
         registerOpusBroadcastReceiver();
     }
@@ -629,6 +629,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         } else {
+                            //noinspection deprecation
                             rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
                         //measurements for the recording layout animations.
@@ -1486,8 +1487,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
         spanEnd = spanStart + quote.length();
         currentText.insert(spanStart, quote);
-        currentText.setSpan(new CustomQuoteSpan(accountColor, getContext()
-                .getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        currentText.setSpan(new CustomQuoteSpan(accountColor,
+                getContext().getResources().getDisplayMetrics()), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         inputView.setSelection(spanEnd);
         skipOnTextChanges = false;
     }

@@ -87,7 +87,7 @@ public class SmackDebugger extends AbstractDebugger {
     }
 
     private static String replaceVcardBase64Hash(String source){
-        if (source.contains("</vCard>")) {
+        if (source.contains("<PHOTO>")) {
             try {
                 int s = source.indexOf("<BINVAL>");
                 int f = source.indexOf("</BINVAL>");
