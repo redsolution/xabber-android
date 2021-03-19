@@ -18,17 +18,14 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.groups.GroupMemberManager;
-import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -44,6 +41,9 @@ import com.xabber.android.ui.OnLastHistoryLoadFinishedListener;
 import com.xabber.android.ui.OnLastHistoryLoadStartedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -967,12 +967,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
             messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
-        } else messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
-
-
-        if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
+        } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
             messageRealmObject.setGroupchatSystem(true);
-        }
+            messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
+        } else messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
 
         return messageRealmObject;
     }

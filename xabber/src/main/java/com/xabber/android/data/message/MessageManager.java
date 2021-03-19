@@ -562,12 +562,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
                 newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
-            } else {
-                newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
-            }
-            if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE))
+            } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
                 newMessageRealmObject.setGroupchatSystem(true);
-
+                newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
+            } else newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);
 

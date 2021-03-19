@@ -1664,8 +1664,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.avatar)  showContactInfo();
-        else if (v.getId() == R.id.btnScrollDown) onScrollDownClick();
+        if (v.getId() == R.id.avatar) {
+            showContactInfo();
+        } else if (v.getId() == R.id.btnScrollDown) onScrollDownClick();
     }
 
     public void showContactInfo() {
@@ -1715,9 +1716,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             String memberId = chatMessageAdapter.getMessageItem(position).getGroupchatUserId();
             startActivity(GroupchatMemberActivity.Companion
                     .createIntentForGroupchatAndMemberId(getActivity(), memberId, (GroupChat) getChat()));
-        } else {
-            LogManager.w(LOG_TAG, "onMessageAvatarClick on notGroupchat. Position: " + position);
-        }
+        } else LogManager.w(LOG_TAG, "onMessageAvatarClick on notGroupchat. Position: " + position);
     }
 
     @Override
@@ -1740,8 +1739,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         } else {
             interactionView.setVisibility(View.GONE);
             replySwipe.setSwipeEnabled(true);
-            ((ChatActivity)getActivity()).showToolbarInteractionsPanel(false, isEditable,
-                    isPinnable, checkedItems);
+            ((ChatActivity)getActivity()).showToolbarInteractionsPanel(false, false,
+                    false, checkedItems);
         }
     }
 
@@ -1761,16 +1760,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments()
                 && (clickedMessageRealmObject.isAcknowledged()
                 || clickedMessageRealmObject.isDelivered()
-                || clickedMessageRealmObject.isDisplayed()))
+                || clickedMessageRealmObject.isDisplayed())) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
+        }
 
         if (OTRManager.getInstance().isEncrypted(clickedMessageRealmObject.getText())) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
         }
 
         //todo checking privileges
-        if (getChat() instanceof GroupChat)
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
+        if (getChat() instanceof GroupChat) CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
 
         if (clickedMessageRealmObject.isError()) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
@@ -1797,9 +1796,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     if (clickedMessageRealmObject.haveAttachments()) {
                         HttpFileUploadManager.getInstance()
                                 .retrySendFileMessage(clickedMessageRealmObject, getActivity());
-                    } else {
-                        sendMessage(clickedMessageRealmObject.getText());
-                    }
+                    } else sendMessage(clickedMessageRealmObject.getText());
+
                     break;
                 case "action_message_copy":
                     Spannable spannable = MessageRealmObject.getSpannable(clickedMessageRealmObject);
@@ -1822,8 +1820,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     chatMessageAdapter.notifyDataSetChanged();
                     break;
                 case "action_message_status":
-                    if (clickedMessageRealmObject.isError())
-                        showError(clickedMessageRealmObject.getErrorDescription());
+                    if (clickedMessageRealmObject.isError()) showError(clickedMessageRealmObject.getErrorDescription());
                     break;
                 case "action_message_edit":
                     getReadyForMessageEditing(clickedMessageRealmObject);
@@ -1901,10 +1898,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (chat != null) {
             int position = chat.getLastPosition();
             int unread = chat.getUnreadMessageCount();
-            if ((position == 0 || fromNotification) && unread > 0)
+            if ((position == 0 || fromNotification) && unread > 0) {
                 scrollToFirstUnread(unread);
-            else if (position > 0)
-                layoutManager.scrollToPosition(position);
+            } else if (position > 0) layoutManager.scrollToPosition(position);
             setFirstUnreadMessageId(chat.getFirstUnreadMessageId());
             updateNewReceivedMessageCounter(unread);
         }
@@ -1921,8 +1917,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             notifyIntent = ((RegularChat) chat).getIntent();
             if (notifyIntent != null) {
                 setupNotifyLayout(notifyIntent);
-            } else if (notifyLayout != null)
-                notifyLayout.setVisibility(View.GONE);
+            } else if (notifyLayout != null) notifyLayout.setVisibility(View.GONE);
         }
     }
 
@@ -1994,8 +1989,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 Utils.dipToPx(8f, getContext()));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            messageBalloon.getBackground()
-                    .setTintList(ColorManager.getInstance().getChatIncomingBalloonColorsStateList(getAccount()));
+            messageBalloon.getBackground().setTintList(
+                    ColorManager.getInstance().getChatIncomingBalloonColorsStateList(getAccount()));
         }
 
     }
@@ -2026,9 +2021,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getResources().getDimensionPixelOffset(R.dimen.input_view_height));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 blockedView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button);
-            } else {
-                blockedView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Widget_Button);
-            }
+            } else blockedView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Widget_Button);
+
             blockedView.setTextColor(accountColor);
             blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
             blockedView.setText(R.string.blocked_contact_message);
@@ -2086,6 +2080,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
+            LogManager.exception("BLINKING", new Exception());
         } else {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             PresenceManager.getInstance().clearSubscriptionRequestNotification(account, user);
@@ -2095,9 +2090,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @SuppressLint("ClickableViewAccessibility")
     private void inflateNewContactLayout(final SubscriptionState subscriptionState, final boolean inRoster) {
-        if (newContactLayout == null) {
-            newContactLayout = (ViewGroup) stubNewContact.inflate();
-        }
+        if (newContactLayout == null) newContactLayout = (ViewGroup) stubNewContact.inflate();
+
         //intercept touch events to avoid clicking on the messages behind the panel.
         newContactLayout.setOnTouchListener((v, event) -> true);
         manageToolbarElevation(true);
@@ -2229,9 +2223,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     e.printStackTrace();
                 }
             }
-            if (getChat() != null) {
-                getChat().setAddContactSuggested(true);                                     // remember "X"-press
-            }
+            if (getChat() != null) getChat().setAddContactSuggested(true);                 // remember "X"-press
+
             TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
             newContactLayout.setVisibility(View.GONE);
             manageToolbarElevation(false);
@@ -2275,8 +2268,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     // remove/recreate activity's toolbar elevation.
     private void manageToolbarElevation(boolean remove) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (((ChatActivity) getActivity()).getToolbar().getElevation() != 0f)
+            if (((ChatActivity) getActivity()).getToolbar().getElevation() != 0f) {
                 toolbarElevation = ((ChatActivity) getActivity()).getToolbar().getElevation();
+            }
             ((ChatActivity) getActivity()).getToolbar().setElevation(remove ? 0f : toolbarElevation);
         }
     }
@@ -2415,9 +2409,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
                 sendStoppedVoiceMessage(recordingPath, bottomPanelMessagesIds);
                 hideBottomMessagePanel();
-            } else {
-                sendStoppedVoiceMessage(recordingPath);
-            }
+            } else sendStoppedVoiceMessage(recordingPath);
             scrollDown();
             setFirstUnreadMessageId(null);
             finishVoiceRecordLayout();
@@ -2427,8 +2419,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void subscribeForRecordedAudioProgress() {
-        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress = VoiceManager
-                .PublishAudioProgress.getInstance().subscribeForProgress();
+        PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress =
+                VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
         audioProgressSubscription = audioProgress.doOnNext(this::setUpAudioProgress).subscribe();
     }
 
@@ -2470,7 +2462,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
                 .setDuration(300)
                 .start();
-        recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_out_200));
+        recordLockView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fade_out_200));
         recordLockView.animate()
                 .y(rootViewHeight - (lockViewHeightSize + lockViewMarginBottom))
                 .setDuration(300)
@@ -2483,7 +2475,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         VoiceManager.getInstance().releaseMediaRecorder();
 
         endRecordingButtonsAnimation();
-        voiceMessageRecorderLayout.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.slide_out_right_opaque));
+        voiceMessageRecorderLayout.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.slide_out_right_opaque));
         handler.postDelayed(postAnimation, 295);
 
         beginTimer(false);
