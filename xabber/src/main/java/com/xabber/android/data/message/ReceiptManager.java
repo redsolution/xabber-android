@@ -29,7 +29,7 @@ import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -109,7 +109,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
-                    String id = UniqueStanzaHelper.getStanzaIdBy(
+                    String id = UniqueIdsHelper.getStanzaIdBy(
                             message, isGroup ? from.asBareJid().toString() : account.getBareJid().toString());
 
                     if (id == null) continue;

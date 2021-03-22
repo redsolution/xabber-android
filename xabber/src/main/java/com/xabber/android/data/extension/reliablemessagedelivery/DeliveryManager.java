@@ -16,7 +16,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.packet.Message;
@@ -154,8 +154,8 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                 } else if (stanza.hasExtension(GroupchatExtensionElement.ELEMENT, NAMESPACE)) {
                     StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
                     Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
-                    originId = UniqueStanzaHelper.getOriginId(message);
-                    stanzaId = UniqueStanzaHelper.getStanzaIdBy(message, stanza.getFrom().asBareJid().toString());
+                    originId = UniqueIdsHelper.getOriginId(message);
+                    stanzaId = UniqueIdsHelper.getStanzaIdBy(message, stanza.getFrom().asBareJid().toString());
                     if (echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE) != null){
                         timestamp = echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE)
                                 .getAttributeValue(TimeElement.ATTRIBUTE_STAMP);

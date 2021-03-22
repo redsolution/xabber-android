@@ -5,7 +5,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class OriginIdElement implements ExtensionElement {
 
-    public static final String NAMESPACE = UniqueStanzaHelper.NAMESPACE;
+    public static final String NAMESPACE = "urn:xmpp:sid:0";
     public static final String ELEMENT = "origin-id";
     public static final String ATTRIBUTE_ID = "id";
     private String id;

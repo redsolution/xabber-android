@@ -44,7 +44,7 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import net.java.otr4j.io.SerializationUtils;
@@ -91,6 +91,7 @@ import io.realm.Sort;
 public class NextMamManager implements OnRosterReceivedListener, OnPacketListener {
 
     private static final String LOG_TAG = NextMamManager.class.getSimpleName();
+    public static final String NAMESPACE = "urn:xmpp:mam:tmp";
 
     private static NextMamManager instance;
 
@@ -468,7 +469,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             if (queryResult != null) {
                 messages.addAll(queryResult.forwardedMessages);
                 complete = queryResult.mamFin.isComplete();
-                id = getNextId(queryResult);
+                id = getNextArchivedId(queryResult);
                 pageLoaded++;
             } else complete = true;
         }
@@ -928,9 +929,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         MessageRealmObject messageRealmObject = new MessageRealmObject(uid);
         messageRealmObject.setPreviousId(prevID);
 
-        String archivedId = ArchivedHelper.getArchivedId(forwarded.getForwardedStanza());
-        if (archivedId != null) messageRealmObject.setArchivedId(archivedId);
-
         long timestamp = delayInformation.getStamp().getTime();
 
         messageRealmObject.setAccount(account);
@@ -942,7 +940,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (messageDelay != null) messageRealmObject.setDelayTimestamp(messageDelay.getStamp().getTime());
 
         messageRealmObject.setIncoming(incoming);
-        messageRealmObject.setOriginId(UniqueStanzaHelper.getOriginId(message));
+        messageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
         messageRealmObject.setPacketId(message.getStanzaId());
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
@@ -966,11 +964,16 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (groupchatUser != null) {
             GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
-            messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, user.getBareJid().toString()));
+            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, user.getBareJid().toString()));
+            messageRealmObject.setArchivedId(UniqueIdsHelper.getArchivedIdBy(message, user.getBareJid().toString()));
         } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
             messageRealmObject.setGroupchatSystem(true);
-            messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, user.getBareJid().toString()));
-        } else messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()));
+            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, user.getBareJid().toString()));
+            messageRealmObject.setArchivedId(UniqueIdsHelper.getArchivedIdBy(message, user.getBareJid().toString()));
+        } else {
+            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()));
+            messageRealmObject.setArchivedId(UniqueIdsHelper.getArchivedIdBy(message, account.getBareJid().toString()));
+        }
 
         return messageRealmObject;
     }
@@ -1068,13 +1071,17 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         dataForm.addField(formField);
     }
 
-    private String getNextId(MamManager.MamQueryResult queryResult) {
-        String archivedId = null;
+    private String getNextArchivedId(MamManager.MamQueryResult queryResult) {
         if (queryResult.forwardedMessages != null && !queryResult.forwardedMessages.isEmpty()) {
-            Forwarded forwarded = queryResult.forwardedMessages.get(queryResult.forwardedMessages.size() - 1);
-            archivedId = ArchivedHelper.getArchivedId(forwarded.getForwardedStanza());
-        }
-        return archivedId;
+            Stanza lastForwardedStanza =
+                    queryResult.forwardedMessages.get(queryResult.forwardedMessages.size() - 1).getForwardedStanza();
+            String to = queryResult.mamFin.getTo().asBareJid().toString();
+            String from = lastForwardedStanza.getFrom().asBareJid().toString();
+            if (lastForwardedStanza.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE)
+                || lastForwardedStanza.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
+                return UniqueIdsHelper.getArchivedIdBy(lastForwardedStanza, from);
+            } else return UniqueIdsHelper.getArchivedIdBy(lastForwardedStanza, to);
+        } else return null;
     }
 
     private Date getNextDate(MamManager.MamQueryResult queryResult) {

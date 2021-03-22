@@ -57,7 +57,7 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
@@ -539,7 +539,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                         ((TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)).getStamp();
                 newMessageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(timestamp).getTime());
             }
-            newMessageRealmObject.setOriginId(UniqueStanzaHelper.getOriginId(message));
+            newMessageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
             if (DeliveryManager.getInstance().isSupported(account))
                 newMessageRealmObject.setAcknowledged(true);
             newMessageRealmObject.setSent(true);
@@ -562,14 +562,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
                 newMessageRealmObject.setStanzaId(
-                        UniqueStanzaHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
+                        UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
             } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
                 newMessageRealmObject.setGroupchatSystem(true);
                 newMessageRealmObject.setStanzaId(
-                        UniqueStanzaHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
+                        UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
             } else {
                 newMessageRealmObject.setStanzaId(
-                        UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()));
+                        UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()));
             }
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);

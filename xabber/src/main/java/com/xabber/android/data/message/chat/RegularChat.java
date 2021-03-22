@@ -44,7 +44,7 @@ import com.xabber.android.ui.OnNewIncomingMessageListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
 
 import net.java.otr4j.OtrException;
 
@@ -256,16 +256,16 @@ public class RegularChat extends AbstractChat {
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()),
-                        UniqueStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
+                        UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()),
+                        UniqueIdsHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
                         originalFrom, false, forwardIdRealmObjects,false, null);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, true, encrypted,
                     MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
-                    UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()),
-                    UniqueStanzaHelper.getOriginId(message), originalStanza, null, originalFrom,
+                    UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()),
+                    UniqueIdsHelper.getOriginId(message), originalStanza, null, originalFrom,
                     false, forwardIdRealmObjects, false, null, isSystem);
 
             for (OnNewIncomingMessageListener listener :
@@ -320,15 +320,15 @@ public class RegularChat extends AbstractChat {
         if (attachmentRealmObjects.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
-                    false, UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()),
-                    UniqueStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, parentMessageId,
+                    false, UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()),
+                    UniqueIdsHelper.getOriginId(message), attachmentRealmObjects, originalStanza, parentMessageId,
                     originalFrom, true, forwardIdRealmObjects, true, gropchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
-                false, UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()),
-                UniqueStanzaHelper.getOriginId(message), originalStanza, parentMessageId, originalFrom, true,
+                false, UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()),
+                UniqueIdsHelper.getOriginId(message), originalStanza, parentMessageId, originalFrom, true,
                 forwardIdRealmObjects, true, gropchatUserId, isSystem);
 
         return uid;

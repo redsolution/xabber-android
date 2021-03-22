@@ -5,7 +5,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class StanzaIdElement implements ExtensionElement {
 
-    public static final String NAMESPACE = UniqueStanzaHelper.NAMESPACE;
+    public static final String NAMESPACE = "urn:xmpp:sid:0";
     public static final String ELEMENT = "stanza-id";
     public static final String ATTRIBUTE_BY = "by";
     public static final String ATTRIBUTE_ID = "id";

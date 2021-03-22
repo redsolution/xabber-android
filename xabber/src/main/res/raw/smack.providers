@@ -193,6 +193,12 @@
         <className>com.xabber.xmpp.sid.OriginIdProvider</className>
     </extensionProvider>
 
+    <extensionProvider>
+        <elementName>archived</elementName>
+        <namespace>urn:xmpp:mam:tmp</namespace>
+        <className>com.xabber.xmpp.archive.ArchivedIdProvider</className>
+    </extensionProvider>
+
 
     <!--              XEP-DELIVERY               -->
     <!--           Time element provider         -->
