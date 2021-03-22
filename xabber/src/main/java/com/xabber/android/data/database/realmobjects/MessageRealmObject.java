@@ -78,7 +78,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ORIGINAL_FROM = "originalFrom";
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
         public static final String PREVIOUS_ID = "previousId";
-        public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
         public static final String IS_GROUPCHAT_SYSTEM = "isGroupchatSystem";
     }
@@ -199,7 +198,6 @@ public class MessageRealmObject extends RealmObject {
 
     private String parentMessageId;
     private String previousId;
-    private String archivedId;
     @Ignore
     private String packetId;
     private String groupchatUserId;
@@ -390,10 +388,6 @@ public class MessageRealmObject extends RealmObject {
     public String getPreviousId() { return previousId; }
 
     public void setPreviousId(String previousId) { this.previousId = previousId; }
-
-    public String getArchivedId() { return archivedId; }
-
-    public void setArchivedId(String archivedId) { this.archivedId = archivedId; }
 
     public String getPacketId() { return packetId; }
 

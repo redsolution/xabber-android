@@ -178,15 +178,10 @@ public class BackpressureMessageReader {
 
         private ArrayList<String> getStanzaIds(MessageRealmObject messageRealmObject) {
             ArrayList<String> stanzaIds = new ArrayList<>();
-            if (messageRealmObject.getStanzaId() != null) {
-                stanzaIds.add(messageRealmObject.getStanzaId());
-            }
-            if (messageRealmObject.getArchivedId() != null && !messageRealmObject.getArchivedId()
-                    .equals(messageRealmObject.getStanzaId())) {
-                stanzaIds.add(messageRealmObject.getArchivedId());
-            }
+            if (messageRealmObject.getStanzaId() != null) stanzaIds.add(messageRealmObject.getStanzaId());
             return stanzaIds;
         }
+
     }
 
 }
