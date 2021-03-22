@@ -561,11 +561,16 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             if (groupchatUser != null) {
                 GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getTo().asBareJid());
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
-                newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
+                newMessageRealmObject.setStanzaId(
+                        UniqueStanzaHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
             } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
                 newMessageRealmObject.setGroupchatSystem(true);
-                newMessageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
-            } else newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
+                newMessageRealmObject.setStanzaId(
+                        UniqueStanzaHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
+            } else {
+                newMessageRealmObject.setStanzaId(
+                        UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()));
+            }
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);
 

@@ -223,14 +223,16 @@ public class GroupChat extends AbstractChat {
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        UniqueStanzaHelper.getContactStanzaId(message), UniqueStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
+                        UniqueStanzaHelper.getStanzaIdBy(message, contactJid.getBareJid().toString()),
+                        UniqueStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, null,
                         originalFrom, false, forwardIdRealmObjects, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, true, encrypted,
                     MessageManager.isOfflineMessage(account.getFullJid().getDomain(), packet),
-                    UniqueStanzaHelper.getContactStanzaId(message), UniqueStanzaHelper.getOriginId(message), originalStanza, null,
+                    UniqueStanzaHelper.getStanzaIdBy(message, contactJid.getBareJid().toString()),
+                    UniqueStanzaHelper.getOriginId(message), originalStanza, null,
                     originalFrom, false, forwardIdRealmObjects, false, gropchatUserId, isSystem);
 
             for (OnNewIncomingMessageListener listener :
@@ -326,16 +328,16 @@ public class GroupChat extends AbstractChat {
         if (attachmentRealmObjects.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp,
                     getDelayStamp(message), true, false, encrypted, false,
-                    UniqueStanzaHelper.getContactStanzaId(message), UniqueStanzaHelper.getOriginId(message),
-                    attachmentRealmObjects, originalStanza, parentMessageId, originalFrom, true,
-                    forwardIdRealmObjects, true, groupchatUserId);
+                    UniqueStanzaHelper.getStanzaIdBy(message, contactJid.getBareJid().toString()),
+                    UniqueStanzaHelper.getOriginId(message), attachmentRealmObjects, originalStanza, parentMessageId,
+                    originalFrom, true, forwardIdRealmObjects, true, groupchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp,
                 getDelayStamp(message), true, false, encrypted, false,
-                UniqueStanzaHelper.getContactStanzaId(message), UniqueStanzaHelper.getOriginId(message), originalStanza,
-                parentMessageId, originalFrom, true, forwardIdRealmObjects, true, groupchatUserId,
-                isSystem);
+                UniqueStanzaHelper.getStanzaIdBy(message, contactJid.getBareJid().toString()),
+                UniqueStanzaHelper.getOriginId(message), originalStanza, parentMessageId, originalFrom, true,
+                forwardIdRealmObjects, true, groupchatUserId, isSystem);
 
         return uid;
     }

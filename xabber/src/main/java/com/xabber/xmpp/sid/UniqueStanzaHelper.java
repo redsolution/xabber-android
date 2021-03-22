@@ -14,26 +14,20 @@ public class UniqueStanzaHelper {
 
     final static String NAMESPACE = "urn:xmpp:sid:0";
 
-    public static String getStanzaId(Message message) {
-        StanzaIdElement sidElement = message.getExtension(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE);
-        if (sidElement != null) return sidElement.getId();
-        else return null;
-    }
-
     public static String getOriginId(Message message) {
         OriginIdElement oidElement = message.getExtension(OriginIdElement.ELEMENT, OriginIdElement.NAMESPACE);
         if (oidElement != null) return oidElement.getId();
         else return message.getStanzaId();
     }
 
-    public static String getContactStanzaId(Message message){
+    public static String getStanzaIdBy(Message message, String by){
         List<ExtensionElement> stanzaIds = new ArrayList<>(message.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
         String messageId = "";
         if (stanzaIds.isEmpty()) return "";
         for (ExtensionElement stanzaIdElement : stanzaIds) {
             if (stanzaIdElement instanceof StanzaIdElement) {
                 String idBy = ((StanzaIdElement) stanzaIdElement).getBy();
-                if (idBy != null && idBy.equals(message.getFrom().toString())) {
+                if (idBy != null && idBy.equals(by)) {
                     messageId = ((StanzaIdElement) stanzaIdElement).getId();
                     break;
                 } else {

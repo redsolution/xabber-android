@@ -11,11 +11,11 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.xmpp.sid.UniqueStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -155,7 +155,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
                     Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
                     originId = UniqueStanzaHelper.getOriginId(message);
-                    stanzaId = UniqueStanzaHelper.getContactStanzaId(message);
+                    stanzaId = UniqueStanzaHelper.getStanzaIdBy(message, stanza.getFrom().asBareJid().toString());
                     if (echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE) != null){
                         timestamp = echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE)
                                 .getAttributeValue(TimeElement.ATTRIBUTE_STAMP);

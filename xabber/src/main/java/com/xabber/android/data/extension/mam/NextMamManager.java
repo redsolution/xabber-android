@@ -966,11 +966,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (groupchatUser != null) {
             GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
-            messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
+            messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, user.getBareJid().toString()));
         } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
             messageRealmObject.setGroupchatSystem(true);
-            messageRealmObject.setStanzaId(UniqueStanzaHelper.getContactStanzaId(message));
-        } else messageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
+            messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, user.getBareJid().toString()));
+        } else messageRealmObject.setStanzaId(UniqueStanzaHelper.getStanzaIdBy(message, account.getBareJid().toString()));
 
         return messageRealmObject;
     }

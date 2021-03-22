@@ -57,7 +57,6 @@ import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
-import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Message;
@@ -135,20 +134,6 @@ public abstract class AbstractChat extends BaseEntity implements
 
     private static int getSizeOfEncodedChars(String str) {
         return Utils.xmlEncode(str).toCharArray().length;
-    }
-
-    public static String getStanzaId(Message message) {
-        String stanzaId;
-
-        stanzaId = UniqueStanzaHelper.getStanzaId(message);
-        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
-
-        stanzaId = message.getStanzaId();
-        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
-
-        stanzaId = UniqueStanzaHelper.getOriginId(message);
-
-        return stanzaId;
     }
 
     protected static Date getDelayStamp(Message message) {

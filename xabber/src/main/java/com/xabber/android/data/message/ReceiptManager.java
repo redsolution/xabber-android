@@ -25,9 +25,11 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.sid.UniqueStanzaHelper;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -94,6 +96,10 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             return;
         }
         final Message message = (Message) packet;
+
+        boolean isGroup = message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
+                || message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
+
         if (message.getType() == Message.Type.error) {
             if (message.getError().getCondition().equals(XMPPError.Condition.service_unavailable)){
                 LogManager.e(LOG_TAG, "Got service unavailable error to message! But message status <b>WAS NOT<b> "
@@ -103,10 +109,11 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
-                    String id = AbstractChat.getStanzaId(message);
-                    if (id == null) {
-                        continue;
-                    }
+                    String id = UniqueStanzaHelper.getStanzaIdBy(
+                            message, isGroup ? from.asBareJid().toString() : account.getBareJid().toString());
+
+                    if (id == null) continue;
+
                     Message receipt = new Message(from);
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
