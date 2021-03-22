@@ -726,7 +726,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         forwardedCount, forwardedCount));
             } else if (message != null && message.haveAttachments()) {
                 pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
-                        message.getAttachmentRealmObjects().get(0)));
+                        message.getAttachmentRealmObjects()));
                 pinnedMessageTv.setTypeface(Typeface.DEFAULT);
                 return;
             } else pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));

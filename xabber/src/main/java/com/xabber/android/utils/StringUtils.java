@@ -23,16 +23,19 @@ import androidx.annotation.Nullable;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
-import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
 
+import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.StringCharacterIterator;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -287,8 +290,8 @@ public class StringUtils {
         return getColoredText(text, hexColor);
     }
 
-    public static String getAttachmentDisplayName(Context context, AttachmentRealmObject attachment) {
-        return getColoredAttachmentDisplayName(context, attachment, -1);
+    public static String getAttachmentDisplayName(Context context, List<AttachmentRealmObject> attachments) {
+        return getColoredAttachmentDisplayName(context, attachments, -1);
     }
 
     /**
@@ -312,26 +315,59 @@ public class StringUtils {
         return null;
     }
 
-    public static String getColoredAttachmentDisplayName(Context context, AttachmentRealmObject attachment, int accountColorIndicator) {
-        if (attachment != null) {
+    public static String getColoredAttachmentDisplayName(Context context, List<AttachmentRealmObject> attachments, int accountColorIndicator) {
+        if (attachments != null) {
             String attachmentName;
             StringBuilder attachmentBuilder = new StringBuilder();
 
-            if (attachment.isVoice()) {
-                attachmentBuilder.append(context.getResources().getString(R.string.voice_message));
-                if (attachment.getDuration() != null && attachment.getDuration() != 0) {
-                    attachmentBuilder.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+            if (attachments.size() == 1){
+                AttachmentRealmObject singleAttachment = attachments.get(0);
+                if (singleAttachment.isVoice()) {
+                    attachmentBuilder.append(context.getResources().getString(R.string.voice_message));
+                    if (singleAttachment.getDuration() != null && singleAttachment.getDuration() != 0) {
+                        attachmentBuilder.append(String.format(Locale.getDefault(), ", %s",
+                                StringUtils.getDurationStringForVoiceMessage(null, singleAttachment.getDuration())));
+                    }
+                } else {
+                    if (singleAttachment.isImage()) {
+                        attachmentBuilder.append(context.getResources().getString(R.string.image_message));
+                    } else {
+                        attachmentBuilder.append(context.getResources().getString(R.string.file_message));
+                    }
+                    if (singleAttachment.getFileSize() != null && singleAttachment.getFileSize() != 0) {
+                        attachmentBuilder.append(", ").append(getHumanReadableFileSize(singleAttachment.getFileSize()));
+                    }
                 }
             } else {
-                if (attachment.isImage()) {
-                    attachmentBuilder.append(context.getResources().getString(R.string.image_message));
+                long sizeOfAllAttachments = 0;
+                for (AttachmentRealmObject attachmentRealmObject : attachments){
+                    sizeOfAllAttachments += attachmentRealmObject.getFileSize();
+                }
+                boolean isAllAttachmentsOfOneType = true;
+                for (int i = 1; i < attachments.size(); i++){
+                    AttachmentRealmObject currentAttachment = attachments.get(i);
+                    AttachmentRealmObject previousAttachment = attachments.get(i-1);
+                    if ( !(currentAttachment.isVoice() && previousAttachment.isVoice())
+                            || !(currentAttachment.isImage() && previousAttachment.isVoice())){
+                        isAllAttachmentsOfOneType = false;
+                        break;
+                    }
+                }
+                if (isAllAttachmentsOfOneType){
+                    if (attachments.get(0).isImage()){
+                        attachmentBuilder.append(context.getResources().getString(
+                                R.string.recent_chat__last_message__images, attachments.size()));
+                    } else {
+                        attachmentBuilder.append(context.getResources().getString(
+                                R.string.recent_chat__last_message__files, attachments.size()));
+                    }
                 } else {
-                    attachmentBuilder.append(context.getResources().getString(R.string.file_message));
+                    attachmentBuilder.append(context.getResources().getString(
+                            R.string.recent_chat__last_message__attachments, attachments.size()));
                 }
-                if (attachment.getTitle() != null) {
-                    attachmentBuilder.append(String.format(Locale.getDefault(), ": %s", attachment.getTitle()));
-                }
+                attachmentBuilder.append(", ").append(getHumanReadableFileSize(sizeOfAllAttachments));
             }
+
 
             attachmentName = attachmentBuilder.toString();
             if (accountColorIndicator != -1) {
@@ -342,6 +378,18 @@ public class StringUtils {
         } else {
             return null;
         }
+    }
+
+    static public String getHumanReadableFileSize(long bytes){
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format(Locale.getDefault(), "%.1f %cB", bytes / 1000.0, ci.current());
     }
 
     /**

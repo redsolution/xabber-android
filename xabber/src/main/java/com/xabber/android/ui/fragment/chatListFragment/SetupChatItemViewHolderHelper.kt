@@ -232,7 +232,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
 
         fun setToAttachments(){
-            holder.messageTextTV.text = StringUtils.getAttachmentDisplayName(context, lastMessage!!.attachmentRealmObjects[0])
+            holder.messageTextTV.text = StringUtils.getColoredAttachmentDisplayName(
+                    context, lastMessage?.attachmentRealmObjects ?: return, holder.accountColorIndicator!!)
 
             colorizeIfPossible()
             setDefaultTypeface()
