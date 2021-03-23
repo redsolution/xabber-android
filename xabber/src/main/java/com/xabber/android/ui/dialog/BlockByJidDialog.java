@@ -171,7 +171,7 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
 
         //
         if (!resourceName.equals("")) {
-            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_slash));
+            setError(getString(R.string.account_add__alert_invalid_slash));
             return false;
         }
         //Invalid when domain is empty
@@ -182,52 +182,52 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
 
         //Invalid when "@" is present but localPart is empty
         if (atChar == 0) {
-            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_absent));
+            setError(getString(R.string.account_add__alert_localpart_absent));
             return false;
         }
 
         //Invalid when "@" is present in a domainPart
         if (atChar > 0) {
             if (domainName.contains("@")) {
-                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_symbols_at));
+                setError(getString(R.string.account_add__alert_invalid_symbols_at));
                 return false;
             }
         }
 
         //Invalid when domain has "." at the start/end
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
         //Invalid when domain does not have a "." in the middle, when paired with the last check
         if (!domainName.contains(".")) {
-            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
         //Invalid when domain has multiple dots in a row
         if(domainName.contains("..")) {
-            setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_invalid_domain));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
 
         if (!localName.equals("")) {
             //Invalid when localPart is NOT empty, and HAS "." at the start/end
             if (localName.charAt(localName.length() - 1) == '.' || localName.charAt(0) == '.') {
-                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_invalid));
+                setError(getString(R.string.account_add__alert_localpart_invalid));
                 return false;
             }
             //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
             if (localName.contains(":")) {
-                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), ":"));
+                setError(String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), ":"));
                 return false;
             }
             if (localName.contains("/")) {
-                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), "/"));
+                setError(String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), "/"));
                 return false;
             }
             //Invalid when localPart is NOT empty, and has multiple dots in a row
             if(localName.contains("..")) {
-                setError(getString(R.string.account_add__alert_incorrect_xmpp_id) + getString(R.string.account_add__alert_localpart_invalid));
+                setError(getString(R.string.account_add__alert_localpart_invalid));
                 return false;
             }
         }
