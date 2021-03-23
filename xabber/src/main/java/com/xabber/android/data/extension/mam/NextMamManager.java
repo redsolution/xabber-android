@@ -943,6 +943,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 originId != null ? MessageRealmObject.createMessageRealmObjectWithOriginId(account, user, originId)
                         : MessageRealmObject.createMessageRealmObjectWithStanzaId(account, user, stanzaId);
 
+        if (stanzaId != null ) messageRealmObject.setStanzaId(stanzaId);
+
         messageRealmObject.setPreviousId(prevID);
 
         long timestamp = delayInformation.getStamp().getTime();

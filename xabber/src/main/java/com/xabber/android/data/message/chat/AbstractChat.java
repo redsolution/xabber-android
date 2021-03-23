@@ -387,8 +387,10 @@ public abstract class AbstractChat extends BaseEntity implements
             notify = false;
         }
 
-        MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(account,
-                contactJid, uid);
+        MessageRealmObject messageRealmObject =
+                MessageRealmObject.createMessageRealmObjectWithOriginId(account, contactJid, uid);
+
+        if (stanzaId != null) messageRealmObject.setStanzaId(stanzaId);
 
         if (resource == null) {
             messageRealmObject.setResource(Resourcepart.EMPTY);
@@ -468,8 +470,8 @@ public abstract class AbstractChat extends BaseEntity implements
             else
                 attachmentRealmObjects = attachmentsFromUris(uris);
 
-            MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(account,
-                    contactJid, messageId);
+            MessageRealmObject messageRealmObject =
+                    MessageRealmObject.createMessageRealmObjectWithOriginId(account, contactJid, messageId);
 
             if (forwards != null && forwards.size() > 0) {
                 RealmList<ForwardIdRealmObject> ids = new RealmList<>();
