@@ -93,7 +93,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                 .findFirst();
 
         if (messageRealmObject == null || messageRealmObject.getAttachmentRealmObjects() == null
@@ -129,7 +129,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
             } else
                 path = attachmentRealmObject.getFileUrl();
         }
-        voiceClicked(message.getUniqueId(), attachmentRealmObject.getUniqueId(), path, attachmentRealmObject.getDuration(), true, timestamp);
+        voiceClicked(message.getPrimaryKey(), attachmentRealmObject.getUniqueId(), path, attachmentRealmObject.getDuration(), true, timestamp);
     }
 
     private void voiceClicked(String messageId, String attachmentId, String filePath, Long duration, boolean alreadySentMessage, Long timestamp) {

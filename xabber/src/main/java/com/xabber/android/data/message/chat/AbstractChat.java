@@ -387,10 +387,8 @@ public abstract class AbstractChat extends BaseEntity implements
             notify = false;
         }
 
-        MessageRealmObject messageRealmObject = new MessageRealmObject(uid);
-
-        messageRealmObject.setAccount(account);
-        messageRealmObject.setUser(contactJid);
+        MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(account,
+                contactJid, uid);
 
         if (resource == null) {
             messageRealmObject.setResource(Resourcepart.EMPTY);
@@ -470,9 +468,8 @@ public abstract class AbstractChat extends BaseEntity implements
             else
                 attachmentRealmObjects = attachmentsFromUris(uris);
 
-            String initialID = UUID.randomUUID().toString();
-
-            MessageRealmObject messageRealmObject = new MessageRealmObject(messageId);
+            MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(account,
+                    contactJid, messageId);
 
             if (forwards != null && forwards.size() > 0) {
                 RealmList<ForwardIdRealmObject> ids = new RealmList<>();
@@ -483,8 +480,6 @@ public abstract class AbstractChat extends BaseEntity implements
                 messageRealmObject.setForwardedIds(ids);
             }
 
-            messageRealmObject.setAccount(account);
-            messageRealmObject.setUser(contactJid);
             messageRealmObject.setOriginalFrom(account.toString());
             messageRealmObject.setText(FileMessageVH.UPLOAD_TAG);
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
@@ -494,8 +489,7 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setError(false);
             messageRealmObject.setIncoming(false);
             messageRealmObject.setInProgress(true);
-            messageRealmObject.setStanzaId(initialID);
-            messageRealmObject.setOriginId(initialID);
+            messageRealmObject.setOriginId(messageId);
             realm1.copyToRealm(messageRealmObject);
         });
         if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
@@ -737,12 +731,12 @@ public abstract class AbstractChat extends BaseEntity implements
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageRealmObject> items = realm
                 .where(MessageRealmObject.class)
-                .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIds)
+                .in(MessageRealmObject.Fields.PRIMARY_KEY, forwardedIds)
                 .findAll();
 
         if (items != null && !items.isEmpty()) {
             for (MessageRealmObject item : items) {
-                String forward = ClipManager.createMessageTree(realm, item.getUniqueId()) + "\n";
+                String forward = ClipManager.createMessageTree(realm, item.getPrimaryKey()) + "\n";
                 int begin = getSizeOfEncodedChars(builder.toString());
                 builder.append(forward);
                 ReferenceElement reference = ReferencesManager.createForwardReference(item,
@@ -895,14 +889,14 @@ public abstract class AbstractChat extends BaseEntity implements
                 message.addExtension(new DelayInformation(delayTimestamp));
             }
 
-            final String messageId = messageRealmObject.getUniqueId();
+            final String messageId = messageRealmObject.getPrimaryKey();
             try {
                 StanzaSender.sendStanza(account, message, packet -> {
                     Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                     realm.executeTransaction(realm1 -> {
                         MessageRealmObject acknowledgedMessage = realm1
                                 .where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                                 .findFirst();
 
                         if (acknowledgedMessage != null && !DeliveryManager
@@ -988,7 +982,7 @@ public abstract class AbstractChat extends BaseEntity implements
         if (results != null && !results.isEmpty()) {
             MessageRealmObject firstUnreadMessage = results.first();
             if (firstUnreadMessage != null)
-                id = firstUnreadMessage.getUniqueId();
+                id = firstUnreadMessage.getPrimaryKey();
         }
         return id;
     }
@@ -1005,7 +999,7 @@ public abstract class AbstractChat extends BaseEntity implements
         unreadMessages.addChangeListener(messageRealmObjects -> {
             for (Iterator<String> iterator = waitToMarkAsRead.iterator(); iterator.hasNext(); ) {
                 String id = iterator.next();
-                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.UNIQUE_ID, id)
+                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id)
                         .findFirst() == null) {
                     iterator.remove();
                 }
@@ -1038,7 +1032,7 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     public void markAsRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
-        if (waitToMarkAsRead.add(messageRealmObject.getUniqueId())) {
+        if (waitToMarkAsRead.add(messageRealmObject.getPrimaryKey())) {
             LogManager.d(LOG_TAG, "onBind called, first time trying to read this message with id = "
                     + messageRealmObject.getOriginId()
                     + "and message timestamp = "
@@ -1052,7 +1046,7 @@ public abstract class AbstractChat extends BaseEntity implements
         RealmResults<MessageRealmObject> results = getAllUnreadMessages();
         if (results != null && !results.isEmpty()) {
             for (MessageRealmObject message : results) {
-                waitToMarkAsRead.add(message.getUniqueId());
+                waitToMarkAsRead.add(message.getPrimaryKey());
             }
             MessageRealmObject lastMessage = results.last();
             if (lastMessage != null) executeRead(lastMessage, trySendDisplay);

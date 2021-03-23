@@ -573,7 +573,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private void loadMissedMessages(Realm realm, AccountItem accountItem, AbstractChat chat, MessageRealmObject m1) {
         LogManager.d(LOG_TAG, "load missed messages in chat: " + chat.getContactJid());
         MessageRealmObject m2 = getMessageForCloseMissedMessages(realm, m1);
-        if (m2 != null && !m2.getUniqueId().equals(m1.getUniqueId())) {
+        if (m2 != null && !m2.getPrimaryKey().equals(m1.getPrimaryKey())) {
             Date startDate = new Date(m2.getTimestamp());
             Date endDate = new Date(m1.getTimestamp());
 
@@ -850,14 +850,14 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             if (message != null) {
                 messageRealmObjects.add(message);
                 prevID = message.getStanzaId();
-                if (!message.isIncoming()) lastOutgoingId = message.getUniqueId();
+                if (!message.isIncoming()) lastOutgoingId = message.getPrimaryKey();
             }
         }
 
         // mark messages before outgoing as read
         if (lastOutgoingId != null) {
             for (MessageRealmObject message : messageRealmObjects) {
-                if (lastOutgoingId.equals(message.getUniqueId())) break;
+                if (lastOutgoingId.equals(message.getPrimaryKey())) break;
                 message.setRead(true);
             }
         }
@@ -879,7 +879,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                         .getExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE);
                 long timestamp = 0;
                 if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                    TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                    TimeElement timeElement = message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                 }
                 GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, accountItem.getAccount(),
@@ -925,14 +925,28 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         boolean incoming = message.getFrom().asBareJid().equals(user.getJid().asBareJid());
 
-        String uid = UUID.randomUUID().toString();
-        MessageRealmObject messageRealmObject = new MessageRealmObject(uid);
+        String stanzaId;
+        String originId;
+
+        GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+
+        if (groupchatUser != null
+                || message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
+            stanzaId = UniqueIdsHelper.getStanzaIdBy(message, user.getBareJid().toString());
+        } else {
+             stanzaId = UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString());
+        }
+
+        originId = UniqueIdsHelper.getOriginId(message);
+
+        MessageRealmObject messageRealmObject =
+                originId != null ? MessageRealmObject.createMessageRealmObjectWithOriginId(account, user, originId)
+                        : MessageRealmObject.createMessageRealmObjectWithStanzaId(account, user, stanzaId);
+
         messageRealmObject.setPreviousId(prevID);
 
         long timestamp = delayInformation.getStamp().getTime();
 
-        messageRealmObject.setAccount(account);
-        messageRealmObject.setUser(user);
         messageRealmObject.setResource(user.getJid().getResourceOrNull());
         messageRealmObject.setText(body);
         if (markupBody != null) messageRealmObject.setMarkupText(markupBody);
@@ -941,7 +955,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         messageRealmObject.setIncoming(incoming);
         messageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
-        messageRealmObject.setPacketId(message.getStanzaId());
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
         messageRealmObject.setSent(true);
@@ -960,16 +973,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setOriginalFrom(message.getFrom().toString());
 
         // groupchat
-        GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
         if (groupchatUser != null) {
             GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.getBareJid(), timestamp);
             messageRealmObject.setGroupchatUserId(groupchatUser.getId());
-            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, user.getBareJid().toString()));
         } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)) {
             messageRealmObject.setGroupchatSystem(true);
-            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, user.getBareJid().toString()));
-        } else {
-            messageRealmObject.setStanzaId(UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()));
         }
 
         return messageRealmObject;
@@ -1018,7 +1026,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             // forwarded
             if (originalMessage != null) {
-                RealmList<ForwardIdRealmObject> forwardIdRealmObjects = chat.parseForwardedMessage(ui, originalMessage, message.getUniqueId());
+                RealmList<ForwardIdRealmObject> forwardIdRealmObjects = chat.parseForwardedMessage(ui, originalMessage, message.getPrimaryKey());
                 if (forwardIdRealmObjects != null && !forwardIdRealmObjects.isEmpty()) {
                     message.setForwardedIds(forwardIdRealmObjects);
                 }
@@ -1216,13 +1224,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     .or()
                     .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.getStanzaId())
                     .or()
-                    .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.getPacketId())
-                    .or()
                     .equalTo(MessageRealmObject.Fields.STANZA_ID, message.getOriginId())
                     .or()
                     .equalTo(MessageRealmObject.Fields.STANZA_ID, message.getStanzaId())
-                    .or()
-                    .equalTo(MessageRealmObject.Fields.STANZA_ID, message.getPacketId())
                 .endGroup()
                 .findFirst();
     }

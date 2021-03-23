@@ -217,7 +217,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageUID)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageUID)
                 .findFirst();
 
         if (messageRealmObject == null) {
@@ -228,7 +228,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (messageRealmObject.haveAttachments()) {
             try {
                 startActivity(ImageViewerActivity.createIntent(getActivity(),
-                        messageRealmObject.getUniqueId(), attachmentPosition));
+                        messageRealmObject.getPrimaryKey(), attachmentPosition));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);
@@ -236,7 +236,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         } else {
             try {
                 startActivity(ImageViewerActivity.createIntent(getActivity(),
-                        messageRealmObject.getUniqueId(), messageRealmObject.getText()));
+                        messageRealmObject.getPrimaryKey(), messageRealmObject.getText()));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);
@@ -558,7 +558,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageUID)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageUID)
                 .findFirst();
         LogManager.d("VoiceDebug", "openFileOrDownload start! attachmentPosition = " + attachmentPosition + " messageUID = " + messageUID);
 

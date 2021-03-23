@@ -187,7 +187,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
         realm.executeTransaction(realm1 -> {
             MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -224,7 +224,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransaction(realm1 ->  {
             MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -261,7 +261,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransactionAsync(realm1 -> {
             MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -284,7 +284,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransaction(realm1 -> {
             MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -329,7 +329,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 realm.executeTransaction(realm1 -> {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageItemId)
+                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageItemId)
                             .findFirst();
                     if (messageRealmObject != null) messageRealmObject.deleteFromRealm();
                 });
@@ -351,7 +351,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<MessageRealmObject> items = realm1.where(MessageRealmObject.class)
-                            .in(MessageRealmObject.Fields.UNIQUE_ID, ids).findAll();
+                            .in(MessageRealmObject.Fields.PRIMARY_KEY, ids).findAll();
 
                     if (items != null && !items.isEmpty())
                         items.deleteAllFromRealm();

@@ -132,7 +132,7 @@ public class FileMessageVH extends MessageVH
         Integer imageWidth = messageRealmObject.getAttachmentRealmObjects().get(0).getImageWidth();
         Integer imageHeight = messageRealmObject.getAttachmentRealmObjects().get(0).getImageHeight();
         String imageUrl = messageRealmObject.getText();
-        final String uniqueId = messageRealmObject.getUniqueId();
+        final String uniqueId = messageRealmObject.getPrimaryKey();
         setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, context);
     }
 
@@ -195,7 +195,7 @@ public class FileMessageVH extends MessageVH
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransactionAsync(realm1 -> {
                             MessageRealmObject first = realm1.where(MessageRealmObject.class)
-                                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
+                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
                                     .findFirst();
                             if (first != null) first.getAttachmentRealmObjects().get(0).setFilePath(null);
 
@@ -274,7 +274,7 @@ public class FileMessageVH extends MessageVH
                                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                                         realm.executeTransactionAsync(realm1 -> {
                                                 MessageRealmObject first = realm1.where(MessageRealmObject.class)
-                                                        .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
+                                                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
                                                         .findFirst();
                                                 if (first != null) {
                                                     first.getAttachmentRealmObjects().get(0).setImageWidth(width);

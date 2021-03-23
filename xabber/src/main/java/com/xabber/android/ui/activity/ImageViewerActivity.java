@@ -110,7 +110,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                 .findFirst();
 
         if (imageUrl != null) {

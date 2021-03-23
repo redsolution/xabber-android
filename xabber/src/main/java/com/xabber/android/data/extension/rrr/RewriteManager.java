@@ -101,7 +101,7 @@ public class RewriteManager implements OnPacketListener {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
                     final MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, id).findFirst();
+                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id).findFirst();
                     try {
                         RetractMessageIQ iq = new RetractMessageIQ(accountJid.toString(),
                                 messageRealmObject.getStanzaId(), symmetrically);
@@ -140,7 +140,7 @@ public class RewriteManager implements OnPacketListener {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
                         MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId)
+                                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
                                 .findFirst();
                         if (messageRealmObject != null) {
                             try {

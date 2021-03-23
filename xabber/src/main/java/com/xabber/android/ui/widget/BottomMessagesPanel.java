@@ -79,7 +79,7 @@ public class BottomMessagesPanel extends Fragment {
         if (messagesIds != null && messagesIds.size() > 0) {
             RealmResults<MessageRealmObject> messages = realm
                     .where(MessageRealmObject.class)
-                    .in(MessageRealmObject.Fields.UNIQUE_ID, messagesIds.toArray(new String[0]))
+                    .in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIds.toArray(new String[0]))
                     .findAll();
 
             tvFrom.setText(Html.fromHtml(getNames(messages)));

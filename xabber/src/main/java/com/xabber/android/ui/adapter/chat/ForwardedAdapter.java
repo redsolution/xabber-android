@@ -108,7 +108,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
 
         // setup message uniqueId
         if (holder instanceof MessageVH)
-            ((MessageVH)holder).messageId = messageRealmObject.getUniqueId();
+            ((MessageVH)holder).messageId = messageRealmObject.getPrimaryKey();
 
         // groupchat user
         GroupMember groupMember = GroupMemberManager.getInstance()
@@ -137,7 +137,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
     public void onMessageClick(View caller, int position) {
         MessageRealmObject message = getItem(position);
         if (message != null && message.haveForwardedMessages())
-            fwdListener.onForwardClick(message.getUniqueId());
+            fwdListener.onForwardClick(message.getPrimaryKey());
     }
 
     @Override

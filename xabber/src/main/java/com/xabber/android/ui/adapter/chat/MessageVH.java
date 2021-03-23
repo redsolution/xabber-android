@@ -192,7 +192,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             RealmResults<MessageRealmObject> forwardedMessages = realm
                             .where(MessageRealmObject.class)
-                            .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
+                            .in(MessageRealmObject.Fields.PRIMARY_KEY, forwardedIDs)
                             .findAll()
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 

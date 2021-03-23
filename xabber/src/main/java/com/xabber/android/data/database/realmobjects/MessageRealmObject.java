@@ -38,16 +38,18 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("FieldMayBeFinal")
 public class MessageRealmObject extends RealmObject {
 
+    @SuppressWarnings("unused")
     public static class Fields {
-        public static final String UNIQUE_ID = "uniqueId";
+        public static final String PRIMARY_KEY = "primaryKey";
+        public static final String STANZA_ID = "stanzaId";
+        public static final String ORIGIN_ID = "originId";
         public static final String ACCOUNT = "account";
         public static final String USER = "user";
         public static final String RESOURCE = "resource";
@@ -66,8 +68,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String DISPLAYED = "displayed";
         public static final String SENT = "sent";
         public static final String READ = "read";
-        public static final String STANZA_ID = "stanzaId";
-        public static final String ORIGIN_ID = "originId";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
         public static final String ACKNOWLEDGED = "acknowledged";
@@ -88,7 +88,7 @@ public class MessageRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
-    private String uniqueId;
+    private String primaryKey;
 
     @Index
     private String account;
@@ -198,20 +198,42 @@ public class MessageRealmObject extends RealmObject {
 
     private String parentMessageId;
     private String previousId;
-    @Ignore
-    private String packetId;
     private String groupchatUserId;
     private boolean isGroupchatSystem = false;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
-    public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId; }
+    private MessageRealmObject(String primaryKey) { this.primaryKey = primaryKey; }
 
-    public MessageRealmObject() { this.uniqueId = UUID.randomUUID().toString(); }
+    public static MessageRealmObject createMessageRealmObjectWithStanzaId(AccountJid accountJid,
+                                                                          ContactJid contactJid,
+                                                                          String stanzaId){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(accountJid.toString() + "#" + contactJid.toString() + "#" + stanzaId);
 
-    public String getUniqueId() { return uniqueId; }
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.stanzaId = stanzaId;
 
-    public void setUniqueId(String uniqueId) { this.uniqueId = uniqueId; }
+        return messageRealmObject;
+    }
+
+    public static MessageRealmObject createMessageRealmObjectWithOriginId(AccountJid accountJid,
+                                                                         ContactJid contactJid,
+                                                                         String originId){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(accountJid.toString() + "#" + contactJid.toString() + "#" + originId);
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.originId = originId;
+
+        return messageRealmObject;
+    }
+
+    public MessageRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
+
+    public String getPrimaryKey() { return primaryKey; }
 
     public AccountJid getAccount() {
         try {
@@ -222,10 +244,6 @@ public class MessageRealmObject extends RealmObject {
         }
     }
 
-    public void setAccount(AccountJid account) {
-        this.account = account.toString();
-    }
-
     public ContactJid getUser() {
         try {
             return ContactJid.from(user);
@@ -234,8 +252,6 @@ public class MessageRealmObject extends RealmObject {
             throw new IllegalStateException();
         }
     }
-
-    public void setUser(ContactJid user) { this.user = user.toString(); }
 
     public Resourcepart getResource() {
         if (TextUtils.isEmpty(resource)) {
@@ -329,7 +345,8 @@ public class MessageRealmObject extends RealmObject {
     public static boolean isUploadFileMessage(MessageRealmObject messageRealmObject) {
         return messageRealmObject.getAttachmentRealmObjects() != null
                 && messageRealmObject.getAttachmentRealmObjects().size() != 0
-                && !messageRealmObject.isSent(); }
+                && !messageRealmObject.isSent();
+    }
 
     public boolean isAcknowledged() { return acknowledged; }
 
@@ -389,10 +406,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setPreviousId(String previousId) { this.previousId = previousId; }
 
-    public String getPacketId() { return packetId; }
-
-    public void setPacketId(String packetId) { this.packetId = packetId; }
-
     public String getMarkupText() { return markupText; }
 
     public void setMarkupText(String markupText) { this.markupText = markupText; }
@@ -418,7 +431,7 @@ public class MessageRealmObject extends RealmObject {
                 Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 RealmResults<MessageRealmObject> forwardedMessages = realm
                         .where(MessageRealmObject.class)
-                        .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
+                        .in(MessageRealmObject.Fields.PRIMARY_KEY, forwardedIDs)
                         .findAll()
                         .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
@@ -482,4 +495,5 @@ public class MessageRealmObject extends RealmObject {
                 && this.isRead() == comparableMessageRealmObject.isRead()
                 && this.isAcknowledged() == comparableMessageRealmObject.isAcknowledged();
     }
+
 }

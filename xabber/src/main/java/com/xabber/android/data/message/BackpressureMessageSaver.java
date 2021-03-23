@@ -85,15 +85,14 @@ public class BackpressureMessageSaver {
             });
     }
 
-    //TODO refactor this method before releasing
     private boolean hasCopyInRealm(final MessageRealmObject newIncomingMessageRealmObject){
         boolean result = false;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         MessageRealmObject item;
 
-        if (newIncomingMessageRealmObject.getUniqueId() != null) {
+        if (newIncomingMessageRealmObject.getPrimaryKey() != null) {
             item = realm.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, newIncomingMessageRealmObject.getUniqueId())
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, newIncomingMessageRealmObject.getPrimaryKey())
                     .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
                     .findFirst();
             if (item != null && !newIncomingMessageRealmObject.isForwarded()) {

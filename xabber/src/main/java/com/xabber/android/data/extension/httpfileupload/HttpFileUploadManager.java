@@ -263,14 +263,14 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         if (notUploadedFilesPaths.size() == 0) {
             final AccountJid accountJid = messageRealmObject.getAccount();
             final ContactJid contactJid = messageRealmObject.getUser();
-            final String messageId = messageRealmObject.getUniqueId();
+            final String messageId = messageRealmObject.getPrimaryKey();
             Application.getInstance().runInBackgroundUserRequest(() -> MessageManager.getInstance()
                     .removeErrorAndResendMessage(accountJid, contactJid, messageId));
         }
 
         // else, upload files that haven't urls. Then write they in existing message and send
         else uploadFile(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                notUploadedFilesPaths, null, messageRealmObject.getUniqueId(), context);
+                notUploadedFilesPaths, null, messageRealmObject.getPrimaryKey(), context);
     }
 
     public void uploadFile(final AccountJid account, final ContactJid user,

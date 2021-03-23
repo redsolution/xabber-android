@@ -667,7 +667,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .sendUnPinMessageRequest((GroupChat)getChat()));
             pinnedRootView.setOnClickListener(v ->
                     startActivity(MessagesActivity.createIntentShowPinned(getContext(),
-                    message.getUniqueId(), user, account)));
+                    message.getPrimaryKey(), user, account)));
 
             if (message == null)
                 return;
@@ -841,9 +841,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         replySwipe = new ReplySwipeCallback(position -> {
             MessageRealmObject messageRealmObject = chatMessageAdapter.getMessageItem(position);
             if (messageRealmObject != null) {
-                if (messageRealmObject.getUniqueId() != null) {
+                if (messageRealmObject.getPrimaryKey() != null) {
                     bottomPanelMessagesIds.clear();
-                    bottomPanelMessagesIds.add(messageRealmObject.getUniqueId());
+                    bottomPanelMessagesIds.add(messageRealmObject.getPrimaryKey());
                     isReply = true;
                     showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
                     setUpInputViewButtons();
@@ -1550,7 +1550,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         final List<String> ids = new ArrayList<>();
         boolean onlyOutgoing = true;
         for (MessageRealmObject messageRealmObject : messages) {
-            ids.add(messageRealmObject.getUniqueId());
+            ids.add(messageRealmObject.getPrimaryKey());
             if (messageRealmObject.isIncoming()) onlyOutgoing = false;
         }
         int size = ids.size();
@@ -1582,7 +1582,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void getReadyForMessageEditing(MessageRealmObject messageRealmObject) {
         List<String> arrayList = new ArrayList<>();
-        arrayList.add(messageRealmObject.getUniqueId());
+        arrayList.add(messageRealmObject.getPrimaryKey());
         bottomPanelMessagesIds = arrayList;
         showBottomMessagesPanel(arrayList, BottomMessagesPanel.Purposes.EDITING);
         closeInteractionPanel();
@@ -1816,7 +1816,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     deleteMessage(arrayList);
                     break;
                 case "action_message_show_original_otr":
-                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getUniqueId());
+                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getPrimaryKey());
                     chatMessageAdapter.notifyDataSetChanged();
                     break;
                 case "action_message_status":

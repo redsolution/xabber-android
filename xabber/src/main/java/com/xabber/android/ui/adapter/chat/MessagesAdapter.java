@@ -117,7 +117,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     private String getFirstMessageId() {
         if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0)
-            return Objects.requireNonNull(realmResults.first()).getUniqueId();
+            return Objects.requireNonNull(realmResults.first()).getPrimaryKey();
         else return null;
     }
 
@@ -227,16 +227,16 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         // setup message uniqueId
         if (holder instanceof MessageVH)
-            ((MessageVH)holder).messageId = messageRealmObject.getUniqueId();
+            ((MessageVH)holder).messageId = messageRealmObject.getPrimaryKey();
 
         // setup message as unread
-        boolean unread = messageRealmObject.getUniqueId().equals(firstUnreadMessageID);
+        boolean unread = messageRealmObject.getPrimaryKey().equals(firstUnreadMessageID);
 
         // setup message as checked
-        boolean checked = checkedItemIds.contains(messageRealmObject.getUniqueId());
+        boolean checked = checkedItemIds.contains(messageRealmObject.getPrimaryKey());
 
         // need show original OTR message
-        boolean showOriginalOTR = itemsNeedOriginalText.contains(messageRealmObject.getUniqueId());
+        boolean showOriginalOTR = itemsNeedOriginalText.contains(messageRealmObject.getPrimaryKey());
 
         // groupchat user
         GroupMember groupMember =
@@ -425,7 +425,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         recyclerView.stopScroll();
         MessageRealmObject messageRealmObject = getItem(position);
-        String uniqueId = messageRealmObject.getUniqueId();
+        String uniqueId = messageRealmObject.getPrimaryKey();
 
         if (checkedItemIds.contains(uniqueId)){
             checkedMessageRealmObjects.remove(messageRealmObject);

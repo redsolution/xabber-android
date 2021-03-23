@@ -113,7 +113,7 @@ public class BackpressureMessageReader {
         int queryFieldCounter = 0;
         realmQuery.beginGroup();
         if (uniqueId != null && !uniqueId.isEmpty()) {
-            realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
+            realmQuery.equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId);
             queryFieldCounter++;
         }
         if (id != null && !id.isEmpty()) {
@@ -159,7 +159,7 @@ public class BackpressureMessageReader {
 
         MessageDataHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
             this.messageId = messageRealmObject.getOriginId();
-            this.uniqueId = messageRealmObject.getUniqueId();
+            this.uniqueId = messageRealmObject.getPrimaryKey();
             this.stanzaId = getStanzaIds(messageRealmObject);
             this.account = messageRealmObject.getAccount();
             this.user = messageRealmObject.getUser();

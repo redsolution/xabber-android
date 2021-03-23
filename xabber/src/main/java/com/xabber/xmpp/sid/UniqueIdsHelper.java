@@ -18,7 +18,7 @@ public class UniqueIdsHelper {
     public static String getOriginId(Message message) {
         OriginIdElement oidElement = message.getExtension(OriginIdElement.ELEMENT, OriginIdElement.NAMESPACE);
         if (oidElement != null) return oidElement.getId();
-        else return message.getStanzaId();
+        else return null;
     }
 
     public static String getStanzaIdBy(Message message, String by){

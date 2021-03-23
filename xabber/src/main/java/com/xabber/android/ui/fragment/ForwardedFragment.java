@@ -106,14 +106,14 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         MessageRealmObject messageRealmObject = realm
                 .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                 .findFirst();
 
         if (action.equals(ACTION_SHOW_FORWARDED)){
 
             RealmResults<MessageRealmObject> forwardedMessages = realm
                     .where(MessageRealmObject.class)
-                    .in(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getForwardedIdsAsArray())
+                    .in(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.getForwardedIdsAsArray())
                     .findAll();
 
             // groupchat user
@@ -141,7 +141,7 @@ public class ForwardedFragment extends FileInteractionFragment {
                     false, false, false, false, true);
 
             RealmResults<MessageRealmObject> messages = realm.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getUniqueId())
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.getPrimaryKey())
                     .findAll();
 
             ForwardedAdapter adapter = new ForwardedAdapter(messages, extraData);

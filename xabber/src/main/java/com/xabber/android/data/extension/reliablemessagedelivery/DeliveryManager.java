@@ -115,7 +115,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.ORIGIN_ID, originId)
                             .or()
-                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, originId)
+                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, originId)
                             .findFirst();
                     if (messageRealmObject == null){
                         LogManager.exception(LOG_TAG, new NullPointerException("Warning! Got delivery receipt for " +

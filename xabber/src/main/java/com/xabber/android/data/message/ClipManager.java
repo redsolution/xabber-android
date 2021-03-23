@@ -51,7 +51,7 @@ public class ClipManager {
     private static String messagesToText(Realm realm, String[] messagesIDs, int level) {
 
         RealmResults<MessageRealmObject> items = realm.where(MessageRealmObject.class)
-                .in(MessageRealmObject.Fields.UNIQUE_ID, messagesIDs).findAll();
+                .in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIDs).findAll();
 
         StringBuilder stringBuilder = new StringBuilder();
         long previousTimestamp = 1;
