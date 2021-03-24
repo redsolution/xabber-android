@@ -66,9 +66,9 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
     private static HttpFileUploadManager instance;
-    private Map<BareJid, Thread> supportDiscoveryThreads = new ConcurrentHashMap<>();
-    private Map<BareJid, Jid> uploadServers = new ConcurrentHashMap<>();
-    private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
+    private final Map<BareJid, Thread> supportDiscoveryThreads = new ConcurrentHashMap<>();
+    private final Map<BareJid, Jid> uploadServers = new ConcurrentHashMap<>();
+    private final PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isUploading;
 
     public static HttpFileUploadManager getInstance() {
@@ -93,18 +93,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(new File(filePath).getAbsolutePath(), options);
-        int imageHeight;
-        int imageWidth;
+
         if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(filePath)))) {
             //image is sent as-is, but the BitmapFactory gets dimension sizes without respecting exif orientation,
             //resulting in flipped dimension data between photos themselves and data in the stanza
-            imageHeight = options.outWidth;
-            imageWidth = options.outHeight;
-        } else {
-            imageHeight = options.outHeight;
-            imageWidth = options.outWidth;
-        }
-        return new ImageSize(imageHeight, imageWidth);
+            //noinspection SuspiciousNameCombination
+            return new ImageSize(options.outWidth, options.outHeight);
+        } else return new ImageSize(options.outHeight, options.outWidth);
     }
 
     public static String getMimeType(String path) {
@@ -139,8 +134,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             for (FormField field : fields) {
                 if (field instanceof ExtendedFormField) {
                     ExtendedFormField.Media media = ((ExtendedFormField) field).getMedia();
-                    if (media != null)
-                        attachmentRealmObjects.add(mediaToAttachment(media, field.getLabel()));
+                    if (media != null) attachmentRealmObjects.add(mediaToAttachment(media, field.getLabel()));
                 }
             }
         }
@@ -165,15 +159,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         //attachmentRealmObject.setRefType(referenceType);
 
         FileInfo fileInfo = sharedFile.getFileInfo();
-        if (fileInfo != null) {
-            attachmentRealmObject.setTitle(fileInfo.getName());
-            attachmentRealmObject.setMimeType(fileInfo.getMediaType());
-            attachmentRealmObject.setDuration(fileInfo.getDuration());
-            attachmentRealmObject.setFileSize(fileInfo.getSize());
-            if (fileInfo.getHeight() > 0)
-                attachmentRealmObject.setImageHeight(fileInfo.getHeight());
-            if (fileInfo.getWidth() > 0) attachmentRealmObject.setImageWidth(fileInfo.getWidth());
-        }
+        attachmentRealmObject.setTitle(fileInfo.getName());
+        attachmentRealmObject.setMimeType(fileInfo.getMediaType());
+        attachmentRealmObject.setDuration(fileInfo.getDuration());
+        attachmentRealmObject.setFileSize(fileInfo.getSize());
+        if (fileInfo.getHeight() > 0) attachmentRealmObject.setImageHeight(fileInfo.getHeight());
+        if (fileInfo.getWidth() > 0) attachmentRealmObject.setImageWidth(fileInfo.getWidth());
+
         return attachmentRealmObject;
     }
 
@@ -183,11 +175,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         attachmentRealmObject.setTitle(title);
 
         try {
-            if (media.getWidth() != null && !media.getWidth().isEmpty())
+            if (media.getWidth() != null && !media.getWidth().isEmpty()){
                 attachmentRealmObject.setImageWidth(Integer.valueOf(media.getWidth()));
+            }
 
-            if (media.getHeight() != null && !media.getHeight().isEmpty())
+            if (media.getHeight() != null && !media.getHeight().isEmpty()) {
                 attachmentRealmObject.setImageHeight(Integer.valueOf(media.getHeight()));
+            }
 
         } catch (NumberFormatException e) {
             LogManager.exception(LOG_TAG, e);
@@ -252,11 +246,10 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void retrySendFileMessage(final MessageRealmObject messageRealmObject, Context context) {
         List<String> notUploadedFilesPaths = new ArrayList<>();
 
-        for (AttachmentRealmObject attachmentRealmObject : messageRealmObject
-                .getAttachmentRealmObjects()) {
-            if (attachmentRealmObject.getFileUrl() == null
-                    || attachmentRealmObject.getFileUrl().isEmpty())
+        for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+            if (attachmentRealmObject.getFileUrl() == null || attachmentRealmObject.getFileUrl().isEmpty()){
                 notUploadedFilesPaths.add(attachmentRealmObject.getFilePath());
+            }
         }
 
         // if all attachments have url that they was uploaded. just resend existing message
@@ -264,46 +257,30 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             final AccountJid accountJid = messageRealmObject.getAccount();
             final ContactJid contactJid = messageRealmObject.getUser();
             final String messageId = messageRealmObject.getPrimaryKey();
-            Application.getInstance().runInBackgroundUserRequest(() -> MessageManager.getInstance()
-                    .removeErrorAndResendMessage(accountJid, contactJid, messageId));
+            Application.getInstance().runInBackgroundUserRequest(
+                    () -> MessageManager.getInstance().removeErrorAndResendMessage(accountJid, contactJid, messageId));
         }
 
         // else, upload files that haven't urls. Then write they in existing message and send
-        else uploadFile(messageRealmObject.getAccount(), messageRealmObject.getUser(),
-                notUploadedFilesPaths, null, messageRealmObject.getPrimaryKey(), context);
+        else uploadFile(messageRealmObject.getAccount(), messageRealmObject.getUser(), notUploadedFilesPaths, null,
+                null, messageRealmObject.getPrimaryKey(), null, context);
     }
 
-    public void uploadFile(final AccountJid account, final ContactJid user,
-                           final List<String> filePaths, Context context) {
-        uploadFile(account, user, filePaths, null, null, context);
+    public void uploadFile(final AccountJid account, final ContactJid user, final List<String> filePaths,
+                           Context context) {
+        uploadFile(account, user, filePaths, null, null,null, null, context);
     }
 
-    public void uploadFileViaUri(final AccountJid account, final ContactJid user,
-                                 final List<Uri> fileUris, Context context) {
-        uploadFile(account, user, null, fileUris, null, context);
+    public void uploadFileViaUri(final AccountJid account, final ContactJid user, final List<Uri> fileUris,
+                                 Context context) {
+        uploadFile(account, user, null, fileUris, null, null, null, context);
     }
 
-    public void uploadFile(final AccountJid account, final ContactJid user,
-                           final List<String> filePaths, final List<Uri> fileUris,
-                           String existMessageId, Context context) {
-        uploadFile(account, user, filePaths, fileUris, existMessageId, null, context);
-    }
-
-    public void uploadFile(final AccountJid account, final ContactJid user,
-                           final List<String> filePaths, final List<Uri> fileUris,
-                           String existMessageId, String element, Context context) {
-
-        uploadFile(account, user, filePaths, fileUris, null, existMessageId,
-                null, context);
-    }
-
-    public void uploadFile(final AccountJid account, final ContactJid user,
-                           final List<String> filePaths, final List<Uri> fileUris,
-                           List<String> forwardIds,
-                           String existMessageId, String messageAttachmentType, Context context) {
+    public void uploadFile(final AccountJid account, final ContactJid user, final List<String> filePaths,
+                           final List<Uri> fileUris, List<String> forwardIds, String existMessageId,
+                           String messageAttachmentType, Context context) {
         if (isUploading) {
-            progressSubscribe.onNext(new ProgressData(0, 0,
-                    "Uploading already started", false, null));
+            progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started", false, null));
             return;
         }
 
@@ -311,8 +288,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
         final Jid uploadServerUrl = uploadServers.get(account.getFullJid().asBareJid());
         if (uploadServerUrl == null) {
-            progressSubscribe.onNext(new ProgressData(0, 0,
-                    "Upload server not found", false, null));
+            progressSubscribe.onNext(new ProgressData(0, 0, "Upload server not found", false, null));
             isUploading = false;
             return;
         }
@@ -352,7 +328,6 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
         if (!services.isEmpty()) {
             final DomainBareJid uploadServerUrl = services.get(0);
-            LogManager.i(LOG_TAG, "Http file upload server: " + uploadServerUrl);
             uploadServers.put(account.getFullJid().asBareJid(), uploadServerUrl);
             saveOrUpdateToRealm(account.getFullJid().asBareJid(), uploadServerUrl);
         }
@@ -361,16 +336,14 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void onAuthorized(final ConnectionItem connectionItem) {
         Thread httpSupportThread;
         if (supportDiscoveryThreads.get(connectionItem.getAccount().getBareJid()) != null) {
-            httpSupportThread = supportDiscoveryThreads.remove(connectionItem.getAccount()
-                    .getBareJid());
-            if (httpSupportThread.getState() != Thread.State.TERMINATED) {
+            httpSupportThread = supportDiscoveryThreads.remove(connectionItem.getAccount().getBareJid());
+
+            if (httpSupportThread != null && httpSupportThread.getState() != Thread.State.TERMINATED) {
                 return;
-            } else {
-                httpSupportThread = createDiscoveryThread(connectionItem);
-            }
-        } else {
-            httpSupportThread = createDiscoveryThread(connectionItem);
-        }
+            } else httpSupportThread = createDiscoveryThread(connectionItem);
+
+        } else httpSupportThread = createDiscoveryThread(connectionItem);
+
         supportDiscoveryThreads.put(connectionItem.getAccount().getBareJid(), httpSupportThread);
         httpSupportThread.start();
     }
@@ -394,35 +367,25 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     private void saveOrUpdateToRealm(final BareJid account, final Jid server) {
-        LogManager.d(LOG_TAG, "Started to save or update in realm with: accountJid - "
-                + account.toString() + "; uploadServer - " + server.toString());
-        if (server == null || server.toString().isEmpty()) {
-            LogManager.d(LOG_TAG, "But incoming upload server was null");
-            return;
-        }
+        if (server == null || server.toString().isEmpty()) return;
+
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     Localpart username = account.getLocalpartOrNull();
-                    if (username == null) {
-                        LogManager.d(LOG_TAG, "But username is null");
-                        return;
-                    }
+                    if (username == null) return;
+
                     Domainpart serverName = account.getDomain();
-                    if (serverName == null) {
-                        LogManager.d(LOG_TAG, "But serverName is null");
-                        return;
-                    }
+                    if (serverName == null) return;
+
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
                             .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
                             .equalTo(AccountRealmObject.Fields.SERVERNAME, serverName.toString())
                             .findFirst();
-                    if (item == null) {
-                        LogManager.d(LOG_TAG, "But no account realm object was found");
-                        return;
-                    }
+                    if (item == null) return;
+
                     item.setUploadServer(server);
                     realm1.copyToRealmOrUpdate(item);
                 });
@@ -435,23 +398,17 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     private void removeFromRealm(final BareJid account) {
-        LogManager.d(LOG_TAG, "Started to remove upload server in realm for "
-                + account.toString());
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     Localpart username = account.getLocalpartOrNull();
-                    if (username == null) {
-                        LogManager.d(LOG_TAG, "But username is null");
-                        return;
-                    }
+                    if (username == null) return;
+
                     Domainpart serverName = account.getDomain();
-                    if (serverName == null) {
-                        LogManager.d(LOG_TAG, "But serverName is null");
-                        return;
-                    }
+                    if (serverName == null) return;
+
                     AccountRealmObject item = realm1.where(AccountRealmObject.class)
                             .equalTo(AccountRealmObject.Fields.USERNAME, username.toString())
                             .equalTo(AccountRealmObject.Fields.SERVERNAME, serverName.toString())
@@ -459,7 +416,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                     if (item != null) {
                         item.setUploadServer("");
                         realm1.copyToRealmOrUpdate(item);
-                    } else LogManager.d(LOG_TAG, "But no account realm object was found");
+                    }
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -470,7 +427,6 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     private void loadAllFromRealm(Map<BareJid, Jid> uploadServers) {
-        LogManager.d(LOG_TAG, "Started to load uploadServers from realm");
         uploadServers.clear();
         Realm realm = null;
         try {
@@ -478,31 +434,21 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             RealmResults<AccountRealmObject> items = realm
                     .where(AccountRealmObject.class)
                     .findAll();
-            LogManager.d(LOG_TAG, "Size of all realm accounts list: " + items.size());
             for (AccountRealmObject item : items) {
-                LogManager.d(LOG_TAG, "In realm found: barejid - "
-                        + item.getAccountJid().getBareJid().toString()
-                        + " and it contains saved uploadserver - "
-                        + (item.getUploadServer() != null && !item.getUploadServer().toString().isEmpty()));
                 if (item.getUploadServer() != null) {
                     uploadServers.put(item.getAccountJid().getBareJid(), item.getUploadServer());
-                    LogManager.d(LOG_TAG, "Loaded from realm and successfully putted into uploadServers "
-                            + item.getUploadServer().toString());
                 }
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         } finally {
-            if (realm != null && Looper.myLooper() != Looper.getMainLooper())
-                realm.close();
+            if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
         }
     }
 
-    // Realm
-
     public static class ImageSize {
-        private int height;
-        private int width;
+        private final int height;
+        private final int width;
 
         public ImageSize(int height, int width) {
             this.height = height;
@@ -516,6 +462,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         public int getWidth() {
             return width;
         }
+
     }
 
     public class UploadReceiver extends ResultReceiver {
@@ -547,6 +494,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                     break;
             }
         }
+
     }
 
     public class ProgressData {
@@ -586,4 +534,5 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             return fileCount;
         }
     }
+
 }

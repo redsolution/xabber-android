@@ -398,7 +398,7 @@ public class FileMessageVH extends MessageVH
     }
 
     private void setUpProgress(HttpFileUploadManager.ProgressData progressData) {
-        if (progressData != null && messageId.equals(progressData.getMessageId())) {
+        if (progressData != null && (messageId.equals(progressData.getMessageId()))) {
             if (progressData.isCompleted()) {
                 showProgress(false);
                 showFileProgressModified(rvFileList, fileCount, fileCount);
@@ -415,8 +415,9 @@ public class FileMessageVH extends MessageVH
                         showProgressModified(true, progressData.getProgress() - 1, imageCount);
                 }
                 if (progressData.getProgress() - imageCount <= fileCount) {
-                    showFileProgressModified(rvFileList, (progressData.getProgress() - imageCount),
-                            progressData.getFileCount()-imageCount);
+                    showFileProgressModified(rvFileList,
+                            progressData.getProgress() - imageCount,
+                            progressData.getFileCount() - imageCount);
                 }
             }
         } else {
