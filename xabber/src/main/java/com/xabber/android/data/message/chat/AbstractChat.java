@@ -459,7 +459,9 @@ public abstract class AbstractChat extends BaseEntity implements
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris,
                                         final String messageAttachmentType,
                                         final List<String> forwards) {
-        final String messageId = UUID.randomUUID().toString();
+
+        MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(
+                account, contactJid, UUID.randomUUID().toString());
 
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(realm1 -> {
@@ -470,8 +472,7 @@ public abstract class AbstractChat extends BaseEntity implements
             else
                 attachmentRealmObjects = attachmentsFromUris(uris);
 
-            MessageRealmObject messageRealmObject =
-                    MessageRealmObject.createMessageRealmObjectWithOriginId(account, contactJid, messageId);
+
 
             if (forwards != null && forwards.size() > 0) {
                 RealmList<ForwardIdRealmObject> ids = new RealmList<>();
@@ -491,11 +492,10 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setError(false);
             messageRealmObject.setIncoming(false);
             messageRealmObject.setInProgress(true);
-            messageRealmObject.setOriginId(messageId);
             realm1.copyToRealm(messageRealmObject);
         });
         if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
-        return messageId;
+        return messageRealmObject.getPrimaryKey();
     }
 
     private RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files,
@@ -882,7 +882,7 @@ public abstract class AbstractChat extends BaseEntity implements
             ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
-            message.addExtension(new OriginIdElement(messageRealmObject.getStanzaId()));
+            message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             if (DeliveryManager.getInstance().isSupported(account))
                 if (!messageRealmObject.isDelivered() && messageRealmObject.isSent()) {
                     message.addExtension(new RetryReceiptRequestElement());
