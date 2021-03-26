@@ -360,18 +360,12 @@ public abstract class AbstractChat extends BaseEntity implements
                                                    boolean isGroupchatSystem) {
 
         final boolean visible = ChatManager.getInstance().isVisibleChat(this);
+
         boolean read = !incoming;
-        boolean send = incoming;
-        if (action == null && text == null) {
-            throw new IllegalArgumentException();
-        }
-        if (text == null) {
-            text = " ";
-        }
-        if (action != null) {
-            read = true;
-            send = true;
-        }
+
+        if (action == null && text == null) throw new IllegalArgumentException();
+
+        if (text == null) text = " ";
 
         if (timestamp == null) timestamp = new Date();
 
@@ -381,12 +375,9 @@ public abstract class AbstractChat extends BaseEntity implements
             notify = false;
         }
 
-        if (notify || !incoming) {
-            openChat();
-        }
-        if (!incoming) {
-            notify = false;
-        }
+        if (notify || !incoming) openChat();
+
+        if (!incoming) notify = false;
 
         MessageRealmObject messageRealmObject =
                 MessageRealmObject.createMessageRealmObjectWithOriginId(account, contactJid, uid);
@@ -395,33 +386,37 @@ public abstract class AbstractChat extends BaseEntity implements
 
         if (resource == null) {
             messageRealmObject.setResource(Resourcepart.EMPTY);
-        } else {
-            messageRealmObject.setResource(resource);
-        }
+        } else messageRealmObject.setResource(resource);
+
 
         if (action != null) {
             messageRealmObject.setAction(action.toString());
+            read = true;
         }
+
         messageRealmObject.setText(text);
+
         if (markupText != null) messageRealmObject.setMarkupText(markupText);
+
         messageRealmObject.setTimestamp(timestamp.getTime());
-        if (delayTimestamp != null) {
-            messageRealmObject.setDelayTimestamp(delayTimestamp.getTime());
-        }
+
+        if (delayTimestamp != null) messageRealmObject.setDelayTimestamp(delayTimestamp.getTime());
+
         messageRealmObject.setIncoming(incoming);
         messageRealmObject.setRead(fromMAM || read);
-        if (send) messageRealmObject.setMessageStatus(MessageStatus.SENT); //todo possible point of problem
+
+        messageRealmObject.setMessageStatus( incoming ? MessageStatus.NONE : MessageStatus.NOT_SENT);
+
         messageRealmObject.setEncrypted(encrypted);
         messageRealmObject.setOffline(offline);
         messageRealmObject.setStanzaId(stanzaId);
         messageRealmObject.setOriginId(originId);
-        if (attachmentRealmObjects != null)
-            messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
 
+        if (attachmentRealmObjects != null) messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
 
         // forwarding
-        if (forwardIdRealmObjects != null)
-            messageRealmObject.setForwardedIds(forwardIdRealmObjects);
+        if (forwardIdRealmObjects != null) messageRealmObject.setForwardedIds(forwardIdRealmObjects);
+
         messageRealmObject.setOriginalStanza(originalStanza);
         messageRealmObject.setOriginalFrom(originalFrom);
         messageRealmObject.setParentMessageId(parentMessageId);
@@ -431,16 +426,15 @@ public abstract class AbstractChat extends BaseEntity implements
         if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, contactJid);
 
         // when getting new message, unarchive chat if chat not muted
-        if (this.notifyAboutMessage())
-            this.archived = false;
+        if (this.notifyAboutMessage()) this.archived = false;
 
         // update last id in chat
         messageRealmObject.setPreviousId(getLastMessageId());
         setLastMessageId(messageRealmObject.getStanzaId());
 
         // groupchat
-        if (groupchatUserId != null)
-            messageRealmObject.setGroupchatUserId(groupchatUserId);
+        if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);
+
         if (isGroupchatSystem){
             messageRealmObject.setGroupchatSystem(true);
             messageRealmObject.setRead(true);
@@ -448,11 +442,11 @@ public abstract class AbstractChat extends BaseEntity implements
 
         // notification
         enableNotificationsIfNeed();
-        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem)
+        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem){
             NotificationManager.getInstance().onMessageNotification(messageRealmObject);
+        }
 
-        if (action != null && (groupchatUserId != null || isGroupchatSystem))
-            return null;
+        if (action != null && (groupchatUserId != null || isGroupchatSystem)) return null;
 
         return messageRealmObject;
     }
@@ -468,12 +462,9 @@ public abstract class AbstractChat extends BaseEntity implements
         realm.executeTransaction(realm1 -> {
             RealmList<AttachmentRealmObject> attachmentRealmObjects;
 
-            if (files != null)
+            if (files != null){
                 attachmentRealmObjects = attachmentsFromFiles(files, messageAttachmentType);
-            else
-                attachmentRealmObjects = attachmentsFromUris(uris);
-
-
+            } else attachmentRealmObjects = attachmentsFromUris(uris);
 
             if (forwards != null && forwards.size() > 0) {
                 RealmList<ForwardIdRealmObject> ids = new RealmList<>();
@@ -489,11 +480,13 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
-            messageRealmObject.setMessageStatus(MessageStatus.SENT); //todo check this or set to uploading i dunno
+            messageRealmObject.setMessageStatus(MessageStatus.UPLOADING); //todo check this or set to NOT_SENT
             messageRealmObject.setIncoming(false);
             realm1.copyToRealm(messageRealmObject);
         });
+
         if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
+
         return messageRealmObject.getPrimaryKey();
     }
 
@@ -512,9 +505,8 @@ public abstract class AbstractChat extends BaseEntity implements
                 attachmentRealmObject.setIsVoice(true);
                 attachmentRealmObject.setDuration(HttpFileUploadManager
                         .getVoiceLength(file.getPath()));
-            } else {
-                attachmentRealmObject.setDuration((long) 0);
-            }
+            } else attachmentRealmObject.setDuration((long) 0);
+
 
             if (isImage) {
                 HttpFileUploadManager.ImageSize imageSize =
