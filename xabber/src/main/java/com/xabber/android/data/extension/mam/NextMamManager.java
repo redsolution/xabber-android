@@ -958,13 +958,12 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         messageRealmObject.setIncoming(incoming);
         messageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
-        messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
+
         if (incoming) {
             messageRealmObject.setMessageStatus(MessageStatus.NONE);
-        } else messageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
-//        messageRealmObject.setSent(true); todo if working fine, remove comment; else change upper line to use proper message status
-//        messageRealmObject.setAcknowledged(true);
+        } else messageRealmObject.setMessageStatus(MessageStatus.DISPLAYED);
+
         messageRealmObject.setEncrypted(encrypted);
 
         // attachments

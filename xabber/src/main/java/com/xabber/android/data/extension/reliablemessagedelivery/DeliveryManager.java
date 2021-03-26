@@ -79,7 +79,6 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                                     .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.RECEIVED.toString())
                                     .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.DISPLAYED.toString())
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                                    .equalTo(MessageRealmObject.Fields.IS_RECEIVED_FROM_MAM, false)
                                     .findAll(); //todo check this statements
 
                             if (messagesUndelivered.size() != 0)

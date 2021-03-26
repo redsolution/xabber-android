@@ -67,7 +67,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ERROR_DESCR = "errorDescription";
         public static final String MESSAGE_STATUS = "messageStatus";
         public static final String READ = "read";
-        public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
         public static final String ATTACHMENTS = "attachments";
         public static final String FORWARDED_IDS = "forwardedIds";
@@ -161,11 +160,6 @@ public class MessageRealmObject extends RealmObject {
      * Internal packet id
      */
     private String originId;
-
-    /**
-     * If message was received from server message archive (XEP-0313)
-     */
-    private boolean isReceivedFromMessageArchive;
 
     /**
      * If message was forwarded (e.g. message carbons (XEP-0280))
@@ -298,10 +292,6 @@ public class MessageRealmObject extends RealmObject {
     public String getOriginId() { return originId; }
 
     public void setOriginId(String originId) { this.originId = originId; }
-
-    public boolean isReceivedFromMessageArchive() { return isReceivedFromMessageArchive; }
-
-    public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) { isReceivedFromMessageArchive = receivedFromMessageArchive; }
 
     public boolean isForwarded() { return forwarded; }
 

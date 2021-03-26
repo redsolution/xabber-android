@@ -214,8 +214,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         && !lastMessage.getMessageStatus().equals(MessageStatus.SENT)
                         && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
                     messageStatus = 5;
-                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DISPLAYED)
-                        || lastMessage.isReceivedFromMessageArchive()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DISPLAYED)) {
                     messageStatus = 1;
                 } else if (lastMessage.getMessageStatus().equals(MessageStatus.RECEIVED)) {
                     messageStatus = 2;
