@@ -15,6 +15,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -84,7 +85,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 sendReceived(message, connection.getAccount());
             } else if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
                 // received
-                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message));
+                markAsReceived(ChatMarkersElements.ReceivedExtension.from(message));
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
                 // displayed
                 markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message));
@@ -108,8 +109,9 @@ public class ChatMarkerManager implements OnPacketListener {
         if (originalMessage == null) return;
 
         String messageId = originalMessage.getStanzaId();
-        List<ExtensionElement> stanzaIds = new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT,
-                StanzaIdElement.NAMESPACE));
+
+        List<ExtensionElement> stanzaIds =
+                new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
 
         if (messageId == null || messageId.isEmpty()) {
             if (stanzaIds.isEmpty()){
@@ -122,14 +124,14 @@ public class ChatMarkerManager implements OnPacketListener {
                     if (idBy != null && idBy.equals(messageRealmObject.getUser().getBareJid().toString())) {
                         messageId = ((StanzaIdElement) stanzaIdElement).getId();
                         break;
-                    } else {
-                        messageId = ((StanzaIdElement) stanzaIdElement).getId();
-                    }
+                    } else messageId = ((StanzaIdElement) stanzaIdElement).getId();
                 }
             }
         }
 
-        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(messageId);
+        ChatMarkersElements.DisplayedExtension displayedExtension =
+                new ChatMarkersElements.DisplayedExtension(messageId);
+
         displayedExtension.setStanzaIdExtensions(stanzaIds);
 
         displayedNotification.addExtension(displayedExtension);
@@ -141,26 +143,24 @@ public class ChatMarkerManager implements OnPacketListener {
             } catch (NetworkException e) {
                 LogManager.exception(LOG_TAG, e);
             }
-        } else {
-            sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.getAccount());
-        }
+        } else sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.getAccount());
+
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
         if (direction == CarbonExtension.Direction.sent) {
-            ChatMarkersElements.DisplayedExtension extension =
-                    ChatMarkersElements.DisplayedExtension.from(message);
+            ChatMarkersElements.DisplayedExtension extension = ChatMarkersElements.DisplayedExtension.from(message);
             if (extension != null) {
                 ContactJid companion;
                 try {
                     companion = ContactJid.from(message.getTo()).getBareUserJid();
                 } catch (ContactJid.ContactJidCreateException e) {
+                    LogManager.exception(LOG_TAG, e);
                     return;
                 }
                 AbstractChat chat = ChatManager.getInstance().getChat(account, companion);
                 if (chat != null) {
                     chat.markAsRead(extension.getId(), extension.getStanzaId(), false);
-                    //chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
 
                     // start grace period
@@ -170,13 +170,13 @@ public class ChatMarkerManager implements OnPacketListener {
         }
         else if (direction == CarbonExtension.Direction.received) {
             if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
-                // received
-                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.ReceivedExtension.from(message).getId(),
+                BackpressureMessageMarker.getInstance().markMessage(
+                        ChatMarkersElements.ReceivedExtension.from(message).getId(),
                         ChatMarkersElements.ReceivedExtension.from(message).getStanzaId(),
                         ChatMarkersState.received, account);
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
-                // displayed
-                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.DisplayedExtension.from(message).getId(),
+                BackpressureMessageMarker.getInstance().markMessage(
+                        ChatMarkersElements.DisplayedExtension.from(message).getId(),
                         ChatMarkersElements.DisplayedExtension.from(message).getStanzaId(),
                         ChatMarkersState.displayed, account);
             }
@@ -219,25 +219,21 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void sendMessageInBackgroundUserRequest(final Message message, final AccountJid account) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    StanzaSender.sendStanza(account, message);
-                } catch (NetworkException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            try {
+                StanzaSender.sendStanza(account, message);
+            } catch (NetworkException e) {
+                LogManager.exception(LOG_TAG, e);
             }
         });
     }
 
     private void markAsDisplayed(ChatMarkersElements.DisplayedExtension displayedExtension) {
         if (displayedExtension.getId() == null || displayedExtension.getId().isEmpty()) {
-            if (!displayedExtension.getStanzaId().isEmpty()) {
-                markAsDisplayed(displayedExtension.getStanzaId().get(0));
-            }
+            if (!displayedExtension.getStanzaId().isEmpty()) markAsDisplayed(displayedExtension.getStanzaId().get(0));
         } else markAsDisplayed(displayedExtension.getId());
     }
+
     private void markAsDisplayed(final String messageID) {
         Application.getInstance().runInBackground(() ->  {
                 Realm realm = null;
@@ -252,13 +248,15 @@ public class ChatMarkerManager implements OnPacketListener {
                                     .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
                                     .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                                    .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
-                                    .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                    .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS,
+                                            MessageStatus.DISPLAYED.toString()) //todo check this
+                                    .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS,
+                                            MessageStatus.UPLOADING.toString()) //todo check this
                                     .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
                                     .findAll();
 
                             if (results != null) {
-                                results.setBoolean(MessageRealmObject.Fields.DISPLAYED, true);
+                                results.setString(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.DISPLAYED.toString());
                                 for (OnMessageUpdatedListener listener :
                                         Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                                     listener.onMessageUpdated();
@@ -268,19 +266,19 @@ public class ChatMarkerManager implements OnPacketListener {
                     });
                 } catch (Exception e) {
                     LogManager.exception(LOG_TAG, e);
-                } finally { if (realm != null) realm.close(); }
+                } finally {
+                    if (realm != null) realm.close();
+                }
         });
     }
 
-    private void markAsDelivered(ChatMarkersElements.ReceivedExtension receivedExtension) {
+    private void markAsReceived(ChatMarkersElements.ReceivedExtension receivedExtension) {
         if (receivedExtension.getId() == null || receivedExtension.getId().isEmpty()) {
-            if (!receivedExtension.getStanzaId().isEmpty()) {
-                markAsDelivered(receivedExtension.getStanzaId().get(0));
-            }
-        } else markAsDelivered(receivedExtension.getId());
+            if (!receivedExtension.getStanzaId().isEmpty()) markAsReceived(receivedExtension.getStanzaId().get(0));
+        } else markAsReceived(receivedExtension.getId());
     }
 
-    private void markAsDelivered(final String stanzaID) {
+    private void markAsReceived(final String stanzaID) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -294,13 +292,13 @@ public class ChatMarkerManager implements OnPacketListener {
                                 .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
                                 .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
                                 .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                                .equalTo(MessageRealmObject.Fields.DELIVERED, false)
-                                .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.RECEIVED.toString())
+                                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.UPLOADING.toString())
                                 .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
                                 .findAll();
 
                         if (results != null) {
-                            results.setBoolean(MessageRealmObject.Fields.DELIVERED, true);
+                            results.setString(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.RECEIVED.toString());
                             for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                                 listener.onMessageUpdated();
                             }
@@ -314,6 +312,5 @@ public class ChatMarkerManager implements OnPacketListener {
             }
         });
     }
-
 
 }

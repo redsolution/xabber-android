@@ -49,6 +49,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.BackpressureMessageSaver;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -409,7 +410,7 @@ public abstract class AbstractChat extends BaseEntity implements
         }
         messageRealmObject.setIncoming(incoming);
         messageRealmObject.setRead(fromMAM || read);
-        messageRealmObject.setSent(send);
+        if (send) messageRealmObject.setMessageStatus(MessageStatus.SENT); //todo possible point of problem
         messageRealmObject.setEncrypted(encrypted);
         messageRealmObject.setOffline(offline);
         messageRealmObject.setStanzaId(stanzaId);
@@ -488,10 +489,8 @@ public abstract class AbstractChat extends BaseEntity implements
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
-            messageRealmObject.setSent(true);
-            messageRealmObject.setError(false);
+            messageRealmObject.setMessageStatus(MessageStatus.SENT); //todo check this or set to uploading i dunno
             messageRealmObject.setIncoming(false);
-            messageRealmObject.setInProgress(true);
             realm1.copyToRealm(messageRealmObject);
         });
         if (Looper.getMainLooper() != Looper.myLooper()) realm.close();
@@ -810,12 +809,12 @@ public abstract class AbstractChat extends BaseEntity implements
                             .where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
                             .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
-                            .equalTo(MessageRealmObject.Fields.SENT, false)
+                            .equalTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.NOT_SENT.toString())
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
                             .findAll();
 
                     for (final MessageRealmObject messageRealmObject : messagesToSend) {
-                        if (messageRealmObject.isInProgress()) continue;
+                        if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) continue;
                         if (!sendMessage(messageRealmObject)) {
                             break;
                         }
@@ -884,12 +883,10 @@ public abstract class AbstractChat extends BaseEntity implements
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             if (DeliveryManager.getInstance().isSupported(account))
-                if (!messageRealmObject.isDelivered() && messageRealmObject.isSent()) {
+                if (!messageRealmObject.getMessageStatus().equals(MessageStatus.SENT)) { //todo check this
                     message.addExtension(new RetryReceiptRequestElement());
                 }
-            if (delayTimestamp != null) {
-                message.addExtension(new DelayInformation(delayTimestamp));
-            }
+            if (delayTimestamp != null) message.addExtension(new DelayInformation(delayTimestamp));
 
             final String messageId = messageRealmObject.getPrimaryKey();
             try {
@@ -901,9 +898,8 @@ public abstract class AbstractChat extends BaseEntity implements
                                 .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                                 .findFirst();
 
-                        if (acknowledgedMessage != null && !DeliveryManager
-                                .getInstance().isSupported(account)) {
-                            acknowledgedMessage.setAcknowledged(true);
+                        if (acknowledgedMessage != null && !DeliveryManager.getInstance().isSupported(account)) {
+                            acknowledgedMessage.setMessageStatus(MessageStatus.DELIVERED);
                         }
                     });
                     if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
@@ -914,20 +910,18 @@ public abstract class AbstractChat extends BaseEntity implements
         }
 
         if (message == null) {
-            messageRealmObject.setError(true);
+            messageRealmObject.setMessageStatus(MessageStatus.ERROR); //todo check this
             messageRealmObject.setErrorDescription("Internal error: message is null");
         } else {
             message.setFrom(account.getFullJid());
             messageRealmObject.setOriginalStanza(message.toXML().toString());
         }
 
-        if (delayTimestamp != null) {
-            messageRealmObject.setDelayTimestamp(delayTimestamp.getTime());
-        }
-        if (messageRealmObject.getTimestamp() == null) {
-            messageRealmObject.setTimestamp(currentTime.getTime());
-        }
-        messageRealmObject.setSent(true);
+        if (delayTimestamp != null) messageRealmObject.setDelayTimestamp(delayTimestamp.getTime());
+
+        if (messageRealmObject.getTimestamp() == null) messageRealmObject.setTimestamp(currentTime.getTime());
+
+        messageRealmObject.setMessageStatus(MessageStatus.SENT);
         return true;
     }
 

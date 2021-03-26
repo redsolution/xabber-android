@@ -28,6 +28,7 @@ import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -959,8 +960,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
         messageRealmObject.setReceivedFromMessageArchive(true);
         messageRealmObject.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
-        messageRealmObject.setSent(true);
-        messageRealmObject.setAcknowledged(true);
+        if (incoming) {
+            messageRealmObject.setMessageStatus(MessageStatus.NONE);
+        } else messageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
+//        messageRealmObject.setSent(true); todo if working fine, remove comment; else change upper line to use proper message status
+//        messageRealmObject.setAcknowledged(true);
         messageRealmObject.setEncrypted(encrypted);
 
         // attachments

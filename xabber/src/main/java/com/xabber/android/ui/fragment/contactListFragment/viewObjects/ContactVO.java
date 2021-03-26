@@ -34,6 +34,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
@@ -209,16 +210,18 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             // message status
             if (isOutgoing) {
-                if (!MessageRealmObject.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
+                if ( !lastMessage.getMessageStatus().equals(MessageStatus.UPLOADING)
+                        && !lastMessage.getMessageStatus().equals(MessageStatus.SENT)
                         && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
                     messageStatus = 5;
-                } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DISPLAYED)
+                        || lastMessage.isReceivedFromMessageArchive()) {
                     messageStatus = 1;
-                } else if (lastMessage.isDelivered()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.RECEIVED)) {
                     messageStatus = 2;
-                } else if (lastMessage.isError()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.ERROR)) {
                     messageStatus = 4;
-                } else if (lastMessage.isAcknowledged() || lastMessage.isForwarded()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DELIVERED) || lastMessage.isForwarded()) {
                     messageStatus = 3;
                 } else messageStatus = 5;
             }

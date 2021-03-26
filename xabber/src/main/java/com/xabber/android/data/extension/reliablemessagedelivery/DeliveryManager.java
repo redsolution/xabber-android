@@ -12,6 +12,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.utils.StringUtils;
@@ -73,13 +74,13 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                             RealmResults<MessageRealmObject> messagesUndelivered = realm1
                                     .where(MessageRealmObject.class)
                                     .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.getFullJid().toString())
-                                    .equalTo(MessageRealmObject.Fields.SENT, true)
+                                    .equalTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.SENT.toString())
+                                    .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.DELIVERED.toString())
+                                    .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.RECEIVED.toString())
+                                    .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.DISPLAYED.toString())
                                     .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                                    .equalTo(MessageRealmObject.Fields.DELIVERED, false)
                                     .equalTo(MessageRealmObject.Fields.IS_RECEIVED_FROM_MAM, false)
-                                    .equalTo(MessageRealmObject.Fields.READ, false)
-                                    .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
-                                    .findAll();
+                                    .findAll(); //todo check this statements
 
                             if (messagesUndelivered.size() != 0)
                                 for (MessageRealmObject messageRealmObject : messagesUndelivered){
@@ -122,7 +123,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                                 "origin id: " + originId + ", but can't find message in database"));
                     } else {
                         messageRealmObject.setStanzaId(stanzaId);
-                        messageRealmObject.setAcknowledged(true);
+                        messageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
                         if (time != null && !time.isEmpty())
                             messageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(time).getTime());
                     }

@@ -13,8 +13,9 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.message.MessageStatus;
+import com.xabber.android.ui.helper.MessageDeliveryStatusHelper;
 import com.xabber.android.utils.Utils;
 
 public class OutgoingMessageVH extends FileMessageVH {
@@ -34,7 +35,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         setStatusIcon(messageRealmObject);
 
         // setup PROGRESS
-        if (messageRealmObject.isInProgress()) {
+        if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) {
             progressBar.setVisibility(View.VISIBLE);
             messageFileInfo.setText(R.string.message_status_uploading);
             messageFileInfo.setVisibility(View.VISIBLE);
@@ -133,40 +134,10 @@ public class OutgoingMessageVH extends FileMessageVH {
         statusIcon.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        boolean isFileUploadInProgress = MessageRealmObject.isUploadFileMessage(messageRealmObject);
-
-        int messageIcon = R.drawable.ic_message_not_sent_14dp;
-
         if (messageRealmObject.getText().equals(UPLOAD_TAG)) {
-            messageIcon = 0;
             messageText.setText("");
-        }
-
-        if (!isFileUploadInProgress && !messageRealmObject.isSent()) {
-            messageIcon = R.drawable.ic_message_not_sent_14dp;
-        } else if (messageRealmObject.isError()) {
-            messageIcon = R.drawable.ic_message_has_error_14dp;
-        } else if (messageRealmObject.isDisplayed() || messageRealmObject.isReceivedFromMessageArchive()) {
-            if(messageRealmObject.isAttachmentImageOnly()) {
-                messageIcon = R.drawable.ic_message_displayed_image;
-            } else messageIcon = R.drawable.ic_message_displayed;
-        } else if (messageRealmObject.isDelivered()) {
-            if(messageRealmObject.isAttachmentImageOnly()) {
-                messageIcon = R.drawable.ic_message_delivered_image_14dp;
-            } else messageIcon = R.drawable.ic_message_delivered_14dp;
-        } else if (messageRealmObject.isAcknowledged() || messageRealmObject.isForwarded()) {
-            if(messageRealmObject.isAttachmentImageOnly()) {
-                messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
-            } else{
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                    messageIcon = R.drawable.ic_message_acknowledged_14dp;
-                } else messageIcon = R.drawable.ic_message_acknowledged_dark_14dp;
-            }
-        }
-
-        if (messageIcon != 0) {
-            statusIcon.setImageResource(messageIcon);
-        } else statusIcon.setVisibility(View.GONE);
+            statusIcon.setVisibility(View.GONE);
+        } else MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(messageRealmObject, statusIcon);
     }
 
 }

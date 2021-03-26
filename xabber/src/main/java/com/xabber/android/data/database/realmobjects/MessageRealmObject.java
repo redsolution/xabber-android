@@ -23,6 +23,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -64,14 +65,10 @@ public class MessageRealmObject extends RealmObject {
         public static final String EDITED_TIMESTAMP = "editedTimestamp";
         public static final String ERROR = "error";
         public static final String ERROR_DESCR = "errorDescription";
-        public static final String DELIVERED = "delivered";
-        public static final String DISPLAYED = "displayed";
-        public static final String SENT = "sent";
+        public static final String MESSAGE_STATUS = "messageStatus";
         public static final String READ = "read";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
-        public static final String ACKNOWLEDGED = "acknowledged";
-        public static final String IS_IN_PROGRESS = "isInProgress";
         public static final String ATTACHMENTS = "attachments";
         public static final String FORWARDED_IDS = "forwardedIds";
         public static final String ORIGINAL_STANZA = "originalStanza";
@@ -83,9 +80,8 @@ public class MessageRealmObject extends RealmObject {
     }
 
     /**
-     * UUID
+     * Should be account jid + # + contact jid + originId or stanzaId
      */
-
     @PrimaryKey
     @Required
     private String primaryKey;
@@ -100,11 +96,13 @@ public class MessageRealmObject extends RealmObject {
      * Contact's resource.
      */
     private String resource;
+
     /**
      * Text representation.
      */
     private String text;
     private String markupText;
+
     /**
      * Optional action. If set message represent not an actual message but some
      * action in the chat.
@@ -126,42 +124,39 @@ public class MessageRealmObject extends RealmObject {
      */
     @Index
     private Long timestamp;
+
     /**
      * RIme when message was edited
      * Realm truncated Date type to seconds, using long for accuracy
      */
     private Long editedTimestamp;
+
     /**
      * Time when message was created.
      * Realm truncated Date type to seconds, using long for accuracy
      */
     private Long delayTimestamp;
+
+    /**
+     * Message state represented by MessageStatus
+     */
+    private String messageStatus = MessageStatus.NONE.toString();
+
+    /**
+     * Message was shown to the us.
+     */
+    private boolean read;
+
     /**
      * Error response received on send request.
      */
-    private boolean error;
     private String errorDescription;
-    /**
-     * ReceiptElement was received for sent message.
-     */
-    private boolean delivered;
-    /**
-     * Chat marker was received for sent message.
-     */
-    private boolean displayed;
-    /**
-     * Message was sent.
-     */
-    @Index
-    private boolean sent;
-    /**
-     * Message was shown to the user.
-     */
-    private boolean read;
+
     /**
      * Outgoing packet id - usual message stanza (packet) id
      */
     private String stanzaId;
+
     /**
      * Internal packet id
      */
@@ -176,16 +171,6 @@ public class MessageRealmObject extends RealmObject {
      * If message was forwarded (e.g. message carbons (XEP-0280))
      */
     private boolean forwarded;
-
-    /**
-     * If message was acknowledged by server (XEP-0198: Stream Management)
-     */
-    private boolean acknowledged;
-
-    /**
-     * If message is currently in progress (i.e. file is uploading/downloading)
-     */
-    private boolean isInProgress;
 
     private RealmList<AttachmentRealmObject> attachmentRealmObjects;
 
@@ -306,26 +291,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setDelayTimestamp(Long delayTimestamp) { this.delayTimestamp = delayTimestamp; }
 
-    public boolean isError() { return error; }
-
-    public void setError(boolean error) { this.error = error; }
-
-    public boolean isDelivered() { return delivered; }
-
-    public void setDelivered(boolean delivered) { this.delivered = delivered; }
-
-    public boolean isDisplayed() { return displayed; }
-
-    public void setDisplayed(boolean displayed) { this.displayed = displayed; }
-
-    public boolean isSent() { return sent; }
-
-    public void setSent(boolean sent) { this.sent = sent; }
-
-    public boolean isRead() { return read; }
-
-    public void setRead(boolean read) { this.read = read; }
-
     public String getStanzaId() { return stanzaId; }
 
     public void setStanzaId(String stanzaId) { this.stanzaId = stanzaId; }
@@ -346,23 +311,17 @@ public class MessageRealmObject extends RealmObject {
 
     public static Spannable getSpannable(MessageRealmObject messageRealmObject) { return new SpannableString(messageRealmObject.getText()); }
 
-    public static boolean isUploadFileMessage(MessageRealmObject messageRealmObject) {
-        return messageRealmObject.getAttachmentRealmObjects() != null
-                && messageRealmObject.getAttachmentRealmObjects().size() != 0
-                && !messageRealmObject.isSent();
-    }
-
-    public boolean isAcknowledged() { return acknowledged; }
-
-    public void setAcknowledged(boolean acknowledged) { this.acknowledged = acknowledged; }
-
-    public boolean isInProgress() { return isInProgress; }
-
-    public void setInProgress(boolean inProgress) {  isInProgress = inProgress; }
-
     public boolean isEncrypted() { return encrypted; }
 
     public void setEncrypted(boolean encrypted) { this.encrypted = encrypted; }
+
+    public MessageStatus getMessageStatus() { return MessageStatus.valueOf(messageStatus); }
+
+    public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus.toString(); }
+
+    public boolean isRead() { return read; }
+
+    public void setRead(boolean read) { this.read = read; }
 
     public String getErrorDescription() { return errorDescription; }
 
@@ -422,7 +381,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setGroupchatSystem(boolean groupchatSystem) {
         isGroupchatSystem = groupchatSystem;
-        read = true;
+        setRead(true);
     }
 
     public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
@@ -492,12 +451,7 @@ public class MessageRealmObject extends RealmObject {
         return this.getText().equals(comparableMessageRealmObject.getText())
                 && this.isIncoming() == comparableMessageRealmObject.isIncoming()
                 && this.getTimestamp().equals(comparableMessageRealmObject.getTimestamp())
-                && this.isError() == comparableMessageRealmObject.isError()
-                && this.isDelivered() == comparableMessageRealmObject.isDelivered()
-                && this.isDisplayed() == comparableMessageRealmObject.isDisplayed()
-                && this.isSent() == comparableMessageRealmObject.isSent()
-                && this.isRead() == comparableMessageRealmObject.isRead()
-                && this.isAcknowledged() == comparableMessageRealmObject.isAcknowledged();
+                && this.getMessageStatus() == comparableMessageRealmObject.getMessageStatus();
     }
 
 }

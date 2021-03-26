@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -31,8 +31,6 @@ import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.groups.GroupchatExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -58,43 +56,29 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     private static ReceiptManager instance;
 
     static {
-        // TODO: change to ifSubscribed when isSubscribedToMyPresence will work and problem with thread element will be solved
         DeliveryReceiptManager.setDefaultAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.disabled);
-
     }
 
     public static ReceiptManager getInstance() {
-        if (instance == null) {
-            instance = new ReceiptManager();
-        }
+        if (instance == null) instance = new ReceiptManager();
 
         return instance;
     }
 
     private ReceiptManager() {
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-            @Override
-            public void connectionCreated(final XMPPConnection connection) {
-                DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this);
-                //DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
-            }
-        });
-
+        XMPPConnectionRegistry.addConnectionCreationListener(connection ->
+                DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this));
     }
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
+        if (!(connection instanceof AccountItem)) return;
+
         final AccountJid account = ((AccountItem) connection).getAccount();
         final Jid from = packet.getFrom();
-        if (from == null) {
-            return;
-        }
-        if (!(packet instanceof Message)) {
-            return;
-        }
+
+        if (!(packet instanceof Message) || from == null) return;
+
         final Message message = (Message) packet;
 
         boolean isGroup = message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
@@ -106,7 +90,6 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                         + "set to error");
             } else Application.getInstance().runInBackground(() -> markAsError(account, message));
         } else {
-            // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
                     String id = UniqueIdsHelper.getStanzaIdBy(
@@ -139,7 +122,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                         .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.getStanzaId())
                         .findFirst();
                 if (first != null) {
-                    first.setError(true);
+                    first.setMessageStatus(MessageStatus.ERROR);
                     XMPPError error = message.getError();
                     if (error != null) {
                         String errorStr = error.toString();
@@ -161,28 +144,30 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     public void onReceiptReceived(Jid fromJid, final Jid toJid, final String receiptId, Stanza stanza) {
         DeliveryReceipt receipt = DeliveryReceipt.from((Message) stanza);
 
-        if (receipt == null) {
-            return;
-        }
+        if (receipt == null) return;
 
-        Application.getInstance().runInBackground(() -> markAsDelivered(toJid, receiptId));
+        Application.getInstance().runInBackground(() -> markAsReceived(toJid, receiptId));
     }
 
-    private void markAsDelivered(final Jid toJid, final String receiptId) {
+    private void markAsReceived(final Jid toJid, final String receiptId) {
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
             realm.executeTransaction(realm1 -> {
                 MessageRealmObject first = realm1.where(MessageRealmObject.class)
                         .equalTo(MessageRealmObject.Fields.STANZA_ID, receiptId).findFirst();
-                first.setDelivered(true);
+                first.setMessageStatus(MessageStatus.RECEIVED);
             });
 
-            for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+            for (OnMessageUpdatedListener listener
+                    : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                 listener.onMessageUpdated();
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
-        } finally { if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close(); }
+        } finally {
+            if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close();
+        }
     }
+
 }

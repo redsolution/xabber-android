@@ -18,6 +18,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.service.RecordService;
 
 import java.io.File;
@@ -116,25 +117,25 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(attachmentIndex);
 
         String path;
-        if (message.isInProgress()) {
+        if (message.getMessageStatus().equals(MessageStatus.UPLOADING)) {
             path = attachmentRealmObject.getFilePath();
         } else {
             if (attachmentRealmObject.getFilePath() != null) {
-                if (new File(attachmentRealmObject.getFilePath()).exists())
+                if (new File(attachmentRealmObject.getFilePath()).exists()){
                     path = attachmentRealmObject.getFilePath();
-                else {
+                } else {
                     MessageManager.setAttachmentLocalPathToNull(attachmentRealmObject.getUniqueId());
                     return;
                 }
-            } else
-                path = attachmentRealmObject.getFileUrl();
+            } else path = attachmentRealmObject.getFileUrl();
         }
-        voiceClicked(message.getPrimaryKey(), attachmentRealmObject.getUniqueId(), path, attachmentRealmObject.getDuration(), true, timestamp);
+        voiceClicked(message.getPrimaryKey(), attachmentRealmObject.getUniqueId(), path,
+                attachmentRealmObject.getDuration(), true, timestamp);
     }
 
     private void voiceClicked(String messageId, String attachmentId, String filePath, Long duration, boolean alreadySentMessage, Long timestamp) {
-        if (filePath == null)
-            return;
+        if (filePath == null) return;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             audioAttributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -153,8 +154,10 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 result = audioManager.requestAudioFocus(audioFocusRequest);
             }
         } else {
-            if (!activeFocus)
-                result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+            if (!activeFocus){
+                result = audioManager.requestAudioFocus(
+                        this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+            }
         }
 
         clickedMessageId = messageId;

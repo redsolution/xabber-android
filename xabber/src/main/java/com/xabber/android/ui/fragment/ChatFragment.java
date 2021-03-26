@@ -99,6 +99,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -1725,9 +1726,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && RewriteManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
-                && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isAcknowledged()
-                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDelivered()
-                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isDisplayed());
+                && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).getMessageStatus().equals(MessageStatus.DELIVERED)
+                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).getMessageStatus().equals(MessageStatus.RECEIVED)
+                || chatMessageAdapter.getCheckedMessageRealmObjects().get(0).getMessageStatus().equals(MessageStatus.DISPLAYED));
 
         boolean isPinnable = checkedItems == 1 && getChat() instanceof GroupChat;
 
@@ -1747,20 +1748,20 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void showCustomMenu(View anchor) {
         menuItems = new ArrayList<>();
 
-        if (clickedMessageRealmObject.isError()) {
+        if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_repeat", getString(R.string.message_repeat));
         }
 
-        if (!MessageRealmObject.isUploadFileMessage(clickedMessageRealmObject)) {
+        if (!clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) { //todo check this
             CustomMessageMenu.addMenuItem(menuItems, "action_message_quote", getString(R.string.message_quote));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
         }
 
         if (!clickedMessageRealmObject.isIncoming() && !clickedMessageRealmObject.haveAttachments()
-                && (clickedMessageRealmObject.isAcknowledged()
-                || clickedMessageRealmObject.isDelivered()
-                || clickedMessageRealmObject.isDisplayed())) {
+                && (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.DELIVERED)
+                || clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.DISPLAYED)
+                || clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.RECEIVED))) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
         }
 
@@ -1771,16 +1772,23 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         //todo checking privileges
         if (getChat() instanceof GroupChat) CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
 
-        if (clickedMessageRealmObject.isError()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
-        } else if (!clickedMessageRealmObject.isSent()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
-        } else if (clickedMessageRealmObject.isDisplayed()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DISPLAYED);
-        } else if (clickedMessageRealmObject.isDelivered()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DELIVERED);
-        } else if (clickedMessageRealmObject.isAcknowledged()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ACK);
+        switch (clickedMessageRealmObject.getMessageStatus()){
+            case ERROR:
+                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
+                break;
+            case SENT:
+                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
+                break;
+            case DISPLAYED:
+                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DISPLAYED);
+                break;
+            case RECEIVED:
+                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DELIVERED);
+                break;
+            case DELIVERED:
+                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ACK);
+                break;
+            default:
         }
 
         CustomMessageMenu.showMenu(getActivity(), anchor, menuItems, this, this);
@@ -1820,7 +1828,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     chatMessageAdapter.notifyDataSetChanged();
                     break;
                 case "action_message_status":
-                    if (clickedMessageRealmObject.isError()) showError(clickedMessageRealmObject.getErrorDescription());
+                    if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
+                        showError(clickedMessageRealmObject.getErrorDescription());
+                    }
                     break;
                 case "action_message_edit":
                     getReadyForMessageEditing(clickedMessageRealmObject);
