@@ -142,12 +142,15 @@
     <string name="dialog_delete_user_messages__confirm">Delete all <b>%s</b> messages in this group chat?</string>
     <string name="groupchat__invitation__error_already_invited"> %s already invited in group</string>
     <string name="groupchat__hint_domain">domain</string>
-    <string name="group__invite_contact__toast_successful_text">Invitations sent successfully</string>
-    <string name="groupchat__toast_invitations_sent_with_count">%1$d/%2$d invitations were sent</string>
-    <string name="groupchat__toast_invitation_sent">Invitation was sent</string>
-    <plurals name="groupchat__toast_invitation_not_sent">
-        <item quantity="one">Invitation wasn\'t sent</item>
-        <item quantity="other">Invitations weren\'t sent</item>
+
+    <plurals name="groupchat__toast__invitations_sent">
+        <item quantity="one">Invitation sent</item>
+        <item quantity="other">Invitations sent</item>
     </plurals>
-    <string name="groupchat__toast_all_invitations_sent">Invitations were sent</string>
+
+    <plurals name="groupchat__toast_failed_to_sent_invitations">
+        <item quantity="one">Failed to send invitation</item>
+        <item quantity="other">Failed to send invitations</item>
+    </plurals>
+
 </resources>

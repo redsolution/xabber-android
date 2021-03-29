@@ -14,6 +14,9 @@ interface BaseIqResultUiListener: ExceptionCallback, StanzaListener {
     fun onIqError(error: XMPPError)
     fun onOtherError(exception: Exception? = null)
 
+    fun onIqErrors(errors: List<XMPPError>) = errors.forEach { error -> onIqError(error) }
+    fun onOtherErrors(exceptions: List<java.lang.Exception>) = exceptions.forEach { exception -> onOtherError(exception) }
+
     override fun processException(exception: Exception?) =
             if (exception is XMPPErrorException)
                 onIqError(exception.xmppError)

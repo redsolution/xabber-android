@@ -139,7 +139,9 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
     override fun onResult() {
         Application.getInstance().runOnUiThread {
             progressBar?.visibility = View.INVISIBLE
-            Toast.makeText(applicationContext, R.string.group__invite_contact__toast_successful_text,
+            Toast.makeText(
+                    this,
+                    resources.getQuantityString(R.plurals.groupchat__toast__invitations_sent, selectionCounter),
                     Toast.LENGTH_SHORT)
                     .show()
             finish()
@@ -152,15 +154,38 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
 
     override fun onIqError(error: XMPPError) {
         progressBar?.visibility = View.INVISIBLE
+        val text = resources.getQuantityText(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter)
+                .toString() + " " + error.descriptiveText
         Application.getInstance().runOnUiThread {
-            Toast.makeText(this, error.descriptiveText, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onIqErrors(errors: List<XMPPError>) {
+        progressBar?.visibility = View.INVISIBLE
+        val text = StringBuilder()
+                .append(resources.getQuantityText(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter))
+                .append(" ")
+        errors.forEach { xmppError ->
+            run {
+                text.append(xmppError.descriptiveText ?: return)
+                text.append(" ")
+            }
+        }
+
+        Application.getInstance().runOnUiThread { Toast.makeText(this, text, Toast.LENGTH_SHORT).show() }
+    }
+
+    override fun onOtherErrors(exceptions: List<java.lang.Exception>) = onOtherError(exceptions[0])
 
     override fun onOtherError(exception: Exception?) {
         progressBar?.visibility = View.INVISIBLE
         Application.getInstance().runOnUiThread {
-            Toast.makeText(this, getString(R.string.groupchat_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                    this,
+                    resources.getQuantityString(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter),
+                    Toast.LENGTH_SHORT)
+                    .show()
         }
     }
 
