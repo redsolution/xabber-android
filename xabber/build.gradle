@@ -133,16 +133,16 @@ dependencies {
     implementation "org.igniterealtime.smack:smack-resolver-dnsjava:$smackVersion"
 
     // android support
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.browser:browser:1.3.0'
     implementation 'androidx.multidex:multidex:2.0.1'
 
     // firebase
     storeImplementation "com.google.firebase:firebase-messaging:21.0.1"
-    storeImplementation 'com.google.firebase:firebase-crashlytics:17.3.1'
+    storeImplementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     storeImplementation 'com.google.firebase:firebase-analytics:18.0.2'
-    storeImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.3.1'
+    storeImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.4.1'
 
     // otr
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
