@@ -18,12 +18,12 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.NestedScrollView
 import com.xabber.android.R
 import com.xabber.android.data.Application
+import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
-import com.xabber.xmpp.groups.create.CreateGroupchatIqResultListener
 import com.xabber.android.data.extension.groups.*
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.activity.ChatActivity
@@ -34,10 +34,11 @@ import com.xabber.android.ui.widget.AccountSpinner
 import com.xabber.android.utils.StringUtils
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 import kotlinx.android.synthetic.main.dialog.*
+import org.jivesoftware.smack.packet.XMPPError
 import java.util.*
 
 @SuppressLint("SetTextI18n")
-class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListener, AccountSpinner.Listener,
+class CreateGroupFragment: CircleEditorFragment(), BaseIqResultUiListener, AccountSpinner.Listener,
         ServersAdapter.OnClickListener {
 
     private var listenerActivity: Listener? = null
@@ -116,20 +117,6 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
 
         return view
     }
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        outState.putParcelable(SAVED_ACCOUNT, getAccount() ?: accountSpinner.selected)
-//        if (!errorTv.text.isNullOrEmpty()) outState.putString(SAVED_ERROR, errorTv.text.toString())
-//        outState.putString(SAVED_GROUP_DESCRIPTION, groupDescriptionEt.text.toString())
-//        outState.putString(SAVED_GROUP_JID, groupJidEt.text.toString())
-//        outState.putString(SAVED_GROUP_NAME, groupNameEt.text.toString())
-//        outState.putString(SAVED_GROUP_SERVER, serverTv.text.toString())
-//    }
-//
-//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-//        super.onViewStateRestored(savedInstanceState)
-//    }
 
     private fun initializeViewsVars(view: View){
         accountSpinner = view.findViewById(R.id.contact_account)
@@ -454,10 +441,41 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         //todo working with circles
     }
 
-    override fun onSuccessfullyCreated(accountJid: AccountJid?, contactJid: ContactJid?) {
+    override fun onSend() {
         Application.getInstance().runOnUiThread {
-            if (activity is CreateGroupActivity)
-                activity?.startActivity(ChatActivity.createSendIntent(context, accountJid, contactJid, null))
+            listenerActivity?.toolbarSetEnabled(false)
+            listenerActivity?.showProgress(true)
+        }
+    }
+
+    override fun onResult() {
+        Application.getInstance().runOnUiThread {
+            val account = accountSpinner.selected ?: getAccount()
+            val server = serverTv.text.substring(3 until serverTv.text.length)
+            val groupJid = ContactJid.from(groupJidEt.text.toString() + server)
+
+            if (activity is CreateGroupActivity) {
+                activity?.startActivity(ChatActivity.createSendIntent(context, account, groupJid, null))
+            }
+        }
+    }
+
+    override fun onIqError(error: XMPPError) {
+        Application.getInstance().runOnUiThread {
+            val text = error.descriptiveText ?: getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason)
+            Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+            listenerActivity?.showProgress(false)
+            listenerActivity?.toolbarSetEnabled(false)
+        }
+    }
+
+    override fun onOtherError(exception: Exception?) {
+        Application.getInstance().runOnUiThread {
+            Toast.makeText(context,
+                    getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
+                    Toast.LENGTH_LONG).show()
+            listenerActivity?.showProgress(false)
+            listenerActivity?.toolbarSetEnabled(false)
         }
     }
 
@@ -490,31 +508,6 @@ class CreateGroupFragment: CircleEditorFragment(), CreateGroupchatIqResultListen
         errorTv.text = stringError
         errorTv.visibility = if ("" == stringError) View.INVISIBLE else View.VISIBLE
         groupJidEt.requestFocus()
-    }
-
-    override fun onSend() {
-        Application.getInstance().runOnUiThread {
-            listenerActivity?.toolbarSetEnabled(false)
-            listenerActivity?.showProgress(true)
-        }
-    }
-
-    override fun onJidConflict() {
-        Application.getInstance().runOnUiThread {
-            showErrorBelowJidEt(requireContext().getString(R.string.groupchat_jid_already_exists))
-            listenerActivity?.showProgress(false)
-            listenerActivity?.toolbarSetEnabled(false)
-        }
-    }
-
-    override fun onOtherError() {
-        Application.getInstance().runOnUiThread {
-            Toast.makeText(context,
-                    getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
-                    Toast.LENGTH_LONG).show()
-            listenerActivity?.showProgress(false)
-            listenerActivity?.toolbarSetEnabled(false)
-        }
     }
 
     override fun onServerClicked(server: String) {

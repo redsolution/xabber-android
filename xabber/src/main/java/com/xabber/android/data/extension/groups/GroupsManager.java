@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.BaseIqResultUiListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -15,20 +16,6 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.xmpp.groups.GroupPinMessageIQ;
-import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
-import com.xabber.xmpp.groups.create.CreateGroupchatIQ;
-import com.xabber.xmpp.groups.create.CreateGroupchatIqResultListener;
-import com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
-import com.xabber.xmpp.groups.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
-import com.xabber.xmpp.groups.restrictions.RequestToChangeGroupDefaultRestrictionsIQ;
-import com.xabber.xmpp.groups.settings.GroupSettingsDataFormResultIQ;
-import com.xabber.xmpp.groups.settings.GroupSettingsRequestFormQueryIQ;
-import com.xabber.xmpp.groups.settings.SetGroupSettingsRequestIQ;
-import com.xabber.xmpp.groups.status.GroupSetStatusRequestIQ;
-import com.xabber.xmpp.groups.status.GroupStatusDataFormIQ;
-import com.xabber.xmpp.groups.status.GroupStatusFormRequestIQ;
-import com.xabber.xmpp.groups.system_message.GroupSystemMessageExtensionElement;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -45,11 +32,23 @@ import com.xabber.xmpp.avatar.DataExtension;
 import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
+import com.xabber.xmpp.groups.GroupPinMessageIQ;
+import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
+import com.xabber.xmpp.groups.create.CreateGroupchatIQ;
+import com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
+import com.xabber.xmpp.groups.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
+import com.xabber.xmpp.groups.restrictions.RequestToChangeGroupDefaultRestrictionsIQ;
+import com.xabber.xmpp.groups.settings.GroupSettingsDataFormResultIQ;
+import com.xabber.xmpp.groups.settings.GroupSettingsRequestFormQueryIQ;
+import com.xabber.xmpp.groups.settings.SetGroupSettingsRequestIQ;
+import com.xabber.xmpp.groups.status.GroupSetStatusRequestIQ;
+import com.xabber.xmpp.groups.status.GroupStatusDataFormIQ;
+import com.xabber.xmpp.groups.status.GroupStatusFormRequestIQ;
+import com.xabber.xmpp.groups.system_message.GroupSystemMessageExtensionElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.vcard.VCard;
 
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
@@ -82,8 +81,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
     private final Map<AccountJid, List<String>> customGroupServers = new HashMap<>();
 
     public static GroupsManager getInstance() {
-        if (instance == null)
-            instance = new GroupsManager();
+        if (instance == null) instance = new GroupsManager();
         return instance;
     }
 
@@ -100,10 +98,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
     public void onStanza(ConnectionItem connection, Stanza packet) {
         if (packet instanceof Presence && packet.hasExtension(GroupchatPresenceExtensionElement.NAMESPACE)) {
             processPresence(connection, packet);
-        } else if (packet instanceof DiscoverItems) {
-            processDiscoInfoIq(connection, packet);
-        }
-
+        } else if (packet instanceof DiscoverItems) processDiscoInfoIq(connection, packet);
     }
 
     private void processDiscoInfoIq(ConnectionItem connectionItem, Stanza packet) {
@@ -219,7 +214,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
     public void sendCreateGroupchatRequest(AccountJid accountJid, String server, String groupName, String description,
                                            String localpart, GroupMembershipType membershipType,
                                            GroupIndexType indexType, GroupPrivacyType privacyType,
-                                           CreateGroupchatIqResultListener listener) {
+                                           BaseIqResultUiListener listener) {
         CreateGroupchatIQ iq = new CreateGroupchatIQ(accountJid.getFullJid(),
                 server, groupName, localpart, description, membershipType, privacyType, indexType);
 
@@ -245,24 +240,18 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                                     createdGroup.setMembershipType(membershipType);
                                     createdGroup.setPrivacyType(privacyType);
 
-                                    listener.onSuccessfullyCreated(accountJid, contactJid);
+                                    listener.onResult();
                                 } catch (Exception e) {
                                     LogManager.exception(LOG_TAG, e);
-                                    listener.onOtherError();
+                                    listener.onOtherError(e);
                                 }
                             }
 
                         }
-                    }, exception -> {
-                        LogManager.exception(LOG_TAG, exception);
-                        if (exception instanceof XMPPException.XMPPErrorException
-                                && ((XMPPException.XMPPErrorException) exception).getXMPPError().getStanza().toXML()
-                                    .toString().contains("conflict")) {
-                            listener.onJidConflict();
-                        } else listener.onOtherError();
-                    });
+                    }, listener);
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
+            listener.onOtherError(e);
         }
 
     }
