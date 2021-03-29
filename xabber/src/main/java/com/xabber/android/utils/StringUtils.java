@@ -16,6 +16,7 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 import android.icu.text.Transliterator;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -416,8 +417,9 @@ public class StringUtils {
     }
 
     public static String translitirateToLatin(String string){
-        //TODO add detecting language and make this more flexible
-        return Transliterator.getInstance("Cyrillic-Latin").transliterate(string);
+        if (Build.VERSION.SDK_INT > 29){
+            return Transliterator.getInstance("Any-Eng").transliterate(string);
+        } else return "";
     }
 
 }
