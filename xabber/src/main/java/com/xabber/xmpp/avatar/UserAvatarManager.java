@@ -1,6 +1,7 @@
 package com.xabber.xmpp.avatar;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
@@ -62,7 +63,6 @@ public final class UserAvatarManager extends Manager {
 
     private final AvatarMetadataStore metadataStore = new AvatarMetadataStore();
     private final Set<String> groupchatMemberAvatarRequests = new ConcurrentSkipListSet<>();
-
 
     /**
      * Get the singleton instance of UserAvatarManager.
@@ -181,7 +181,6 @@ public final class UserAvatarManager extends Manager {
     }
 
     public byte[] fetchAvatarFromUrl(URL url, int length) {
-
         try {
             InputStream is = url.openConnection().getInputStream();
 
@@ -198,31 +197,76 @@ public final class UserAvatarManager extends Manager {
             return  baos.toByteArray();
 
         } catch (Exception e) {
-            LogManager.exception(LOG_TAG + " Url: " + url.toString(), e);
+            LogManager.exception(LOG_TAG, e);
         }
         return null;
     }
 
+    public void requestContactPubsubAvatar(ContactJid contactJid){
+        try{
+            ItemsExtension items = new ItemsExtension(ItemsExtension.ItemsElementType.items, METADATA_NAMESPACE,
+                    Collections.singletonList(new Item()));
+            PubSub avatarRequest = PubSub.createPubsubPacket(contactJid.getBareJid(), IQ.Type.get, items, null);
+            PubSub reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow(120000);
+            ItemsExtension receivedItems = reply.getExtension(PubSubElementType.ITEMS);
+            for (ExtensionElement itm : (receivedItems).getExtensions()) {
+                if (!(itm instanceof PayloadItem<?>)) continue;
+
+                PayloadItem<?> payloadItem = (PayloadItem<?>) itm;
+                if ((payloadItem.getPayload() instanceof MetadataExtension)) {
+                    MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
+                    if (metadataExtension.getInfoElements() == null) {
+                        //save as empty bitmap
+                        AvatarManager.getInstance().onAvatarReceived(contactJid.getJid(), "", null, "xep");
+
+                    } else for (MetadataInfo info : metadataExtension.getInfoElements()) {
+                        if (metadataStore.hasAvatarAvailable(contactJid.getBareJid().asEntityBareJidIfPossible(), info.getId())) {
+                            AvatarManager am = AvatarManager.getInstance();
+                            // If we have a locally saved copy of the avatar, check if its hash
+                            // matches the hash of the current PEP-avatar(XEP-0084)
+                            // and if not, set it as the current one.
+                            if (am.getCurrentXEPHash(contactJid.getJid()) != null) {
+                                if (am.getCurrentXEPHash(contactJid.getJid()).equals(info.getId()))
+                                    continue;
+                                am.setXEPHashAsCurrent(contactJid.getJid(), info.getId());
+                            }
+                        }
+                        try {
+                            byte[] avatar = info.getUrl() != null ?
+                                    fetchAvatarFromUrl(info.getUrl(), info.getBytes()) :
+                                    fetchAvatarFromPubSub(contactJid.getJid().asEntityBareJidIfPossible(), info);
+
+                            if (avatar == null) continue;
+                            String sh1 = info.getId();
+                            metadataStore.setAvatarAvailable(contactJid.getJid().asEntityBareJidIfPossible(), info.getId());
+                            AvatarManager.getInstance().onAvatarReceived(contactJid.getJid(), sh1, avatar, "xep");
+                        } catch (Exception e) {
+                            LogManager.exception(LOG_TAG, e);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e){
+            LogManager.exception(LOG_TAG, e);
+        }
+    }
+
     public void requestAvatarOfGroupchatMember(GroupMember groupMember) {
-        if (groupMember == null
-                || groupMember.getGroupJid() == null
-                || groupMember.getAvatarHash() == null) {
-            return;
-        }
-        if (groupchatMemberAvatarRequests.contains(groupMember.getAvatarHash())) {
-            return;
-        }
+        if (groupMember == null || groupMember.getGroupJid() == null || groupMember.getAvatarHash() == null) return;
+        if (groupchatMemberAvatarRequests.contains(groupMember.getAvatarHash())) return;
+
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             String avatarHash = groupMember.getAvatarHash();
-            if (groupchatMemberAvatarRequests.contains(avatarHash)) {
-                return;
-            }
+            if (groupchatMemberAvatarRequests.contains(avatarHash)) return;
+
             groupchatMemberAvatarRequests.add(avatarHash);
 
-            ItemsExtension itemsExtension =
-                    new ItemsExtension(ItemsExtension.ItemsElementType.items,
-                            (DATA_NAMESPACE + "#" + groupMember.getId()),
-                            Collections.singletonList(new Item(avatarHash)));
+            ItemsExtension itemsExtension = new ItemsExtension(
+                    ItemsExtension.ItemsElementType.items,
+                    (DATA_NAMESPACE + "#" + groupMember.getId()),
+                    Collections.singletonList(new Item(avatarHash)));
+
             BareJid groupchatJid = null;
             try {
                 groupchatJid = JidCreate.bareFrom(groupMember.getGroupJid());
@@ -246,9 +290,8 @@ public final class UserAvatarManager extends Manager {
 
             ItemsExtension receivedItems = reply.getExtension(PubSubElementType.ITEMS);
             for (ExtensionElement itm : (receivedItems).getExtensions()) {
-                if (!(itm instanceof PayloadItem<?>)) {
-                    continue;
-                }
+                if (!(itm instanceof PayloadItem<?>)) continue;
+
                 PayloadItem<?> payloadItem = (PayloadItem<?>) itm;
                 if ((payloadItem.getPayload() instanceof DataExtension)) {
                     DataExtension data = (DataExtension) payloadItem.getPayload();

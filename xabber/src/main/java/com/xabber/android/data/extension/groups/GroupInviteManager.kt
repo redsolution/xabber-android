@@ -23,6 +23,7 @@ import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener
 import com.xabber.android.ui.OnMessageUpdatedListener
 import com.xabber.android.ui.OnNewMessageListener
 import com.xabber.android.ui.forEachOnUi
+import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.invite.incoming.DeclineGroupInviteIQ
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement
 import com.xabber.xmpp.groups.invite.outgoing.*
@@ -67,6 +68,8 @@ object GroupInviteManager: OnLoadListener {
                 }
                 ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
+                UserAvatarManager.getInstanceFor(AccountManager.getInstance().getAccount(account)?.connection)
+                        .requestContactPubsubAvatar(groupContactJid);
             }
         } catch (e: Exception) {
             LogManager.exception(LOG_TAG, e)
