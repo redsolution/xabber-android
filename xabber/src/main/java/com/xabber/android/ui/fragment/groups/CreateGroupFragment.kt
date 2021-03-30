@@ -195,7 +195,7 @@ class CreateGroupFragment: CircleEditorFragment(), BaseIqResultUiListener, Accou
 
     }
 
-    private fun getLocalpartHintByString(string: String?): String? {
+    private fun getLocalpartHintByString(string: String?): String {
         val transliterated = StringUtils.translitirateToLatin(string)
         val result = StringBuilder()
         for (c in transliterated) {

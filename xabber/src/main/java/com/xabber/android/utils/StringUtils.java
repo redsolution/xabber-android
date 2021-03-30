@@ -41,6 +41,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import static net.gcardone.junidecode.Junidecode.*;
+
 /**
  * Helper class to perform different actions with strings
  *
@@ -417,9 +419,7 @@ public class StringUtils {
     }
 
     public static String translitirateToLatin(String string){
-        if (Build.VERSION.SDK_INT > 29){
-            return Transliterator.getInstance("Any-Eng").transliterate(string);
-        } else return "";
+        return unidecode(string);
     }
 
 }
