@@ -12,9 +12,6 @@ import java.net.URL;
  */
 public class MetadataInfo {
 
-    public static final int MAX_HEIGHT = 65536;
-    public static final int MAX_WIDTH = 65536;
-
     private final String id;
     private final URL url;
     private final Integer bytes;
@@ -33,27 +30,20 @@ public class MetadataInfo {
      * @param pixelsWidth width of the image in pixels
      */
     public MetadataInfo(String id, URL url, long bytes, String type, int pixelsHeight, int pixelsWidth) {
-        /*this.id = StringUtils.requireNotNullNorEmpty(id, "ID is required.")*/;
         this.id = StringUtils.requireNotNullOrEmpty(id, "ID is required.");
         this.url = url;
         this.bytes = longToIntConverter(bytes);
-        this.type = type; //StringUtils.requireNotNullOrEmpty(type, "Content Type is required.");
-        //if (pixelsHeight < 0 || pixelsHeight > MAX_HEIGHT) {
-        //    throw new IllegalArgumentException("Image height value must be between 0 and 65536.");
-        //}
-        //if (pixelsWidth < 0 || pixelsWidth > MAX_WIDTH) {
-        //    throw new IllegalArgumentException("Image width value must be between 0 and 65536.");
-        //}
+        this.type = type;
         this.height = (short) pixelsHeight;
         this.width = (short) pixelsWidth;
     }
 
     public Integer longToIntConverter(long bytes) {
-        if (bytes <= Integer.MAX_VALUE && bytes > 0)
+        if (bytes <= Integer.MAX_VALUE && bytes > 0) {
             return (int) bytes;
-        else if (bytes > Integer.MAX_VALUE)
+        } else if (bytes > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
-        else return 0;
+        } else return 0;
     }
 
     /**

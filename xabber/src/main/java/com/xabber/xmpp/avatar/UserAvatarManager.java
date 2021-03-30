@@ -2,8 +2,8 @@ package com.xabber.xmpp.avatar;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.extension.groups.GroupMember;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.SmackException.NoResponseException;
@@ -35,6 +35,9 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +177,29 @@ public final class UserAvatarManager extends Manager {
             }
         }
 
+        return null;
+    }
+
+    public byte[] fetchAvatarFromUrl(URL url, int length) {
+
+        try {
+            InputStream is = url.openConnection().getInputStream();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[length];
+            int read;
+
+            while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+                baos.write(buffer, 0, read);
+            }
+
+            baos.flush();
+
+            return  baos.toByteArray();
+
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG + " Url: " + url.toString(), e);
+        }
         return null;
     }
 
@@ -354,7 +380,9 @@ public final class UserAvatarManager extends Manager {
                             }
                         }
                         try {
-                            byte[] avatar = fetchAvatarFromPubSub(from, info);
+                            byte[] avatar = info.getUrl() != null ?
+                                    fetchAvatarFromUrl(info.getUrl(), info.getBytes()) : fetchAvatarFromPubSub(from, info);
+
                             if (avatar == null) continue;
                             String sh1 = info.getId();
                             metadataStore.setAvatarAvailable(from, info.getId());

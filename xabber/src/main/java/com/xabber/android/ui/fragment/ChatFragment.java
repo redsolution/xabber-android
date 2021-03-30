@@ -2090,7 +2090,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
-            LogManager.exception("BLINKING", new Exception());
         } else {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             PresenceManager.getInstance().clearSubscriptionRequestNotification(account, user);
