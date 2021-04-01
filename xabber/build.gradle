@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 957
-        versionName '3.0.1(957)'
+        versionCode 959
+        versionName '3.0.1(959)'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -186,7 +186,7 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
 
     // ui
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4' //Apache-2.0 License
     implementation 'me.relex:circleindicator:1.2.2@aar' //Apache-2.0 License
     implementation 'com.github.bumptech.glide:glide:4.9.0' //Apache-2.0 License
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1' //MIT License
