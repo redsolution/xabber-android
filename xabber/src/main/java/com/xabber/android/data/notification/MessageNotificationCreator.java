@@ -91,7 +91,7 @@ public class MessageNotificationCreator {
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setNumber(getUnreadCount())
+                //.setNumber(getUnreadCount())
                 .setPriority((inForeground || inGracePeriod(chat)) ? NotificationCompat.PRIORITY_DEFAULT
                         : NotificationCompat.PRIORITY_HIGH);
 
