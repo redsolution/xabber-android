@@ -73,7 +73,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ORIGINAL_STANZA = "originalStanza";
         public static final String ORIGINAL_FROM = "originalFrom";
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
-        public static final String PREVIOUS_ID = "previousId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
         public static final String IS_GROUPCHAT_SYSTEM = "isGroupchatSystem";
     }
@@ -176,7 +175,6 @@ public class MessageRealmObject extends RealmObject {
     private String originalFrom;
 
     private String parentMessageId;
-    private String previousId;
     private String groupchatUserId;
     private boolean isGroupchatSystem = false;
 
@@ -354,10 +352,6 @@ public class MessageRealmObject extends RealmObject {
     public String getParentMessageId() { return parentMessageId; }
 
     public void setParentMessageId(String parentMessageId) { this.parentMessageId = parentMessageId; }
-
-    public String getPreviousId() { return previousId; }
-
-    public void setPreviousId(String previousId) { this.previousId = previousId; }
 
     public String getMarkupText() { return markupText; }
 

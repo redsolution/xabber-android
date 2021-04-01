@@ -15,7 +15,6 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
@@ -109,8 +108,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     };
 
     public static NextMamManager getInstance() {
-        if (instance == null)
-            instance = new NextMamManager();
+        if (instance == null) instance = new NextMamManager();
         return instance;
     }
 
@@ -127,7 +125,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             loadMostRecentMessages(realm, accountItem);
             startLoadingLastMessageInAllChats(accountItem);
         } else {
-            if (isNeedMigration(accountItem, realm)) runMigrationToNewArchive(accountItem, realm);
             String lastArchivedId = getLastMessageArchivedId(accountItem, realm);
             if (lastArchivedId != null) {
                 boolean historyCompleted = loadAllNewMessages(realm, accountItem, lastArchivedId);
@@ -174,7 +171,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             // load missed messages if need
             List<MessageRealmObject> messages = findMissedMessages(realm, chat);
-            if (messages != null && !messages.isEmpty() && accountItem != null) {
+            if (messages != null && !messages.isEmpty()) {
                 for (MessageRealmObject message : messages) {
                     loadMissedMessages(realm, accountItem, chat, message);
                 }
@@ -259,7 +256,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                                 IncomingInviteExtensionElement.NAMESPACE);
                                 long timestamp = 0;
                                 if (forwardedStanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                                    TimeElement timeElement = (TimeElement) forwardedStanza.getExtension(TimeElement.ELEMENT,
+                                    TimeElement timeElement = forwardedStanza.getExtension(TimeElement.ELEMENT,
                                             TimeElement.NAMESPACE);
                                     timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                                 }
@@ -408,7 +405,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         LogManager.d(LOG_TAG, "load new messages");
         List<Forwarded> messages = new ArrayList<>();
 
-        MamManager.MamQueryResult queryResult = requestRecentMessages(accountItem, null);
+        MamManager.MamQueryResult queryResult = requestRecentMessages(accountItem);
         if (queryResult != null) messages.addAll(queryResult.forwardedMessages);
 
 
@@ -422,10 +419,12 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 ArrayList<Forwarded> list = entry.getValue();
                 if (list != null) {
                     try {
-                        AbstractChat chat = ChatManager.getInstance().getChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                        AbstractChat chat = ChatManager.getInstance().getChat(
+                                accountItem.getAccount(), ContactJid.from(entry.getKey()));
+
                         if (chat == null){
-                            chat = ChatManager.getInstance()
-                                    .createRegularChat(accountItem.getAccount(), ContactJid.from(entry.getKey()));
+                            chat = ChatManager.getInstance().createRegularChat(
+                                    accountItem.getAccount(), ContactJid.from(entry.getKey()));
                         }
 
                         int oldSize = parsedMessages.size();
@@ -466,7 +465,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 //            ArrayList<Jid> archiveAdresses;
 //            for (AbstractChat abstractChat : ChatManager.getInstance().getChats())
 
-            MamManager.MamQueryResult queryResult = requestMessagesFromId(accountItem, null, id);
+            MamManager.MamQueryResult queryResult = requestMessagesFromId(accountItem, id);
             if (queryResult != null) {
                 messages.addAll(queryResult.forwardedMessages);
                 complete = queryResult.mamFin.isComplete();
@@ -541,10 +540,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         LogManager.d(LOG_TAG, "load next history in chat: " + chat.getContactJid());
         MessageRealmObject firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
-            if (firstMessage.getStanzaId().equals(firstMessage.getPreviousId())) {
-                chat.setHistoryIsFull();
-                return true;
-            }
 
             MamManager.MamQueryResult queryResult = requestMessagesBeforeId(accountItem, chat,
                     firstMessage.getStanzaId());
@@ -555,15 +550,13 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     List<MessageRealmObject> savedMessages = saveOrUpdateMessages(realm,
                             parseMessage(accountItem, chat.getAccount(), chat.getContactJid(), messages, null));
 
-                    if (savedMessages != null && !savedMessages.isEmpty()) {
+                    if (!savedMessages.isEmpty()) {
                         realm.beginTransaction();
-                        firstMessage.setPreviousId(savedMessages.get(savedMessages.size() - 1).getStanzaId());
                         realm.commitTransaction();
                         return false;
                     }
                 } else if (queryResult.mamFin.isComplete()) {
                     realm.beginTransaction();
-                    firstMessage.setPreviousId(firstMessage.getStanzaId());
                     realm.commitTransaction();
                 }
             }
@@ -574,7 +567,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private void loadMissedMessages(Realm realm, AccountItem accountItem, AbstractChat chat, MessageRealmObject m1) {
         LogManager.d(LOG_TAG, "load missed messages in chat: " + chat.getContactJid());
         MessageRealmObject m2 = getMessageForCloseMissedMessages(realm, m1);
-        if (m2 != null && !m2.getPrimaryKey().equals(m1.getPrimaryKey())) {
+        if (m2 != null && !m2.getStanzaId().equals(m1.getStanzaId())) {
             Date startDate = new Date(m2.getTimestamp());
             Date endDate = new Date(m1.getTimestamp());
 
@@ -594,15 +587,13 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 List<MessageRealmObject> savedMessages = saveOrUpdateMessages(realm,
                         parseMessage(accountItem, chat.getAccount(), chat.getContactJid(), messages, m2.getStanzaId()));
 
-                if (savedMessages != null && !savedMessages.isEmpty()) {
+                if (!savedMessages.isEmpty()) {
                     realm.beginTransaction();
-                    m1.setPreviousId(savedMessages.get(savedMessages.size() - 1).getStanzaId());
                     realm.commitTransaction();
                 }
 
             } else {
                 realm.beginTransaction();
-                m1.setPreviousId(m2.getStanzaId());
                 realm.commitTransaction();
             }
         }
@@ -626,7 +617,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                                     IncomingInviteExtensionElement.NAMESPACE);
                     long timestamp = 0;
                     if (forwardedStanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
-                        TimeElement timeElement = (TimeElement) forwardedStanza.getExtension(TimeElement.ELEMENT,
+                        TimeElement timeElement = forwardedStanza.getExtension(TimeElement.ELEMENT,
                                 TimeElement.NAMESPACE);
                         timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
                     }
@@ -700,14 +691,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         });
     }
 
-    private @Nullable MamManager.MamQueryResult requestRecentMessages(@NonNull AccountItem accountItem,
-                                                                      @Nullable final AbstractChat chat) {
+    private @Nullable MamManager.MamQueryResult requestRecentMessages(@NonNull AccountItem accountItem) {
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                if (chat != null) {
-                    return manager.mostRecentPage(chat.getContactJid().getJid(), 50);
-                } else return manager.mostRecentPage(null, 50);
+                return manager.mostRecentPage(null, 50);
             }
         });
     }
@@ -763,14 +751,11 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     /** Request messages after archivedID from chat history
     *  Else request messages after archivedID from all history */
     private @Nullable MamManager.MamQueryResult requestMessagesFromId(@NonNull AccountItem accountItem,
-                                                                      @Nullable final AbstractChat chat,
                                                                       final String archivedId) {
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                if (chat != null) {
-                    return manager.pageAfter(chat.getContactJid().getJid(), archivedId, 50);
-                } else return manager.pageAfter(null, archivedId, 50);
+                return manager.pageAfter(null, archivedId, 50);
             }
         });
     }
@@ -831,8 +816,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             AbstractChat chat = ChatManager.getInstance().getChat(account, ContactJid.from(user));
             if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, ContactJid.from(user));
 
-            MessageRealmObject messageRealmObject = parseMessage(accountItem, account, chat.getContactJid(), forwarded,
-                    null);
+            MessageRealmObject messageRealmObject =
+                    parseMessage(accountItem, account, chat.getContactJid(), forwarded, null);
             if (messageRealmObject != null) {
                 saveOrUpdateMessages(realm, Collections.singletonList(messageRealmObject), true);
                 updateLastMessageId(chat, realm);
@@ -946,8 +931,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         if (stanzaId != null ) messageRealmObject.setStanzaId(stanzaId);
 
-        messageRealmObject.setPreviousId(prevID);
-
         long timestamp = delayInformation.getStamp().getTime();
 
         messageRealmObject.setResource(user.getJid().getResourceOrNull());
@@ -1017,7 +1000,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private MessageRealmObject determineSaveOrUpdate(Realm realm, final MessageRealmObject message, boolean ui) {
         Message originalMessage = null;
         try {
-            originalMessage = (Message) PacketParserUtils.parseStanza(message.getOriginalStanza());
+            originalMessage = PacketParserUtils.parseStanza(message.getOriginalStanza());
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
             LogManager.e(LOG_TAG, message.getOriginalStanza());
@@ -1031,7 +1014,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
             // forwarded
             if (originalMessage != null) {
-                RealmList<ForwardIdRealmObject> forwardIdRealmObjects = chat.parseForwardedMessage(ui, originalMessage, message.getPrimaryKey());
+                RealmList<ForwardIdRealmObject> forwardIdRealmObjects =
+                        chat.parseForwardedMessage(ui, originalMessage, message.getPrimaryKey());
+
                 if (forwardIdRealmObjects != null && !forwardIdRealmObjects.isEmpty()) {
                     message.setForwardedIds(forwardIdRealmObjects);
                 }
@@ -1045,7 +1030,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     && chat.notifyAboutMessage();
             boolean visible = ChatManager.getInstance().isVisibleChat(chat);
             if (notify && !visible) NotificationManager.getInstance().onMessageNotification(message);
-            //
+
             return message;
         } else {
             LogManager.d(LOG_TAG, "Matching message found! Updating message");
@@ -1110,7 +1095,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .isNull(MessageRealmObject.Fields.PREVIOUS_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING);
 
@@ -1132,14 +1116,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (results != null && !results.isEmpty()) {
             return results.first();
         } else return null;
-    }
-
-    private boolean isNeedMigration(AccountItem account, Realm realm) {
-        MessageRealmObject result = realm.where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.getAccount().toString())
-                .notEqualTo(MessageRealmObject.Fields.PREVIOUS_ID, "legacy")
-                .findFirst();
-        return result == null;
     }
 
     private boolean historyIsNotEnough(Realm realm, AbstractChat chat) {
@@ -1170,19 +1146,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
-
-        if (results != null && !results.isEmpty()) {
-            return results.first();
-        } else return null;
-    }
-
-    private MessageRealmObject getFirstMessageForMigration(AbstractChat chat, Realm realm) {
-        RealmResults<MessageRealmObject> results = realm.where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.getContactJid().toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
@@ -1236,25 +1199,4 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .findFirst();
     }
 
-    private void runMigrationToNewArchive(AccountItem accountItem, Realm realm) {
-        LogManager.d(LOG_TAG, "run migration for account: " + accountItem.getAccount().toString());
-        Collection<RosterContact> contacts = RosterManager.getInstance()
-                .getAccountRosterContacts(accountItem.getAccount());
-
-        for (RosterContact contact : contacts) {
-            AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
-
-            MessageRealmObject firstMessage = getFirstMessageForMigration(chat, realm);
-            SyncInfoRealmObject syncInfoRealmObject = realm.where(SyncInfoRealmObject.class)
-                    .equalTo(SyncInfoRealmObject.Fields.FIELD_ACCOUNT, accountItem.getAccount().toString())
-                    .equalTo(SyncInfoRealmObject.Fields.FIELD_USER, chat.getContactJid().toString()).findFirst();
-
-            if (firstMessage != null && syncInfoRealmObject != null) {
-                realm.beginTransaction();
-                //firstMessage.setArchivedId(syncInfoRealmObject.getFirstMamMessageMamId()); todo pay attention
-                firstMessage.setPreviousId(null);
-                realm.commitTransaction();
-            }
-        }
-    }
 }

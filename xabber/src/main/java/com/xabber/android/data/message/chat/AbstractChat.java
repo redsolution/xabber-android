@@ -429,7 +429,6 @@ public abstract class AbstractChat extends BaseEntity implements
         if (this.notifyAboutMessage()) this.archived = false;
 
         // update last id in chat
-        messageRealmObject.setPreviousId(getLastMessageId());
         setLastMessageId(messageRealmObject.getStanzaId());
 
         // groupchat
