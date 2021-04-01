@@ -1,6 +1,6 @@
 package com.xabber.xmpp.groups.block.blocklist;
 
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 
 import org.jivesoftware.smack.packet.IQ;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class GroupchatBlocklistResultIQ extends IQ {
 
-    public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE
+    public static final String NAMESPACE = GroupExtensionElement.NAMESPACE
             + GroupchatBlocklistQueryIQ.HASH_BLOCK;
     public static final String ELEMENT = QUERY_ELEMENT;
     public static final String ELEMENT_JID = GroupMemberExtensionElement.ELEMENT_JID;

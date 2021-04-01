@@ -43,7 +43,6 @@ import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -55,7 +54,7 @@ import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
@@ -390,7 +389,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             return;
         }
 
-        if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)
+        if (stanza.hasExtension(GroupExtensionElement.NAMESPACE)
                 && ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
             AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
             if (abstractChat instanceof RegularChat){
@@ -471,7 +470,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 }
                 return;
             }
-            if (stanza.hasExtension(GroupchatExtensionElement.NAMESPACE)){
+            if (stanza.hasExtension(GroupExtensionElement.NAMESPACE)){
                 ChatManager.getInstance().createGroupChat(account, contactJid).onPacket(contactJid, stanza, false);
             } else ChatManager.getInstance().createRegularChat(account, contactJid).onPacket(contactJid, stanza, false);
         }
@@ -561,7 +560,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
                 newMessageRealmObject.setStanzaId(
                         UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
-            } else if (message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
+            } else if (message.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
                 newMessageRealmObject.setGroupchatSystem(true);
                 newMessageRealmObject.setStanzaId(
                         UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));

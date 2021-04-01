@@ -345,7 +345,7 @@ public class TestApplication extends android.app.Application {
         addManager(CarbonManager.getInstance());
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
-        addManager(NextMamManager.getInstance());
+        addManager(NextMamManager.INSTANCE);
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
         addManager(PushManager.getInstance());

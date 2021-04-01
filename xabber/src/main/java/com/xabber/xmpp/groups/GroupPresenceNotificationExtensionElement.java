@@ -1,13 +1,13 @@
 package com.xabber.xmpp.groups;
 
-public class GroupchatPresenceNotificationExtensionElement extends GroupchatExtensionElement {
+public class GroupPresenceNotificationExtensionElement extends GroupExtensionElement {
 
     private static final String NOTIFICATION_PRESENT = "#present";
     private static final String NOTIFICATION_NOT_PRESENT = "#not-present";
 
     private boolean isPresent;
 
-    public GroupchatPresenceNotificationExtensionElement(boolean isPresent) {
+    public GroupPresenceNotificationExtensionElement(boolean isPresent) {
         this.isPresent = isPresent;
     }
 

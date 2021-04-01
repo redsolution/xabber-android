@@ -1099,7 +1099,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
             AccountRepository.saveAccountToRealm(accountItem);
-            NextMamManager.getInstance().onRequestUpdatePreferences(accountJid);
+            NextMamManager.INSTANCE.onRequestUpdatePreferences(accountJid);
         }
     }
 

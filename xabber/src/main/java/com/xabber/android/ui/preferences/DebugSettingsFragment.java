@@ -88,10 +88,11 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
             for (AbstractChat chat : chats) {
                 setDownloadProgress(totalArchives, downloadedArchives);
-                NextMamManager.getInstance().loadFullChatHistory(chat);
+                NextMamManager.INSTANCE.loadFullChatHistory(chat);
                 downloadedArchives++;
             }
             closeDownloadArchiveDialog();
         });
     }
+
 }

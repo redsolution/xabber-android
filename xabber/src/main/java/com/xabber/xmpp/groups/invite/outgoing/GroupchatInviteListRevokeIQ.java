@@ -1,6 +1,6 @@
 package com.xabber.xmpp.groups.invite.outgoing;
 
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.android.data.message.chat.GroupChat;
 
 import org.jivesoftware.smack.packet.IQ;
@@ -8,7 +8,7 @@ import org.jivesoftware.smack.packet.IQ;
 public class GroupchatInviteListRevokeIQ extends IQ {
 
     public static final String ELEMENT = "revoke";
-    public static final String NAMESPACE = GroupchatExtensionElement.NAMESPACE + "#invite";
+    public static final String NAMESPACE = GroupExtensionElement.NAMESPACE + "#invite";
     public static final String SUB_ELEMENT_JID = "jid";
 
     private final String inviteJid;

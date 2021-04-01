@@ -16,7 +16,7 @@ import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -151,7 +151,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     timestamp = receipt.getTimeElement().getStamp();
                     originId = receipt.getOriginIdElement().getId();
                     stanzaId = receipt.getStanzaIdElement().getId();
-                } else if (stanza.hasExtension(GroupchatExtensionElement.ELEMENT, NAMESPACE)) {
+                } else if (stanza.hasExtension(GroupExtensionElement.ELEMENT, NAMESPACE)) {
                     StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
                     Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
                     originId = UniqueIdsHelper.getOriginId(message);

@@ -15,8 +15,6 @@
 package com.xabber.android.utils;
 
 import android.content.Context;
-import android.icu.text.Transliterator;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +23,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
+import com.xabber.xmpp.groups.GroupPresenceExtensionElement;
 
 import java.text.CharacterIterator;
 import java.text.DateFormat;
@@ -302,7 +300,7 @@ public class StringUtils {
      *  with the amount of members and online members.
      *  Not to be mistaken with the stanza status value.
      */
-    public static String getDisplayStatusForGroupchat(GroupchatPresenceExtensionElement groupchatPresenceExtensionElement, Context context) {
+    public static String getDisplayStatusForGroupchat(GroupPresenceExtensionElement groupchatPresenceExtensionElement, Context context) {
         int members = groupchatPresenceExtensionElement.getAllMembers();
         int online = groupchatPresenceExtensionElement.getPresentMembers();
         return getDisplayStatusForGroupchat(members, online, context);

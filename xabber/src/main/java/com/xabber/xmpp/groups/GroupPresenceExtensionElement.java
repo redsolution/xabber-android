@@ -6,7 +6,7 @@ import com.xabber.android.data.extension.groups.GroupPrivacyType;
 
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
-public class GroupchatPresenceExtensionElement extends GroupchatExtensionElement {
+public class GroupPresenceExtensionElement extends GroupExtensionElement {
 
 
     public static final String NAME = "name";
@@ -35,7 +35,7 @@ public class GroupchatPresenceExtensionElement extends GroupchatExtensionElement
     private int presentMembers;
     private int allMembers;
 
-    public GroupchatPresenceExtensionElement() {
+    public GroupPresenceExtensionElement() {
     }
 
     public String getName() {

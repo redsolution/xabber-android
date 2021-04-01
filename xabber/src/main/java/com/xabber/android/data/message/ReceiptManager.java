@@ -28,7 +28,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
 import org.jivesoftware.smack.XMPPConnectionRegistry;
@@ -81,8 +81,8 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
 
         final Message message = (Message) packet;
 
-        boolean isGroup = message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
-                || message.hasExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
+        boolean isGroup = message.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
+                || message.hasExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
 
         if (message.getType() == Message.Type.error) {
             if (message.getError().getCondition().equals(XMPPError.Condition.service_unavailable)){

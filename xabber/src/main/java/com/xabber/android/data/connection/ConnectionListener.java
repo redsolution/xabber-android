@@ -103,7 +103,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "connectionClosed");
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
-        NextMamManager.getInstance().resetContactHistoryIterator(connectionItem.getAccount());
+        NextMamManager.INSTANCE.resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(() -> {
@@ -120,7 +120,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
-        NextMamManager.getInstance().resetContactHistoryIterator(connectionItem.getAccount());
+        NextMamManager.INSTANCE.resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
         connectionItem.refreshPingFailedListener(false);
 

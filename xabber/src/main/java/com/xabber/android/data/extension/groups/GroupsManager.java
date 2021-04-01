@@ -33,7 +33,7 @@ import com.xabber.xmpp.avatar.MetadataExtension;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.groups.GroupPinMessageIQ;
-import com.xabber.xmpp.groups.GroupchatPresenceExtensionElement;
+import com.xabber.xmpp.groups.GroupPresenceExtensionElement;
 import com.xabber.xmpp.groups.create.CreateGroupchatIQ;
 import com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsDataFormResultIQ;
 import com.xabber.xmpp.groups.restrictions.RequestGroupDefaultRestrictionsDataFormIQ;
@@ -96,7 +96,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (packet instanceof Presence && packet.hasExtension(GroupchatPresenceExtensionElement.NAMESPACE)) {
+        if (packet instanceof Presence && packet.hasExtension(GroupPresenceExtensionElement.NAMESPACE)) {
             processPresence(connection, packet);
         } else if (packet instanceof DiscoverItems) processDiscoInfoIq(connection, packet);
     }
@@ -127,7 +127,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
 
     private void processPresence(ConnectionItem connection, Stanza packet) {
         try {
-            GroupchatPresenceExtensionElement presence = (GroupchatPresenceExtensionElement) packet.getExtension(GroupchatPresenceExtensionElement.NAMESPACE);
+            GroupPresenceExtensionElement presence = (GroupPresenceExtensionElement) packet.getExtension(GroupPresenceExtensionElement.NAMESPACE);
 
             AccountJid accountJid = AccountJid.from(packet.getTo().toString());
             ContactJid contactJid = ContactJid.from(packet.getFrom());
@@ -151,7 +151,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
                 if (pinnedMessage == null || pinnedMessage.getTimestamp() == null) {
 
-                    NextMamManager.getInstance().requestSingleMessageAsync(connection,
+                    NextMamManager.INSTANCE.requestSingleMessageAsync(connection,
                             groupChat, presence.getPinnedMessageId());
                 }
                 groupChat.setPinnedMessageId(presence.getPinnedMessageId());

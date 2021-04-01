@@ -1,9 +1,9 @@
 package com.xabber.xmpp.groups.system_message
 
-import com.xabber.xmpp.groups.GroupchatExtensionElement
+import com.xabber.xmpp.groups.GroupExtensionElement
 import org.jivesoftware.smack.packet.ExtensionElement
 
-class GroupSystemMessageExtensionElement: GroupchatExtensionElement() {
+class GroupSystemMessageExtensionElement: GroupExtensionElement() {
 
     var type: Type = Type.none
     val listOfExtensions = mutableListOf<ExtensionElement>()

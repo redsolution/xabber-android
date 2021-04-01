@@ -869,7 +869,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onStart() {
         super.onStart();
-        NextMamManager.getInstance().onChatOpen(getChat());
+        NextMamManager.INSTANCE.onChatOpen(getChat());
     }
 
     @Override
@@ -1153,7 +1153,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             int invisibleMessagesCount = layoutManager.findFirstVisibleItemPosition();
             if (invisibleMessagesCount <= 15) {
                 AbstractChat chat = getChat();
-                if (chat != null) NextMamManager.getInstance().onScrollInChat(chat);
+                if (chat != null) NextMamManager.INSTANCE.onScrollInChat(chat);
             }
         }
     }

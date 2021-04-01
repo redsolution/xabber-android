@@ -54,7 +54,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     }
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
-        Boolean supported = NextMamManager.getInstance().isSupported(account);
+        Boolean supported = NextMamManager.INSTANCE.isSupported(account);
         if (supported == null) {
             mamPreference.setEnabled(false);
             mamPreference.setSummary(getString(R.string.account_chat_history_unknown));

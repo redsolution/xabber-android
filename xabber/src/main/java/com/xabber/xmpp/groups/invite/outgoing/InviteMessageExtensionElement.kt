@@ -1,7 +1,7 @@
 package com.xabber.xmpp.groups.invite.outgoing
 
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.xmpp.groups.GroupchatExtensionElement
+import com.xabber.xmpp.groups.GroupExtensionElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
@@ -21,7 +21,7 @@ class InviteMessageExtensionElement(private val groupJid: ContactJid, private va
 
     companion object{
         const val ELEMENT = "invite"
-        const val NAMESPACE = GroupchatExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE
+        const val NAMESPACE = GroupExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE
         const val ATTRIBUTE_JID = "jid"
         const val ELEMENT_REASON = "reason"
     }

@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
-import com.xabber.xmpp.groups.GroupchatMemberContainerExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -132,9 +132,9 @@ public class ReferencesManager {
             }
         }
 
-        List<ExtensionElement> groupchatElements = message.getExtensions(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
+        List<ExtensionElement> groupchatElements = message.getExtensions(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         for (ExtensionElement groupchatElement : groupchatElements) {
-            if (groupchatElement instanceof GroupchatMemberContainerExtensionElement) {
+            if (groupchatElement instanceof GroupMemberContainerExtensionElement) {
                 return true;
             }
         }
@@ -171,10 +171,10 @@ public class ReferencesManager {
 
     @Nullable
     public static GroupMemberExtensionElement getGroupchatUserFromReferences(Stanza packet) {
-        GroupchatExtensionElement element = packet.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
+        GroupExtensionElement element = packet.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         if (element == null) return null;
-        if (element instanceof GroupchatMemberContainerExtensionElement) {
-            return ((GroupchatMemberContainerExtensionElement) element).getUser();
+        if (element instanceof GroupMemberContainerExtensionElement) {
+            return ((GroupMemberContainerExtensionElement) element).getUser();
         }
         return null;
     }
@@ -183,7 +183,7 @@ public class ReferencesManager {
         if (body == null || body.isEmpty() || body.trim().isEmpty()) return new Pair<>(body, null);
 
         List<ExtensionElement> directReferenceElements = message.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
-        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE);
+        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         if ((directReferenceElements == null || directReferenceElements.size() == 0)
                 && (groupchatWrappedElements == null || groupchatWrappedElements.size() == 0)) return new Pair<>(body, null);
 
@@ -233,8 +233,8 @@ public class ReferencesManager {
     private static List<ReferenceElement> getGroupchatUserReferences(List<ExtensionElement> elements) {
         List<ReferenceElement> references = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof GroupchatMemberContainerExtensionElement) {
-                GroupchatMemberReference userReference = ((GroupchatMemberContainerExtensionElement) element).getUserReference();
+            if (element instanceof GroupMemberContainerExtensionElement) {
+                GroupchatMemberReference userReference = ((GroupMemberContainerExtensionElement) element).getUserReference();
                 if (userReference != null) references.add(userReference);
             }
         }

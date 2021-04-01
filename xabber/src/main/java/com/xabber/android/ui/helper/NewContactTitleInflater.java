@@ -18,7 +18,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
@@ -259,9 +259,9 @@ public class NewContactTitleInflater {
 
     private static String getGroupchatStatus(AbstractContact contact, Context context) {
         Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getContactJid());
-        if (groupchatPresence != null && groupchatPresence.hasExtension(GroupchatExtensionElement.NAMESPACE)) {
+        if (groupchatPresence != null && groupchatPresence.hasExtension(GroupExtensionElement.NAMESPACE)) {
             return StringUtils.getDisplayStatusForGroupchat(
-                    groupchatPresence.getExtension(GroupchatExtensionElement.ELEMENT, GroupchatExtensionElement.NAMESPACE),
+                    groupchatPresence.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE),
                     context);
         }
         return getNormalStatus(contact);

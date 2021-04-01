@@ -32,7 +32,7 @@ import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.ui.OnNewIncomingMessageListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupchatExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
@@ -215,7 +215,7 @@ public class GroupChat extends AbstractChat {
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
 
-            boolean isSystem = packet.hasExtension(GroupchatExtensionElement.ELEMENT,
+            boolean isSystem = packet.hasExtension(GroupExtensionElement.ELEMENT,
                     GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
             // create message with file-attachments
@@ -321,7 +321,7 @@ public class GroupChat extends AbstractChat {
         text = bodies.first;
         String markupText = bodies.second;
 
-        boolean isSystem = message.hasExtension(GroupchatExtensionElement.ELEMENT,
+        boolean isSystem = message.hasExtension(GroupExtensionElement.ELEMENT,
                 GroupsManager.SYSTEM_MESSAGE_NAMESPACE);
 
         // create message with file-attachments

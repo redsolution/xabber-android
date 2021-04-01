@@ -13,12 +13,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensionElement> {
+public class GroupchatProvider extends ExtensionElementProvider<GroupExtensionElement> {
 
     @Override
-    public GroupchatExtensionElement parse(XmlPullParser parser, int initialDepth) throws Exception {
-        GroupchatMemberContainerExtensionElement user = null;
-        GroupchatPresenceExtensionElement presence;
+    public GroupExtensionElement parse(XmlPullParser parser, int initialDepth) throws Exception {
+        GroupMemberContainerExtensionElement user = null;
+        GroupPresenceExtensionElement presence;
 
         outerloop:
         while (true) {
@@ -29,12 +29,12 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                             && ReferenceElement.NAMESPACE.equals(parser.getNamespace())) {
                         GroupchatMemberReference referenceWrapperUser = parseGroupUserReference(parser);
                         if (referenceWrapperUser != null)
-                            user = new GroupchatMemberContainerExtensionElement(referenceWrapperUser);
+                            user = new GroupMemberContainerExtensionElement(referenceWrapperUser);
                         return user;
                     } else {
                         String name = parser.getName();
                         if (name != null) {
-                            for (String field : GroupchatPresenceExtensionElement.presenceFields) {
+                            for (String field : GroupPresenceExtensionElement.presenceFields) {
                                 if(name.equals(field)) {
                                     presence = parseGroupPresence(parser);
                                     return presence;
@@ -45,8 +45,8 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                     parser.next();
                     break;
                 case XmlPullParser.END_TAG:
-                    if (GroupchatExtensionElement.ELEMENT.equals(parser.getName())
-                            && GroupchatExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
+                    if (GroupExtensionElement.ELEMENT.equals(parser.getName())
+                            && GroupExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
                         break outerloop;
                     } else parser.next();
                     break;
@@ -71,8 +71,8 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
         }
     }
 
-    private GroupchatPresenceExtensionElement parseGroupPresence(XmlPullParser parser) throws XmlPullParserException, IOException {
-        GroupchatPresenceExtensionElement presence = new GroupchatPresenceExtensionElement();
+    private GroupPresenceExtensionElement parseGroupPresence(XmlPullParser parser) throws XmlPullParserException, IOException {
+        GroupPresenceExtensionElement presence = new GroupPresenceExtensionElement();
         int initialDepth = parser.getDepth() - 1;
 
         innerloop:
@@ -82,40 +82,40 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupchatExtensi
                 case XmlPullParser.START_TAG:
                     String name = parser.getName();
                     switch (name) {
-                        case GroupchatPresenceExtensionElement.NAME:
+                        case GroupPresenceExtensionElement.NAME:
                             presence.setName(parser.nextText());
                             break;
-                        case GroupchatPresenceExtensionElement.DESCRIPTION:
+                        case GroupPresenceExtensionElement.DESCRIPTION:
                             presence.setDescription(parser.nextText());
                             break;
-                        case GroupchatPresenceExtensionElement.COLLECT:
+                        case GroupPresenceExtensionElement.COLLECT:
                             presence.setCollect("yes".equals(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.MEMBERS:
+                        case GroupPresenceExtensionElement.MEMBERS:
                             presence.setAllMembers(Integer.parseInt(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.PEER_TO_PEER:
+                        case GroupPresenceExtensionElement.PEER_TO_PEER:
                             presence.setP2p("true".equals(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.PINNED_MESSAGE:
+                        case GroupPresenceExtensionElement.PINNED_MESSAGE:
                             presence.setPinnedMessageId(parser.nextText());
                             break;
-                        case GroupchatPresenceExtensionElement.PRESENT:
+                        case GroupPresenceExtensionElement.PRESENT:
                             presence.setPresentMembers(Integer.parseInt(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.PRIVACY:
+                        case GroupPresenceExtensionElement.PRIVACY:
                             presence.setPrivacy(GroupPrivacyType
                                     .fromXml(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.MEMBERSHIP:
+                        case GroupPresenceExtensionElement.MEMBERSHIP:
                             presence.setMembership(GroupMembershipType
                                     .fromXml(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.INDEX:
+                        case GroupPresenceExtensionElement.INDEX:
                             presence.setIndex(GroupIndexType
                                     .fromXml(parser.nextText()));
                             break;
-                        case GroupchatPresenceExtensionElement.STATUS:
+                        case GroupPresenceExtensionElement.STATUS:
                             presence.setStatus(parser.nextText());
                             break;
                         default:

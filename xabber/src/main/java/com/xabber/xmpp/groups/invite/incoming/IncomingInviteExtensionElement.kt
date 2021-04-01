@@ -3,6 +3,7 @@ package com.xabber.xmpp.groups.invite.incoming
 import com.xabber.android.data.extension.groups.GroupsManager
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.NamedElement
+import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.util.XmlStringBuilder
 
 class IncomingInviteExtensionElement: ExtensionElement {
@@ -79,3 +80,9 @@ class IncomingInviteExtensionElement: ExtensionElement {
     }
 
 }
+
+fun Stanza.hasIncomingInviteExtension() =
+        this.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)
+
+fun Stanza.getIncomingInviteExtension() : IncomingInviteExtensionElement? =
+        this.getExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)
