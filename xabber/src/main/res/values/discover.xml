@@ -6,6 +6,6 @@
     <string name="nothing_was_searched">No results</string>
     <string name="placeholder_no_matches">No matches</string>
     <string name="placeholder_loading">Loading...</string>
-    <string name="discover__no_matches">No matches for %</string>
+    <string name="discover__no_matches">No matches for %s</string>
     <string name="discover__text_discovered_groups">Discovered %1$d groups by %2$s</string>
 </resources>

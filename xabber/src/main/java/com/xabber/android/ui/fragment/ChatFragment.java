@@ -687,7 +687,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
                         .getAccountColorWithTint(getAccount(), 600));
             } else {
-                pinnedMessageHeaderTv.setText(getString(R.string.message_by_me));
+                pinnedMessageHeaderTv.setText("Me"); //todo change to sender name
                 pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
                         .getAccountColorWithTint(getAccount(), 500));
                 pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
@@ -1561,8 +1561,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
                     RosterManager.getInstance().getBestContact(account, user).getName()));
             AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
-                    .setTitle(size == 1 ? getString(R.string.delete_message_title) : getString(R.string.delete_messages_title, String.valueOf(size)))
-                    .setMessage(size == 1 ? R.string.delete_message_question : R.string.delete_messages_question)
+                    .setTitle(getResources().getQuantityString(R.plurals.delete_message_title, size, size))
+                    .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
                             RewriteManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked()))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
@@ -1571,7 +1571,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             dialog.show();
         } else {
              new AlertDialog.Builder(getContext())
-                    .setMessage(getContext().getResources().getString(R.string.delete_messages_question))
+                    .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog12, which) -> MessageManager.getInstance().removeMessage(ids))
                     .setNegativeButton(R.string.cancel_action, (dialog1, which) -> {
                     })

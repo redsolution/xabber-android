@@ -6,7 +6,7 @@
     <string name="choose_account" comment="dialog_add__label_select_account">Select account</string>
     <string name="add_to" comment="dialog_add__label_add_to">Add to</string>
     <string name="create_to" comment="dialog_add__label_create_to">Create to</string>
-    <string name="motivating_oneliner" comment="general__text_motivating_oneliners">Ready to rock?\n
+    <string name="motivating_oneliner" comment="IMPORTANT NOTICE:&#10;&#10;This list is not meant to be translated directly line by line. Just some random memorable lines that are understood by user to create a lighthearted easy mood. &#10;&#10;It can be memes, movie quotes, game quotes, famous words, jokes, etc, easily understandable by a native speaker. This may differ in different countries and in different languages. &#10;&#10;They should not be offensive and should not put anyone in bad mood. &#10;&#10;The interface picks a random line out of this block and presents it to the user. On Android you can see it after pressing the + button, on web - after clicking several times on text input field in chat.&#10;&#10;Lines should not be too long, ideally no longer than 30 symbols. ">Ready to rock?\n
 Groovy!\n
 Be the change!\n
 Believe in yourself!\n
@@ -178,6 +178,6 @@ I don\'t need luck. I have ammo.</string>
     <string name="dialog_add_contact__error__text_no_accounts">No connected accounts found.</string>
     <string name="dialog_add_contact__error__text_input_username">Input username!</string>
     <string name="dialog_add_contact__error__text_can_not_add_youself">Can not add yourself to contacts!</string>
-    <string name="dialog_add_contact__error__text_invalid_jid">Invalid jid</string>
+    <string name="dialog_add_contact__error__text_invalid_jid">Invalid XMPP ID</string>
     <string name="dialog_add_contact__error__text_already_in_roster">Contact is already in your roster!</string>
 </resources>

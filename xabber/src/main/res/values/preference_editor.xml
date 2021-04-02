@@ -26,7 +26,7 @@
     <string name="debug_log_files_activity_title">Log files</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>
     <string name="debug_crash_reports_title">Share crash and diagnostics data\nHelp app developers improve Xabber by allowing to share crash and diagnostics data with them (please restart application to apply changes).</string>
-    <string name="debug_use_develop_api_title">Use development Xabber API\nChanges will be applied after restart</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Use development Xabber API\nChanges will be applied after restart</string>
     <string name="debug_sync_bookmarks_on_start_title">Sync bookmarks on start</string>
     <string name="debug_fetch_crowdfunding_feed_title">Fetch crowdfunding feed now</string>
     <string name="debug_crash_reports_dialog_title">Crash and diagnostics data</string>
@@ -207,11 +207,16 @@
     <string name="settings__menu_item__interface_language">Interface language</string>
     <string name="settings__dialog_change_language__header">Change Interface Language</string>
     <string name="settings__dialog_change_language__confirm">Page must be reloaded to update the interface language</string>
-    <string name="settings__section_interface_language__text_description_no_translations">If you don\'t find your
-        native language in this list, it means that %1$s is not yet translated to this language. %2$s translations are
-        provided by the community. That means that you can help us translate %3$s!</string>
-    <string name="settings__section_interface_language__text_description_translation_platform">We are using CrowdIn Localisation Management Platform. If you wish to join our translation team, just follow this %s and apply as a translator for your native language.</string>
+    <string name="settings__section_interface_language__text_description_no_translations">%1$s is not translated to the language used on this device. Translations are provided by the community, it means that you can help us translate %2$s to your native language!</string>
+    <string name="settings__section_interface_language__text_description_translation_platform">We use CrowdIn Localisation Management Platform. If you wish to join our translation team, follow this %s and apply as a translator to your native language.</string>
     <string name="settings__section_interface_language__text_description__text_link">link</string>
     <string name="settings__section_interface_language__text_description___link">https://crowdin.com/project/xabber</string>
-    <string name="settings__languages_list___item_default">Default (English)</string>
+    <string name="settings__languages_list___item_default">Default (%s)</string>
+    <string name="settings__section_interface_language__translation_progress">%s translated</string>
+    <string name="settings__section_interface_language__translation_progress_fully">Fully translated</string>
+    <string name="settings__dialog_change_language__button_change">Change &amp; reload</string>
+    <string name="settings__interface_language__text_description_full_translation">%1$s is already fully translated to the language used on this device. Translations are provided by the community. If you feel that the translation is imperfect, you can join our translation team and help us make %2$s better. </string>
+    <string name="settings__interface_language__text_description_unfull_translation">%1$s is only partially translated to the language used on this device. Translations are provided by the community, it means that you can help us translate %2$s to your native language!</string>
+    <string name="settings__interface_language__text_description_full_translation_platform">We use Crowdin Localisation Management Platform. If you wish to participate, follow this %s and apply as a translator to your native language.</string>
+    <string name="settings__interface_language__text_description_no_translation_platform">We use Crowdin Localisation Management Platform. If you wish to join our translation team, follow this %1$s, email us %2$s and we will add your native language to the list of target languages. Then you will be able to apply as a translator to your native language</string>
 </resources>

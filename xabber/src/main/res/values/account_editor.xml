@@ -8,7 +8,7 @@
     <string name="account_priority">Priority</string>
     <string name="account_resource">Resource</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">You must <a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">You must <a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
     <string name="account_user_name">Username</string>
     <string name="settings_account__alert_server_not_specified">Server name is not specified</string>
     <string name="settings_account__alert_xmpp_id_not_specified">Username is not specified</string>
@@ -49,7 +49,7 @@
     <string name="account_add__alert_no_server_info">Could not get server info.</string>
     <string name="account_add__alert_incorrect_xmpp_id">Incorrect user name</string>
     <string name="account_add__alert_invalid_domain">Incorrect user name: invalid domain</string>
-    <string name="account_add__alert_invalid_symbols_at">Incorrect user name: multiple \"@\"-symbols present</string>
+    <string name="account_add__alert_invalid_symbols_at">Incorrect user name: multiple \"@\" symbols present</string>
     <string name="account_add__alert_localpart_invalid">Incorrect user name: invalid local part</string>
     <string name="account_add__alert_localpart_absent">Incorrect user name: \"@\" is present without local part</string>
     <string name="account_add__alert_localpart_invalid_symbols">Incorrect user name: \"%s\" symbol is not accepted in the local part</string>
@@ -119,7 +119,7 @@
     <string name="account_bookmarks">Bookmarks</string>
     <string name="account_bookmarks_summary">List of bookmarks for this account</string>
     <string name="account_sync">Synchronization</string>
-    <string name="account_sync_summary">Synchronization with Xabber Account</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronization with Xabber Account</string>
     <string name="account_vcard">Profile picture, vCard</string>
     <string name="account_vcard_summary">Edit your Avatar and vCard info</string>
     <string name="avatar_successfully_published">Avatar published!</string>
@@ -144,7 +144,7 @@
     <string name="settings_account__blocklist__button_block">Block</string>
     <string name="dialog_block_xmpp_address__text">Block a specific XMPP address</string>
     <string name="dialog_block_xmpp_address__hint_address">name@example.com</string>
-    <string name="dialog_quit_account__confirm">Do you want to quit this account from Xabber Web? Account will not be deleted from the server.</string>
+    <string name="dialog_quit_account__confirm">Do you want to quit this account? Account will not be deleted from the server.</string>
     <string name="settings_account__dialog_terminate_sessions__header">Terminate sessions</string>
     <string name="delete_settings__optional_button__delete_synced_account">Delete synced XMPP account</string>
     <string name="dialog_change_password__error__text_input_pass">Please input password!</string>
