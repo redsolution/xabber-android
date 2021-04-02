@@ -246,7 +246,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         AbstractChat abstractChat = getChat(account, user);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         Message message = abstractChat.createMessagePacket(msg);
-        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        CarbonManager.INSTANCE.setMessageToIgnoreCarbons(message);
         LogManager.d(OTRManager.class.toString(), "set message to ignore carbons");
         try {
             StanzaSender.sendStanza(abstractChat.getAccount(), message);

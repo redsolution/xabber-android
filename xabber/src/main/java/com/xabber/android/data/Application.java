@@ -434,7 +434,7 @@ public class Application extends android.app.Application {
         addManager(ChatMarkerManager.getInstance());
         addManager(SSNManager.getInstance());
         addManager(AttentionManager.getInstance());
-        addManager(CarbonManager.getInstance());
+        addManager(CarbonManager.INSTANCE);
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
         addManager(NextMamManager.INSTANCE);

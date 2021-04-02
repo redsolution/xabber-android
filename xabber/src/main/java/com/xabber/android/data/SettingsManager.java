@@ -958,7 +958,7 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_use_carbons_key))) {
             LogManager.d(SettingsManager.class.toString(), "Client preference \"Use carbons\" was changed!");
-            CarbonManager.getInstance().onUseCarbonsSettingsChanged();
+            CarbonManager.INSTANCE.onUseCarbonsSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.events_show_text_key))) {
             NotificationManager.getInstance().onMessageNotification();

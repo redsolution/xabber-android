@@ -78,7 +78,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "finished discovering and saving server info");
 
         // just to see the order of call
-        CarbonManager.getInstance().onAuthorized(connectionItem);
+        CarbonManager.INSTANCE.onAuthorized(connectionItem);
         LogManager.i(getLogTag(), "finished carbonManger onAuthorized");
         BlockingManager.getInstance().onAuthorized(connectionItem);
         LogManager.i(getLogTag(), "finished blockingManager onAuthorized");

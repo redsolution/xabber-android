@@ -870,7 +870,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
         if (message != null) {
             ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-            CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            CarbonManager.INSTANCE.updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             if (DeliveryManager.getInstance().isSupported(account))

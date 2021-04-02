@@ -485,7 +485,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         message.setBody(text);
         message.setThread(threadId);
         // send auto-generated messages without carbons
-        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        CarbonManager.INSTANCE.setMessageToIgnoreCarbons(message);
         LogManager.d(LOG_TAG, "Message sent without chat. Invoke CarbonManager setMessageToIgnoreCarbons");
         try {
             StanzaSender.sendStanza(account, message);
@@ -534,8 +534,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             }
             newMessageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
 
-//            if (DeliveryManager.getInstance().isSupported(account))
-//                newMessageRealmObject.setAcknowledged(true); todo this
+            newMessageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
 //
 //            newMessageRealmObject.setSent(true);
 //            newMessageRealmObject.setForwarded(true);
