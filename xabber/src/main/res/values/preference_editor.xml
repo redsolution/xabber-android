@@ -86,7 +86,7 @@
     <string name="connection_wifi_lock">Keep WiFi awake\nKeep WiFi active on standby. This will increase battery usage</string>
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
-    <string name="contacts_reset_offline_circle">Reset offline settings\nClear individual settings for circles and accounts</string>
+    <string name="contacts_reset_offline_circle" comment="contacts_reset_offline_circle">Reset offline settings\nClear individual settings for circles and accounts</string>
     <string name="contacts_reset_offline_warning_circle">Do you really want to clear individual settings for circles and accounts?</string>
     <string name="events_first_only">Alert on first message</string>
     <string name="events_first_only_summary">Notify only on the first message in a chat</string>
@@ -157,7 +157,7 @@
     <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
     <string name="events_ringtone_not_available">Ringtone not available</string>
     <string name="events_ringtone_not_available_summary">Please select another ringtone</string>
-    <string name="events_ringtone_not_available_summary_permission">Xabber need permission for read storage to access this ringtone\nPlease grant a permission or select another ringtone</string>
+    <string name="events_ringtone_not_available_summary_permission">Xabber requires a permission to read storage to access this ringtone\nPlease grant a permission or select another ringtone</string>
     <string name="settings__menu_item__xabber_account">Xabber Account</string>
     <string name="settings__menu_item__xmpp_account">XMPP Accounts</string>
     <string name="settings__menu_item__keyboard">Keyboard</string>
@@ -215,8 +215,8 @@
     <string name="settings__section_interface_language__translation_progress">%s translated</string>
     <string name="settings__section_interface_language__translation_progress_fully">Fully translated</string>
     <string name="settings__dialog_change_language__button_change">Change &amp; reload</string>
-    <string name="settings__interface_language__text_description_full_translation">%1$s is already fully translated to the language used on this device. Translations are provided by the community. If you feel that the translation is imperfect, you can join our translation team and help us make %2$s better. </string>
+    <string name="settings__interface_language__text_description_full_translation">%1$s is already fully translated to the language used on this device. Translations are provided by the community. If you feel that the translation is imperfect, you can join our translation team and help us make %2$s better.</string>
     <string name="settings__interface_language__text_description_unfull_translation">%1$s is only partially translated to the language used on this device. Translations are provided by the community, it means that you can help us translate %2$s to your native language!</string>
     <string name="settings__interface_language__text_description_full_translation_platform">We use Crowdin Localisation Management Platform. If you wish to participate, follow this %s and apply as a translator to your native language.</string>
-    <string name="settings__interface_language__text_description_no_translation_platform">We use Crowdin Localisation Management Platform. If you wish to join our translation team, follow this %1$s, email us %2$s and we will add your native language to the list of target languages. Then you will be able to apply as a translator to your native language</string>
+    <string name="settings__interface_language__text_description_no_translation_platform">We use Crowdin Localisation Management Platform. If you wish to join our translation team, follow this %1$s, email us %2$s and we will add your native language to the list of target languages. Then you will be able to apply as a translator to your native language.</string>
 </resources>

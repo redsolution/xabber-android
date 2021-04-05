@@ -29,7 +29,7 @@
     <string name="conference_private_chat_invitation">%1$s from %2$s wants to start private chat with you</string>
     <string name="accept_muc_private_chat">Accept</string>
     <string name="input_widget__button_rename">Rename</string>
-    <string name="dialog_add_contact__label_jid">Contact JID</string>
+    <string name="dialog_add_contact__label_jid">Contact XMPP ID</string>
     <string name="dialog_add_contact__button_add">Add</string>
     <string name="dialog_add_contact__button_cancel">Cancel</string>
     <string name="dialog_add_contact__header">Add Contact</string>

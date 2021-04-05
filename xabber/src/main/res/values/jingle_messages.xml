@@ -2,16 +2,16 @@
 <resources>
     <string name="dialog_jingle_message__header">%s voice call</string>
     <string name="jingle__error__call_in_progress">Voice call is already in progress</string>
-    <string name="dialog_jingle_message__status_calling">Calling...</string>
-    <string name="dialog_jingle_message__status_network_error">Network error...</string>
-    <string name="dialog_jingle_message__status_search">Search...</string>
+    <string name="dialog_jingle_message__status_calling">Calling…</string>
+    <string name="dialog_jingle_message__status_network_error">Network error…</string>
+    <string name="dialog_jingle_message__status_search">Search…</string>
     <string name="jingle__text_body_message">You have received a voice call. If your are seing this, your client probably does not support this functionality. For more information, see https://xabber.com/voice/</string>
-    <string name="dialog_jingle_message__status_connecting">Connecting...</string>
+    <string name="dialog_jingle_message__status_connecting">Connecting…</string>
     <string name="jingle__system_message__outgoing_call">Outgoing call, %s</string>
     <string name="jingle__system_message__incoming_call">Incoming call, %s</string>
     <string name="jingle__system_message__cancelled_call">Cancelled call</string>
     <string name="jingle__system_message__no_devices_to_answer">Incoming call. You have no required devices to answer</string>
-    <string name="jingle__error__audio_not_supported">This type of audio isn\'t supported in Your browser</string>
+    <string name="jingle__error__audio_not_supported">This type of audio isn\'t supported in your browser</string>
     <string name="dialog_jingle_message__status_busy">Line busy</string>
     <string name="dialog_jingle_message__status_disconnected">Disconnected</string>
     <string name="dialog_jingle_message__button_switch_video__tooltip">Switch on/off video</string>

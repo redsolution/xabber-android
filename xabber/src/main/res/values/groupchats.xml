@@ -26,7 +26,7 @@
     </plurals>
     <string name="groupchat_join">Join</string>
     <string name="groupchat_decline">Decline</string>
-    <string name="groupchat_joining">Joining...</string>
+    <string name="groupchat_joining">Joining…</string>
     <string name="groupchat_invitation_to_group_chat">Invitation to %1$s group</string>
     <string name="groupchat_member_of_group_name">%1$s of %2$s group %3$s</string>
     <string name="member_info">Member info</string>
@@ -81,7 +81,7 @@
     <string name="groupchat_failed_to_unblock">Failed to unblock</string>
     <string name="groupchat_failed_to_pin_message">Failed to pin message</string>
     <string name="groupchat_failed_to_unpin_message">Failed to unpin message</string>
-    <string name="groupchat_failed_to_change_groupchat_settings">Failed to update groupchat settings</string>
+    <string name="groupchat_failed_to_change_groupchat_settings">Failed to update group settings</string>
     <string name="groupchat_failed_to_retrieve_settings_data_form">Failed to retrieve settings Data Form</string>
     <string name="groupchat_permissions_successfully_changed">Group settings successfully changed</string>
     <string name="groupchat_set_duration">Set duration</string>
@@ -109,7 +109,7 @@
     <string name="group_settings__button_delete_group">Delete group</string>
     <string name="group_settings__members_list__header">Members</string>
     <string name="group_settings__properties__button_edit">edit</string>
-    <string name="group_settings__properties__label_jid">Jabber ID</string>
+    <string name="group_settings__properties__label_jid">XMPP ID</string>
     <string name="group_settings__properties__label_indexed">Indexed</string>
     <string name="group_settings__members__status_online">Online</string>
     <string name="groupchat_block">Block</string>
@@ -132,12 +132,11 @@
     <string name="group_settings__invitations__no_pending_invitations">No pending invitations</string>
     <string name="groupchat__dialog_block_member__header">Block member</string>
     <string name="groupchat__dialog_block_member__confirm">Do you really want to block member %s?</string>
-    <string name="groupchat__private_chat__text_message_init">Initiating private chat with %1$s from %2$s. If your
-        invitation is accepted, you won\'t see each other\'s real XMPP IDs.</string>
+    <string name="groupchat__private_chat__text_message_init">Initiating private chat with %1$s from %2$s. If your invitation is accepted, you won\'t see each other\'s real XMPP IDs.</string>
     <string name="groupchat__set_badge__error_length">Badge can\'t be longer than 32 symbols</string>
     <string name="groupchat__rights_timer__indefinitely">Indefinitely</string>
     <string name="groupchat__rights_timer__text_expire">For %d</string>
-    <string name="groupchat__public_group__text_invitation">You are invited to group chat. If you accept, %s username shall be visible to group chat members</string>
+    <string name="groupchat__public_group__text_invitation">You are invited to group chat. If you accept, %s XMPP ID will be visible to group chat members</string>
     <string name="dialog_delete_user_messages__header">Delete user messages</string>
     <string name="dialog_delete_user_messages__confirm">Delete all <b>%s</b> messages in this group chat?</string>
     <string name="groupchat__invitation__error_already_invited"> %s already invited in group</string>

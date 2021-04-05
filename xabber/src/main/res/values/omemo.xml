@@ -12,8 +12,7 @@
     <string name="omemo__dialog_fingerprints__text_learn_more">Learn more about encryption and safe key exchange</string>
     <string name="omemo__dialog_fingerprints__link_learn_more">https://www.xabber.com/encryption/</string>
     <string name="omemo__dialog_fingerprints__text_this_device">this device</string>
-    <string name="omemo__dialog_fingerprints__textfield_device_id_tooltip">Device ID: %s\nLabel: %s\nDevice ID is a
-        unique identifier for your contact\'s device. You maintain separate encryption session with each device.</string>
+    <string name="omemo__dialog_fingerprints__textfield_device_id_tooltip">Device ID: %s\nLabel: %s\nDevice ID is a unique identifier for your contact\'s device. You maintain separate encryption session with each device.</string>
     <string name="omemo__dialog_fingerprints__label_set_label">set label</string>
     <string name="omemo__dialog_fingerprints__label_device_id">device ID</string>
     <string name="omemo__alert_new_device__button_manage_devices">Manage devices</string>
@@ -23,11 +22,9 @@
     <string name="omemo__settings__button_manage_devices">Manage devices</string>
     <string name="omemo__settings__button_purge_keys">Purge keys</string>
     <string name="omemo__settings__menu_item">OMEMO</string>
-    <string name="omemo__alert_new_device_yours__text_new_device">New device has published encryption keys for your
-        account. If it wasn\'t you, it looks like you might have a problem.</string>
+    <string name="omemo__alert_new_device_yours__text_new_device">New device has published encryption keys for your account. If it wasn\'t you, it looks like you might have a problem.</string>
     <string name="omemo__alert_keys_changed_yours__text_keys_changed">Public keys for your device you previously trusted have changed. This <i>should not</i> be happening, ever. You are likely being hacked, or your software is severely malfunctioning.</string>
-    <string name="omemo__alert_keys_changed_partner__text_keys_changed">Public keys for your partner\'s device that
-        you previously trusted have changed. This <i>should not</i> be happening, ever. He is likely being hacked, or his software is severely malfunctioning.</string>
+    <string name="omemo__alert_keys_changed_partner__text_keys_changed">Public keys for your partner\'s device that you previously trusted have changed. This <i>should not</i> be happening, ever. He is likely being hacked, or his software is severely malfunctioning.</string>
     <string name="omemo__alert_new_device_partner__text_new_device">Your chat partner has unverified devices with published encryption keys. Please, review the list of devices and perform verification of digital fingerprints. It is <u>very</u> important.</string>
     <string name="omemo__dialog_fingerprints__text_no_fingerprints">No fingerprints yet</string>
     <string name="omemo__chat__placeholder_encryption_disabled">OMEMO encryption is disabled</string>
@@ -37,7 +34,7 @@
         <item quantity="other">%s, %d devices</item>
     </plurals>
     <string name="omemo__dialog_purge_keys__header">Purge encryption keys</string>
-    <string name="omemo__dialog_purge_keys__text">This will unpublish all encryption keys and remove them from your server and this device. All decrypted will be permanently deleted, you will not be able to recover them in the future. To resume encrypted messaging you will have to perform fingerprint verification procedures again, with each of your contacts.\n\nUse this measure only as a last resort.</string>
+    <string name="omemo__dialog_purge_keys__text">This will unpublish all encryption keys and remove them from your server and this device. All decrypted chats will be permanently deleted, you will not be able to recover them in the future. To resume encrypted messaging you will have to perform fingerprint verification procedures again, with each of your contacts.\n\nUse this measure only as a last resort.</string>
     <string name="omemo__dialog_purge_keys__button_purge_keys">Purge Keys</string>
     <string name="omemo__dialog_delete_device__header">Delete device</string>
     <string name="omemo__dialog_delete_device__text">Do you really want to delete device %s?</string>

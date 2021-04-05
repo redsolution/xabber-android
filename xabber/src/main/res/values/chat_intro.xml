@@ -1,34 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="intro_regular_chat">Regular chat</string>
-    <string name="intro_regular_chat_text">Messages in this chat are not encrypted. Servers often store transient
-        messages in
-        an archive. This allows easy device synchronization and server-side history search, but adds privacy risks.
-    </string>
+    <string name="intro_regular_chat_text">Messages in this chat are not encrypted. Servers often store transient messages in an archive. This allows easy device synchronization and server-side history search, but adds privacy risks.</string>
     <string name="intro_regular_chat_learn">Learn more about messaging</string>
     <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
     <string name="intro_encrypted_chat">Regular chat</string>
-    <string name="intro_encrypted_chat_text">Messages in this chat are encrypted with end-to-end encryption. You must
-        always confirm the identity of your contact by verifying encryption keys fingerprints.
-    </string>
+    <string name="intro_encrypted_chat_text">Messages in this chat are encrypted with end-to-end encryption. You must always confirm the identity of your contact by verifying encryption keys fingerprints.</string>
     <string name="intro_encrypted_chat_learn">Learn more about encrypted chats</string>
     <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/encrypted</string>
     <string name="intro_public_group">Public group</string>
-    <string name="intro_public_group_text">Identities of users in this group are public, so any member can contact you
-        using your real XMPP ID.
-    </string>
+    <string name="intro_public_group_text">Identities of users in this group are public, so any member can contact you using your real XMPP ID.</string>
     <string name="intro_public_group_learn">Learn more about public groups</string>
     <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
     <string name="intro_incognito_group">Incognito group</string>
-    <string name="intro_incognito_group_text">Identities of users in this group are kept hidden from each other, only
-        group admins can access your real XMPP ID. Be vigilant, do not disclose yourself by being careless.
-    </string>
+    <string name="intro_incognito_group_text">Identities of users in this group are kept hidden from each other, only group admins can access your real XMPP ID. Be vigilant, do not disclose yourself by being careless.</string>
     <string name="intro_incognito_group_learn">Learn more about incognito groups</string>
     <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
     <string name="intro_private_chat">Private chat</string>
-    <string name="intro_private_chat_text">Private chat with incognito user. Messages are routed through group server
-        and your identities are kept secret from each other. Be vigilant, do not disclose yourself by being careless.
-    </string>
+    <string name="intro_private_chat_text">Private chat with incognito user. Messages are routed through group server and your identities are kept secret from each other. Be vigilant, do not disclose yourself by being careless.</string>
     <string name="intro_private_chat_learn">Learn more about private chats</string>
     <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
 </resources>

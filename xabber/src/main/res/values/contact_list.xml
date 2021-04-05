@@ -24,7 +24,7 @@
     <string name="contact_delete">Delete</string>
     <string name="contact_delete_full">Delete contact</string>
     <string name="contact_block">Block contact</string>
-    <string name="contact_block_and_delete">Block &amp; Delete</string>
+    <string name="contact_block_and_delete">Delete &amp; Block</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
     <string name="groupchat_leave">Leave</string>
     <string name="groupchat_leave_full">Leave group</string>
@@ -94,7 +94,7 @@
     <string name="send_log_file">Send</string>
     <string name="send_all_log_files">Send all log files</string>
     <string name="voice_download_dialog_message">Xabber can automatically download all incoming media files. It is way more convenient, but carries a privacy risk and may cause high data usage.</string>
-    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings.</b></string>
+    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings</b>.</string>
     <string name="voice_download_dialog_agree">Download automatically</string>
     <string name="synchronize_bookmarks">Synchronize bookmarks</string>
     <string name="remove_all_bookmarks">Remove all</string>
@@ -138,7 +138,7 @@
     <string name="circles__name_non_roster_circle">Not in roster</string>
     <string name="dialog_add_circle__error__text_input_name">Please input name!</string>
     <string name="dialog_add_circle__error__text_wrong_name">Wrong name</string>
-    <string name="application_state_reconnect_after_some_seconds">Reconnect after %d seconds...</string>
+    <string name="application_state_reconnect_after_some_seconds">Reconnect after %d seconds…</string>
     <string name="recent_chat__last_message_retracted">Message retracted</string>
     <string name="recent_chat__decrypting_messages">Decrypting messages</string>
     <string name="saved_messages__hint_forward_here">Forward here to save</string>

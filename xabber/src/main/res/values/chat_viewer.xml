@@ -138,6 +138,12 @@
     
     
     
+    
+    
+    
+    
+    
+    
     <string name="occupant_list">List of occupants</string>
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
@@ -236,9 +242,9 @@
     <string name="mentions_list__placeholder">Please select mention to view in chat</string>
     <string name="delete_messages__header">Clear message archive</string>
     <string name="delete_messages__confirm">Do you want to delete all messages from archive?</string>
-    <string name="loading_history">Loading history...</string>
+    <string name="loading_history">Loading history…</string>
     <string name="loading_archived_messages_error">Error while loading archived messages</string>
-    <string name="chat_state_composing_upload_filetype">sending %s...</string>
+    <string name="chat_state_composing_upload_filetype">sending %s…</string>
     <string name="dialog_clear_chat_history__warning_deletion_not_supported">Warning! <b>%s</b> server does not support message deletion. Only local message history will be deleted.</string>
     <string name="dialog_clear_chat_history__button_delete_locally">delete locally</string>
     <string name="dialog_clear_chat_history__option_delete_for_all">Delete for all</string>
@@ -248,11 +254,11 @@
     <string name="file_upload__error">Error: %s</string>
     <string name="groupchat__incognito_group__text_invitation">You are invited to incognito group chat. If you join it, you won\'t see real XMPP IDs of other members</string>
     <string name="dialog_delete_saved_messages__header">Delete saved messages</string>
-    <string name="dialog_delete_saved_messages__confirm">Are you sure you want to <b>delete all saved messages</b>? This operation can not be undone.</string>
-    <string name="dialog_group_remove__confirm">If you delete a group chat, you won\'t receive messages from it</string>
+    <string name="dialog_delete_saved_messages__confirm">Are you sure you want to <b>delete all saved messages</b>? This action can not be undone.</string>
+    <string name="dialog_group_remove__confirm">If you delete a group, you won\'t receive messages from it</string>
     <string name="chat_bottom__drag_and_drop__text_drop_files_here">Drop files here to send</string>
-    <string name="chat_bottom__hint_default">Write a message...</string>
-    <string name="chat_bottom__hint_default_encrypted">Write an encrypted message...</string>
+    <string name="chat_bottom__hint_default">Write a message…</string>
+    <string name="chat_bottom__hint_default_encrypted">Write an encrypted message…</string>
     <string name="chat_bottom__mentions_list__item_everyone">Everyone</string>
     <string name="dialog_send_image_from_clipboard__header">Send Image from Clipboard</string>
     <string name="dialog_send_image_from_clipboard__confirm">Do you want to send Image from Clipboard?</string>
