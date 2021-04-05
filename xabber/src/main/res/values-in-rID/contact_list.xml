@@ -114,8 +114,6 @@
     <string name="show_all_chats">Tampilkan semua obrolan</string>
     <string name="category_title_contacts">Kontak</string>
     <string name="voice_message">Pesan suara</string>
-    <string name="image_message">Gambar</string>
-    <string name="file_message">File</string>
     <string name="showcase_contact_list_text_1">Geser obrolan ke kanan atau kiri untuk mengarsipkan</string>
     <string name="last_seen_now">terakhir dilihat baru saja</string>
     <string name="last_seen_minutes">terakhir dilihat %1$s menit yang lalu</string>

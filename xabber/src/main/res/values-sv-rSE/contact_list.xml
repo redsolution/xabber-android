@@ -114,8 +114,6 @@
     <string name="show_all_chats">Visa alla chattar</string>
     <string name="category_title_contacts">Kontakter</string>
     <string name="voice_message">Röstmeddelande</string>
-    <string name="image_message">Bild</string>
-    <string name="file_message">Fil</string>
     <string name="showcase_contact_list_text_1">Dra chatten åt vänster eller höger för att arkivera den</string>
     <string name="last_seen_now">sågs senast just nu</string>
     <string name="last_seen_minutes">sågs senast för %1$s minuter sedan</string>
@@ -131,9 +129,15 @@
     <string name="dialog_circle_settings__header">Cirkel-inställningar</string>
     <string name="dialog_circle_settings__button_apply">Tillämpa</string>
     <string name="contact_list__placeholder">Välj en kontakt för att visa detaljer</string>
-    <string name="recent_chat__last_message__images">%d bilder</string>
-    <string name="recent_chat__last_message__files">%d filer</string>
     <string name="synchronization__text_all_chats_loaded">Alla chattar hämtade</string>
     <string name="circles__name_general_circle">Allmänt</string>
     <string name="circles__name_non_roster_circle">Inte i deltagarlistan</string>
+    <string name="dialog_add_circle__error__text_wrong_name">Fel namn</string>
+    <string name="application_state_reconnect_after_some_seconds">Återanslut efter %d sekunder...</string>
+    <string name="recent_chat__last_message_retracted">Meddelanden drogs tillbaka</string>
+    <string name="recent_chat__decrypting_messages">Avkrypterar meddelandena</string>
+    <string name="saved_messages__hint_forward_here">Vidarebefordra här för att spara</string>
+    <string name="category_recent_chats">Senaste chattar</string>
+    <string name="recent_chat__last_message__attachments">%d bilagor</string>
+    <string name="recent_chat__last_message__private_invitation">Inbjudan till privat chatt</string>
 </resources>

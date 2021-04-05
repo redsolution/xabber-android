@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">无法打开文件</string>
     <string name="uploaded_files_count">正在上传.. %s</string>
     <string name="unread_messages">未读消息</string>
-    <string name="xabber_chat_title">Xabber 官方</string>
-    <string name="xabber_chat_description">新闻源</string>
-    <string name="xabber_join_button">支持 Xabber</string>
     <string name="action_new_contact">新建联系人</string>
 </resources>

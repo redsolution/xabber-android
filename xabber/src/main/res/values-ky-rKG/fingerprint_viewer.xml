@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="otr_fingerprint_description">Сиздин маектешиңизди эч ким башка бирөөгө шилтеме кылбашы үчүн, ал сизге цифралык манжа изин бериши керек, сиз аны ушул жерде көрсөтүлгөн менен текшересиз. Мындай текшерүү үчүн XMPP чатын колдонбоңуз.</string>
+    <string name="otr_is_verified">Мен бул байланышка ишенем</string>
+    <string name="otr_local_fingerprint">Сиздин санариптик манжа изиңиз:</string>
+    <string name="otr_remote_fingerprint">Маектешүүнүн санарип манжа изи:</string>
+    <string name="otr_scan_fingerprint">QR кодду маектешиңиздин санарип манжа изи менен сканерлеңиз</string>
+    <string name="otr_show_fingerprint">Манжа изиңиз менен QR кодду көрсөтүңүз</string>
+    <string name="otr_copy_fingerprint">Манжа изиңизди буферге көчүрүңүз</string>
+</resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="account_delete_confirm" comment="settings_account__dialog_delete_account__text_delete">Tem a certeza que deseja apagar a conta %s?\n(Isto não apagará a conta no servidor, apenas no Xabber.)</string>
+    <string name="account_delete_confirm" comment="settings_account__dialog_delete_account__text_delete">Você realmente deseja excluir a conta %1$s?\n(ela não será excluída do servidor, apenas de %2$s)</string>
     <string name="account_delete_confirmation_question" comment="settings_account__dialog_delete_account__header_delete">Você realmente deseja excluir a conta %s?\n</string>
     <string name="account_delete_confirmation_explanation" comment="settings_account__dialog_delete_account__text_explanation">A conta não será excluída do servidor, apenas do Xabber</string>
     <string name="account" comment="settings_account__label_account">Conta</string>
@@ -8,7 +8,8 @@
     <string name="account_register" comment="account_add__label_register_account">Cadastrar Nova Conta</string>
     <string name="account_delete" comment="settings_account__label_delete_account">Apagar conta</string>
     <string name="account_editor" comment="settings_account__label_account_settings">Configurações da conta</string>
-    <string name="account_state_registration" comment="settings_account__label_state_registration">Registrar-se</string>
+    <string name="account_state_registration" comment="settings_account__label_state_registration">Registrar</string>
+    <string name="account_state_authentication" comment="settings_account__label_state_authentication">Autenticação</string>
     <string name="account_state_connected" comment="settings_account__label_state_connected">Conectado</string>
     <string name="account_state_connecting" comment="settings_account__label_state_connecting">Conectando...</string>
     <string name="account_state_disconnecting" comment="settings_account__label_state_disconnecting">Desconectando</string>
@@ -17,4 +18,6 @@
     <string name="account_push_state_disabled" comment="settings_account__label_push_notifications_hint_disabled">Notificações push desativadas</string>
     <string name="account_push_state_not_support" comment="settings_account__label_push_notifications_hint_unsupported">Notificações push não suportadas</string>
     <string name="account_push_state_enabled" comment="settings_account__label_push_notifications_hint_enabled">Notificações push habilitadas</string>
+    <string name="account__toolbar_item__button_filter_chats">Filtrar bate-papos</string>
+    <string name="settings_account__label_state_disconnected">Desconectado</string>
 </resources>

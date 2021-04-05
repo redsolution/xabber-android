@@ -8,7 +8,7 @@
     <string name="account_priority">الأولوية</string>
     <string name="account_resource">المورد</string>
     <string name="account_server_name">خادم</string>
-    <string name="account_xmpp_register_warning">يتوجب عليك<a href="http://www.google.com/#q=إنشاء حساب XMPP"> إنشاء حساب XMPP </a>قبل القيام بإضافته إلى Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">يتوجب عليك<a href="http://www.google.com/#q=إنشاء حساب XMPP"> إنشاء حساب XMPP </a>قبل القيام بإضافته إلى Xabber!</string>
     <string name="account_user_name">اسم المستخدم</string>
     <string name="account_compression_summary">علِّم لتفعيل ضغط البيانات</string>
     <string name="account_custom">تخصيص المضيف</string>
@@ -83,6 +83,6 @@
     <string name="account_bookmarks">الإشارات المرجعيّة</string>
     <string name="account_bookmarks_summary">قائمة الإشارات المرجعية من هذا الحساب</string>
     <string name="account_sync">مزامنة</string>
-    <string name="account_sync_summary">المزامنة مع حساب Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">المزامنة مع حساب Xabber</string>
     <string name="bookmark_not_supported">المخدم لايدعم الإشارات المرجعية</string>
 </resources>

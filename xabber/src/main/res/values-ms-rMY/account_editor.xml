@@ -76,6 +76,6 @@
     <string name="account_bookmarks">Penanda halaman</string>
     <string name="account_bookmarks_summary">Senarai penanda halaman akaun ini</string>
     <string name="account_sync">Penyegerakan</string>
-    <string name="account_sync_summary">Penyegerakan dengan Xabber akaun</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Penyegerakan dengan Xabber akaun</string>
     <string name="bookmark_not_supported">Pelayan tidak menyokong penanda halaman</string>
 </resources>

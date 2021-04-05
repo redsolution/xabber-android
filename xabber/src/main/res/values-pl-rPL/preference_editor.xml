@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Pliki dziennika</string>
     <string name="debug_connection_errors_title">Pokaż błędy połączeń\nPokaż powiadomienia o błędach połączeń</string>
     <string name="debug_crash_reports_title">Udostępniaj dane diagnostyczne\nPomóż autorom aplikacji ulepszać Xabbera pozwalając na udostępnianie im danych diagnostycznych (proszę uruchomić ponownie aplikację aby zastosować zmiany).</string>
-    <string name="debug_use_develop_api_title">Użyj developerskiego Xabber API\nZmiany zostaną zastosowane po ponownym uruchomieniu</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Użyj developerskiego Xabber API\nZmiany zostaną zastosowane po ponownym uruchomieniu</string>
     <string name="debug_fetch_crowdfunding_feed_title">Pobierz teraz kanał Crowdfunding</string>
     <string name="debug_crash_reports_dialog_title">Dane diagnostyczne</string>
     <string name="debug_crash_reports_dialog_message">Xabber gromadzi anonimowe dane na temat błędów. Można to wyłączyć w ustawieniach debugowania, ale utrudni to nam dostarczanie możliwie najlepszego doświadczenia dla użytkowników Xabbera.</string>
@@ -143,4 +143,11 @@
     <string name="events_reset_toast">Ustawienia zostały zresetowane</string>
     <string name="events_remove_all_custom_title">Usuń wszystkie powiadomienia</string>
     <string name="events_remove_all_custom_summary">Wszystkie niestandardowe ustawienia powiadomień (dla kontaktów, grup wykazów i kont) zostaną usunięte</string>
+    <string name="settings__menu_item__interface_language">Język interfejsu</string>
+    <string name="settings__dialog_change_language__header">Zmień język interfejsu</string>
+    <string name="settings__section_interface_language__text_description__text_link">link</string>
+    <string name="settings__section_interface_language__text_description___link">https://crowdin.com/project/xabber</string>
+    <string name="settings__languages_list___item_default">Domyślny (angielski)</string>
+    <string name="settings__section_interface_language__translation_progress">%s przetłumaczone</string>
+    <string name="settings__section_interface_language__translation_progress_fully">W pełni przetłumaczone</string>
 </resources>

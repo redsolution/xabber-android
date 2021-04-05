@@ -47,6 +47,6 @@
     <string name="account_bookmarks">Закладкі</string>
     <string name="account_bookmarks_summary">Сьпіс закладак для гэтага рахунка</string>
     <string name="account_sync">Сінхранізацыя</string>
-    <string name="account_sync_summary">Сінхранізацыя з рахункам Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Сінхранізацыя з рахункам Xabber</string>
     <string name="bookmark_not_supported">Сервер не падтрымлівае закладкі.</string>
 </resources>

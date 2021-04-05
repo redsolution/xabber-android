@@ -111,8 +111,6 @@
     <string name="show_all_chats">Tüm sohbetleri göster</string>
     <string name="category_title_contacts">İletişim</string>
     <string name="voice_message">Sesli mesaj</string>
-    <string name="image_message">Görüntü</string>
-    <string name="file_message">Dosya</string>
     <string name="showcase_contact_list_text_1">Arşivlemek için sohbeti sola yada sağa kaydırın</string>
     <string name="last_seen_now">son görüntüleme şimdi</string>
     <string name="last_seen_minutes">en son %1$s dakika önce görüldü</string>

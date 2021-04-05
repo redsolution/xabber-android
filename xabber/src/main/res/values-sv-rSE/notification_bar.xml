@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Anpassad aviseringskanal för nyckelfras:</string>
     <string name="channel_attention_title">Påkallande av uppmärksamhet</string>
     <string name="channel_attention_description">Aviseringar för påkallande av uppmärksamhet</string>
-    <string name="channel_private_chat_title">Privata chattar</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Privata chattar</string>
     <string name="channel_private_chat_description">Aviseringar om meddelanden i privata chattar</string>
     <string name="channel_group_chat_title">Gruppchattar</string>
     <string name="channel_group_chat_description">Aviseringar om meddelanden i gruppchattar</string>
@@ -23,4 +23,8 @@
     <string name="channel_persistent_connection_description">Beständig avisering för att upprätta anslutning till att ta emot meddelanden</string>
     <string name="channel_events_title">Händelser</string>
     <string name="channel_events_description">Meddelanden för händelser som: inbjudan till gruppchatt, fråga om prenumeration, OTR-förfrågningar</string>
+    <string name="connection__error__text_disconnected">Frånkopplad</string>
+    <string name="connection__error__text_authentication_failed">Autentiseringen misslyckades för kontot %s</string>
+    <string name="connection__error__text_authentication_failed_short">Autentiseringen misslyckades</string>
+    <string name="connection__error__connection_lost">Anslutningen förlorades!</string>
 </resources>

@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">قناة إعلام مخصصة للمحادثة:</string>
     <string name="channel_attention_title">مكالمات الاهتمام</string>
     <string name="channel_attention_description">إعلامات المكالمات الاهتمام</string>
-    <string name="channel_private_chat_title">دردشة خاصة</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">دردشة خاصة</string>
     <string name="channel_private_chat_description">إعلامات حول رسائل في الأحاديث الخاصة</string>
     <string name="channel_group_chat_title">مجموعة الدردشة</string>
     <string name="channel_group_chat_description">إعلامات حول الرسائل في دردشات المجموعة</string>

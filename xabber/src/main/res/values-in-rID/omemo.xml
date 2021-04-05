@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="omemo__alert_enable__link_text">Aktifkan</string>
+    <string name="omemo__alert_enable__tooltip">Ini akan memungkinkan Anda dan kontak Anda bertukar pesan pribadi menggunakan obrolan terenkripsi. Ingatlah untuk selalu memverifikasi identitas mitra obrolan Anda dengan memverifikasi sidik jari digital perangkat mereka.</string>
+    <string name="omemo__alert_enable__text">Enkripsi ujung-ke-ujung untuk akun <b>%s</b>?</string>
+    <string name="omemo__dialog_fingerprints__button_ignore">Abaikan</string>
+    <string name="omemo__dialog_fingerprints__button_trust">Percayai</string>
+    <string name="omemo__dialog_fingerprints__button_delete">Hapus</string>
+    <string name="omemo__dialog_fingerprints__button_error">Terjadi kesalahan</string>
+    <string name="omemo__dialog_fingerprints__button_unknown">Tidak diketahui</string>
+    <string name="omemo__dialog_fingerprints__text_description">Anda harus dengan hati-hati memverifikasi bahwa sidik jari perangkat ini cocok dengan yang pernah terlihat oleh mitra obrolan Anda. Untuk keamanan maksimum, ini harus dilakukan melalui saluran komunikasi lain. Lebih disukai, secara langsung.</string>
+    <string name="omemo__dialog_fingerprints__text_learn_more">Pelajari lebih lanjut tentang enkripsi dan pertukaran kunci keamanan</string>
+    <string name="omemo__dialog_fingerprints__link_learn_more">https://www.xabber.com/encryption/</string>
+    <string name="omemo__dialog_fingerprints__text_this_device">perangkat ini</string>
+    <string name="omemo__dialog_fingerprints__textfield_device_id_tooltip">ID Perangkat: %s\nLabel: %s\nID Perangkat adalah pengidentifikasi unik untuk perangkat kontak Anda. Anda menyimpan sesi enkripsi terpisah untuk setiap perangkat.</string>
+    <string name="omemo__dialog_fingerprints__label_set_label">Atur label</string>
+    <string name="omemo__dialog_fingerprints__label_device_id">ID Perangkat</string>
+    <string name="omemo__alert_new_device__button_manage_devices">Kelola perangkat</string>
+    <string name="omemo__settings__section_header">Pengaturan OMEMO</string>
+    <string name="omemo__settings__toggle_enable_encryption">Enkripsi OMEMO</string>
+    <string name="omemo__settings__toggle_send_typing_notifications">Kirim pemberitahuan sedang mengetik</string>
+    <string name="omemo__settings__button_manage_devices">Kelola perangkat</string>
+    <string name="omemo__settings__button_purge_keys">Bersihkan kunci</string>
+    <string name="omemo__settings__menu_item">OMEMO</string>
+    <string name="omemo__alert_new_device_yours__text_new_device">Perangkat baru telah meminta kunci enkripsi untuk akun Anda. Jika ini bukan Anda, tampaknya ada masalah.</string>
+    <string name="omemo__alert_keys_changed_yours__text_keys_changed">Kunci publik untuk perangkat tepercaya Anda sebelumnya telah berubah. Ini <i>mestinya tidak</i> terjadi. Mungkin Anda sedang dibajak, atau aplikasi Anda tidak berfungsi dengan benar.</string>
+    <string name="omemo__alert_keys_changed_partner__text_keys_changed">Kunci publik untuk perangkat tepercaya rekan Anda sebelumnya telah berubah. Ini <i>mestinya tidak</i> terjadi. Mungkin dia sedang dibajak, atau aplikasinya tidak berfungsi dengan benar.</string>
+    <string name="omemo__alert_new_device_partner__text_new_device">Rekan obrolan Anda memiliki perangkat tanpa verifikasi dengan kunci enkripsi terpublikasi. Silakan lihat daftar perangkat dan lakukan verifikasi sidik jari digital. Ini <u>sangat</u> penting.</string>
+    <string name="omemo__dialog_fingerprints__text_no_fingerprints">Belum ada sidik jari</string>
+    <string name="omemo__chat__placeholder_encryption_disabled">Enkripsi OMEMO dimatikan</string>
+    <string name="omemo__dialog_fingerprints__header">%s sidik jari</string>
+    <plurals name="omemo__dialog_fingerprints__text_devices_count">
+        <item quantity="other">%s, %d perangkat</item>
+    </plurals>
+    <string name="omemo__dialog_purge_keys__header">Bersihkan kunci enkripsi</string>
+    <string name="omemo__dialog_purge_keys__text">Tindakan ini akan menarik semua kunci enkripsi dan menghapusnya dari server dan perangkat ini. Semua yang terdekripsi akan dihapus permanen. Anda tidak bisa memulihkannya di waktu mendatang. Untuk memulihkan pesan terenkripsi, Anda harus melakukan prosedur verifikasi sidik jari kembali, dengan setiap kontak Anda.\n\nLakukan ini sebagai usaha terakhir.</string>
+    <string name="omemo__dialog_purge_keys__button_purge_keys">Bersihkan kunci</string>
+    <string name="omemo__dialog_delete_device__header">Hapus perangkat</string>
+    <string name="omemo__dialog_delete_device__text">Apakah Anda yakin ingin menghapus perangkat %s?</string>
+    <string name="omemo__dialog_delete_device__button_delete">Hapus</string>
+    <string name="omemo__chat_settings__button_start_encrypted_chat">Mulai obrolan terenkripsi</string>
+    <string name="omemo__chat_settings__button_open_encrypted_chat">Buka obrolan terenkripsi</string>
+    <string name="omemo__chat_settings__button_open_regular_chat">Buka obrolan reguler</string>
+</resources>

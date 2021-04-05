@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_jingle_message__header">%s զանգ</string>
+    <string name="dialog_jingle_message__status_search">Որոնել...</string>
+    <string name="jingle__system_message__cancelled_call">Չեղարկված զանգ</string>
+</resources>

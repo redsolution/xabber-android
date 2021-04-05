@@ -26,7 +26,7 @@
     <string name="debug_log_files_activity_title">Logdateien</string>
     <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
     <string name="debug_crash_reports_title">Absturz- und Diagnosedaten teilen\nHilf den App-Entwicklern Xabber zu verbessern indem Du erlaubst, die Absturz- und Diagnosedaten mit ihnen zu teilen (Um die Änderung wirksam werden zu lassen, muss die Anwendung neu gestartet werden).</string>
-    <string name="debug_use_develop_api_title">Xabber-Entwicklung API verwenden\nÄnderungen werden nach dem Neustart übernommen</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Xabber-Entwicklung API verwenden\nÄnderungen werden nach dem Neustart übernommen</string>
     <string name="debug_sync_bookmarks_on_start_title">Lesezeichen beim Start synchronisieren</string>
     <string name="debug_fetch_crowdfunding_feed_title">Crowdfunding-Feed jetzt abrufen</string>
     <string name="debug_crash_reports_dialog_title">Absturz- und Diagnosedaten</string>
@@ -86,7 +86,7 @@
     <string name="connection_wifi_lock">WiFi aktiv lassen\nWiFi bleibt im Standbymodus aktiv. Dies erhöht die Akku-Nutzung</string>
     <string name="contacts_reset_offline">Offline-Einstellungen zurücksetzen\nIndividuelle Einstellungen für Gruppen und Konten zurücksetzen.</string>
     <string name="contacts_reset_offline_warning">Sollen die persönlichen Einstellungen für Gruppen und Konten wirklich zurückgesetzt werden?</string>
-    <string name="contacts_reset_offline_circle">Offline-Einstellungen zurücksetzen\nIndividuelle Einstellungen für Kreise und Konten zurücksetzen</string>
+    <string name="contacts_reset_offline_circle" comment="contacts_reset_offline_circle">Offline-Einstellungen zurücksetzen\nIndividuelle Einstellungen für Kreise und Konten zurücksetzen</string>
     <string name="contacts_reset_offline_warning_circle">Möchten Sie wirklich die individuellen Einstellungen für Kreise und Konten löschen?</string>
     <string name="events_first_only">Alarm bei erster Nachricht</string>
     <string name="events_first_only_summary">Benachrichtigung nur bei der ersten Nachricht</string>

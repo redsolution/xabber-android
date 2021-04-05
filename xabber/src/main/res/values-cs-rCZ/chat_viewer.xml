@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">Soubor nelze otevřít</string>
     <string name="uploaded_files_count">Odesílání… %s</string>
     <string name="unread_messages">Nepřečtené zprávy</string>
-    <string name="xabber_chat_title">Oficiální Xabber</string>
-    <string name="xabber_chat_description">Informační kanál</string>
-    <string name="xabber_join_button">Podporujte Xabber</string>
     <string name="action_new_contact">Nový kontakt</string>
 </resources>

@@ -8,7 +8,7 @@
     <string name="account_priority">Priorita</string>
     <string name="account_resource">Zdroj</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">Nejprve si musíte <a href="http://www.google.com/#q=register an XMPP account">vytvořit XMPP účet</a> než ho přidáte do Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Nejprve si musíte <a href="http://www.google.com/#q=register an XMPP account">vytvořit XMPP účet</a> než ho přidáte do Xabber!</string>
     <string name="account_compression_summary">Zaškrtnutím povolíte kompresi dat</string>
     <string name="account_custom">Vlastní nastavení hostitele</string>
     <string name="account_custom_summary">Použij vlastní nastavení hostitele namísto SRV záznamu</string>
@@ -80,6 +80,6 @@
     <string name="account_bookmarks">Záložky</string>
     <string name="account_bookmarks_summary">Seznam záložek pro tento účet</string>
     <string name="account_sync">Synchronizace</string>
-    <string name="account_sync_summary">Synchronizace s účtem Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronizace s účtem Xabber</string>
     <string name="bookmark_not_supported">Server nepodporuje záložky.</string>
 </resources>

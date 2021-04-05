@@ -22,8 +22,15 @@
     <string name="CONNECTION_FAILED">Ошибка подключения</string>
     <string name="contact_add">Добавить контакт</string>
     <string name="contact_delete">Удалить</string>
+    <string name="contact_delete_full">Удалить контакт</string>
     <string name="contact_block">Заблокировать контакт</string>
+    <string name="contact_block_and_delete">Удалить и Заблокировать</string>
     <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+    <string name="groupchat_leave">Покинуть</string>
+    <string name="groupchat_leave_full">Покинуть группу</string>
+    <string name="groupchat_leave_confirm">Вы действительно хотите покинуть группу %s?</string>
+    <string name="contact_delete_confirm_short">Вы действительно хотите удалить контакт &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="contact_delete_warning">Вы сможете обмениваться сообщениями и запросами подписки</string>
     <string name="discard_subscription">Запретить подписку</string>
     <string name="archive_chat">Архивировать</string>
     <string name="unarchive_chat">Разархивировать</string>
@@ -38,6 +45,10 @@
     <string name="exit">Выход</string>
     <string name="group_active_chat">Активные чаты</string>
     <string name="group_none">Вне групп</string>
+    <string name="no_group_contacts"><i>Контакты</i></string>
+    <string name="circle_remove">Удалить круг</string>
+    <string name="circle_remove_confirm">Вы действительно хотите удалить круг %s? Пользователи из этого круга останутся в списке контактов.</string>
+    <string name="circle_rename">Переименовать круг</string>
     <string name="group_remove">Удалить группу</string>
     <string name="group_remove_confirm">Вы действительно хотите удалить группу %s? Пользователи этой группы остануться в списке контактов.</string>
     <string name="group_rename">Переименовать группу</string>
@@ -59,6 +70,7 @@
     <string name="start_at_boot">Запускаться при включении устройства</string>
     <string name="start_at_boot_suggest">Вы хотите запускать Xabber при включении телефона?\nИзменить эту настройку можно в меню \"Настройки\" → \"Настройки подключения\" → \"Запускать при включении телефона\"</string>
     <string name="contact_search_hint">Поиск контактов</string>
+    <string name="sender_is_you">Вы: </string>
     <string name="xmpp_accounts">Учётные записи XMPP</string>
     <string name="block_list">Черный список</string>
     <string name="contact_blocked_successfully">Контакт успешно заблокирован</string>
@@ -66,6 +78,8 @@
     <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
     <string name="error_unblocking_contacts">Не удалось разблокировать контакты</string>
     <string name="block_contact_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+    <string name="block_contact_confirm_short">Вы действительно хотите заблокировать &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_warning">Вы не сможете обмениваться сообщениями и информацией о присутствии с &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Вы действительно хотите разблокировать все контакты из аккаунта %1$s?</string>
     <string name="unblock_all">Разблокировать всех</string>
     <string name="unblock_selected">Разблокировать выбранные</string>
@@ -78,6 +92,10 @@
     <string name="clear_log">Удалить старые файлы журнала</string>
     <string name="open_log_file">Открыть</string>
     <string name="send_log_file">Отправить</string>
+    <string name="send_all_log_files">Отправить все файлы журнала отладки</string>
+    <string name="voice_download_dialog_message">Xabber может автоматически загружать все входящие медиа-файлы. Это удобно, но может скомпрометировать адрес устойства, а также привести к загрузке большого объема данных.</string>
+    <string name="voice_download_dialog_message_settings">Вы всегда можете изменить это в <b>настройках подключения</b>.</string>
+    <string name="voice_download_dialog_agree">Загружать автоматически</string>
     <string name="synchronize_bookmarks">Синхронизировать закладки</string>
     <string name="remove_all_bookmarks">Удалить все</string>
     <string name="remove_selected_bookmarks">Удалить выбранные</string>
@@ -95,6 +113,7 @@
     <string name="no_messages">Нет сообщений</string>
     <string name="show_all_chats">Показать все чаты</string>
     <string name="category_title_contacts">Контакты</string>
+    <string name="voice_message">Аудиосообщение</string>
     <string name="showcase_contact_list_text_1">Смахните влево или вправо чтобы поместить чат в архив</string>
     <string name="last_seen_now">был в сети только что</string>
     <string name="last_seen_minutes">был в сети %1$s минут назад</string>
@@ -105,4 +124,21 @@
     <string name="last_seen_date">был в сети %1$s</string>
     <string name="mark_all_as_read_button">Отметить все сообщения как прочитанные</string>
     <string name="all_chats_were_market_as_read_toast">Все сообщения были помечены как прочитанные</string>
+    <string name="hide_offline_always">Всегда скрывать</string>
+    <string name="dialog_circle_settings__label_common_settings">Использовать общие настройки</string>
+    <string name="dialog_circle_settings__header">Настройки круга</string>
+    <string name="dialog_circle_settings__button_apply">Применить</string>
+    <string name="contact_list__placeholder">Пожалуйста, выберите контакт для просмотра информации</string>
+    <string name="synchronization__text_all_chats_loaded">Все чаты загружены</string>
+    <string name="circles__name_general_circle">Общие настройки</string>
+    <string name="circles__name_non_roster_circle">Не в списке контактов</string>
+    <string name="dialog_add_circle__error__text_input_name">Пожалуйста, введите ваше имя!</string>
+    <string name="dialog_add_circle__error__text_wrong_name">Неправильное имя</string>
+    <string name="application_state_reconnect_after_some_seconds">Переподключение через %d секунд&#8230;</string>
+    <string name="recent_chat__last_message_retracted">Сообщение отозвано</string>
+    <string name="recent_chat__decrypting_messages">Расшифровка сообщений</string>
+    <string name="saved_messages__hint_forward_here">Перешлите сюда для сохранения</string>
+    <string name="category_recent_chats">Недавние чаты</string>
+    <string name="recent_chat__last_message__attachments">%d вложений</string>
+    <string name="recent_chat__last_message__private_invitation">Приглашение в приватный чат</string>
 </resources>

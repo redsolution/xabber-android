@@ -106,8 +106,5 @@
     <string name="toast_could_not_open_file">Fișierul nu se poate deschide</string>
     <string name="uploaded_files_count">Se încarcă %s</string>
     <string name="unread_messages">Mesaje necitite</string>
-    <string name="xabber_chat_title">Xabber oficial</string>
-    <string name="xabber_chat_description">News Feed</string>
-    <string name="xabber_join_button">Sprijină Xabber</string>
     <string name="action_new_contact">Contact nou</string>
 </resources>

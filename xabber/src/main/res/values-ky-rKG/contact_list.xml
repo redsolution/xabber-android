@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_viewer">Чат</string>
+    <string name="contact_delete">Өчүрүү</string>
+    <string name="exit">Чыгуу</string>
+    <string name="show_offline_normal">Жалпы орнотууларды колдонуу</string>
+    <string name="show_offline_settings">Желеде контактын көрүнүшү</string>
+    <string name="contact_search_hint">Контакты издөө</string>
+    <string name="block_list">Кара тизмек</string>
+    <string name="contact_blocked_successfully">Контакт ийгиликтүү тосмолонду</string>
+    <string name="error_blocking_contact">Контакты тосмолоого мүмкүнчүк болбоду</string>
+    <string name="contacts_unblocked_successfully">Контакт ийгиликтүү тосмолонду</string>
+    <string name="error_unblocking_contacts">Контакты тосмолоого мүмкүнчүк болбоду</string>
+    <string name="open_log_file">Ачык</string>
+    <string name="send_log_file">Жөнөтүү</string>
+    <string name="unread_chats">Окулбагандар</string>
+    <string name="archived_chats">Чаттардын архиви</string>
+    <string name="all_chats">Бардык чаттар</string>
+    <string name="no_messages">Билдирүүлөр жок</string>
+    <string name="show_all_chats">Бардык чаттарды көрсөтүү</string>
+    <string name="category_title_contacts">Контакттар</string>
+</resources>

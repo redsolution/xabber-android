@@ -8,7 +8,7 @@
     <string name="account_priority">Προτεραιότητα</string>
     <string name="account_resource">Πόρος</string>
     <string name="account_server_name">Εξυπηρετητής</string>
-    <string name="account_xmpp_register_warning">Πρέπει να<a href="http://www.google.com/#q=register an XMPP account">καταχωρήσετε έναν λογαριασμό XMPP</a> πριν τον προσθέσετε στο Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Πρέπει να<a href="http://www.google.com/#q=register an XMPP account">καταχωρήσετε έναν λογαριασμό XMPP</a> πριν τον προσθέσετε στο Xabber!</string>
     <string name="account_user_name">Όνομα Χρήστη</string>
     <string name="settings_account__alert_server_not_specified">Δεν έχει καθοριστεί όνομα διακομιστή</string>
     <string name="settings_account__alert_xmpp_id_not_specified">Δεν έχει καθοριστεί όνομα χρήστη</string>
@@ -48,12 +48,6 @@
     <string name="account_add__alert_registration_failed">Αποτυχία εγγραφής λογαριασμού στον διακομιστή.</string>
     <string name="account_add__alert_no_server_info">Αδυναμία λήψης πληροφοριών διακομιστή.</string>
     <string name="account_add__alert_incorrect_xmpp_id">Εσφαλμένο όνομα χρήστη</string>
-    <string name="account_add__alert_invalid_domain">: μη έγκυρος τομέας</string>
-    <string name="account_add__alert_invalid_symbols_at">: υπάρχουν πολλαπλά \"@\"-σύμβολα</string>
-    <string name="account_add__alert_localpart_invalid">: μη έγκυρο τοπικό τμήμα</string>
-    <string name="account_add__alert_localpart_absent">: Το \"@\" είναι παρόν χωρίς τοπικό τμήμα</string>
-    <string name="account_add__alert_localpart_invalid_symbols">: το σύμβολο \"%s\" δεν είναι αποδεκτό στο τοπικό τμήμα</string>
-    <string name="account_add__alert_invalid_slash">: Ο χαρακτήρας \"/\" δεν είναι αποδεκτός</string>
     <string name="account_color">Χρώμα λογαριασμού</string>
     <string name="account_color_name_green">Πράσινο</string>
     <string name="account_color_name_orange">Πορτοκαλί</string>
@@ -102,7 +96,7 @@
     <string name="account_bookmarks">Σελιδοδείκτες</string>
     <string name="account_bookmarks_summary">Λίστα με σελιδοδείκτες για αυτόν το λογαριασμό</string>
     <string name="account_sync">Συγχρονισμός</string>
-    <string name="account_sync_summary">Συγχρονισμός με λογαριασμό Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Συγχρονισμός με λογαριασμό Xabber</string>
     <string name="account_vcard">Εικόνα προφίλ, vCard</string>
     <string name="account_vcard_summary">Επεξεργαστείτε τα στοιχεία του προφίλ και vCard</string>
     <string name="bookmark_not_supported">Ο διακομιστής δεν υποστηρίζει σελιδοδείκτες.</string>

@@ -114,10 +114,19 @@
     <string name="toast_could_not_open_file">Nie można otworzyć pliku</string>
     <string name="uploaded_files_count">Wgrywanie... %s</string>
     <string name="unread_messages">Nieprzeczytane wiadomości</string>
-    <string name="xabber_chat_title">Publiczny Xabber</string>
-    <string name="xabber_chat_description">Kanał wiadomości</string>
-    <string name="xabber_join_button">Wspieraj Xabber</string>
     <string name="action_new_contact">Dodaj kontakt</string>
     <string name="loading_history">Ładowanie historii...</string>
     <string name="edit_message__header">Edytuj wiadomość</string>
+    <string name="message__delivering_state__error">Wiadomość błędu</string>
+    <string name="message__delivering_state__pending">Wiadomość nie została wysłana</string>
+    <string name="message__delivering_state__sent">Wiadomość wysłana</string>
+    <string name="message__delivering_state__delivered">Wiadomość dostarczona do użytkownika</string>
+    <string name="message__delivering_state__displayed">Wiadomość przeczytana</string>
+    <string name="message__delivering_state__archived">Wiadomość z archiwum</string>
+    <string name="message__delivering_state__saved">Wiadomość zapisana</string>
+    <string name="emoji_list__catelory_name__animals_and_nature">Zwierzęta i przyroda</string>
+    <string name="emoji_list__catelory_name__food_and_drinks">Żywność i napoje</string>
+    <string name="emoji_list__catelory_name__travel_and_places">Podróże i miejsca</string>
+    <string name="emoji_list__catelory_name__events">Wydarzenia</string>
+    <string name="emoji_list__catelory_name__objects">Obiekty</string>
 </resources>

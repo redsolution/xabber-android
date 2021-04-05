@@ -17,4 +17,8 @@
     <string name="saved_statuses">Status salvos</string>
     <string name="clear_status_history">Limpar histórico de status</string>
     <string name="status_message">Mensagem de status</string>
+    <string name="online">Online</string>
+    <string name="dialog_status_editor__label_custom_status">Mensagem de status personalizada</string>
+    <string name="dialog_status_editor__label_apply_to_all">Aplicar a todas as contas</string>
+    <string name="offline">Desconectado</string>
 </resources>

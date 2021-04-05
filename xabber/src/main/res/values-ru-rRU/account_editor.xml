@@ -8,7 +8,7 @@
     <string name="account_priority">Приоритет</string>
     <string name="account_resource">Ресурс</string>
     <string name="account_server_name">Сервер</string>
-    <string name="account_xmpp_register_warning">Вы должны <a href="http://www.google.com/#q=зарегистрировать учётную запись XMPP">зарегистрировать учётную запись XMPP</a> перед тем, как добавить её в Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Вы должны <a href="http://www.google.com/#q=зарегистрировать учётную запись XMPP">зарегистрировать учётную запись XMPP</a> перед тем, как добавить её в Xabber!</string>
     <string name="account_user_name">Имя пользователя</string>
     <string name="settings_account__alert_server_not_specified">Не указано имя сервера</string>
     <string name="settings_account__alert_xmpp_id_not_specified">Не указано имя пользователя</string>
@@ -48,6 +48,12 @@
     <string name="account_add__alert_registration_failed">Не удалось зарегистрировать аккаунт на сервере.</string>
     <string name="account_add__alert_no_server_info">Не удалось получить информацию о сервере.</string>
     <string name="account_add__alert_incorrect_xmpp_id">Неверное имя пользователя</string>
+    <string name="account_add__alert_invalid_domain">Неверное имя пользователя: некорректный домен</string>
+    <string name="account_add__alert_invalid_symbols_at">Неверное имя пользователя: присутствует несколько символов \"@\"</string>
+    <string name="account_add__alert_localpart_invalid">Неверное имя пользователя: некорректная локальная часть</string>
+    <string name="account_add__alert_localpart_absent">Неверное имя пользователя: присутствует символ \"@\" без локальной части</string>
+    <string name="account_add__alert_localpart_invalid_symbols">Неверное имя пользователя: использование символа \"%s\" недопустимо в локальной части</string>
+    <string name="account_add__alert_invalid_slash">Неверное имя пользователя: использование символа \"/\" недопустимо</string>
     <string name="account_color">Цвет учётной записи</string>
     <string name="account_color_name_green">Зеленый</string>
     <string name="account_color_name_orange">Оранжевый</string>
@@ -86,7 +92,7 @@
     <string name="blocked_contact">Заблокированный контакт</string>
     <string name="blocked_group">Заблокированная группа</string>
     <string name="blocked_domain">Заблокированный домен</string>
-    <string name="blocked_contacts">Заблокированные контакты</string>
+    <string name="blocked_contacts">Чёрный список</string>
     <string name="blocked_contact_status">Заблокирован</string>
     <string name="blocked_contacts_unknown">Поддержка блокировки контактов ещё не определена.</string>
     <string name="blocked_contacts_not_supported">Блокировка не поддерживается сервером.</string>
@@ -117,7 +123,7 @@
     <string name="account_bookmarks">Закладки</string>
     <string name="account_bookmarks_summary">Список закладок этой учётной записи</string>
     <string name="account_sync">Синхронизация</string>
-    <string name="account_sync_summary">Синхронизация с аккаунтом Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Синхронизация с аккаунтом Xabber</string>
     <string name="account_vcard">Аватар, данные профиля </string>
     <string name="account_vcard_summary">Редактирование аватара и данных профиля</string>
     <string name="avatar_successfully_published">Аватар опубликован!</string>
@@ -142,6 +148,7 @@
     <string name="settings_account__blocklist__button_block">Заблокировать</string>
     <string name="dialog_block_xmpp_address__text">Блокировать указанный XMPP адрес</string>
     <string name="dialog_block_xmpp_address__hint_address">имя@сервер.ru</string>
+    <string name="dialog_quit_account__confirm">Хотите выйти из этого аккаунта? Аккаунт не будет удален с сервера.</string>
     <string name="settings_account__dialog_terminate_sessions__header">Завершить сеансы</string>
     <string name="delete_settings__optional_button__delete_synced_account">Удалить синхронизированный XMPP аккаунт</string>
     <string name="dialog_change_password__error__text_input_pass">Пожалуйста, введите пароль!</string>

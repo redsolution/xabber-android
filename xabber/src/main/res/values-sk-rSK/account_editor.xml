@@ -72,6 +72,6 @@
     <string name="account_bookmarks">Záložky</string>
     <string name="account_bookmarks_summary">Zoznam zálo¾iek pre toto konto</string>
     <string name="account_sync">Synchronizácia</string>
-    <string name="account_sync_summary">Synchronizácia s Xabber účtom</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronizácia s Xabber účtom</string>
     <string name="bookmark_not_supported">Server nepodporuje záložky.</string>
 </resources>

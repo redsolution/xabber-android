@@ -16,7 +16,7 @@
     <string name="channel_custom_keyphrase_description">Canal de notificação personalizado para palavra-chave:</string>
     <string name="channel_attention_title">Chamadas de atenção</string>
     <string name="channel_attention_description">Notificações para pedidos de atenção</string>
-    <string name="channel_private_chat_title">Chats privados</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Chats privados</string>
     <string name="channel_private_chat_description">Notificações sobre mensagens em conversas privadas</string>
     <string name="channel_group_chat_title">Conversas em grupo</string>
     <string name="channel_group_chat_description">Notificações sobre mensagens em conversas em grupo</string>

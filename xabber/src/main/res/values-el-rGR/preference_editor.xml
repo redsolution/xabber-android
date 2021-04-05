@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Αρχεία καταγραφής</string>
     <string name="debug_connection_errors_title">Εμφάνιση σφαλμάτων σύνδεσης\nΕμφάνισε εξαιρέσεις σύνδεσης σε αναδυόμενα παράθυρα</string>
     <string name="debug_crash_reports_title">Διαμοιρασμός δεδομένων συντριβής και διαγνωστικών\nΒοηθήστε τους προγραμματιστές της εφαρμογής να βελτιώσουν το Xabber επιτρέποντας τον διαμοιρασμό δεδομένων συντριβής και διαγνωστικών μαζί τους (παρακαλώ επανεκκινήστε την εφαρμογή για να εφαρμοστούν οι αλλαγές).</string>
-    <string name="debug_use_develop_api_title">Χρήση του εργαλείου προγραμματισμού Xabber API\nΟι αλλαγές θα εφαρμοστούν μετά την επανεκκίνηση</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Χρήση του εργαλείου προγραμματισμού Xabber API\nΟι αλλαγές θα εφαρμοστούν μετά την επανεκκίνηση</string>
     <string name="debug_fetch_crowdfunding_feed_title">Φέρε ροή χρηματοδότησης από το πλήθος τώρα</string>
     <string name="debug_crash_reports_dialog_title">Δεδομένα συντριβής και διαγνωστικών</string>
     <string name="debug_crash_reports_dialog_message">Το Xabber συλλέγει αναφορές σφαλμάτων ανώνυμα. Μπορείτε να το απενεργοποιήσετε στις ρυθμίσεις εντοπισμού σφαλμάτων, αλλά αυτό θα εμποδίσει την ικανότητά μας να παρέχουμε αξιόπιστη εμπειρία μηνυμάτων στους χρήστες Xabber.</string>

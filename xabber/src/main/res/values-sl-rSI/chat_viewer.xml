@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">Datoteke ni mogoče odpreti</string>
     <string name="uploaded_files_count">Poteka pošiljanje %s</string>
     <string name="unread_messages">Neprebrana sporočila</string>
-    <string name="xabber_chat_title">Uradne novice Xabber</string>
-    <string name="xabber_chat_description">Novičarski vir</string>
-    <string name="xabber_join_button">Podprite Xabber</string>
     <string name="action_new_contact">Nov stik</string>
 </resources>

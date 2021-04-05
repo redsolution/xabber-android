@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Спеціальний канал сповіщень для ключової фрази:</string>
     <string name="channel_attention_title">Виклики уваги</string>
     <string name="channel_attention_description">Повідомлення про виклики уваги</string>
-    <string name="channel_private_chat_title">Приватні чати</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Приватні чати</string>
     <string name="channel_private_chat_description">Сповіщення про повідомлення в приватних чатах</string>
     <string name="channel_group_chat_title">Групові чати</string>
     <string name="channel_group_chat_description">Сповіщення про повідомлення в групових чатах</string>

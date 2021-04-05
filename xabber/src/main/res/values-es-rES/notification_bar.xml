@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Vista de notificación personalizada para frase clave:</string>
     <string name="channel_attention_title">Llamadas de atención</string>
     <string name="channel_attention_description">Notificaciones de llamadas de atención</string>
-    <string name="channel_private_chat_title">Chalas privadas</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Chalas privadas</string>
     <string name="channel_private_chat_description">Notificaciones sobre mensajes en charlas privadas</string>
     <string name="channel_group_chat_title">Charlas de grupo</string>
     <string name="channel_group_chat_description">Notificaciones sobre mensajes en charlas de grupo</string>

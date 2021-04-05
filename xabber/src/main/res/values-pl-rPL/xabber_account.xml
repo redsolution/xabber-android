@@ -139,4 +139,14 @@
     <string name="password_reset_success">Prośba o reset hasła została wysłana. Sprawdź: %1$s</string>
     <string name="password_reset_fail">Nie udało się zresetować hasła</string>
     <string name="password_reset_need_email">Resetowanie hasła wymaga co najmniej jednego potwierdzonego e-mail konta</string>
+    <string name="xabber_account__sync__settings_already_synced">Ustawienia są już zsynchronizowane</string>
+    <string name="xabber_account__sync__settings_will_be_downloaded">Ustawienia zostaną pobrane z chmury</string>
+    <string name="xabber_account__sync__settings_will_be_uploaded">Ustawienia lokalne zostaną przesłane do chmury</string>
+    <string name="xabber_account__sync__acc_will_be_deleted">Konto lokalne zostanie usunięte</string>
+    <string name="xabber_account__sync__local_acc">Konto lokalne</string>
+    <string name="xabber_account__sync__remote_acc">Zdalne konto</string>
+    <string name="xabber_account__sync_status__disabled">Synchronizacja wyłączona</string>
+    <string name="xabber_account__sync_status__synced">Ustawienia są zsynchronizowane</string>
+    <string name="xabber_account__sync_status__not_synced">Ustawienia nie są zsynchronizowane z chmurą</string>
+    <string name="xabber_account__sync__error_no_permission_to_sync">Twoje konto Xabber nie ma uprawnień do synchronizacji ustawień kont XMPP!</string>
 </resources>

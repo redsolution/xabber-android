@@ -26,7 +26,7 @@
     <string name="debug_log_files_activity_title">Berkas log</string>
     <string name="debug_connection_errors_title">Tampilkan kesalahan jaringan\nMenampilkan layar munculan tentang pengecualian koneksi</string>
     <string name="debug_crash_reports_title">Membagikan data kerusakan dan diagnosis\nMembantu peningkatan Xabber dengan mengizinkan pembagian data kerusakan dan diagnosis (mohon mulai ulang aplikasi untuk menerapkan perubahan).</string>
-    <string name="debug_use_develop_api_title">Gunakan pengembang Xabber API\nPerubahan diterapkan setelah dimulai ulang</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Gunakan pengembang Xabber API\nPerubahan diterapkan setelah dimulai ulang</string>
     <string name="debug_sync_bookmarks_on_start_title">Sinkronisasikan markah saat mulai</string>
     <string name="debug_fetch_crowdfunding_feed_title">Mulai umpan penggalangan dana sekarang</string>
     <string name="debug_crash_reports_dialog_title">Data kerusakan dan diagnosis</string>
@@ -86,7 +86,7 @@
     <string name="connection_wifi_lock">Jaga WiFi aktif\nJaga WiFi tetap aktif. Fitur ini akan meningkatkan penggunaan baterai</string>
     <string name="contacts_reset_offline">Kembalikan pengaturan luring\nBersihkan pengaturan pribadi untuk grup dan akun</string>
     <string name="contacts_reset_offline_warning">Apakah Anda yakin ingin menghapus pengaturan pribadi untuk grup dan akun?</string>
-    <string name="contacts_reset_offline_circle">Reset pengaturan offline\nMembersihkan pengaturan individual untuk lingkar dan akun</string>
+    <string name="contacts_reset_offline_circle" comment="contacts_reset_offline_circle">Reset pengaturan offline\nMembersihkan pengaturan individual untuk lingkar dan akun</string>
     <string name="contacts_reset_offline_warning_circle">Anda yakin mau membersihkan pengaturan individual untuk lingkar dan akun?</string>
     <string name="events_first_only">Ingatkan pada pesan pertama</string>
     <string name="events_first_only_summary">Notifikasi hanya untuk pesan pertama dalam obrolan</string>

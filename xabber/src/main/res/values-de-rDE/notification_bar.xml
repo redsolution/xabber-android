@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="accounts_offline">
-        <item quantity="one">%1$d Konto offline</item>
-        <item quantity="other">%1$d Konten offline</item>
-    </plurals>
-    <plurals name="new_chat_messages">
-        <item quantity="one">%1$d neue Nachricht</item>
-        <item quantity="other">%1$d neue Nachrichten</item>
-    </plurals>
-    <plurals name="new_chat_messages_from_contact">
-        <item quantity="one">%1$d neue Nachricht von %3$s</item>
-        <item quantity="other">%1$d neue Nachrichten von %3$s</item>
-    </plurals>
-    <plurals name="accounts_of_online">
-        <item quantity="one">%1$d von %2$d Konto online</item>
-        <item quantity="other">%1$d von %2$d Konten online</item>
-    </plurals>
-    <plurals name="accounts_of_connecting">
-        <item quantity="one">%1$d von %2$d Konto verbinden...</item>
-        <item quantity="other">%1$d von %2$d Konten verbinden...</item>
-    </plurals>
-    <plurals name="accounts_of_waiting_to_connect">
-        <item quantity="one">%1$d von %2$d Konto wartet auf eine Verbindung</item>
-        <item quantity="other">%1$d von %2$d Konten warten auf eine Verbindung</item>
-    </plurals>
     <string name="AUTHENTICATION_FAILED">Autorisierungsfehler</string>
     <string name="connection_state_sync">Synchronisierung läuft</string>
     <string name="otr_verification_in_progress">Hier klicken um abzubrechen.</string>
@@ -40,7 +16,7 @@
     <string name="channel_custom_keyphrase_description">Benutzerdefinierter Benachrichtigungskanal für Schlüsselwörter:</string>
     <string name="channel_attention_title">Aufmerksamkeitsanfrage</string>
     <string name="channel_attention_description">Benachrichtigungen für Aufmerksamkeitsanfrage</string>
-    <string name="channel_private_chat_title">Private Chats</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Private Chats</string>
     <string name="channel_private_chat_description">Benachrichtigungen über Nachrichten in privaten Chats</string>
     <string name="channel_group_chat_title">Gruppenchats</string>
     <string name="channel_group_chat_description">Benachrichtigungen über Nachrichten in Gruppenchats</string>

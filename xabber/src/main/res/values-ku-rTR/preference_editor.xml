@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="events_sound">Deng</string>
+    <string name="interface_theme_dark">Tarî</string>
+    <string name="interface_theme_light">Vekirî</string>
+    <string name="about_viewer">Derheq</string>
+    <string name="chats_font_size_large">Mezin</string>
+    <string name="chats_font_size_normal">Normal</string>
+    <string name="category_about">Derheq</string>
+</resources>

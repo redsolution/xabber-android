@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Kanal obvestil po meri za ključno besedo:</string>
     <string name="channel_attention_title">Klici za usmerjanje pozornosti</string>
     <string name="channel_attention_description">Obvestila za klice pozornosti</string>
-    <string name="channel_private_chat_title">Zasebni pogovori</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Zasebni pogovori</string>
     <string name="channel_private_chat_description">Obvestila o sporočilih v zasebnih pogovorih</string>
     <string name="channel_group_chat_title">Skupinski pogovori</string>
     <string name="channel_group_chat_description">Obvestila o sporočilih v skupinskih pogovorih</string>

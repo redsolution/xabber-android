@@ -7,5 +7,5 @@
     <string name="account_port">Porti </string>
     <string name="account_priority">Ohun ìṣáájú </string>
     <string name="account_server_name">A pé ranse</string>
-    <string name="account_xmpp_register_warning">O gbodo ni ohun ìgbà ní wọlé lórí XMPP kò tó fi sì Xabber </string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">O gbodo ni ohun ìgbà ní wọlé lórí XMPP kò tó fi sì Xabber </string>
 </resources>

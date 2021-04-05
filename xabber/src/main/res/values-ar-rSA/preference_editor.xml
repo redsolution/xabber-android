@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">ملفات السجل</string>
     <string name="debug_connection_errors_title">إظهار أخطاء الاتصال\nإظهار اطارات منبثقة ﻷخطاء الاتصال</string>
     <string name="debug_crash_reports_title">حصة تحطم وتشخيص البيانات\nمساعدة مطوري التطبيق تحسين شبير بالسماح بتبادل البيانات تحطم وتشخيص معهم (الرجاء إعادة تشغيل التطبيق لتطبيق التغييرات).</string>
-    <string name="debug_use_develop_api_title">سيتم تطبيق التغييرات API شبير\nبعد إعادة التشغيل</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">سيتم تطبيق التغييرات API شبير\nبعد إعادة التشغيل</string>
     <string name="debug_fetch_crowdfunding_feed_title">إحضار علاوة تغذية الآن</string>
     <string name="debug_crash_reports_dialog_title">بيانات الأعطال والتشخيص</string>
     <string name="debug_crash_reports_dialog_message">Xabber يجمع تقارير الأخطاء المجهولة. يمكنك تعطيل فإنه في إعدادات التصحيح، ولكن سوف تعوق قدرتنا على توفير تجربة مراسلة موثوق بها للمستخدمين شبير.</string>

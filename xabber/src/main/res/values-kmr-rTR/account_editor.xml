@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_host">Host</string>
+    <string name="account_password">Pêborîn</string>
+    <string name="confirm_password">Pêborîna rastandinê</string>
+    <string name="account_port">Port</string>
+    <string name="account_priority">Pêşikî</string>
+    <string name="account_resource">Çavkanî</string>
+    <string name="account_server_name">Rajekar</string>
+</resources>

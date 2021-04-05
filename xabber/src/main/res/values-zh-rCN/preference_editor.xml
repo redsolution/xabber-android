@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">日志文件</string>
     <string name="debug_connection_errors_title">显示连接错误\n显示连接异常弹出消息</string>
     <string name="debug_crash_reports_title">分享的崩溃和诊断 data\n允许与应用程序开发人员分享崩溃和诊断数据来帮助他们改进 Xabber (请重新启动应用程序以应用更改)。</string>
-    <string name="debug_use_develop_api_title">使用开发 Xabber API\n更改将在重启后应用</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">使用开发 Xabber API\n更改将在重启后应用</string>
     <string name="debug_fetch_crowdfunding_feed_title">立即获取众筹资金</string>
     <string name="debug_crash_reports_dialog_title">崩溃和诊断数据</string>
     <string name="debug_crash_reports_dialog_message">Xabber 收集匿名 bug 报告。你可以在调试设置中禁用它，但它会阻碍我们向 Xabber 用户提供可靠的消息传递经验的能力。</string>

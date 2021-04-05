@@ -114,8 +114,6 @@
     <string name="show_all_chats">Zeige alle Chats</string>
     <string name="category_title_contacts">Kontakte</string>
     <string name="voice_message">Sprachnachricht</string>
-    <string name="image_message">Bild</string>
-    <string name="file_message">Datei</string>
     <string name="showcase_contact_list_text_1">Streichen Sie im Chat nach links oder rechts um ihn zu archivieren</string>
     <string name="last_seen_now">zuletzt gesehen: Gerade eben</string>
     <string name="last_seen_minutes">zul. gesehen vor %1$s Minuten</string>
@@ -130,8 +128,6 @@
     <string name="dialog_circle_settings__label_common_settings">Gemeinsame Einstellungen verwenden</string>
     <string name="dialog_circle_settings__button_apply">Übernehmen</string>
     <string name="contact_list__placeholder">Bitte wählen Sie einen Kontakt aus, um dessen Details anzuzeigen</string>
-    <string name="recent_chat__last_message__images">%d Bilder</string>
-    <string name="recent_chat__last_message__files">%d Dateien</string>
     <string name="synchronization__text_all_chats_loaded">Alle Chats geladen</string>
     <string name="circles__name_general_circle">Allgemein</string>
     <string name="dialog_add_circle__error__text_input_name">Bitte Namen eingeben!</string>

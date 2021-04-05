@@ -90,6 +90,4 @@
     <string name="show_all_chats">הצגת כל ההתכתבויות</string>
     <string name="category_title_contacts">אנשי קשר</string>
     <string name="voice_message">הודעה קולית</string>
-    <string name="image_message">תמונה</string>
-    <string name="file_message">קובץ</string>
 </resources>

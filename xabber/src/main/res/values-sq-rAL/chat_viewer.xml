@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_kick">%1$s u përjashtua</string>
+    <string name="chat_send">Dërgo</string>
+    <string name="clear_history">Fshij historikun</string>
+    <string name="clear_chat_history_dialog_button">Pastro</string>
+    <string name="message_copy">Kopjo</string>
+    <string name="action_ban">%1$s u përjashtua</string>
+    <string name="action_invite_sent">Ftesa është dërguar në %s</string>
+    <string name="action_otr_error">Gabim OTR: %1$s</string>
+    <string name="action_otr_smp_failed">Verifikimi dështoi</string>
+    <string name="action_otr_smp_unverified">Verifikimi dështoi</string>
+</resources>

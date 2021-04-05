@@ -107,4 +107,6 @@
     <string name="all_chats_were_market_as_read_toast">Wszystkie wiadomości zostały oznaczone jako przeczytane</string>
     <string name="recent_chat__last_message_retracted">Wiadomość wycofana</string>
     <string name="recent_chat__decrypting_messages">Odszyfrowywanie wiadomości</string>
+    <string name="recent_chat__last_message__attachments">%d załączników</string>
+    <string name="recent_chat__last_message__private_invitation">Zaproszenie do prywatnego czatu</string>
 </resources>

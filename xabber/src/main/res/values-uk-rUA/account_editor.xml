@@ -8,7 +8,7 @@
     <string name="account_priority">Пріоритет</string>
     <string name="account_resource">Ресурс</string>
     <string name="account_server_name">Сервер</string>
-    <string name="account_xmpp_register_warning">Ви повинні<a href="http://www.google.com/#q=register an XMPP account">зареєструвати обліковий запис XMMP</a> перед тим як додати її до Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Ви повинні<a href="http://www.google.com/#q=register an XMPP account">зареєструвати обліковий запис XMMP</a> перед тим як додати її до Xabber!</string>
     <string name="account_compression_summary">Позначте для включення стиснення даних</string>
     <string name="account_custom">Вказати хост вручну</string>
     <string name="account_custom_summary">Вказати хост для підключення вручну, замість використання SRV запису</string>
@@ -80,6 +80,6 @@
     <string name="account_bookmarks">Закладки</string>
     <string name="account_bookmarks_summary">Список закладок для цього облікового запису</string>
     <string name="account_sync">Синхронізація</string>
-    <string name="account_sync_summary">Синхронізація з обліковим записом Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Синхронізація з обліковим записом Xabber</string>
     <string name="bookmark_not_supported">Сервер не підтримує закладки.</string>
 </resources>

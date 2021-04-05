@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_account">Llogaria</string>
+    <string name="contact_group">Zgjidh grupet</string>
+    <string name="contact_subscribe_confirm">Ndaj statusin e llogarise tënde %1$s me kontaktin?</string>
+    <string name="ENTRY_IS_NOT_FOUND">Kontakti nuk u gjend</string>
+    <string name="group_is_empty">Vendos emrin e grupit</string>
+    <string name="group_name">Emri i grupit</string>
+    <string name="EMPTY_ACCOUNT">Ju lutem zgjidhni një llogari</string>
+    <string name="accept_contact">Autorizo</string>
+    <string name="error_during_crop">Gabim gjatë prerjes së imazhit</string>
+    <string name="accept_muc_private_chat">Prano</string>
+</resources>

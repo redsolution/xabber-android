@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Dostosuj kanał powiadomień dla frazy kluczowej:</string>
     <string name="channel_attention_title">Prośby o uwagę</string>
     <string name="channel_attention_description">Powiadomienie dla wezwań uwagi</string>
-    <string name="channel_private_chat_title">Czat prywatny</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Czat prywatny</string>
     <string name="channel_private_chat_description">Powiadomienia o wiadomościach w prywatnych czatach</string>
     <string name="channel_group_chat_title">Czat grupowy</string>
     <string name="channel_group_chat_description">Powiadomienia o wiadomościach w czatach grupowych</string>

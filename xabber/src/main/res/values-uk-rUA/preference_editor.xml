@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Файли журналу</string>
     <string name="debug_connection_errors_title">Показувати помилки з\'єднання\nВідображати спливаючі сповіщення при обривах з\'єднання</string>
     <string name="debug_crash_reports_title">Збір інформації для діагностики\nДозволивши збір інформації про збої ви допоможете розробникам покращити Xabber (будь ласка, перезапустіть додаток, щоб внести зміни).</string>
-    <string name="debug_use_develop_api_title">Використовуйте розробку Xabber API\nПісля перезапуску будуть застосовані зміни</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Використовуйте розробку Xabber API\nПісля перезапуску будуть застосовані зміни</string>
     <string name="debug_fetch_crowdfunding_feed_title">Отримати потокове фінансування тепер</string>
     <string name="debug_crash_reports_dialog_title">Збір інформації для діагностики</string>
     <string name="debug_crash_reports_dialog_message">Xabber збирає анонімні повідомлення про помилки. Ви можете відключити це в параметрах, але це буде перешкоджати наданню надійного досвіду спілкування користувачам Xabber.</string>

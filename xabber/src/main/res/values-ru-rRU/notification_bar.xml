@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="AUTHENTICATION_FAILED">Ошибка авторизации</string>
+    <string name="connection_state_sync">Выполняется синхронизация</string>
     <string name="otr_verification_in_progress">Нажмите, чтобы прервать.</string>
     <string name="PASSWORD_REQUIRED">Требуется ввести пароль</string>
     <string name="pay_attention">Вас окликнули</string>
@@ -15,12 +16,39 @@
     <string name="channel_custom_keyphrase_description">Специальный канал уведомлений для ключевой фразы:</string>
     <string name="channel_attention_title">Запросы привлечения внимания</string>
     <string name="channel_attention_description">Уведомления о привлечении внимания</string>
-    <string name="channel_private_chat_title">Личные чаты</string>
-    <string name="channel_private_chat_description">Уведомления о сообщениях в личном чате</string>
-    <string name="channel_group_chat_title">Групповые чаты</string>
-    <string name="channel_group_chat_description">Уведомления о сообщениях в групповом чате</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Чаты</string>
+    <string name="channel_private_chat_description">Уведомления о сообщениях в чатах</string>
+    <string name="channel_group_chat_title">Группы</string>
+    <string name="channel_group_chat_description">Уведомления о сообщениях в группах</string>
     <string name="channel_persistent_connection_title">Постоянное подключение</string>
-    <string name="channel_persistent_connection_description">Уведомление о постоянном подключении. Необходимо для получения сообщений</string>
+    <string name="channel_persistent_connection_description">Постоянное уведомление необходимо для поддержания стабильного подключения к серверу</string>
     <string name="channel_events_title">События</string>
-    <string name="channel_events_description">Уведомления о событиях, например: приглашение в групповой чат, запрос подписки, запрос OTR</string>
+    <string name="channel_silent_title">Уведомления без звука</string>
+    <string name="channel_events_description">Уведомления о событиях, например: приглашения в группы, запросы подписки, инициация шифрованного чата</string>
+    <string name="channel_silent_description">Беззвучные уведомления о сообщениях</string>
+    <string name="connection__error__text_timeout_expired">Время ожидания соединения истекло</string>
+    <string name="connection__error__text_disconnected">Отключен</string>
+    <string name="connection__error__text_authentication_failed">Ошибка аутентификации аккаунта %s</string>
+    <string name="connection__error__text_authentication_failed_short">Ошибка аутентификации</string>
+    <string name="connection__error__connection_lost">Соединение разорвано!</string>
+    <string name="connection__error__text_token_invalidated">Токен аккаунта %s был отозван</string>
+    <string name="connection__error__text_token_invalidated_short">Токен был отозван</string>
+    <string name="connection_status__you_are_offline">Вы не в сети</string>
+    <string name="notification__text_sent_a_message">отправил вам сообщение</string>
+    <string name="desktop_notifications__alert_enable__link_text">включить уведомления на рабочем столе</string>
+    <string name="desktop_notifications__alert_enable__text">%s требуется ваше разрешение на</string>
+    <string name="notifications__toast_notifications_not_supported">Браузер не поддерживает уведомления</string>
+    <string name="notofications__desktop_notification__text">Сообщения (%d)</string>
+    <string name="notifications__error__text_could_not_open_new_tab">Не удалось открыть новую вкладку. Пожалуйста, разрешите всплывающие окна</string>
+    <string name="warning__client_not_support_android_browser">Воспользуйтесь android-приложением Xabber</string>
+    <string name="warning__client_not_support_ios_browser">Извините, %s не поддерживает браузеры для iOS.</string>
+    <string name="warning__client_not_support_mobile">Извините, но %s может работать некорректно на вашем устройстве.</string>
+    <string name="client_error__missing_connection_url">Отсутствует URL соединения!</string>
+    <string name="client_warning__no_local_storage">Ваш веб-браузер не поддерживает локальное хранение данных. В браузере Safari наиболее вероятной причиной этого является использование режима Приватного Просмотра.</string>
+    <string name="client_error__option_show_msg_again">Больше не показывать это сообщение</string>
+    <string name="dialog_version_update__header">Обновить %s</string>
+    <string name="dialog_version_update__confirm_text__new_version">Доступна новая версия %s</string>
+    <string name="dialog_version_update__confirm_text__question_reload_page">Перезагрузить страницу, чтобы получить эти изменения?</string>
+    <string name="dialog_version_update__button_reload">обновить</string>
+    <string name="dialog_version_update__option_not_now">не сейчас</string>
 </resources>

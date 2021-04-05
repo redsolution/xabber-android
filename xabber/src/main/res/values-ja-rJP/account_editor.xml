@@ -77,6 +77,6 @@
     <string name="account_bookmarks">ブックマーク</string>
     <string name="account_bookmarks_summary">このアカウントのブックマークのリスト</string>
     <string name="account_sync">同期</string>
-    <string name="account_sync_summary">Xabber アカウントと同期</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Xabber アカウントと同期</string>
     <string name="bookmark_not_supported">サーバーは、ブックマークがサポートされていません。</string>
 </resources>

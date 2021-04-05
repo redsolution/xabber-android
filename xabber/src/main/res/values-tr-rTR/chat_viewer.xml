@@ -142,7 +142,6 @@
     <string name="message_status_uploading">Gönderiliyor..</string>
     <string name="too_many_files_at_once">Bir defada 10 dan fazla gönderemezsiniz</string>
     <string name="toast_no_history">Orada daha fazla ileti geçmişi de</string>
-    <string name="message_by_me">Ben</string>
     <string name="muc_role_moderator">Moderatör</string>
     <string name="muc_role_member">Üye</string>
     <string name="muc_role_visitor">Ziyaretçi</string>
@@ -161,18 +160,11 @@
     <string name="toast_could_not_open_file">Dosya açılamadı</string>
     <string name="uploaded_files_count">Yükleniyor.. %s</string>
     <string name="unread_messages">Okunmamış mesajlar</string>
-    <string name="xabber_chat_title">Xabber yetkilisi</string>
-    <string name="xabber_chat_description">Haber akışı</string>
-    <string name="xabber_join_button">Xabber i Destekleyin</string>
     <string name="action_new_contact">Yeni bağlantı</string>
     <string name="action_new_subscription_request">Yeni abonelik talebi</string>
     <string name="open_this_link">Bu link açılsın mı?</string>
     <string name="open">Aç</string>
     <string name="delete_for_all">%s için de sil</string>
-    <string name="delete_message_title">Mesajı sil</string>
-    <string name="delete_messages_title">%s mesajını sil</string>
-    <string name="delete_message_question">Bu mesajı silmek istediğinizden emin misin?</string>
-    <string name="delete_messages_question">Bu mesajlar silinsin mi?</string>
     <string name="message_edit">Düzenle</string>
     <string name="cancel_action">İptal</string>
     <string name="delete">Sil</string>

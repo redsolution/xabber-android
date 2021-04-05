@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Speciální oznamovací kanál pro klíčovou frázi:</string>
     <string name="channel_attention_title">Upozornění na volání</string>
     <string name="channel_attention_description">Oznámení upozorňující na volání</string>
-    <string name="channel_private_chat_title">Soukromý chat</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Soukromý chat</string>
     <string name="channel_private_chat_description">Upozornění na zprávy v soukromých chatech</string>
     <string name="channel_group_chat_title">Skupinový chat</string>
     <string name="channel_group_chat_description">Upozornění na zprávy ve skupinových chatech</string>

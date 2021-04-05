@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Günlük dosyaları</string>
     <string name="debug_connection_errors_title">Bağlantı hatalarını göster\nBağlantı hatalarını bildiren pencereleri göster</string>
     <string name="debug_crash_reports_title">Diagnotik hata dosyasını paylaşarak \n program geliştiricilerine yardım edebilirsiniz. Bu sayede Xabbler hata ayıklayarak daha iyi bir hale gelebilir. (Değişikliklerin etkin olabilmesi adına lütfen applikasyonu yeniden başlatınız.).</string>
-    <string name="debug_use_develop_api_title">Xabber Geliştirme API\'sini kullanın\nDeğişiklikler yeniden başlatıldıktan sonra uygulanacaktır</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Xabber Geliştirme API\'sini kullanın\nDeğişiklikler yeniden başlatıldıktan sonra uygulanacaktır</string>
     <string name="debug_sync_bookmarks_on_start_title">Başlangıçta yer imlerini senkronize et</string>
     <string name="debug_crash_reports_dialog_title">Crash ve tanılama verileri</string>
     <string name="debug_crash_reports_dialog_message">Xabber isimsiz hata raporlarını toplar. Bu özelliği hata ayıklama ayarlarından devre dışı bırakabilirsiniz fakat Xabber kullanıcılarına güvenilir mesajlaşma deneyimi sağlamamıza engel olacaktır.</string>

@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">自定义密语通知通道：</string>
     <string name="channel_attention_title">Attentions呼叫</string>
     <string name="channel_attention_description">关注呼叫通知</string>
-    <string name="channel_private_chat_title">私密对话</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">私密对话</string>
     <string name="channel_private_chat_description">私聊消息通知</string>
     <string name="channel_group_chat_title">群组聊天</string>
     <string name="channel_group_chat_description">关于群聊中消息的通知</string>

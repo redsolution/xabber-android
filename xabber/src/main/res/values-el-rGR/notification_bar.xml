@@ -15,7 +15,7 @@
     <string name="channel_custom_keyphrase_description">Προσαρμοσμένο κανάλι ειδοποίησης για φράση κλειδί:</string>
     <string name="channel_attention_title">Κλήσεις προσοχής</string>
     <string name="channel_attention_description">Ειδοποιήσεις για κλήσεις προσοχής</string>
-    <string name="channel_private_chat_title">Ιδιωτικές συνομιλίες</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Ιδιωτικές συνομιλίες</string>
     <string name="channel_private_chat_description">Ειδοποιήσεις σχετικά με μηνύματα σε ιδιωτικές συνομιλίες</string>
     <string name="channel_group_chat_title">Ομαδικές συνομιλίες</string>
     <string name="channel_group_chat_description">Ειδοποιήσεις σχετικά με μηνύματα σε ομαδικές συνομιλίες</string>

@@ -8,7 +8,7 @@
     <string name="account_priority">עדיפות</string>
     <string name="account_resource">משאב</string>
     <string name="account_server_name">שרת</string>
-    <string name="account_xmpp_register_warning">עליך <a href="http://www.google.com/#q=register an XMPP account">לרשום חשבון XMPP</a> בטרם הוספתו ל־Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">עליך <a href="http://www.google.com/#q=register an XMPP account">לרשום חשבון XMPP</a> בטרם הוספתו ל־Xabber!</string>
     <string name="account_user_name">שם משתמש</string>
     <string name="settings_account__alert_server_not_specified">לא צוין שם שרת</string>
     <string name="settings_account__alert_xmpp_id_not_specified">לא צוין שם משתמש</string>
@@ -85,6 +85,6 @@
     <string name="account_bookmarks">סימניות</string>
     <string name="account_bookmarks_summary">רשימת הסימניות עבור חשבון זה</string>
     <string name="account_sync">סינכרון</string>
-    <string name="account_sync_summary">סינכרון עם חשבון Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">סינכרון עם חשבון Xabber</string>
     <string name="bookmark_not_supported">השרת אינו תומך בסימניות</string>
 </resources>

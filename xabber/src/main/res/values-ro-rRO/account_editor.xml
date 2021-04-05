@@ -8,7 +8,7 @@
     <string name="account_priority">Prioritate</string>
     <string name="account_resource">Resursă</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">Înainte de a te conecta prin Xabber, trebuie să <a href="http://www.google.com/#q=register an XMPP account">creezi un cont</a>!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Înainte de a te conecta prin Xabber, trebuie să <a href="http://www.google.com/#q=register an XMPP account">creezi un cont</a>!</string>
     <string name="account_compression_summary">Bifaţi pentru a permite comprimarea datelor</string>
     <string name="account_custom">Personalizează domeniul sau adresa</string>
     <string name="account_custom_summary">Utilizaţi setările personalizate de domeniu sau adresă în loc de înregistrările din SRV</string>
@@ -79,6 +79,6 @@
     <string name="account_bookmarks">Semne de carte</string>
     <string name="account_bookmarks_summary">Lista semnelor de carte pentru acest cont</string>
     <string name="account_sync">Sincronizare</string>
-    <string name="account_sync_summary">Sincronizare cu contul Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Sincronizare cu contul Xabber</string>
     <string name="bookmark_not_supported">Serverul nu accepta semne de carte.</string>
 </resources>

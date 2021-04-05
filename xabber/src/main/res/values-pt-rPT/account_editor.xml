@@ -8,7 +8,7 @@
     <string name="account_priority">Prioridade</string>
     <string name="account_resource">Recurso</string>
     <string name="account_server_name">Servidor</string>
-    <string name="account_xmpp_register_warning">Deve <a href="http://www.google.com/#q=register an XMPP account">registar uma conta XMPP</a> antes de a adicionar ao Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Deve <a href="http://www.google.com/#q=register an XMPP account">registar uma conta XMPP</a> antes de a adicionar ao Xabber!</string>
     <string name="account_compression_summary">Selecione para ativar a compressão dos dados</string>
     <string name="account_custom">Hospedeiro personalizado</string>
     <string name="account_custom_summary">Usar definições de hospedeiro personalizado em vez de registo SRV</string>
@@ -78,6 +78,6 @@
     <string name="account_bookmarks">Marcadores</string>
     <string name="account_bookmarks_summary">Lista de marcadores para esta conta</string>
     <string name="account_sync">Sincronização</string>
-    <string name="account_sync_summary">Sincronização com a conta Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Sincronização com a conta Xabber</string>
     <string name="bookmark_not_supported">O servidor não permite marcadores</string>
 </resources>

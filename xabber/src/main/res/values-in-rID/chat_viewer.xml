@@ -148,7 +148,6 @@
     <string name="message_status_uploading">Mengirim...</string>
     <string name="too_many_files_at_once">Anda tak bisa mengirim lebih dari 10 item sekaligus</string>
     <string name="toast_no_history">Tidak ada pesan dalam riwayat</string>
-    <string name="message_by_me">Saya</string>
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_member">Anggota</string>
     <string name="muc_role_visitor">Pengunjung</string>
@@ -167,18 +166,11 @@
     <string name="toast_could_not_open_file">Tidak dapat membuka berkas</string>
     <string name="uploaded_files_count">Mengunggah.. %s</string>
     <string name="unread_messages">Pesan belum dibaca</string>
-    <string name="xabber_chat_title">Xabber official</string>
-    <string name="xabber_chat_description">Umpan Berita</string>
-    <string name="xabber_join_button">Dukung Xabber</string>
     <string name="action_new_contact">Kontak baru</string>
     <string name="action_new_subscription_request">Permintaan langganan baru</string>
     <string name="open_this_link">Buka tautan ini?</string>
     <string name="open">Buka</string>
     <string name="delete_for_all">Hapus juga untuk %s</string>
-    <string name="delete_message_title">Hapus pesan</string>
-    <string name="delete_messages_title">Hapus %s pesan</string>
-    <string name="delete_message_question">Anda yakin menghapus pesan ini?</string>
-    <string name="delete_messages_question">Anda yakin mau menghapus pesan ini?</string>
     <string name="message_edit">Edit</string>
     <string name="cancel_action">Batal</string>
     <string name="delete">Hapus</string>

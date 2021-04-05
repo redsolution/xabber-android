@@ -4,6 +4,7 @@
     <string name="action_status_text_none">%1$s limpou status</string>
     <string name="action_join">%1$s entrou na conferência</string>
     <string name="action_kick">%1$s foi expulso</string>
+    <string name="account_is_offline">Você está offline no momento. As mensagens que você enviar serão entregues na próxima vez que você se conectar.</string>
     <string name="chat_delay">enviado em %s</string>
     <string name="chat_input_hint">Digite sua mensagem aqui</string>
     <string name="chat_send">Enviar</string>
@@ -16,6 +17,10 @@
     <string name="clear_chat_history_dialog_warning">Esta operação não pode ser desfeita.</string>
     <string name="clear_chat_history_for_companion_checkbox">Tente retirar suas mensagens do arquivo do seu parceiro de bate-papo</string>
     <string name="waiting_for_network">Aguardando rede...</string>
+    <plurals name="contact_groupchat_status_member">
+        <item quantity="one">1 membro</item>
+        <item quantity="other">%d membros</item>
+    </plurals>
     <string name="contact_groupchat_status_online">, %d online</string>
     <string name="contact_state_not_in_contact_list">Não está em seus contatos</string>
     <string name="contact_state_no_subscriptions">Nenhuma assinatura</string>
@@ -39,7 +44,7 @@
     <string name="message_quote">Citação</string>
     <string name="message_remove">Remover do histórico</string>
     <string name="message_repeat">Tente reenviar</string>
-    <string name="message_pin">Fixar mensagem</string>
+    <string name="message_pin">Fixar</string>
     <string name="message_otr_show_original">Mostrar mensagens</string>
     <string name="save_history">Salvar histórico local\nArmazenar mensagem no histórico localmente</string>
     <string name="action_attention_called">Chamada de atenção enviada</string>
@@ -83,7 +88,7 @@
     <string name="call_attention">Chamar a atenção</string>
     <string name="chat_more_actions">Mais</string>
     <string name="chat_settings">Definições de conversa</string>
-    <string name="chat_state_composing">Digitando...</string>
+    <string name="chat_state_composing">digitando&#8230;</string>
     <string name="chat_state_composing_voice">gravando uma mensagem de voz&#8230;</string>
     <string name="chat_state_composing_video">gravando uma mensagem de vídeo&#8230;</string>
     <string name="chat_state_composing_upload">enviando um arquivo...</string>
@@ -107,6 +112,10 @@
     <string name="otr_start">Iniciar a criptografia</string>
     <string name="otr_unreadable_message">A mensagem criptografada que você enviou é ilegível</string>
     <string name="otr_not_decrypted_message">Mensagem não pode ser descriptografada</string>
+    <plurals name="forwarded_messages_count">
+        <item quantity="one">%d mensagem encaminhada</item>
+        <item quantity="other">%d mensagens encaminhadas</item>
+    </plurals>
     <string name="pinned_message">Mensagem fixada</string>
     <string name="otr_verification">Verificação de OTR</string>
     <string name="otr_verify_fingerprint">Verificar com impressão digital</string>
@@ -133,7 +142,7 @@
     <string name="error_description_title">Descrição do erro:</string>
     <string name="message_status_sent">Enviado</string>
     <string name="message_status_delivered">Entregue</string>
-    <string name="message_status_displayed">Exibido</string>
+    <string name="message_status_displayed">Visível</string>
     <string name="message_status_synced">Recebeu do histórico</string>
     <string name="message_status_error">Erro</string>
     <string name="message_status_forwarded">Enviado de outro dispositivo </string>
@@ -141,7 +150,6 @@
     <string name="message_status_uploading">Enviando...</string>
     <string name="too_many_files_at_once">Não é possível enviar mais de 10 itens de uma vez</string>
     <string name="toast_no_history">Não existem mais mensagens no histórico</string>
-    <string name="message_by_me">Eu</string>
     <string name="muc_role_moderator">Moderador</string>
     <string name="muc_role_member">Membro</string>
     <string name="muc_role_visitor">Visitante</string>
@@ -149,6 +157,7 @@
     <string name="toast_archived_hide">Arquivos de bate-papo ocultos</string>
     <string name="chat_notification_settings_title">Notificação para este bate-papo</string>
     <string name="error_file_upload_not_support">O servidor %1$s parece não suportar transferência de arquivos. Isso pode acontecer porque Xabber ainda não recebeu recursos de servidor, ou por causa de algum problema.\n\nAtualize a informação do servidor nas configurações da conta → Informações do servidor. Se isso não ajudar, considere usar um servidor que definitivamente suporta transferência de arquivos. Um desses servidores é xabber.org</string>
+    <string name="error_file_upload_disco_in_progress">Ainda estamos determinando se o servidor %1$s suporta ou não a transferência de arquivos.</string>
     <string name="button_join_conference">Junte-se a conferência</string>
     <string name="showcase_chat_text_1">Deslize para a direita para abrir as conversas recentes</string>
     <string name="showcase_chat_text_2">Deslize para a esquerda para abrir as informações de contato</string>
@@ -159,8 +168,17 @@
     <string name="toast_could_not_open_file">O arquivo não pôde ser aberto</string>
     <string name="uploaded_files_count">Enviando.. %s</string>
     <string name="unread_messages">Mensagens não lidas</string>
-    <string name="xabber_chat_title">Xabber oficial</string>
-    <string name="xabber_chat_description">Feed de notícias</string>
-    <string name="xabber_join_button">Ajude o Xabber</string>
     <string name="action_new_contact">Novo contato</string>
+    <string name="action_new_subscription_request">Solicitação de inscrição recebida</string>
+    <string name="open_this_link">Abrir este link?</string>
+    <string name="open">Abrir</string>
+    <string name="delete_for_all">Também excluir para %s</string>
+    <string name="message_edit">Editar</string>
+    <string name="cancel_action">Cancelar</string>
+    <string name="delete">Apagar</string>
+    <string name="edited">(editado às %s)</string>
+    <string name="search__header_chats" comment="Header of searched chats in left panel">Conversas</string>
+    <string name="search__header_messages" comment="Header of searched messages in left panel">Mensagens</string>
+    <string name="saved_messages__header">Mensagens salvas</string>
+    <string name="chat_settings__button_delete_all">Apagar tudo</string>
 </resources>

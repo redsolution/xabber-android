@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="accounts_offline">
-        <item quantity="other">%1$d akun offline</item>
-    </plurals>
-    <plurals name="new_chat_messages">
-        <item quantity="other">%1$d pesan baru</item>
-    </plurals>
-    <plurals name="new_chat_messages_from_contact">
-        <item quantity="other">%1$d pesan baru dari %3$s</item>
-    </plurals>
-    <plurals name="accounts_of_online">
-        <item quantity="other">%1$d dari %2$d akun online</item>
-    </plurals>
-    <plurals name="accounts_of_connecting">
-        <item quantity="other">%1$d dari %2$d akun menghubungkan</item>
-    </plurals>
-    <plurals name="accounts_of_waiting_to_connect">
-        <item quantity="other">%1$d dari %2$d akun menunggu koneksi</item>
-    </plurals>
     <string name="AUTHENTICATION_FAILED">Otorisasi gagal</string>
     <string name="connection_state_sync">Menyinkronkan</string>
     <string name="otr_verification_in_progress">Klik di sini untuk membatalkannya.</string>
@@ -34,7 +16,7 @@
     <string name="channel_custom_keyphrase_description">Kanal notifikasi disesuaikan untuk kata kunci:</string>
     <string name="channel_attention_title">Panggilan mohon perhatian</string>
     <string name="channel_attention_description">Notifikasi untuk panggilan mohon perhatian</string>
-    <string name="channel_private_chat_title">Obrolan pribadi</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Obrolan pribadi</string>
     <string name="channel_private_chat_description">Notifikasi pesan pada obrolan pribadi</string>
     <string name="channel_group_chat_title">Obrolan grup</string>
     <string name="channel_group_chat_description">Notifikasi pesan dalam obrolan grup</string>

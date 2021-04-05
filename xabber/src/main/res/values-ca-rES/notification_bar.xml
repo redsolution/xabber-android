@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="AUTHENTICATION_FAILED">Error d\'autorització</string>
-    <string name="otr_verification_in_progress">Feu clic aquí per cancel·lar.</string>
-    <string name="PASSWORD_REQUIRED">Es requereix la contrasenya</string>
-    <string name="pay_attention">Prestar atenció</string>
-    <string name="subscription_request_message">Sol·licitud d\'autorització</string>
-</resources>

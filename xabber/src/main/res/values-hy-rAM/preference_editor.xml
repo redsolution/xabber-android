@@ -18,4 +18,5 @@
     <string name="chats_font_size_large">Մեծ</string>
     <string name="chats_font_size_normal">Միջին</string>
     <string name="chats_font_size_small">Փոքր</string>
+    <string name="settings__dialog_change_language__button_change">Փոխել և կրկին բեռնել</string>
 </resources>

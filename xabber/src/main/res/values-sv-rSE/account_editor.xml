@@ -8,12 +8,12 @@
     <string name="account_priority">Prioritet</string>
     <string name="account_resource">Resurs</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">Du måste <a href="http://www.google.com/#q=register an XMPP account"> registrera ett XMPP-konto</a> innan du lägger till det i Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Du måste <a href="http://www.google.com/#q=register an XMPP account"> registrera ett XMPP-konto</a> innan du lägger till det i Xabber!</string>
     <string name="account_user_name">Användarnamn</string>
-    <string name="settings_account__alert_server_not_specified">Servernamn har inte angetts</string>
-    <string name="settings_account__alert_xmpp_id_not_specified">Användarnamn saknas</string>
+    <string name="settings_account__alert_server_not_specified">Namn på servern har inte angetts</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Användarnamnet saknas</string>
     <string name="settings_account__alert_passwords_do_not_match">Lösenorden stämmer inte överens</string>
-    <string name="settings_account__alert_account_exists">Det angivna kontot finns redan</string>
+    <string name="settings_account__alert_account_exists">Det här kontot finns redan</string>
     <string name="account_compression_summary">Markera för att aktivera datakomprimering</string>
     <string name="account_custom">Anpassad värd</string>
     <string name="account_custom_summary">Använd den anpassade värdens inställningar istället för SRV-post</string>
@@ -48,9 +48,10 @@
     <string name="account_add__alert_registration_failed">Det gick inte att registrera kontot på servern.</string>
     <string name="account_add__alert_no_server_info">Kunde inte hämta serverinformation.</string>
     <string name="account_add__alert_incorrect_xmpp_id">Felaktigt användarnamn</string>
-    <string name="account_add__alert_invalid_domain">: ogiltig domän</string>
-    <string name="account_add__alert_invalid_symbols_at">: för många \"@\"-symboler</string>
-    <string name="account_add__alert_invalid_slash">: \"/\"-tecken är inte tillåtna</string>
+    <string name="account_add__alert_invalid_domain">Felaktigt användarnamn: ogiltig domän</string>
+    <string name="account_add__alert_invalid_symbols_at">Felaktigt användarnamn: flera \"@\"-symboler närvarande</string>
+    <string name="account_add__alert_localpart_invalid">Felaktigt användarnamn: ogiltig lokal del</string>
+    <string name="account_add__alert_localpart_absent">Felaktigt användarnamn: \"@\" är närvarande utan lokal del</string>
     <string name="account_color">Kontofärg</string>
     <string name="account_color_name_green">Grön</string>
     <string name="account_color_name_orange">Orange</string>
@@ -112,8 +113,9 @@
     <string name="account_bookmarks">Bokmärken</string>
     <string name="account_bookmarks_summary">Lista med bokmärken för detta konto</string>
     <string name="account_sync">Synkronisering</string>
-    <string name="account_sync_summary">Synkronisering med Xabber-konto</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synkronisering med Xabber-konto</string>
     <string name="account_vcard">Profilbild, vCard</string>
+    <string name="account_vcard_summary">Redigera din avatar och vCard-info</string>
     <string name="avatar_successfully_published">Avatar publicerad!</string>
     <string name="avatar_publishing_failed">Avatarpublicering misslyckades!</string>
     <string name="account_push">Push-notiser</string>
@@ -132,4 +134,18 @@
     <string name="settings_account__section_header_server_info">Serverinformation</string>
     <string name="settings_account__section_header_circles">Cirklar</string>
     <string name="settings_account__button_quit_account">Avsluta konto</string>
+    <string name="settings_account__button_reconnect">Återanslut</string>
+    <string name="settings_account__blocklist__button_block">Blockera</string>
+    <string name="dialog_block_xmpp_address__text">Blockera en specifik XMPP-adress</string>
+    <string name="dialog_block_xmpp_address__hint_address">namn@exempel.com</string>
+    <string name="dialog_quit_account__confirm">Vill du avsluta det här kontot från Xabber Web? Kontot kommer inte tas bort från servern.</string>
+    <string name="settings_account__dialog_terminate_sessions__header">Säg upp sessioner</string>
+    <string name="delete_settings__optional_button__delete_synced_account">Ta bort synkroniserat XMPP-konto</string>
+    <string name="dialog_change_password__error__text_input_pass">Vänligen mata in lösenord!</string>
+    <string name="dialog_change_password__feedback__text_auth_with_pass">Autentisering med lösenord...</string>
+    <string name="account_auth__error__text_input_username">Vänligen mata in användarnamn!</string>
+    <string name="account_auth__error__text_wrong_username">Fel format på användarnamnet!</string>
+    <string name="account_auth__feedback__text_authentication">Autentisering...</string>
+    <string name="account_color_name_grey">Grå</string>
+    <string name="account_color_name_yellow">Gul</string>
 </resources>

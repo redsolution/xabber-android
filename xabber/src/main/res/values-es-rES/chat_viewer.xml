@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">No se pudo abrir el archivo</string>
     <string name="uploaded_files_count">Subiendo %s</string>
     <string name="unread_messages">Mensajes no leídos</string>
-    <string name="xabber_chat_title">Xabber oficial</string>
-    <string name="xabber_chat_description">Noticias</string>
-    <string name="xabber_join_button">Soporte de Xabber</string>
     <string name="action_new_contact">Nuevo contacto</string>
 </resources>

@@ -8,7 +8,7 @@
     <string name="account_priority">Приоритет</string>
     <string name="account_resource">Jabber ресурс</string>
     <string name="account_server_name">Сървър</string>
-    <string name="account_xmpp_register_warning"><a href="http://www.google.com/#q=register an XMPP account">Регистрирайте XMPP профил</a> преди да го добавите в Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register"><a href="http://www.google.com/#q=register an XMPP account">Регистрирайте XMPP профил</a> преди да го добавите в Xabber!</string>
     <string name="account_compression_summary">Избери за активиране на компресиране на данните</string>
     <string name="account_custom">Персонализиран хост</string>
     <string name="account_custom_summary">Използване на персонални сървърни настройки вместо SRV запис</string>
@@ -78,6 +78,6 @@
     <string name="account_bookmarks">Отметки</string>
     <string name="account_bookmarks_summary">Списък с отметките за този профил</string>
     <string name="account_sync">Синхронизиране</string>
-    <string name="account_sync_summary">Синхронизиране с Xabber профил</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Синхронизиране с Xabber профил</string>
     <string name="bookmark_not_supported">Сървърът не поддържа отметки.</string>
 </resources>

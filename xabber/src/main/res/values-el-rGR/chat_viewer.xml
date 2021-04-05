@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">Αδυναμία ανοίγματος αρχείου</string>
     <string name="uploaded_files_count">Φόρτωμα... %s</string>
     <string name="unread_messages">Αδιάβαστα μηνύματα</string>
-    <string name="xabber_chat_title">Επίσημο Xabber</string>
-    <string name="xabber_chat_description">Ροή ειδήσεων</string>
-    <string name="xabber_join_button">Υποστηρίξτε το Xabber</string>
     <string name="action_new_contact">Νέα επαφή</string>
 </resources>

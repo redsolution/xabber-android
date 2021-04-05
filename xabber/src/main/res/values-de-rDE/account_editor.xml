@@ -8,7 +8,7 @@
     <string name="account_priority">Priorität</string>
     <string name="account_resource">Ressource</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">Du musst <a href="http://www.google.de/#q=XMPP+Account+erstellen">ein XMPP Bentzerkonto erstellen</a> um Xabber zu nutzen!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Du musst <a href="http://www.google.de/#q=XMPP+Account+erstellen">ein XMPP Bentzerkonto erstellen</a> um Xabber zu nutzen!</string>
     <string name="account_user_name">Benutzername</string>
     <string name="settings_account__alert_server_not_specified">Servername nicht angegeben</string>
     <string name="settings_account__alert_xmpp_id_not_specified">Benutzername nicht angegeben</string>
@@ -48,12 +48,6 @@
     <string name="account_add__alert_registration_failed">Das Konto konnte nicht auf dem Server angelegt werden.</string>
     <string name="account_add__alert_no_server_info">Serverinformationen konnten nicht abgerufen werden.</string>
     <string name="account_add__alert_incorrect_xmpp_id">Falscher Benutzername</string>
-    <string name="account_add__alert_invalid_domain">: Ungültige Domain</string>
-    <string name="account_add__alert_invalid_symbols_at">: mehrere \"@\"-Zeichen vorhanden</string>
-    <string name="account_add__alert_localpart_invalid">: Ungültiger lokaler Teil</string>
-    <string name="account_add__alert_localpart_absent">: \"@\" ist ohne lokalen Teil vorhanden</string>
-    <string name="account_add__alert_localpart_invalid_symbols">: \"%s\" Symbol wird im lokalen Teil nicht akzeptiert</string>
-    <string name="account_add__alert_invalid_slash">: \"/\" wird nicht akzeptiert</string>
     <string name="account_color">Kontofarbe</string>
     <string name="account_color_name_green">Grün</string>
     <string name="account_color_name_orange">Orange</string>
@@ -115,7 +109,7 @@
     <string name="account_bookmarks">Lesezeichen</string>
     <string name="account_bookmarks_summary">Liste von Lesezeichen für dieses Konto</string>
     <string name="account_sync">Synchronisation</string>
-    <string name="account_sync_summary">Synchronisation mit Xabber Konto</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronisation mit Xabber Konto</string>
     <string name="account_vcard">Profilbild, vCard</string>
     <string name="account_vcard_summary">Avatar und vCard bearbeiten</string>
     <string name="avatar_successfully_published">Avatar veröffentlicht!</string>

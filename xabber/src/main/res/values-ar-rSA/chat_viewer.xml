@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">لا يمكن فتح الملف</string>
     <string name="uploaded_files_count">جاري التحميل.. %s</string>
     <string name="unread_messages">رسائل غير مقروءة</string>
-    <string name="xabber_chat_title">مسؤول Xabber</string>
-    <string name="xabber_chat_description">تغذية الأخبار</string>
-    <string name="xabber_join_button">دعم Xabber</string>
     <string name="action_new_contact">جهة اتصال جديدة</string>
 </resources>

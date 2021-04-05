@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Soubory protokolů ladění</string>
     <string name="debug_connection_errors_title">Ukázuj chyby připojení\nZobrazí chyby připojení ve vyskakovacích oknech</string>
     <string name="debug_crash_reports_title">Sdílej havarijní a diagnostická data\nPomozte vylepšit Xabber tím, že budete s vývojáři sdílet havarijní a diagnostická data (prosíme, restartujte aplikaci pro aplikaci tohoto nastavení).</string>
-    <string name="debug_use_develop_api_title">Použij vývojové Xabber API\nUmožní sync vizuální konfigurace, například uživatelských účtů a jejich barev (nikoliv tedy hesel). K aplikaci změny tohoto nastavení je nutný restart Xabber</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Použij vývojové Xabber API\nUmožní sync vizuální konfigurace, například uživatelských účtů a jejich barev (nikoliv tedy hesel). K aplikaci změny tohoto nastavení je nutný restart Xabber</string>
     <string name="debug_fetch_crowdfunding_feed_title">Načti novinky z crowdfundingu</string>
     <string name="debug_crash_reports_dialog_title">Data o pádech a diagnostice</string>
     <string name="debug_crash_reports_dialog_message">Xabber shromažďuje anonymní zprávy o chybách. Pokud to zakážete v nastavení ladění, omezíte tím naši schopnost vylepšit Xabber pro ostatní uživatele.</string>

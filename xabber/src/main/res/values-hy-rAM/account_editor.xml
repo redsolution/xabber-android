@@ -8,7 +8,7 @@
     <string name="account_priority">Առաջնություն</string>
     <string name="account_resource">Ռեսուրս</string>
     <string name="account_server_name">Սերվեր</string>
-    <string name="account_xmpp_register_warning">Դուք պետք է <a href="http://www.google.com/#q=register an XMPP account"> գրանցեք հաշիվ XMPP</a> մինչև Xabber -ի մեջ ներառելը։</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Դուք պետք է <a href="http://www.google.com/#q=register an XMPP account"> գրանցեք հաշիվ XMPP</a> մինչև Xabber -ի մեջ ներառելը։</string>
     <string name="account_user_name">Օգտանուն</string>
     <string name="settings_account__alert_server_not_specified">Սերվերի անունը նշված չէ</string>
     <string name="settings_account__alert_xmpp_id_not_specified">Օգտանունը նշված չէ</string>
@@ -48,12 +48,6 @@
     <string name="account_add__alert_registration_failed">Չհաջողվեց նոր հաշիվ ստեղծել սերվերում։</string>
     <string name="account_add__alert_no_server_info">Սերվերի տվյալներն անհայտ են։</string>
     <string name="account_add__alert_incorrect_xmpp_id">Սխալ օգտանուն</string>
-    <string name="account_add__alert_invalid_domain">․ անվավեր դոմեյն</string>
-    <string name="account_add__alert_invalid_symbols_at">․ կան հոգնակի քանակով «@»֊ներ</string>
-    <string name="account_add__alert_localpart_invalid">. անվավեր նույնացուցիչ</string>
-    <string name="account_add__alert_localpart_absent">․ «@» կա, բայց նույնացուցիչ չկա</string>
-    <string name="account_add__alert_localpart_invalid_symbols">․ «%s» սիմվոլը չի կարելի օգտագործել նույնացուցիչի մեջ</string>
-    <string name="account_add__alert_invalid_slash">․ «/» նշանը չի կարելի օգտագործել</string>
     <string name="account_color">Հաշվի գույնը</string>
     <string name="account_color_name_green">Կանաչ</string>
     <string name="account_color_name_orange">Նարնջագույն</string>
@@ -74,6 +68,10 @@
     <string name="account_color_name_brown">Շագանակագույն</string>
     <string name="account_connected_devices">Միացված սարքեր</string>
     <string name="account_connected_devices_none">Հաշիվը անցանց է</string>
+    <plurals name="account_connected_devices">
+        <item quantity="one">1 միացված սարք</item>
+        <item quantity="other">%d միացված սարք</item>
+    </plurals>
     <string name="account_connection_settings">Միացման կարգավորումներ</string>
     <string name="account_active_sessions">Ակտիվ սեանսներ</string>
     <string name="account_current_session">Ընթացիկ սեանս</string>
@@ -104,7 +102,7 @@
     <string name="account_bookmarks">Էջանշաններ</string>
     <string name="account_bookmarks_summary">Տվյալ օգտատերի էջանշանների ցուցակը</string>
     <string name="account_sync">Համաժամեցում</string>
-    <string name="account_sync_summary">Համաժամեցում Xabber անհատական էջի հետ</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Համաժամեցում Xabber անհատական էջի հետ</string>
     <string name="avatar_successfully_published">Լուսանկարը հրապարակվել է։</string>
     <string name="avatar_publishing_failed">Չհաջողվեց հրապարակել լուսանկարը։</string>
     <string name="account_push">Թռնող ծանուցումներ</string>

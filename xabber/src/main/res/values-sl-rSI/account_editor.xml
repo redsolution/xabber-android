@@ -8,7 +8,7 @@
     <string name="account_priority">Prednost</string>
     <string name="account_resource">Vir</string>
     <string name="account_server_name">Strežnik</string>
-    <string name="account_xmpp_register_warning">Preden dodajanjem je treba <a href="http://www.google.com/#q=register an XMPP account">račun</a> ustvariti!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Preden dodajanjem je treba <a href="http://www.google.com/#q=register an XMPP account">račun</a> ustvariti!</string>
     <string name="account_compression_summary">Omogoči stiskanje podatkov</string>
     <string name="account_custom">Gostitelj po meri</string>
     <string name="account_custom_summary">Uporabite nastavitve gostitelja po meri namesto zapisa SRV</string>
@@ -80,6 +80,6 @@
     <string name="account_bookmarks">Zaznamki</string>
     <string name="account_bookmarks_summary">Seznam zaznamkov za ta račun</string>
     <string name="account_sync">Usklajevanje</string>
-    <string name="account_sync_summary">Usklajevanje z računom Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Usklajevanje z računom Xabber</string>
     <string name="bookmark_not_supported">Strežnik ne podpira zaznamkov</string>
 </resources>

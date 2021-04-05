@@ -142,7 +142,6 @@
     <string name="message_status_uploading">Senden...</string>
     <string name="too_many_files_at_once">Es können max. 10 Anhänge gleichzeitig versendet werden</string>
     <string name="toast_no_history">Es gibt keine weiteren Nachrichten im Verlauf</string>
-    <string name="message_by_me">Ich</string>
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_member">Mitglied</string>
     <string name="muc_role_visitor">Besucher</string>
@@ -161,18 +160,11 @@
     <string name="toast_could_not_open_file">Datei konnte nicht geöffnet werden</string>
     <string name="uploaded_files_count">Wird hochgeladen... %s</string>
     <string name="unread_messages">Ungelesene Nachrichten</string>
-    <string name="xabber_chat_title">Xabber offiziell</string>
-    <string name="xabber_chat_description">News-Feed</string>
-    <string name="xabber_join_button">Unterstütze Xabber</string>
     <string name="action_new_contact">Neuer Kontakt</string>
     <string name="action_new_subscription_request">Eingehende Kontaktanfrage</string>
     <string name="open_this_link">Link öffnen?</string>
     <string name="open">Öffnen</string>
     <string name="delete_for_all">Auch für %s löschen</string>
-    <string name="delete_message_title">Nachricht löschen</string>
-    <string name="delete_messages_title">%s Nachrichten löschen</string>
-    <string name="delete_message_question">Sind Sie sicher, dass Sie diese Nachricht löschen möchten?</string>
-    <string name="delete_messages_question">Sind Sie sicher, dass Sie diese Nachrichten löschen möchten?</string>
     <string name="message_edit">Bearbeiten</string>
     <string name="cancel_action">Abbrechen</string>
     <string name="delete">Löschen</string>

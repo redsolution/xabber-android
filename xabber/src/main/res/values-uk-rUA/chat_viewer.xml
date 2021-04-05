@@ -113,8 +113,5 @@
     <string name="toast_could_not_open_file">Не вдалося відкрити файл</string>
     <string name="uploaded_files_count">Завантаження.. %s</string>
     <string name="unread_messages">Непрочитані повідомлення</string>
-    <string name="xabber_chat_title">Xabber official</string>
-    <string name="xabber_chat_description">Стрічка новин</string>
-    <string name="xabber_join_button">Підтримка Xabber</string>
     <string name="action_new_contact">Новий контакт</string>
 </resources>

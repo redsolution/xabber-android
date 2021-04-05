@@ -76,6 +76,6 @@
     <string name="account_bookmarks">Marque-pages</string>
     <string name="account_bookmarks_summary">Liste des marque-pages pour ce compte</string>
     <string name="account_sync">Synchronisation</string>
-    <string name="account_sync_summary">Synchronisation avec le compte Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronisation avec le compte Xabber</string>
     <string name="bookmark_not_supported">Le serveur ne prend pas en charge les marque-pages.</string>
 </resources>

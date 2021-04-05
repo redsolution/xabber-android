@@ -8,7 +8,7 @@
     <string name="account_priority">Prioritas</string>
     <string name="account_resource">Sumber daya</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">Anda harus <a href="http://www.google.com/#q=register an XMPP account">mendaftar akun XMPP</a> sebelum menambahkan ke Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Anda harus <a href="http://www.google.com/#q=register an XMPP account">mendaftar akun XMPP</a> sebelum menambahkan ke Xabber!</string>
     <string name="account_compression_summary">Centang untuk mengaktifkan kompresi data</string>
     <string name="account_custom">Custom host</string>
     <string name="account_custom_summary">Gunakan pengaturan custom host sebagai ganti rekaman SRV</string>
@@ -98,7 +98,7 @@
     <string name="account_bookmarks">Penanda</string>
     <string name="account_bookmarks_summary">Daftar penanda pada akun ini</string>
     <string name="account_sync">Sinkronisasi</string>
-    <string name="account_sync_summary">Sinkronisasi ke akun Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Sinkronisasi ke akun Xabber</string>
     <string name="account_vcard">Gambar profil, vCard</string>
     <string name="account_vcard_summary">Atur avatar dan info vCard</string>
     <string name="avatar_successfully_published">Avatar ditampikan!</string>

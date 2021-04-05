@@ -18,4 +18,5 @@
     <string name="clear_status_history">Wyczyść historię statusów</string>
     <string name="status_message">Status</string>
     <string name="online">Online</string>
+    <string name="offline">Offline</string>
 </resources>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="account_delete_confirm" comment="settings_account__dialog_delete_account__text_delete">Ali res želite izbrisati račun %s?\n(Dejanje ne izbriše računa s strežnika, odstrani le krajevne podatke)</string>
     <string name="account_add" comment="account_add__button_add_account">Dodaj račun</string>
     <string name="account_register" comment="account_add__label_register_account">Ustvari nov račun</string>
     <string name="account_delete" comment="settings_account__label_delete_account">Izbriši račun</string>

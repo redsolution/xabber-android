@@ -22,7 +22,7 @@
     <string name="debug_log_files_activity_title">Datoteke dnevnikov</string>
     <string name="debug_connection_errors_title">Pokaži napake povezave\nPokaže obvestila težav s povezavami</string>
     <string name="debug_crash_reports_title">Pošiljaj podatke o sesutju in diagnostiki\nRazvoju programa je mogoče pomagati tudi s pošiljanjem podatkov o delovanju in napakah razvijalcem programa Xabber (za uveljavitev sprememb je treba program znova zagnati).</string>
-    <string name="debug_use_develop_api_title">Uporabi razvojni vmesnik Xabber API\nSpremembe bodo uveljavljene po ponovnem zagonu programa.</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Uporabi razvojni vmesnik Xabber API\nSpremembe bodo uveljavljene po ponovnem zagonu programa.</string>
     <string name="debug_fetch_crowdfunding_feed_title">Pridobi vir za množično financiranje</string>
     <string name="debug_crash_reports_dialog_title">Podatki o sesutju in diagnostiki</string>
     <string name="debug_crash_reports_dialog_message">Program Xabber zbira anonimna poročila o napakah. Možnost lahko onemogočite med nastavitvami, vendar hkrati onemogočite tudi zanesljivo obveščanje o hroščih.</string>

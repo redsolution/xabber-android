@@ -8,7 +8,7 @@
     <string name="account_priority">Priorytet</string>
     <string name="account_resource">Zasób</string>
     <string name="account_server_name">Serwer</string>
-    <string name="account_xmpp_register_warning">Musisz <a href="http://www.google.com/#q=zarejestruj+konto+XMPP">zarejestrować konto XMPP</a> przed dodaniem go do Xabbera!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Musisz <a href="http://www.google.com/#q=zarejestruj+konto+XMPP">zarejestrować konto XMPP</a> przed dodaniem go do Xabbera!</string>
     <string name="account_compression_summary">Zaznacz, aby włączyć kompresję danych</string>
     <string name="account_custom">Użyj niestandardowego adresu hosta</string>
     <string name="account_custom_summary">Użyj własnych ustawień hosta zamiast rekordu SRV</string>
@@ -38,6 +38,7 @@
     <string name="orbot_required_message">Aby korzystać z TOR, Orbot musi być zainstalowany, a połączenie przez proxy musi być uruchomione. Czy chcesz pobrać tą aplikację z Google Play?</string>
     <string name="orbot_required_title">Zainstalować Orbota?</string>
     <string name="install_orbot">Zainstalować Orbota</string>
+    <string name="account_add__alert_invalid_domain">Nieprawidłowa nazwa użytkownika: nieprawidłowa domena</string>
     <string name="account_color">Kolor konta</string>
     <string name="account_color_name_green">Zielony</string>
     <string name="account_color_name_orange">Pomarańczowy</string>
@@ -80,7 +81,7 @@
     <string name="account_bookmarks">Zakładki</string>
     <string name="account_bookmarks_summary">Lista zakładek dla tego konta</string>
     <string name="account_sync">Synchronizacja</string>
-    <string name="account_sync_summary">Synchronizacja z kontem Xabber</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronizacja z kontem Xabber</string>
     <string name="bookmark_not_supported">Serwer nie obsługuje zakładek.</string>
     <string name="settings_account__label_this_device">to urządzenie</string>
 </resources>

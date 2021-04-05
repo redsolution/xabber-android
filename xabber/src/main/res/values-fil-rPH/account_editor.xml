@@ -78,6 +78,6 @@
     <string name="account_bookmarks">Mga Bookmark</string>
     <string name="account_bookmarks_summary">Listahan ng mga bookmarks para sa akawnt na ito</string>
     <string name="account_sync">Pag-synchronize</string>
-    <string name="account_sync_summary">Pag-synchronize sa Xabber Akawnt</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Pag-synchronize sa Xabber Akawnt</string>
     <string name="bookmark_not_supported">Hindi sinusuportahan ng server ang mga bookmark</string>
 </resources>

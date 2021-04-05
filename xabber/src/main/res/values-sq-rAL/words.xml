@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in10m">Në 10 minuta</string>
+    <string name="in15m">Në 15 minuta</string>
+    <string name="in2m">Në 2 minuta</string>
+    <string name="in30m">Në 30 minuta</string>
+    <string name="in5m">Në 5 minuta</string>
+    <string name="save">Ruaj</string>
+    <string name="search">Kërko</string>
+</resources>

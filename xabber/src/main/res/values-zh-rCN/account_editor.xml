@@ -8,7 +8,7 @@
     <string name="account_priority">优先级</string>
     <string name="account_resource">资源</string>
     <string name="account_server_name">域</string>
-    <string name="account_xmpp_register_warning">在添加到 Xabber 之前，你必须 <a href="http://www.google.com/#q=register XMPP account"> 注册 XMPP 帐户</a>！</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">在添加到 Xabber 之前，你必须 <a href="http://www.google.com/#q=register XMPP account"> 注册 XMPP 帐户</a>！</string>
     <string name="account_compression_summary">勾选以启用数据压缩</string>
     <string name="account_custom">自定义服务器</string>
     <string name="account_custom_summary">使用自定义服务器而不是SRV记录</string>
@@ -77,6 +77,6 @@
     <string name="account_bookmarks">书签</string>
     <string name="account_bookmarks_summary">此帐户的书签列表</string>
     <string name="account_sync">同步</string>
-    <string name="account_sync_summary">与 Xabber 帐户同步</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">与 Xabber 帐户同步</string>
     <string name="bookmark_not_supported">服务器不支持书签。</string>
 </resources>
