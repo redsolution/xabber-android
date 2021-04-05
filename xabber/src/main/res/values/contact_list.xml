@@ -114,8 +114,6 @@
     <string name="show_all_chats">Show all chats</string>
     <string name="category_title_contacts">Contacts</string>
     <string name="voice_message">Voice message</string>
-    <string name="image_message">Image</string>
-    <string name="file_message">File</string>
     <string name="showcase_contact_list_text_1">Swipe chat left or right to archive it</string>
     <string name="last_seen_now">last seen just now</string>
     <string name="last_seen_minutes">last seen %1$s minutes ago</string>
@@ -131,8 +129,14 @@
     <string name="dialog_circle_settings__header">Circle settings</string>
     <string name="dialog_circle_settings__button_apply">Apply</string>
     <string name="contact_list__placeholder">Please select a contact to view details</string>
-    <string name="recent_chat__last_message__images">%d images</string>
-    <string name="recent_chat__last_message__files">%d files</string>
+    <plurals name="recent_chat__last_message__images">
+        <item quantity="one">Image</item>
+        <item quantity="other">%d images</item>
+    </plurals>
+    <plurals name="recent_chat__last_message__files">
+        <item quantity="one">File</item>
+        <item quantity="other">%d files</item>
+    </plurals>
     <string name="synchronization__text_all_chats_loaded">All chats loaded</string>
     <string name="circles__name_general_circle">General</string>
     <string name="circles__name_non_roster_circle">Not in roster</string>

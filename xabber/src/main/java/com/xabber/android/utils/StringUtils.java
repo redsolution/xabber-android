@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import static net.gcardone.junidecode.Junidecode.*;
+import static net.gcardone.junidecode.Junidecode.unidecode;
 
 /**
  * Helper class to perform different actions with strings
@@ -331,9 +331,9 @@ public class StringUtils {
                     }
                 } else {
                     if (singleAttachment.isImage()) {
-                        attachmentBuilder.append(context.getResources().getString(R.string.image_message));
+                        attachmentBuilder.append(context.getResources().getQuantityString(R.plurals.recent_chat__last_message__images, 1));
                     } else {
-                        attachmentBuilder.append(context.getResources().getString(R.string.file_message));
+                        attachmentBuilder.append(context.getResources().getQuantityString(R.plurals.recent_chat__last_message__files, 1));
                     }
                     if (singleAttachment.getFileSize() != null && singleAttachment.getFileSize() != 0) {
                         attachmentBuilder.append(", ").append(getHumanReadableFileSize(singleAttachment.getFileSize()));
@@ -356,11 +356,11 @@ public class StringUtils {
                 }
                 if (isAllAttachmentsOfOneType){
                     if (attachments.get(0).isImage()){
-                        attachmentBuilder.append(context.getResources().getString(
-                                R.string.recent_chat__last_message__images, attachments.size()));
+                        attachmentBuilder.append(context.getResources().getQuantityString(
+                                R.plurals.recent_chat__last_message__images, attachments.size(), attachments.size()));
                     } else {
-                        attachmentBuilder.append(context.getResources().getString(
-                                R.string.recent_chat__last_message__files, attachments.size()));
+                        attachmentBuilder.append(context.getResources().getQuantityString(
+                                R.plurals.recent_chat__last_message__files, attachments.size(), attachments.size()));
                     }
                 } else {
                     attachmentBuilder.append(context.getResources().getString(

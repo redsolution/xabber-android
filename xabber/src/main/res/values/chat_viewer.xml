@@ -103,47 +103,7 @@
     <string name="export_chat_send">Send after export</string>
     <string name="export_chat_title">Enter file name</string>
     <string name="muc_invite">Invite to chat</string>
-    <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>    //
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>
     <string name="occupant_list">List of occupants</string>
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
@@ -280,4 +240,9 @@
     <string name="emoji_list__catelory_name__events">Events</string>
     <string name="emoji_list__catelory_name__objects">Objects</string>
     <string name="emoji_list__catelory_name__signs">Signs</string>
+    <plurals name="chat_screen__bottom_panel__selected_messages__text">
+        <item quantity="one">1 message selected</item>
+        <item quantity="other">%d messages selected</item>
+    </plurals>
+    <string name="chat_screen__message__label_edited">edited</string>
 </resources>
