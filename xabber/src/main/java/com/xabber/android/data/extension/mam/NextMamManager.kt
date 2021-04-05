@@ -83,7 +83,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         //updatePreferencesFromServer(accountItem);
         //LogManager.d("AccountRosterListener", "finished updating preferences");
         val realm = DatabaseManager.getInstance().defaultRealmInstance
-        accountItem.startHistoryTimestamp = getLastMessageTimestamp(accountItem, realm)
         if (accountItem.startHistoryTimestamp == 0L) {
             initializeStartTimestamp(realm, accountItem)
             loadMostRecentMessages(realm, accountItem)
@@ -364,9 +363,8 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
     private fun loadMostRecentMessages(realm: Realm,
                                        accountItem: AccountItem,
     ) {
-        if (accountItem.loadHistorySettings != LoadHistorySettings.all || !isSupported(accountItem.account)) {
-            return
-        }
+        if (accountItem.loadHistorySettings != LoadHistorySettings.all || !isSupported(accountItem.account)) return
+
         LogManager.d(LOG_TAG, "load new messages")
         val messages: MutableList<Forwarded> = ArrayList()
         val queryResult = requestRecentMessages(accountItem)
@@ -452,7 +450,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                                        chat: AbstractChat?,
                                        accountItem: AccountItem,
     ): List<MessageRealmObject> {
-        Collections.sort(chatMessages, archiveMessageTimeComparator)
+        chatMessages.sortWith{ f1, f2 -> f1.delayInformation.stamp.time.compareTo(f2.delayInformation.stamp.time) }
         return ArrayList(parseMessage(accountItem, accountItem.account, chat!!.contactJid,
                 chatMessages))
     }
@@ -610,7 +608,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
     private fun requestRecentMessages(accountItem: AccountItem,
     ): MamQueryResult? {
         return requestToMessageArchive(accountItem, object : MamRequest<MamQueryResult>() {
-            @Throws(Exception::class)
             override fun execute(manager: MamManager): MamQueryResult {
                 return manager.mostRecentPage(null, 50)
             }
@@ -914,7 +911,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
             // notify about new message
             chat.enableNotificationsIfNeed()
             val notify = (!message.isRead
-                    && message.text != null && !message.text.trim { it <= ' ' }.isEmpty()
+                    && message.text != null && message.text.trim { it <= ' ' }.isNotEmpty()
                     && message.isIncoming
                     && chat.notifyAboutMessage())
             val visible = ChatManager.getInstance().isVisibleChat(chat)
@@ -1011,18 +1008,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         } else null
     }
 
-    private fun getLastMessageTimestamp(account: AccountItem, realm: Realm): Long {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.account.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-        return if (results != null && !results.isEmpty()) {
-            val lastMessage = results.last()
-            lastMessage!!.timestamp
-        } else 0
-    }
-
     private fun updateLastMessageId(chat: AbstractChat?, realm: Realm) {
         val results = realm.where(MessageRealmObject::class.java)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat!!.account.toString())
@@ -1052,12 +1037,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 .equalTo(MessageRealmObject.Fields.STANZA_ID, message.stanzaId)
                 .endGroup()
                 .findFirst()
-    }
-
-    private val archiveMessageTimeComparator = Comparator { o1: Forwarded, o2: Forwarded ->
-        val time1 = o1.delayInformation.stamp.time
-        val time2 = o2.delayInformation.stamp.time
-        time1.compareTo(time2)
     }
 
     private fun sortNewMessagesByChats(messages: List<Forwarded>,
