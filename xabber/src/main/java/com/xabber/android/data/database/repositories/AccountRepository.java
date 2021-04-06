@@ -96,10 +96,6 @@ public class AccountRepository {
                     accountRealmObject.setMamDefaultBehavior(accountItem.getMamDefaultBehaviour());
                     accountRealmObject.setLoadHistorySettings(accountItem.getLoadHistorySettings());
                     accountRealmObject.setSuccessfulConnectionHappened(accountItem.isSuccessfulConnectionHappened());
-                    accountRealmObject.setPushNode(accountItem.getPushNode());
-                    accountRealmObject.setPushServiceJid(accountItem.getPushServiceJid());
-                    accountRealmObject.setPushEnabled(accountItem.isPushEnabled());
-                    accountRealmObject.setPushWasEnabled(accountItem.isPushWasEnabled());
 
                     realm1.copyToRealmOrUpdate(accountRealmObject);
                     LogManager.d(LOG_TAG, "Account " + accountItem.getAccount().getBareJid() + " has been successfully " +

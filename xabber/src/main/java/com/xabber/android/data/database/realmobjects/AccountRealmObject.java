@@ -43,10 +43,6 @@ public class AccountRealmObject extends RealmObject {
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
-        public static final String PUSH_NODE = "pushNode";
-        public static final String PUSH_SERVICE_JID = "pushServiceJid";
-        public static final String PUSH_ENABLED = "pushEnabled";
-        public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
         public static final String XTOKEN = "xToken";
         public static final String UPLOAD_SERVER = "uploadServer";
         public static final String GROUP_SERVERS = "groupServers";
@@ -112,11 +108,6 @@ public class AccountRealmObject extends RealmObject {
      * happen at least ones with current connection settings
      */
     private boolean successfulConnectionHappened;
-
-    private String pushNode;
-    private String pushServiceJid;
-    private boolean pushEnabled;
-    private boolean pushWasEnabled;
 
     public AccountRealmObject(String id) {
         this.id = id;
@@ -439,38 +430,6 @@ public class AccountRealmObject extends RealmObject {
 
     public void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
         this.successfulConnectionHappened = successfulConnectionHappened;
-    }
-
-    public String getPushNode() {
-        return pushNode;
-    }
-
-    public void setPushNode(String pushNode) {
-        this.pushNode = pushNode;
-    }
-
-    public String getPushServiceJid() {
-        return pushServiceJid;
-    }
-
-    public void setPushServiceJid(String pushServiceJid) {
-        this.pushServiceJid = pushServiceJid;
-    }
-
-    public boolean isPushEnabled() {
-        return pushEnabled;
-    }
-
-    public void setPushEnabled(boolean pushEnabled) {
-        this.pushEnabled = pushEnabled;
-    }
-
-    public boolean isPushWasEnabled() {
-        return pushWasEnabled;
-    }
-
-    public void setPushWasEnabled(boolean pushWasEnabled) {
-        this.pushWasEnabled = pushWasEnabled;
     }
 
     public XTokenRealmObject getXToken() {

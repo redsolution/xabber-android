@@ -293,10 +293,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 accountItem.setLoadHistorySettings(accountRealmObject.getLoadHistorySettings());
             }
             accountItem.setSuccessfulConnectionHappened(accountRealmObject.isSuccessfulConnectionHappened());
-            accountItem.setPushNode(accountRealmObject.getPushNode());
-            accountItem.setPushServiceJid(accountRealmObject.getPushServiceJid());
-            accountItem.setPushEnabled(accountRealmObject.isPushEnabled());
-            accountItem.setPushWasEnabled(accountRealmObject.isPushWasEnabled());
 
             accountItems.add(accountItem);
 
@@ -304,12 +300,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(savedStatuses, accountItems);
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> onLoaded(savedStatuses, accountItems));
     }
 
     private void onLoaded(Collection<SavedStatus> savedStatuses, Collection<AccountItem> accountItems) {
@@ -740,12 +731,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         // disable sync for account if it use not default settings
         ConnectionSettings connectionSettings = result.getConnectionSettings();
-        if (connectionSettings.isCustomHostAndPort()
+        result.setSyncNotAllowed(connectionSettings.isCustomHostAndPort()
                 || connectionSettings.getProxyType() != ProxyType.none
-                || connectionSettings.getTlsMode() == TLSMode.legacy) {
-
-            result.setSyncNotAllowed(true);
-        } else result.setSyncNotAllowed(false);
+                || connectionSettings.getTlsMode() == TLSMode.legacy);
     }
 
     public boolean haveNotAllowedSyncAccounts() {
@@ -1138,7 +1126,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     /**
      * Sets status for all accounts.
      *
-     * @param statusMode
      * @param statusText can be <code>null</code> if value was not changed.
      */
     public void setStatus(StatusMode statusMode, String statusText) {
@@ -1332,12 +1319,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void setPushEnabled(final AccountItem accountItem, final boolean enabled) {
         accountItem.setPushEnabled(enabled);
         AccountRepository.saveAccountToRealm(accountItem);
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
-                else PushManager.getInstance().disablePushNotification(accountItem, true);
-            }
+        Application.getInstance().runInBackground(() -> {
+            if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
+            else PushManager.getInstance().disablePushNotification(accountItem, true);
         });
         PushManager.getInstance().updateEnabledPushNodes();
     }
