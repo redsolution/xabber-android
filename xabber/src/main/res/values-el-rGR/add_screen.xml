@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Προσθήκη Επαφής</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Δημιουργία Ομάδας</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Δημιουργία Ανώνυμης Ομάδας</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Επιλέξτε λογαριασμό</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Προσθήκη σε</string>
+    <string name="create_to" comment="dialog_add__label_create_to">Δημιουργία σε</string>
+    <string name="dialog_add__label_add_account">Προσθήκη Λογαριασμού</string>
+    <string name="toolbar__button_add_tooltip">Προσθήκη ομάδας, επαφής ή λογαριασμού</string>
+    <string name="dialog_add_contact__error__text_no_accounts">Δεν βρέθηκαν συνδεδεμένοι λογαριασμοί.</string>
+    <string name="dialog_add_contact__error__text_input_username">Εισαγωγή ονόματος χρήστη!</string>
+    <string name="dialog_add_contact__error__text_can_not_add_youself">Δεν μπορείτε να προσθέσετε τον εαυτό σας σε επαφές!</string>
+    <string name="dialog_add_contact__error__text_already_in_roster">Η επαφή έχει ήδη προστεθεί!</string>
+</resources>

@@ -185,4 +185,6 @@
     <string name="xabber_account__dialog_confirm_email__hint_enter_code">Enter verification code</string>
     <string name="xabber_account__dialog_unlink_email__header">Unlink email</string>
     <string name="xabber_account__dialog_unlink_social__header">Unlink social account</string>
+    <string name="xabber_account__last_sync__text">Synced %s</string>
+    <string name="xabber_account__last_sync__not_synced">Not synced</string>
 </resources>

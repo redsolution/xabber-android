@@ -14,7 +14,7 @@
     <string name="clear_history">Limpar histórico</string>
     <string name="clear_chat_history_dialog_button">Limpar</string>
     <string name="clear_chat_history_dialog_message">Você tem certeza que deseja limpar seu histórico de bate-papo com &lt;b&gt;%s&lt;/b&gt;?</string>
-    <string name="clear_chat_history_dialog_warning">Esta operação não pode ser desfeita.</string>
+    <string name="clear_chat_history_dialog_warning">Essa ação não pode ser desfeita.</string>
     <string name="clear_chat_history_for_companion_checkbox">Tente retirar suas mensagens do arquivo do seu parceiro de bate-papo</string>
     <string name="waiting_for_network">Aguardando rede...</string>
     <plurals name="contact_groupchat_status_member">
@@ -173,6 +173,14 @@
     <string name="open_this_link">Abrir este link?</string>
     <string name="open">Abrir</string>
     <string name="delete_for_all">Também excluir para %s</string>
+    <plurals name="delete_message_title">
+        <item quantity="one">Apagar mensagem</item>
+        <item quantity="other">Apagar %s mensagens</item>
+    </plurals>
+    <plurals name="delete_message_question">
+        <item quantity="one">Tem certeza que deseja excluir esta mensagem?</item>
+        <item quantity="other">Tem certeza que deseja apagar essas mensagens?</item>
+    </plurals>
     <string name="message_edit">Editar</string>
     <string name="cancel_action">Cancelar</string>
     <string name="delete">Apagar</string>
@@ -181,4 +189,60 @@
     <string name="search__header_messages" comment="Header of searched messages in left panel">Mensagens</string>
     <string name="saved_messages__header">Mensagens salvas</string>
     <string name="chat_settings__button_delete_all">Apagar tudo</string>
+    <string name="dialog_forward_message__header">Encaminhar mensagem</string>
+    <string name="chat_list__placeholder">Selecione um bate-papo para começar a enviar mensagens</string>
+    <string name="chat_settings__button_unblock_contact">Desbloquear contato</string>
+    <string name="chat_settings__button_delete_contact">Excluir contato</string>
+    <string name="chat__search_messages_panel__placeholder">Pesquisar mensagens</string>
+    <string name="chat__placeholder_participant_messages__messages_by">Mensagens de</string>
+    <string name="chat_bottom__placeholder__cancel_write_voice">Solte fora deste formulário para cancelar</string>
+    <string name="chat_bottom__tooltip_send_file">Enviar arquivo</string>
+    <string name="chat_bottom__placeholder__blocked">bloqueado</string>
+    <string name="mentions_list__placeholder">Por favor, selecione menção para ver no bate-papo</string>
+    <string name="delete_messages__header">Limpar arquivo de mensagem</string>
+    <string name="delete_messages__confirm">Você deseja excluir todas as mensagens do arquivo?</string>
+    <string name="loading_history">Carregando histórico&#8230;</string>
+    <string name="loading_archived_messages_error">Erro ao carregar as mensagens arquivadas</string>
+    <string name="chat_state_composing_upload_filetype">enviando %s&#8230;</string>
+    <string name="dialog_clear_chat_history__warning_deletion_not_supported">Atenção! <b>%s</b> o servidor não suporta a exclusão de mensagens. Apenas o histórico de mensagens locais será excluído.</string>
+    <string name="dialog_clear_chat_history__button_delete_locally">excluir localmente</string>
+    <string name="dialog_clear_chat_history__option_delete_for_all">Apagar para todos</string>
+    <string name="message__error_big_stanza">Estrofe xml muito grande</string>
+    <string name="file_upload__text_progress">%1$s de %2$s</string>
+    <string name="file_upload__error_default">Erro ao enviar arquivo.</string>
+    <string name="file_upload__error">Erro: %s</string>
+    <string name="groupchat__incognito_group__text_invitation">Você foi convidado para um bate-papo em grupo anônimo. Se você entrar, não verá IDs XMPP reais de outros membros</string>
+    <string name="dialog_delete_saved_messages__header">Excluir mensagens salvas</string>
+    <string name="dialog_delete_saved_messages__confirm">Tem certeza que deseja <b>deletar todas as mensagens salvas</b>? Esta ação não pode ser desfeita.</string>
+    <string name="dialog_group_remove__confirm">Se você excluir um grupo, não receberá mais mensagens dele.</string>
+    <string name="chat_bottom__drag_and_drop__text_drop_files_here">Solte os arquivos aqui para enviar</string>
+    <string name="chat_bottom__hint_default">Escreva uma mensagem...</string>
+    <string name="chat_bottom__hint_default_encrypted">Escrever uma mensagem criptografada&#8230;</string>
+    <string name="chat_bottom__mentions_list__item_everyone">Todos</string>
+    <string name="dialog_send_image_from_clipboard__header">Enviar imagem da área de transferência</string>
+    <string name="dialog_send_image_from_clipboard__confirm">Você deseja enviar Imagem da área de transferência?</string>
+    <string name="chat_bottom__placeholder__cancel_write_voice_short">Solte para cancelar o registro</string>
+    <string name="edit_message__header">Editar mensagem</string>
+    <string name="dialog_delete_messages__header">Apagar mensagens</string>
+    <string name="message__delivering_state__error">Erro na mensagem</string>
+    <string name="message__delivering_state__pending">Mensagem não enviada</string>
+    <string name="message__delivering_state__sent">Mensagem enviada</string>
+    <string name="message__delivering_state__delivered">Mensagem entregue ao usuário</string>
+    <string name="message__delivering_state__displayed">Mensagem lida</string>
+    <string name="message__delivering_state__archived">Mensagem do arquivo</string>
+    <string name="message__delivering_state__saved">Mensagem salva</string>
+    <string name="emoji_list__catelory_name__smiles_and_people">Sorrisos e pessoas</string>
+    <string name="emoji_list__catelory_name__body_and_clothes">Corpo e roupas</string>
+    <string name="emoji_list__catelory_name__animals_and_nature">Animais e natureza</string>
+    <string name="emoji_list__catelory_name__food_and_drinks">Comidas e bebidas</string>
+    <string name="emoji_list__catelory_name__travel_and_places">Viagem e lugares</string>
+    <string name="emoji_list__catelory_name__events">Eventos</string>
+    <string name="emoji_list__catelory_name__objects">Objetos</string>
+    <string name="emoji_list__catelory_name__signs">Sinais</string>
+    <plurals name="chat_screen__bottom_panel__selected_messages__text">
+        <item quantity="one">1 mensagem selecionada</item>
+        <item quantity="other">%d mensagens selecionadas</item>
+    </plurals>
+    <string name="chat_screen__message__label_edited">Editado</string>
+    <string name="chat_screen__message__button_retry_send">tentar novamente</string>
 </resources>

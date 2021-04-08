@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Kişi Ekle</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Grup Oluştur</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Gizli Grup Oluştur</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Hesap seç</string>
+</resources>

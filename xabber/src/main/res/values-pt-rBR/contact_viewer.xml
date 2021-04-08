@@ -65,13 +65,13 @@
     <string name="message_info_occupants_number">Participantes: %d</string>
     <string name="contact_info_connected_clients_header">Dispositivos conectados</string>
     <string name="contact_info_visiting_card_header">vCard</string>
-    <string name="vcard_jabber_id">Jabber ID</string>
+    <string name="vcard_jabber_id">ID XMPP</string>
     <string name="vcard_full_name">Nome completo</string>
     <string name="vcard_type_mobile">Mobile</string>
     <string name="vcard_type_personal">Pessoal</string>
     <string name="vcard_address">Endereço</string>
     <string name="vcard_job">Trabalho</string>
-    <string name="vcard_decsription_placeholder">Algum campo de texto, 3-5 linhas</string>
+    <string name="vcard_decsription_placeholder">Algo sobre você, 3-5 linhas no máximo</string>
     <string name="vcard_home_address">Endereço Residencial</string>
     <string name="vcard_work_address">Endereço de trabalho</string>
     <string name="vcard_edit__header">Editar vCard</string>

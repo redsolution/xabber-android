@@ -247,4 +247,12 @@
     <string name="emoji_list__catelory_name__events">События</string>
     <string name="emoji_list__catelory_name__objects">Предметы</string>
     <string name="emoji_list__catelory_name__signs">Знаки</string>
+    <plurals name="chat_screen__bottom_panel__selected_messages__text">
+        <item quantity="one">Выбрано %d сообщение</item>
+        <item quantity="few">Выбрано %d сообщения</item>
+        <item quantity="many">Выбрано %d сообщений</item>
+        <item quantity="other">Выбрано %d сообщений</item>
+    </plurals>
+    <string name="chat_screen__message__label_edited">изменено</string>
+    <string name="chat_screen__message__button_retry_send">повторить</string>
 </resources>

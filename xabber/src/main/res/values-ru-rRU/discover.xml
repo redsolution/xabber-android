@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_contacts">Быстрые контакты</string>
+    <string name="recent_searches">Недавние запросы</string>
+    <string name="type_here_to_search">Введите здесь для поиска</string>
+    <string name="nothing_was_searched">Ничего не найдено</string>
+    <string name="placeholder_no_matches">Нет совпадений</string>
+    <string name="placeholder_loading">Загрузка…</string>
+    <string name="discover__no_matches">Нет совпадений с %s</string>
+    <string name="discover__text_discovered_groups">Найдено %1$d групп %2$s</string>
+</resources>

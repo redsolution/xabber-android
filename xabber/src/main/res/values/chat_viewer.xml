@@ -245,4 +245,5 @@
         <item quantity="other">%d messages selected</item>
     </plurals>
     <string name="chat_screen__message__label_edited">edited</string>
+    <string name="chat_screen__message__button_retry_send">retry</string>
 </resources>

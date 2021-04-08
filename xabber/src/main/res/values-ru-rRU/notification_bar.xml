@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="new_chat_messages">
+        <item quantity="one">Новое сообщение</item>
+        <item quantity="few">%1$d новых сообщения</item>
+        <item quantity="many">%1$d новых сообщений</item>
+        <item quantity="other">%1$d новых сообщений</item>
+    </plurals>
+    <plurals name="new_chat_messages_from_contact">
+        <item quantity="one">Новое сообщение от %3$s</item>
+        <item quantity="few">%1$d новых сообщения от %3$s</item>
+        <item quantity="many">%1$d новых сообщений от %3$s</item>
+        <item quantity="other">%1$d новых сообщений от %3$s</item>
+    </plurals>
     <string name="AUTHENTICATION_FAILED">Ошибка авторизации</string>
     <string name="connection_state_sync">Выполняется синхронизация</string>
     <string name="otr_verification_in_progress">Нажмите, чтобы прервать.</string>

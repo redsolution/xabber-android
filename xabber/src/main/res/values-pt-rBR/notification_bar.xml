@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="new_chat_messages">
+        <item quantity="one">Nova Mensagem</item>
+        <item quantity="other">%1$d novas mensagens</item>
+    </plurals>
+    <plurals name="new_chat_messages_from_contact">
+        <item quantity="one">Nova mensagem de %1$s</item>
+        <item quantity="other">%1$d novas mensagens de %3$s</item>
+    </plurals>
     <string name="AUTHENTICATION_FAILED">Erro de autorização</string>
     <string name="connection_state_sync">Sincronização em andamento</string>
     <string name="otr_verification_in_progress">Clique aqui para abortar.</string>
@@ -21,9 +29,34 @@
     <string name="channel_group_chat_title">Conversas em grupo</string>
     <string name="channel_group_chat_description">Notificações sobre mensagens em conversas em grupo</string>
     <string name="channel_persistent_connection_title">Conexão persistente</string>
-    <string name="channel_persistent_connection_description">Notificação persistente para estabelecer conexão para receber mensagens</string>
+    <string name="channel_persistent_connection_description">Uma notificação persistente é necessária para manter uma conexão estável com o servidor</string>
     <string name="channel_events_title">Eventos</string>
     <string name="channel_silent_title">Notificações de mensagens silenciosas</string>
     <string name="channel_events_description">Notificações para eventos como: convites de bate-papo em grupo, solicitações de inscrição, solicitações de OTR</string>
     <string name="channel_silent_description">Silenciar notificações sobre mensagens</string>
+    <string name="connection__error__text_timeout_expired">A conexão expirou</string>
+    <string name="connection__error__text_disconnected">Desconectado</string>
+    <string name="connection__error__text_authentication_failed">A autenticação falhou para a conta %s</string>
+    <string name="connection__error__text_authentication_failed_short">A autenticação falhou</string>
+    <string name="connection__error__connection_lost">Conexão perdida</string>
+    <string name="connection__error__text_token_invalidated">O token foi invalidado para a conta %s</string>
+    <string name="connection__error__text_token_invalidated_short">O token foi invalidado</string>
+    <string name="connection_status__you_are_offline">Você está offline</string>
+    <string name="notification__text_sent_a_message">enviou uma mensagem para você</string>
+    <string name="desktop_notifications__alert_enable__link_text">ativar notificações na área de trabalho</string>
+    <string name="desktop_notifications__alert_enable__text">%s precisa da sua permissão para</string>
+    <string name="notifications__toast_notifications_not_supported">O navegador não suporta notificações</string>
+    <string name="notofications__desktop_notification__text">Mensagens (%d)</string>
+    <string name="notifications__error__text_could_not_open_new_tab">Não foi possível abrir uma nova guia. Por favor, permita pop-ups</string>
+    <string name="warning__client_not_support_android_browser">Você deve usar o Xabber para plantaforma Android.</string>
+    <string name="warning__client_not_support_ios_browser">Desculpe, mas %s não suporta navegadores iOS.</string>
+    <string name="warning__client_not_support_mobile">Desculpe, mas %s pode não funcionar corretamente no seu dispositivo.</string>
+    <string name="client_error__missing_connection_url">URL de conexão ausente!</string>
+    <string name="client_warning__no_local_storage">Seu navegador não suporta armazenamento local de dados. No Safari, a causa mais comum disto é o uso do Modo de Navegação Privada. Então, você precisará fazer login após a atualização da página.</string>
+    <string name="client_error__option_show_msg_again">Não mostrar esta mensagem novamente</string>
+    <string name="dialog_version_update__header">Atualizar %s</string>
+    <string name="dialog_version_update__confirm_text__new_version">Nova versão %s disponível</string>
+    <string name="dialog_version_update__confirm_text__question_reload_page">Recarregar a página para obter essas alterações?</string>
+    <string name="dialog_version_update__button_reload">recarregar</string>
+    <string name="dialog_version_update__option_not_now">agora não</string>
 </resources>

@@ -149,4 +149,6 @@
     <string name="xabber_account__sync_status__synced">Ustawienia są zsynchronizowane</string>
     <string name="xabber_account__sync_status__not_synced">Ustawienia nie są zsynchronizowane z chmurą</string>
     <string name="xabber_account__sync__error_no_permission_to_sync">Twoje konto Xabber nie ma uprawnień do synchronizacji ustawień kont XMPP!</string>
+    <string name="xabber_account__last_sync__text">Zsynchronizowano %s</string>
+    <string name="xabber_account__last_sync__not_synced">Nie zsynchronizowano</string>
 </resources>

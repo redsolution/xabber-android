@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_regular_chat">Obrolan umum</string>
+    <string name="intro_regular_chat_text">Pesan dalam obrolan ini tidak dienkripsi. Server kerap menyimpan sementara
+        pesan dalam
+        arsip. Ini mempermudah perangkat untuk sinkronisasi dan mencari riwayat server tambahan, namun menambah risiko privasi.
+    </string>
+    <string name="intro_regular_chat_learn">Lebih lanjut tentang perpesanan</string>
+    <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_encrypted_chat">Obrolan umum</string>
+    <string name="intro_encrypted_chat_text">Pesan dalam obrolan ini dienkripsi dengan enkripsi end-to-end. Anda harus
+        selalu mengonfirmasi identitas kontak Anda dengan verifikasi enkripsi sidik jari.
+    </string>
+    <string name="intro_encrypted_chat_learn">Pelajari lebih lanjut tentang obrolan terenkripsi</string>
+    <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/encrypted</string>
+    <string name="intro_public_group">Grup publik</string>
+    <string name="intro_public_group_text">Identitas pengguna di grup ini bersifat publik, maka anggota dapat mengontak Anda
+        menggunakan ID XMPP Anda.
+    </string>
+    <string name="intro_public_group_learn">Pelajari lebih lanjut tentang grup publik</string>
+    <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
+    <string name="intro_incognito_group">Grup samaran</string>
+    <string name="intro_incognito_group_text">Identitas pengguna di grup ini disembunyikan dari pengguna lain, hanya
+        admin grup yang dapat melihat ID XMPP Anda. Berhati-hatilah, jangan membuka ID Anda dengan ceroboh.
+    </string>
+    <string name="intro_incognito_group_learn">Pelajari lebih lanjut tentang grup samaran</string>
+    <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
+    <string name="intro_private_chat">Obrolan privat</string>
+    <string name="intro_private_chat_text">Obrolan privat dengan pengguna samaran. Pesan dialihkan ke server grup
+        dan identitas Anda disembunyikan. Berhati-hatilah, jangan membuka ID Anda dengan ceroboh.
+    </string>
+    <string name="intro_private_chat_learn">Pelajari lebih lanjut tentang obrolan privat</string>
+    <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
+</resources>

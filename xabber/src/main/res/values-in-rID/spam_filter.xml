@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spam_filter_limit_message">Pengguna ini membatasi penerimaan pesan dari pengguna tanpa otorisasi</string>
+    <string name="spam_filter_limit_subscription">Pengguna ini membatasi langganan. Untuk meminta langganan, selesaikan captcha:</string>
+    <string name="spam_filter_ban_subscription">Pengguna ini tidak menerima langganan. Anda hanya dapat mengobrol jika dia menambahkan Anda.</string>
+    <string name="spam_filter_captcha_correct">Jawaban benar. Permintaan berlangganan ditampilkan ke pengguna</string>
+    <string name="spam_filter_captcha_incorrect">Jawaban salah. Anda bukan botspam, kan?</string>
+    <string name="spam_filter_captcha_many_attempts">Terlalu banyak mencoba. Coba minta langganan lagi untuk mendapatkan captcha baru</string>
+</resources>

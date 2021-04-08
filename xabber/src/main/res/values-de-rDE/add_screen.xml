@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Kontakt hinzufügen</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Gruppe erstellen</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Inkognito-Gruppe erstellen</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Konto auswählen</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Hinzufügen zu</string>
+    <string name="dialog_add__label_add_account">Konto hinzufügen</string>
+    <string name="toolbar__button_add_tooltip">Gruppe, Kontakt oder Konto hinzufügen</string>
+</resources>

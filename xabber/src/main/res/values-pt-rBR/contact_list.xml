@@ -129,6 +129,14 @@
     <string name="dialog_circle_settings__header">Configurações do círculo</string>
     <string name="dialog_circle_settings__button_apply">Aplicar</string>
     <string name="contact_list__placeholder">Por favor, selecione um contato para ver detalhes</string>
+    <plurals name="recent_chat__last_message__images">
+        <item quantity="one">Imagem</item>
+        <item quantity="other">%d imagens</item>
+    </plurals>
+    <plurals name="recent_chat__last_message__files">
+        <item quantity="one">Arquivo</item>
+        <item quantity="other">%d arquivos</item>
+    </plurals>
     <string name="synchronization__text_all_chats_loaded">Todas as conversas carregadas</string>
     <string name="circles__name_general_circle">Geral</string>
     <string name="circles__name_non_roster_circle">Não está na lista</string>

@@ -85,4 +85,5 @@
     <string name="unblock_contact_confirm_short">Вы действительно хотите разблокировать %s?</string>
     <string name="toast__copied_in_clipboard">Скопировано в буфер обмена</string>
     <string name="toast__not_copied_in_clipboard">ОШИБКА: Не скопировано в буфер обмена</string>
+    <string name="vcard_screen__header">Контактная информация</string>
 </resources>

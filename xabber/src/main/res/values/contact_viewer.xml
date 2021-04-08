@@ -85,4 +85,5 @@
     <string name="unblock_contact_confirm_short">Do you really want to unblock %s?</string>
     <string name="toast__copied_in_clipboard">Copied in clipboard</string>
     <string name="toast__not_copied_in_clipboard">ERROR: Not copied in clipboard</string>
+    <string name="vcard_screen__header">Contact details</string>
 </resources>

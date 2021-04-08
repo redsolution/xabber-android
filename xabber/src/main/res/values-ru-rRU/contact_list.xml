@@ -53,7 +53,7 @@
     <string name="group_remove_confirm">Вы действительно хотите удалить группу %s? Пользователи этой группы остануться в списке контактов.</string>
     <string name="group_rename">Переименовать группу</string>
     <string name="configure_notifications">Настроить уведомления</string>
-    <string name="NO_SUCH_ACCOUNT">Учетная запись не найдена</string>
+    <string name="NO_SUCH_ACCOUNT">Аккаунт не найден</string>
     <string name="NOT_CONNECTED">Подключение не установлено</string>
     <string name="request_subscription">Запросить подписку</string>
     <string name="action_send_contact">Отправить контакт</string>
@@ -129,8 +129,20 @@
     <string name="dialog_circle_settings__header">Настройки круга</string>
     <string name="dialog_circle_settings__button_apply">Применить</string>
     <string name="contact_list__placeholder">Пожалуйста, выберите контакт для просмотра информации</string>
+    <plurals name="recent_chat__last_message__images">
+        <item quantity="one">Изображение</item>
+        <item quantity="few">%d изображения</item>
+        <item quantity="many">%d изображений</item>
+        <item quantity="other">%d изображений</item>
+    </plurals>
+    <plurals name="recent_chat__last_message__files">
+        <item quantity="one">Файл</item>
+        <item quantity="few">%d файла</item>
+        <item quantity="many">%d файлов</item>
+        <item quantity="other">%d файлов</item>
+    </plurals>
     <string name="synchronization__text_all_chats_loaded">Все чаты загружены</string>
-    <string name="circles__name_general_circle">Общие настройки</string>
+    <string name="circles__name_general_circle">Контакты</string>
     <string name="circles__name_non_roster_circle">Не в списке контактов</string>
     <string name="dialog_add_circle__error__text_input_name">Пожалуйста, введите ваше имя!</string>
     <string name="dialog_add_circle__error__text_wrong_name">Неправильное имя</string>

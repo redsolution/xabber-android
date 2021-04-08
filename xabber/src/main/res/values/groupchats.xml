@@ -149,4 +149,12 @@
         <item quantity="one">Failed to send invitation</item>
         <item quantity="other">Failed to send invitations</item>
     </plurals>
+    <string name="group_settings_edit__setting_privacy__text_public">Public group. Members can see real XMPP IDs of other participants</string>
+    <string name="group_settings_edit__setting_privacy__text_incognito">Incognito group. Members can not see real XMPP IDs of other participants</string>
+    <string name="group_settings_edit__setting_index__text">Locally indexed chats can be discovered by searching host server. Globally indexed chats can be discovered by searching global index</string>
+    <string name="group_settings_edit__setting_membership__text">Member-only chats can be joined only by invitation</string>
+    <string name="group_settings_edit__setting_name__hint">Enter Chat Name</string>
+    <string name="public_group_settings__header">Public Group Settings</string>
+    <string name="incognito_group_settings__header">Incognito Group Settings</string>
+    <string name="group_settings__block_list__header">Blocked</string>
 </resources>

@@ -9,6 +9,7 @@
     <string name="account_resource">Zasób</string>
     <string name="account_server_name">Serwer</string>
     <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Musisz <a href="http://www.google.com/#q=zarejestruj+konto+XMPP">zarejestrować konto XMPP</a> przed dodaniem go do Xabbera!</string>
+    <string name="account_user_name">Nazwa użytkownika</string>
     <string name="account_compression_summary">Zaznacz, aby włączyć kompresję danych</string>
     <string name="account_custom">Użyj niestandardowego adresu hosta</string>
     <string name="account_custom_summary">Użyj własnych ustawień hosta zamiast rekordu SRV</string>
@@ -84,4 +85,6 @@
     <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronizacja z kontem Xabber</string>
     <string name="bookmark_not_supported">Serwer nie obsługuje zakładek.</string>
     <string name="settings_account__label_this_device">to urządzenie</string>
+    <string name="account_settings__server_info__status_available">Dostępne</string>
+    <string name="account_settings__server_info__status_unavailable">Niedostępne</string>
 </resources>

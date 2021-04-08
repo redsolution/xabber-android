@@ -154,4 +154,6 @@
     <string name="account_auth__feedback__text_authentication">Autenticação...</string>
     <string name="account_color_name_grey">Cinza</string>
     <string name="account_color_name_yellow">Amarelo</string>
+    <string name="account_settings__server_info__status_available">Disponível</string>
+    <string name="account_settings__server_info__status_unavailable">Indisponível</string>
 </resources>

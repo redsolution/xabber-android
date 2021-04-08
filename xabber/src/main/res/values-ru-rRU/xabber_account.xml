@@ -14,7 +14,7 @@
     <string name="settings_delete_success">Настройки удалены</string>
     <string name="need_login_to_continue">Войдите в аккаунт Xabber, чтобы продолжить</string>
     <string name="social_bind_success">Социальный аккаунт привязан</string>
-    <string name="social_bind_fail">Эта учетная запись уже связана с другим аккаунтом Xabber</string>
+    <string name="social_bind_fail">Этот аккаунт уже связан с другим аккаунтом Xabber</string>
     <string name="social_unbind_success">Социальный аккаунт отвязан</string>
     <string name="social_unbind_fail">Не удалось отвязать социальный аккаунт</string>
     <string name="toast_no_internet">Нет подключения к Интернет</string>
@@ -179,4 +179,6 @@
     <string name="xabber_account__dialog_confirm_email__hint_enter_code">Введите проверочный код</string>
     <string name="xabber_account__dialog_unlink_email__header">Отвязать электронную почту</string>
     <string name="xabber_account__dialog_unlink_social__header">Отвязать аккаунт соцсетей</string>
+    <string name="xabber_account__last_sync__text">Синхронизировано %s</string>
+    <string name="xabber_account__last_sync__not_synced">Не синхронизировано</string>
 </resources>

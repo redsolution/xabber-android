@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_add" comment="account_add__button_add_account">Afegeix un compte</string>
+    <string name="account_register" comment="account_add__label_register_account">Registrar un compte nou</string>
+    <string name="account_delete" comment="settings_account__label_delete_account">Elimina el compte</string>
+    <string name="account_editor" comment="settings_account__label_account_settings">Configuració del compte</string>
+    <string name="account_state_registration" comment="settings_account__label_state_registration">Registrant</string>
+    <string name="account_state_connected" comment="settings_account__label_state_connected">En línia</string>
+    <string name="account_state_disconnecting" comment="settings_account__label_state_disconnecting">S\'està desconnectant</string>
+    <string name="account_state_offline" comment="settings_account__label_state_offline">Fora de línia</string>
+    <string name="account_state_waiting" comment="settings_account__label_state_waiting">Esperant la connexió</string>
+</resources>

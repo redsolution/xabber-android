@@ -129,4 +129,5 @@
     <string name="emoji_list__catelory_name__travel_and_places">Podróże i miejsca</string>
     <string name="emoji_list__catelory_name__events">Wydarzenia</string>
     <string name="emoji_list__catelory_name__objects">Obiekty</string>
+    <string name="chat_screen__message__button_retry_send">ponów próbę</string>
 </resources>

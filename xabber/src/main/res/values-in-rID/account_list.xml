@@ -6,7 +6,7 @@
     <string name="account_add" comment="account_add__button_add_account">Tambah akun</string>
     <string name="account_register" comment="account_add__label_register_account">Daftar akun baru</string>
     <string name="account_delete" comment="settings_account__label_delete_account">Hapus akun</string>
-    <string name="account_editor" comment="settings_account__label_account_settings">Pengaturan akun</string>
+    <string name="account_editor" comment="account_editor">Pengaturan akun</string>
     <string name="account_state_registration" comment="settings_account__label_state_registration">Daftar</string>
     <string name="account_state_connected" comment="settings_account__label_state_connected">Daring</string>
     <string name="account_state_connecting" comment="settings_account__label_state_connecting">Menghubungkan...</string>

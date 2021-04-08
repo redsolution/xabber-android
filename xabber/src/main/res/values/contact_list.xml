@@ -138,7 +138,7 @@
         <item quantity="other">%d files</item>
     </plurals>
     <string name="synchronization__text_all_chats_loaded">All chats loaded</string>
-    <string name="circles__name_general_circle">General</string>
+    <string name="circles__name_general_circle">Contacts</string>
     <string name="circles__name_non_roster_circle">Not in roster</string>
     <string name="dialog_add_circle__error__text_input_name">Please input name!</string>
     <string name="dialog_add_circle__error__text_wrong_name">Wrong name</string>

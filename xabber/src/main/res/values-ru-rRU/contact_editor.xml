@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="contact_title">Редактировать контакт</string>
-    <string name="contact_account">Учетная запись</string>
+    <string name="contact_account">Аккаунт</string>
     <string name="contact_group">Выберите группы</string>
     <string name="contact_circle">Круги</string>
     <string name="contact_name">Псевдоним (не обязателен)</string>

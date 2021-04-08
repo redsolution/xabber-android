@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="accounts_offline">
-        <item quantity="one">Account offline</item>
+        <item quantity="one">Offline</item>
         <item quantity="other">%1$d accounts offline</item>
     </plurals>
     <plurals name="new_chat_messages">
@@ -13,15 +13,15 @@
         <item quantity="other">%1$d new messages from %3$s</item>
     </plurals>
     <plurals name="accounts_of_online">
-        <item quantity="one">Account online</item>
+        <item quantity="one">Online</item>
         <item quantity="other">%1$d of %2$d accounts online</item>
     </plurals>
     <plurals name="accounts_of_connecting">
-        <item quantity="one">Account connecting</item>
+        <item quantity="one">Connecting</item>
         <item quantity="other">%1$d of %2$d accounts connecting</item>
     </plurals>
     <plurals name="accounts_of_waiting_to_connect">
-        <item quantity="one">Account waiting to connect</item>
+        <item quantity="one">Waiting to connect</item>
         <item quantity="other">%1$d of %2$d accounts waiting to connect</item>
     </plurals>
     <string name="AUTHENTICATION_FAILED">Authorization error</string>

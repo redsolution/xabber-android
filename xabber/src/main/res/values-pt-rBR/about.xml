@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="web_client__screen_about__preamble_1">%1$s é um mensageiro XMPP de código aberto para plataformas Android, iOS e Web. É construída em torno de padrões abertos, interoperabilidade, design e ótima experiência de usuário. Versões de %2$s para cada plataforma são criadas para proporcionar uma experiência de bate-papo contínua entre elas.</string>
+    <string name="web_client__screen_about__preamble_2">Você encontrará mais informações em nosso site oficial %s</string>
+    <string name="web_client__screen_about__preamble_2__link">https://www.xabber.com</string>
+    <string name="web_client__screen_about__block_1__header">Protocolo XMPP</string>
+    <string name="web_client__screen_about__block_1__text">Extensible Messaging and Presence Protocol (XMPP) é um protocolo de comunicação para um middleware orientado a mensagens baseado em XML (Extensible Markup Language). Permite o intercâmbio quase em tempo real de dados estruturados, mas extensíveis, entre duas ou mais entidades de rede. O protocolo foi originalmente nomeado como Jabber e foi desenvolvido pela comunidade de código aberto Jabber em 1999 para mensagens instantâneas quase em tempo real (IM), informação de presença e manutenção da lista de contatos.</string>
+    <string name="web_client__screen_about__block_2__header">Protocolos de extensão XMPP</string>
+    <string name="web_client__screen_about__block_2__text">XMPP é altamente extensível, por meio de extensões conhecidas como XEPs (protocolo de extensão XMPP). %s suporta uma série de XEPs populares que são essenciais para fornecer uma ótima experiência de bate-papo para nossos usuários.</string>
+    <string name="web_client__screen_about__block_3__header">Desenvolvedores</string>
+</resources>

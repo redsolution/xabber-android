@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="AUTHENTICATION_FAILED">Errore di autorizzazione</string>
+    <string name="otr_verification_in_progress">Clicca qui per annullare.</string>
+    <string name="PASSWORD_REQUIRED">Password richiesta</string>
+    <string name="pay_attention">Presta attenzione</string>
+    <string name="subscription_request_message">Richiesta di autorizzazione</string>
+    <string name="action_reply">Rispondi</string>
+    <string name="action_snooze">Posticipa</string>
+    <string name="action_mark_as_read">Segna come letto</string>
+    <string name="channel_custom_name_default">Canale di notifica personalizzato</string>
+    <string name="channel_custom_chat_description">Canale di notifica personalizzato per la chat:</string>
+    <string name="channel_custom_group_description">Canale di notifica personalizzato per il gruppo:</string>
+    <string name="channel_custom_account_description">Canale di notifica personalizzato per l\'account:</string>
+    <string name="channel_custom_keyphrase_description">Canale di notifica personalizzato per la frase chiave:</string>
+    <string name="channel_attention_title">Chiamate di attenzione</string>
+    <string name="channel_attention_description">Notifiche per le chiamate di attenzione</string>
+    <string name="channel_private_chat_title" comment="channel_private_chat_title ">Chat private</string>
+    <string name="channel_private_chat_description">Notifiche sui messaggi nelle chat private</string>
+    <string name="channel_group_chat_title">Chat di gruppo</string>
+    <string name="channel_group_chat_description">Notifiche sui messaggi nelle chat di gruppo</string>
+    <string name="channel_persistent_connection_title">Connessione permanente</string>
+    <string name="channel_persistent_connection_description">Notifica permanente per stabilire una connessione per ricevere messaggi</string>
+    <string name="channel_events_title">Eventi</string>
+    <string name="channel_events_description">Notifiche per eventi come: inviti a chat di gruppo, richieste di abbonamento, richieste OTR</string>
+</resources>
