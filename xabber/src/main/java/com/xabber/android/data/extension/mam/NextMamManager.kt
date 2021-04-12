@@ -52,7 +52,6 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
 import org.jivesoftware.smackx.forward.packet.Forwarded
 import org.jivesoftware.smackx.mam.MamManager
-import org.jivesoftware.smackx.mam.MamManager.MamPrefsResult
 import org.jivesoftware.smackx.mam.MamManager.MamQueryResult
 import org.jivesoftware.smackx.mam.element.MamElements
 import org.jivesoftware.smackx.mam.element.MamElements.MamResultExtension
@@ -65,11 +64,15 @@ import org.jxmpp.jid.Jid
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
     private val LOG_TAG = NextMamManager::class.java.simpleName
     const val NAMESPACE = "urn:xmpp:mam:tmp"
+    private const val DATA_FORM_FIELD_STANZA_ID = "{urn:xmpp:sid:0}stanza-id"
+    private const val DATA_FORM_FIELD_WITH = "with"
 
     private val supportedByAccount: MutableMap<AccountJid, Boolean> = ConcurrentHashMap()
     private var isRequested = false
@@ -80,23 +83,21 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
     override fun onRosterReceived(accountItem: AccountItem) {
         LogManager.d(LOG_TAG, "onRosterReceivedStarted")
         updateIsSupported(accountItem)
-        //updatePreferencesFromServer(accountItem);
-        //LogManager.d("AccountRosterListener", "finished updating preferences");
+
         val realm = DatabaseManager.getInstance().defaultRealmInstance
         if (accountItem.startHistoryTimestamp == 0L) {
-            initializeStartTimestamp(realm, accountItem)
-            loadMostRecentMessages(realm, accountItem)
+            initializeStartTimestamp(accountItem)
+            loadMostRecentMessages(accountItem)
             startLoadingLastMessageInAllChats(accountItem)
         } else {
             val lastArchivedId = getLastMessageArchivedId(accountItem, realm)
             if (lastArchivedId != null) {
-                val historyCompleted = loadAllNewMessages(realm, accountItem, lastArchivedId)
+                val historyCompleted = loadAllNewMessages(accountItem, lastArchivedId)
                 if (!historyCompleted) {
                     startLoadingLastMessageInAllChats(accountItem)
-                } else startLoadingLastMessageInMissedChats(realm, accountItem)
+                } else startLoadingLastMessageInMissedChats(accountItem)
             } else startLoadingLastMessageInAllChats(accountItem)
         }
-        updatePreferencesFromServer(accountItem)
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
     }
 
@@ -111,14 +112,13 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
             val realm = DatabaseManager.getInstance().defaultRealmInstance
 
             // if history is empty - load last message
-            val firstMessage = getFirstMessage(chat, realm)
-            if (firstMessage == null) loadLastMessage(realm, accountItem, chat)
+            if (hasMessage(chat)) loadLastMessage(accountItem, chat)
             synchronized(lock) {
                 isRequested = if (isRequested) return@runInBackgroundNetworkUserRequest else true
             }
 
             // load prev page if history is not enough
-            if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
+            if (historyIsNotEnough(chat) && !chat.historyIsFull()) {
 
                 Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java).forEach {
                     listener -> listener.onLastHistoryLoadStarted(chat.account, chat.contactJid)
@@ -137,7 +137,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 messages.forEach { message -> loadMissedMessages(realm, accountItem, chat, message) }
             }
             synchronized(lock) { isRequested = false }
-            if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
+            realm.close()
         }
     }
 
@@ -184,10 +184,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
         val realm = DatabaseManager.getInstance().defaultRealmInstance
 
-        // if history is empty - load last message
-        val firstMessage = getFirstMessage(chat, realm)
-
-        if (firstMessage == null) loadLastMessage(realm, accountItem, chat)
+        if (hasMessage(chat)) loadLastMessage(accountItem, chat)
 
         var complete = false
         while (!complete) {
@@ -195,12 +192,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         }
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
-    }
-
-    fun onRequestUpdatePreferences(accountJid: AccountJid) {
-        val accountItem = AccountManager.getInstance().getAccount(accountJid)
-        if (accountItem == null || !isSupported(accountJid)) return
-        Application.getInstance().runInBackgroundNetworkUserRequest { requestUpdatePreferences(accountItem) }
     }
 
     override fun onStanza(connection: ConnectionItem,
@@ -231,7 +222,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                                     return
                                 }
                                 val realm = DatabaseManager.getInstance().defaultRealmInstance
-                                parseAndSaveMessageFromMamResult(realm, connection.account, packetExtension.forwarded)
+                                parseAndSaveMessageFromMamResult(connection.account, packetExtension.forwarded)
                                 val contactJid = waitingRequests[resultID]
                                 val chat = ChatManager.getInstance().getChat(connection.account, contactJid)
                                 if (chat != null && !chat.isHistoryRequestedAtStart) chat.setHistoryRequestedAtStart()
@@ -282,9 +273,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
      * This is needed just in case the initial last message
      * loading was interrupted previously.
      */
-    private fun startLoadingLastMessageInMissedChats(realm: Realm,
-                                                     accountItem: AccountItem,
-    ) {
+    private fun startLoadingLastMessageInMissedChats(accountItem: AccountItem) {
         if (accountItem.loadHistorySettings != LoadHistorySettings.all || !isSupported(accountItem.account)) return
 
         val contactsWithoutHistory: MutableCollection<RosterContact> = ArrayList()
@@ -294,7 +283,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
             if (chat == null) chat = ChatManager.getInstance().createRegularChat(contact.account, contact.contactJid)
 
-            if (getFirstMessage(chat, realm) == null && !chat!!.isHistoryRequestedAtStart) {
+            if (!hasMessage(chat!!) && !chat.isHistoryRequestedAtStart) {
                 contactsWithoutHistory.add(contact)
             }
         }
@@ -347,21 +336,19 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         }
     }
 
-    private fun loadLastMessage(realm: Realm,
-                                accountItem: AccountItem,
+    private fun loadLastMessage(accountItem: AccountItem,
                                 chat: AbstractChat,
     ) {
         LogManager.d(LOG_TAG, "load last messages in chat: " + chat.contactJid)
         val queryResult = requestLastMessage(accountItem, chat)
         if (queryResult != null) {
             val messages: List<Forwarded> = ArrayList(queryResult.forwardedMessages)
-            saveOrUpdateMessages(realm, parseMessage(accountItem, chat.account, chat.contactJid, messages))
+            saveOrUpdateMessages(parseMessage(accountItem, chat.account, chat.contactJid, messages))
         }
-        updateLastMessageId(chat, realm)
+        updateLastMessageIdInChat(chat)
     }
 
-    private fun loadMostRecentMessages(realm: Realm,
-                                       accountItem: AccountItem,
+    private fun loadMostRecentMessages(accountItem: AccountItem,
     ) {
         if (accountItem.loadHistorySettings != LoadHistorySettings.all || !isSupported(accountItem.account)) return
 
@@ -371,37 +358,32 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         if (queryResult != null) messages.addAll(queryResult.forwardedMessages)
         if (messages.isNotEmpty()) {
             val parsedMessages: MutableList<MessageRealmObject> = ArrayList()
-            val chatsNeedUpdateLastMessageId: MutableList<AbstractChat?> = ArrayList()
-            val messagesByChat: HashMap<String, ArrayList<Forwarded>> = sortNewMessagesByChats(messages, accountItem)
-            for ((key, list) in messagesByChat) {
+            val chatsNeedUpdateLastMessageId: MutableList<AbstractChat> = ArrayList()
+            messages.groupToChats(accountItem).forEach { (jid, messagesList) ->
                 try {
-                    var chat = ChatManager.getInstance().getChat(accountItem.account, ContactJid.from(key))
-
-                    if (chat == null) {
-                        chat = ChatManager.getInstance().createRegularChat(accountItem.account, ContactJid.from(key))
-                    }
+                    val chat = ChatManager.getInstance().getChat(accountItem.account, ContactJid.from(jid))
+                            ?: ChatManager.getInstance().createRegularChat(accountItem.account, ContactJid.from(jid))
 
                     val oldSize = parsedMessages.size
-                    parsedMessages.addAll(parseNewMessagesInChat(list, chat, accountItem))
+                    parsedMessages.addAll(parseNewMessagesInChat(ArrayList(messagesList), chat, accountItem))
 
                     if (parsedMessages.size - oldSize > 0) chatsNeedUpdateLastMessageId.add(chat)
                 } catch (e: ContactJidCreateException) {
                     LogManager.d(LOG_TAG, e.toString())
                 }
             }
-            saveOrUpdateMessages(realm, parsedMessages)
+            saveOrUpdateMessages(parsedMessages)
             chatsNeedUpdateLastMessageId.forEach { chat ->
                 run {
-                    updateLastMessageId(chat, realm)
-                    chat!!.setHistoryRequestedWithoutRealm(true)
+                    updateLastMessageIdInChat(chat)
+                    chat.setHistoryRequestedWithoutRealm(true)
                     ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
                 }
             }
         }
     }
 
-    private fun loadAllNewMessages(realm: Realm,
-                                   accountItem: AccountItem,
+    private fun loadAllNewMessages(accountItem: AccountItem,
                                    lastArchivedId: String,
     ): Boolean {
         if (accountItem.loadHistorySettings != LoadHistorySettings.all || !isSupported(accountItem.account)) return true
@@ -423,16 +405,15 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         }
         if (messages.isNotEmpty()) {
             val parsedMessages: MutableList<MessageRealmObject> = ArrayList()
-            val chatsNeedUpdateLastMessageId: MutableList<AbstractChat?> = ArrayList()
-            val messagesByChat: HashMap<String, ArrayList<Forwarded>> = sortNewMessagesByChats(messages, accountItem)
-
+            val chatsNeedUpdateLastMessageId: MutableList<AbstractChat> = ArrayList()
+            
             // parse message lists
-            for ((key, list) in messagesByChat) {
+            messages.groupToChats(accountItem).forEach { (jid, messagesList) ->
                 try {
-                    val chat = ChatManager.getInstance().getChat(accountItem.account, ContactJid.from(key))
-                            ?: ChatManager.getInstance().createRegularChat(accountItem.account, ContactJid.from(key))
+                    val chat = ChatManager.getInstance().getChat(accountItem.account, ContactJid.from(jid))
+                            ?: ChatManager.getInstance().createRegularChat(accountItem.account, ContactJid.from(jid))
 
-                    parsedMessages.addAll(parseNewMessagesInChat(list, chat, accountItem))
+                    parsedMessages.addAll(parseNewMessagesInChat(ArrayList(messagesList), chat, accountItem))
                     if (parsedMessages.size - parsedMessages.size > 0) chatsNeedUpdateLastMessageId.add(chat)
                 } catch (e: ContactJidCreateException) {
                     LogManager.d(LOG_TAG, e.toString())
@@ -440,8 +421,8 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
             }
 
             // save messages to Realm
-            saveOrUpdateMessages(realm, parsedMessages)
-            chatsNeedUpdateLastMessageId.forEach { chat -> updateLastMessageId(chat, realm) }
+            saveOrUpdateMessages(parsedMessages)
+            chatsNeedUpdateLastMessageId.forEach { chat -> updateLastMessageIdInChat(chat) }
         }
         return complete
     }
@@ -460,19 +441,12 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                                 chat: AbstractChat,
     ): Boolean {
         LogManager.d(LOG_TAG, "load next history in chat: " + chat.contactJid)
-        val firstMessage = getFirstMessage(chat, realm)
-        if (firstMessage != null) {
-            val queryResult = requestMessagesBeforeId(accountItem, chat, firstMessage.stanzaId)
+        if (hasMessage(chat)) {
+            val queryResult = requestMessagesBeforeId(accountItem, chat, getFirstMessageId(chat) ?: "")
             if (queryResult != null) {
                 val messages: List<Forwarded> = ArrayList(queryResult.forwardedMessages)
                 if (messages.isNotEmpty()) {
-                    val savedMessages = saveOrUpdateMessages(
-                            realm, parseMessage(accountItem, chat.account, chat.contactJid, messages))
-                    if (savedMessages.isNotEmpty()) {
-                        realm.beginTransaction()
-                        realm.commitTransaction()
-                        return false
-                    }
+                    saveOrUpdateMessages(parseMessage(accountItem, chat.account, chat.contactJid, messages))
                 } else if (queryResult.mamFin.isComplete) {
                     realm.beginTransaction()
                     realm.commitTransaction()
@@ -503,12 +477,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 } else complete = true
             }
             if (messages.isNotEmpty()) {
-                val savedMessages = saveOrUpdateMessages(
-                        realm, parseMessage(accountItem, chat.account, chat.contactJid, messages))
-                if (savedMessages.isNotEmpty()) {
-                    realm.beginTransaction()
-                    realm.commitTransaction()
-                }
+                saveOrUpdateMessages(parseMessage(accountItem, chat.account, chat.contactJid, messages))
             } else {
                 realm.beginTransaction()
                 realm.commitTransaction()
@@ -518,7 +487,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
     /** Request most recent message from all history and save it timestamp to startHistoryTimestamp
      * If message is null save current time to startHistoryTimestamp  */
-    private fun initializeStartTimestamp(realm: Realm, accountItem: AccountItem) {
+    private fun initializeStartTimestamp(accountItem: AccountItem) {
         var startHistoryTimestamp = System.currentTimeMillis()
         val queryResult = requestLastMessage(accountItem, null)
         if (queryResult != null && queryResult.forwardedMessages.isNotEmpty()) {
@@ -542,7 +511,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 accountItem.startHistoryTimestamp = startHistoryTimestamp
                 return
             }
-            parseAndSaveMessageFromMamResult(realm, accountItem.account, forwarded)
+            parseAndSaveMessageFromMamResult(accountItem.account, forwarded)
         }
         accountItem.startHistoryTimestamp = startHistoryTimestamp
     }
@@ -561,20 +530,11 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         if (!isSupported) VCardManager.getInstance().onHistoryLoaded(accountItem)
     }
 
-    private fun updatePreferencesFromServer(accountItem: AccountItem) {
-        val prefsResult = requestPreferencesFromServer(accountItem)
-        if (prefsResult != null) {
-            val behavior = prefsResult.mamPrefs.default
-            AccountManager.getInstance().setMamDefaultBehaviour(accountItem.account, behavior)
-        }
-    }
 
-    /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult  */
     internal abstract class MamRequest<T> {
         abstract fun execute(manager: MamManager): T
     }
 
-    /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult  */
     private fun <T> requestToMessageArchive(accountItem: ConnectionItem,
                                             request: MamRequest<T>,
     ): T? {
@@ -626,8 +586,12 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
                 // send request stanza
                 val rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1)
-                val dataForm = newMamForm
-                addWithJid(chat.contactJid.jid, dataForm)
+                val dataForm = createNewMamDataForm()
+
+                val formField = FormField(DATA_FORM_FIELD_WITH)
+                formField.addValue(chat.contactJid.jid.toString())
+                dataForm.addField(formField)
+
                 val mamQueryIQ = MamQueryIQ(queryID, null, dataForm)
                 mamQueryIQ.type = IQ.Type.set
                 if (chat is GroupChat) {
@@ -651,8 +615,12 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 waitingRequests[queryID] = chat.contactJid
 
                 // send request stanza
-                val dataForm = newMamForm
-                addWithStanzaId(stanzaId, dataForm)
+                val dataForm = createNewMamDataForm()
+                if (stanzaId != null) {
+                    val formField = FormField(DATA_FORM_FIELD_STANZA_ID)
+                    formField.addValue(stanzaId)
+                    dataForm.addField(formField)
+                }
                 val mamQueryIQ = MamQueryIQ(queryID, null, dataForm)
                 mamQueryIQ.type = IQ.Type.set
                 if (chat is GroupChat) {
@@ -701,27 +669,9 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         })
     }
 
-    /** Request update archiving preferences on server  */
-    private fun requestUpdatePreferences(accountItem: AccountItem) {
-        requestToMessageArchive(accountItem, object : MamRequest<MamPrefsResult>() {
-            override fun execute(manager: MamManager): MamPrefsResult {
-                return manager.updateArchivingPreferences(null, null, accountItem.mamDefaultBehaviour)
-            }
-        })
-    }
-
-    /** Request archiving preferences from server  */
-    private fun requestPreferencesFromServer(accountItem: AccountItem): MamPrefsResult? {
-        return requestToMessageArchive(accountItem, object : MamRequest<MamPrefsResult>() {
-            override fun execute(manager: MamManager): MamPrefsResult {
-                return manager.retrieveArchivingPreferences()
-            }
-        })
-    }
 
     /** PARSING  */
-    private fun parseAndSaveMessageFromMamResult(realm: Realm,
-                                                 account: AccountJid,
+    private fun parseAndSaveMessageFromMamResult(account: AccountJid,
                                                  forwarded: Forwarded,
     ) {
         val stanza = forwarded.forwardedStanza
@@ -733,8 +683,8 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
             if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, ContactJid.from(user))
             val messageRealmObject = parseMessage(accountItem, account, chat!!.contactJid, forwarded)
             if (messageRealmObject != null) {
-                saveOrUpdateMessages(realm, listOf(messageRealmObject), true)
-                updateLastMessageId(chat, realm)
+                saveOrUpdateMessages(listOf(messageRealmObject), true)
+                updateLastMessageIdInChat(chat)
             }
         } catch (e: ContactJidCreateException) {
             LogManager.d(LOG_TAG, e.toString())
@@ -793,6 +743,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         val otrMessage: AbstractMessage? = try {
             SerializationUtils.toMessage(body)
         } catch (e: IOException) {
+            LogManager.exception(LOG_TAG, e)
             return null
         }
         var encrypted = false
@@ -804,6 +755,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                     body = OTRManager.getInstance().transformReceivingIfSessionExist(account, user, body)
                     if (OTRManager.getInstance().isEncrypted(body)) return null
                 } catch (e: Exception) {
+                    LogManager.exception(LOG_TAG, e)
                     return null
                 }
             } else body = (otrMessage as PlainTextMessage).cleanText
@@ -831,20 +783,23 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
                 if (originId != null) MessageRealmObject.createMessageRealmObjectWithOriginId(account, user, originId)
                 else MessageRealmObject.createMessageRealmObjectWithStanzaId(account, user, stanzaId)
 
-        if (stanzaId != null) messageRealmObject.stanzaId = stanzaId
         val timestamp = delayInformation.stamp.time
-        messageRealmObject.resource = user.jid.resourceOrNull
-        messageRealmObject.text = body
-        if (markupBody != null) messageRealmObject.markupText = markupBody
-        messageRealmObject.timestamp = timestamp
-        if (messageDelay != null) messageRealmObject.delayTimestamp = messageDelay.stamp.time
-        messageRealmObject.isIncoming = incoming
-        messageRealmObject.originId = UniqueIdsHelper.getOriginId(message)
-        messageRealmObject.isRead = timestamp <= accountItem!!.startHistoryTimestamp
-        if (incoming) {
-            messageRealmObject.messageStatus = MessageStatus.NONE
-        } else messageRealmObject.messageStatus = MessageStatus.DISPLAYED
-        messageRealmObject.isEncrypted = encrypted
+
+        messageRealmObject.apply {
+            resource = user.jid.resourceOrNull
+            text = body
+            isIncoming = incoming
+            markupText = markupBody
+            delayTimestamp = messageDelay?.stamp?.time
+            isRead = timestamp <= accountItem!!.startHistoryTimestamp
+            if (incoming) {
+                messageRealmObject.messageStatus = MessageStatus.NONE
+            } else messageRealmObject.messageStatus = MessageStatus.DISPLAYED
+            this.timestamp = timestamp
+            this.stanzaId = stanzaId
+            this.originId = UniqueIdsHelper.getOriginId(message)
+            isEncrypted = encrypted
+        }
 
         // attachments
         // FileManager.processFileMessage(messageRealmObject);
@@ -865,65 +820,93 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     /** SAVING  */
-    private fun saveOrUpdateMessages(realm: Realm,
-                                     messages: Collection<MessageRealmObject>?,
+    private fun saveOrUpdateMessages(messages: Collection<MessageRealmObject>?,
                                      ui: Boolean = false,
-    ): List<MessageRealmObject> {
-        val messagesToSave: MutableList<MessageRealmObject> = ArrayList()
-        realm.refresh()
-        if (messages != null && !messages.isEmpty()) {
-            for (message in messages) {
-                val newMessage = determineSaveOrUpdate(realm, message, ui)
-                if (newMessage != null) messagesToSave.add(newMessage)
+    ){
+        fun determineSaveOrUpdate(realm: Realm, message: MessageRealmObject): MessageRealmObject? {
+
+            var originalMessage: Message? = null
+            try {
+                originalMessage = PacketParserUtils.parseStanza(message.originalStanza)
+            } catch (e: Exception) {
+                LogManager.exception(LOG_TAG, e)
             }
-        }
-        realm.beginTransaction()
-        realm.copyToRealmOrUpdate(messagesToSave)
-        realm.commitTransaction()
-        SyncManager.getInstance().onMessageSaved()
-        for (listener in Application.getInstance().getUIListeners(OnNewMessageListener::class.java)) {
-            listener.onNewMessage()
-        }
-        return messagesToSave
-    }
+            if (originalMessage == null) LogManager.e(NextMamManager::class.java, message.originalStanza)
+            val chat = ChatManager.getInstance().getChat(message.account, message.user) ?: return null
+            val localMessage = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                    .equalTo(MessageRealmObject.Fields.TEXT, message.text)
+                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                    .beginGroup()
+                    .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.originId)
+                    .or()
+                    .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.stanzaId)
+                    .or()
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, message.originId)
+                    .or()
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, message.stanzaId)
+                    .endGroup()
+                    .findFirst()
 
-    private fun determineSaveOrUpdate(realm: Realm, message: MessageRealmObject, ui: Boolean): MessageRealmObject? {
-        var originalMessage: Message? = null
-        try {
-            originalMessage = PacketParserUtils.parseStanza(message.originalStanza)
-        } catch (e: Exception) {
-            LogManager.exception(LOG_TAG, e)
-            LogManager.e(LOG_TAG, message.originalStanza)
-        }
-        val chat = ChatManager.getInstance().getChat(message.account, message.user)
-                ?: return null
-        val localMessage = findSameLocalMessage(realm, chat, message)
-        return if (localMessage == null) {
+            return if (localMessage == null) {
 
-            // forwarded
-            if (originalMessage != null) {
-                val forwardIdRealmObjects = chat.parseForwardedMessage(ui, originalMessage, message.primaryKey)
-                if (forwardIdRealmObjects != null && !forwardIdRealmObjects.isEmpty()) {
-                    message.forwardedIds = forwardIdRealmObjects
+                // forwarded
+                if (originalMessage != null) {
+                    val forwardIdRealmObjects = chat.parseForwardedMessage(ui, originalMessage, message.primaryKey)
+                    if (forwardIdRealmObjects != null && !forwardIdRealmObjects.isEmpty()) {
+                        message.forwardedIds = forwardIdRealmObjects
+                    }
                 }
-            }
 
-            // notify about new message
-            chat.enableNotificationsIfNeed()
-            val notify = (!message.isRead
-                    && message.text != null && message.text.trim { it <= ' ' }.isNotEmpty()
-                    && message.isIncoming
-                    && chat.notifyAboutMessage())
-            val visible = ChatManager.getInstance().isVisibleChat(chat)
-            if (notify && !visible) NotificationManager.getInstance().onMessageNotification(message)
-            message
-        } else {
-            LogManager.d(LOG_TAG, "Matching message found! Updating message")
-            realm.beginTransaction()
-            localMessage.stanzaId = message.stanzaId
-            realm.commitTransaction()
-            localMessage
+                // notify about new message
+                chat.enableNotificationsIfNeed()
+                val notify = (!message.isRead
+                        && message.text != null && message.text.trim { it <= ' ' }.isNotEmpty()
+                        && message.isIncoming
+                        && chat.notifyAboutMessage())
+                val visible = ChatManager.getInstance().isVisibleChat(chat)
+                if (notify && !visible) NotificationManager.getInstance().onMessageNotification(message)
+                message
+            } else {
+                LogManager.d(LOG_TAG, "Matching message found! Updating message")
+                realm.executeTransaction { localMessage.stanzaId = message.stanzaId }
+
+                localMessage
+            }
         }
+
+        fun saveOrUpdate() {
+            var realm : Realm? = null
+            try {
+                realm = DatabaseManager.getInstance().defaultRealmInstance
+                val messagesToSave: MutableList<MessageRealmObject> = ArrayList()
+                if (messages != null && !messages.isEmpty()) {
+                    messages.forEach { message ->
+                        val newMessage = determineSaveOrUpdate(realm, message)
+                        if (newMessage != null) messagesToSave.add(newMessage)
+                    }
+                }
+                realm.executeTransaction { realm1 ->
+                    realm1.copyToRealmOrUpdate(messagesToSave)
+                }
+                SyncManager.getInstance().onMessageSaved()
+
+                Application.getInstance().runOnUiThread {
+                    Application.getInstance().getUIListeners(OnNewMessageListener::class.java)
+                            .forEach(OnNewMessageListener::onNewMessage)
+                }
+            } catch (e: Exception){
+                LogManager.exception(LOG_TAG, e)
+            } finally {
+                if (Looper.myLooper() != Looper.getMainLooper() && realm != null) realm.close()
+            }
+        }
+
+        if (ui){
+            Application.getInstance().runOnUiThread { saveOrUpdate() }
+        } else Application.getInstance().runInBackground { saveOrUpdate() }
+
     }
 
     private fun getNextArchivedId(queryResult: MamQueryResult): String? {
@@ -947,139 +930,139 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         return date
     }
 
-    private fun findMissedMessages(realm: Realm, chat: AbstractChat): List<MessageRealmObject>? {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-        return if (results != null && !results.isEmpty()) {
-            ArrayList(results)
-        } else null
+    private fun findMissedMessages(realm: Realm,
+                                   chat: AbstractChat,
+    ) = realm.where(MessageRealmObject::class.java)
+            .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+            .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+            .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+            .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+            .findAll()
+            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+
+    private fun getMessageForCloseMissedMessages(realm: Realm,
+                                                 messageRealmObject: MessageRealmObject,
+    ) = realm.where(MessageRealmObject::class.java)
+            .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.account.toString())
+            .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.user.toString())
+            .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+            .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+            .lessThan(MessageRealmObject.Fields.TIMESTAMP, messageRealmObject.timestamp)
+            .findAll()
+            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+            .first()
+
+    private fun historyIsNotEnough(chat: AbstractChat,
+    ): Boolean {
+        var result = false
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            result = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                    .findAll()
+                    .size < 30
+        } catch (e: Exception){
+            LogManager.exception(LOG_TAG, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+        }
+        return result
     }
 
-    private fun getMessageForCloseMissedMessages(realm: Realm, messageRealmObject: MessageRealmObject): MessageRealmObject? {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.user.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .lessThan(MessageRealmObject.Fields.TIMESTAMP, messageRealmObject.timestamp)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-        return if (results != null && !results.isEmpty()) {
-            results.first()
-        } else null
+    private fun getLastMessageArchivedId(account: AccountItem,
+                                         realm: Realm,
+    ) = realm.where(MessageRealmObject::class.java)
+            .equalTo(MessageRealmObject.Fields.ACCOUNT, account.account.toString())
+            .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+            .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+            .findAll()
+            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+            .last()
+            ?.stanzaId
+
+    private fun hasMessage(chat: AbstractChat,
+    ): Boolean {
+        var result = false
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            val message = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                    .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                    .findAll()
+                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+                    .first()
+            result = message != null && message.isValid
+        } catch (e: Exception){
+            LogManager.exception(LOG_TAG, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+        }
+        return result
     }
 
-    private fun historyIsNotEnough(realm: Realm, chat: AbstractChat): Boolean {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .findAll()
-        return results.size < 30
+    private fun getFirstMessageId(chat: AbstractChat,
+    ): String? {
+        var result: String? = ""
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            result = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                    .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                    .findAll()
+                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+                    .first()
+                    ?.stanzaId
+        } catch (e: Exception){
+            LogManager.exception(LOG_TAG, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+        }
+        return result
     }
 
-    private fun getLastMessageArchivedId(account: AccountItem, realm: Realm): String? {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.account.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-        return if (results != null && !results.isEmpty()) {
-            results.last()!!.stanzaId
-        } else null
-    }
-
-    private fun getFirstMessage(chat: AbstractChat?, realm: Realm): MessageRealmObject? {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat!!.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-        return if (results != null && !results.isEmpty()) {
-            results.first()
-        } else null
-    }
-
-    private fun updateLastMessageId(chat: AbstractChat?, realm: Realm) {
-        val results = realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat!!.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .findAll()
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-        if (results != null && !results.isEmpty()) {
-            val lastMessage = results.last()
-            chat.lastMessageId = lastMessage!!.stanzaId
+    private fun updateLastMessageIdInChat(chat: AbstractChat,
+    ) {
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            chat.lastMessageId = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                    .findFirst()
+                    ?.stanzaId
+        } catch (e: Exception){
+            LogManager.exception(LOG_TAG, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
         }
     }
 
-    private fun findSameLocalMessage(realm: Realm, chat: AbstractChat, message: MessageRealmObject): MessageRealmObject? {
-        return realm.where(MessageRealmObject::class.java)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                .equalTo(MessageRealmObject.Fields.TEXT, message.text)
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .beginGroup()
-                .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.originId)
-                .or()
-                .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.stanzaId)
-                .or()
-                .equalTo(MessageRealmObject.Fields.STANZA_ID, message.originId)
-                .or()
-                .equalTo(MessageRealmObject.Fields.STANZA_ID, message.stanzaId)
-                .endGroup()
-                .findFirst()
+    private fun List<Forwarded>.groupToChats(accountItem: AccountItem,
+    ): Map<String, List<Forwarded>> = this.groupBy { forwarded -> 
+        if (forwarded.forwardedStanza.from.asBareJid() == accountItem.account.fullJid.asBareJid()) {
+            forwarded.forwardedStanza.to.asBareJid().toString()
+        } else forwarded.forwardedStanza.from.asBareJid().toString() 
     }
 
-    private fun sortNewMessagesByChats(messages: List<Forwarded>,
-                                       accountItem: AccountItem,
-    ): HashMap<String, ArrayList<Forwarded>> {
-        val sortedMapOfChats = HashMap<String, ArrayList<Forwarded>>()
-        for (forwarded in messages) {
-            val stanza = forwarded.forwardedStanza
-            var user: Jid = stanza.from.asBareJid()
-
-            if (user.equals(accountItem.account.fullJid.asBareJid())) user = stanza.to.asBareJid()
-
-            if (!sortedMapOfChats.containsKey(user.toString())) sortedMapOfChats[user.toString()] = ArrayList()
-
-            val list = sortedMapOfChats[user.toString()]
-            list?.add(forwarded)
-        }
-        return sortedMapOfChats
-    }
-
-    /** UTILS  */
-    private val newMamForm: DataForm
-        get() {
-            val formField = FormField(FormField.FORM_TYPE)
-            formField.type = FormField.Type.hidden
-            formField.addValue(MamElements.NAMESPACE)
-            val form = DataForm(DataForm.Type.submit)
-            form.addField(formField)
-            return form
-        }
-
-    private fun addWithJid(withJid: Jid?, dataForm: DataForm) {
-        if (withJid == null) return
-        val formField = FormField("with")
-        formField.addValue(withJid.toString())
-        dataForm.addField(formField)
-    }
-
-    private fun addWithStanzaId(stanzaId: String?, dataForm: DataForm) {
-        if (stanzaId == null) return
-        val formField = FormField("{urn:xmpp:sid:0}stanza-id")
-        formField.addValue(stanzaId)
-        dataForm.addField(formField)
-    }
+    private fun createNewMamDataForm() =
+            DataForm(DataForm.Type.submit).apply {
+                addField(
+                        FormField(FormField.FORM_TYPE).apply {
+                            type = FormField.Type.hidden
+                            addValue(MamElements.NAMESPACE)
+                        }
+                )
+            }
 
 }

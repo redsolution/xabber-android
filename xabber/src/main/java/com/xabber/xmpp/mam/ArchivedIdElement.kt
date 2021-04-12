@@ -1,4 +1,4 @@
-package com.xabber.xmpp.archive
+package com.xabber.xmpp.mam
 
 import com.xabber.android.data.extension.mam.NextMamManager
 import org.jivesoftware.smack.packet.ExtensionElement

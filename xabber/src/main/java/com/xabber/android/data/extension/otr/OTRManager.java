@@ -51,7 +51,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnAuthAskListener;
 import com.xabber.android.ui.activity.QuestionActivity;
-import com.xabber.xmpp.archive.OtrMode;
+import com.xabber.xmpp.mam.OtrMode;
 
 import net.java.otr4j.OtrEngineHost;
 import net.java.otr4j.OtrEngineListener;

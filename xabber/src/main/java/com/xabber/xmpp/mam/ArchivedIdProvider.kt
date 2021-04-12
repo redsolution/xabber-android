@@ -1,4 +1,4 @@
-package com.xabber.xmpp.archive
+package com.xabber.xmpp.mam
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider
 import org.xmlpull.v1.XmlPullParser

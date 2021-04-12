@@ -25,7 +25,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.xmpp.archive.OtrMode;
+import com.xabber.xmpp.mam.OtrMode;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
 import com.xabber.xmpp.ssn.LoggingValue;

@@ -1,6 +1,6 @@
 package com.xabber.xmpp.sid;
 
-import com.xabber.xmpp.archive.ArchivedIdElement;
+import com.xabber.xmpp.mam.ArchivedIdElement;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
