@@ -67,7 +67,6 @@ class GroupInviteRequestIqTest {
                 "<iq to='localpart@group.domain/resource' id='iqId' type='set'>" +
                     "<invite xmlns='https://xabber.com/protocol/groups#invite'>" +
                         "<jid>membertoinvite@server.domain</jid>" +
-                        "<reason>This is reason to get invite to group chat</reason>" +
                         "<send>false</send>" +
                     "</invite>" +
                 "</iq>"
@@ -77,7 +76,6 @@ class GroupInviteRequestIqTest {
                 "<iq to='localpart@group.domain/resource' id='iqId' type='set'>" +
                     "<invite xmlns='https://xabber.com/protocol/groups#invite'>" +
                         "<jid>membertoinvite@server.domain</jid>" +
-                        "<reason>New reason!</reason>" +
                         "<send>true</send>" +
                     "</invite>" +
                 "</iq>"
