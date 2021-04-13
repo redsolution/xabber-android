@@ -5,7 +5,6 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
-import com.xabber.android.data.extension.mam.NextMamManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.references.ReferencesManager
 import com.xabber.android.data.log.LogManager
@@ -15,13 +14,12 @@ import net.java.otr4j.io.SerializationUtils
 import net.java.otr4j.io.messages.AbstractMessage
 import net.java.otr4j.io.messages.PlainTextMessage
 import org.jivesoftware.smack.packet.Message
-import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.delay.packet.DelayInformation
 import java.io.IOException
 
-//fun parseMessage(accountJid: AccountJid,
+//fun parseAndSaveMessage(accountJid: AccountJid,
 //                 contactJid: ContactJid,
-//                 stanza: Stanza,
+//                 stanza: Message,
 //): MessageRealmObject {
 //    if (stanza !is Message) throw ClassCastException("Incoming stanza does not contain any message!")
 //
@@ -44,7 +42,7 @@ import java.io.IOException
 //                body = OTRManager.getInstance().transformReceivingIfSessionExist(accountJid, contactJid, body)
 //                if (OTRManager.getInstance().isEncrypted(body)) return null
 //            } catch (e: Exception) {
-//                LogManager.exception(NextMamManager.LOG_TAG, e)
+//                LogManager.exception(this, e)
 //                return null
 //            }
 //        } else body = (otrMessage as PlainTextMessage).cleanText

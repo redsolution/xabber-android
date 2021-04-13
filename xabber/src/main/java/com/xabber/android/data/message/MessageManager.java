@@ -124,15 +124,16 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
-        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
-            listener.onNewMessage();
-        }
 
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         sendMessage(text, markupText, chat);
 
         // stop grace period
         AccountManager.getInstance().stopGracePeriod(account);
+
+        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+            listener.onNewMessage();
+        }
     }
 
     private void sendMessage(final String text, final String markupText, final AbstractChat chat) {

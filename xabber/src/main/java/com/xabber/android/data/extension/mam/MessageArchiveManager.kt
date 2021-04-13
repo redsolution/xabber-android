@@ -12,6 +12,7 @@ import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.mam.MamQueryIQ
+import com.xabber.xmpp.mam.MamResultExtensionElement
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
@@ -37,7 +38,7 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
         if (packet is Message && packet.hasExtension(MamElements.MamResultExtension.ELEMENT, NAMESPACE)){
-            packet.extensions.filterIsInstance<MamElements.MamResultExtension>().forEach { mamResultElement -> //todo
+            packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { mamResultElement -> //todo
             // check this, possible bug
                 val forwardedElement = mamResultElement.forwarded.forwardedStanza
                 val hasInvite = forwardedElement.hasIncomingInviteExtension()

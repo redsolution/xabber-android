@@ -200,6 +200,16 @@
     </extensionProvider>
 
 
+    <!--                XEP-0313                 -->
+    <!--             Message archive             -->
+    <extensionProvider>
+        <elementName>result</elementName>
+        <namespace>urn:xmpp:mam:2</namespace>
+        <className>com.xabber.xmpp.mam.MamResultExtensionElementProvider</className>
+    </extensionProvider>
+
+
+
     <!--              XEP-DELIVERY               -->
     <!--           Time element provider         -->
     <extensionProvider>
