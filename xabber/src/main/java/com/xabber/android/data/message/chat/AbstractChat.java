@@ -46,9 +46,9 @@ import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.BackpressureMessageSaver;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
+import com.xabber.android.data.message.MessageHandler;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -308,7 +308,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     private void saveMessageItem(boolean ui, final MessageRealmObject messageRealmObject) {
         if (ui)
-            BackpressureMessageSaver.getInstance().saveMessageItem(messageRealmObject);
+            MessageHandler.INSTANCE.saveOrUpdateMessage(messageRealmObject);
         else {
             final long startTime = System.currentTimeMillis();
             Realm realm = null;
@@ -1029,7 +1029,6 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     public void markAsReadAll(boolean trySendDisplay) {
-        LogManager.d(LOG_TAG, "executing markAsReadAll");
         RealmResults<MessageRealmObject> results = getAllUnreadMessages();
         if (results != null && !results.isEmpty()) {
             for (MessageRealmObject message : results) {

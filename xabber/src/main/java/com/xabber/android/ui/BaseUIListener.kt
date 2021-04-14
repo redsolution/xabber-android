@@ -29,37 +29,18 @@ import org.jxmpp.jid.Jid
 /**
  * Base listener to notify UI about some changes.
  *
- *
  * This listener should be registered from [Activity.onResume] and
  * unregistered from [Activity.onPause].
  *
- * @author alexander.ivanov
  */
 interface BaseUIListener
 
-inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit): Unit {
-    Application.getInstance().runOnUiThread{
-        for (element in this) action(element)
-    }
+inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit) {
+    Application.getInstance().runOnUiThread { forEach { action(it) } }
 }
 
 interface OnXTokenSessionsUpdatedListener: BaseUIListener {
     fun onXTokenSessionsUpdated()
-}
-
-interface OnVCardSaveListener : BaseUIListener {
-    fun onVCardSaveSuccess(account: AccountJid?)
-    fun onVCardSaveFailed(account: AccountJid?)
-}
-
-interface OnVCardListener : BaseUIListener {
-    fun onVCardReceived(account: AccountJid?, jid: Jid?, vCard: VCard?)
-    fun onVCardFailed(account: AccountJid?, jid: Jid?)
-}
-
-interface OnStatusChangeListener : BaseUIListener {
-    fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusText: String?)
-    fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusMode: StatusMode?, statusText: String?)
 }
 
 interface OnReorderClickListener: BaseUIListener {
@@ -84,19 +65,6 @@ interface OnLastHistoryLoadStartedListener: BaseUIListener {
 
 interface OnLastHistoryLoadFinishedListener : BaseUIListener {
     fun onLastHistoryLoadFinished(accountJid: AccountJid, contactJid: ContactJid)
-}
-
-interface OnGroupchatRequestListener : BaseUIListener {
-    fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid)
-    fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid)
-    fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String)
-}
-
-interface OnGroupSelectorListToolbarActionResultListener : BaseUIListener {
-    fun onActionSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>)
-    fun onPartialSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>,
-                         failedJids: List<String>)
-    fun onActionFailure(account: AccountJid, groupchatJid: ContactJid, failedJids: List<String>)
 }
 
 interface OnGroupPresenceUpdatedListener : BaseUIListener {
@@ -138,6 +106,34 @@ interface OnAddAccountClickListener: BaseUIListener {
 
 interface OnAccountChangedListener : BaseUIListener {
     fun onAccountsChanged(accounts: Collection<AccountJid?>?)
+}
+
+interface OnGroupchatRequestListener : BaseUIListener {
+    fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid)
+    fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid)
+    fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String)
+}
+
+interface OnGroupSelectorListToolbarActionResultListener : BaseUIListener {
+    fun onActionSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>)
+    fun onPartialSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>,
+                         failedJids: List<String>)
+    fun onActionFailure(account: AccountJid, groupchatJid: ContactJid, failedJids: List<String>)
+}
+
+interface OnVCardSaveListener : BaseUIListener {
+    fun onVCardSaveSuccess(account: AccountJid?)
+    fun onVCardSaveFailed(account: AccountJid?)
+}
+
+interface OnVCardListener : BaseUIListener {
+    fun onVCardReceived(account: AccountJid?, jid: Jid?, vCard: VCard?)
+    fun onVCardFailed(account: AccountJid?, jid: Jid?)
+}
+
+interface OnStatusChangeListener : BaseUIListener {
+    fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusText: String?)
+    fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusMode: StatusMode?, statusText: String?)
 }
 
 interface OnGroupStatusResultListener: BaseUIListener {

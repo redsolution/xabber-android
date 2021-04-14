@@ -177,23 +177,6 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
         }
     }
 
-    fun loadFullChatHistory(chat: AbstractChat) {
-        val accountItem = AccountManager.getInstance().getAccount(chat.account)
-
-        if (accountItem == null || !isSupported(accountItem.account) || chat.historyIsFull()) return
-
-        val realm = DatabaseManager.getInstance().defaultRealmInstance
-
-        if (hasMessage(chat)) loadLastMessage(accountItem, chat)
-
-        var complete = false
-        while (!complete) {
-            complete = loadNextHistory(realm, accountItem, chat)
-        }
-
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
-    }
-
     override fun onStanza(connection: ConnectionItem,
                           packet: Stanza,
     ) {
@@ -812,7 +795,7 @@ object NextMamManager : OnRosterReceivedListener, OnPacketListener {
 
         // groupchat
         if (groupchatUser != null) {
-            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.bareJid, timestamp)
+            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, user.bareJid)
             messageRealmObject.groupchatUserId = groupchatUser.id
         } else if (message.hasGroupSystemMessage()) messageRealmObject.isGroupchatSystem = true
 

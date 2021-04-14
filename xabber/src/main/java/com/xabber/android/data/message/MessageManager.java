@@ -569,7 +569,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                         UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()));
             }
 
-            BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);
+            MessageHandler.INSTANCE.saveOrUpdateMessage(newMessageRealmObject);
 
             // mark incoming messages as read
             finalChat.markAsReadAll(false);

@@ -13,6 +13,19 @@ import com.xabber.android.data.database.repositories.GroupMemberRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.OnGroupMemberRightsListener;
+import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
+import com.xabber.android.ui.OnGroupchatRequestListener;
+import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.xmpp.avatar.DataExtension;
+import com.xabber.xmpp.avatar.MetadataExtension;
+import com.xabber.xmpp.avatar.MetadataInfo;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.block.BlockGroupMemberIQ;
 import com.xabber.xmpp.groups.block.KickGroupMemberIQ;
@@ -28,19 +41,6 @@ import com.xabber.xmpp.groups.members.GroupchatMembersResultIQ;
 import com.xabber.xmpp.groups.rights.GroupRequestMemberRightsChangeIQ;
 import com.xabber.xmpp.groups.rights.GroupchatMemberRightsQueryIQ;
 import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.GroupChat;
-import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.ui.OnGroupMemberRightsListener;
-import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
-import com.xabber.android.ui.OnGroupchatRequestListener;
-import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.xmpp.avatar.DataExtension;
-import com.xabber.xmpp.avatar.MetadataExtension;
-import com.xabber.xmpp.avatar.MetadataInfo;
-import com.xabber.xmpp.avatar.UserAvatarManager;
 
 import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
@@ -195,11 +195,6 @@ public class GroupMemberManager implements OnLoadListener {
     }
 
     public void saveGroupUser(GroupMemberExtensionElement user, BareJid groupJid) {
-        saveGroupUser(user, groupJid, System.currentTimeMillis());
-    }
-
-    public void saveGroupUser(GroupMemberExtensionElement user, BareJid groupJid, long timestamp) {
-
         GroupMember groupMember = getGroupMemberFromGroupMemberExtensionElement(user, groupJid);
 
         members.put(user.getId(), groupMember);
