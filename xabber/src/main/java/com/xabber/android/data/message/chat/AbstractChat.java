@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -47,14 +47,10 @@ import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
-import com.xabber.android.data.message.ForwardManager;
-import com.xabber.android.data.message.MessageHandler;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
@@ -62,12 +58,9 @@ import com.xabber.xmpp.sid.OriginIdElement;
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
-import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -135,15 +128,6 @@ public abstract class AbstractChat extends BaseEntity implements
 
     private static int getSizeOfEncodedChars(String str) {
         return Utils.xmlEncode(str).toCharArray().length;
-    }
-
-    protected static Date getDelayStamp(Message message) {
-        DelayInformation delayInformation = DelayInformation.from(message);
-        if (delayInformation != null) {
-            return delayInformation.getStamp();
-        } else {
-            return null;
-        }
     }
 
     public boolean isActive() {
@@ -216,238 +200,6 @@ public abstract class AbstractChat extends BaseEntity implements
             setNotificationStateOrDefault(new NotificationState(
                     NotificationState.NotificationMode.enabled, 0), true);
         }
-    }
-
-    abstract public MessageRealmObject createNewMessageItem(String text);
-
-    /**
-     * Creates new action.
-     *
-     * @param resource can be <code>null</code>.
-     * @param text     can be <code>null</code>.
-     */
-    public void newAction(Resourcepart resource, String text, ChatAction action) {
-        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
-                action, null, null, true, false, false, false,
-                null, null, null, null, null, false, null,
-                false, null, false);
-    }
-
-    /**
-     * Creates new action with the same timestamp as the last message,
-     * as not to disturb the order of chatList elements.
-     * <p>
-     *
-     * @param resource can be <code>null</code>.
-     * @param text     can be <code>null</code>.
-     */
-    public void newSilentAction(Resourcepart resource, String text, ChatAction action) {
-        Long lastMessageTimestamp = getLastTimestampFromBackground();
-        Date silentTimestamp = null;
-        if (lastMessageTimestamp != null) {
-            silentTimestamp = new Date(lastMessageTimestamp + 1);
-        }
-        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
-                action, silentTimestamp, null, true, false, false, false,
-                null, null, null, null, null, false, null,
-                false, null, false);
-    }
-
-    /**
-     * Creates new message.
-     * <p/>
-     * Any parameter can be <code>null</code> (except boolean values).
-     *
-     * @param resource       Contact's resource or nick in conference.
-     * @param text           message.
-     * @param action         Informational message.
-     * @param delayTimestamp Time when incoming message was sent or outgoing was created.
-     * @param incoming       Incoming message.
-     * @param notify         Notify user about this message when appropriated.
-     * @param encrypted      Whether encrypted message in OTR chat was received.
-     * @param offline        Whether message was received from server side offline storage.
-     * @return
-     */
-    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource,
-                                 String text, String markupText, final ChatAction action,
-                                 final Date timestamp, final Date delayTimestamp,
-                                 final boolean incoming, boolean notify,
-                                 final boolean encrypted, final boolean offline,
-                                 final String stanzaId, final String originId,
-                                 final String originalStanza, final String parentMessageId,
-                                 final String originalFrom, boolean isForwarded,
-                                 final RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                 boolean fromMAM, String groupchatUserId, boolean isGroupchatSystem) {
-
-        final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
-                markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
-                stanzaId, originId, null, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId, isGroupchatSystem);
-
-        saveMessageItem(ui, messageRealmObject);
-    }
-
-    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
-                                  String markupText, final ChatAction action, final Date timestamp,
-                                  final Date delayTimestamp, final boolean incoming, boolean notify,
-                                  final boolean encrypted, final boolean offline,
-                                  final String stanzaId,
-                                  String originId, RealmList<AttachmentRealmObject> attachmentRealmObjects,
-                                  final String originalStanza, final String parentMessageId,
-                                  final String originalFrom, boolean isForwarded,
-                                  final RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                  boolean fromMAM, String groupchatUserId) {
-
-        final MessageRealmObject messageRealmObject = createMessageItem(uid, resource, text,
-                markupText, action, timestamp, delayTimestamp, incoming, notify, encrypted, offline,
-                stanzaId, originId, attachmentRealmObjects, originalStanza, parentMessageId,
-                originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId, false);
-
-        saveMessageItem(ui, messageRealmObject);
-    }
-
-    private void saveMessageItem(boolean ui, final MessageRealmObject messageRealmObject) {
-        if (ui)
-            MessageHandler.INSTANCE.saveOrUpdateMessage(messageRealmObject);
-        else {
-            final long startTime = System.currentTimeMillis();
-            Realm realm = null;
-            try {
-                realm = Realm.getDefaultInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.copyToRealm(messageRealmObject);
-                    LogManager.d("REALM", Thread.currentThread().getName()
-                            + " save message item: " + (System.currentTimeMillis() - startTime));
-                });
-            } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) realm.close();
-            }
-
-            for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
-                listener.onNewMessage();
-            }
-        }
-    }
-
-    protected MessageRealmObject createMessageItem(Resourcepart resource, String text, String markupText,
-                                                   ChatAction action, Date delayTimestamp, boolean incoming,
-                                                   boolean notify, boolean encrypted, boolean offline,
-                                                   String stanzaId, String originId,
-                                                   RealmList<AttachmentRealmObject> attachmentRealmObjects,
-                                                   String originalStanza, String parentMessageId,
-                                                   String originalFrom, boolean isForwarded,
-                                                   RealmList<ForwardIdRealmObject> forwardIdRealmObjects) {
-
-        return createMessageItem(UUID.randomUUID().toString(), resource, text, markupText, action,
-                null, delayTimestamp, incoming, notify, encrypted, offline, stanzaId,
-                originId, attachmentRealmObjects, originalStanza, parentMessageId, originalFrom,
-                isForwarded, forwardIdRealmObjects, false, null, false);
-    }
-
-    protected MessageRealmObject createMessageItem(String uid, Resourcepart resource, String text,
-                                                   String markupText, ChatAction action,
-                                                   Date timestamp, Date delayTimestamp,
-                                                   boolean incoming, boolean notify,
-                                                   boolean encrypted, boolean offline,
-                                                   String stanzaId, String originId,
-                                                   RealmList<AttachmentRealmObject> attachmentRealmObjects,
-                                                   String originalStanza, String parentMessageId,
-                                                   String originalFrom, boolean isForwarded,
-                                                   RealmList<ForwardIdRealmObject> forwardIdRealmObjects,
-                                                   boolean fromMAM, String groupchatUserId,
-                                                   boolean isGroupchatSystem) {
-
-        final boolean visible = ChatManager.getInstance().isVisibleChat(this);
-
-        boolean read = !incoming;
-
-        if (action == null && text == null) throw new IllegalArgumentException();
-
-        if (text == null) text = " ";
-
-        if (timestamp == null) timestamp = new Date();
-
-        if (text.trim().isEmpty()
-                && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
-                && (attachmentRealmObjects == null || attachmentRealmObjects.isEmpty())) {
-            notify = false;
-        }
-
-        if (notify || !incoming) openChat();
-
-        if (!incoming) notify = false;
-
-        MessageRealmObject messageRealmObject =
-                MessageRealmObject.createMessageRealmObjectWithOriginId(account, contactJid, uid);
-
-        if (stanzaId != null) messageRealmObject.setStanzaId(stanzaId);
-
-        if (resource == null) {
-            messageRealmObject.setResource(Resourcepart.EMPTY);
-        } else messageRealmObject.setResource(resource);
-
-
-        if (action != null) {
-            messageRealmObject.setAction(action.toString());
-            read = true;
-        }
-
-        messageRealmObject.setText(text);
-
-        if (markupText != null) messageRealmObject.setMarkupText(markupText);
-
-        messageRealmObject.setTimestamp(timestamp.getTime());
-
-        if (delayTimestamp != null) messageRealmObject.setDelayTimestamp(delayTimestamp.getTime());
-
-        messageRealmObject.setIncoming(incoming);
-        messageRealmObject.setRead(fromMAM || read);
-
-        messageRealmObject.setMessageStatus( incoming ? MessageStatus.NONE : MessageStatus.NOT_SENT);
-
-        messageRealmObject.setEncrypted(encrypted);
-        messageRealmObject.setOffline(offline);
-        messageRealmObject.setStanzaId(stanzaId);
-        messageRealmObject.setOriginId(originId);
-
-        if (attachmentRealmObjects != null) messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
-
-        // forwarding
-        if (forwardIdRealmObjects != null) messageRealmObject.setForwardedIds(forwardIdRealmObjects);
-
-        messageRealmObject.setOriginalStanza(originalStanza);
-        messageRealmObject.setOriginalFrom(originalFrom);
-        messageRealmObject.setParentMessageId(parentMessageId);
-        messageRealmObject.setForwarded(isForwarded);
-
-        // remove notifications if get outgoing message with 2 sec delay
-        if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, contactJid);
-
-        // when getting new message, unarchive chat if chat not muted
-        if (this.notifyAboutMessage()) this.archived = false;
-
-        // update last id in chat
-        setLastMessageId(messageRealmObject.getStanzaId());
-
-        // groupchat
-        if (groupchatUserId != null) messageRealmObject.setGroupchatUserId(groupchatUserId);
-
-        if (isGroupchatSystem){
-            messageRealmObject.setGroupchatSystem(true);
-            messageRealmObject.setRead(true);
-        }
-
-        // notification
-        enableNotificationsIfNeed();
-        if (notify && notifyAboutMessage() && !visible && !isGroupchatSystem){
-            NotificationManager.getInstance().onMessageNotification(messageRealmObject);
-        }
-
-        if (action != null && (groupchatUserId != null || isGroupchatSystem)) return null;
-
-        return messageRealmObject;
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris,
@@ -531,13 +283,6 @@ public abstract class AbstractChat extends BaseEntity implements
         return attachmentRealmObjects;
     }
 
-    /**
-     * @return Whether chat accepts packets from specified user.
-     */
-    private boolean accept(ContactJid jid) {
-        return this.contactJid.equals(jid);
-    }
-
     @Nullable
     public synchronized MessageRealmObject getLastMessage() {
         return lastMessage;
@@ -560,29 +305,6 @@ public abstract class AbstractChat extends BaseEntity implements
             }
             return new Date();
         }
-    }
-
-    private Long getLastTimestampFromBackground() {
-        Long timestamp;
-        Realm bgRealm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        MessageRealmObject lastMessage = bgRealm
-                .where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageRealmObject.Fields.TEXT)
-                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-                .findAll()
-                .last(null);
-        if (lastMessage != null && lastMessage.getTimestamp() != null) {
-            timestamp = lastMessage.getTimestamp();
-        } else if (lastActionTimestamp != null) {
-            timestamp = lastActionTimestamp;
-        } else {
-            return null;
-        }
-        if (Looper.myLooper() != Looper.getMainLooper()) bgRealm.close();
-        return timestamp;
     }
 
     public Long getLastActionTimestamp() {
@@ -925,20 +647,9 @@ public abstract class AbstractChat extends BaseEntity implements
      *
      * @param threadId <code>null</code> if current value shouldn't be changed.
      */
-    protected void updateThreadId(String threadId) {
-        if (threadId == null) {
-            return;
-        }
+    public void setThreadId(String threadId) {
+        if (threadId == null) return;
         this.threadId = threadId;
-    }
-
-    /**
-     * Processes incoming packet.
-     *
-     * @return Whether packet was directed to this chat.
-     */
-    public boolean onPacket(ContactJid contactJid, Stanza packet, boolean isCarbons) {
-        return accept(contactJid);
     }
 
     /**
@@ -1124,27 +835,6 @@ public abstract class AbstractChat extends BaseEntity implements
         this.lastPosition = lastPosition;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
-
-    public RealmList<ForwardIdRealmObject> parseForwardedMessage(boolean ui, Stanza packet,
-                                                                 String parentMessageId) {
-        List<Forwarded> forwarded = ReferencesManager.getForwardedFromReferences(packet);
-        if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet);
-        if (forwarded.isEmpty()) return null;
-
-        RealmList<ForwardIdRealmObject> forwardedIds = new RealmList<>();
-        for (Forwarded forward : forwarded) {
-            Stanza stanza = forward.getForwardedStanza();
-            DelayInformation delayInformation = forward.getDelayInformation();
-            Date timestamp = delayInformation.getStamp();
-            if (stanza instanceof Message) {
-                forwardedIds.add(new ForwardIdRealmObject(parseInnerMessage(ui, (Message) stanza,
-                        timestamp, parentMessageId)));
-            }
-        }
-        return forwardedIds;
-    }
-
-    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId);
 
     public String getLastMessageId() {
         return lastMessageId;

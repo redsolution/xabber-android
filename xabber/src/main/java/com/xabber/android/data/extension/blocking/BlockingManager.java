@@ -2,7 +2,6 @@ package com.xabber.android.data.extension.blocking;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -11,7 +10,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -247,8 +245,8 @@ public class BlockingManager {
                 PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
                 AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
                 if (chat != null) {
-                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked),
-                            ChatAction.contact_blocked);
+//                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked),
+//                            ChatAction.contact_blocked); //todo
                 }
             }
 
@@ -313,11 +311,9 @@ public class BlockingManager {
             if (success) {
                 for (ContactJid contactJid : contacts) {
                     AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
-                    if (chat != null) {
-                        chat.newSilentAction(null,
-                                Application.getInstance().getString(R.string.action_contact_unblocked),
-                                ChatAction.contact_unblocked);
-                    }
+//                    if (chat != null) {
+//                        chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked);
+//                    } //todo
                 }
             }
 

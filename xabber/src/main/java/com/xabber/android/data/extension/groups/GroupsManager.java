@@ -16,6 +16,7 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.mam.MessageArchiveManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -151,8 +152,7 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                         .getMessageFromRealmByStanzaId(presence.getPinnedMessageId());
                 if (pinnedMessage == null || pinnedMessage.getTimestamp() == null) {
 
-                    NextMamManager.INSTANCE.requestSingleMessageAsync(connection,
-                            groupChat, presence.getPinnedMessageId());
+                    MessageArchiveManager.INSTANCE.loadMessageByStanzaId(groupChat, presence.getPinnedMessageId());
                 }
                 groupChat.setPinnedMessageId(presence.getPinnedMessageId());
             }

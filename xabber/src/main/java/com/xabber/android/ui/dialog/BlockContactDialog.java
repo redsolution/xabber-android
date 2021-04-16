@@ -24,7 +24,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -144,9 +143,9 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
 
         // remove roster contact
         RosterManager.getInstance().removeContact(account, user);
-        if (chat != null) {
-            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
-        }
+//        if (chat != null) {
+//            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
+//        }//todo
 
         if (getActivity() instanceof ContactActivity) {
             startActivity(MainActivity.createIntent(getActivity()));

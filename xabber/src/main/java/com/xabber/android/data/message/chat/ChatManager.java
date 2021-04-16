@@ -40,8 +40,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.utils.StringUtils;
 
-import org.jivesoftware.smack.packet.Stanza;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -298,11 +296,9 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         return chat;
     }
 
-    public boolean convertRegularToGroup(ContactJid bareAddress, Stanza packet, boolean isCarbons,
-                                         RegularChat regularChat){
-        removeChat(regularChat);
-        return createGroupChat(regularChat.getAccount(),
-                regularChat.getContactJid()).onPacket(bareAddress, packet, isCarbons);
+    public void convertRegularToGroup(AccountJid accountJid, ContactJid contactJid){
+        removeChat(accountJid, contactJid);
+        createGroupChat(accountJid, contactJid);
     }
 
     /**

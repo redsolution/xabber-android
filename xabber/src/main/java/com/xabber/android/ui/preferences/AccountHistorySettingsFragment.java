@@ -13,7 +13,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.data.extension.mam.MessageArchiveManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -21,6 +21,7 @@ import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AccountHistorySettingsFragment extends BaseSettingsFragment implements OnAccountChangedListener {
     private static final String ARGUMENT_ACCOUNT = AccountHistorySettingsFragment.class.getName() + "ARGUMENT_ACCOUNT";
@@ -39,9 +40,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            account = getArguments().getParcelable(ARGUMENT_ACCOUNT);
-        }
+        if (getArguments() != null) account = getArguments().getParcelable(ARGUMENT_ACCOUNT);
     }
 
     @Override
@@ -54,15 +53,14 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     }
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
-        Boolean supported = NextMamManager.INSTANCE.isSupported(account);
-        if (supported == null) {
-            mamPreference.setEnabled(false);
-            mamPreference.setSummary(getString(R.string.account_chat_history_unknown));
-        } else if (!supported) {
-            mamPreference.setEnabled(true);
+        boolean supported = MessageArchiveManager.INSTANCE.isSupported(
+                Objects.requireNonNull(
+                        AccountManager.getInstance().getAccount(this.account)));
+
+        mamPreference.setEnabled(true);
+        if (!supported) {
             mamPreference.setSummary(getString(R.string.account_chat_history_not_supported));
         } else {
-            mamPreference.setEnabled(true);
             if (newSummary != null) {
                 mamPreference.setSummary(newSummary);
             } else {
@@ -88,15 +86,8 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-
-        if (getString(R.string.account_mam_default_behavior_key).equals(key)) {
-            setUpMamPreference(preference, (String) newValue);
-        }
-
-        if (getString(R.string.account_mam_sync_key).equals(key)) {
-            preference.setSummary((String)newValue);
-        }
-
+        if (getString(R.string.account_mam_default_behavior_key).equals(key)) setUpMamPreference(preference, (String) newValue);
+        if (getString(R.string.account_mam_sync_key).equals(key)) preference.setSummary((String)newValue);
         return true;
     }
 
@@ -108,10 +99,8 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
 
         if (accountItem != null) {
             putValue(source, R.string.account_clear_history_on_exit_key, accountItem.isClearHistoryOnExit());
-
             // order of enum fields is very important!
             putValue(source, R.string.account_mam_default_behavior_key, accountItem.getMamDefaultBehaviour().ordinal());
-
             putValue(source, R.string.account_mam_sync_key, accountItem.getLoadHistorySettings().ordinal());
         }
 
@@ -128,8 +117,8 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
                 .setMamDefaultBehaviour(account, MamPrefsIQ.DefaultBehavior.values()[mamBehaviorIndex]);
 
         int loadHistoryIndex = getInt(result, R.string.account_mam_sync_key);
-        AccountManager.getInstance()
-                .setLoadHistorySettings(account, LoadHistorySettings.values()[loadHistoryIndex]);
+        AccountManager.getInstance().setLoadHistorySettings(account, LoadHistorySettings.values()[loadHistoryIndex]);
+
         return true;
     }
 
@@ -140,6 +129,5 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
             setUpMamPreference(mamPreference, null);
         });
     }
-
 
 }

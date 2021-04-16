@@ -148,7 +148,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             try{
                 if (stanza.hasExtension(ReceivedExtensionElement.ELEMENT, ReceivedExtensionElement.NAMESPACE)){
                     ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
-                    timestamp = receipt.getTimeElement().getStamp();
+                    timestamp = receipt.getTimeElement().getTimeStamp();
                     originId = receipt.getOriginIdElement().getId();
                     stanzaId = receipt.getStanzaIdElement().getId();
                 } else if (stanza.hasExtension(GroupExtensionElement.ELEMENT, NAMESPACE)) {

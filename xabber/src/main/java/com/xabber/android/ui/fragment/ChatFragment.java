@@ -88,7 +88,7 @@ import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.data.extension.mam.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
@@ -869,7 +869,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onStart() {
         super.onStart();
-        NextMamManager.INSTANCE.onChatOpen(getChat());
+        MessageArchiveManager.INSTANCE.onChatOpen(getChat());
     }
 
     @Override
@@ -1153,7 +1153,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             int invisibleMessagesCount = layoutManager.findFirstVisibleItemPosition();
             if (invisibleMessagesCount <= 15) {
                 AbstractChat chat = getChat();
-                if (chat != null) NextMamManager.INSTANCE.onScrollInChat(chat);
+                if (chat != null) MessageArchiveManager.INSTANCE.onScrollInChat(chat);
             }
         }
     }

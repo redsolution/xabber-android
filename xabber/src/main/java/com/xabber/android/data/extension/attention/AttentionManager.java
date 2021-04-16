@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -32,7 +32,6 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
@@ -93,10 +92,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     };
 
     public static AttentionManager getInstance() {
-        if (instance == null) {
-            instance = new AttentionManager();
-        }
-
+        if (instance == null) instance = new AttentionManager();
         return instance;
     }
 
@@ -118,6 +114,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 for (String feature : manager.getFeatures()) {
                     if (AttentionExtension.NAMESPACE.equals(feature)) {
                         contains = true;
+                        break;
                     }
                 }
                 if (SettingsManager.chatsAttention() == contains) {
@@ -134,14 +131,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     @Override
-    public void onLoad() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded();
-            }
-        });
-    }
+    public void onLoad() { Application.getInstance().runOnUiThread(this::onLoaded); }
 
     @SuppressWarnings("WeakerAccess")
     void onLoaded() {
@@ -170,11 +160,9 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
                 ChatManager.getInstance().openChat(account, from);
-                ChatManager.getInstance()
-                        .getChat(account, from)
-                        .newAction(null,
-                                Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested),
-                                ChatAction.attention_requested);
+//                ChatManager.getInstance()
+//                        .getChat(account, from) todo
+//                        .newAction(null, Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested), ChatAction.attention_requested);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
@@ -208,9 +196,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
         StanzaSender.sendStanza(account, message);
-        chat.newAction(null,
-                Application.getInstance().getApplicationContext().getString(R.string.action_attention_called),
-                ChatAction.attention_called);
+        // todo chat.newAction(null,Application.getInstance().getApplicationContext().getString(R.string.action_attention_called), ChatAction.attention_called);
     }
 
     public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {

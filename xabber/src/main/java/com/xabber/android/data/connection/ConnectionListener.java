@@ -9,7 +9,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.rrr.RewriteManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
@@ -47,12 +46,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void connected(XMPPConnection connection) {
         LogManager.i(getLogTag(), "connected");
         VCardManager.getInstance().setStart(System.currentTimeMillis());
-
         connectionItem.updateState(ConnectionState.authentication);
-
-        //
         UserAvatarManager.getInstanceFor(connection).enable();
-        //
 
         Application.getInstance().runOnUiThread(() -> {
             for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
@@ -90,9 +85,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "finished bookmarksManager onAuthorized");
         RewriteManager.getInstance().subscribeForUpdates();
         LogManager.i(getLogTag(), "finished rrrManager onAuthorized");
-        //UserAvatarManager.getInstanceFor(connection).onAuthorized();
-        //
-        //
 
         Application.getInstance().runOnUiThread(
                 () -> AccountManager.getInstance().removeAccountError(connectionItem.getAccount()));
@@ -103,7 +95,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "connectionClosed");
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
-        NextMamManager.INSTANCE.resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(() -> {
@@ -120,7 +111,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
         PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
         VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
-        NextMamManager.INSTANCE.resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
         connectionItem.refreshPingFailedListener(false);
 
@@ -168,4 +158,5 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "reconnectionFailed " + e + " " + e.getMessage());
         connectionItem.updateState(ConnectionState.offline);
     }
+
 }

@@ -53,8 +53,8 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
@@ -66,7 +66,6 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Domainpart;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -140,7 +139,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
         realm.executeTransactionAsync(realm1 -> {
-            MessageRealmObject newMessageRealmObject = chat.createNewMessageItem(text);
+            MessageRealmObject newMessageRealmObject = MessageHandler.INSTANCE.createMessageItem(
+                    UUID.randomUUID().toString(), null, text, null, null, null,
+                    null, false, false, false, false, null,
+                    UUID.randomUUID().toString(), null, null, null,
+                    null, false, null, false, null,
+                    false, chat);
 
             if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
 
@@ -384,7 +388,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             long timestamp = 0;
             if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
                 TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
-                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp()).getTime();
+                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getTimeStamp()).getTime();
             }
             GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
             return;
@@ -398,16 +402,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 ChatManager.getInstance().createGroupChat(account, contactJid);
             }
         }
-
-        try {
-            List<AbstractChat> chatsCopy = new ArrayList<>(ChatManager.getInstance().getChats());
-            for (AbstractChat chat : chatsCopy) {
-                if (chat.onPacket(contactJid, stanza, false)) {
-                    processed = true;
-                    break;
-                }
-            }
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
 
         if (!processed && stanza instanceof Message) {
             final Message message = (Message) stanza;
@@ -471,9 +465,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 }
                 return;
             }
-            if (stanza.hasExtension(GroupExtensionElement.NAMESPACE)){
-                ChatManager.getInstance().createGroupChat(account, contactJid).onPacket(contactJid, stanza, false);
-            } else ChatManager.getInstance().createRegularChat(account, contactJid).onPacket(contactJid, stanza, false);
+            MessageHandler.INSTANCE.parseMessage(account, contactJid, (Message) stanza, null, false);
         }
     }
 
@@ -513,7 +505,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
 
             String text = body;
             String uid = UUID.randomUUID().toString();
-            RealmList<ForwardIdRealmObject> forwardIdRealmObjects = finalChat.parseForwardedMessage(true, message, uid);
+            RealmList<ForwardIdRealmObject> forwardIdRealmObjects =
+                    MessageHandler.INSTANCE.parseForwardedMessage(message, uid, finalChat);
             String originalStanza = message.toXML().toString();
             String originalFrom = message.getFrom().toString();
 
@@ -526,10 +519,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             text = bodies.first;
             String markupText = bodies.second;
 
-            MessageRealmObject newMessageRealmObject = finalChat.createNewMessageItem(text);
+            MessageRealmObject newMessageRealmObject = MessageHandler.INSTANCE.createMessageItem(
+                    UUID.randomUUID().toString(), null, text, null, null, null,
+                    null, false, false, false, false, null,
+                    UUID.randomUUID().toString(), null, null, null,
+                    null, false, null, false, null,
+                    false, finalChat);
             if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)){
                 String timestamp =
-                        ((TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)).getStamp();
+                        ((TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)).getTimeStamp();
 
                 newMessageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(timestamp).getTime());
             }
@@ -593,24 +591,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             return;
         }
 
-        boolean processed = false;
-        for (AbstractChat chat : ChatManager.getInstance().getChats(account)) {
-            if (chat.onPacket(companion, message, true)) {
-                processed = true;
-                break;
-            }
-        }
-
-        if (ChatManager.getInstance().getChat(account, companion) != null) return;
-
-        if (processed) return;
-
-        final String body = message.getBody();
-
-        if (body == null) return;
-
-        ChatManager.getInstance().getChat(account, companion).onPacket(companion, message, true);
-
+        MessageHandler.INSTANCE.parseMessage(account, companion, message, null, true);
     }
 
     /**

@@ -142,15 +142,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         actives = new NestedMap<>();
         finished = new NestedMap<>();
         sessions = new NestedMap<>();
-        keyPairGenerator = Executors.newSingleThreadExecutor(new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable runnable) {
-                        Thread thread = new Thread(runnable, "Key pair generator service");
-                        thread.setPriority(Thread.MIN_PRIORITY);
-                        thread.setDaemon(true);
-                        return thread;
-                    }
-                });
+        keyPairGenerator = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "Key pair generator service");
+            thread.setPriority(Thread.MIN_PRIORITY);
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     @Override
@@ -267,9 +264,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void newAction(String account, String user, String text, ChatAction action) {
         LogManager.i(this, "newAction. text: " + text + " action " + action);
         AbstractChat chat = getChat(account, user);
-        if (chat != null) {
-            chat.newAction(null, text, action);
-        }
+//        if (chat != null) {
+//            chat.newAction(null, text, action);
+//        } //todo
     }
 
     @Override

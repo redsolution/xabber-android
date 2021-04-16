@@ -22,6 +22,7 @@ import org.jivesoftware.smackx.forward.packet.Forwarded;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -32,7 +33,12 @@ public class ForwardManager {
 
     public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text, @Nullable String markupText) {
         final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-        final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
+        final MessageRealmObject messageRealmObject = MessageHandler.INSTANCE.createMessageItem(
+                UUID.randomUUID().toString(), null, text, null, null, null,
+                null, false, false, false, false, null,
+                UUID.randomUUID().toString(), null, null, null,
+                null, false, null, false, null,
+                false, chat);
 
         if (markupText != null) messageRealmObject.setMarkupText(markupText);
 

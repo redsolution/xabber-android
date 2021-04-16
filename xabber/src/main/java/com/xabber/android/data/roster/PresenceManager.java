@@ -32,21 +32,20 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
-import com.xabber.xmpp.groups.GroupExtensionElement;
-import com.xabber.xmpp.groups.GroupPresenceExtensionElement;
-import com.xabber.xmpp.groups.GroupPresenceNotificationExtensionElement;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.OnStatusChangeListener;
+import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.groups.GroupPresenceExtensionElement;
+import com.xabber.xmpp.groups.GroupPresenceNotificationExtensionElement;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
@@ -178,27 +177,27 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     private void createChatForNewContact(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent), ChatAction.subscription_sent);
+        // todo chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent), ChatAction.subscription_sent);
     }
 
     private void createChatForIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received), ChatAction.subscription_received);
+        // todo chat.newAction(null,Application.getInstance().getResources().getString(R.string.action_subscription_received), ChatAction.subscription_received);
     }
 
     private void createChatForAcceptingIncomingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name), ChatAction.subscription_received_accepted);
+        //todo chat.newAction(null,Application.getInstance().getResources().getString(R.string.action_subscription_received_add, name), ChatAction.subscription_received_accepted);
     }
 
     private void createChatForAcceptingOutgoingRequest(AccountJid account, ContactJid user) {
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat == null) chat = ChatManager.getInstance().createRegularChat(account, user);
         String name = RosterManager.getInstance().getBestContact(account, user).getName();
-        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name), ChatAction.subscription_sent_accepted);
+       // todo chat.newAction(null,Application.getInstance().getResources().getString(R.string.action_subscription_sent_add, name), ChatAction.subscription_sent_accepted);
     }
 
     /**

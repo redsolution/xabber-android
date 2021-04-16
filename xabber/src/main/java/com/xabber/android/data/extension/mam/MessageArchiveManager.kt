@@ -96,4 +96,14 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
         }
     }
 
+    fun onChatOpen(chat: AbstractChat){
+        //todo this
+        LogManager.i(this, "Not implemented")
+    }
+
+    fun onScrollInChat(chat: AbstractChat){
+        //todo this
+        LogManager.i(this, "Not implemented")
+    }
+
 }
