@@ -87,8 +87,9 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
         Application.getInstance().runInBackgroundNetwork {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
-                    { packet -> if (packet is IQ && packet.type == IQ.Type.result) {
-                        LogManager.i(MessageArchiveManager.javaClass,
+                    { packet ->
+                        if (packet is IQ && packet.type == IQ.Type.result) {
+                            LogManager.i(MessageArchiveManager.javaClass,
                                 "All messages with in chat ${chat.account} and ${chat.contactJid} successfully fetched")
                     } },
                     { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }

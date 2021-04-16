@@ -168,7 +168,6 @@ object MessageHandler {
 
         val isIncoming = messageStanza.from.asBareJid().equals(contactJid.jid.asBareJid())
 
-
         val stanzaId =
                 if (groupchatUser != null || messageStanza.hasGroupSystemMessage()) {
                     UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
@@ -405,51 +404,53 @@ object MessageHandler {
 //        } else messageRealmObject.messageStatus = MessageStatus.DISPLAYED
 
         //
-        var text = text
-        var timestamp = timestamp
-        var notify = notify
+        var messageText = text
+        var messageTimestamp = timestamp
+        var isNotify = notify
 
         val visible = ChatManager.getInstance().isVisibleChat(chat)
-        var read = !incoming
-        require(!(action == null && text == null))
-        if (text == null) text = " "
-        if (timestamp == null) timestamp = Date()
-        if (text.trim { it <= ' ' }.isEmpty()
+        val read = !incoming
+        require(!(action == null && messageText == null))
+        if (messageText == null) messageText = " "
+        if (messageTimestamp == null) messageTimestamp = Date()
+        if (messageText.trim { it <= ' ' }.isEmpty()
                 && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
                 && (attachmentRealmObjects == null || attachmentRealmObjects.isEmpty())) {
-            notify = false
+            isNotify = false
         }
-        if (notify || !incoming) chat.openChat()
-        if (!incoming) notify = false
+        if (isNotify || !incoming) chat.openChat()
+        if (!incoming) isNotify = false
         val messageRealmObject =
-                MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, uid)
-        if (stanzaId != null) messageRealmObject.stanzaId = stanzaId
-        if (resource == null) {
-            messageRealmObject.resource = Resourcepart.EMPTY
-        } else messageRealmObject.resource = resource
-        if (action != null) {
-            messageRealmObject.action = action.toString()
-            read = true
-        }
-        messageRealmObject.text = text
-        if (markupText != null) messageRealmObject.markupText = markupText
-        messageRealmObject.timestamp = timestamp.time
-        if (delayTimestamp != null) messageRealmObject.delayTimestamp = delayTimestamp.time
-        messageRealmObject.isIncoming = incoming
-        messageRealmObject.isRead = fromMAM || read
-        messageRealmObject.messageStatus = if (incoming) MessageStatus.NONE else MessageStatus.NOT_SENT
-        messageRealmObject.isEncrypted = encrypted
-        messageRealmObject.isOffline = offline
-        messageRealmObject.stanzaId = stanzaId
-        messageRealmObject.originId = originId
-        if (attachmentRealmObjects != null) messageRealmObject.attachmentRealmObjects = attachmentRealmObjects
+                if (stanzaId != null) {
+                    MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, uid)
+                } else MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, uid)
 
-        // forwarding
-        if (forwardIdRealmObjects != null) messageRealmObject.forwardedIds = forwardIdRealmObjects
-        messageRealmObject.originalStanza = originalStanza
-        messageRealmObject.originalFrom = originalFrom
-        messageRealmObject.parentMessageId = parentMessageId
-        messageRealmObject.isForwarded = isForwarded
+        messageRealmObject.apply {
+            this.text = messageText
+            this.timestamp = messageTimestamp.time
+            this.isIncoming = incoming
+            this.isRead = fromMAM || read || !isGroupchatSystem || action != null
+            this.isEncrypted = encrypted
+            this.isOffline = offline
+            this.stanzaId = stanzaId
+            this.originId = originId
+            this.originalStanza = originalStanza
+            this.originalFrom = originalFrom
+            this.parentMessageId = parentMessageId
+            this.isForwarded = isForwarded
+            this.isGroupchatSystem = isGroupchatSystem
+            this.resource = resource ?: Resourcepart.EMPTY
+
+            this.messageStatus = if (incoming) MessageStatus.NONE else MessageStatus.NOT_SENT
+
+            if (stanzaId != null) this.stanzaId = stanzaId
+            if (action != null) this.action = action.toString()
+            if (markupText != null) this.markupText = markupText
+            if (delayTimestamp != null) this.delayTimestamp = delayTimestamp.time
+            if (attachmentRealmObjects != null) this.attachmentRealmObjects = attachmentRealmObjects
+            if (forwardIdRealmObjects != null) this.forwardedIds = forwardIdRealmObjects
+            if (groupchatUserId != null) this.groupchatUserId = groupchatUserId
+        }
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(chat.account, chat.contactJid)
@@ -460,16 +461,9 @@ object MessageHandler {
         // update last id in chat
         chat.lastMessageId = messageRealmObject.stanzaId
 
-        // groupchat
-        if (groupchatUserId != null) messageRealmObject.groupchatUserId = groupchatUserId
-        if (isGroupchatSystem) {
-            messageRealmObject.isGroupchatSystem = true
-            messageRealmObject.isRead = true
-        }
-
         // notification
         chat.enableNotificationsIfNeed()
-        if (notify && chat.notifyAboutMessage() && !visible && !isGroupchatSystem) {
+        if (isNotify && chat.notifyAboutMessage() && !visible && !isGroupchatSystem) {
             NotificationManager.getInstance().onMessageNotification(messageRealmObject)
         }
         return if (action != null && (groupchatUserId != null || isGroupchatSystem)) null else messageRealmObject

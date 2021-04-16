@@ -39,6 +39,12 @@ inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -
     Application.getInstance().runOnUiThread { forEach { action(it) } }
 }
 
+//inline fun <T: BaseUIListener> notifyUiListeners(listener: Class<T>) {
+//    Application.getInstance().runOnUiThread {
+//        Application.getInstance().getUIListeners(listener).map { listener -> listener. }
+//    }
+//}
+
 interface OnXTokenSessionsUpdatedListener: BaseUIListener {
     fun onXTokenSessionsUpdated()
 }
