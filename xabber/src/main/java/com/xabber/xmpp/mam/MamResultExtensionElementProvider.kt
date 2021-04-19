@@ -8,34 +8,33 @@ import org.xmlpull.v1.XmlPullParser
 class MamResultExtensionElementProvider : ExtensionElementProvider<MamResultExtensionElement>() {
 
     override fun parse(parser: XmlPullParser, initialDepth: Int): MamResultExtensionElement {
-        var queryId: String? = null
-        var id: String? = null
+
+        var forwarded: Forwarded? = null
+        val queryId = parser.getAttributeValue("", MamResultExtensionElement.QUERY_ID_ATTRIBUTE)
+        val id = parser.getAttributeValue("", MamResultExtensionElement.ID_ATTRIBUTE)
+
+        var anotherId: String? = null
+        var anotherQueryId: String? = null
 
         outerloop@ while (true) {
             val eventType = parser.next()
             val name = parser.name
             when (eventType) {
-                XmlPullParser.START_TAG ->{
-                    if (parser.getAttributeValue("", MamResultExtensionElement.ID_ATTRIBUTE) != null){
-                        id = parser.getAttributeValue("", MamResultExtensionElement.ID_ATTRIBUTE)
+                XmlPullParser.START_TAG -> {
+                    if (name == MamResultExtensionElement.ELEMENT) {
+                        anotherQueryId = parser.getAttributeValue("", MamResultExtensionElement.QUERY_ID_ATTRIBUTE)
+                        anotherId = parser.getAttributeValue("", MamResultExtensionElement.ID_ATTRIBUTE)
                     }
-                    if (parser.getAttributeValue("", MamResultExtensionElement.QUERY_ID_ATTRIBUTE) != null){
-                        queryId = parser.getAttributeValue("", MamResultExtensionElement.QUERY_ID_ATTRIBUTE)
-                    }
-                    when (name) {
-                        Forwarded.ELEMENT ->
-                            return MamResultExtensionElement(
-                                    id ?: throw NullPointerException("Error while parsing id"),
-                                    ForwardedProvider.INSTANCE.parse(parser),
-                                    queryId)
-                    }
+                    if (name == Forwarded.ELEMENT) forwarded = ForwardedProvider.INSTANCE.parse(parser)
                 }
-
-                XmlPullParser.END_TAG -> if (parser.depth == initialDepth) break@outerloop
+                XmlPullParser.END_TAG -> if (name == MamResultExtensionElement.ELEMENT) break@outerloop
             }
         }
 
-        throw IllegalStateException("Can't parse mam result extension element, infinity loop!")
+        return MamResultExtensionElement(
+                id ?: anotherId ?: throw NullPointerException("Error while parsing id"),
+                forwarded ?: throw NullPointerException("Error while parsing forwarded element"),
+                queryId ?: anotherQueryId)
     }
 
 }

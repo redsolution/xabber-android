@@ -25,7 +25,7 @@ class MamResultExtensionElement(val id: String,
     }
 
     companion object {
-        private const val ELEMENT = "result"
+        const val ELEMENT = "result"
         private const val NAMESPACE = MessageArchiveManager.NAMESPACE
         const val QUERY_ID_ATTRIBUTE = "queryid"
         const val ID_ATTRIBUTE = "id"

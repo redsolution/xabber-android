@@ -6,6 +6,7 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.roster.OnRosterReceivedListener
@@ -37,14 +38,11 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
-        if (packet is Message && packet.hasExtension(MamElements.MamResultExtension.ELEMENT, NAMESPACE)){
+        if (packet is Message && packet.hasExtension(MamResultExtensionElement.ELEMENT, NAMESPACE)){
             packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { mamResultElement -> //todo
             // check this, possible bug
                 val forwardedElement = mamResultElement.forwarded.forwardedStanza
-                val hasInvite = forwardedElement.hasIncomingInviteExtension()
-                if (hasInvite){
-
-                }
+                //MessageHandler.parseMessage()
             }
         }
     }

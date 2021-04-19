@@ -58,18 +58,16 @@ object MessageHandler {
                         var realm: Realm? = null
                         try {
                             realm = DatabaseManager.getInstance().defaultRealmInstance
-                            realm.executeTransactionAsync(
-                                    Realm.Transaction { realm1: Realm -> realm1.copyToRealmOrUpdate(messagesList) },
-                                    OnSuccess {
-                                        Application.getInstance().runOnUiThread {
-                                            Application.getInstance()
-                                                    .getUIListeners(OnNewMessageListener::class.java)
-                                                    .map(OnNewMessageListener::onNewMessage)
-                                        }
-                                        SyncManager.getInstance().onMessageSaved()
-                                        checkForAttachmentsAndDownload(messagesList)
-                                    }
-                            )
+                            realm.executeTransaction { realm1 ->
+                                realm1.copyToRealmOrUpdate(messagesList)
+                            }
+                            Application.getInstance().runOnUiThread {
+                                Application.getInstance()
+                                        .getUIListeners(OnNewMessageListener::class.java)
+                                        .map(OnNewMessageListener::onNewMessage)
+                            }
+                            SyncManager.getInstance().onMessageSaved()
+                            checkForAttachmentsAndDownload(messagesList)
                         } catch (e: Exception) {
                             LogManager.exception(this, e)
                         } finally {
@@ -103,7 +101,6 @@ object MessageHandler {
 
         if (delayInformation != null && "Offline Storage" == delayInformation.reason) return
 
-        // Xabber service message received
         if (messageStanza.type == Message.Type.headline
                 && XMPPAuthManager.getInstance().isXabberServiceMessage(messageStanza.stanzaId)) {
             return
@@ -173,8 +170,6 @@ object MessageHandler {
                     UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
                 } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
 
-        val originId: String? = UniqueIdsHelper.getOriginId(messageStanza)
-
         val accountStartHistoryTimestamp = AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp
 
         // FileManager.processFileMessage(messageRealmObject);
@@ -200,11 +195,11 @@ object MessageHandler {
                     action = null,
                     timestamp = timestamp,
                     delayTimestamp = getDelayStamp(messageStanza),
-                    incoming = true,
+                    incoming = isIncoming,
                     notify = true,
                     encrypted = encrypted,
                     offline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza),
-                    stanzaId = UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString()),
+                    stanzaId = stanzaId,
                     originId = UniqueIdsHelper.getOriginId(messageStanza),
                     attachmentRealmObjects = attachmentRealmObjects,
                     originalStanza = messageStanza.toXML().toString(),
@@ -225,11 +220,11 @@ object MessageHandler {
                     action = null,
                     timestamp = timestamp,
                     delayTimestamp = getDelayStamp(messageStanza),
-                    incoming = true,
+                    incoming = isIncoming,
                     notify = true,
                     encrypted = encrypted,
                     offline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza),
-                    stanzaId = UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString()),
+                    stanzaId = stanzaId,
                     originId = UniqueIdsHelper.getOriginId(messageStanza),
                     originalStanza = messageStanza.toXML().toString(),
                     parentMessageId = null,
@@ -260,7 +255,9 @@ object MessageHandler {
 
     fun saveOrUpdateMessage(messageRealmObject: MessageRealmObject) = saverBuffer.onNext(messageRealmObject)
 
-    fun parseForwardedMessage(packet: Stanza, parentMessageId: String, chat: AbstractChat,
+    fun parseForwardedMessage(packet: Stanza,
+                              parentMessageId: String,
+                              chat: AbstractChat,
     ): RealmList<ForwardIdRealmObject>? {
         var forwarded = ReferencesManager.getForwardedFromReferences(packet)
         if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet)
@@ -314,7 +311,6 @@ object MessageHandler {
         text = bodies.first
         val markupText = bodies.second
         val isGroupSystem = message.hasGroupSystemMessage()
-
 
         // create message with file-attachments
         if (attachmentRealmObjects.size > 0){

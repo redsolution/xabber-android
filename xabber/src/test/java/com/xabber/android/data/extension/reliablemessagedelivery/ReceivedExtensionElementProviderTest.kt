@@ -32,7 +32,7 @@ class ReceivedExtensionElementProviderTest {
 
         Assert.assertEquals(referenceOriginId, receivedElement.originIdElement?.id)
         Assert.assertEquals(referenceStanzaId, receivedElement.stanzaIdElement?.id)
-        Assert.assertEquals(referenceTimestamp, receivedElement.timeElement?.stamp)
+        Assert.assertEquals(referenceTimestamp, receivedElement.timeElement?.timeStamp)
     }
 
 }
