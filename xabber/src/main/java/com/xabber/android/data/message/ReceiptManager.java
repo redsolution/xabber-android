@@ -133,7 +133,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             });
             for (OnMessageUpdatedListener listener :
                     Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onMessageUpdated();
+                listener.onAction();
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
@@ -161,7 +161,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
 
             for (OnMessageUpdatedListener listener
                     : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onMessageUpdated();
+                listener.onAction();
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);

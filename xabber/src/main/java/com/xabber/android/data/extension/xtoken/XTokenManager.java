@@ -46,7 +46,7 @@ public class XTokenManager implements OnPacketListener {
         } else if (packet instanceof Message && packet.hasExtension(NAMESPACE)) {
             for (OnXTokenSessionsUpdatedListener listener :
                     Application.getInstance().getUIListeners(OnXTokenSessionsUpdatedListener.class)){
-                listener.onXTokenSessionsUpdated();
+                listener.onAction();
             }
         }
     }

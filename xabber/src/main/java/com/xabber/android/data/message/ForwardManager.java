@@ -58,7 +58,7 @@ public class ForwardManager {
                     realm1.copyToRealm(messageRealmObject);
                     for (OnNewMessageListener listener :
                             Application.getInstance().getUIListeners(OnNewMessageListener.class)){
-                        listener.onNewMessage();
+                        listener.onAction();
                     }
                     chat.sendMessages();
                 });

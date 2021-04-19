@@ -114,7 +114,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
     }
 
@@ -133,7 +133,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
     }
 
@@ -185,7 +185,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
 
         if (chat instanceof RegularChat){
@@ -271,7 +271,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
         LogManager.d(ChatManager.class.getSimpleName(), "Created regular chat: " + user);
         return chat;
@@ -290,7 +290,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
         LogManager.d(ChatManager.class.getSimpleName(), "Created group chat: " + groupJid);
         return chat;
@@ -312,7 +312,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         chats.put(chat.getAccount().toString(), chat.getContactJid().toString(), chat);
 
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
     }
 
@@ -325,7 +325,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         //MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
@@ -339,7 +339,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         LogManager.i(this, "removeChat " + contactJid);
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);

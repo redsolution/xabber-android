@@ -87,13 +87,13 @@ public class XMPPListPreference extends Preference implements View.OnClickListen
             case R.id.rlReorder:
                 for (OnReorderClickListener listener :
                         Application.getInstance().getUIListeners(OnReorderClickListener.class)){
-                    listener.onReorderCLick();
+                    listener.onAction();
                 }
                 break;
             case R.id.btnAddAccount:
                 for (OnAddAccountClickListener listener :
                         Application.getInstance().getUIListeners(OnAddAccountClickListener.class)){
-                    listener.onAddAccountClick();
+                    listener.onAction();
                 }
                 break;
         }

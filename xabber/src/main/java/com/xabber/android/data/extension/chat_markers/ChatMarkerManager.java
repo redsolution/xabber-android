@@ -259,7 +259,7 @@ public class ChatMarkerManager implements OnPacketListener {
                                 results.setString(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.DISPLAYED.toString());
                                 for (OnMessageUpdatedListener listener :
                                         Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                                    listener.onMessageUpdated();
+                                    listener.onAction();
                                 }
                             }
                         }
@@ -300,7 +300,7 @@ public class ChatMarkerManager implements OnPacketListener {
                         if (results != null) {
                             results.setString(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.RECEIVED.toString());
                             for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                                listener.onMessageUpdated();
+                                listener.onAction();
                             }
                         }
                     }

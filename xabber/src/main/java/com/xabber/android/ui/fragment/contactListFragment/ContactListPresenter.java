@@ -147,12 +147,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     @Override
-    public void onNewMessage() {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
-    }
-
-    @Override
-    public void onMessageUpdated() {
+    public void onAction() {
         Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 

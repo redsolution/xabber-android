@@ -118,7 +118,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
 //                } //todo
                 for (OnChatUpdatedListener listener
                         : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-                    listener.onChatUpdated();
+                    listener.onAction();
                 }
 
                 dismiss();

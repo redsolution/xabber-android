@@ -447,7 +447,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         if (contact != null) {
             contact.setDirtyRemoved(true);
             for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-                listener.onChatUpdated();
+                listener.onAction();
             }
         }
 
@@ -457,7 +457,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
                 for (OnChatUpdatedListener listener :
                         Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-                    listener.onChatUpdated();
+                    listener.onAction();
                 }
             } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
                 Application.getInstance().onError(R.string.NOT_CONNECTED);

@@ -17,7 +17,6 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -30,7 +29,6 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
-import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -39,10 +37,7 @@ import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.groups.GroupMemberManager;
-import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -54,9 +49,7 @@ import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupExtensionElement;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
-import com.xabber.xmpp.sid.UniqueIdsHelper;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
@@ -131,7 +124,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         AccountManager.getInstance().stopGracePeriod(account);
 
         for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
-            listener.onNewMessage();
+            listener.onAction();
         }
     }
 
@@ -142,7 +135,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             MessageRealmObject newMessageRealmObject = MessageHandler.INSTANCE.createMessageItem(
                     UUID.randomUUID().toString(), null, text, null, null, null,
                     null, false, false, false, false, null,
-                    UUID.randomUUID().toString(), null, null, null,
+                     UUID.randomUUID().toString(), null, null, null,
                     null, false, null, false, null,
                     false, chat);
 
@@ -158,7 +151,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         // mark incoming messages as read
         chat.markAsReadAll(true);
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
     }
 
@@ -497,101 +490,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 return;
             }
 
-            final String body = message.getBody();
-
-            if (body == null) return;
-
-            final AbstractChat finalChat = ChatManager.getInstance().getChat(account, companion);
-
-            String text = body;
-            String uid = UUID.randomUUID().toString();
-            RealmList<ForwardIdRealmObject> forwardIdRealmObjects =
-                    MessageHandler.INSTANCE.parseForwardedMessage(message, uid, finalChat);
-            String originalStanza = message.toXML().toString();
-            String originalFrom = message.getFrom().toString();
-
-            // forward comment (to support previous forwarded xep)
-            String forwardComment = ForwardManager.parseForwardComment(message);
-            if (forwardComment != null) text = forwardComment;
-
-            // modify body with references
-            Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
-            text = bodies.first;
-            String markupText = bodies.second;
-
-            MessageRealmObject newMessageRealmObject = MessageHandler.INSTANCE.createMessageItem(
-                    UUID.randomUUID().toString(), null, text, null, null, null,
-                    null, false, false, false, false, null,
-                    UUID.randomUUID().toString(), null, null, null,
-                    null, false, null, false, null,
-                    false, finalChat);
-            if (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)){
-                String timestamp =
-                        ((TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)).getTimeStamp();
-
-                newMessageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(timestamp).getTime());
-            }
-            newMessageRealmObject.setOriginId(UniqueIdsHelper.getOriginId(message));
-
-            newMessageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
-//
-//            newMessageRealmObject.setSent(true);
-//            newMessageRealmObject.setForwarded(true);
-
-            if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
-
-            // forwarding
-            if (forwardIdRealmObjects != null) newMessageRealmObject.setForwardedIds(forwardIdRealmObjects);
-
-            newMessageRealmObject.setOriginalStanza(originalStanza);
-            newMessageRealmObject.setOriginalFrom(originalFrom);
-
-            // attachments
-            RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
-            if (attachmentRealmObjects.size() > 0)
-                newMessageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
-
-            // groupchat
-            GroupMemberExtensionElement groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
-            if (groupchatUser != null) {
-                GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.getTo().asBareJid());
-                newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
-                newMessageRealmObject.setStanzaId(
-                        UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
-            } else if (message.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)){
-                newMessageRealmObject.setGroupchatSystem(true);
-                newMessageRealmObject.setStanzaId(
-                        UniqueIdsHelper.getStanzaIdBy(message, companion.getBareJid().toString()));
-            } else {
-                newMessageRealmObject.setStanzaId(
-                        UniqueIdsHelper.getStanzaIdBy(message, account.getBareJid().toString()));
+            //check for spam
+            if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                    && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
+                // just ignore carbons from not-authorized user
+                return;
             }
 
-            MessageHandler.INSTANCE.saveOrUpdateMessage(newMessageRealmObject);
-
-            // mark incoming messages as read
-            finalChat.markAsReadAll(false);
-
-            // start grace period
             AccountManager.getInstance().startGracePeriod(account);
-            return;
-        }
 
-        ContactJid companion;
-        try {
-            companion = ContactJid.from(message.getFrom()).getBareUserJid();
-        } catch (ContactJid.ContactJidCreateException e) {
-            return;
+            MessageHandler.INSTANCE.parseMessage(account, companion, message, null, true);
         }
-
-        //check for spam
-        if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
-                && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
-            // just ignore carbons from not-authorized user
-            return;
-        }
-
-        MessageHandler.INSTANCE.parseMessage(account, companion, message, null, true);
     }
 
     /**

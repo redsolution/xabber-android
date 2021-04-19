@@ -704,7 +704,7 @@ public abstract class AbstractChat extends BaseEntity implements
             }
             for (OnMessageUpdatedListener listener :
                     Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onMessageUpdated();
+                listener.onAction();
             }
         });
     }
@@ -712,7 +712,7 @@ public abstract class AbstractChat extends BaseEntity implements
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
         for (OnMessageUpdatedListener listener :
                 Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-            listener.onMessageUpdated();
+            listener.onAction();
         }
         BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,
                 trySendDisplay);
@@ -721,7 +721,7 @@ public abstract class AbstractChat extends BaseEntity implements
     private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
         BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
         for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-            listener.onMessageUpdated();
+            listener.onAction();
         }
     }
 

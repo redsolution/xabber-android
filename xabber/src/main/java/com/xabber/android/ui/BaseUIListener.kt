@@ -35,37 +35,37 @@ import org.jxmpp.jid.Jid
  */
 interface BaseUIListener
 
+fun interface SamBaseUiListener: BaseUIListener {
+    abstract fun onAction()
+}
+
 inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit) {
     Application.getInstance().runOnUiThread { forEach { action(it) } }
 }
 
-//inline fun <T: BaseUIListener> notifyUiListeners(listener: Class<T>) {
-//    Application.getInstance().runOnUiThread {
-//        Application.getInstance().getUIListeners(listener).map { listener -> listener. }
-//    }
-//}
-
-interface OnXTokenSessionsUpdatedListener: BaseUIListener {
-    fun onXTokenSessionsUpdated()
+fun <T: SamBaseUiListener> notifySamUiListeners(listener: Class<T>) {
+    Application.getInstance().runOnUiThread {
+        Application.getInstance().getUIListeners(listener).map { listener -> listener.onAction() }
+    }
 }
 
-interface OnReorderClickListener: BaseUIListener {
-    fun onReorderCLick()
-}
+interface OnXTokenSessionsUpdatedListener: SamBaseUiListener
 
-interface OnNewMessageListener : BaseUIListener {
-    fun onNewMessage()
-}
+interface OnReorderClickListener: SamBaseUiListener
+
+interface OnNewMessageListener : SamBaseUiListener
+
+interface OnMessageUpdatedListener : SamBaseUiListener
+
+interface OnChatUpdatedListener: SamBaseUiListener
+
+interface OnAddAccountClickListener: SamBaseUiListener
 
 interface OnNewIncomingMessageListener : BaseUIListener {
     fun onNewIncomingMessage(accountJid: AccountJid, contactJid: ContactJid)
 }
 
-interface OnMessageUpdatedListener : BaseUIListener {
-    fun onMessageUpdated()
-}
-
-interface OnLastHistoryLoadStartedListener: BaseUIListener {
+interface OnLastHistoryLoadStartedListener: SamBaseUiListener {
     fun onLastHistoryLoadStarted(accountJid: AccountJid, contactJid: ContactJid)
 }
 
@@ -90,10 +90,6 @@ interface OnConnectionStateChangedListener: BaseUIListener {
     fun onConnectionStateChanged(newConnectionState: ConnectionState)
 }
 
-interface OnChatUpdatedListener: BaseUIListener {
-    fun onChatUpdated()
-}
-
 interface OnChatStateListener : BaseUIListener {
     fun onChatStateChanged(entities: Collection<RosterContact>)
 }
@@ -104,10 +100,6 @@ interface OnBlockedListChangedListener : BaseUIListener {
 
 interface OnAuthAskListener: BaseUIListener {
     fun onAuthAsk(accountJid: AccountJid, contactJid: ContactJid)
-}
-
-interface OnAddAccountClickListener: BaseUIListener {
-    fun onAddAccountClick()
 }
 
 interface OnAccountChangedListener : BaseUIListener {

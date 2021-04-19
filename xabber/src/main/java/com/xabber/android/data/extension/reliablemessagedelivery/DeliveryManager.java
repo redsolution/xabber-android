@@ -168,7 +168,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             markMessageReceivedInDatabase(timestamp, originId, stanzaId);
             for (OnMessageUpdatedListener listener :
                     Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onMessageUpdated();
+                listener.onAction();
             }
         }
     }

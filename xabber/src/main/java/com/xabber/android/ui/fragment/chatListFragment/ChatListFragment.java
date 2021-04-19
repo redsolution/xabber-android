@@ -199,12 +199,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatUpdated() {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
-    }
-
-    @Override
-    public void onMessageUpdated() {
+    public void onAction() {
         Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 

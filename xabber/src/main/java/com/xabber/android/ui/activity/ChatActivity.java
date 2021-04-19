@@ -572,12 +572,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public void onNewMessage() {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
-    }
-
-    @Override
-    public void onMessageUpdated() {
+    public void onAction() {
         Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
     }
 

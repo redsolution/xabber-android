@@ -82,7 +82,7 @@ public class BackpressureMessageMarker {
                     }
                     for (OnMessageUpdatedListener listener :
                             Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                        listener.onMessageUpdated();
+                        listener.onAction();
                     }
                 }, new Action1<Throwable>() {
                     @Override

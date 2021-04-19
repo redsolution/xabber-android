@@ -113,7 +113,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
             deleteContact();
         }
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onChatUpdated();
+            listener.onAction();
         }
     }
 

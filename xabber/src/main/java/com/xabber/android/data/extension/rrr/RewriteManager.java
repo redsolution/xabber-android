@@ -168,7 +168,7 @@ public class RewriteManager implements OnPacketListener {
                             messageRealmObject.setOriginalStanza(message[0].toXML().toString());
                             for (OnMessageUpdatedListener listener :
                                     Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                                listener.onMessageUpdated();
+                                listener.onAction();
                             }
                         }
                 });
@@ -223,7 +223,7 @@ public class RewriteManager implements OnPacketListener {
                             if (messageRealmObject != null)
                                 messageRealmObject.deleteFromRealm();
                             for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                                listener.onMessageUpdated();
+                                listener.onAction();
                             }
                     });
                 } catch (Exception e){
@@ -260,7 +260,7 @@ public class RewriteManager implements OnPacketListener {
                                     .parseReceivedReceiptTimestampString(stamp).getTime());
                     }
                     for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                        listener.onMessageUpdated();
+                        listener.onAction();
                     }
                 });
             } catch (Exception e) {

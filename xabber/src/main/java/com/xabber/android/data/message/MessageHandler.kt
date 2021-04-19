@@ -10,6 +10,8 @@ import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.chat_markers.ChatMarkerManager
+import com.xabber.android.data.extension.chat_markers.ChatMarkersElements
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.otr.OTRManager
@@ -25,11 +27,12 @@ import com.xabber.android.data.push.SyncManager
 import com.xabber.android.data.xaccount.XMPPAuthManager
 import com.xabber.android.ui.OnNewIncomingMessageListener
 import com.xabber.android.ui.OnNewMessageListener
+import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.android.utils.StringUtils
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.sid.UniqueIdsHelper
+import com.xabber.xmpp.uuu.ChatStateExtension
 import io.realm.Realm
-import io.realm.Realm.Transaction.OnSuccess
 import io.realm.RealmList
 import net.java.otr4j.io.SerializationUtils
 import net.java.otr4j.io.messages.AbstractMessage
@@ -58,14 +61,8 @@ object MessageHandler {
                         var realm: Realm? = null
                         try {
                             realm = DatabaseManager.getInstance().defaultRealmInstance
-                            realm.executeTransaction { realm1 ->
-                                realm1.copyToRealmOrUpdate(messagesList)
-                            }
-                            Application.getInstance().runOnUiThread {
-                                Application.getInstance()
-                                        .getUIListeners(OnNewMessageListener::class.java)
-                                        .map(OnNewMessageListener::onNewMessage)
-                            }
+                            realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
+                            notifySamUiListeners(OnNewMessageListener::class.java)
                             SyncManager.getInstance().onMessageSaved()
                             checkForAttachmentsAndDownload(messagesList)
                         } catch (e: Exception) {
@@ -96,6 +93,17 @@ object MessageHandler {
             delayInformation: DelayInformation? = null,
             isCarbons: Boolean = false,
     ) {
+
+        //todo parse carbons chat markers
+        //todo parse chat states
+        //todo parse headlines maybe
+        //todo parse group invites
+        
+        if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)) return
+        if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE)
+                && !messageStanza.hasExtension(ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)){
+                    return
+        }
 
         if (messageStanza.type == Message.Type.error) return
 
@@ -187,14 +195,14 @@ object MessageHandler {
         if (groupchatUser != null) GroupMemberManager.getInstance().saveGroupUser(groupchatUser, contactJid.bareJid)
 
         if (attachmentRealmObjects.size > 0){
-            createAndSaveFileMessage(
+            val messageRealmObject = createMessageItem(
                     uid = id,
                     resource = resource,
                     text = body,
                     markupText = markupBody,
                     action = null,
                     timestamp = timestamp,
-                    delayTimestamp = getDelayStamp(messageStanza),
+                    delayTimestamp = DelayInformation.from(messageStanza)?.stamp,
                     incoming = isIncoming,
                     notify = true,
                     encrypted = encrypted,
@@ -211,49 +219,32 @@ object MessageHandler {
                     groupchatUserId = groupchatUser?.id,
                     chat = chat,
             )
+
+            saverBuffer.onNext(messageRealmObject ?: return)
         } else {
-            createAndSaveNewMessage(
-                    uid = id,
-                    resource = resource,
-                    text = body,
-                    markupText = markupBody,
-                    action = null,
-                    timestamp = timestamp,
-                    delayTimestamp = getDelayStamp(messageStanza),
-                    incoming = isIncoming,
-                    notify = true,
-                    encrypted = encrypted,
+            val messageRealmObject = createMessageItem(uid = id, resource = resource, text = body, action = null,
+                    markupText = markupBody,  timestamp = timestamp, encrypted = encrypted,  stanzaId = stanzaId,
+                    delayTimestamp = DelayInformation.from(messageStanza)?.stamp, incoming = isIncoming, notify = true,
                     offline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza),
-                    stanzaId = stanzaId,
-                    originId = UniqueIdsHelper.getOriginId(messageStanza),
-                    originalStanza = messageStanza.toXML().toString(),
-                    parentMessageId = null,
-                    originalFrom = messageStanza.from.toString(),
-                    isForwarded = false,
-                    forwardIdRealmObjects = parseForwardedMessage(messageStanza, id, chat!!),
-                    fromMAM = false,
-                    groupchatUserId = groupchatUser?.id,
+                    originId = UniqueIdsHelper.getOriginId(messageStanza), groupchatUserId = groupchatUser?.id,
+                    originalStanza = messageStanza.toXML().toString(), parentMessageId = null, fromMAM = false,
+                    originalFrom = messageStanza.from.toString(), isForwarded = false, attachmentRealmObjects = null,
+                    forwardIdRealmObjects = parseForwardedMessage(messageStanza, id, chat!!), chat = chat,
                     isGroupchatSystem = isGroupSystem,
-                    chat = chat,
             )
+
+            saverBuffer.onNext(messageRealmObject ?: return)
+
         }
 
         Application.getInstance().runOnUiThread {
-            Application.getInstance()
-                    .getUIListeners(OnNewIncomingMessageListener::class.java)
+            Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
                     .map{ listener -> listener.onNewIncomingMessage(accountJid, contactJid) }
         }
 
-        Application.getInstance().runOnUiThread {
-            Application.getInstance()
-                    .getUIListeners(OnNewMessageListener::class.java)
-                    .map(OnNewMessageListener::onNewMessage)
-        }
+        notifySamUiListeners(OnNewMessageListener::class.java)
+
     }
-
-    private fun getDelayStamp(message: Message) = DelayInformation.from(message)?.stamp
-
-    fun saveOrUpdateMessage(messageRealmObject: MessageRealmObject) = saverBuffer.onNext(messageRealmObject)
 
     fun parseForwardedMessage(packet: Stanza,
                               parentMessageId: String,
@@ -313,53 +304,29 @@ object MessageHandler {
         val isGroupSystem = message.hasGroupSystemMessage()
 
         // create message with file-attachments
-        if (attachmentRealmObjects.size > 0){
-            createAndSaveFileMessage(uid = uid,
-                    resource = resource,
-                    text = text,
-                    markupText = markupText,
-                    action = null,
-                    timestamp = timestamp,
-                    delayTimestamp = getDelayStamp(message),
-                    incoming = true,
-                    notify = false,
-                    encrypted = encrypted,
-                    offline = false,
-                    stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()),
-                    originId = UniqueIdsHelper.getOriginId(message),
-                    attachmentRealmObjects = attachmentRealmObjects,
-                    originalStanza = originalStanza,
-                    parentMessageId = parentMessageId,
-                    originalFrom = originalFrom,
-                    isForwarded = true,
-                    forwardIdRealmObjects = forwardIdRealmObjects,
-                    fromMAM = true,
-                    groupchatUserId = groupchatUserId,
-                    chat = chat)
+        val messageRealmObject =
+                if (attachmentRealmObjects.size > 0){
+                    createMessageItem(uid = uid, resource = resource, text = text, markupText = markupText,
+                            action = null, timestamp = timestamp, delayTimestamp = DelayInformation.from(message)?.stamp,
+                            incoming = true, notify = false, encrypted = encrypted, offline = false, isForwarded = true,
+                            stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()),
+                            originId = UniqueIdsHelper.getOriginId(message), chat = chat, fromMAM = true,
+                            attachmentRealmObjects = attachmentRealmObjects, originalFrom = originalFrom,
+                            originalStanza = message.toXML().toString(), parentMessageId = parentMessageId,
+                            forwardIdRealmObjects = forwardIdRealmObjects, groupchatUserId = groupchatUserId,
+                    )
         } else {
-            createAndSaveNewMessage(uid = uid,
-                    resource = resource,
-                    text = text,
-                    markupText = markupText,
-                    action = null,
-                    timestamp = timestamp,
-                    delayTimestamp = getDelayStamp(message),
-                    incoming = true,
-                    notify = false,
-                    encrypted = encrypted,
-                    offline = false,
+            createMessageItem(uid = uid, resource = resource, text = text, markupText = markupText, action = null,
+                    timestamp = timestamp, delayTimestamp = DelayInformation.from(message)?.stamp, offline = false,
+                    incoming = true, notify = false, isGroupchatSystem = isGroupSystem, chat = chat, fromMAM = true,
+                    encrypted = encrypted,  originalFrom = originalFrom, isForwarded = true,
                     stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()),
-                    originId = UniqueIdsHelper.getOriginId(message),
-                    originalStanza = originalStanza,
-                    parentMessageId = parentMessageId,
-                    originalFrom = originalFrom,
-                    isForwarded = true,
-                    forwardIdRealmObjects = forwardIdRealmObjects,
-                    fromMAM = true,
+                    originId = UniqueIdsHelper.getOriginId(message), originalStanza = message.toXML().toString(),
+                    parentMessageId = parentMessageId, forwardIdRealmObjects = forwardIdRealmObjects,
                     groupchatUserId = groupchatUserId,
-                    isGroupchatSystem = isGroupSystem,
-                    chat = chat)
+            )
         }
+        if (messageRealmObject != null) saverBuffer.onNext(messageRealmObject)
         return uid
     }
 
@@ -376,7 +343,7 @@ object MessageHandler {
                           offline: Boolean,
                           stanzaId: String?,
                           originId: String? = UUID.randomUUID().toString(),
-                          attachmentRealmObjects: RealmList<AttachmentRealmObject?>?,
+                          attachmentRealmObjects: RealmList<AttachmentRealmObject?>? = null,
                           originalStanza: String?,
                           parentMessageId: String?,
                           originalFrom: String?,
@@ -406,7 +373,6 @@ object MessageHandler {
 
         val visible = ChatManager.getInstance().isVisibleChat(chat)
         val read = !incoming
-        require(!(action == null && messageText == null))
         if (messageText == null) messageText = " "
         if (messageTimestamp == null) messageTimestamp = Date()
         if (messageText.trim { it <= ' ' }.isEmpty()
@@ -439,7 +405,6 @@ object MessageHandler {
 
             this.messageStatus = if (incoming) MessageStatus.NONE else MessageStatus.NOT_SENT
 
-            if (stanzaId != null) this.stanzaId = stanzaId
             if (action != null) this.action = action.toString()
             if (markupText != null) this.markupText = markupText
             if (delayTimestamp != null) this.delayTimestamp = delayTimestamp.time
@@ -465,86 +430,40 @@ object MessageHandler {
         return if (action != null && (groupchatUserId != null || isGroupchatSystem)) null else messageRealmObject
     }
 
-    /**
-     * Creates new message.
-     *
-     * @param resource       Contact's resource or nick in conference.
-     * @param text           message.
-     * @param action         Informational message.
-     * @param delayTimestamp Time when incoming message was sent or outgoing was created.
-     * @param incoming       Incoming message.
-     * @param notify         Notify user about this message when appropriated.
-     * @param encrypted      Whether encrypted message in OTR chat was received.
-     * @param offline        Whether message was received from server side offline storage.
-     * @return
-     */
-    private fun createAndSaveNewMessage(
-            uid: String?, resource: Resourcepart?, text: String?, markupText: String?,
-            action: ChatAction?, timestamp: Date?, delayTimestamp: Date?, incoming: Boolean,
-            notify: Boolean, encrypted: Boolean, offline: Boolean, stanzaId: String?,
-            originId: String?, originalStanza: String?, parentMessageId: String?,
-            originalFrom: String?, isForwarded: Boolean,
-            forwardIdRealmObjects: RealmList<ForwardIdRealmObject>?, fromMAM: Boolean,
-            groupchatUserId: String?, isGroupchatSystem: Boolean, chat: AbstractChat,
-    ) {
-        val messageRealmObject = createMessageItem(uid, resource, text, markupText, action, timestamp, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, originId, null, originalStanza,
-                parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId,
-                isGroupchatSystem, chat, )
-
-        saveOrUpdateMessage(messageRealmObject ?: return)
-    }
-
-    private fun createAndSaveFileMessage(
-            uid: String?, resource: Resourcepart?, text: String?, markupText: String?,
-            action: ChatAction?, timestamp: Date?, delayTimestamp: Date?, incoming: Boolean,
-            notify: Boolean, encrypted: Boolean, offline: Boolean, stanzaId: String?,
-            originId: String?, attachmentRealmObjects: RealmList<AttachmentRealmObject?>?,
-            originalStanza: String?, parentMessageId: String?, originalFrom: String?,
-            isForwarded: Boolean, forwardIdRealmObjects: RealmList<ForwardIdRealmObject>?,
-            fromMAM: Boolean, groupchatUserId: String?, chat: AbstractChat,
-    ) {
-        val messageRealmObject = createMessageItem(uid, resource, text, markupText, action, timestamp, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, originId, attachmentRealmObjects, originalStanza,
-                parentMessageId, originalFrom, isForwarded, forwardIdRealmObjects, fromMAM, groupchatUserId, false, chat)
-
-        saveOrUpdateMessage(messageRealmObject ?: return)
-    }
-
-    /**
-     * Creates new action.
-     *
-     * @param resource can be `null`.
-     * @param text     can be `null`.
-     */
-    fun newActionMessage(resource: Resourcepart,
-                         text: String,
-                         action: ChatAction,
-                         abstractChat: AbstractChat,
-    ) {
-        createAndSaveNewMessage(uid = UUID.randomUUID().toString(),
-                resource = resource,
-                text = text,
-                markupText = null,
-                action = action,
-                timestamp = null,
-                delayTimestamp = null,
-                incoming = true,
-                notify = false,
-                encrypted = false,
-                offline = false,
-                stanzaId = null,
-                originId = null,
-                originalStanza = null,
-                parentMessageId = null,
-                originalFrom = null,
-                isForwarded = false,
-                forwardIdRealmObjects = null,
-                fromMAM = false,
-                groupchatUserId = null,
-                isGroupchatSystem = false,
-                chat = abstractChat)
-    }
+//    /**
+//     * Creates new action.
+//     *
+//     * @param resource can be `null`.
+//     * @param text     can be `null`.
+//     */
+//    fun newActionMessage(resource: Resourcepart,
+//                         text: String,
+//                         action: ChatAction,
+//                         abstractChat: AbstractChat,
+//    ) {
+//        createAndSaveNewMessage(uid = UUID.randomUUID().toString(),
+//                resource = resource,
+//                text = text,
+//                markupText = null,
+//                action = action,
+//                timestamp = null,
+//                delayTimestamp = null,
+//                incoming = true,
+//                notify = false,
+//                encrypted = false,
+//                offline = false,
+//                stanzaId = null,
+//                originId = null,
+//                originalStanza = null,
+//                parentMessageId = null,
+//                originalFrom = null,
+//                isForwarded = false,
+//                forwardIdRealmObjects = null,
+//                fromMAM = false,
+//                groupchatUserId = null,
+//                isGroupchatSystem = false,
+//                chat = abstractChat)
+//    }
 
 //    /**
 //     * Creates new action with the same timestamp as the last message,

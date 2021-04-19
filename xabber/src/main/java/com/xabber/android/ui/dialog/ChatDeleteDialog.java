@@ -83,7 +83,7 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
                 }
                 for (OnMessageUpdatedListener listener :
                         Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                    listener.onMessageUpdated();
+                    listener.onAction();
                 }
             }
         }

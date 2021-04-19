@@ -5,13 +5,13 @@ import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.listeners.OnPacketListener
+import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.mam.MamQueryIQ
 import com.xabber.xmpp.mam.MamResultExtensionElement
 import org.jivesoftware.smack.packet.IQ
@@ -38,11 +38,17 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
+        val accountJid = connection.account
         if (packet is Message && packet.hasExtension(MamResultExtensionElement.ELEMENT, NAMESPACE)){
-            packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { mamResultElement -> //todo
-            // check this, possible bug
+            packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { mamResultElement ->
                 val forwardedElement = mamResultElement.forwarded.forwardedStanza
-                //MessageHandler.parseMessage()
+                val contactJid =
+                        if (forwardedElement.from.asBareJid() ==accountJid.fullJid.asBareJid()) {
+                            ContactJid.from(forwardedElement.to.asBareJid().toString())
+                        } else ContactJid.from(forwardedElement.from.asBareJid().toString())
+                if (forwardedElement != null && forwardedElement is Message){
+                    MessageHandler.parseMessage(accountJid, contactJid, forwardedElement)
+                }
             }
         }
     }

@@ -93,7 +93,7 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
                 RosterManager.getInstance().removeContact(account, groupchatJid);
                 for (OnChatUpdatedListener listener :
                         Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-                    listener.onChatUpdated();
+                    listener.onAction();
                 }
 
                 dismiss();

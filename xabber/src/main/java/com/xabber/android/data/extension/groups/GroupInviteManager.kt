@@ -19,10 +19,7 @@ import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener
-import com.xabber.android.ui.OnMessageUpdatedListener
-import com.xabber.android.ui.OnNewMessageListener
-import com.xabber.android.ui.forEachOnUi
+import com.xabber.android.ui.*
 import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.invite.incoming.DeclineGroupInviteIQ
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement
@@ -75,8 +72,8 @@ object GroupInviteManager: OnLoadListener {
             LogManager.exception(LOG_TAG, e)
         }
 
-        Application.getInstance().getUIListeners(OnNewMessageListener::class.java).forEach { it.onNewMessage() }
-        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
+        notifySamUiListeners(OnNewMessageListener::class.java)
+        notifySamUiListeners(OnMessageUpdatedListener::class.java)
     }
 
     fun onContactAddedToRoster(accountJid: AccountJid, contactJid: ContactJid){
@@ -112,8 +109,9 @@ object GroupInviteManager: OnLoadListener {
         } catch (e: java.lang.Exception) {
             LogManager.exception(LOG_TAG, e)
         }
-        Application.getInstance().getUIListeners(OnNewMessageListener::class.java).forEach { it.onNewMessage() }
-        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
+
+        notifySamUiListeners(OnNewMessageListener::class.java)
+        notifySamUiListeners(OnMessageUpdatedListener::class.java)
     }
 
     fun declineInvitation(accountJid: AccountJid, groupJid: ContactJid) {
@@ -148,8 +146,9 @@ object GroupInviteManager: OnLoadListener {
                         "to account $accountJid!${e.message}")
             }
         }
-        Application.getInstance().getUIListeners(OnNewMessageListener::class.java).forEach { it.onNewMessage() }
-        Application.getInstance().getUIListeners(OnMessageUpdatedListener::class.java).forEach { it.onMessageUpdated() }
+
+        notifySamUiListeners(OnNewMessageListener::class.java)
+        notifySamUiListeners(OnMessageUpdatedListener::class.java)
     }
 
     fun hasActiveIncomingInvites(accountJid: AccountJid, groupchatJid: ContactJid) =

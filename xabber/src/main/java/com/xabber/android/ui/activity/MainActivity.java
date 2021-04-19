@@ -504,7 +504,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     @Override
-    public void onMessageUpdated() {
+    public void onAction() {
         Application.getInstance().runOnUiThread(this::updateUnreadCount);
     }
 

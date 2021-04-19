@@ -160,7 +160,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     }
 
     @Override
-    public void onXTokenSessionsUpdated() {
+    public void onAction() {
         Application.getInstance().runOnUiThread(() -> {if (XTokenEnabled) refreshData();});
     }
 

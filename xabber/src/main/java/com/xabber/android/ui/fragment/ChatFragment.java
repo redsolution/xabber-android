@@ -1196,7 +1196,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public void onMessageUpdated() { Application.getInstance().runOnUiThread(this::updateUnread); }
+    public void onAction() {
+        Application.getInstance().runOnUiThread(this::updateUnread);
+    }
 
     @Override
     public void onNewIncomingMessage(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
@@ -1206,11 +1208,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 NotificationManager.getInstance().removeMessageNotification(account, user);
             }
         });
-    }
-
-    @Override
-    public void onNewMessage() {
-        Application.getInstance().runOnUiThread(this::updateUnread);
     }
 
     @Override
