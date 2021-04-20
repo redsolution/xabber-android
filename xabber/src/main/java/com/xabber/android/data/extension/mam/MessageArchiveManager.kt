@@ -24,10 +24,6 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
 
-    //todo loading on chat opening
-
-    //todo loading on chat scroll
-
     override fun onRosterReceived(accountItem: AccountItem) {
         LogManager.i(MessageArchiveManager::class.java, "onRosterReceived")
         RosterManager.getInstance().getAccountRosterContacts(accountItem.account).forEach { rosterContact ->

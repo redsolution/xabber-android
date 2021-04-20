@@ -132,16 +132,18 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
         realm.executeTransactionAsync(realm1 -> {
-            MessageRealmObject newMessageRealmObject = MessageHandler.INSTANCE.createMessageItem(
-                    UUID.randomUUID().toString(), null, text, null, null, null,
-                    null, false, false, false, false, null,
-                     UUID.randomUUID().toString(), null, null, null,
-                    null, false, null, false, null,
-                    false, chat);
 
-            if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
+            MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
+                    chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString());
+            message.setText(text);
+            message.setIncoming(false);
+            message.setOffline(false);
+            message.setEncrypted(false);
+            message.setForwarded(false);
+            message.setGroupchatSystem(false);
+            if (markupText != null) message.setMarkupText(markupText);
 
-            realm1.copyToRealm(newMessageRealmObject);
+            realm1.copyToRealm(message);
 
             if (chat.canSendMessage()) chat.sendMessages();
         });

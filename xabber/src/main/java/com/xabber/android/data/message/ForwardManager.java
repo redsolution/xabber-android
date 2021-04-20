@@ -33,14 +33,18 @@ public class ForwardManager {
 
     public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text, @Nullable String markupText) {
         final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-        final MessageRealmObject messageRealmObject = MessageHandler.INSTANCE.createMessageItem(
-                UUID.randomUUID().toString(), null, text, null, null, null,
-                null, false, false, false, false, null,
-                UUID.randomUUID().toString(), null, null, null,
-                null, false, null, false, null,
-                false, chat);
 
-        if (markupText != null) messageRealmObject.setMarkupText(markupText);
+        final MessageRealmObject parentMessage = MessageRealmObject.createMessageRealmObjectWithOriginId(
+                account, user, UUID.randomUUID().toString());
+
+        parentMessage.setText(text);
+        parentMessage.setIncoming(false);
+        parentMessage.setEncrypted(false);
+        parentMessage.setOffline(false);
+        parentMessage.setForwarded(false);
+        parentMessage.setGroupchatSystem(false);
+
+        if (markupText != null) parentMessage.setMarkupText(markupText);
 
         RealmList<ForwardIdRealmObject> ids = new RealmList<>();
 
@@ -48,14 +52,14 @@ public class ForwardManager {
             ids.add(new ForwardIdRealmObject(message));
         }
 
-        messageRealmObject.setForwardedIds(ids);
+        parentMessage.setForwardedIds(ids);
 
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
-                    realm1.copyToRealm(messageRealmObject);
+                    realm1.copyToRealm(parentMessage);
                     for (OnNewMessageListener listener :
                             Application.getInstance().getUIListeners(OnNewMessageListener.class)){
                         listener.onAction();
@@ -66,13 +70,12 @@ public class ForwardManager {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
+
     }
 
     public static String parseForwardComment(Stanza packet) {
         ExtensionElement comment = packet.getExtension(ForwardComment.ELEMENT, ForwardComment.NAMESPACE);
-        if (comment instanceof ForwardComment) {
-            return ((ForwardComment) comment).getComment();
-        }
+        if (comment instanceof ForwardComment) return ((ForwardComment) comment).getComment();
         return null;
     }
 
@@ -83,9 +86,7 @@ public class ForwardManager {
 
         List<Forwarded> forwarded = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof Forwarded) {
-                forwarded.add((Forwarded)element);
-            }
+            if (element instanceof Forwarded) forwarded.add((Forwarded)element);
         }
         return forwarded;
     }
