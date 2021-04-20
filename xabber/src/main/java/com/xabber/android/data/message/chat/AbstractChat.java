@@ -61,6 +61,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -106,6 +107,7 @@ public abstract class AbstractChat extends BaseEntity implements
     protected Long lastActionTimestamp;
     private int lastPosition;
     private boolean archived;
+    protected Resourcepart resource;
     private NotificationState notificationState;
     private final Set<String> waitToMarkAsRead = new HashSet<>();
     private MessageRealmObject lastMessage;
@@ -864,5 +866,9 @@ public abstract class AbstractChat extends BaseEntity implements
     public void setHistoryRequestedWithoutRealm(boolean isHistoryRequested) {
         this.historyRequestedAtStart = isHistoryRequested;
     }
+
+    public Resourcepart getResource() { return resource; }
+
+    public void setResource(Resourcepart resource) { this.resource = resource; }
 
 }

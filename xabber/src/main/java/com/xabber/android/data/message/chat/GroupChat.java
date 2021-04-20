@@ -19,6 +19,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,8 +45,6 @@ public class GroupChat extends AbstractChat {
     private int numberOfMembers;
     private int numberOfOnlineMembers;
 
-    private String resource;
-
     //Permissions and restrictions
     private boolean canInvite;
     private boolean canChangeSettings;
@@ -64,7 +63,7 @@ public class GroupChat extends AbstractChat {
                      String name, String description, int numberOfMembers, String pinnedMessageId,
                      String membersListVersion, boolean canInvite, boolean canChangeSettings,
                      boolean canChangeUsersSettings, boolean canChangeNicknames, boolean canChangeBadge,
-                     boolean canBlockUsers, boolean canChangeAvatars, String resource,
+                     boolean canBlockUsers, boolean canChangeAvatars, Resourcepart resource,
                      NotificationState notificationState) {
         super(account, user);
         this.indexType = indexType;
@@ -112,8 +111,8 @@ public class GroupChat extends AbstractChat {
     @Nullable
     public FullJid getFullJidIfPossible(){
         try{
-            if (resource != null && !resource.isEmpty()) {
-                return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/" + resource);
+            if (resource != null && !resource.toString().isEmpty()) {
+                return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/" + resource.toString());
             } else return JidCreate.fullFrom(contactJid.getBareJid().toString() + "/Group");
         } catch (Exception e){
             LogManager.exception(LOG_TAG, e);
@@ -130,9 +129,6 @@ public class GroupChat extends AbstractChat {
     /* Getters and setters */
     public GroupIndexType getIndexType() { return indexType; }
     public void setIndexType(GroupIndexType indexType) { this.indexType = indexType; }
-
-    public String getResource() { return resource; }
-    public void setResource(String resource) { this.resource = resource; }
 
     public GroupMembershipType getMembershipType() { return membershipType; }
     public void setMembershipType(GroupMembershipType membershipType) { this.membershipType = membershipType; }

@@ -21,8 +21,6 @@ import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.data.push.SyncManager
@@ -131,9 +129,7 @@ object MessageHandler {
         val resource: Resourcepart? = messageStanza.from.resourceOrNull
 
         if (resource != null && resource != Resourcepart.EMPTY) {
-            if (chat is GroupChat) {
-                chat.resource = resource.toString()
-            } else if (chat is RegularChat) chat.resource = resource
+            chat?.resource = resource
         }
 
         chat?.threadId = messageStanza.thread ?: null

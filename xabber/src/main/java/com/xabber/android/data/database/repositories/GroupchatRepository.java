@@ -99,12 +99,16 @@ public class GroupchatRepository {
                 .findAll();
 
         for (GroupchatRealmObject gro : realmObjects) {
-            list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
-                    gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
-                    gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
-                    gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
-                    gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                    gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource(), gro.getNotificationState()));
+            try{
+                list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
+                        gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
+                        gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
+                        gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
+                        gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
+                        gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource(), gro.getNotificationState()));
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            }
         }
 
         return list;

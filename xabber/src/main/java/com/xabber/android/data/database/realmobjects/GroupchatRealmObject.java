@@ -8,6 +8,9 @@ import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
+
 import java.util.UUID;
 
 import io.realm.RealmList;
@@ -244,8 +247,8 @@ public class GroupchatRealmObject extends RealmObject {
         this.status = status;
     }
 
-    public String getResource() { return resource; }
-    public void setResource(String resource) { this.resource = resource; }
+    public Resourcepart getResource() throws XmppStringprepException { return Resourcepart.from(resource); }
+    public void setResource(Resourcepart resource) { this.resource = resource.toString(); }
 
     public void setNotificationState(NotificationState notificationState) {
         this.notificationMode = notificationState.getMode().toString();

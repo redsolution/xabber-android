@@ -40,10 +40,6 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public class RegularChat extends AbstractChat {
 
-    /**
-     * Resource used for contact.
-     */
-    private Resourcepart resource;
     private Resourcepart OTRresource;
     private Intent intent;
 
@@ -68,11 +64,6 @@ public class RegularChat extends AbstractChat {
     public void setOTRresource(Resourcepart OTRresource) {
         this.OTRresource = OTRresource;
     }
-
-    public Resourcepart getResource() {
-        return resource;
-    }
-    public void setResource(Resourcepart resource) { this.resource = resource; }
 
     @NonNull
     @Override
