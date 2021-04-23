@@ -19,9 +19,9 @@ import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.connection.ConnectionState
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterContact
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.xmpp.vcard.VCard
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import org.jxmpp.jid.Jid
@@ -36,7 +36,7 @@ import org.jxmpp.jid.Jid
 interface BaseUIListener
 
 fun interface SamBaseUiListener: BaseUIListener {
-    abstract fun onAction()
+    fun onAction()
 }
 
 inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit) {

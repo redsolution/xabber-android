@@ -74,7 +74,7 @@ public class GroupchatRepository {
                     groupchatRealmObject.setCanChangeAvatars(groupChat.isCanChangeAvatars());
 
                     groupchatRealmObject.setNotificationState(groupChat.getNotificationState());
-                    groupchatRealmObject.setResource(groupChat.getResource());
+                    if (groupChat.getResource() != null) groupchatRealmObject.setResource(groupChat.getResource());
 
                     realm1.insertOrUpdate(groupchatRealmObject);
                 });

@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -59,6 +58,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Domainpart;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -74,7 +74,7 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class MessageManager implements OnLoadListener, OnPacketListener {
+public class MessageManager implements OnPacketListener {
 
     private static MessageManager instance;
     private static final String LOG_TAG = MessageManager.class.getSimpleName();
@@ -83,29 +83,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         if (instance == null) instance = new MessageManager();
 
         return instance;
-    }
-
-    @Override
-    public void onLoad() {
-        //todo if all will be fine, remove this code
-//        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-//
-//        RealmResults<MessageRealmObject> messagesToSend = realm.where(MessageRealmObject.class)
-//                .equalTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.NOT_SENT.toString())
-//                .findAll();
-//
-//        for (MessageRealmObject messageRealmObject : messagesToSend) {
-//            AccountJid account = messageRealmObject.getAccount();
-//            ContactJid user = messageRealmObject.getUser();
-//
-//            if (account != null && user != null) {
-//                if (ChatManager.getInstance().getChat(account, user) == null) {
-//                    ChatManager.getInstance().getChat(account, user);
-//                }
-//            }
-//        }
-//
-//        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     /**
@@ -131,6 +108,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
+
+        // TODO: 23.04.21 filemessages and forwards
         realm.executeTransactionAsync(realm1 -> {
 
             MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
@@ -141,6 +120,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
             message.setEncrypted(false);
             message.setForwarded(false);
             message.setGroupchatSystem(false);
+            message.setTimestamp(new Date().getTime());
+            message.setMessageStatus(MessageStatus.NOT_SENT);
             if (markupText != null) message.setMarkupText(markupText);
 
             realm1.copyToRealm(message);
@@ -210,7 +191,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 }
 
                 messageRealmObject.setText("");
-                messageRealmObject.setMessageStatus(MessageStatus.NOT_SENT); //todo check this
+                messageRealmObject.setMessageStatus(MessageStatus.NOT_SENT);
                 messageRealmObject.setErrorDescription("");
             }
         });
@@ -483,8 +464,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
+        ContactJid companion = null;
         if (direction == CarbonExtension.Direction.sent) {
-            ContactJid companion;
             try {
                 companion = ContactJid.from(message.getTo()).getBareUserJid();
             } catch (ContactJid.ContactJidCreateException e) {
@@ -498,11 +479,18 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 // just ignore carbons from not-authorized user
                 return;
             }
-
             AccountManager.getInstance().startGracePeriod(account);
 
-            MessageHandler.INSTANCE.parseMessage(account, companion, message, null, true);
+        } else if (direction == CarbonExtension.Direction.received){
+
+            try {
+                companion = ContactJid.from(message.getFrom()).getBareUserJid();
+            } catch (ContactJid.ContactJidCreateException e) {
+                LogManager.exception(LOG_TAG, e);
+                return;
+            }
         }
+        if (companion != null) MessageHandler.INSTANCE.parseMessage(account, companion, message, null, true);
     }
 
     /**

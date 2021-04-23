@@ -47,7 +47,11 @@ class MamQueryIQ private constructor(private val queryId: String? = null,
         )
 
         fun createMamRequestIqLastMessageInChat(chat: AbstractChat,
-        ) = createMamRequestIqLastMessagesInChat(chat, 1)
+        ) = MamQueryIQ(
+                archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
+                dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
+                rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
+        )
 
         fun createMamRequestIqMessageWithStanzaId(chat: AbstractChat,
                                                   stanzaId: String,
@@ -61,7 +65,7 @@ class MamQueryIQ private constructor(private val queryId: String? = null,
         ) = MamQueryIQ(
                 archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
                 dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
-                rsmSet = RSMSet(messagesCount),
+                rsmSet = RSMSet(null, "", -1, -1, null, messagesCount, null, -1),
         )
 
     }

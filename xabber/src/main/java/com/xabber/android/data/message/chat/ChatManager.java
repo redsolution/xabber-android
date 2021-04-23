@@ -59,8 +59,8 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener,
-        OnAccountDisabledListener, OnDisconnectListener {
+public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener, OnAccountDisabledListener,
+        OnDisconnectListener {
 
     public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
@@ -87,27 +87,23 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         chats = new NestedMap<>();
         chatInputs = new NestedMap<>();
 
-        for (RegularChat regularChat : RegularChatRepository.getAllRegularChatsFromRealm())
-            chats.put(regularChat.getAccount().toString(), regularChat.getContactJid().toString(),
-                    regularChat);
+        for (RegularChat regularChat : RegularChatRepository.getAllRegularChatsFromRealm()){
+            chats.put(regularChat.getAccount().toString(), regularChat.getContactJid().toString(), regularChat);
+        }
 
-        for (GroupChat groupChat : GroupchatRepository.getAllGroupchatsFromRealm())
-            chats.put(groupChat.getAccount().toString(), groupChat.getContactJid().toString(),
-                    groupChat);
+        for (GroupChat groupChat : GroupchatRepository.getAllGroupchatsFromRealm()){
+            chats.put(groupChat.getAccount().toString(), groupChat.getContactJid().toString(), groupChat);
+        }
     }
 
     public static ChatManager getInstance() {
-        if (instance == null) {
-            instance = new ChatManager();
-        }
+        if (instance == null) instance = new ChatManager();
         return instance;
     }
 
     @Override
     public void onRosterReceived(AccountItem accountItem) {
-        for (AbstractChat chat : chats.getNested(accountItem.getAccount().toString()).values()) {
-            chat.onComplete();
-        }
+        for (AbstractChat chat : chats.getNested(accountItem.getAccount().toString()).values()) chat.onComplete();
     }
 
     @Override
@@ -120,9 +116,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
 
     @Override
     public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
+        if (!(connection instanceof AccountItem)) return;
         AccountJid account = connection.getAccount();
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
             chat.onDisconnect();
@@ -142,10 +136,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      */
     public String getTypedMessage(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return "";
-        }
-        return chat.getTypedMessage();
+        return chat == null ? "" : chat.getTypedMessage();
     }
 
     /**
@@ -153,10 +144,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      */
     public int getSelectionStart(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return 0;
-        }
-        return chat.getSelectionStart();
+        return chat != null ? chat.getSelectionStart() : 0;
     }
 
     /**
@@ -164,10 +152,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      */
     public int getSelectionEnd(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return 0;
-        }
-        return chat.getSelectionEnd();
+        return chat != null ? chat.getSelectionEnd() : 0;
     }
 
     /**
@@ -192,9 +177,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
             RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getContactJid(), null,
                     chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(), 0,
                     chat.getNotificationState());
-        } else if (chat instanceof GroupChat){
-            GroupchatRepository.saveOrUpdateGroupchatRealmObject((GroupChat) chat);
-        }
+        } else if (chat instanceof GroupChat) GroupchatRepository.saveOrUpdateGroupchatRealmObject((GroupChat) chat);
     }
 
     /**
@@ -225,9 +208,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
             return chats.get(account.toString(), user.getBareJid().toString());
-        } else {
-            return null;
-        }
+        } else return null;
     }
 
     public Collection<AbstractChat> getChatsOfEnabledAccounts() {
@@ -306,9 +287,8 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      *
      */
     private void addChat(AbstractChat chat) {
-        if (getChat(chat.getAccount(), chat.getContactJid()) != null) {
-            return;
-        }
+        if (getChat(chat.getAccount(), chat.getContactJid()) != null) return;
+
         chats.put(chat.getAccount().toString(), chat.getContactJid().toString(), chat);
 
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
@@ -329,9 +309,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
-        } else if (chat instanceof RegularChat){
-            RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
-        }
+        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
     }
 
     public void removeChat(AccountJid accountJid, ContactJid contactJid){
@@ -343,9 +321,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         }
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
-        } else if (chat instanceof RegularChat){
-            RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
-        }
+        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
     }
 
     /**
@@ -360,9 +336,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      */
     public void closeChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            return;
-        }
+        if (chat == null) return;
         chat.closeChat();
     }
 
@@ -387,15 +361,12 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
                 RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository.getChatMessages(account, user);
 
                 for (MessageRealmObject messageRealmObject : messageRealmObjects) {
-                    if (messageRealmObject.getAction() != null) {
-                        continue;
-                    }
+                    if (messageRealmObject.getAction() != null) continue;
+
                     final String name;
                     if (messageRealmObject.isIncoming()) {
                         name = userName;
-                    } else {
-                        name = accountName;
-                    }
+                    } else name = accountName;
 
                     out.write("<b>");
                     out.write(StringUtils.escapeHtml(name));

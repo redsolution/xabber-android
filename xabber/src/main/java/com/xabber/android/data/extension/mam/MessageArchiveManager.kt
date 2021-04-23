@@ -30,7 +30,6 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
             loadLastMessageInChat(ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
                     ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid))
         }
-
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
@@ -42,8 +41,9 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
                         if (forwardedElement.from.asBareJid() ==accountJid.fullJid.asBareJid()) {
                             ContactJid.from(forwardedElement.to.asBareJid().toString())
                         } else ContactJid.from(forwardedElement.from.asBareJid().toString())
+                val delayInformation = mamResultElement.forwarded.delayInformation
                 if (forwardedElement != null && forwardedElement is Message){
-                    MessageHandler.parseMessage(accountJid, contactJid, forwardedElement)
+                    MessageHandler.parseMessage(accountJid, contactJid, forwardedElement, delayInformation,)
                 }
             }
         }
@@ -74,6 +74,19 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
         Application.getInstance().runInBackgroundNetwork {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
+                    { packet -> if (packet is IQ && packet.type == IQ.Type.result) {
+                        LogManager.i(MessageArchiveManager.javaClass,
+                                "Last message with in chat ${chat.account} and ${chat.contactJid} successfully fetched")
+                    } },
+                    { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
+            )
+        }
+    }
+
+    fun loadLastMessagesInChat(chat: AbstractChat){
+        Application.getInstance().runInBackgroundNetwork {
+            AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+                    MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
                     { packet -> if (packet is IQ && packet.type == IQ.Type.result) {
                         LogManager.i(MessageArchiveManager.javaClass,
                                 "Last message with in chat ${chat.account} and ${chat.contactJid} successfully fetched")

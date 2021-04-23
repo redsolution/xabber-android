@@ -11,11 +11,12 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.chat_markers.ChatMarkersElements
+import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.references.ReferencesManager
-import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement
+import com.xabber.android.data.extension.reliablemessagedelivery.getTimeElement
 import com.xabber.android.data.extension.reliablemessagedelivery.hasTimeElement
 import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
@@ -27,10 +28,14 @@ import com.xabber.android.data.push.SyncManager
 import com.xabber.android.data.xaccount.XMPPAuthManager
 import com.xabber.android.ui.OnNewIncomingMessageListener
 import com.xabber.android.ui.OnNewMessageListener
+import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.android.utils.StringUtils
 import com.xabber.xmpp.groups.hasGroupSystemMessage
+import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
+import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.sid.UniqueIdsHelper
+import com.xabber.xmpp.uuu.ChatState
 import com.xabber.xmpp.uuu.ChatStateExtension
 import io.realm.Realm
 import io.realm.RealmList
@@ -62,9 +67,15 @@ object MessageHandler {
                         try {
                             realm = DatabaseManager.getInstance().defaultRealmInstance
                             realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
-                            notifySamUiListeners(OnNewMessageListener::class.java)
                             SyncManager.getInstance().onMessageSaved()
                             checkForAttachmentsAndDownload(messagesList)
+                            notifySamUiListeners(OnNewMessageListener::class.java)
+                            messagesList.map { message ->
+                                Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
+                                        .forEachOnUi { listener ->
+                                            listener.onNewIncomingMessage(message.account, message.user)
+                                        }
+                            }
                         } catch (e: Exception) {
                             LogManager.exception(this, e)
                         } finally {
@@ -94,17 +105,36 @@ object MessageHandler {
             isCarbons: Boolean = false,
     ): MessageRealmObject? {
 
-        //todo parse headlines maybe
-        //todo parse group invites
-        
-        if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)) return null //todo parse chat states
-        if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE)
-                && !messageStanza.hasExtension(
-                        ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)){ //todo parse carbons chat markers
+        val timestamp =
+                if (messageStanza.hasTimeElement()){
+                    StringUtils.parseReceivedReceiptTimestampString(messageStanza.getTimeElement().timeStamp).time
+                } else Date().time
+
+        if (messageStanza.hasIncomingInviteExtension()){
+            GroupInviteManager.processIncomingInvite(
+                    messageStanza.getIncomingInviteExtension()!!, accountJid, contactJid, timestamp)
+
             return null
         }
 
-        if (messageStanza.type == Message.Type.error) return null
+        //todo parse headlines maybe
+        //todo parse group invites
+        
+        if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)
+                || messageStanza.hasExtension(ChatState.active.toString(), ChatStateExtension.NAMESPACE)
+                    && messageStanza.getOptimalTextBody() == null
+                || !messageStanza.hasExtension(ChatState.inactive.toString(), ChatStateExtension.NAMESPACE)
+                    && messageStanza.getOptimalTextBody() == null) {
+                    return null
+        }
+
+        if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE)
+                && !messageStanza.hasExtension(
+                        ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)){
+            return null
+        }
+
+        if (messageStanza.type != Message.Type.chat) return null
 
         if (delayInformation != null && "Offline Storage" == delayInformation.reason) return null
 
@@ -128,11 +158,9 @@ object MessageHandler {
 
         val resource: Resourcepart? = messageStanza.from.resourceOrNull
 
-        if (resource != null && resource != Resourcepart.EMPTY) {
-            chat?.resource = resource
-        }
+        if (resource != null && resource != Resourcepart.EMPTY) chat?.resource = resource
 
-        chat?.threadId = messageStanza.thread ?: null
+        if (messageStanza.thread != null) chat?.threadId = messageStanza.thread
 
         var body = messageStanza.getOptimalTextBody()
         val otrMessage: AbstractMessage? = try {
@@ -168,7 +196,7 @@ object MessageHandler {
         val isIncoming = messageStanza.from.asBareJid().equals(contactJid.jid.asBareJid())
 
         val stanzaId =
-                if (groupchatUser != null || messageStanza.hasGroupSystemMessage()) {
+                if (groupchatUser != null || isGroupSystem) {
                     UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
                 } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
 
@@ -176,12 +204,6 @@ object MessageHandler {
 
         // FileManager.processFileMessage(messageRealmObject);
         val attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(messageStanza)
-
-        var timestamp: Date? = null
-        if (messageStanza.hasTimeElement()){
-            timestamp = StringUtils.parseReceivedReceiptTimestampString(
-                    messageStanza.getExtension<TimeElement>(TimeElement.ELEMENT, TimeElement.NAMESPACE).timeStamp)
-        }
 
         val id = UUID.randomUUID().toString()
 
@@ -193,22 +215,22 @@ object MessageHandler {
         val originId = UniqueIdsHelper.getOriginId(messageStanza)
 
         val messageRealmObject = if (originId != null) {
-            MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
-        } else MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, stanzaId)
+            MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
+        } else MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
 
         messageRealmObject.apply {
             this.text = body ?: ""
-            this.isRead = !isIncoming || !isGroupSystem
+            this.isRead = !isIncoming || isGroupSystem || delayInformation != null
             this.isEncrypted = encrypted
             this.isOffline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
-            this.timestamp = timestamp?.time ?: Date().time
+            this.timestamp = timestamp
             this.isIncoming = isIncoming
             this.stanzaId = stanzaId
             this.originId = originId
             this.originalStanza = messageStanza.toXML().toString()
             this.originalFrom = messageStanza.from.toString()
             this.isForwarded = false
-            this.isGroupchatSystem = isGroupchatSystem
+            this.isGroupchatSystem = isGroupSystem
             this.resource = resource ?: Resourcepart.EMPTY
             this.messageStatus = if (isIncoming) MessageStatus.NONE else MessageStatus.DISPLAYED
             this.markupText = markupBody
@@ -220,11 +242,6 @@ object MessageHandler {
 
         saverBuffer.onNext(messageRealmObject ?: return null)
 
-        Application.getInstance().runOnUiThread {
-            Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
-                    .map{ listener -> listener.onNewIncomingMessage(accountJid, contactJid) }
-        }
-
         // remove notifications if get outgoing message with 2 sec delay
         if (!isIncoming) MessageNotificationManager.getInstance().removeChatWithTimer(chat.account, chat.contactJid)
 
@@ -235,7 +252,7 @@ object MessageHandler {
         chat.lastMessageId = messageRealmObject.stanzaId
 
         // notification
-        var isNotify = false
+        var isNotify = isIncoming && !isGroupSystem
         chat.enableNotificationsIfNeed()
         if (isNotify && chat.notifyAboutMessage() && !ChatManager.getInstance().isVisibleChat(chat) && !isGroupSystem) {
             NotificationManager.getInstance().onMessageNotification(messageRealmObject)
@@ -247,8 +264,6 @@ object MessageHandler {
             isNotify = false
         }
         if (isNotify || !isIncoming) chat.openChat()
-
-        notifySamUiListeners(OnNewMessageListener::class.java)
 
         return messageRealmObject
     }
@@ -281,7 +296,6 @@ object MessageHandler {
         if (message.type == Message.Type.error) return null
 
         var text: String? = message.body ?: return null
-        val uid = UUID.randomUUID().toString()
 
         // groupchat
         var groupchatUserId: String? = null
@@ -300,7 +314,7 @@ object MessageHandler {
         text = bodies.first
 
         val originId = UniqueIdsHelper.getOriginId(message)
-        val stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString())
+        val stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()) ?: UUID.randomUUID().toString()
 
         val messageRealmObject =  if (originId != null) {
             MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
@@ -326,13 +340,12 @@ object MessageHandler {
             this.markupText = bodies.second
             this.delayTimestamp = DelayInformation.from(message)?.stamp?.time
             this.attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message) ?: null
-            this.forwardedIds = parseForwardedMessage(message, uid, chat)
             this.groupchatUserId = groupchatUserId
         }
 
         if (messageRealmObject != null) saverBuffer.onNext(messageRealmObject)
 
-        return uid
+        return messageRealmObject.primaryKey
     }
 
 }

@@ -185,7 +185,6 @@ public class MessageRealmObject extends RealmObject {
     public static MessageRealmObject createMessageRealmObjectWithStanzaId(AccountJid accountJid,
                                                                           ContactJid contactJid,
                                                                           String stanzaId){
-        LogManager.exception("thisMESSAGE", new Exception());
         MessageRealmObject messageRealmObject =
                 new MessageRealmObject(createPrimaryKey(accountJid, contactJid, stanzaId));
 
@@ -199,7 +198,6 @@ public class MessageRealmObject extends RealmObject {
     public static MessageRealmObject createMessageRealmObjectWithOriginId(AccountJid accountJid,
                                                                          ContactJid contactJid,
                                                                          String originId){
-        LogManager.exception("thisMESSAGE", new Exception());
         MessageRealmObject messageRealmObject =
                 new MessageRealmObject(createPrimaryKey(accountJid, contactJid, originId));
 
@@ -367,7 +365,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setGroupchatSystem(boolean groupchatSystem) {
         isGroupchatSystem = groupchatSystem;
-        setRead(true);
+        if (groupchatSystem) setRead(true);
     }
 
     public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
