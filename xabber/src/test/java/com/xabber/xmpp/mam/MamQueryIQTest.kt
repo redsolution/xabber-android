@@ -30,7 +30,7 @@ class MamQueryIQTest : TestCase() {
     }
 
     fun test_createMamRequestIqLastMessageInChat_toXml(){
-        val reference_regularChat = "<iq id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>regular@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><max>1</max></set></query></iq>"
+        val reference_regularChat = "<iq id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>regular@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><before></before><max>1</max></set></query></iq>"
         val regularChat = Mockito.mock(RegularChat::class.java)
         `when`(regularChat.contactJid).thenReturn(ContactJid.from("regular@server.domain"))
         val mamIq_regularChat = MamQueryIQ.createMamRequestIqLastMessageInChat(regularChat)
@@ -39,7 +39,7 @@ class MamQueryIQTest : TestCase() {
                 reference_regularChat,
                 mamIq_regularChat.toXML().toString())
 
-        val reference_groupChat = "<iq to='group@server.domain' id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>group@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><max>1</max></set></query></iq>"
+        val reference_groupChat = "<iq to='group@server.domain' id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><set xmlns='http://jabber.org/protocol/rsm'><before></before><max>1</max></set></query></iq>"
         val groupChat = Mockito.mock(GroupChat::class.java)
         `when`(groupChat.contactJid).thenReturn(ContactJid.from("group@server.domain"))
         val mamIq_groupChat = MamQueryIQ.createMamRequestIqLastMessageInChat(groupChat)
@@ -69,20 +69,20 @@ class MamQueryIQTest : TestCase() {
                 mamIq_groupChat.toXML().toString(),)
     }
 
-    fun test_createMamRequestIqLastMessagesInChat_toXml(){
-        val reference_regularChat = "<iq id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>regular@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><max>30</max></set></query></iq>"
+    fun test_createMamRequestIqMessagesAfterInChat(){
+        val reference_regularChat = "<iq id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>regular@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><before>messageStanzaId</before><max>50</max></set></query></iq>"
         val regularChat = Mockito.mock(RegularChat::class.java)
         `when`(regularChat.contactJid).thenReturn(ContactJid.from("regular@server.domain"))
-        val mamIq_regularChat = MamQueryIQ.createMamRequestIqLastMessagesInChat(regularChat, 30)
+        val mamIq_regularChat = MamQueryIQ.createMamRequestIqMessagesAfterInChat(regularChat, "messageStanzaId")
         mamIq_regularChat.stanzaId = "iqId"
         assertEquals("Error creating with regular chat!",
                 reference_regularChat,
                 mamIq_regularChat.toXML().toString())
 
-        val reference_groupChat = "<iq to='group@server.domain' id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><x xmlns='jabber:x:data' type='submit'><field var='FORM_TYPE' type='hidden'><value>urn:xmpp:mam:2</value></field><field var='with'><value>group@server.domain</value></field></x><set xmlns='http://jabber.org/protocol/rsm'><max>20</max></set></query></iq>"
+        val reference_groupChat = "<iq to='group@server.domain' id='iqId' type='set'><query xmlns='urn:xmpp:mam:2'><set xmlns='http://jabber.org/protocol/rsm'><before>messageStanzaId</before><max>50</max></set></query></iq>"
         val groupChat = Mockito.mock(GroupChat::class.java)
         `when`(groupChat.contactJid).thenReturn(ContactJid.from("group@server.domain"))
-        val mamIq_groupChat = MamQueryIQ.createMamRequestIqLastMessagesInChat(groupChat, 20)
+        val mamIq_groupChat = MamQueryIQ.createMamRequestIqMessagesAfterInChat(groupChat, "messageStanzaId")
         mamIq_groupChat.stanzaId = "iqId"
         assertEquals("Error creating MAM IQ query to group chat!",
                 reference_groupChat,

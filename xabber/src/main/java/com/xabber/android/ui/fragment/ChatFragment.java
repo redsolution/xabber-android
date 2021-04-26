@@ -112,6 +112,7 @@ import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.OnAuthAskListener;
 import com.xabber.android.ui.OnGroupPresenceUpdatedListener;
+import com.xabber.android.ui.OnLastHistoryLoadErrorListener;
 import com.xabber.android.ui.OnLastHistoryLoadFinishedListener;
 import com.xabber.android.ui.OnLastHistoryLoadStartedListener;
 import com.xabber.android.ui.OnMessageUpdatedListener;
@@ -171,7 +172,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
         IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
         OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
-        OnLastHistoryLoadFinishedListener, OnAuthAskListener {
+        OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -659,6 +660,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         return view;
     }
 
+    @Override
+    public void onLastHistoryLoadingError(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid, @org.jetbrains.annotations.Nullable String errorText) {
+        String text = errorText != null ? errorText : getString(R.string.groupchat_error); //todo change to use specific string
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
     private void setupPinnedMessageView(){
         //todo privilege checking
         if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null){
@@ -869,7 +876,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onStart() {
         super.onStart();
-        MessageArchiveManager.INSTANCE.onChatOpen(getChat());
+        loadHistoryIfNeed();
     }
 
     @Override
@@ -1153,7 +1160,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             int invisibleMessagesCount = layoutManager.findFirstVisibleItemPosition();
             if (invisibleMessagesCount <= 15) {
                 AbstractChat chat = getChat();
-                if (chat != null) MessageArchiveManager.INSTANCE.onScrollInChat(chat);
+                if (chat != null) MessageArchiveManager.INSTANCE.loadNextMessagesPortionInChat(chat);
             }
         }
     }

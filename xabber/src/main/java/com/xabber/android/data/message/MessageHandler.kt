@@ -102,7 +102,6 @@ object MessageHandler {
             contactJid: ContactJid,
             messageStanza: Message,
             delayInformation: DelayInformation? = null,
-            isCarbons: Boolean = false,
     ): MessageRealmObject? {
 
         val timestamp =
@@ -254,7 +253,8 @@ object MessageHandler {
         // notification
         var isNotify = isIncoming && !isGroupSystem
         chat.enableNotificationsIfNeed()
-        if (isNotify && chat.notifyAboutMessage() && !ChatManager.getInstance().isVisibleChat(chat) && !isGroupSystem) {
+        if (isNotify && chat.notifyAboutMessage() && !ChatManager.getInstance().isVisibleChat(chat) && !isGroupSystem
+                && delayInformation == null) {
             NotificationManager.getInstance().onMessageNotification(messageRealmObject)
         }
 

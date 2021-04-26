@@ -65,12 +65,16 @@ interface OnNewIncomingMessageListener : BaseUIListener {
     fun onNewIncomingMessage(accountJid: AccountJid, contactJid: ContactJid)
 }
 
-interface OnLastHistoryLoadStartedListener: SamBaseUiListener {
+interface OnLastHistoryLoadStartedListener: BaseUIListener {
     fun onLastHistoryLoadStarted(accountJid: AccountJid, contactJid: ContactJid)
 }
 
 interface OnLastHistoryLoadFinishedListener : BaseUIListener {
     fun onLastHistoryLoadFinished(accountJid: AccountJid, contactJid: ContactJid)
+}
+
+interface OnLastHistoryLoadErrorListener : BaseUIListener {
+    fun onLastHistoryLoadingError(accountJid: AccountJid, contactJid: ContactJid, errorText: String? = null)
 }
 
 interface OnGroupPresenceUpdatedListener : BaseUIListener {

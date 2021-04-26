@@ -54,8 +54,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
         boolean supported = MessageArchiveManager.INSTANCE.isSupported(
-                Objects.requireNonNull(
-                        AccountManager.getInstance().getAccount(this.account)));
+                Objects.requireNonNull(AccountManager.getInstance().getAccount(this.account)));
 
         mamPreference.setEnabled(true);
         if (!supported) {

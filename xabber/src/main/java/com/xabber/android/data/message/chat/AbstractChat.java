@@ -115,7 +115,6 @@ public abstract class AbstractChat extends BaseEntity implements
     private RealmResults<MessageRealmObject> unreadMessages;
     private String lastMessageId = null;
     private boolean addContactSuggested = false;
-    private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
@@ -844,14 +843,6 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public void setLastMessageId(String lastMessageId) {
         this.lastMessageId = lastMessageId;
-    }
-
-    public boolean historyIsFull() {
-        return historyIsFull;
-    }
-
-    public void setHistoryIsFull() {
-        this.historyIsFull = true;
     }
 
     public boolean isHistoryRequestedAtStart() {
