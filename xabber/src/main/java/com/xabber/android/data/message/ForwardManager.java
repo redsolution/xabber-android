@@ -21,6 +21,7 @@ import org.jivesoftware.smackx.forward.packet.Forwarded;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,8 @@ public class ForwardManager {
         parentMessage.setOffline(false);
         parentMessage.setForwarded(false);
         parentMessage.setGroupchatSystem(false);
+        parentMessage.setTimestamp(new Date().getTime());
+        parentMessage.setMessageStatus(MessageStatus.NOT_SENT);
 
         if (markupText != null) parentMessage.setMarkupText(markupText);
 
