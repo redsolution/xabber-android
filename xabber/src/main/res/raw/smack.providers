@@ -196,7 +196,7 @@
     <extensionProvider>
         <elementName>archived</elementName>
         <namespace>urn:xmpp:mam:tmp</namespace>
-        <className>com.xabber.xmpp.archive.ArchivedIdProvider</className>
+        <className>com.xabber.xmpp.mam.ArchivedIdProvider</className>
     </extensionProvider>
 
 
