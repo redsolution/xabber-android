@@ -17,6 +17,7 @@ package com.xabber.android.ui
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.StatusMode
 import com.xabber.android.data.connection.ConnectionState
+import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.message.chat.GroupChat
@@ -62,7 +63,11 @@ interface OnChatUpdatedListener: SamBaseUiListener
 interface OnAddAccountClickListener: SamBaseUiListener
 
 interface OnNewIncomingMessageListener : BaseUIListener {
-    fun onNewIncomingMessage(accountJid: AccountJid, contactJid: ContactJid)
+    fun onNewIncomingMessage(accountJid: AccountJid,
+                             contactJid: ContactJid,
+                             message: MessageRealmObject? = null,
+                             needNotification: Boolean = false,
+    )
 }
 
 interface OnLastHistoryLoadStartedListener: BaseUIListener {

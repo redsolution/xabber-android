@@ -1205,10 +1205,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public void onNewIncomingMessage(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid) {
+    public void onNewIncomingMessage(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid,
+                                     MessageRealmObject message, boolean needNotification) {
         Application.getInstance().runOnUiThread(() -> {
             if (accountJid.equals(account) && contactJid.equals(user)) {
-                playMessageSound();
+                if (needNotification) playMessageSound();
                 NotificationManager.getInstance().removeMessageNotification(account, user);
             }
         });

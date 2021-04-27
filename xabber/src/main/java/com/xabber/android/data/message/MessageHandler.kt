@@ -71,12 +71,6 @@ object MessageHandler {
                             SyncManager.getInstance().onMessageSaved()
                             checkForAttachmentsAndDownload(messagesList)
                             notifySamUiListeners(OnNewMessageListener::class.java)
-                            messagesList.map { message ->
-                                Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
-                                        .forEachOnUi { listener ->
-                                            listener.onNewIncomingMessage(message.account, message.user)
-                                        }
-                            }
                         } catch (e: Exception) {
                             LogManager.exception(this, e)
                         } finally {
@@ -118,7 +112,6 @@ object MessageHandler {
         }
 
         //todo parse headlines maybe
-        //todo parse group invites
         
         if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)
                 || messageStanza.hasExtension(ChatState.active.toString(), ChatStateExtension.NAMESPACE)
@@ -254,11 +247,6 @@ object MessageHandler {
 
         // notification
         var isNotify = isIncoming && !isGroupSystem
-        chat.enableNotificationsIfNeed()
-        if (isNotify && chat.notifyAboutMessage() && !ChatManager.getInstance().isVisibleChat(chat) && !isGroupSystem
-                && delayInformation == null) {
-            NotificationManager.getInstance().onMessageNotification(messageRealmObject)
-        }
 
         if (body.trim().isEmpty()
                 && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
@@ -266,6 +254,23 @@ object MessageHandler {
             isNotify = false
         }
         if (isNotify || !isIncoming) chat.openChat()
+
+        chat.enableNotificationsIfNeed()
+
+        if (isNotify && chat.notifyAboutMessage() && !isGroupSystem && delayInformation == null) {
+            Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
+                    .forEachOnUi { listener ->
+                        listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, true)
+                    }
+            if (!ChatManager.getInstance().isVisibleChat(chat)) {
+                NotificationManager.getInstance().onMessageNotification(messageRealmObject)
+            }
+        } else {
+            Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
+                    .forEachOnUi { listener ->
+                        listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, false)
+                    }
+        }
 
         return messageRealmObject
     }
