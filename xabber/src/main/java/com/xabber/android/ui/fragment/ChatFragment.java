@@ -874,12 +874,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        loadHistoryIfNeed();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -912,6 +906,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Application.getInstance().addUIListener(OnLastHistoryLoadStartedListener.class, this);
         Application.getInstance().addUIListener(OnLastHistoryLoadFinishedListener.class, this);
         Application.getInstance().addUIListener(OnAuthAskListener.class, this);
+
+        loadHistoryIfNeed();
     }
 
     @Override
@@ -1157,8 +1153,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void loadHistoryIfNeed() {
         if (!historyIsLoading) {
-            int invisibleMessagesCount = layoutManager.findFirstVisibleItemPosition();
-            if (invisibleMessagesCount <= 15) {
+            int messagesCount = chatMessageAdapter.getItemCount();
+            int topVisible = layoutManager.findFirstVisibleItemPosition();
+            if (topVisible <= 15 && topVisible != -1 && messagesCount != 0 || topVisible == -1 && messagesCount <= 30) {
                 AbstractChat chat = getChat();
                 if (chat != null) MessageArchiveManager.INSTANCE.loadNextMessagesPortionInChat(chat);
             }
