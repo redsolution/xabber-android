@@ -22,6 +22,7 @@ import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.data.push.SyncManager
@@ -149,7 +150,8 @@ object MessageHandler {
             if (groupchatUser != null || isGroupSystem){
                 ChatManager.getInstance().createGroupChat(accountJid, contactJid)
             } else ChatManager.getInstance().createRegularChat(accountJid, contactJid)
-        } else if (groupchatUser != null || isGroupSystem){
+        } else if ((groupchatUser != null || isGroupSystem)
+                && ChatManager.getInstance().getChat(accountJid, contactJid) is RegularChat){
             ChatManager.getInstance().convertRegularToGroup(accountJid, contactJid)
         }
 

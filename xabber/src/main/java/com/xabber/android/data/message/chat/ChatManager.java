@@ -304,25 +304,19 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         LogManager.i(this, "removeChat " + chat.getContactJid());
         //MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
-        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onAction();
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnChatUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                listener.onAction();
+            }
+        });
+
         if (chat instanceof GroupChat){
             GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
         } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
     }
 
-    public void removeChat(AccountJid accountJid, ContactJid contactJid){
-        AbstractChat chat = getChat(accountJid, contactJid);
-        LogManager.i(this, "removeChat " + contactJid);
-        chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
-        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onAction();
-        }
-        if (chat instanceof GroupChat){
-            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
-        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
-    }
+    public void removeChat(AccountJid accountJid, ContactJid contactJid){ removeChat(getChat(accountJid, contactJid)); }
 
     /**
      * Force open chat (make it active).
