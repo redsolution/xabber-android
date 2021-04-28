@@ -41,13 +41,11 @@ import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 
 import org.jivesoftware.smack.packet.Message;
@@ -368,15 +366,6 @@ public class MessageManager implements OnPacketListener {
             }
             GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
             return;
-        }
-
-        if (stanza.hasExtension(GroupExtensionElement.NAMESPACE)
-                && ChatManager.getInstance().hasChat(account.toString(), contactJid.toString())){
-            AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contactJid);
-            if (abstractChat instanceof RegularChat){
-                ChatManager.getInstance().removeChat(abstractChat);
-                ChatManager.getInstance().createGroupChat(account, contactJid);
-            }
         }
 
         if (!processed && stanza instanceof Message) {

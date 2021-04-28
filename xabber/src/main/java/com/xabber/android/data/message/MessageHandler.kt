@@ -22,7 +22,6 @@ import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.data.push.SyncManager
@@ -139,16 +138,8 @@ object MessageHandler {
         val groupchatUser = ReferencesManager.getGroupchatUserFromReferences(messageStanza)
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
-        if (ChatManager.getInstance().getChat(accountJid, contactJid) == null){
-            if (groupchatUser != null || isGroupSystem){
-                ChatManager.getInstance().createGroupChat(accountJid, contactJid)
-            } else ChatManager.getInstance().createRegularChat(accountJid, contactJid)
-        } else if ((groupchatUser != null || isGroupSystem)
-                && ChatManager.getInstance().getChat(accountJid, contactJid) is RegularChat){
-            ChatManager.getInstance().convertRegularToGroup(accountJid, contactJid)
-        }
-
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
+                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
 
         val resource: Resourcepart? = messageStanza.from.resourceOrNull
 

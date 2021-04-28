@@ -17,7 +17,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.mam.MessageArchiveManager;
-import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -131,19 +130,18 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
             GroupPresenceExtensionElement presence = (GroupPresenceExtensionElement) packet.getExtension(GroupPresenceExtensionElement.NAMESPACE);
 
             AccountJid accountJid = AccountJid.from(packet.getTo().toString());
-            ContactJid contactJid = ContactJid.from(packet.getFrom());
+            ContactJid contactJid = ContactJid.from(packet.getFrom()).getBareUserJid();
 
-            if (ChatManager.getInstance().getChat(accountJid, contactJid) instanceof RegularChat) {
-                ChatManager.getInstance().removeChat(accountJid, contactJid);
-                ChatManager.getInstance().createGroupChat(accountJid, contactJid);
+            AbstractChat chat = ChatManager.getInstance().getChat(accountJid, contactJid);
+
+            if (chat == null) chat = ChatManager.getInstance().createGroupChat(accountJid, contactJid);
+
+            if (chat instanceof RegularChat) {
+                ChatManager.getInstance().removeChat(chat);
+                chat = ChatManager.getInstance().createGroupChat(accountJid, contactJid);
             }
 
-            GroupChat groupChat = (GroupChat) ChatManager.getInstance().getChat(accountJid, contactJid);
-
-            if (groupChat == null) {
-                LogManager.e(LOG_TAG, "Got the groupchat presence, but groupchat isn't exist yet");
-                return;
-            }
+            GroupChat groupChat = (GroupChat) chat;
 
             if (presence.getPinnedMessageId() != null
                     && !presence.getPinnedMessageId().isEmpty()

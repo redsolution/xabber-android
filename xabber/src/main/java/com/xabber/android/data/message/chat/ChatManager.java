@@ -251,10 +251,6 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
-        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onAction();
-        }
-        LogManager.d(ChatManager.class.getSimpleName(), "Created regular chat: " + user);
         return chat;
     }
 
@@ -262,24 +258,10 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      * Creates and adds new group chat to be managed.
      */
     public GroupChat createGroupChat(AccountJid account, ContactJid groupJid) {
-        if (hasChat(account, groupJid)){
-            if (getChat(account, groupJid) instanceof RegularChat){
-                removeChat(account, groupJid);
-            } else if (getChat(account, groupJid) instanceof GroupChat) return (GroupChat) getChat(account, groupJid);
-        }
         GroupChat chat = new GroupChat(account, groupJid);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
-        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
-            listener.onAction();
-        }
-        LogManager.d(ChatManager.class.getSimpleName(), "Created group chat: " + groupJid);
         return chat;
-    }
-
-    public void convertRegularToGroup(AccountJid accountJid, ContactJid contactJid){
-        removeChat(accountJid, contactJid);
-        createGroupChat(accountJid, contactJid);
     }
 
     /**
@@ -303,6 +285,11 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         chat.closeChat();
         LogManager.i(this, "removeChat " + chat.getContactJid());
         //MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
+
+        if (chat instanceof GroupChat){
+            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
+        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
+
         chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
         Application.getInstance().runOnUiThread(() -> {
             for (OnChatUpdatedListener listener :
@@ -311,9 +298,6 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
             }
         });
 
-        if (chat instanceof GroupChat){
-            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
-        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
     }
 
     public void removeChat(AccountJid accountJid, ContactJid contactJid){ removeChat(getChat(accountJid, contactJid)); }

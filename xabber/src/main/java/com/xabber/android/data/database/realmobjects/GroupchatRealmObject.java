@@ -247,7 +247,11 @@ public class GroupchatRealmObject extends RealmObject {
         this.status = status;
     }
 
-    public Resourcepart getResource() throws XmppStringprepException { return Resourcepart.from(resource); }
+    public Resourcepart getResource() throws XmppStringprepException {
+        if (resource != null) {
+            return Resourcepart.from(resource);
+        } else return null;
+    }
     public void setResource(Resourcepart resource) { this.resource = resource.toString(); }
 
     public void setNotificationState(NotificationState notificationState) {
