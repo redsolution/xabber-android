@@ -35,7 +35,6 @@ import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.sid.UniqueIdsHelper
-import com.xabber.xmpp.uuu.ChatState
 import com.xabber.xmpp.uuu.ChatStateExtension
 import io.realm.Realm
 import io.realm.RealmList
@@ -114,18 +113,12 @@ object MessageHandler {
             return null
         }
 
-        if (messageStanza.hasExtension(ChatState.active.toString(), ChatStateExtension.NAMESPACE)
-            && messageStanza.getOptimalTextBody() == null
-            || !messageStanza.hasExtension(ChatState.inactive.toString(), ChatStateExtension.NAMESPACE)
-            && messageStanza.getOptimalTextBody() == null
-        ) {
+        if (messageStanza.getOptimalTextBody() == null && messageStanza.hasExtension(ChatStateExtension.NAMESPACE)) {
             return null
         }
 
-        if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE)
-            && !messageStanza.hasExtension(
-                ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE
-            )
+        if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE) &&
+            !messageStanza.hasExtension(ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)
         ) {
             return null
         }
@@ -244,7 +237,7 @@ object MessageHandler {
         // notification
         var isNotify = isIncoming && !isGroupSystem
 
-        if (body.trim().isEmpty()
+        if (body?.trim()?.isEmpty() == true
             && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
             && (attachmentRealmObjects == null || attachmentRealmObjects.isEmpty())
         ) {
