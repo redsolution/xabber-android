@@ -84,8 +84,7 @@ import io.realm.Sort;
  *
  * @author alexander.ivanov
  */
-public abstract class AbstractChat extends BaseEntity implements
-        RealmChangeListener<RealmResults<MessageRealmObject>> {
+public abstract class AbstractChat extends BaseEntity implements RealmChangeListener<RealmResults<MessageRealmObject>> {
 
     private static final String LOG_TAG = AbstractChat.class.getSimpleName();
 
@@ -180,9 +179,9 @@ public abstract class AbstractChat extends BaseEntity implements
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
-        if (notificationState.getMode().equals(NotificationState.NotificationMode.byDefault))
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.byDefault)){
             return SettingsManager.eventsOnChat();
-        return notificationState.getMode().equals(NotificationState.NotificationMode.enabled);
+        } else return notificationState.getMode().equals(NotificationState.NotificationMode.enabled);
     }
 
     public void enableNotificationsIfNeed() {
@@ -204,8 +203,7 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris,
-                                        final String messageAttachmentType,
-                                        final List<String> forwards) {
+                                        final String messageAttachmentType, final List<String> forwards) {
 
         MessageRealmObject messageRealmObject = MessageRealmObject.createMessageRealmObjectWithOriginId(
                 account, contactJid, UUID.randomUUID().toString());
@@ -242,8 +240,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return messageRealmObject.getPrimaryKey();
     }
 
-    private RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files,
-                                                                  String messageAttachmentType) {
+    private RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files, String messageAttachmentType) {
         RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
         for (File file : files) {
             boolean isImage = FileManager.fileIsImage(file);
@@ -255,14 +252,12 @@ public abstract class AbstractChat extends BaseEntity implements
             attachmentRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
             if ("voice".equals(messageAttachmentType)) {
                 attachmentRealmObject.setIsVoice(true);
-                attachmentRealmObject.setDuration(HttpFileUploadManager
-                        .getVoiceLength(file.getPath()));
+                attachmentRealmObject.setDuration(HttpFileUploadManager.getVoiceLength(file.getPath()));
             } else attachmentRealmObject.setDuration((long) 0);
 
 
             if (isImage) {
-                HttpFileUploadManager.ImageSize imageSize =
-                        HttpFileUploadManager.getImageSizes(file.getPath());
+                HttpFileUploadManager.ImageSize imageSize = HttpFileUploadManager.getImageSizes(file.getPath());
                 attachmentRealmObject.setImageHeight(imageSize.getHeight());
                 attachmentRealmObject.setImageWidth(imageSize.getWidth());
             }
@@ -285,9 +280,7 @@ public abstract class AbstractChat extends BaseEntity implements
     }
 
     @Nullable
-    public synchronized MessageRealmObject getLastMessage() {
-        return lastMessage;
-    }
+    public synchronized MessageRealmObject getLastMessage() { return lastMessage; }
 
     protected void updateLastMessage() {
         lastMessage = messages.last(null);
@@ -318,9 +311,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
     public void setLastActionTimestamp() {
         MessageRealmObject lastMessage = getLastMessage();
-        if (lastMessage != null) {
-            lastActionTimestamp = lastMessage.getTimestamp();
-        }
+        if (lastMessage != null) lastActionTimestamp = lastMessage.getTimestamp();
     }
 
     private Message createMessagePacket(String body, String stanzaId) {
@@ -402,8 +393,8 @@ public abstract class AbstractChat extends BaseEntity implements
         return message;
     }
 
-    private Message createForwardMessageWithMarkupPacket(String stanzaId, String[] forwardIds,
-                                                         String text, String markupText) {
+    private Message createForwardMessageWithMarkupPacket(String stanzaId, String[] forwardIds, String text,
+                                                         String markupText) {
         Message message = new Message();
         message.setTo(getTo().asBareJid());
         message.setType(getType());
@@ -419,8 +410,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return message;
     }
 
-    private void createFileMessageReferences(Message message,
-                                             RealmList<AttachmentRealmObject> attachmentRealmObjects,
+    private void createFileMessageReferences(Message message, RealmList<AttachmentRealmObject> attachmentRealmObjects,
                                              StringBuilder builder) {
         for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
             StringBuilder rowBuilder = new StringBuilder();
@@ -431,18 +421,17 @@ public abstract class AbstractChat extends BaseEntity implements
             builder.append(rowBuilder);
             ReferenceElement reference;
             if (attachmentRealmObject.isVoice()) {
-                reference = ReferencesManager.createVoiceReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()));
+                reference = ReferencesManager.createVoiceReferences(
+                        attachmentRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
             } else {
-                reference = ReferencesManager.createMediaReferences(attachmentRealmObject,
-                        begin, getSizeOfEncodedChars(builder.toString()));
+                reference = ReferencesManager.createMediaReferences(
+                        attachmentRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
             }
             message.addExtension(reference);
         }
     }
 
-    private void createForwardMessageReferences(Message message, String[] forwardedIds,
-                                                StringBuilder builder) {
+    private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageRealmObject> items = realm
                 .where(MessageRealmObject.class)
@@ -454,8 +443,8 @@ public abstract class AbstractChat extends BaseEntity implements
                 String forward = ClipManager.createMessageTree(realm, item.getPrimaryKey()) + "\n";
                 int begin = getSizeOfEncodedChars(builder.toString());
                 builder.append(forward);
-                ReferenceElement reference = ReferencesManager.createForwardReference(item,
-                        begin, getSizeOfEncodedChars(builder.toString()));
+                ReferenceElement reference = ReferencesManager.createForwardReference(
+                        item, begin, getSizeOfEncodedChars(builder.toString()));
                 message.addExtension(reference);
             }
         }
@@ -465,8 +454,7 @@ public abstract class AbstractChat extends BaseEntity implements
     // TODO make a proper html-markup parsing(or implement Html.fromHtml() and
     //  check for unnecessary newlines for paragraph-type tags newlines)
     //  This method only works with quotes.
-    private void createMarkupReferences(Message message, String markupText,
-                                        StringBuilder originalBuilder) {
+    private void createMarkupReferences(Message message, String markupText, StringBuilder originalBuilder) {
         if (!markupText.contains("<blockquote>")) return;
 
         int begin = getSizeOfEncodedChars(originalBuilder.toString());
@@ -529,9 +517,7 @@ public abstract class AbstractChat extends BaseEntity implements
 
                     for (final MessageRealmObject messageRealmObject : messagesToSend) {
                         if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) continue;
-                        if (!sendMessage(messageRealmObject)) {
-                            break;
-                        }
+                        if (!sendMessage(messageRealmObject)) break;
                     }
                 });
             } catch (Exception e) {
@@ -554,41 +540,33 @@ public abstract class AbstractChat extends BaseEntity implements
         Date currentTime = new Date(System.currentTimeMillis());
         Date delayTimestamp = null;
 
-        if (timestamp != null) {
-            if (currentTime.getTime() - timestamp > 60000) {
-                delayTimestamp = currentTime;
-            }
-        }
+        if (timestamp != null && currentTime.getTime() - timestamp > 60000) delayTimestamp = currentTime;
 
         Message message = null;
 
         if (messageRealmObject.haveAttachments()) {
             if (messageRealmObject.haveForwardedMessages()) {
-                message = createFileAndForwardMessagePacket(messageRealmObject.getStanzaId(),
-                        messageRealmObject.getAttachmentRealmObjects(),
+                message = createFileAndForwardMessagePacket(
+                        messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(),
                         messageRealmObject.getForwardedIdsAsArray(), text);
             } else {
-                message = createFileMessagePacket(messageRealmObject.getStanzaId(),
-                        messageRealmObject.getAttachmentRealmObjects(), text);
+                message = createFileMessagePacket(
+                        messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(), text);
             }
         } else if (messageRealmObject.haveForwardedMessages()) {
-            if (messageRealmObject.getMarkupText() != null
-                    && !messageRealmObject.getMarkupText().isEmpty()) {
-                message = createForwardMessageWithMarkupPacket(messageRealmObject.getStanzaId(),
-                        messageRealmObject.getForwardedIdsAsArray(), text,
+            if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {
+                message = createForwardMessageWithMarkupPacket(
+                        messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text,
                         messageRealmObject.getMarkupText());
             } else {
-                message = createForwardMessagePacket(messageRealmObject.getStanzaId(),
-                        messageRealmObject.getForwardedIdsAsArray(), text);
+                message = createForwardMessagePacket(
+                        messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text);
             }
         } else if (text != null) {
-            if (messageRealmObject.getMarkupText() != null
-                    && !messageRealmObject.getMarkupText().isEmpty()) {
-                message = createMessageWithMarkupPacket(text, messageRealmObject.getMarkupText(),
-                        messageRealmObject.getStanzaId());
-            } else {
-                message = createMessagePacket(text, messageRealmObject.getStanzaId());
-            }
+            if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {
+                message = createMessageWithMarkupPacket(
+                        text, messageRealmObject.getMarkupText(), messageRealmObject.getStanzaId());
+            } else message = createMessagePacket(text, messageRealmObject.getStanzaId());
         }
 
         if (message != null) {
@@ -597,7 +575,7 @@ public abstract class AbstractChat extends BaseEntity implements
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             if (DeliveryManager.getInstance().isSupported(account))
-                if (!messageRealmObject.getMessageStatus().equals(MessageStatus.SENT)) { //todo check this
+                if (!messageRealmObject.getMessageStatus().equals(MessageStatus.SENT)) {
                     message.addExtension(new RetryReceiptRequestElement());
                 }
             if (delayTimestamp != null) message.addExtension(new DelayInformation(delayTimestamp));
@@ -639,9 +617,7 @@ public abstract class AbstractChat extends BaseEntity implements
         return true;
     }
 
-    public String getThreadId() {
-        return threadId;
-    }
+    public String getThreadId() { return threadId; }
 
     /**
      * Update thread id with new value.
@@ -656,20 +632,15 @@ public abstract class AbstractChat extends BaseEntity implements
     /**
      * Connection complete.f
      */
-    protected void onComplete() {
-    }
+    protected void onComplete() { }
 
     /**
      * Disconnection occurred.
      */
-    void onDisconnect() {
-        setLastMessageId(null);
-    }
+    void onDisconnect() { setLastMessageId(null); }
 
     @Override
-    public void onChange(@NotNull RealmResults<MessageRealmObject> messageRealmObjects) {
-        updateLastMessage();
-    }
+    public void onChange(@NotNull RealmResults<MessageRealmObject> messageRealmObjects) { updateLastMessage(); }
 
     /**
      * UNREAD MESSAGES
@@ -680,8 +651,7 @@ public abstract class AbstractChat extends BaseEntity implements
         RealmResults<MessageRealmObject> results = getAllUnreadMessages();
         if (results != null && !results.isEmpty()) {
             MessageRealmObject firstUnreadMessage = results.first();
-            if (firstUnreadMessage != null)
-                id = firstUnreadMessage.getPrimaryKey();
+            if (firstUnreadMessage != null) id = firstUnreadMessage.getPrimaryKey();
         }
         return id;
     }
@@ -698,8 +668,7 @@ public abstract class AbstractChat extends BaseEntity implements
         unreadMessages.addChangeListener(messageRealmObjects -> {
             for (Iterator<String> iterator = waitToMarkAsRead.iterator(); iterator.hasNext(); ) {
                 String id = iterator.next();
-                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id)
-                        .findFirst() == null) {
+                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id).findFirst() == null) {
                     iterator.remove();
                 }
             }
@@ -715,13 +684,13 @@ public abstract class AbstractChat extends BaseEntity implements
                 Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
             listener.onAction();
         }
-        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid,
-                trySendDisplay);
+        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, contactJid, trySendDisplay);
     }
 
     private void executeRead(MessageRealmObject messageRealmObject, boolean trySendDisplay) {
         BackpressureMessageReader.getInstance().markAsRead(messageRealmObject, trySendDisplay);
-        for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+        for (OnMessageUpdatedListener listener :
+                Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
             listener.onAction();
         }
     }
@@ -769,26 +738,18 @@ public abstract class AbstractChat extends BaseEntity implements
         return unreadMessages;
     }
 
-    public boolean isArchived() {
-        return archived;
-    }
+    public boolean isArchived() { return archived; }
 
     public void setArchived(boolean archived) {
         this.archived = archived;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
-    public void setArchivedWithoutRealm(boolean archived) {
-        this.archived = archived;
-    }
+    public void setArchivedWithoutRealm(boolean archived) { this.archived = archived; }
 
-    public boolean isAddContactSuggested() {
-        return addContactSuggested;
-    }
+    public boolean isAddContactSuggested() { return addContactSuggested; }
 
-    public void setAddContactSuggested(boolean suggested) {
-        addContactSuggested = suggested;
-    }
+    public void setAddContactSuggested(boolean suggested) { addContactSuggested = suggested; }
 
     public NotificationState getNotificationState() {
         enableNotificationsIfNeed();
@@ -811,43 +772,29 @@ public abstract class AbstractChat extends BaseEntity implements
                 && notificationState.getMode() != NotificationState.NotificationMode.disabled)
             throw new IllegalStateException("In this method mode must be enabled or disabled.");
 
-        if (!eventsOnChatGlobal()
+        if (!SettingsManager.eventsOnChat()
                 && notificationState.getMode() == NotificationState.NotificationMode.disabled
-                || eventsOnChatGlobal()
+                || SettingsManager.eventsOnChat()
                 && notificationState.getMode() == NotificationState.NotificationMode.enabled)
             notificationState.setMode(NotificationState.NotificationMode.byDefault);
 
         setNotificationState(notificationState, needSaveToRealm);
     }
 
-    private boolean eventsOnChatGlobal() {
-        return SettingsManager.eventsOnChat();
-    }
+    public int getLastPosition() { return lastPosition; }
 
-    public int getLastPosition() {
-        return lastPosition;
-    }
-
-    public void setLastPosition(int lastPosition) {
-        this.lastPosition = lastPosition;
-    }
+    public void setLastPosition(int lastPosition) { this.lastPosition = lastPosition; }
 
     public void saveLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
-    public String getLastMessageId() {
-        return lastMessageId;
-    }
+    public String getLastMessageId() { return lastMessageId; }
 
-    public void setLastMessageId(String lastMessageId) {
-        this.lastMessageId = lastMessageId;
-    }
+    public void setLastMessageId(String lastMessageId) { this.lastMessageId = lastMessageId; }
 
-    public boolean isHistoryRequestedAtStart() {
-        return historyRequestedAtStart;
-    }
+    public boolean isHistoryRequestedAtStart() { return historyRequestedAtStart; }
 
     public void setHistoryRequestedAtStart() {
         this.historyRequestedAtStart = true;
