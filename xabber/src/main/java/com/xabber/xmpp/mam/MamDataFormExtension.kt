@@ -16,7 +16,7 @@ class MamDataFormExtension(private val with: Jid? = null,
                            private val end: Date? = null,
                            private val afterId: String? = null,
                            private val beforeId: String? = null,
-                           private val ids: List<String>? = null,
+                           private val id: String? = null,
 ): DataForm(Type.submit) {
 
     init {
@@ -32,7 +32,7 @@ class MamDataFormExtension(private val with: Jid? = null,
         if (end != null) addField(FormField(END_FIELD).apply { addValue(XmppDateTime.formatXEP0082Date(end)) })
         if (afterId != null) addField(FormField(AFTER_FIELD).apply { addValue(afterId) })
         if (beforeId != null) addField(FormField(BEFORE_FIELD).apply { addValue(beforeId) })
-        if (!ids.isNullOrEmpty()) addField(FormField(IDS_FIELD).apply { addValues(ids) })
+        if (!id.isNullOrEmpty()) addField(FormField(IDS_FIELD).apply { addValue(id) })
     }
 
     companion object{
@@ -41,7 +41,7 @@ class MamDataFormExtension(private val with: Jid? = null,
         private const val END_FIELD = "end"
         private const val BEFORE_FIELD = "before-id"
         private const val AFTER_FIELD = "after-id"
-        private const val IDS_FIELD = "ids"
+        private const val IDS_FIELD = "{urn:xmpp:sid:0}stanza-id"
     }
 
 }
