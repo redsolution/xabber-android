@@ -58,71 +58,75 @@ object MessageHandler {
 
     init {
         saverBuffer
-                .buffer(250, TimeUnit.MILLISECONDS)
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .subscribe { messagesList ->
-                    if (!messagesList.isNullOrEmpty()){
-                        var realm: Realm? = null
-                        try {
-                            realm = DatabaseManager.getInstance().defaultRealmInstance
-                            realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
-                            SyncManager.getInstance().onMessageSaved()
-                            checkForAttachmentsAndDownload(messagesList)
-                            notifySamUiListeners(OnNewMessageListener::class.java)
-                        } catch (e: Exception) {
-                            LogManager.exception(this, e)
-                        } finally {
-                            if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close()
-                        }
+            .buffer(250, TimeUnit.MILLISECONDS)
+            .onBackpressureBuffer()
+            .observeOn(Schedulers.io())
+            .subscribe { messagesList ->
+                if (!messagesList.isNullOrEmpty()) {
+                    var realm: Realm? = null
+                    try {
+                        realm = DatabaseManager.getInstance().defaultRealmInstance
+                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
+                        SyncManager.getInstance().onMessageSaved()
+                        checkForAttachmentsAndDownload(messagesList)
+                        notifySamUiListeners(OnNewMessageListener::class.java)
+                    } catch (e: Exception) {
+                        LogManager.exception(this, e)
+                    } finally {
+                        if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close()
                     }
                 }
+            }
     }
 
     private fun checkForAttachmentsAndDownload(messageRealmObjects: List<MessageRealmObject>) {
         if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
             messageRealmObjects
-                    .flatMap { message ->
-                        message.attachmentRealmObjects.map { attach -> Pair(attach, message.account) } }
-                    .filter { pair: Pair<AttachmentRealmObject, AccountJid> ->
-                        pair.first.isVoice && pair.first.filePath == null }
-                    .map { pair: Pair<AttachmentRealmObject, AccountJid> ->
-                        DownloadManager.getInstance().downloadFile(pair.first, pair.second, Application.getInstance()) }
+                .flatMap { message ->
+                    message.attachmentRealmObjects.map { attach -> Pair(attach, message.account) }
+                }
+                .filter { pair: Pair<AttachmentRealmObject, AccountJid> ->
+                    pair.first.isVoice && pair.first.filePath == null
+                }
+                .map { pair: Pair<AttachmentRealmObject, AccountJid> ->
+                    DownloadManager.getInstance().downloadFile(pair.first, pair.second, Application.getInstance())
+                }
         }
     }
 
     fun parseMessage(
-            accountJid: AccountJid,
-            contactJid: ContactJid,
-            messageStanza: Message,
-            delayInformation: DelayInformation? = null,
+        accountJid: AccountJid,
+        contactJid: ContactJid,
+        messageStanza: Message,
+        delayInformation: DelayInformation? = null,
     ): MessageRealmObject? {
 
         val timestamp =
-                if (messageStanza.hasTimeElement()){
-                    StringUtils.parseReceivedReceiptTimestampString(messageStanza.getTimeElement().timeStamp).time
-                } else Date().time
+            if (messageStanza.hasTimeElement()) {
+                StringUtils.parseReceivedReceiptTimestampString(messageStanza.getTimeElement().timeStamp).time
+            } else Date().time
 
-        if (messageStanza.hasIncomingInviteExtension()){
+        if (messageStanza.hasIncomingInviteExtension()) {
             GroupInviteManager.processIncomingInvite(
-                    messageStanza.getIncomingInviteExtension()!!, accountJid, contactJid, timestamp)
+                messageStanza.getIncomingInviteExtension()!!, accountJid, contactJid, timestamp
+            )
 
             return null
         }
 
-        //todo parse headlines maybe
-        
-        if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)
-                || messageStanza.hasExtension(ChatState.active.toString(), ChatStateExtension.NAMESPACE)
-                    && messageStanza.getOptimalTextBody() == null
-                || !messageStanza.hasExtension(ChatState.inactive.toString(), ChatStateExtension.NAMESPACE)
-                    && messageStanza.getOptimalTextBody() == null) {
-                    return null
+        if (messageStanza.hasExtension(ChatState.active.toString(), ChatStateExtension.NAMESPACE)
+            && messageStanza.getOptimalTextBody() == null
+            || !messageStanza.hasExtension(ChatState.inactive.toString(), ChatStateExtension.NAMESPACE)
+            && messageStanza.getOptimalTextBody() == null
+        ) {
+            return null
         }
 
         if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE)
-                && !messageStanza.hasExtension(
-                        ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)){
+            && !messageStanza.hasExtension(
+                ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE
+            )
+        ) {
             return null
         }
 
@@ -131,7 +135,8 @@ object MessageHandler {
         if (delayInformation != null && "Offline Storage" == delayInformation.reason) return null
 
         if (messageStanza.type == Message.Type.headline
-                && XMPPAuthManager.getInstance().isXabberServiceMessage(messageStanza.stanzaId)) {
+            && XMPPAuthManager.getInstance().isXabberServiceMessage(messageStanza.stanzaId)
+        ) {
             return null
         }
 
@@ -139,7 +144,7 @@ object MessageHandler {
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
-                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
+            ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
 
         val resource: Resourcepart? = messageStanza.from.resourceOrNull
 
@@ -181,9 +186,9 @@ object MessageHandler {
         val isIncoming = messageStanza.from.asBareJid().equals(contactJid.jid.asBareJid())
 
         val stanzaId =
-                if (groupchatUser != null || isGroupSystem) {
-                    UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
-                } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
+            if (groupchatUser != null || isGroupSystem) {
+                UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
+            } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
 
         val accountStartHistoryTimestamp = AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp
 
@@ -240,8 +245,9 @@ object MessageHandler {
         var isNotify = isIncoming && !isGroupSystem
 
         if (body.trim().isEmpty()
-                && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
-                && (attachmentRealmObjects == null || attachmentRealmObjects.isEmpty())) {
+            && (forwardIdRealmObjects == null || forwardIdRealmObjects.isEmpty())
+            && (attachmentRealmObjects == null || attachmentRealmObjects.isEmpty())
+        ) {
             isNotify = false
         }
         if (isNotify || !isIncoming) chat.openChat()
@@ -250,25 +256,26 @@ object MessageHandler {
 
         if (isNotify && chat.notifyAboutMessage() && !isGroupSystem && delayInformation == null) {
             Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
-                    .forEachOnUi { listener ->
-                        listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, true)
-                    }
+                .forEachOnUi { listener ->
+                    listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, true)
+                }
             if (!ChatManager.getInstance().isVisibleChat(chat)) {
                 NotificationManager.getInstance().onMessageNotification(messageRealmObject)
             }
         } else {
             Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
-                    .forEachOnUi { listener ->
-                        listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, false)
-                    }
+                .forEachOnUi { listener ->
+                    listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, false)
+                }
         }
 
         return messageRealmObject
     }
 
-    private fun parseForwardedMessage(packet: Stanza,
-                                      parentMessageId: String,
-                                      chat: AbstractChat,
+    private fun parseForwardedMessage(
+        packet: Stanza,
+        parentMessageId: String,
+        chat: AbstractChat,
     ): RealmList<ForwardIdRealmObject>? {
         var forwarded = ReferencesManager.getForwardedFromReferences(packet)
         if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet)
@@ -285,10 +292,11 @@ object MessageHandler {
         return forwardedIds
     }
 
-    private fun parseInnerMessage(message: Message,
-                                  timestamp: Date?,
-                                  parentMessageId: String?,
-                                  chat: AbstractChat,
+    private fun parseInnerMessage(
+        message: Message,
+        timestamp: Date?,
+        parentMessageId: String?,
+        chat: AbstractChat,
     ): String? {
 
         if (message.type == Message.Type.error) return null
@@ -312,9 +320,10 @@ object MessageHandler {
         text = bodies.first
 
         val originId = UniqueIdsHelper.getOriginId(message)
-        val stanzaId = UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()) ?: UUID.randomUUID().toString()
+        val stanzaId =
+            UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()) ?: UUID.randomUUID().toString()
 
-        val messageRealmObject =  if (originId != null) {
+        val messageRealmObject = if (originId != null) {
             MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
         } else MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, stanzaId)
 
