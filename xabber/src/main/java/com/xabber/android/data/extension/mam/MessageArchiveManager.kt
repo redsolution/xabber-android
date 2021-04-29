@@ -29,29 +29,34 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
 import org.jivesoftware.smackx.mam.element.MamElements
+import java.util.*
 
-object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
+object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
 
     override fun onRosterReceived(accountItem: AccountItem) {
         RosterManager.getInstance().getAccountRosterContacts(accountItem.account).forEach { rosterContact ->
-            loadLastMessageInChat(ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
-                    ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid))
+            val chat = ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
+                ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid)
+
+            if (chat.lastMessage != null) {
+                loadAllMissedMessagesSinceLastDisconnect(chat)
+            } else loadLastMessageInChat(chat)
         }
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
         val accountJid = connection.account
-        if (packet is Message && packet.hasExtension(MamResultExtensionElement.ELEMENT, NAMESPACE)){
+        if (packet is Message && packet.hasExtension(MamResultExtensionElement.ELEMENT, NAMESPACE)) {
             packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { mamResultElement ->
                 val forwardedElement = mamResultElement.forwarded.forwardedStanza
                 val contactJid =
-                        if (forwardedElement.from.asBareJid() ==accountJid.fullJid.asBareJid()) {
-                            ContactJid.from(forwardedElement.to.asBareJid().toString())
-                        } else ContactJid.from(forwardedElement.from.asBareJid().toString())
+                    if (forwardedElement.from.asBareJid() == accountJid.fullJid.asBareJid()) {
+                        ContactJid.from(forwardedElement.to.asBareJid().toString())
+                    } else ContactJid.from(forwardedElement.from.asBareJid().toString())
                 val delayInformation = mamResultElement.forwarded.delayInformation
-                if (forwardedElement != null && forwardedElement is Message){
+                if (forwardedElement != null && forwardedElement is Message) {
                     MessageHandler.parseMessage(accountJid, contactJid, forwardedElement, delayInformation)
                 }
             }
@@ -60,70 +65,124 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
 
     fun isSupported(accountItem: AccountItem) = try {
         ServiceDiscoveryManager.getInstanceFor(accountItem.connection)
-                .supportsFeature(accountItem.connection.user.asBareJid(), MamElements.NAMESPACE)
+            .supportsFeature(accountItem.connection.user.asBareJid(), MamElements.NAMESPACE)
     } catch (e: Exception) {
         LogManager.exception(this::class.java.simpleName, e)
         false
     }
 
-    fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String){
+    fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String) {
         Application.getInstance().runInBackgroundNetwork {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
-                    MamQueryIQ.createMamRequestIqMessageWithStanzaId(chat, stanzaId),
-                    { packet -> if (packet is IQ && packet.type == IQ.Type.result) {
-                        LogManager.i(MessageArchiveManager.javaClass,
-                                "Message with stanza id $stanzaId successfully fetched")
-                    } },
-                    { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
+                MamQueryIQ.createMamRequestIqMessageWithStanzaId(chat, stanzaId),
+                { packet ->
+                    if (packet is IQ && packet.type == IQ.Type.result) {
+                        LogManager.i(
+                            MessageArchiveManager.javaClass,
+                            "Message with stanza id $stanzaId successfully fetched"
+                        )
+                    }
+                },
+                { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
             )
         }
     }
 
-    fun loadLastMessageInChat(chat: AbstractChat){
+    fun loadLastMessageInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetwork {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
-                    MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
-                    { },
-                    { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
+                MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
+                { },
+                { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
             )
         }
     }
 
-    fun loadAllMessagesInChat(chat: AbstractChat){
+    fun loadAllMessagesInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetwork {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
-                    MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
-                    { packet ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            LogManager.i(MessageArchiveManager.javaClass,
-                                "All messages with in chat ${chat.account} and ${chat.contactJid} successfully fetched")
-                    } },
-                    { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
+                MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
+                { packet ->
+                    if (packet is IQ && packet.type == IQ.Type.result) {
+                        LogManager.i(
+                            MessageArchiveManager.javaClass,
+                            "All messages with in chat ${chat.account} and ${chat.contactJid} successfully fetched"
+                        )
+                    }
+                },
+                { exception -> LogManager.exception(MessageArchiveManager.javaClass, exception) }
             )
         }
     }
 
-    fun onChatOpen(chat: AbstractChat){
-        //todo this
-        LogManager.i(this, "Not implemented")
+    fun loadAllMissedMessagesSinceLastDisconnect(chat: AbstractChat) {
+
+        Application.getInstance().runInBackgroundNetwork {
+
+            val accountJid = chat.account
+            val contactJid = chat.contactJid
+
+            val timestamp = getLastChatMessageInRealmTimestamp(chat)
+
+            LogManager.d(this, "Start loading lost messages in chat with $contactJid")
+
+            Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
+                .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
+
+            AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                MamQueryIQ.createMamRequestIqAllMessagesSince(
+                    chat,
+                    if (timestamp != null) Date(timestamp) else Date(),
+                ),
+                {
+                    Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
+                        .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
+                },
+                {
+                    Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)
+                        .forEachOnUi { it.onLastHistoryLoadingError(accountJid, contactJid) }
+                }
+            )
+        }
     }
 
-    private fun getFirstChatMessageMessageInRealmStanzaId(chat: AbstractChat,
-    ): String? {
+    private fun getFirstChatMessageInRealmStanzaId(chat: AbstractChat): String? {
         var result: String? = ""
         var realm: Realm? = null
         try {
             realm = DatabaseManager.getInstance().defaultRealmInstance
             result = realm.where(MessageRealmObject::class.java)
-                    .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
-                    .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
-                    .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
-                    .isNotNull(MessageRealmObject.Fields.STANZA_ID)
-                    .findAll()
-                    .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-                    .first()
-                    ?.stanzaId
-        } catch (e: Exception){
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
+                .first()
+                ?.stanzaId
+        } catch (e: Exception) {
+            LogManager.exception(MessageArchiveManager::class.java, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+        }
+        return result
+    }
+
+    private fun getLastChatMessageInRealmTimestamp(chat: AbstractChat): Long? {
+        var result: Long? = 0
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            result = realm.where(MessageRealmObject::class.java)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                .first()
+                ?.timestamp
+        } catch (e: Exception) {
             LogManager.exception(MessageArchiveManager::class.java, e)
         } finally {
             if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
@@ -132,41 +191,47 @@ object MessageArchiveManager: OnRosterReceivedListener, OnPacketListener {
     }
 
 
-    fun loadNextMessagesPortionInChat(chat: AbstractChat){
+    fun loadNextMessagesPortionInChat(chat: AbstractChat) {
         LogManager.d(MessageArchiveManager::class.java, "Invoked loadNextMessagesPortionInChat")
 
         Application.getInstance().runInBackgroundNetworkUserRequest {
 
             val accountItem = AccountManager.getInstance().getAccount(chat.account)
             if (accountItem == null
-                    || accountItem.loadHistorySettings == LoadHistorySettings.none
-                    || !isSupported(accountItem)) {
+                || accountItem.loadHistorySettings == LoadHistorySettings.none
+                || !isSupported(accountItem)
+            ) {
                 return@runInBackgroundNetworkUserRequest
             }
 
-            Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java).forEachOnUi {
-                listener -> listener.onLastHistoryLoadStarted(chat.account, chat.contactJid)
-            }
+            Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
+                .forEachOnUi { listener ->
+                    listener.onLastHistoryLoadStarted(chat.account, chat.contactJid)
+                }
 
             accountItem.connection.sendIqWithResponseCallback(
-                    MamQueryIQ.createMamRequestIqMessagesAfterInChat(
-                            chat, getFirstChatMessageMessageInRealmStanzaId(chat) ?: "" ),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
-                                    .forEachOnUi { listener -> listener.onLastHistoryLoadFinished(chat.account, chat.contactJid)
-                                    }
-                        } },
-                    { exception: Exception? ->
-                        Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)
-                                .forEachOnUi { listener ->
-                                    if (exception is XMPPException.XMPPErrorException) {
-                                        listener.onLastHistoryLoadingError(
-                                                chat.account, chat.contactJid, exception.xmppError.conditionText)
-                                    } else listener.onLastHistoryLoadingError(chat.account, chat.contactJid)
-                                }
-                    },
-                    60000
+                MamQueryIQ.createMamRequestIqMessagesAfterInChat(
+                    chat, getFirstChatMessageInRealmStanzaId(chat) ?: ""
+                ),
+                { packet: Stanza? ->
+                    if (packet is IQ && packet.type == IQ.Type.result) {
+                        Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
+                            .forEachOnUi { listener ->
+                                listener.onLastHistoryLoadFinished(chat.account, chat.contactJid)
+                            }
+                    }
+                },
+                { exception: Exception? ->
+                    Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)
+                        .forEachOnUi { listener ->
+                            if (exception is XMPPException.XMPPErrorException) {
+                                listener.onLastHistoryLoadingError(
+                                    chat.account, chat.contactJid, exception.xmppError.conditionText
+                                )
+                            } else listener.onLastHistoryLoadingError(chat.account, chat.contactJid)
+                        }
+                },
+                60000
             )
         }
     }

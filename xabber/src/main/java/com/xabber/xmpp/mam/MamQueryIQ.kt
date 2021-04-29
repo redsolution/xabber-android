@@ -9,18 +9,19 @@ import com.xabber.xmpp.mam.MamQueryIQ.Companion
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smackx.rsm.packet.RSMSet
 import org.jxmpp.jid.Jid
+import java.util.*
 
 /**
  * Query IQ to Message Archive
  * Must use [Companion] methods for creating instance of this IQ
  */
 class MamQueryIQ private constructor(
-        private val queryId: String? = null,
-        private val node: String? = null,
-        dataFormExtension: MamDataFormExtension? = null,
-        rsmSet: RSMSet? = null,
-        archiveAddress: Jid? = null,
-): IQ(ELEMENT, NAMESPACE) {
+    private val queryId: String? = null,
+    private val node: String? = null,
+    dataFormExtension: MamDataFormExtension? = null,
+    rsmSet: RSMSet? = null,
+    archiveAddress: Jid? = null,
+) : IQ(ELEMENT, NAMESPACE) {
 
     init {
         type = Type.set
@@ -43,42 +44,53 @@ class MamQueryIQ private constructor(
         private const val NODE_ATTRIBUTE = "node"
 
         fun createMamRequestIqAllMessagesInChat(
-                chat: AbstractChat,
+            chat: AbstractChat,
         ) = MamQueryIQ(
-                archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
-                dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
+            archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
+            dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
         )
 
         fun createMamRequestIqLastMessageInChat(
-                chat: AbstractChat,
+            chat: AbstractChat,
         ) = MamQueryIQ(
-                archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
-                dataFormExtension =
-                if (chat is RegularChat) {
-                    MamDataFormExtension(with = chat.contactJid.bareJid)
-                } else null,
-                rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
+            archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
+            dataFormExtension =
+            if (chat is RegularChat) {
+                MamDataFormExtension(with = chat.contactJid.bareJid)
+            } else null,
+            rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
         )
 
         fun createMamRequestIqMessageWithStanzaId(
-                chat: AbstractChat,
-                stanzaId: String,
+            chat: AbstractChat,
+            stanzaId: String,
         ) = MamQueryIQ(
-                archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
-                dataFormExtension = MamDataFormExtension(id = stanzaId),
+            archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
+            dataFormExtension = MamDataFormExtension(id = stanzaId),
         )
 
-        fun createMamRequestIqMessagesAfterInChat(chat: AbstractChat,
-                                                  messageStanzaId: String,
-                                                  max: Int = 50,
+        fun createMamRequestIqMessagesAfterInChat(
+            chat: AbstractChat,
+            messageStanzaId: String,
+            max: Int = 50,
         ) = MamQueryIQ(
-                archiveAddress = if(chat is GroupChat) chat.contactJid.bareJid else null,
-                dataFormExtension =
-                if (chat is RegularChat) {
-                    MamDataFormExtension(with = chat.contactJid.bareJid)
-                } else null,
-                rsmSet = RSMSet(null, messageStanzaId, -1, -1, null, max, null, -1),
+            archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
+            dataFormExtension =
+            if (chat is RegularChat) {
+                MamDataFormExtension(with = chat.contactJid.bareJid)
+            } else null,
+            rsmSet = RSMSet(null, messageStanzaId, -1, -1, null, max, null, -1),
         )
+
+        fun createMamRequestIqAllMessagesSince(
+            chat: AbstractChat,
+            timestamp: Date = Date(),
+        ) = if (chat is GroupChat) {
+            MamQueryIQ(
+                archiveAddress = chat.contactJid.bareJid,
+                dataFormExtension = MamDataFormExtension(start = timestamp)
+            )
+        } else MamQueryIQ(dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid, start = timestamp))
 
     }
 
