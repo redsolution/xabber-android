@@ -8,6 +8,7 @@ import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageHandler
@@ -37,6 +38,13 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     override fun onRosterReceived(accountItem: AccountItem) {
         RosterManager.getInstance().getAccountRosterContacts(accountItem.account).forEach { rosterContact ->
+
+            //If it first (cold) start, try to retrieve most last message to get account accountStartHistoryTimestamp
+            if (accountItem.startHistoryTimestamp == null || accountItem.startHistoryTimestamp == 0L) {
+                accountItem.startHistoryTimestamp = Date().time
+                AccountRepository.saveAccountToRealm(accountItem)
+            }
+
             val chat = ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
                 ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid)
 

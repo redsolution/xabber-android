@@ -78,21 +78,6 @@ object MessageHandler {
             }
     }
 
-    private fun checkForAttachmentsAndDownload(messageRealmObjects: List<MessageRealmObject>) {
-        if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
-            messageRealmObjects
-                .flatMap { message ->
-                    message.attachmentRealmObjects.map { attach -> Pair(attach, message.account) }
-                }
-                .filter { pair: Pair<AttachmentRealmObject, AccountJid> ->
-                    pair.first.isVoice && pair.first.filePath == null
-                }
-                .map { pair: Pair<AttachmentRealmObject, AccountJid> ->
-                    DownloadManager.getInstance().downloadFile(pair.first, pair.second, Application.getInstance())
-                }
-        }
-    }
-
     fun parseMessage(
         accountJid: AccountJid,
         contactJid: ContactJid,
@@ -203,7 +188,8 @@ object MessageHandler {
 
         messageRealmObject.apply {
             this.text = body ?: ""
-            this.isRead = !isIncoming || isGroupSystem || delayInformation != null
+            this.isRead = !isIncoming || isGroupSystem
+                    || delayInformation != null && (timestamp <= accountStartHistoryTimestamp ?: 0)
             this.isEncrypted = encrypted
             this.isOffline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
@@ -263,6 +249,21 @@ object MessageHandler {
         }
 
         return messageRealmObject
+    }
+
+    private fun checkForAttachmentsAndDownload(messageRealmObjects: List<MessageRealmObject>) {
+        if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
+            messageRealmObjects
+                .flatMap { message ->
+                    message.attachmentRealmObjects.map { attach -> Pair(attach, message.account) }
+                }
+                .filter { pair: Pair<AttachmentRealmObject, AccountJid> ->
+                    pair.first.isVoice && pair.first.filePath == null
+                }
+                .map { pair: Pair<AttachmentRealmObject, AccountJid> ->
+                    DownloadManager.getInstance().downloadFile(pair.first, pair.second, Application.getInstance())
+                }
+        }
     }
 
     private fun parseForwardedMessage(
