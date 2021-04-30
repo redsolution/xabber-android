@@ -9,11 +9,13 @@ import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.OnLastHistoryLoadErrorListener
@@ -36,20 +38,27 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
 
+    var isArchiveFetching: Boolean = false
+        private set(value) {
+            field = value
+            Application.getInstance().getManagers(OnMessageArchiveFetchingListener::class.java)
+                .map(OnMessageArchiveFetchingListener::onMessageArchiveFetching)
+        }
+
     override fun onRosterReceived(accountItem: AccountItem) {
+
+        //If it first (cold) start, try to retrieve most last message to get account accountStartHistoryTimestamp
+        if (accountItem.startHistoryTimestamp == null || accountItem.startHistoryTimestamp == 0L) {
+            accountItem.startHistoryTimestamp = Date().time
+            AccountRepository.saveAccountToRealm(accountItem)
+        } else loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
+
         RosterManager.getInstance().getAccountRosterContacts(accountItem.account).forEach { rosterContact ->
-
-            //If it first (cold) start, try to retrieve most last message to get account accountStartHistoryTimestamp
-            if (accountItem.startHistoryTimestamp == null || accountItem.startHistoryTimestamp == 0L) {
-                accountItem.startHistoryTimestamp = Date().time
-                AccountRepository.saveAccountToRealm(accountItem)
-            }
-
             val chat = ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
                 ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid)
 
             if (chat.lastMessage != null) {
-                loadAllMissedMessagesSinceLastDisconnect(chat)
+                if (chat is GroupChat) loadAllMissedMessagesSinceLastDisconnectForCurrentChat(chat)
             } else loadLastMessageInChat(chat)
         }
     }
@@ -123,7 +132,34 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         }
     }
 
-    fun loadAllMissedMessagesSinceLastDisconnect(chat: AbstractChat) {
+    fun loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem: AccountItem) {
+        Application.getInstance().runInBackgroundNetwork {
+            val timestamp = getLastAccountMessageInRealmTimestamp(accountItem.account)
+
+            LogManager.d(this, "Start loading whole missed messages for account ${accountItem.account}")
+
+            isArchiveFetching = true
+
+            Application.getInstance().getManagers(OnMessageArchiveFetchingListener::class.java)
+                .map(OnMessageArchiveFetchingListener::onMessageArchiveFetching)
+
+            accountItem.connection.sendIqWithResponseCallback(
+                MamQueryIQ.createMamRequestIqAllMessagesSince(
+                    timestamp = if (timestamp != null) Date(timestamp) else Date()
+                ),
+                {
+                    LogManager.d(this, "Finish loading whole missed messages for account ${accountItem.account}")
+                    isArchiveFetching = false
+                },
+                {
+                    LogManager.d(this, "Error loading whole missed messages for account ${accountItem.account}")
+                    isArchiveFetching = false
+                }
+            )
+        }
+    }
+
+    fun loadAllMissedMessagesSinceLastDisconnectForCurrentChat(chat: AbstractChat) {
 
         Application.getInstance().runInBackgroundNetwork {
 
@@ -145,10 +181,12 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 {
                     Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
+                    LogManager.d(this, "Finish loading lost messages in chat with $contactJid")
                 },
                 {
                     Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadingError(accountJid, contactJid) }
+                    LogManager.e(this, "Error while loading lost messages in chat with $contactJid")
                 }
             )
         }
@@ -198,6 +236,26 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         return result
     }
 
+    private fun getLastAccountMessageInRealmTimestamp(accountJid: AccountJid): Long? {
+        var result: Long? = 0
+        var realm: Realm? = null
+        try {
+            realm = DatabaseManager.getInstance().defaultRealmInstance
+            result = realm.where(MessageRealmObject::class.java)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                .first()
+                ?.timestamp
+        } catch (e: Exception) {
+            LogManager.exception(MessageArchiveManager::class.java, e)
+        } finally {
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+        }
+        return result
+    }
 
     fun loadNextMessagesPortionInChat(chat: AbstractChat) {
         LogManager.d(MessageArchiveManager::class.java, "Invoked loadNextMessagesPortionInChat")

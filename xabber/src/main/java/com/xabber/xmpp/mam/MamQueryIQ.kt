@@ -83,14 +83,23 @@ class MamQueryIQ private constructor(
         )
 
         fun createMamRequestIqAllMessagesSince(
-            chat: AbstractChat,
+            chat: AbstractChat? = null,
             timestamp: Date = Date(),
-        ) = if (chat is GroupChat) {
-            MamQueryIQ(
-                archiveAddress = chat.contactJid.bareJid,
-                dataFormExtension = MamDataFormExtension(start = timestamp)
+        ) = when (chat) {
+            is GroupChat -> {
+                MamQueryIQ(
+                    archiveAddress = chat.contactJid.bareJid,
+                    dataFormExtension = MamDataFormExtension(start = timestamp)
+                )
+            }
+            is RegularChat -> MamQueryIQ(
+                dataFormExtension = MamDataFormExtension(
+                    with = chat.contactJid.bareJid,
+                    start = timestamp
+                )
             )
-        } else MamQueryIQ(dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid, start = timestamp))
+            else -> MamQueryIQ(dataFormExtension = MamDataFormExtension(start = timestamp))
+        }
 
     }
 

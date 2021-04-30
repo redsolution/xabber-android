@@ -39,6 +39,8 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.mam.MessageArchiveManager;
+import com.xabber.android.data.extension.mam.OnMessageArchiveFetchingListener;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
@@ -60,7 +62,7 @@ import java.util.List;
  * @author alexander.ivanov
  */
 public class NotificationManager implements OnInitializedListener, OnAccountChangedListener,
-        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener {
+        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener, OnMessageArchiveFetchingListener {
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
@@ -171,6 +173,9 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         //updateMessageNotification(null);
         updatePersistentNotification();
     }
+
+    @Override
+    public void onMessageArchiveFetching() { updatePersistentNotification(); }
 
     /**
      * Register new provider for notifications.
@@ -315,7 +320,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         persistentIntent = MainActivity.createPersistentIntent(application);
 
-        if (SyncManager.getInstance().isSyncMode()) {
+        if (SyncManager.getInstance().isSyncMode() || MessageArchiveManager.INSTANCE.isArchiveFetching()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
             persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
             persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
