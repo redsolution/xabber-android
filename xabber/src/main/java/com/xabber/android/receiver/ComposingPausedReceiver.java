@@ -20,7 +20,7 @@ import android.content.Intent;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 
 /**

@@ -1,6 +1,6 @@
 package com.xabber.xmpp.mam
 
-import com.xabber.android.data.extension.mam.MessageArchiveManager
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import org.jxmpp.jid.Jid

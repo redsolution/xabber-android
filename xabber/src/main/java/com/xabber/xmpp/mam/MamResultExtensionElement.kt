@@ -1,6 +1,6 @@
 package com.xabber.xmpp.mam
 
-import com.xabber.android.data.extension.mam.MessageArchiveManager
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jivesoftware.smackx.forward.packet.Forwarded

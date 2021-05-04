@@ -1,7 +1,7 @@
 package com.xabber.xmpp.mam
 
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.mam.MessageArchiveManager
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat

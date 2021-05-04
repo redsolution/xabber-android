@@ -82,18 +82,18 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.MessageArchiveManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
-import com.xabber.android.data.extension.rrr.RewriteManager;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
@@ -141,7 +141,7 @@ import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
-import com.xabber.xmpp.uuu.ChatStateSubtype;
+import com.xabber.xmpp.chat_state.ChatStateSubtype;
 
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
@@ -1371,7 +1371,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
-            RewriteManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
+            RetractManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
             hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
             sendMessage(text, markupText);
@@ -1557,7 +1557,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (messageRealmObject.isIncoming()) onlyOutgoing = false;
         }
         int size = ids.size();
-        if (RewriteManager.getInstance().isSupported(account)) {
+        if (RetractManager.getInstance().isSupported(account)) {
             View checkBoxView = View.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
             checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
@@ -1566,7 +1566,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .setTitle(getResources().getQuantityString(R.plurals.delete_message_title, size, size))
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
-                            RewriteManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked()))
+                            RetractManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked()))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
                     });
             if (onlyOutgoing) dialog.setView(checkBoxView);
@@ -1725,7 +1725,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Override
     public void onChangeCheckedItems(int checkedItems) {
         boolean isEditable = checkedItems == 1
-                && RewriteManager.getInstance().isSupported(account)
+                && RetractManager.getInstance().isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
                 && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).getMessageStatus().equals(MessageStatus.DELIVERED)

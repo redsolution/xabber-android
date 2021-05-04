@@ -10,7 +10,7 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.extension.cs.ChatStateManager
+import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.otr.OTRManager

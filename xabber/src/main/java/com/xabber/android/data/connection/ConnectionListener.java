@@ -9,7 +9,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.rrr.RewriteManager;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -83,7 +83,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "finished presenceManager onAuthorized");
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
         LogManager.i(getLogTag(), "finished bookmarksManager onAuthorized");
-        RewriteManager.getInstance().subscribeForUpdates();
+        RetractManager.getInstance().subscribeForUpdates();
         LogManager.i(getLogTag(), "finished rrrManager onAuthorized");
 
         Application.getInstance().runOnUiThread(

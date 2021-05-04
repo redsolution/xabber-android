@@ -14,7 +14,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
@@ -23,7 +23,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
-import com.xabber.xmpp.uuu.ChatStateSubtype;
+import com.xabber.xmpp.chat_state.ChatStateSubtype;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;

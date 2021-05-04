@@ -32,7 +32,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;

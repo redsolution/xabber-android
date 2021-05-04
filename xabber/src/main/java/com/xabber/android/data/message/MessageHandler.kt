@@ -16,8 +16,8 @@ import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.references.ReferencesManager
-import com.xabber.android.data.extension.reliablemessagedelivery.getTimeElement
-import com.xabber.android.data.extension.reliablemessagedelivery.hasTimeElement
+import com.xabber.android.data.extension.delivery.getTimeElement
+import com.xabber.android.data.extension.delivery.hasTimeElement
 import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
@@ -35,7 +35,7 @@ import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.sid.UniqueIdsHelper
-import com.xabber.xmpp.uuu.ChatStateExtension
+import com.xabber.xmpp.chat_state.ChatStateExtension
 import io.realm.Realm
 import io.realm.RealmList
 import net.java.otr4j.io.SerializationUtils

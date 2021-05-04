@@ -19,9 +19,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.MessageArchiveManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
-import com.xabber.android.data.extension.rrr.RewriteManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.PushManager;
@@ -159,7 +159,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean push = PushManager.getInstance().isSupport(connection);
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
-            boolean rewrite = RewriteManager.getInstance().isSupported(connection);
+            boolean rewrite = RetractManager.getInstance().isSupported(connection);
             boolean reliable = DeliveryManager.getInstance().isSupported(connection);
             boolean groupchats = GroupsManager.getInstance().isSupported(connection);
 

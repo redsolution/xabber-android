@@ -12,8 +12,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MessageArchiveManager;
+import com.xabber.android.data.extension.archive.LoadHistorySettings;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;

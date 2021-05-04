@@ -37,7 +37,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
+import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;

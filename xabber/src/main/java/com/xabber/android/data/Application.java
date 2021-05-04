@@ -44,19 +44,19 @@ import com.xabber.android.data.extension.avatar.AvatarStorage;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.ccc.CccSyncManager;
+import com.xabber.android.data.extension.sync.SyncManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.mam.MessageArchiveManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.DeliveryManager;
-import com.xabber.android.data.extension.rrr.RewriteManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
@@ -70,7 +70,6 @@ import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.push.PushManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -446,11 +445,11 @@ public class Application extends android.app.Application {
         addManager(XTokenManager.getInstance());
         addManager(GroupsManager.getInstance());
         addManager(GroupMemberManager.getInstance());
-        addManager(RewriteManager.getInstance());
+        addManager(RetractManager.getInstance());
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
         addManager(GroupInviteManager.INSTANCE);
-        addManager(CccSyncManager.INSTANCE);
+        addManager(SyncManager.INSTANCE);
     }
 
     /**

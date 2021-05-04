@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.chat_markers;
 
-import com.xabber.xmpp.uuu.ChatState;
+import com.xabber.xmpp.chat_state.ChatState;
 
 import org.jivesoftware.smack.filter.StanzaExtensionFilter;
 import org.jivesoftware.smack.packet.ExtensionElement;

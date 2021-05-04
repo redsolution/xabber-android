@@ -9,7 +9,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.extension.mam.MessageArchiveManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;

@@ -17,7 +17,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;

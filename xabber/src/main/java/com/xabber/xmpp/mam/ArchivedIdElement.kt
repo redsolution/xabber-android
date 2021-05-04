@@ -1,11 +1,10 @@
 package com.xabber.xmpp.mam
 
-import com.xabber.android.data.extension.mam.MessageArchiveManager
-import com.xabber.android.data.extension.mam.NextMamManager
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class ArchivedIdElement(val id: String, val by: String): ExtensionElement {
+class ArchivedIdElement(val id: String, val by: String) : ExtensionElement {
 
     override fun getElementName() = ELEMENT
 

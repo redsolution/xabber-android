@@ -7,7 +7,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.extension.archive.LoadHistorySettings;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
