@@ -36,41 +36,42 @@ import org.jxmpp.jid.Jid
  */
 interface BaseUIListener
 
-fun interface SamBaseUiListener: BaseUIListener {
+fun interface SamBaseUiListener : BaseUIListener {
     fun onAction()
 }
 
-inline fun <T: BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit) {
+inline fun <T : BaseUIListener> Iterable<T>.forEachOnUi(crossinline action: (T) -> Unit) {
     Application.getInstance().runOnUiThread { forEach { action(it) } }
 }
 
-fun <T: SamBaseUiListener> notifySamUiListeners(listener: Class<T>) {
+fun <T : SamBaseUiListener> notifySamUiListeners(listener: Class<T>) {
     Application.getInstance().runOnUiThread {
         Application.getInstance().getUIListeners(listener).map { listener -> listener.onAction() }
     }
 }
 
-interface OnXTokenSessionsUpdatedListener: SamBaseUiListener
+interface OnXTokenSessionsUpdatedListener : SamBaseUiListener
 
-interface OnReorderClickListener: SamBaseUiListener
+interface OnReorderClickListener : SamBaseUiListener
 
 interface OnNewMessageListener : SamBaseUiListener
 
 interface OnMessageUpdatedListener : SamBaseUiListener
 
-interface OnChatUpdatedListener: SamBaseUiListener
+interface OnChatUpdatedListener : SamBaseUiListener
 
-interface OnAddAccountClickListener: SamBaseUiListener
+interface OnAddAccountClickListener : SamBaseUiListener
 
 interface OnNewIncomingMessageListener : BaseUIListener {
-    fun onNewIncomingMessage(accountJid: AccountJid,
-                             contactJid: ContactJid,
-                             message: MessageRealmObject? = null,
-                             needNotification: Boolean = false,
+    fun onNewIncomingMessage(
+        accountJid: AccountJid,
+        contactJid: ContactJid,
+        message: MessageRealmObject? = null,
+        needNotification: Boolean = false,
     )
 }
 
-interface OnLastHistoryLoadStartedListener: BaseUIListener {
+interface OnLastHistoryLoadStartedListener : BaseUIListener {
     fun onLastHistoryLoadStarted(accountJid: AccountJid, contactJid: ContactJid)
 }
 
@@ -95,7 +96,7 @@ interface OnContactChangedListener : BaseUIListener {
     fun onContactsChanged(entities: Collection<RosterContact>)
 }
 
-interface OnConnectionStateChangedListener: BaseUIListener {
+interface OnConnectionStateChangedListener : BaseUIListener {
     fun onConnectionStateChanged(newConnectionState: ConnectionState)
 }
 
@@ -107,7 +108,7 @@ interface OnBlockedListChangedListener : BaseUIListener {
     fun onBlockedListChanged(account: AccountJid?)
 }
 
-interface OnAuthAskListener: BaseUIListener {
+interface OnAuthAskListener : BaseUIListener {
     fun onAuthAsk(accountJid: AccountJid, contactJid: ContactJid)
 }
 
@@ -123,8 +124,13 @@ interface OnGroupchatRequestListener : BaseUIListener {
 
 interface OnGroupSelectorListToolbarActionResultListener : BaseUIListener {
     fun onActionSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>)
-    fun onPartialSuccess(account: AccountJid, groupchatJid: ContactJid, successfulJids: List<String>,
-                         failedJids: List<String>)
+    fun onPartialSuccess(
+        account: AccountJid,
+        groupchatJid: ContactJid,
+        successfulJids: List<String>,
+        failedJids: List<String>,
+    )
+
     fun onActionFailure(account: AccountJid, groupchatJid: ContactJid, failedJids: List<String>)
 }
 
@@ -143,26 +149,26 @@ interface OnStatusChangeListener : BaseUIListener {
     fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusMode: StatusMode?, statusText: String?)
 }
 
-interface OnGroupStatusResultListener: BaseUIListener {
+interface OnGroupStatusResultListener : BaseUIListener {
     fun onStatusDataFormReceived(groupchat: GroupChat, dataForm: DataForm)
     fun onError(groupchat: GroupChat)
     fun onStatusSuccessfullyChanged(groupchat: GroupChat)
 }
 
-interface OnGroupSettingsResultsListener: BaseUIListener {
+interface OnGroupSettingsResultsListener : BaseUIListener {
     fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm)
     fun onErrorAtDataFormRequesting(groupchat: GroupChat)
     fun onErrorAtSettingsSetting(groupchat: GroupChat)
     fun onGroupSettingsSuccessfullyChanged(groupchat: GroupChat)
 }
 
-interface OnGroupMemberRightsListener: BaseUIListener {
+interface OnGroupMemberRightsListener : BaseUIListener {
     fun onGroupchatMemberRightsFormReceived(groupchat: GroupChat, iq: GroupchatMemberRightsReplyIQ)
     fun onSuccessfullyChanges(groupchat: GroupChat)
     fun onError(groupchat: GroupChat)
 }
 
-interface OnGroupDefaultRestrictionsListener: BaseUIListener {
+interface OnGroupDefaultRestrictionsListener : BaseUIListener {
     fun onDataFormReceived(groupchat: GroupChat, dataForm: DataForm)
     fun onError(groupchat: GroupChat)
     fun onSuccessful(groupchat: GroupChat)
