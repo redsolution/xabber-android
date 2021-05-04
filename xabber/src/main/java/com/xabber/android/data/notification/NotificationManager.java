@@ -322,7 +322,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         if (SyncManager.getInstance().isSyncMode() || MessageArchiveManager.INSTANCE.isArchiveFetching()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
-            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
             persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
         } else {
             if (connected > 0) {

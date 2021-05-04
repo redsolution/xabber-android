@@ -25,7 +25,7 @@
         <item quantity="other">%1$d of %2$d accounts waiting to connect</item>
     </plurals>
     <string name="AUTHENTICATION_FAILED">Authorization error</string>
-    <string name="connection_state_sync">Synchronization in progress</string>
+    <string name="connection_state_sync">Synchronization</string>
     <string name="otr_verification_in_progress">Click here to abort it.</string>
     <string name="PASSWORD_REQUIRED">Password required</string>
     <string name="pay_attention">Pay attention</string>
