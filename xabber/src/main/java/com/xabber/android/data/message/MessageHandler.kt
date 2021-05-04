@@ -11,13 +11,13 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.chat_markers.ChatMarkersElements
+import com.xabber.android.data.extension.delivery.getTimeElement
+import com.xabber.android.data.extension.delivery.hasTimeElement
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.references.ReferencesManager
-import com.xabber.android.data.extension.delivery.getTimeElement
-import com.xabber.android.data.extension.delivery.hasTimeElement
 import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
@@ -31,11 +31,11 @@ import com.xabber.android.ui.OnNewMessageListener
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.android.utils.StringUtils
+import com.xabber.xmpp.chat_state.ChatStateExtension
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
 import com.xabber.xmpp.sid.UniqueIdsHelper
-import com.xabber.xmpp.chat_state.ChatStateExtension
 import io.realm.Realm
 import io.realm.RealmList
 import net.java.otr4j.io.SerializationUtils
@@ -168,7 +168,8 @@ object MessageHandler {
                 UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
             } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
 
-        val accountStartHistoryTimestamp = AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp
+        val accountStartHistoryTimestamp =
+            AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp?.time
 
         // FileManager.processFileMessage(messageRealmObject);
         val attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(messageStanza)

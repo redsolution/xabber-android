@@ -130,7 +130,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      *  сообщения с timestamp раньше этого считаются прочитанными,
      *  позднее - непрочитанными.
      *  */
-    private long startHistoryTimestamp;
+    private Date startHistoryTimestamp;
 
     public AccountItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
                        Resourcepart resource, boolean storePassword, String password, String token, XToken xToken,
@@ -465,9 +465,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public boolean isPushEnabled() { return pushEnabled; }
 
-    public long getStartHistoryTimestamp() { return startHistoryTimestamp; }
-
-    public void setStartHistoryTimestamp(long startHistoryTimestamp) {
+    public Date getStartHistoryTimestamp() { return startHistoryTimestamp; }
+    public void setStartHistoryTimestamp(Date startHistoryTimestamp) {
         this.startHistoryTimestamp = startHistoryTimestamp;
     }
 

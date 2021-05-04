@@ -104,6 +104,12 @@ public class AccountRealmObject extends RealmObject {
     private String loadHistorySettings;
 
     /**
+     * First history (cold boot) loading timestamp
+     * Used to determine of read markers for messages from archive
+     */
+    private long startHistoryTimestamp;
+
+    /**
      * Flag indication that successful connection and authorization
      * happen at least ones with current connection settings
      */
@@ -338,9 +344,7 @@ public class AccountRealmObject extends RealmObject {
     }
 
     public KeyPair getKeyPair() {
-        if (this.privateKeyBytes == null || this.publicKeyBytes == null) {
-            return null;
-        }
+        if (this.privateKeyBytes == null || this.publicKeyBytes == null) return null;
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
         PublicKey publicKey;
@@ -377,9 +381,7 @@ public class AccountRealmObject extends RealmObject {
     public void setLastSync(Date lastSync) {
         if (lastSync == null) {
             this.lastSync = 0;
-        } else {
-            this.lastSync = lastSync.getTime();
-        }
+        } else this.lastSync = lastSync.getTime();
     }
 
     public ArchiveMode getArchiveMode() {
@@ -400,10 +402,7 @@ public class AccountRealmObject extends RealmObject {
 
     @Nullable
     public MamPrefsIQ.DefaultBehavior getMamDefaultBehavior() {
-        if (mamDefaultBehavior == null) {
-            return null;
-        }
-
+        if (mamDefaultBehavior == null) return null;
         return MamPrefsIQ.DefaultBehavior.valueOf(mamDefaultBehavior);
     }
 
@@ -413,9 +412,7 @@ public class AccountRealmObject extends RealmObject {
 
     @Nullable
     public LoadHistorySettings getLoadHistorySettings() {
-        if (loadHistorySettings == null) {
-            return null;
-        }
+        if (loadHistorySettings == null) return null;
 
         return LoadHistorySettings.valueOf(loadHistorySettings);
     }
@@ -475,6 +472,11 @@ public class AccountRealmObject extends RealmObject {
     }
     public void removeCustomGroupServer(String customGroupServerToRemove){
         customGroupServers.remove(customGroupServerToRemove);
+    }
+
+    public long getStartHistoryTimestamp() { return startHistoryTimestamp; }
+    public void setStartHistoryTimestamp(long startHistoryTimestamp) {
+        this.startHistoryTimestamp = startHistoryTimestamp;
     }
 
 }

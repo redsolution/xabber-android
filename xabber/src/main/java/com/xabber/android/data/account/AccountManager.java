@@ -285,6 +285,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealmObject.isXabberAutoLoginEnabled());
             accountItem.setId(accountRealmObject.getId());
             accountItem.setClearHistoryOnExit(accountRealmObject.isClearHistoryOnExit());
+            if (accountRealmObject.getStartHistoryTimestamp() != 0L){
+                accountItem.setStartHistoryTimestamp(new Date(accountRealmObject.getStartHistoryTimestamp()));
+            }
             if (accountRealmObject.getMamDefaultBehavior() != null) {
                 accountItem.setMamDefaultBehaviour(accountRealmObject.getMamDefaultBehavior());
             }

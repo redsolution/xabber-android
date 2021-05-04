@@ -96,6 +96,9 @@ public class AccountRepository {
                     accountRealmObject.setMamDefaultBehavior(accountItem.getMamDefaultBehaviour());
                     accountRealmObject.setLoadHistorySettings(accountItem.getLoadHistorySettings());
                     accountRealmObject.setSuccessfulConnectionHappened(accountItem.isSuccessfulConnectionHappened());
+                    if (accountItem.getStartHistoryTimestamp() != null){
+                        accountRealmObject.setStartHistoryTimestamp(accountItem.getStartHistoryTimestamp().getTime());
+                    }
 
                     realm1.copyToRealmOrUpdate(accountRealmObject);
                     LogManager.d(LOG_TAG, "Account " + accountItem.getAccount().getBareJid() + " has been successfully " +
