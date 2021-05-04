@@ -112,7 +112,7 @@
     <iqProvider>
         <elementName>query</elementName>
         <namespace>https://xabber.com/protocol/synchronization</namespace>
-        <className>com.xabber.xmpp.ccc.IncomingSetSyncIqProvider</className>
+        <className>com.xabber.xmpp.sync.IncomingSetSyncIqProvider</className>
     </iqProvider>
 
 
@@ -151,31 +151,31 @@
     <extensionProvider>
         <elementName>active</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>composing</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>paused</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>inactive</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>gone</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
 
@@ -215,14 +215,14 @@
     <extensionProvider>
         <elementName>time</elementName>
         <namespace>https://xabber.com/protocol/delivery</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
+        <className>com.xabber.android.data.extension.delivery.TimeProvider</className>
     </extensionProvider>
 
     <!--           Received element provider         -->
     <extensionProvider>
         <elementName>received</elementName>
         <namespace>https://xabber.com/protocol/delivery</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.ReceivedExtensionElementProvider</className>
+        <className>com.xabber.android.data.extension.delivery.ReceivedExtensionElementProvider</className>
     </extensionProvider>
 
 </smackProviders>

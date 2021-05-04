@@ -404,7 +404,6 @@ public class Application extends android.app.Application {
     }
 
     private void addManagers() {
-        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());

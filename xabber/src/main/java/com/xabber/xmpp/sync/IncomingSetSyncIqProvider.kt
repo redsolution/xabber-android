@@ -7,7 +7,7 @@ import org.jivesoftware.smack.provider.IQProvider
 import org.xmlpull.v1.XmlPullParser
 import java.util.*
 
-class IncomingSetSyncIqProvider: IQProvider<IncomingSetSyncIQ>() {
+class IncomingSetSyncIqProvider : IQProvider<IncomingSetSyncIQ>() {
 
     override fun parse(parser: XmlPullParser, initialDepth: Int): IncomingSetSyncIQ {
 
@@ -19,17 +19,22 @@ class IncomingSetSyncIqProvider: IQProvider<IncomingSetSyncIQ>() {
             when (parser.eventType) {
                 XmlPullParser.START_TAG -> {
                     if (parser.getAttributeValue(SyncManager.NAMESPACE, IncomingSetSyncIQ.STAMP_ATTRIBUTE) != null) {
-                                timestamp = parser.getAttributeValue(SyncManager.NAMESPACE, IncomingSetSyncIQ.STAMP_ATTRIBUTE).toLong()
+                        timestamp =
+                            parser.getAttributeValue(SyncManager.NAMESPACE, IncomingSetSyncIQ.STAMP_ATTRIBUTE).toLong()
                     }
-                    when (parser.name){
+                    when (parser.name) {
                         IncomingSetSyncIQ.QUERY_ELEMENT -> {
                             timestamp = parser
-                                    .getAttributeValue(null, "stamp")
-                                    .toLong()
+                                .getAttributeValue(null, "stamp")
+                                .toLong()
                         }
                         ConversationExtensionElement.ELEMENT_NAME -> {
-                            conversationJid = ContactJid.from(parser.getAttributeValue("",
-                                    ConversationExtensionElement.JID_ATTRIBUTE))
+                            conversationJid = ContactJid.from(
+                                parser.getAttributeValue(
+                                    "",
+                                    ConversationExtensionElement.JID_ATTRIBUTE
+                                )
+                            )
                         }
                         DeletedElement.ELEMENT_NAME -> {
                             innerElement = DeletedElement()
