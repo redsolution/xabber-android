@@ -304,6 +304,10 @@ object MessageHandler {
         val groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message)
         if (groupchatUser != null) {
             groupchatUserId = groupchatUser.id
+            if (message.from == null) {
+                LogManager.e(this, "Got possible rewrite, todo implement handling")
+                return null
+            }
             GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.from.asBareJid())
         }
 
