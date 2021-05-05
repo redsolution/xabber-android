@@ -34,10 +34,10 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -45,7 +45,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 
 import org.jivesoftware.smack.packet.Message;
@@ -54,6 +53,7 @@ import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Domainpart;
+import org.jxmpp.util.XmppDateTime;
 
 import java.io.File;
 import java.util.Date;
@@ -362,7 +362,9 @@ public class MessageManager implements OnPacketListener {
             long timestamp = 0;
             if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
                 TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
-                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getTimeStamp()).getTime();
+                try{
+                    timestamp = XmppDateTime.parseDate(timeElement.getTimeStamp()).getTime();
+                } catch (Exception ignored) { }
             }
             GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
             return;

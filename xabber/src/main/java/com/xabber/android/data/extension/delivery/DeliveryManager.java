@@ -15,7 +15,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -25,6 +24,7 @@ import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.util.XmppDateTime;
 
 import java.util.Date;
 
@@ -123,8 +123,11 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     } else {
                         messageRealmObject.setStanzaId(stanzaId);
                         messageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
-                        if (time != null && !time.isEmpty())
-                            messageRealmObject.setTimestamp(StringUtils.parseReceivedReceiptTimestampString(time).getTime());
+                        if (time != null && !time.isEmpty()){
+                            try {
+                                messageRealmObject.setTimestamp(XmppDateTime.parseDate(time).getTime());
+                            } catch (Exception ignored) { }
+                        }
                     }
                 });
             } catch (Exception e) {

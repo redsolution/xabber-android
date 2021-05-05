@@ -171,20 +171,20 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
             val timestamp = getLastChatMessageInRealmTimestamp(chat)
 
-            LogManager.i(this, "Start fetching missed messages in chat with $contactJid")
+            LogManager.i(this, "Start fetching missed messages in chat $accountJid with $contactJid")
 
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
                 .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
 
             AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
-                    chat,
-                    if (timestamp != null) Date(timestamp) else Date(),
+                    chat = chat,
+                    timestamp = if (timestamp != null) Date(timestamp) else Date(),
                 ),
                 {
                     Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
-                    LogManager.i(this, "Finish fetching missed messages in chat with $contactJid")
+                    LogManager.i(this, "Finish fetching missed messages in chat $accountJid with $contactJid")
                 },
                 { exception ->
                     Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)

@@ -393,29 +393,6 @@ public class StringUtils {
         return String.format(Locale.getDefault(), "%.2f %sB", bytes / 1024.0, ci.current() + "i");
     }
 
-    /**
-     * Convert date time string to Date.
-     * (Mostly for XEP-0XXX Reliable Message Delivery)
-     * @param string can be three formats:
-     *               or yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'
-     *               or yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
-     *               or yyyy-MM-dd'T'HH:mm:ss'Z'
-     */
-    public static Date parseReceivedReceiptTimestampString(String string){
-        try {
-            SimpleDateFormat simpleDateFormat;
-            switch (string.length()){
-                case 27: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-                case 24: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                case 21: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                default: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-            }
-            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return simpleDateFormat.parse(string);
-        } catch (Exception e) { LogManager.exception(StringUtils.class.getSimpleName(), e); }
-        return null;
-    }
-
     public static String translitirateToLatin(String string){
         return unidecode(string);
     }

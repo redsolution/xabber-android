@@ -30,7 +30,6 @@ import com.xabber.android.ui.OnNewIncomingMessageListener
 import com.xabber.android.ui.OnNewMessageListener
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.ui.notifySamUiListeners
-import com.xabber.android.utils.StringUtils
 import com.xabber.xmpp.chat_state.ChatStateExtension
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
@@ -45,6 +44,7 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.delay.packet.DelayInformation
 import org.jxmpp.jid.parts.Resourcepart
+import org.jxmpp.util.XmppDateTime
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import java.io.IOException
@@ -85,10 +85,11 @@ object MessageHandler {
         delayInformation: DelayInformation? = null,
     ): MessageRealmObject? {
 
-        val timestamp =
-            if (messageStanza.hasTimeElement()) {
-                StringUtils.parseReceivedReceiptTimestampString(messageStanza.getTimeElement().timeStamp).time
-            } else Date().time
+        val timestamp = when {
+            messageStanza.hasTimeElement() -> XmppDateTime.parseDate(messageStanza.getTimeElement().timeStamp).time
+            delayInformation != null -> delayInformation.stamp.time
+            else -> Date().time
+        }
 
         if (messageStanza.hasIncomingInviteExtension()) {
             GroupInviteManager.processIncomingInvite(

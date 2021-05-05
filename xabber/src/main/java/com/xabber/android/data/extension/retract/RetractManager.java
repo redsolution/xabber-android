@@ -19,7 +19,6 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.packet.IQ;
@@ -28,6 +27,7 @@ import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.util.XmppDateTime;
 
 import java.util.List;
 
@@ -255,9 +255,11 @@ public class RetractManager implements OnPacketListener {
                             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
                         if (body != null)
                             messageRealmObject.setText(body);
-                        if (stamp != null)
-                            messageRealmObject.setEditedTimestamp(StringUtils
-                                    .parseReceivedReceiptTimestampString(stamp).getTime());
+                        try{
+                            if (stamp != null){
+                                messageRealmObject.setEditedTimestamp(XmppDateTime.parseDate(stamp).getTime());
+                            }
+                        } catch (Exception ignored) {}
                     }
                     for (OnMessageUpdatedListener listener : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
                         listener.onAction();
