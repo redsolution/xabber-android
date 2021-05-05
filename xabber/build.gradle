@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.frogermcs.androiddevmetrics'
 
 android {
@@ -140,9 +139,9 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     // firebase
-    storeImplementation "com.google.firebase:firebase-messaging:21.0.1"
+    storeImplementation "com.google.firebase:firebase-messaging:21.1.0"
     storeImplementation 'com.google.firebase:firebase-crashlytics:17.4.1'
-    storeImplementation 'com.google.firebase:firebase-analytics:18.0.2'
+    storeImplementation 'com.google.firebase:firebase-analytics:18.0.3'
     storeImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.4.1'
 
     // otr
