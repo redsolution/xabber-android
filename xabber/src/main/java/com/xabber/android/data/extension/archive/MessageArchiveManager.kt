@@ -15,6 +15,7 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.OnLastHistoryLoadErrorListener
@@ -36,6 +37,13 @@ import java.util.*
 object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
+
+
+    /**
+     * When loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount
+     * Use to store groups with new messages in local archive to be re-requested from group archive
+     */
+    private val groupsQueryToRequestArchive = mutableSetOf<GroupChat>()
 
     var isArchiveFetching: Boolean = false
         private set(value) {
@@ -68,7 +76,16 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                         ContactJid.from(forwardedElement.to.asBareJid().toString())
                     } else ContactJid.from(forwardedElement.from.asBareJid().toString())
                 val delayInformation = mamResultElement.forwarded.delayInformation
-                if (forwardedElement != null && forwardedElement is Message) {
+
+                if (ChatManager.getInstance().getChat(accountJid, contactJid) is GroupChat
+                    && packet.from.asBareJid().toString() == accountJid.bareJid.toString()
+                ) {
+                    // If we received group message from local archive
+                    // Don't save this message and request it from remote archive
+                    groupsQueryToRequestArchive.add(
+                        ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
+                    )
+                } else if (forwardedElement != null && forwardedElement is Message) {
                     MessageHandler.parseMessage(accountJid, contactJid, forwardedElement, delayInformation)
                 }
             }
@@ -153,10 +170,14 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                         "Finish fetching whole missed messages for account ${accountItem.account}"
                     )
                     isArchiveFetching = false
+                    groupsQueryToRequestArchive.map { loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it) }
+                    groupsQueryToRequestArchive.clear()
                 },
                 { exception ->
                     LogManager.exception(this, exception)
                     isArchiveFetching = false
+                    groupsQueryToRequestArchive.map { loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it) }
+                    groupsQueryToRequestArchive.clear()
                 }
             )
         }
