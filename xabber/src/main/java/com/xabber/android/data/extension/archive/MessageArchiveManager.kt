@@ -27,6 +27,7 @@ import com.xabber.xmpp.mam.MamQueryIQ
 import com.xabber.xmpp.mam.MamResultExtensionElement
 import io.realm.Realm
 import io.realm.Sort
+import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
@@ -37,7 +38,6 @@ import java.util.*
 object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAuthenticatedListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
-
 
     /**
      * When loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount
@@ -102,6 +102,13 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
     fun isSupported(accountItem: AccountItem) = try {
         ServiceDiscoveryManager.getInstanceFor(accountItem.connection)
             .supportsFeature(accountItem.connection.user.asBareJid(), NAMESPACE)
+    } catch (e: Exception) {
+        LogManager.exception(this, e)
+        false
+    }
+
+    fun isSupported(connection: XMPPConnection) = try {
+        ServiceDiscoveryManager.getInstanceFor(connection).supportsFeature(connection.user.asBareJid(), NAMESPACE)
     } catch (e: Exception) {
         LogManager.exception(this, e)
         false
@@ -204,7 +211,9 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
                 .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
 
-            AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+            val accountItem = AccountManager.getInstance().getAccount(accountJid)
+
+            accountItem?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
                     chat = chat,
                     timestamp = if (timestamp != null) Date(timestamp) else Date(),
@@ -212,11 +221,21 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
                 {
                     Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
+                    if (groupsQueryToRequestArchive.size == 0) {
+                        Application.getInstance().getManagers(OnHistoryLoaded::class.java).forEach { listener ->
+                            listener.onHistoryLoaded(accountItem)
+                        }
+                    }
                     LogManager.i(this, "Finish fetching missed messages in chat $accountJid with $contactJid")
                 },
                 { exception ->
                     Application.getInstance().getUIListeners(OnLastHistoryLoadErrorListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadingError(accountJid, contactJid) }
+                    if (groupsQueryToRequestArchive.size == 0) {
+                        Application.getInstance().getManagers(OnHistoryLoaded::class.java).forEach { listener ->
+                            listener.onHistoryLoaded(accountItem)
+                        }
+                    }
                     LogManager.exception(this, exception)
                 }
             )

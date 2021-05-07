@@ -1,8 +1,8 @@
 package com.xabber.android.data.extension.archive
 
+import com.xabber.android.data.BaseManagerInterface
 import com.xabber.android.data.account.AccountItem
-import com.xabber.android.ui.BaseUIListener
 
-interface OnHistoryLoaded : BaseUIListener {
+interface OnHistoryLoaded : BaseManagerInterface {
     fun onHistoryLoaded(accountItem: AccountItem)
 }

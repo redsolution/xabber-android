@@ -25,10 +25,12 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.archive.OnHistoryLoaded;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -73,7 +75,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnLoadListener, OnAccountDisabledListener, OnPacketListener, OnHistoryLoaded,
-        OnDisconnectListener, OnRosterReceivedListener {
+        OnDisconnectListener, OnAuthenticatedListener {
 
     private static PresenceManager instance;
 
@@ -105,13 +107,21 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     @Override
-    public void onRosterReceived(AccountItem accountItem) {
-        onHistoryLoaded(accountItem);
+    public void onLoad() {
+        Application.getInstance().runOnUiThread(this::onLoaded);
     }
 
     @Override
-    public void onLoad() {
-        Application.getInstance().runOnUiThread(this::onLoaded);
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(connectionItem.getAccount());
+        if (MessageArchiveManager.INSTANCE.isSupported(connectionItem.getConnection())
+                && accountItem != null && accountItem.getStartHistoryTimestamp() == null){
+            try {
+                sendAccountPresence(accountItem.getAccount());
+            } catch (NetworkException e) {
+                LogManager.exception(this, e);
+            }
+        }
     }
 
     @Override
