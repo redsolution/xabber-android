@@ -25,7 +25,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -73,8 +72,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author alexander.ivanov
  */
-public class PresenceManager implements OnLoadListener, OnAccountDisabledListener, OnPacketListener,
-        OnAuthenticatedListener, OnDisconnectListener, OnHistoryLoaded {
+public class PresenceManager implements OnLoadListener, OnAccountDisabledListener, OnPacketListener, OnHistoryLoaded,
+        OnDisconnectListener, OnRosterReceivedListener {
 
     private static PresenceManager instance;
 
@@ -106,21 +105,23 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     @Override
+    public void onRosterReceived(AccountItem accountItem) {
+        onHistoryLoaded(accountItem);
+    }
+
+    @Override
     public void onLoad() {
         Application.getInstance().runOnUiThread(this::onLoaded);
     }
 
     @Override
-    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+    public void onHistoryLoaded(@NotNull AccountItem accountItem){
         try {
-            sendAccountPresence(connectionItem.getAccount());
+            sendAccountPresence(accountItem.getAccount());
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
     }
-
-    @Override
-    public void onHistoryLoaded(@NotNull AccountItem accountItem){ onAuthenticated(accountItem); }
 
     @Override
     public void onDisconnect(ConnectionItem connection) { clearPresencesTiedToThisAccount(connection.getAccount()); }

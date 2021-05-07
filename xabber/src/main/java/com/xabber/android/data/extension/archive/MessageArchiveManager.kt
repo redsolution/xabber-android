@@ -5,6 +5,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
 import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
@@ -33,7 +34,7 @@ import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
 import java.util.*
 
-object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
+object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAuthenticatedListener {
 
     const val NAMESPACE = "urn:xmpp:mam:2"
 
@@ -51,6 +52,13 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 .map(OnMessageArchiveFetchingListener::onMessageArchiveFetching)
         }
 
+    override fun onAuthenticated(connectionItem: ConnectionItem) {
+        val accountItem = AccountManager.getInstance().getAccount(connectionItem.account)
+        if (accountItem?.startHistoryTimestamp != null) {
+            loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
+        }
+    }
+
     override fun onRosterReceived(accountItem: AccountItem) {
         //If it first (cold) start, try to retrieve most last message to get account accountStartHistoryTimestamp
         if (accountItem.startHistoryTimestamp == null) {
@@ -62,7 +70,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid)
                 loadLastMessageInChat(chat)
             }
-        } else loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
+        }
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
