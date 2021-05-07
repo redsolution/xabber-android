@@ -5,9 +5,12 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.bookmarks.BookmarkManager;
@@ -29,7 +32,7 @@ import java.util.List;
  * Created by valery.miller on 02.06.17.
  */
 
-public class BookmarksManager {
+public class BookmarksManager implements OnAuthenticatedListener {
 
     public static final String XABBER_NAME = "Xabber bookmark";
     public static final String XABBER_URL = "Required to correctly sync bookmarks";
@@ -65,6 +68,31 @@ public class BookmarksManager {
             }
         }
         return urls;
+    }
+
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        AccountJid account = connectionItem.getAccount();
+
+        if (!SettingsManager.syncBookmarksOnStart()) return;
+
+        cleanCache(account);
+
+        List<BookmarkedConference> conferences;
+
+        try {
+            conferences = getConferencesFromBookmarks(account);
+        } catch (SmackException.NoResponseException | InterruptedException |
+                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+            LogManager.exception(this, e);
+            return;
+        }
+
+        // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
+        if (!isBookmarkCheckedByXabber(account)) {
+            // add url about check to bookmarks
+            addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
+        }
     }
 
     public void addUrlToBookmarks(AccountJid accountJid, String url, String name, boolean isRSS) {
@@ -170,28 +198,6 @@ public class BookmarksManager {
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             bookmarkManager.cleanCache();
-        }
-    }
-
-    public void onAuthorized(AccountJid account) {
-        if (!SettingsManager.syncBookmarksOnStart()) return;
-
-        cleanCache(account);
-
-        List<BookmarkedConference> conferences;
-
-        try {
-            conferences = getConferencesFromBookmarks(account);
-        } catch (SmackException.NoResponseException | InterruptedException |
-                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
-            LogManager.exception(this, e);
-            return;
-        }
-
-        // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
-        if (!isBookmarkCheckedByXabber(account)) {
-            // add url about check to bookmarks
-            addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
         }
     }
 

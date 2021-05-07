@@ -16,13 +16,14 @@ package com.xabber.android.data.extension.vcard;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.VCardRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
@@ -30,8 +31,8 @@ import com.xabber.android.data.database.repositories.VCardRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.groups.GroupsManager;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -72,8 +73,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * @author alexander.ivanov
  */
-public class VCardManager implements OnLoadListener, OnPacketListener,
-        OnRosterReceivedListener, OnAccountRemovedListener {
+public class VCardManager implements OnPacketListener, OnRosterReceivedListener, OnAccountRemovedListener,
+        OnDisconnectListener, OnConnectedListener {
 
     private static final String LOG_TAG = VCardManager.class.getSimpleName();
 
@@ -121,7 +122,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     @Override
-    public void onLoad() { }
+    public void onConnected(ConnectionItem connection) {
+        if (this.start == null) this.start = System.currentTimeMillis();
+    }
 
     private void requestRosterVCards(AccountItem accountItem) {
         AccountJid account = accountItem.getAccount();
@@ -164,11 +167,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    private Long start;
+    @Override
+    public void onDisconnect(ConnectionItem connection) { resetLoadedState(connection.getAccount()); }
 
-    public void setStart(long start) {
-        if (this.start == null) this.start = start;
-    }
+    private Long start;
 
     public Long getStart() {
         return start;

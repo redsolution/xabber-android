@@ -40,12 +40,13 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupMember;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.color.ColorManager;
@@ -82,7 +83,7 @@ import java.util.Map;
  *
  * @author alexander.ivanov
  */
-public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener {
+public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener, OnConnectedListener {
 
     public static final String LOG_TAG = AvatarManager.class.getSimpleName();
     public static final String EMPTY_HASH = "";
@@ -134,6 +135,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
 
         return instance;
+    }
+
+    @Override
+    public void onConnected(ConnectionItem connection) {
+        UserAvatarManager.getInstanceFor(connection.getConnection()).enable();
     }
 
     /**

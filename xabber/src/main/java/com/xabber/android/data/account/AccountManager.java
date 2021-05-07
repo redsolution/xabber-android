@@ -35,11 +35,13 @@ import com.xabber.android.data.account.listeners.OnAccountOfflineListener;
 import com.xabber.android.data.account.listeners.OnAccountOnlineListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.account.listeners.OnAccountSyncableChangedListener;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.repositories.AccountRepository;
@@ -61,6 +63,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 import org.jxmpp.jid.BareJid;
@@ -95,7 +98,7 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeListener {
+public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeListener, OnAuthenticatedListener {
 
     private static final String LOG_TAG = AccountManager.class.getSimpleName();
 
@@ -197,6 +200,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+    }
+
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        Application.getInstance().runOnUiThread(() -> removeAccountError(connectionItem.getAccount()));
     }
 
     @Override
@@ -692,7 +700,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             if (result.getPriority() != priority) {
                 result.setPriority(priority);
                 try {
-                    PresenceManager.getInstance().resendPresence(account);
+                    PresenceManager.getInstance().sendAccountPresence(account);
                 } catch (NetworkException e) {
                     LogManager.exception(this, e);
                 }
@@ -945,7 +953,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(account);
         setStatus(accountItem, statusMode, statusText);
         try {
-            PresenceManager.getInstance().resendPresence(account);
+            PresenceManager.getInstance().sendAccountPresence(account);
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
@@ -1027,7 +1035,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : accountItems.values()) {
             if (accountItem.isEnabled()) {
                 try {
-                    PresenceManager.getInstance().resendPresence(accountItem.getAccount());
+                    PresenceManager.getInstance().sendAccountPresence(accountItem.getAccount());
                 } catch (NetworkException e) {
                     LogManager.exception(this, e);
                 }
@@ -1216,9 +1224,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return null;
     }
 
-    public void removeAccountError(AccountJid account) {
-        accountErrorProvider.remove(account);
-    }
+    public void removeAccountError(AccountJid account) { accountErrorProvider.remove(account); }
 
     public void addAccountError(AccountErrorEvent accountErrorEvent) {
         accountErrorProvider.add(new AccountError(accountErrorEvent), true);

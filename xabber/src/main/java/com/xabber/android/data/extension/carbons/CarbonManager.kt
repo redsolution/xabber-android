@@ -5,6 +5,7 @@ import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.SettingsManager.SecurityOtrMode
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.otr.SecurityLevel
@@ -27,19 +28,22 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Georg Lukas, Semyon Baranov
  */
-object CarbonManager {
+object CarbonManager : OnAuthenticatedListener {
 
     private val LOG_TAG = CarbonManager::class.java.simpleName
 
     private var carbonCopyListeners: MutableMap<AccountJid, CarbonCopyListener> = ConcurrentHashMap()
 
-    fun onAuthorized(connection: ConnectionItem) = updateIsSupported(connection)
+    override fun onAuthenticated(connectionItem: ConnectionItem) = updateIsSupported(connectionItem)
 
     private fun updateIsSupported(connectionItem: ConnectionItem) {
         val carbonManager = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connectionItem.connection)
         try {
             if (connectionItem.connection.user != null && carbonManager.isSupportedByServer) {
-                LogManager.d(LOG_TAG, "Smack reports that carbons are " + if (carbonManager.carbonsEnabled) "enabled" else "disabled")
+                LogManager.d(
+                    LOG_TAG,
+                    "Smack reports that carbons are " + if (carbonManager.carbonsEnabled) "enabled" else "disabled"
+                )
                 if (carbonManager.carbonsEnabled) {
                     // Sometimes Smack's CarbonManager still thinks that carbons are enabled during a
                     // period of time between disconnecting on error and completing a new authorization.
@@ -47,9 +51,17 @@ object CarbonManager {
                     // it can introduce an incorrect behavior of .getCarbonsEnabled().
                     // To avoid it we can use .enableCarbonsAsync(), and its' counterpart, to skip the Carbons's
                     // state check and "forcefully" send the correct carbons state IQ
-                    changeCarbonsStateAsync(carbonManager, connectionItem.account, SettingsManager.connectionUseCarbons())
+                    changeCarbonsStateAsync(
+                        carbonManager,
+                        connectionItem.account,
+                        SettingsManager.connectionUseCarbons()
+                    )
                 } else {
-                    changeCarbonsStateAsync(carbonManager, connectionItem.account, SettingsManager.connectionUseCarbons())
+                    changeCarbonsStateAsync(
+                        carbonManager,
+                        connectionItem.account,
+                        SettingsManager.connectionUseCarbons()
+                    )
                 }
             }
         } catch (e: NoResponseException) {
@@ -65,9 +77,10 @@ object CarbonManager {
     // Async method sends carbons IQ without checking the current state, which is useful when the order of
     // authorized listeners becomes messed up and Smack's Carbons state flag doesn't reflect the real state since it didn't update yet.
     @Throws(InterruptedException::class)
-    private fun changeCarbonsStateAsync(carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
-                                        account: AccountJid,
-                                        enable: Boolean,
+    private fun changeCarbonsStateAsync(
+        carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
+        account: AccountJid,
+        enable: Boolean,
     ) {
         if (enable) {
             carbonManager.enableCarbonsAsync(null)
@@ -81,8 +94,9 @@ object CarbonManager {
     }
 
     // we need to remove old listener not to cause memory leak
-    private fun addListener(carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
-                            account: AccountJid,
+    private fun addListener(
+        carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
+        account: AccountJid,
     ) {
         removeListener(carbonManager, account)
         val carbonCopyListener = CarbonCopyListener(account)
@@ -90,8 +104,9 @@ object CarbonManager {
         carbonManager.addCarbonCopyReceivedListener(carbonCopyListener)
     }
 
-    private fun removeListener(carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
-                               account: AccountJid,
+    private fun removeListener(
+        carbonManager: org.jivesoftware.smackx.carbons.CarbonManager,
+        account: AccountJid,
     ) {
         val carbonCopyListener = carbonCopyListeners.remove(account)
         if (carbonCopyListener != null) carbonManager.removeCarbonCopyReceivedListener(carbonCopyListener)
@@ -99,8 +114,8 @@ object CarbonManager {
 
     fun isCarbonsEnabledForConnection(connection: ConnectionItem): Boolean {
         return org.jivesoftware.smackx.carbons.CarbonManager
-                .getInstanceFor(connection.connection)
-                .carbonsEnabled
+            .getInstanceFor(connection.connection)
+            .carbonsEnabled
     }
 
     /**
@@ -125,8 +140,9 @@ object CarbonManager {
      *
      * @param message      the <tt>Message</tt> to be sent
      */
-    fun updateOutgoingMessage(abstractChat: AbstractChat,
-                              message: Message?,
+    fun updateOutgoingMessage(
+        abstractChat: AbstractChat,
+        message: Message?,
     ) {
         if (!SettingsManager.connectionUseCarbons()) return
 

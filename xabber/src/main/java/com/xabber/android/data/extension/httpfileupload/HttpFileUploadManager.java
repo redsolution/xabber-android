@@ -20,6 +20,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
@@ -35,6 +36,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.service.UploadService;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -61,7 +63,7 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.subjects.PublishSubject;
 
-public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedListener {
+public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedListener, OnAuthenticatedListener {
 
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
@@ -87,6 +89,22 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             duration = Math.round(Long.valueOf(dur) / 1000);
         }
         return duration;
+    }
+
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        Thread httpSupportThread;
+        if (supportDiscoveryThreads.get(connectionItem.getAccount().getBareJid()) != null) {
+            httpSupportThread = supportDiscoveryThreads.remove(connectionItem.getAccount().getBareJid());
+
+            if (httpSupportThread != null && httpSupportThread.getState() != Thread.State.TERMINATED) {
+                return;
+            } else httpSupportThread = createDiscoveryThread(connectionItem);
+
+        } else httpSupportThread = createDiscoveryThread(connectionItem);
+
+        supportDiscoveryThreads.put(connectionItem.getAccount().getBareJid(), httpSupportThread);
+        httpSupportThread.start();
     }
 
     public static ImageSize getImageSizes(String filePath) {
@@ -331,21 +349,6 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             uploadServers.put(account.getFullJid().asBareJid(), uploadServerUrl);
             saveOrUpdateToRealm(account.getFullJid().asBareJid(), uploadServerUrl);
         }
-    }
-
-    public void onAuthorized(final ConnectionItem connectionItem) {
-        Thread httpSupportThread;
-        if (supportDiscoveryThreads.get(connectionItem.getAccount().getBareJid()) != null) {
-            httpSupportThread = supportDiscoveryThreads.remove(connectionItem.getAccount().getBareJid());
-
-            if (httpSupportThread != null && httpSupportThread.getState() != Thread.State.TERMINATED) {
-                return;
-            } else httpSupportThread = createDiscoveryThread(connectionItem);
-
-        } else httpSupportThread = createDiscoveryThread(connectionItem);
-
-        supportDiscoveryThreads.put(connectionItem.getAccount().getBareJid(), httpSupportThread);
-        httpSupportThread.start();
     }
 
     private Thread createDiscoveryThread(ConnectionItem connectionItem) {

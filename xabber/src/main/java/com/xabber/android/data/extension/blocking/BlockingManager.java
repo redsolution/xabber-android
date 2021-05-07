@@ -6,6 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
@@ -17,6 +18,7 @@ import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
@@ -28,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlockingManager {
+public class BlockingManager implements OnAuthenticatedListener {
 
     static final String LOG_TAG = BlockingManager.class.getSimpleName();
     private static BlockingManager instance;
@@ -60,7 +62,8 @@ public class BlockingManager {
         cachedBlockedContacts = new ConcurrentHashMap<>();
     }
 
-    public void onAuthorized(final ConnectionItem connection) {
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connection) {
         final AccountJid account = connection.getAccount();
 
         BlockingCommandManager blockingCommandManager =

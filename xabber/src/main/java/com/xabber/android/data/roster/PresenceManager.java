@@ -25,9 +25,12 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.archive.OnHistoryLoaded;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
@@ -47,6 +50,7 @@ import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement;
 import com.xabber.xmpp.groups.GroupPresenceNotificationExtensionElement;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
@@ -69,8 +73,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author alexander.ivanov
  */
-public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
-        OnPacketListener {
+public class PresenceManager implements OnLoadListener, OnAccountDisabledListener, OnPacketListener,
+        OnAuthenticatedListener, OnDisconnectListener, OnHistoryLoaded {
 
     private static PresenceManager instance;
 
@@ -105,6 +109,21 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void onLoad() {
         Application.getInstance().runOnUiThread(this::onLoaded);
     }
+
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        try {
+            sendAccountPresence(connectionItem.getAccount());
+        } catch (NetworkException e) {
+            LogManager.exception(this, e);
+        }
+    }
+
+    @Override
+    public void onHistoryLoaded(@NotNull AccountItem accountItem){ onAuthenticated(accountItem); }
+
+    @Override
+    public void onDisconnect(ConnectionItem connection) { clearPresencesTiedToThisAccount(connection.getAccount()); }
 
     private void onLoaded() {
         NotificationManager.getInstance().registerNotificationProvider(subscriptionRequestProvider);
@@ -348,7 +367,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * Sends new presence information.
      *
      */
-    public void resendPresence(AccountJid account) throws NetworkException {
+    public void sendAccountPresence(AccountJid account) throws NetworkException {
         sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getBareJid()));
     }
 
@@ -561,19 +580,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (subscriptionRequestProvider.get(account, from) != null) {
             subscriptionRequestProvider.remove(account, from);
         }
-    }
-
-    public void onAuthorized(ConnectionItem connection) {
-        try {
-            resendPresence(connection.getAccount());
-        } catch (NetworkException e) {
-            LogManager.exception(this, e);
-        }
-    }
-
-    public void onHistoryLoaded(AccountItem accountItem){
-        LogManager.d(PresenceManager.class.getSimpleName(), "onHistoryLoaded");
-        onAuthorized(accountItem);
     }
 
     public void onRosterEntriesUpdated(AccountJid account, Collection<Jid> entries) {

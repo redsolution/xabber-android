@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
@@ -21,6 +22,7 @@ import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
@@ -34,7 +36,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class RetractManager implements OnPacketListener {
+public class RetractManager implements OnPacketListener, OnAuthenticatedListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/rewrite";
     private static final String NAMESPACE_NOTIFY = NAMESPACE.concat("#notify");
@@ -67,7 +69,8 @@ public class RetractManager implements OnPacketListener {
         return isSupported(AccountManager.getInstance().getAccount(accountJid).getConnection());
     }
 
-    public void subscribeForUpdates() {
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             if (RetractManager.getInstance().isSupported(accountJid))
                 subscribeForUpdates(accountJid);
