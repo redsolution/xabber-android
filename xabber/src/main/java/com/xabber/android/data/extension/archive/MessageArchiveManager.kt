@@ -31,7 +31,6 @@ import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
-import org.jivesoftware.smackx.mam.element.MamElements
 import java.util.*
 
 object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
@@ -94,7 +93,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     fun isSupported(accountItem: AccountItem) = try {
         ServiceDiscoveryManager.getInstanceFor(accountItem.connection)
-            .supportsFeature(accountItem.connection.user.asBareJid(), MamElements.NAMESPACE)
+            .supportsFeature(accountItem.connection.user.asBareJid(), NAMESPACE)
     } catch (e: Exception) {
         LogManager.exception(this, e)
         false
