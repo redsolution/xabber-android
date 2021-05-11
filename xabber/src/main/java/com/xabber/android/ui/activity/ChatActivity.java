@@ -788,7 +788,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             case R.id.action_request_subscription:
                 try {
-                    PresenceManager.getInstance().requestSubscription(account, user);
+                    PresenceManager.INSTANCE.requestSubscription(account, user);
                 } catch (NetworkException e) {
                     Application.getInstance().onError(e);
                 }

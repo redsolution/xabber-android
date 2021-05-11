@@ -122,7 +122,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
 
             case R.id.action_request_subscription:
                 try {
-                    PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
+                    PresenceManager.INSTANCE.requestSubscription(getAccount(), getUser());
                 } catch (NetworkException e) {
                     Application.getInstance().onError(e);
                 }
@@ -227,7 +227,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
 
             try {
                 RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
-                PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                PresenceManager.INSTANCE.addAutoAcceptSubscription(getAccount(), getUser());
                 stopAddContactProcess(true);
             } catch (SmackException.NotLoggedInException
                     | XMPPException.XMPPErrorException

@@ -402,9 +402,9 @@ public class GroupMemberManager implements OnLoadListener {
                                 try{
                                     ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
                                     AccountJid account = AccountJid.from(packet.getTo().toString());
-                                    PresenceManager.getInstance().addAutoAcceptSubscription(account, contactJid);
-                                    PresenceManager.getInstance().acceptSubscription(account, contactJid, true);
-                                    PresenceManager.getInstance().requestSubscription(account, contactJid);
+                                    PresenceManager.INSTANCE.addAutoAcceptSubscription(account, contactJid);
+                                    PresenceManager.INSTANCE.acceptSubscription(account, contactJid, true);
+                                    PresenceManager.INSTANCE.requestSubscription(account, contactJid);
                                     Context context = Application.getInstance().getApplicationContext();
                                     context.startActivity(ChatActivity.createSendIntent(context, groupChat.getAccount(), contactJid, null));
                                 } catch (Exception e){

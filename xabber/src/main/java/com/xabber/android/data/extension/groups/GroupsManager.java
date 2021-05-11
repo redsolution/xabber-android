@@ -227,8 +227,8 @@ public class GroupsManager implements OnPacketListener, OnLoadListener {
                                 try {
                                     ContactJid contactJid = ContactJid.from(((CreateGroupchatIQ.ResultIq) packet).getJid());
                                     AccountJid account = AccountJid.from(packet.getTo().toString());
-                                    PresenceManager.getInstance().addAutoAcceptGroupSubscription(account, contactJid);
-                                    PresenceManager.getInstance().requestSubscription(account, contactJid, false);
+                                    PresenceManager.INSTANCE.addAutoAcceptGroupSubscription(account, contactJid);
+                                    PresenceManager.INSTANCE.requestSubscription(account, contactJid, false);
 
                                     GroupChat createdGroup = ChatManager.getInstance().createGroupChat(account, contactJid);
 

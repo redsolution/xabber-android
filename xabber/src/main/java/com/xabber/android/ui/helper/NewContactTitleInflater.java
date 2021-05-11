@@ -154,7 +154,7 @@ public class NewContactTitleInflater {
                     abstractContact.getAccount(), abstractContact.getContactJid());
             if (statusText == null) {
                 if (abstractContact instanceof ChatContact) {
-                    if (PresenceManager.getInstance().hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getContactJid())) {
+                    if (PresenceManager.INSTANCE.hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getContactJid())) {
                         //Contact not in our roster, but we have an incoming subscription request
                         statusText = context.getString(R.string.contact_state_incoming_request);
                     } else {
@@ -258,7 +258,7 @@ public class NewContactTitleInflater {
 
 
     private static String getGroupchatStatus(AbstractContact contact, Context context) {
-        Presence groupchatPresence = PresenceManager.getInstance().getPresence(contact.getAccount(), contact.getContactJid());
+        Presence groupchatPresence = PresenceManager.INSTANCE.getPresence(contact.getAccount(), contact.getContactJid());
         if (groupchatPresence != null && groupchatPresence.hasExtension(GroupExtensionElement.NAMESPACE)) {
             return StringUtils.getDisplayStatusForGroupchat(
                     groupchatPresence.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE),

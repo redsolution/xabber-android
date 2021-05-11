@@ -442,7 +442,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
                     if (avatarHash == null) {
                         avatarHash = AvatarManager.EMPTY_HASH;
                     }
-                    PresenceManager.getInstance().sendVCardUpdatePresence(account, avatarHash);
+                    PresenceManager.INSTANCE.sendVCardUpdatePresence(account, avatarHash);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | NetworkException | InterruptedException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());

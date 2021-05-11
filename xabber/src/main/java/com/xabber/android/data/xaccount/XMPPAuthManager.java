@@ -205,7 +205,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
             RosterManager.getInstance().createContact(account, user,
                     "xabber", Collections.EMPTY_LIST);
-            PresenceManager.getInstance().requestSubscription(account, user, false);
+            PresenceManager.INSTANCE.requestSubscription(account, user, false);
 
         } catch (ContactJid.ContactJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {

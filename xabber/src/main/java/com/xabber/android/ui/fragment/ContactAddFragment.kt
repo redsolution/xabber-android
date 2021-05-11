@@ -137,19 +137,19 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         return view
     }
 
-    private fun setColor(accountJid: AccountJid){
+    private fun setColor(accountJid: AccountJid) {
         val color = ColorManager.getInstance().accountPainter.getAccountSendButtonColor(accountJid)
         val defaultLabelTextColor =
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
-                else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
+            else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
         val defaultLineBackgroundColor =
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                    ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
-                else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                ColorManager.getColorWithAlpha(Color.GRAY, 0.5f)
+            else ColorManager.getColorWithAlpha(Color.GRAY, 0.9f)
 
         userViewEt?.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus){
+            if (hasFocus) {
                 userViewTv?.setTextColor(color)
                 userViewVw?.setBackgroundColor(color)
             } else {
@@ -158,16 +158,16 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             }
         }
 
-        if (userViewEt!!.isFocused){
+        if (userViewEt!!.isFocused) {
             userViewTv?.setTextColor(color)
             userViewVw?.setBackgroundColor(color)
-        }else {
+        } else {
             userViewTv?.setTextColor(defaultLabelTextColor)
             userViewVw?.setBackgroundColor(defaultLabelTextColor)
         }
 
         nameViewEt?.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus){
+            if (hasFocus) {
                 nameViewTv?.setTextColor(color)
                 nameViewVw?.setBackgroundColor(color)
             } else {
@@ -176,7 +176,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             }
         }
 
-        if (nameViewEt!!.isFocused){
+        if (nameViewEt!!.isFocused) {
             nameViewTv?.setTextColor(color)
             nameViewVw?.setBackgroundColor(color)
         } else {
@@ -199,22 +199,25 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             val jids = AccountManager.getInstance().enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()
-            for (jid in jids){
+            for (jid in jids) {
                 avatars.add(AvatarManager.getInstance().getAccountAvatar(jid))
             }
 
             val nicknames = mutableListOf<String?>()
-            for (jid in jids){
-                val name = RosterManager.getInstance().getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
-                if (!name.isNullOrEmpty()){
+            for (jid in jids) {
+                val name =
+                    RosterManager.getInstance().getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
+                if (!name.isNullOrEmpty()) {
                     nicknames.add(name)
                 } else {
                     nicknames.add(null)
                 }
             }
 
-            accountSpinner?.setup(getString(R.string.add_to), getString(R.string.choose_account), jids, avatars,
-                    nicknames, this)
+            accountSpinner?.setup(
+                getString(R.string.add_to), getString(R.string.choose_account), jids, avatars,
+                nicknames, this
+            )
         }
     }
 
@@ -222,12 +225,12 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (view.id == R.id.imgQRcode) {
             val integrator = IntentIntegrator.forSupportFragment(this)
             integrator.setOrientationLocked(false)
-                    .setBeepEnabled(false)
-                    .setCameraId(0)
-                    .setPrompt("")
-                    .addExtra("caller", "ContactAddFragment")
-                    .setCaptureActivity(QRCodeScannerActivity::class.java)
-                    .initiateScan(Collections.unmodifiableList(listOf(IntentIntegrator.QR_CODE)))
+                .setBeepEnabled(false)
+                .setCameraId(0)
+                .setPrompt("")
+                .addExtra("caller", "ContactAddFragment")
+                .setCaptureActivity(QRCodeScannerActivity::class.java)
+                .initiateScan(Collections.unmodifiableList(listOf(IntentIntegrator.QR_CODE)))
         }
     }
 
@@ -235,8 +238,10 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                Toast.makeText(activity, "Scanned = " + result.contents,
-                        Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    activity, "Scanned = " + result.contents,
+                    Toast.LENGTH_LONG
+                ).show()
                 if (result.contents.length > 5) {
                     val s = result.contents.split(":").toTypedArray()
                     if ((s[0] == "xmpp" || s[0] == "xabber") && s.size >= 2) {
@@ -267,7 +272,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     }
 
     override fun onSelected(accountJid: AccountJid) {
-        if (listenerActivity != null){
+        if (listenerActivity != null) {
             listenerActivity?.onAccountSelected(accountJid)
         }
 
@@ -280,7 +285,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         userViewEt?.requestFocusFromTouch()
 
         (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                .showSoftInput(userViewEt, InputMethodManager.SHOW_IMPLICIT)
+            .showSoftInput(userViewEt, InputMethodManager.SHOW_IMPLICIT)
 
         setColor(accountJid)
 
@@ -324,7 +329,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             override fun run() {
                 try {
                     RosterManager.getInstance().createContact(account, user, name, groups)
-                    PresenceManager.getInstance().requestSubscription(account, user)
+                    PresenceManager.requestSubscription(account, user)
                 } catch (e: NotLoggedInException) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED)
                     stopAddContactProcess(false)
@@ -454,9 +459,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     private fun stopAddContactProcess(success: Boolean) {
         Application.getInstance().runOnUiThread {
             if (listenerActivity != null) listenerActivity!!.showProgress(false)
-            if (success){
-                startActivityForResult(ChatActivity.createSpecificChatIntent(context, account, contactJid),
-                        MainActivity.CODE_OPEN_CHAT)
+            if (success) {
+                startActivityForResult(
+                    ChatActivity.createSpecificChatIntent(context, account, contactJid),
+                    MainActivity.CODE_OPEN_CHAT
+                )
             }
         }
     }

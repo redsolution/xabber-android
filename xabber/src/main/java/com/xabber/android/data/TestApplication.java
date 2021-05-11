@@ -327,7 +327,7 @@ public class TestApplication extends android.app.Application {
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());
         addManager(AvatarManager.getInstance());
-        addManager(PresenceManager.getInstance());
+        addManager(PresenceManager.INSTANCE);
         addManager(RosterManager.getInstance());
         addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());

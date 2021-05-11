@@ -83,8 +83,8 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
             case R.id.leave:
                 try {
                     // discard subscription
-                    PresenceManager.getInstance().discardSubscription(account, groupchatJid);
-                    PresenceManager.getInstance().unsubscribeFromPresence(account, groupchatJid);
+                    PresenceManager.INSTANCE.discardSubscription(account, groupchatJid);
+                    PresenceManager.INSTANCE.unsubscribeFromPresence(account, groupchatJid);
                 } catch (NetworkException e) {
                     Application.getInstance().onError(R.string.CONNECTION_FAILED);
                 }

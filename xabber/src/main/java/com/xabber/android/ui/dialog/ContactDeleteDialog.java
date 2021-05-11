@@ -95,8 +95,8 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
             case R.id.delete:
                 try {
                     // discard subscription
-                    PresenceManager.getInstance().discardSubscription(account, user);
-                    PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+                    PresenceManager.INSTANCE.discardSubscription(account, user);
+                    PresenceManager.INSTANCE.unsubscribeFromPresence(account, user);
                 } catch (NetworkException e) {
                     Application.getInstance().onError(R.string.CONNECTION_FAILED);
                 }

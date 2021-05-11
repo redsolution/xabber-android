@@ -108,7 +108,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         if (groupChat != null && groupChat instanceof GroupChat) {
             try {
-                PresenceManager.getInstance().sendPresenceToGroupchat(groupChat, true);
+                PresenceManager.INSTANCE.sendPresenceToGroupchat(groupChat, true);
             } catch (NetworkException e) {
                 e.printStackTrace();
             }
@@ -125,7 +125,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
 
         if (groupChat != null && groupChat instanceof GroupChat) {
             try {
-                PresenceManager.getInstance().sendPresenceToGroupchat(groupChat, false);
+                PresenceManager.INSTANCE.sendPresenceToGroupchat(groupChat, false);
             } catch (NetworkException e) {
                 e.printStackTrace();
             }
@@ -191,7 +191,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        groupchatPresence = PresenceManager.getInstance().getPresence(account, groupchatContact);
+        groupchatPresence = PresenceManager.INSTANCE.getPresence(account, groupchatContact);
         groupChat = ChatManager.getInstance().getChat(account, groupchatContact);
 
         if (groupChat instanceof GroupChat) {

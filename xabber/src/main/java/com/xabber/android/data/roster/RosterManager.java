@@ -160,11 +160,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @Nullable
     public Presence getPresence(AccountJid account, ContactJid user) {
-        return PresenceManager.getInstance().getPresence(account, user);
+        return PresenceManager.INSTANCE.getPresence(account, user);
     }
 
     public List<Presence> getPresences(AccountJid account, Jid user) {
-        return PresenceManager.getInstance().getAvailablePresences(account, user.asBareJid());
+        return PresenceManager.INSTANCE.getAvailablePresences(account, user.asBareJid());
     }
 
     public boolean accountIsSubscribedTo(AccountJid account, ContactJid user) {
@@ -214,7 +214,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     public SubscriptionState getSubscriptionState(AccountJid account, ContactJid user) {
         boolean outgoingRequest = hasSubscriptionPending(account, user);
-        boolean incomingRequest = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
+        boolean incomingRequest = PresenceManager.INSTANCE.hasSubscriptionRequest(account, user);
         RosterPacket.ItemType subscription = getSubscriptionType(account, user);
 
         SubscriptionState state = new SubscriptionState(subscription);
@@ -454,7 +454,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             try {
                 roster.removeEntry(entry);
-                PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
+                PresenceManager.INSTANCE.clearSingleContactPresences(account, user.getBareJid());
                 for (OnChatUpdatedListener listener :
                         Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
                     listener.onAction();

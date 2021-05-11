@@ -416,7 +416,7 @@ public class Application extends android.app.Application {
         addManager(ColorManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
-        addManager(PresenceManager.getInstance());
+        addManager(PresenceManager.INSTANCE);
         addManager(RosterManager.getInstance());
         addManager(OTRManager.getInstance());
         addManager(CircleManager.getInstance());

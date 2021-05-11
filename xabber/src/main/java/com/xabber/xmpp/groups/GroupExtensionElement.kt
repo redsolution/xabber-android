@@ -27,10 +27,10 @@ open class GroupExtensionElement : ExtensionElement {
 }
 
 fun Stanza.hasGroupExtensionElement() =
-        this.hasExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE)
+    this.hasExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE)
 
 fun Stanza.getGroupExtensionElement(): GroupExtensionElement? =
-        this.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE)
+    this.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE)
 
 fun Stanza.hasGroupSystemMessage() =
-        this.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
+    this.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)

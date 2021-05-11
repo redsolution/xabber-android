@@ -245,7 +245,7 @@ public class BlockingManager implements OnAuthenticatedListener {
             }
 
             if (success) {
-                PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
+                PresenceManager.INSTANCE.clearSingleContactPresences(account, contactJid.getBareJid());
                 AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
                 if (chat != null) {
 //                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked),

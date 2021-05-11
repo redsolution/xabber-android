@@ -129,7 +129,7 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_accept_subscription).setOnMenuItemClickListener(
                 item -> {
                     try {
-                        PresenceManager.getInstance().acceptSubscription(account, user);
+                        PresenceManager.INSTANCE.acceptSubscription(account, user);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }
@@ -140,8 +140,7 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_discard_subscription).setOnMenuItemClickListener(
                 item -> {
                     try {
-                        PresenceManager.getInstance()
-                                .discardSubscription(account, user);
+                        PresenceManager.INSTANCE.discardSubscription(account, user);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }
@@ -181,7 +180,7 @@ public class ContextMenuHelper {
         // all menu items are visible by default
         // it allows to hide items in xml file without touching code
 
-        if (!PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+        if (!PresenceManager.INSTANCE.hasSubscriptionRequest(account, user)) {
             menu.findItem(R.id.action_accept_subscription).setVisible(false);
             menu.findItem(R.id.action_discard_subscription).setVisible(false);
         }

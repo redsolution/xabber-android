@@ -884,7 +884,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() != null && getChat() instanceof GroupChat) {
             // TODO should probably move to groupchat manager
             try {
-                PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), true);
+                PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), true);
             } catch (NetworkException e) {
                 e.printStackTrace();
             }
@@ -919,7 +919,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() != null && getChat() instanceof GroupChat) {
             // TODO should probably move to groupchat manager
             try {
-                PresenceManager.getInstance().sendPresenceToGroupchat(getChat(), false);
+                PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), false);
             } catch (NetworkException e) {
                 e.printStackTrace();
             }
@@ -2094,7 +2094,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inflateNewContactLayout(subscriptionState, inRoster);
         } else {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
-            PresenceManager.getInstance().clearSubscriptionRequestNotification(account, user);
+            PresenceManager.INSTANCE.clearSubscriptionRequestNotification(account, user);
         }
 
     }
@@ -2170,17 +2170,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                     || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {        // No active subscriptions.
 
                                 if (!subscriptionState.hasOutgoingSubscription()) {                                // No outgoing subscription at the moment
-                                    PresenceManager.getInstance().subscribeForPresence(account, user);             // So we try to subscribe for contact's presence.
+                                    PresenceManager.INSTANCE.subscribeForPresence(account, user);             // So we try to subscribe for contact's presence.
                                 }
                             }
                         }
                         if (subscriptionState.getSubscriptionType() == SubscriptionState.TO) {                   // If we are currently subscribed to contact
-                            PresenceManager.getInstance().addAutoAcceptSubscription(account, user);              // Preemptively allow incoming subscription request.
+                            PresenceManager.INSTANCE.addAutoAcceptSubscription(account, user);              // Preemptively allow incoming subscription request.
                         } else if (subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {          // If there are no subscriptions
                             if (subscriptionState.hasIncomingSubscription()) {                                   // If we have incoming subscription request
-                                PresenceManager.getInstance().acceptSubscription(account, user, false);  // "quietly" accept it (since we are in the process of
+                                PresenceManager.INSTANCE.acceptSubscription(account, user, false);  // "quietly" accept it (since we are in the process of
                             } else {                                                                             // adding a contact, we don't need to create unnecessary Action messages
-                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);          // or Preemptively allow incoming request.
+                                PresenceManager.INSTANCE.addAutoAcceptSubscription(account, user);          // or Preemptively allow incoming request.
                             }
                         }
                     }
@@ -2201,8 +2201,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user)){
                     GroupInviteManager.INSTANCE.declineInvitation(account, user);
                 }
-                PresenceManager.getInstance().discardSubscription(account, user);
-                PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+                PresenceManager.INSTANCE.discardSubscription(account, user);
+                PresenceManager.INSTANCE.unsubscribeFromPresence(account, user);
             } catch (NetworkException e) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
@@ -2229,7 +2229,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeNewContactLayout.setOnClickListener(v -> {
             if (subscriptionState.hasIncomingSubscription()) {                              // check if we have an incoming (IN) subscription
                 try {
-                    PresenceManager.getInstance().discardSubscription(account, user);       // discard it on "X"-press
+                    PresenceManager.INSTANCE.discardSubscription(account, user);       // discard it on "X"-press
                 } catch (NetworkException e) {
                     e.printStackTrace();
                 }

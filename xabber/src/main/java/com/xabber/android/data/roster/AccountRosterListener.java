@@ -47,7 +47,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     public void entriesUpdated(Collection<Jid> addresses) {
         LogManager.i(getLogTag(), "entriesUpdated " + addresses);
         RosterManager.getInstance().onContactsUpdated(account, addresses);
-        PresenceManager.getInstance().onRosterEntriesUpdated(account, addresses);
+        PresenceManager.INSTANCE.onRosterEntriesUpdated(account, addresses);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void presenceChanged(Presence presence) {
-        PresenceManager.getInstance().onPresenceChanged(account, presence);
+        PresenceManager.INSTANCE.onPresenceChanged(account, presence);
     }
 
     @Override

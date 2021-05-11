@@ -391,7 +391,7 @@ public class MessageManager implements OnPacketListener {
                             CaptchaManager.getInstance().removeCaptcha(account, contactJid);
                             // discard subscription
                             try {
-                                PresenceManager.getInstance().discardSubscription(account, contactJid);
+                                PresenceManager.INSTANCE.discardSubscription(account, contactJid);
                             } catch (NetworkException e) {
                                 e.printStackTrace();
                             }
@@ -405,7 +405,7 @@ public class MessageManager implements OnPacketListener {
                             CaptchaManager.getInstance().removeCaptcha(account, contactJid);
 
                             // show auth
-                            PresenceManager.getInstance().handleSubscriptionRequest(account, contactJid);
+                            PresenceManager.INSTANCE.handleSubscriptionRequest(account, contactJid);
                             sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_correct));
                         } else {

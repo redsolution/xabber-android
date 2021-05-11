@@ -427,7 +427,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private String getConnectedDevicesDescription() {
-        int connectedDevices = PresenceManager.getInstance().getAvailableAccountPresences(account).size();
+        int connectedDevices = PresenceManager.INSTANCE.getAvailableAccountPresences(account).size();
         if (connectedDevices != 0) {
             return getResources().getQuantityString(R.plurals.account_connected_devices, connectedDevices, connectedDevices);
         } else return getResources().getString(R.string.account_connected_devices_none);
@@ -437,7 +437,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTED_DEVICES:
-                if (PresenceManager.getInstance().getAvailableAccountPresences(account).size() > 0) {
+                if (PresenceManager.INSTANCE.getAvailableAccountPresences(account).size() > 0) {
                     startActivity(ConnectedDevicesActivity.createIntent(this, account));
                 }
                 break;

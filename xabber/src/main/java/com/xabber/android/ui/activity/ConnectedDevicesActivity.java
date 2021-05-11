@@ -112,7 +112,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
     }
 
     private void fillResourceList(List<View> resourcesList) {
-        List<Presence> allAccountPresences = PresenceManager.getInstance().getAvailableAccountPresences(account);
+        List<Presence> allAccountPresences = PresenceManager.INSTANCE.getAvailableAccountPresences(account);
 
         Resourcepart accountResource = null;
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -120,7 +120,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
             accountResource = accountItem.getConnection().getConfiguration().getResource();
         }
 
-        PresenceManager.sortPresencesByPriority(allAccountPresences);
+        PresenceManager.INSTANCE.sortPresencesByPriority(allAccountPresences);
         int thisDeviceIndex = processThisDevicePresence(allAccountPresences, resourcesList, accountResource);
         for (int i = 0; i < allAccountPresences.size(); i++) {
             if (i == thisDeviceIndex) continue;

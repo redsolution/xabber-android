@@ -125,8 +125,8 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
     private void discardSubscription() {
         try {
             // discard subscription
-            PresenceManager.getInstance().discardSubscription(account, user);
-            PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+            PresenceManager.INSTANCE.discardSubscription(account, user);
+            PresenceManager.INSTANCE.unsubscribeFromPresence(account, user);
         } catch (NetworkException e) {
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         }

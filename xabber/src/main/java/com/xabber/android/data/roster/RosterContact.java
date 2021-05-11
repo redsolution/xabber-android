@@ -112,7 +112,7 @@ public class RosterContact extends AbstractContact {
 
     @Override
     public StatusMode getStatusMode() {
-        return PresenceManager.getInstance().getStatusMode(account, contactJid);
+        return PresenceManager.INSTANCE.getStatusMode(account, contactJid);
     }
 
     @Override

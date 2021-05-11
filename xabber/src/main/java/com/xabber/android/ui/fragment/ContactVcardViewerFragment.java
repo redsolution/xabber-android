@@ -353,7 +353,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             }
         }
 
-        PresenceManager.sortPresencesByPriority(allPresences);
+        PresenceManager.INSTANCE.sortPresencesByPriority(allPresences);
 
         for (Presence presence : allPresences) {
             Jid fromJid = presence.getFrom();

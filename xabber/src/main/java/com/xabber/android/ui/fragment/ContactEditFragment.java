@@ -138,7 +138,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
     // Either set or restore checkbox values
     // and the text of TextViews paired with them.
     private void setPresenceSettings() {
-        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getContactJid());
+        boolean hasAutoAcceptSubscription = PresenceManager.INSTANCE.hasAutoAcceptSubscription(getAccount(), getContactJid());
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.BOTH:
                 setSendSubscriptionField(true, R.string.contact_subscription_send);
@@ -230,7 +230,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
             return;
         }
         boolean hasOutgoingSubscription = subscriptionState.hasOutgoingSubscription();
-        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getContactJid());
+        boolean hasAutoAcceptSubscription = PresenceManager.INSTANCE.hasAutoAcceptSubscription(getAccount(), getContactJid());
 
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.BOTH:
@@ -302,10 +302,10 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
                 }
                 try {
                     if (!chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().discardSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.discardSubscription(getAccount(), getContactJid());
                     }
                     if (!chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
                         AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
@@ -316,12 +316,12 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
             case SubscriptionState.TO:
                 try {
                     if (chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.addAutoAcceptSubscription(getAccount(), getContactJid());
                     } else {
-                        PresenceManager.getInstance().removeAutoAcceptSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.removeAutoAcceptSubscription(getAccount(), getContactJid());
                     }
                     if (!chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
                         AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
@@ -332,15 +332,15 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
             case SubscriptionState.FROM:
                 try {
                     if (!chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().discardSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.discardSubscription(getAccount(), getContactJid());
                     }
                     if (chkReceivePresence.isChecked()) {
                         if (subscriptionState.getPendingSubscription() != SubscriptionState.PENDING_OUT) {
-                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getContactJid());
+                            PresenceManager.INSTANCE.subscribeForPresence(getAccount(), getContactJid());
                         }
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT) {
-                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getContactJid());
+                            PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
                             AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }
@@ -352,19 +352,19 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
             case SubscriptionState.NONE:
                 try {
                     if (chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.addAutoAcceptSubscription(getAccount(), getContactJid());
                     } else {
-                        PresenceManager.getInstance().removeAutoAcceptSubscription(getAccount(), getContactJid());
+                        PresenceManager.INSTANCE.removeAutoAcceptSubscription(getAccount(), getContactJid());
                     }
                     if (chkReceivePresence.isChecked()) {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
-                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getContactJid());
+                            PresenceManager.INSTANCE.subscribeForPresence(getAccount(), getContactJid());
                         }
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT)  {
-                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getContactJid());
+                            PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
                             AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }

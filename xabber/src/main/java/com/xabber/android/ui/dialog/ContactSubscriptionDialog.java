@@ -60,7 +60,7 @@ public class ContactSubscriptionDialog extends BaseContactDialog {
 
     public void onAccept() {
         try {
-            PresenceManager.getInstance().acceptSubscription(getAccount(), getContact());
+            PresenceManager.INSTANCE.acceptSubscription(getAccount(), getContact());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
@@ -69,7 +69,7 @@ public class ContactSubscriptionDialog extends BaseContactDialog {
 
     public void onDecline() {
         try {
-            PresenceManager.getInstance().discardSubscription(getAccount(), getContact());
+            PresenceManager.INSTANCE.discardSubscription(getAccount(), getContact());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }

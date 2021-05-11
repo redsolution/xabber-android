@@ -700,7 +700,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             if (result.getPriority() != priority) {
                 result.setPriority(priority);
                 try {
-                    PresenceManager.getInstance().sendAccountPresence(account);
+                    PresenceManager.INSTANCE.sendAccountPresence(account);
                 } catch (NetworkException e) {
                     LogManager.exception(this, e);
                 }
@@ -953,7 +953,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(account);
         setStatus(accountItem, statusMode, statusText);
         try {
-            PresenceManager.getInstance().sendAccountPresence(account);
+            PresenceManager.INSTANCE.sendAccountPresence(account);
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
@@ -1035,7 +1035,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : accountItems.values()) {
             if (accountItem.isEnabled()) {
                 try {
-                    PresenceManager.getInstance().sendAccountPresence(accountItem.getAccount());
+                    PresenceManager.INSTANCE.sendAccountPresence(accountItem.getAccount());
                 } catch (NetworkException e) {
                     LogManager.exception(this, e);
                 }

@@ -53,7 +53,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     public StatusMode getStatusMode() {
-        return PresenceManager.getInstance().getStatusMode(account, contactJid);
+        return PresenceManager.INSTANCE.getStatusMode(account, contactJid);
     }
 
     public boolean isSubscribed() {
@@ -61,7 +61,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     public String getStatusText() {
-        final String statusText = PresenceManager.getInstance().getStatusText(account, contactJid);
+        final String statusText = PresenceManager.INSTANCE.getStatusText(account, contactJid);
         if (statusText == null) {
             return "";
         } else {
