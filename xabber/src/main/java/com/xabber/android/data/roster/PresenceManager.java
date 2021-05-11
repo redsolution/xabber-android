@@ -75,7 +75,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnLoadListener, OnAccountDisabledListener, OnPacketListener, OnHistoryLoaded,
-        OnDisconnectListener, OnAuthenticatedListener {
+        OnDisconnectListener, OnAuthenticatedListener, OnRosterReceivedListener {
 
     private static PresenceManager instance;
 
@@ -121,6 +121,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             } catch (NetworkException e) {
                 LogManager.exception(this, e);
             }
+        }
+    }
+
+    @Override
+    public void onRosterReceived(AccountItem accountItem) {
+        try {
+            sendAccountPresence(accountItem.getAccount());
+        } catch (NetworkException e) {
+            LogManager.exception(this, e);
         }
     }
 
