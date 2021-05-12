@@ -178,7 +178,7 @@ object MessageHandler {
         val id = UUID.randomUUID().toString()
 
         // groupchat
-        if (groupchatUser != null) GroupMemberManager.getInstance().saveGroupUser(groupchatUser, contactJid.bareJid)
+        if (groupchatUser != null) GroupMemberManager.saveGroupUser(groupchatUser, contactJid.bareJid)
 
         val forwardIdRealmObjects = parseForwardedMessage(messageStanza, id, chat!!)
 
@@ -308,7 +308,7 @@ object MessageHandler {
                 LogManager.e(this, "Got possible rewrite, todo implement handling")
                 return null
             }
-            GroupMemberManager.getInstance().saveGroupUser(groupchatUser, message.from.asBareJid())
+            GroupMemberManager.saveGroupUser(groupchatUser, message.from.asBareJid())
         }
 
         // forward comment (to support previous forwarded xep)

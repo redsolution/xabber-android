@@ -29,8 +29,8 @@ import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
 import com.xabber.android.utils.StringUtils
 
-class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
-        GroupchatMembersAdapter.OnMemberClickListener {
+class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener,
+    GroupchatMembersAdapter.OnMemberClickListener {
 
     private lateinit var arrowBackIv: ImageView
     private lateinit var clearIv: ImageView
@@ -50,7 +50,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
             val accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_TAG)!!)
             val contactJid = ContactJid.from(intent.getStringExtra(CONTACT_TAG))
             groupchat = ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
-        } catch (e: Exception){
+        } catch (e: Exception) {
             LogManager.exception(this.javaClass, e)
             finish()
         }
@@ -60,7 +60,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
         updateRecyclerView()
     }
 
-    private fun setupToolbar(){
+    private fun setupToolbar() {
 
         val isLightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
 
@@ -101,30 +101,34 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
 
     }
 
-    private fun setupRecyclerView(){
+    private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.filter_group_members_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = GroupchatMembersAdapter(arrayListOf<GroupMember>(), groupchat, this)
         recyclerView.adapter = adapter
     }
 
-    private fun updateRecyclerView(){
+    private fun updateRecyclerView() {
         if (filterString.isNotEmpty()) {
             val newList = ArrayList<GroupMember>()
-            for (groupchatMember in GroupMemberManager.getInstance()
-                    .getGroupMembers(groupchat.contactJid))
-                if (groupchatMember.nickname!!.toLowerCase().contains(filterString)
-                        || groupchatMember.nickname!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))
-                        || (groupchatMember.jid != null && groupchatMember.jid!!.toLowerCase().contains(filterString))
-                        || (groupchatMember.jid != null && groupchatMember.jid!!.toLowerCase().contains(StringUtils.translitirateToLatin(filterString))))
+            for (groupchatMember in GroupMemberManager.getGroupMembers(groupchat.contactJid))
+                if (groupchatMember?.nickname?.toLowerCase()?.contains(filterString) == true
+                    || groupchatMember?.nickname?.toLowerCase()
+                        ?.contains(StringUtils.translitirateToLatin(filterString)) == true
+                    || (groupchatMember?.jid != null
+                            && groupchatMember.jid?.toLowerCase()?.contains(filterString) == true)
+                    || (groupchatMember?.jid != null
+                            && groupchatMember.jid?.toLowerCase()?.contains(StringUtils.translitirateToLatin(filterString)) == true)
+                )
                     newList.add(groupchatMember)
             adapter.setItems(newList)
         } else {
-            val list = ArrayList(GroupMemberManager.getInstance()
-                    .getGroupMembers(groupchat.contactJid))
-            list.sortWith { o1: GroupMember, o2: GroupMember ->
-                if (o1.isMe && !o2.isMe) return@sortWith -1
-                if (o2.isMe && !o1.isMe) return@sortWith 1
+            val list = ArrayList(
+                GroupMemberManager.getGroupMembers(groupchat.contactJid)
+            )
+            list.sortWith { o1: GroupMember?, o2: GroupMember? ->
+                if (o1?.isMe == true && o2?.isMe != true) return@sortWith -1
+                if (o2?.isMe == true && o1?.isMe != true) return@sortWith 1
                 0
             }
             adapter.setItems(list)
@@ -135,7 +139,7 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
 
     override fun onResume() {
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupMemberManager.getInstance().requestGroupchatMembers(groupchat.account, groupchat.contactJid)
+        GroupMemberManager.requestGroupchatMembers(groupchat.account, groupchat.contactJid)
         super.onResume()
     }
 
@@ -160,18 +164,19 @@ class FilterGroupMembersActivity: ManagedActivity(), OnGroupchatRequestListener,
     }
 
     override fun onMemberClick(groupMember: GroupMember?) = startActivity(
-            createIntentForGroupchatAndMemberId(this, groupMember!!.id, groupchat))
+        createIntentForGroupchatAndMemberId(this, groupMember!!.id, groupchat)
+    )
 
     private fun isThisChat(account: AccountJid, contactJid: ContactJid) =
-            groupchat.account == account && groupchat.contactJid == contactJid
+        groupchat.account == account && groupchat.contactJid == contactJid
 
     private fun isThisChat(groupchat: GroupChat) = this.groupchat == groupchat
 
-    companion object{
+    companion object {
         private const val ACCOUNT_TAG = "com.xabber.android.ui.activity.FilterGroupMembersActivity.ACCOUNT_TAG"
         private const val CONTACT_TAG = "com.xabber.android.ui.activity.FilterGroupMembersActivity.CONTACT_TAG"
 
-        fun createIntent(context: Context, account: AccountJid, contactJid: ContactJid): Intent{
+        fun createIntent(context: Context, account: AccountJid, contactJid: ContactJid): Intent {
             return Intent(context, FilterGroupMembersActivity::class.java).apply {
 
                 putExtra(ACCOUNT_TAG, account.fullJid.toString())

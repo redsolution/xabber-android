@@ -204,8 +204,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     private void requestLists() {
-        GroupMemberManager.getInstance().requestGroupchatMembers(account, groupchatContact);
-        GroupMemberManager.getInstance().requestMe(account, groupchatContact);
+        GroupMemberManager.INSTANCE.requestGroupchatMembers(account, groupchatContact);
+        GroupMemberManager.INSTANCE.requestMe(account, groupchatContact);
         membersProgress.setVisibility(View.VISIBLE);
     }
 
@@ -285,8 +285,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
 
-            ArrayList<GroupMember> list = new ArrayList<>(GroupMemberManager.getInstance()
-                    .getGroupMembers(groupchatContact));
+            ArrayList<GroupMember> list =
+                    new ArrayList<>(GroupMemberManager.INSTANCE.getGroupMembers(groupchatContact));
 
             Collections.sort(list, (o1, o2) -> {
                 if (o1.isMe() && !o2.isMe()) return -1;

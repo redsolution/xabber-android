@@ -43,7 +43,6 @@ import com.xabber.xmpp.groups.status.GroupStatusFormRequestIQ
 import com.xabber.xmpp.groups.system_message.GroupSystemMessageExtensionElement
 import com.xabber.xmpp.smack.XMPPTCPConnection
 import com.xabber.xmpp.vcard.VCard
-import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Stanza
@@ -100,29 +99,28 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             val presence = packet.getExtension(GroupPresenceExtensionElement.NAMESPACE) as GroupPresenceExtensionElement
             val accountJid = AccountJid.from(packet.to.toString())
             val contactJid = ContactJid.from(packet.from).bareUserJid
-            var chat = ChatManager.getInstance().getChat(accountJid, contactJid)
-            if (chat == null) chat = ChatManager.getInstance().createGroupChat(accountJid, contactJid)
-            if (chat is RegularChat) {
-                ChatManager.getInstance().removeChat(chat)
-                chat = ChatManager.getInstance().createGroupChat(accountJid, contactJid)
-            }
-            val groupChat = chat as GroupChat? ?: return
+            val chat =
+                (ChatManager.getInstance().getChat(accountJid, contactJid) as? RegularChat)
+                    ?.let { regularChat ->
+                        ChatManager.getInstance().removeChat(regularChat)
+                        ChatManager.getInstance().createGroupChat(accountJid, contactJid)
+                    } ?: ChatManager.getInstance().createGroupChat(accountJid, contactJid)
             if (presence.pinnedMessageId != null
                 && presence.pinnedMessageId.isNotEmpty()
                 && presence.pinnedMessageId != "0"
             ) {
                 val pinnedMessage = MessageRepository.getMessageFromRealmByStanzaId(presence.pinnedMessageId)
                 if (pinnedMessage == null || pinnedMessage.timestamp == null) {
-                    loadMessageByStanzaId(groupChat, presence.pinnedMessageId)
+                    loadMessageByStanzaId(chat, presence.pinnedMessageId)
                 }
-                groupChat.pinnedMessageId = presence.pinnedMessageId
+                chat.pinnedMessageId = presence.pinnedMessageId
             }
-            groupChat.name = presence.name
-            groupChat.numberOfOnlineMembers = presence.presentMembers
+            chat.name = presence.name
+            chat.numberOfOnlineMembers = presence.presentMembers
             Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java)
                 .forEachOnUi { listener -> listener.onGroupPresenceUpdated(contactJid) }
             //todo etc...
-            ChatManager.getInstance().saveOrUpdateChatDataToRealm(groupChat)
+            ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
         } catch (e: Exception) {
             LogManager.exception(this::class.java.simpleName, e)
         }
@@ -173,11 +171,11 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         accountJid: AccountJid,
         server: String,
         groupName: String,
-        description: String,
+        groupDescription: String,
         localpart: String,
-        membershipType: GroupMembershipType,
-        indexType: GroupIndexType = GroupIndexType.NONE,
-        privacyType: GroupPrivacyType = GroupPrivacyType.NONE,
+        groupMembershipType: GroupMembershipType,
+        groupIndexType: GroupIndexType = GroupIndexType.NONE,
+        groupPrivacyType: GroupPrivacyType = GroupPrivacyType.NONE,
         listener: BaseIqResultUiListener? = null
     ) {
         try {
@@ -188,31 +186,30 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     server,
                     groupName,
                     localpart,
-                    description,
-                    membershipType,
-                    privacyType,
-                    indexType
+                    groupDescription,
+                    groupMembershipType,
+                    groupPrivacyType,
+                    groupIndexType
                 ),
                 { packet: Stanza ->
-                    if (packet is IQ && packet.type == IQ.Type.result) {
+                    if (packet is ResultIq && packet.type == IQ.Type.result) {
                         LogManager.d(this::class.java.simpleName, "Groupchat successfully created")
-                        if (packet is ResultIq) {
-                            try {
-                                val contactJid = ContactJid.from(packet.jid)
-                                val account = AccountJid.from(packet.getTo().toString())
-                                addAutoAcceptGroupSubscription(account, contactJid)
-                                requestSubscription(account, contactJid, false)
-                                val createdGroup = ChatManager.getInstance().createGroupChat(account, contactJid)
-                                createdGroup.name = groupName
-                                createdGroup.description = description
-                                createdGroup.indexType = indexType
-                                createdGroup.membershipType = membershipType
-                                createdGroup.privacyType = privacyType
-                                listener?.onResult()
-                            } catch (e: Exception) {
-                                LogManager.exception(this::class.java.simpleName, e)
-                                listener?.onOtherError(e)
+                        try {
+                            val contactJid = ContactJid.from(packet.jid)
+                            val account = AccountJid.from(packet.getTo().toString())
+                            addAutoAcceptGroupSubscription(account, contactJid)
+                            requestSubscription(account, contactJid, false)
+                            ChatManager.getInstance().createGroupChat(account, contactJid).apply {
+                                name = groupName
+                                description = groupDescription
+                                indexType = groupIndexType
+                                membershipType = groupMembershipType
+                                privacyType = groupPrivacyType
                             }
+                            listener?.onResult()
+                        } catch (e: Exception) {
+                            LogManager.exception(this::class.java.simpleName, e)
+                            listener?.onOtherError(e)
                         }
                     }
                 },

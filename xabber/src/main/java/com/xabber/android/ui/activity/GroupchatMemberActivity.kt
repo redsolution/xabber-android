@@ -72,8 +72,8 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private var accountJid: AccountJid? = null
     private var groupchatJid: ContactJid? = null
-    private var groupMember: GroupMember? = null
-    private var groupchat: GroupChat? = null
+    lateinit private var groupMember: GroupMember
+    lateinit private var groupchat: GroupChat
 
     private var toolbar: Toolbar? = null
     private var contactTitleView: View? = null
@@ -135,8 +135,9 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        groupMember = GroupMemberManager.getInstance()
-            .getGroupMemberById(intent.getStringExtra(GROUPCHAT_MEMBER_ID))
+        intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
+            groupMember = GroupMemberManager.getGroupMemberById(it) ?: return
+        }
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
@@ -201,7 +202,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.scrollable_container,
-                GroupMemberRightsFragment(groupMember!!, groupchat!!),
+                GroupMemberRightsFragment(groupMember, groupchat),
                 GroupMemberRightsFragment.TAG
             )
             .commit()
@@ -210,7 +211,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private fun setupNameBlock() {
         val nameTv = findViewById<TextView>(R.id.name)
-        nameTv.text = (groupMember?.bestName + " " + groupMember?.badge)
+        nameTv.text = (groupMember.bestName + " " + groupMember.badge)
         nameTv.setOnClickListener {
             val adb = AlertDialog.Builder(this)
             adb.setTitle(getString(R.string.groupchat_member_nickname))
@@ -220,24 +221,23 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            et.hint = groupMember?.nickname
+            et.hint = groupMember.nickname
             adb.setView(et, 56, 0, 56, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
-                GroupMemberManager.getInstance()
-                    .sendSetMemberNicknameIqRequest(groupchat, groupMember, et.text.toString())
+                GroupMemberManager.sendSetMemberNicknameIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()
         }
-        if (groupchat!!.privacyType!! != GroupPrivacyType.INCOGNITO)
-            findViewById<TextView>(R.id.address_text).text = (groupMember!!.jid)
+        if (groupchat.privacyType!! != GroupPrivacyType.INCOGNITO)
+            findViewById<TextView>(R.id.address_text).text = (groupMember.jid)
 
         findViewById<TextView>(R.id.groupchat_member_title).text = getString(
             R.string.groupchat_member_of_group_name,
-            groupMember?.role?.capitalize(Locale.getDefault()),
-            groupchat?.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
-            groupchat?.name
+            groupMember.role?.capitalize(Locale.getDefault()),
+            groupchat.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
+            groupchat.name
         )
     }
 
@@ -261,7 +261,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupMemberManager.getInstance().requestGroupchatMemberInfo(groupchat, groupMember?.id)
+        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember?.id)
         appBarResize()
     }
 
@@ -365,10 +365,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             if (newAvatarImageUri == null) {
                 try {
                     //publishing empty (avatar) metadata
-                    GroupMemberManager.getInstance().removeMemberAvatar(
-                        groupchat,
-                        groupMember?.id
-                    )
+                    GroupMemberManager.removeMemberAvatar(groupchat, groupMember.id)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
                     onAvatarSettingEnded(false)
@@ -376,10 +373,13 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 }
             } else if (avatarData != null) {
                 try {
-                    GroupMemberManager.getInstance().publishMemberAvatar(
+                    GroupMemberManager.publishMemberAvatar(
                         groupchat,
-                        groupMember?.id, avatarData, AccountActivity.FINAL_IMAGE_SIZE,
-                        AccountActivity.FINAL_IMAGE_SIZE, imageFileType
+                        groupMember.id,
+                        avatarData ?: return@runInBackgroundUserRequest,
+                        AccountActivity.FINAL_IMAGE_SIZE,
+                        AccountActivity.FINAL_IMAGE_SIZE,
+                        imageFileType ?: return@runInBackgroundUserRequest
                     )
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
@@ -692,7 +692,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                     ), MainActivity.CODE_OPEN_CHAT
                 )
             } else {
-                GroupMemberManager.getInstance().createChatWithIncognitoMember(groupchat!!, groupMember)
+                GroupMemberManager.createChatWithIncognitoMember(groupchat!!, groupMember)
             }
         }
 
@@ -739,8 +739,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
-                GroupMemberManager.getInstance()
-                    .sendSetMemberBadgeIqRequest(groupchat, groupMember, et.text.toString())
+                GroupMemberManager.sendSetMemberBadgeIqRequest(groupchat, groupMember, et.text.toString())
             }
             adb.show()
         }
@@ -790,7 +789,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 "                                 " + context.getString(R.string.groupchat_kick)
             )
             { _, _ ->
-                GroupMemberManager.getInstance().kickMember(groupMember, groupchat,
+                GroupMemberManager.kickMember(groupMember, groupchat,
                     object : BaseIqResultUiListener {
                         override fun onSend() {}
                         override fun onIqError(error: XMPPError) {
@@ -829,7 +828,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 "                                 " + context.getString(R.string.groupchat_kick_and_block)
             )
             { _, _ ->
-                GroupMemberManager.getInstance().kickAndBlockMember(groupMember, groupchat,
+                GroupMemberManager.kickAndBlockMember(groupMember, groupchat,
                     object : BaseIqResultUiListener {
                         override fun onSend() {}
 

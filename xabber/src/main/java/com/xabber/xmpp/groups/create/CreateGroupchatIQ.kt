@@ -9,16 +9,22 @@ import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.Jid
 
-class CreateGroupchatIQ(val contact: Jid, to: String, val groupName: String?, private val groupLocalpart: String?,
-                        val description: String?, private val membershipType: GroupMembershipType,
-                        private val privacyType: GroupPrivacyType, private val indexType: GroupIndexType)
-    : GroupchatCreateAbstractIQ() {
+class CreateGroupchatIQ(
+    val contact: Jid,
+    to: String,
+    val groupName: String?,
+    private val groupLocalpart: String?,
+    val description: String?,
+    private val membershipType: GroupMembershipType,
+    private val privacyType: GroupPrivacyType,
+    private val indexType: GroupIndexType
+) : GroupchatCreateAbstractIQ() {
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()
 
-        append(SimpleNamedElement(NAME_ELEMENT, groupName!!).toXML())
-        append(SimpleNamedElement(DESCRIPTION_ELEMENT, description!!).toXML())
+        (groupName)?.let { append(SimpleNamedElement(NAME_ELEMENT, groupName).toXML()) }
+        (description)?.let { append(SimpleNamedElement(DESCRIPTION_ELEMENT, description).toXML()) }
         append(SimpleNamedElement(MEMBERSHIP_ELEMENT, membershipType.toXml()).toXML())
         append(SimpleNamedElement(PRIVACY_ELEMENT, privacyType.toXml()).toXML())
         append(SimpleNamedElement(INDEX_ELEMENT, indexType.toXml()).toXML())
@@ -27,7 +33,6 @@ class CreateGroupchatIQ(val contact: Jid, to: String, val groupName: String?, pr
 
         if (groupLocalpart != null && groupLocalpart.isNotEmpty())
             append(SimpleNamedElement(LOCALPART_ELEMENT, groupLocalpart).toXML())
-
     }
 
     private class ContactsNamedElement(val contactJid: String) : NamedElement {
@@ -66,7 +71,7 @@ class CreateGroupchatIQ(val contact: Jid, to: String, val groupName: String?, pr
     /**
      * WARN! This is not a fully implemented class
      */
-    class ResultIq(val localpart: String) : IQ(ELEMENT, NAMESPACE + HASH_BLOCK){
+    class ResultIq(val localpart: String) : IQ(ELEMENT, NAMESPACE + HASH_BLOCK) {
         val jid: String
             get() = "$localpart@$from"
 

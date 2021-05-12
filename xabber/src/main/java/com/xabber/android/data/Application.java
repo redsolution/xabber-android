@@ -443,7 +443,7 @@ public class Application extends android.app.Application {
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
         addManager(GroupsManager.INSTANCE);
-        addManager(GroupMemberManager.getInstance());
+        addManager(GroupMemberManager.INSTANCE);
         addManager(RetractManager.getInstance());
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());

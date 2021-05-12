@@ -210,7 +210,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
 
         fun setGroupRegular(){
-            val nickname = GroupMemberManager.getInstance().getGroupMemberById(lastMessage!!.groupchatUserId)?.nickname
+            val nickname = GroupMemberManager.getGroupMemberById(lastMessage!!.groupchatUserId)?.nickname
             val sender = StringUtils.getColoredText((nickname ?: "") + ":", holder.accountColorIndicator!!)
             holder.messageTextTV.text = Html.fromHtml("$sender ${getDecodedTextIfPossible()}")
         }

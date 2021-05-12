@@ -34,6 +34,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
@@ -261,6 +262,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         GroupChat chat = new GroupChat(account, groupJid);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
+        GroupMemberManager.INSTANCE.requestMe(account, groupJid);
         return chat;
     }
 

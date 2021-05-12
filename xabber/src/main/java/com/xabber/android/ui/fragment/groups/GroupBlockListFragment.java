@@ -95,7 +95,7 @@ public class GroupBlockListFragment extends Fragment implements GroupchatSelecto
         AbstractChat chat = ChatManager.getInstance().getChat(account, groupchatContact);
         if (chat instanceof GroupChat) {
             groupChat = (GroupChat) chat;
-            GroupMemberManager.getInstance().requestGroupchatBlocklistList(account, groupchatContact, this, this);
+            GroupMemberManager.INSTANCE.requestGroupchatBlocklistList(account, groupchatContact, this, this);
         } else {
             requireActivity().finish();
         }
@@ -186,9 +186,9 @@ public class GroupBlockListFragment extends Fragment implements GroupchatSelecto
             return;
         }
         if (selectedElements.size() == 1) {
-            GroupMemberManager.getInstance().unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
+            GroupMemberManager.INSTANCE.unblockGroupchatBlockedElement(account, groupchatContact, selectedElements.get(0));
         } else {
-            GroupMemberManager.getInstance().unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
+            GroupMemberManager.INSTANCE.unblockGroupchatBlockedElements(account, groupchatContact, selectedElements);
         }
     }
 

@@ -65,9 +65,8 @@ object GroupInviteManager : OnLoadListener {
                 }
                 invitesList.add(giro)
                 GroupInviteRepository.saveOrUpdateInviteToRealm(giro)
-                if (ChatManager.getInstance().getChat(account, groupContactJid) is RegularChat) {
-                    ChatManager.getInstance().removeChat(account, groupContactJid)
-                }
+                (ChatManager.getInstance().getChat(account, groupContactJid) as? RegularChat)
+                    .let { ChatManager.getInstance().removeChat(it) }
                 ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
                 UserAvatarManager.getInstanceFor(AccountManager.getInstance().getAccount(account)?.connection)

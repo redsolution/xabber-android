@@ -276,7 +276,7 @@ public class MessageNotificationCreator {
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
         if (chat.isGroupChat()){
             List<MessageNotificationManager.Message> messages = chat.getMessages();
-            GroupMember member = GroupMemberManager.getInstance()
+            GroupMember member = GroupMemberManager.INSTANCE
                     .getGroupMemberById(messages.get(messages.size() - 1).getGroupMemberId());
             return AvatarManager.getInstance().getGroupMemberCircleBitmap(member, chat.getAccountJid());
         } else {
@@ -288,7 +288,7 @@ public class MessageNotificationCreator {
     private Bitmap getMyAvatarBitmap(MessageNotificationManager.Chat chat){
         if (chat.isGroupChat()){
             return AvatarManager.getInstance().getGroupMemberCircleBitmap(
-                    GroupMemberManager.getInstance().getMe(chat.getContactJid()), chat.getAccountJid());
+                    GroupMemberManager.INSTANCE.getMe(chat.getContactJid()), chat.getAccountJid());
         } else return AvatarManager.getInstance().getAccountCircleBitmapAvatar(chat.getAccountJid());
     }
 
@@ -422,7 +422,7 @@ public class MessageNotificationCreator {
     private NotificationCompat.Action createReplyAction(MessageNotificationManager.Chat chat, AccountJid accountJid) {
         String label;
         if (chat.isGroupChat() && chat.getPrivacyType().equals(GroupPrivacyType.INCOGNITO)){
-            GroupMember me = GroupMemberManager.getInstance().getMe(chat.getContactJid());
+            GroupMember me = GroupMemberManager.INSTANCE.getMe(chat.getContactJid());
             if ( me != null){
                 label = context.getString(R.string.groupchat_reply_as, me.getNickname());
             } else label = context.getString(R.string.groupchat_incognito_reply);

@@ -78,6 +78,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -88,7 +89,6 @@ import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
@@ -683,9 +683,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                if (GroupMemberManager.getInstance().getGroupMemberById(message.getGroupchatUserId()) != null){
-                    pinnedMessageHeaderTv.setText(GroupMemberManager.getInstance()
-                            .getGroupMemberById(message.getGroupchatUserId()).getBestName());
+                if (GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()) != null){
+                    pinnedMessageHeaderTv.setText(
+                            GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()).getBestName());
                 } else {
                     pinnedMessageHeaderTv.setText(message.getUser().toString());
                 }
@@ -701,8 +701,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            GroupMember member = GroupMemberManager.getInstance()
-                    .getGroupMemberById(message.getGroupchatUserId());
+            GroupMember member = GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId());
             if (member != null){
                 if (member.getBadge() != null){
                     pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
@@ -712,8 +711,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 if (member.getRole() != null){
                     pinnedMessageRoleTv.setVisibility(View.VISIBLE);
                     pinnedMessageRoleTv.setText(member.getRole());
-                    pinnedMessageRoleTv.setBackgroundColor(ColorManager.getInstance()
-                            .getAccountPainter().getAccountColorWithTint(getAccount(), 50));
+                    pinnedMessageRoleTv.setBackgroundColor(
+                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(getAccount(), 50));
                 } else pinnedMessageRoleTv.setVisibility(View.GONE);
             }
 

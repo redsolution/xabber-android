@@ -21,8 +21,8 @@ import com.xabber.android.ui.color.ColorManager
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: GroupChat)
-    : Fragment(), OnGroupMemberRightsListener, RightsFormListAdapter.Listener {
+class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: GroupChat) : Fragment(),
+    OnGroupMemberRightsListener, RightsFormListAdapter.Listener {
 
     var recyclerView: RecyclerView? = null
     var adapter: RightsFormListAdapter? = null
@@ -31,8 +31,10 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
 
     private val newFields = mutableMapOf<String, FormField>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         val view = inflater.inflate(R.layout.simple_nested_scroll_with_recycler_view, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
@@ -40,8 +42,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                groupchat.contactJid, groupMember)
+        GroupMemberManager.requestGroupchatMemberRightsForm(groupchat.account, groupchat.contactJid, groupMember)
 
         return view
     }
@@ -57,9 +58,11 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
     }
 
     private fun setupRecyclerViewWithDataForm(dataForm: DataForm) {
-        adapter = RightsFormListAdapter(dataForm,
-                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
-                fragmentManager!!, this)
+        adapter = RightsFormListAdapter(
+            dataForm,
+            ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
+            fragmentManager!!, this
+        )
 
         recyclerView?.adapter = adapter
         adapter?.notifyDataSetChanged()
@@ -67,10 +70,12 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
     }
 
     override fun onSuccessfullyChanges(groupchat: GroupChat) {
-        if (isThisGroup(groupchat)){
+        if (isThisGroup(groupchat)) {
             newFields.clear()
-            GroupMemberManager.getInstance().requestGroupchatMemberRightsForm(groupchat.account,
-                    groupchat.contactJid, groupMember)
+            GroupMemberManager.requestGroupchatMemberRightsForm(
+                groupchat.account,
+                groupchat.contactJid, groupMember
+            )
             notifyActivityAboutNewFieldSizeChanged()
         }
     }
@@ -86,7 +91,8 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
         if (isThisGroup(groupchat))
             for (field in iq.dataFrom!!.fields)
                 if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
-                        && groupMember.id == field.values[0]) {
+                    && groupMember.id == field.values[0]
+                ) {
                     oldDataForm = iq.dataFrom
                     Application.getInstance().runOnUiThread {
                         setupRecyclerViewWithDataForm(iq.dataFrom!!)
@@ -163,8 +169,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
         return newDataForm
     }
 
-    fun sendSaveRequest() = GroupMemberManager.getInstance()
-            .requestGroupchatMemberRightsChange(groupchat, createNewDataFrom())
+    fun sendSaveRequest() = GroupMemberManager.requestGroupchatMemberRightsChange(groupchat, createNewDataFrom())
 
     companion object {
         const val TAG = "com.xabber.android.ui.fragment.GroupchatMemberInfoFragment"
