@@ -400,7 +400,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             }
             Presence.Type.unsubscribe, Presence.Type.unsubscribed ->
                 if (ChatManager.getInstance().getChat(connection.getAccount(), from) is GroupChat) {
-                    GroupsManager.getInstance().onUnsubscribePresence(connection.getAccount(), from)
+                    GroupsManager.onUnsubscribePresence(connection.getAccount(), from)
                     LogManager.d(PresenceManager::class.java.simpleName, "Got unsubscribed from group chat")
                 }
             Presence.Type.error -> {
@@ -443,7 +443,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     try {
                         discardSubscription(account, ContactJid.from(from.toString()))
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        LogManager.exception(this::class.java.simpleName, e)
                     }
                     return
                 }
@@ -459,7 +459,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                             try {
                                 discardSubscription(account, ContactJid.from(from.toString()))
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                LogManager.exception(this::class.java.simpleName, e)
                             }
                             return
                         }
@@ -532,7 +532,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     createChatForNewContact(account, user)
                 }
             } catch (e: ContactJidCreateException) {
-                e.printStackTrace()
+                LogManager.exception(this::class.java.simpleName, e)
             }
         }
     }

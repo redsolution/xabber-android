@@ -442,7 +442,7 @@ public class Application extends android.app.Application {
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
-        addManager(GroupsManager.getInstance());
+        addManager(GroupsManager.INSTANCE);
         addManager(GroupMemberManager.getInstance());
         addManager(RetractManager.getInstance());
         addManager(DeliveryManager.getInstance());

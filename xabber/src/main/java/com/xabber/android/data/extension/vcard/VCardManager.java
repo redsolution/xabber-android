@@ -300,7 +300,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
 
         try {
             if(ChatManager.getInstance().getChat(account, ContactJid.from(bareAddress)) instanceof GroupChat){
-                GroupsManager.getInstance().processVcard(account, ContactJid.from(bareAddress), vCard);
+                GroupsManager.INSTANCE.processVcard(account, ContactJid.from(bareAddress), vCard);
             }
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);

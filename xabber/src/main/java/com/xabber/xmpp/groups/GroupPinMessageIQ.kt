@@ -7,7 +7,7 @@ import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.Jid
 
-class GroupPinMessageIQ(to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
+class GroupPinMessageIQ(to: Jid, val messageId: String) : IQ(UPDATE_ELEMENT_NAME, NAMESPACE) {
 
     init {
         this.type = Type.set
@@ -27,7 +27,7 @@ class GroupPinMessageIQ(to: Jid, val messageId: String): IQ(UPDATE_ELEMENT_NAME,
         const val UPDATE_ELEMENT_NAME = "update"
     }
 
-    private class GroupPinMessageElement(private val messageStanzaId: String): NamedElement {
+    private class GroupPinMessageElement(private val messageStanzaId: String) : NamedElement {
 
         override fun getElementName() = PINNED_ELEMENT_NAME
 

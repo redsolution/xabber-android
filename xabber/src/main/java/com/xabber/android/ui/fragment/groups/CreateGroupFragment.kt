@@ -310,8 +310,8 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
         }
         circlesLayout.visibility = View.VISIBLE
 
-        val serversList = GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(accountJid)
-            ?: GroupsManager.getInstance().getCustomGroupServers(accountJid)
+        val serversList = GroupsManager.getAvailableGroupchatServersForAccountJid(accountJid)
+            ?: GroupsManager.getCustomGroupServers(accountJid)
         if (serversList != null && serversList.isNotEmpty()) {
             serverTv.text = "\u200A@\u200A${serversList.first()}"
         } else {
@@ -325,10 +325,11 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
     private fun createListOfServers(): MutableList<Pair<String, GroupServerType>> {
         val list = mutableListOf<Pair<String, GroupServerType>>()
+        val selected = accountSpinner.selected
 
         if (AccountManager.getInstance().enabledAccounts.size <= 1) {
 
-            val serversList = GroupsManager.getInstance()
+            val serversList = GroupsManager
                 .getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
 
             if (serversList != null && serversList.isNotEmpty()) {
@@ -337,8 +338,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
                 }
             }
 
-            val customServersList = GroupsManager.getInstance()
-                .getCustomGroupServers(AccountManager.getInstance().firstAccount)
+            val customServersList = GroupsManager.getCustomGroupServers(AccountManager.getInstance().firstAccount)
 
             if (customServersList != null && customServersList.isNotEmpty()) {
                 for (jid in customServersList) {
@@ -346,15 +346,14 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
                 }
             }
 
-        } else if (accountSpinner.selected != null) {
-            val serversList = GroupsManager.getInstance()
-                .getAvailableGroupchatServersForAccountJid(accountSpinner.selected)
+        } else if (selected != null) {
+            val serversList = GroupsManager.getAvailableGroupchatServersForAccountJid(selected)
             if (serversList != null && serversList.isNotEmpty()) {
                 for (jid in serversList) {
                     list.add(Pair(jid.toString(), GroupServerType.providedByOwnServer))
                 }
             }
-            val customServersList = GroupsManager.getInstance().getCustomGroupServers(accountSpinner.selected)
+            val customServersList = GroupsManager.getCustomGroupServers(selected)
             if (customServersList != null && customServersList.isNotEmpty()) {
                 for (jid in customServersList) {
                     list.add(Pair(jid, GroupServerType.custom))
@@ -394,8 +393,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
             setView(linearLayout)
             setPositiveButton(getString(R.string.add)) { _, _ ->
                 serverTv.text = "\u200A@\u200A${editText.text}"
-                GroupsManager.getInstance()
-                    .saveCustomGroupServer(accountSpinner.selected ?: account, editText.text.toString())
+                GroupsManager.saveCustomGroupServer(accountSpinner.selected ?: account, editText.text.toString())
             }
             setNegativeButton(R.string.cancel) { _, _ -> }
         }
@@ -406,14 +404,14 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
         serverTv.apply {
             setOnClickListener { openServerDialog() }
             if (AccountManager.getInstance().enabledAccounts.size == 1) {
-                val servers = GroupsManager.getInstance().getAvailableGroupchatServersForAccountJid(
+                val servers = GroupsManager.getAvailableGroupchatServersForAccountJid(
                     AccountManager.getInstance().firstAccount
                 )
                 if (servers != null && servers.size != 0) {
                     text = "\u200A@\u200A${servers.first()}"
                     return@apply
                 }
-                val customServers = GroupsManager.getInstance().getCustomGroupServers(
+                val customServers = GroupsManager.getCustomGroupServers(
                     AccountManager.getInstance().firstAccount
                 )
                 if (customServers != null && customServers.size != 0)
@@ -443,7 +441,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
         val server = serverTv.text.substring(3 until serverTv.text.length)
 
-        GroupsManager.getInstance().sendCreateGroupchatRequest(
+        GroupsManager.sendCreateGroupchatRequest(
             accountSpinner.selected ?: getAccount(),
             server, groupNameEt.text.toString(), groupDescriptionEt.text.toString(),
             groupJidEt.text.toString(), membershipType, indexType, privacyType, this
@@ -544,7 +542,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     }
 
     override fun onServerDeleted(server: String) {
-        GroupsManager.getInstance().removeCustomGroupServer(accountSpinner.selected ?: getAccount(), server)
+        GroupsManager.removeCustomGroupServer(accountSpinner.selected ?: getAccount(), server)
     }
 
     interface Listener {

@@ -23,7 +23,7 @@ import org.jivesoftware.smackx.xdata.packet.DataForm
 import java.util.*
 
 class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEditorFragment(),
-        OnGroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
+    OnGroupSettingsResultsListener, GroupSettingsFormListAdapter.Listener {
 
     init {
         account = groupchat.account
@@ -35,8 +35,10 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     private val newFields = mutableMapOf<String, FormField>()
     private var contactCircles = ArrayList<String>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.groupchat_update_settings_fragment, container, false)
         recyclerView = view.findViewById(R.id.recyclerView)
         var llm = LinearLayoutManager(context).apply {
@@ -44,7 +46,8 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
         }
         recyclerView.layoutManager = llm
 
-        view.findViewById<TextView>(R.id.select_circles_text_view).setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
+        view.findViewById<TextView>(R.id.select_circles_text_view)
+            .setTextColor(ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account))
 
         return view
     }
@@ -67,7 +70,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     override fun getContactJid() = groupchat.contactJid
 
     private fun sendRequestGroupSettingsDataForm() {
-        GroupsManager.getInstance().requestGroupSettingsForm(groupchat)
+        GroupsManager.requestGroupSettingsForm(groupchat)
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
@@ -77,7 +80,7 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     }
 
     private fun sendSetNewSettingsRequest() {
-        GroupsManager.getInstance().sendSetGroupSettingsRequest(groupchat, createNewDataForm())
+        GroupsManager.sendSetGroupSettingsRequest(groupchat, createNewDataForm())
         (activity as GroupchatUpdateSettingsActivity).showProgressBar(true)
     }
 
@@ -111,9 +114,11 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
 
     private fun updateViewWithDataForm(dataForm: DataForm) {
         val avatar = RosterManager.getInstance().getAbstractContact(account, contactJid).avatar
-        val adapter = GroupSettingsFormListAdapter(dataForm,
-                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account),
-                this, groupchat.contactJid.bareJid.toString(), avatar)
+        val adapter = GroupSettingsFormListAdapter(
+            dataForm,
+            ColorManager.getInstance().accountPainter.getAccountSendButtonColor(account),
+            this, groupchat.contactJid.bareJid.toString(), avatar
+        )
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
@@ -197,10 +202,13 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
 
     override fun onGroupSettingsSuccessfullyChanged(groupchat: GroupChat) {
         if (!isThisGroup(groupchat)) return
-        GroupsManager.getInstance().requestGroupSettingsForm(groupchat)
+        GroupsManager.requestGroupSettingsForm(groupchat)
         Application.getInstance().runOnUiThread {
-            Toast.makeText(context, R.string.groupchat_permissions_successfully_changed,
-                    Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                R.string.groupchat_permissions_successfully_changed,
+                Toast.LENGTH_SHORT
+            ).show()
             newFields.clear()
             (activity as GroupchatUpdateSettingsActivity).showProgressBar(false)
             (activity as GroupchatUpdateSettingsActivity).showToolbarButtons(false)
@@ -210,8 +218,11 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     override fun onErrorAtDataFormRequesting(groupchat: GroupChat) {
         if (!isThisGroup(groupchat)) return
         Application.getInstance().runOnUiThread {
-            Toast.makeText(context, getString(R.string.groupchat_failed_to_retrieve_settings_data_form),
-                    Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                getString(R.string.groupchat_failed_to_retrieve_settings_data_form),
+                Toast.LENGTH_SHORT
+            ).show()
             (activity as GroupchatUpdateSettingsActivity).showToolbarButtons(false)
         }
     }
@@ -219,8 +230,10 @@ class GroupUpdateSettingsFragment(private val groupchat: GroupChat) : CircleEdit
     override fun onErrorAtSettingsSetting(groupchat: GroupChat) {
         if (!isThisGroup(groupchat)) return
         Application.getInstance().runOnUiThread {
-            Toast.makeText(context, getString(R.string.groupchat_failed_to_change_groupchat_settings),
-                    Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context, getString(R.string.groupchat_failed_to_change_groupchat_settings),
+                Toast.LENGTH_SHORT
+            ).show()
             (activity as GroupchatUpdateSettingsActivity).showToolbarButtons(false)
         }
     }

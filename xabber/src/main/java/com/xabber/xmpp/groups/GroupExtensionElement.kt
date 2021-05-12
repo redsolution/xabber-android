@@ -17,7 +17,7 @@ open class GroupExtensionElement : ExtensionElement {
         closeElement(elementName)
     }
 
-    open fun appendToXML(xml: XmlStringBuilder?) {}
+    open fun appendToXML(xml: XmlStringBuilder) {}
 
     companion object {
         const val NAMESPACE = GroupsManager.NAMESPACE

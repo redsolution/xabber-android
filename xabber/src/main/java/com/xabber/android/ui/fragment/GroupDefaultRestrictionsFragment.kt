@@ -19,8 +19,8 @@ import com.xabber.android.ui.color.ColorManager
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragment(),
-        RightsFormListAdapter.Listener, OnGroupDefaultRestrictionsListener {
+class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat) : Fragment(),
+    RightsFormListAdapter.Listener, OnGroupDefaultRestrictionsListener {
 
     var recyclerView: RecyclerView? = null
     var adapter: RightsFormListAdapter? = null
@@ -29,8 +29,10 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
 
     private val newFields = mutableMapOf<String, FormField>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         val view = inflater.inflate(R.layout.simple_nested_scroll_with_recycler_view, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
@@ -38,7 +40,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupsManager.getInstance().requestGroupDefaultRestrictionsDataForm(groupchat)
+        GroupsManager.requestGroupDefaultRestrictionsDataForm(groupchat)
         if (activity != null && activity is GroupDefaultRestrictionsActivity)
             (activity as GroupDefaultRestrictionsActivity).showProgressBar(true)
 
@@ -55,7 +57,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
         super.onPause()
     }
 
-    private fun DataForm.removeFixedFields(): DataForm{
+    private fun DataForm.removeFixedFields(): DataForm {
         val result = DataForm(this.type)
         for (field in this.fields)
             if (field.type != FormField.Type.fixed)
@@ -64,9 +66,11 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
     }
 
     private fun setupRecyclerViewWithDataForm(dataForm: DataForm) {
-        adapter = RightsFormListAdapter(dataForm.removeFixedFields(),
-                ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
-                fragmentManager!!, this)
+        adapter = RightsFormListAdapter(
+            dataForm.removeFixedFields(),
+            ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
+            fragmentManager!!, this
+        )
 
         recyclerView?.adapter = adapter
         adapter?.notifyDataSetChanged()
@@ -166,8 +170,7 @@ class GroupDefaultRestrictionsFragment(private val groupchat: GroupChat): Fragme
         return newDataForm
     }
 
-    fun sendSaveRequest() = GroupsManager.getInstance()
-            .requestSetGroupDefaultRestrictions(groupchat, createNewDataFrom())
+    fun sendSaveRequest() = GroupsManager.requestSetGroupDefaultRestrictions(groupchat, createNewDataFrom())
 
     companion object {
         const val TAG = "com.xabber.android.ui.fragment.GroupDefaultRestrictionsFragment"

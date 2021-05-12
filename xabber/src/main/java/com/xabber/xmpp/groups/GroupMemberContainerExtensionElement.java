@@ -2,6 +2,7 @@ package com.xabber.xmpp.groups;
 
 import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class GroupMemberContainerExtensionElement extends GroupExtensionElement {
@@ -21,7 +22,7 @@ public class GroupMemberContainerExtensionElement extends GroupExtensionElement 
     }
 
     @Override
-    public void appendToXML(XmlStringBuilder xml) {
+    public void appendToXML(@NotNull XmlStringBuilder xml) {
         if (user != null) xml.append(user.toXML());
     }
 }

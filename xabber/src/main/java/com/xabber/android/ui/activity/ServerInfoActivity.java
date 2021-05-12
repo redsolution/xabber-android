@@ -161,7 +161,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
             boolean rewrite = RetractManager.getInstance().isSupported(connection);
             boolean reliable = DeliveryManager.getInstance().isSupported(connection);
-            boolean groupchats = GroupsManager.getInstance().isSupported(connection);
+            boolean groupchats = GroupsManager.INSTANCE.isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
             serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));

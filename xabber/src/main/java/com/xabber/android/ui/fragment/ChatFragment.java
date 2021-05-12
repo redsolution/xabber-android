@@ -671,8 +671,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null){
             MessageRealmObject message = MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
 
-            pinnedMessageCrossIv.setOnClickListener(v -> GroupsManager.getInstance()
-                    .sendUnPinMessageRequest((GroupChat)getChat()));
+            pinnedMessageCrossIv.setOnClickListener(v ->
+                    GroupsManager.INSTANCE.sendUnPinMessageRequest((GroupChat)getChat()));
             pinnedRootView.setOnClickListener(v ->
                     startActivity(MessagesActivity.createIntentShowPinned(getContext(),
                     message.getPrimaryKey(), user, account)));
@@ -773,8 +773,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void onToolbarInteractionPinClick(){
         if (getChat() instanceof GroupChat){
-            GroupsManager.getInstance().
-                    sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
+            GroupsManager.INSTANCE.sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
             bottomPanelMessagesIds.clear();
             closeInteractionPanel();
         }
@@ -1838,7 +1837,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getReadyForMessageEditing(clickedMessageRealmObject);
                     break;
                 case "action_message_pin":
-                    GroupsManager.getInstance().sendPinMessageRequest(clickedMessageRealmObject);
+                    GroupsManager.INSTANCE.sendPinMessageRequest(clickedMessageRealmObject);
                 default:
                     break;
             }

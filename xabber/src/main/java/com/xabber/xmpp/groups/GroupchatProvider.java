@@ -72,9 +72,23 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupExtensionEl
     }
 
     private GroupPresenceExtensionElement parseGroupPresence(XmlPullParser parser) throws XmlPullParserException, IOException {
-        GroupPresenceExtensionElement presence = new GroupPresenceExtensionElement();
+        
+        String groupName = null;
+        String description = null;
+        String status = null;
+        String pinnedMessageId = null;
+        
+        int membersCount = 0;
+        int membersOnlineCount = 0;
+        
+        boolean isCollect = false;
+        boolean isPtp = false;
+        
+        GroupPrivacyType privacyType = null;
+        GroupMembershipType membershipType = null;
+        GroupIndexType indexType = null;
+        
         int initialDepth = parser.getDepth() - 1;
-
         innerloop:
         while (true) {
             int eventType = parser.getEventType();
@@ -83,40 +97,37 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupExtensionEl
                     String name = parser.getName();
                     switch (name) {
                         case GroupPresenceExtensionElement.NAME:
-                            presence.setName(parser.nextText());
+                            groupName = parser.nextText();
                             break;
                         case GroupPresenceExtensionElement.DESCRIPTION:
-                            presence.setDescription(parser.nextText());
+                            description = parser.nextText();
                             break;
                         case GroupPresenceExtensionElement.COLLECT:
-                            presence.setCollect("yes".equals(parser.nextText()));
+                            isCollect = "yes".equals(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.MEMBERS:
-                            presence.setAllMembers(Integer.parseInt(parser.nextText()));
+                            membersCount = Integer.parseInt(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.PEER_TO_PEER:
-                            presence.setP2p("true".equals(parser.nextText()));
+                            isPtp = "true".equals(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.PINNED_MESSAGE:
-                            presence.setPinnedMessageId(parser.nextText());
+                            pinnedMessageId = parser.nextText();
                             break;
                         case GroupPresenceExtensionElement.PRESENT:
-                            presence.setPresentMembers(Integer.parseInt(parser.nextText()));
+                            membersOnlineCount = Integer.parseInt(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.PRIVACY:
-                            presence.setPrivacy(GroupPrivacyType
-                                    .fromXml(parser.nextText()));
+                            privacyType = GroupPrivacyType.fromXml(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.MEMBERSHIP:
-                            presence.setMembership(GroupMembershipType
-                                    .fromXml(parser.nextText()));
+                            membershipType = GroupMembershipType.fromXml(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.INDEX:
-                            presence.setIndex(GroupIndexType
-                                    .fromXml(parser.nextText()));
+                            indexType = GroupIndexType.fromXml(parser.nextText());
                             break;
                         case GroupPresenceExtensionElement.STATUS:
-                            presence.setStatus(parser.nextText());
+                            status = parser.nextText();
                             break;
                         default:
                             parser.next();
@@ -132,7 +143,8 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupExtensionEl
             }
         }
 
-        return presence;
+        return new GroupPresenceExtensionElement(groupName, description, privacyType, membershipType, indexType,
+                pinnedMessageId, isCollect, isPtp, status, membersOnlineCount, membersCount);
     }
 
 }
