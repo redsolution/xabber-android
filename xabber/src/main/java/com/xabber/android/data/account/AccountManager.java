@@ -404,20 +404,18 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     /**
      * Creates new account and starts connection.
      */
-    private AccountItem addAccount(boolean custom, String host, int port,
-                                   DomainBareJid serverName, Localpart userName, boolean storePassword,
-                                   String password, String token, Resourcepart resource, int color, int order, boolean syncNotAllowed, int timestamp, int priority,
-                                   StatusMode statusMode, String statusText, boolean enabled,
-                                   boolean saslEnabled, TLSMode tlsMode, boolean compression,
-                                   ProxyType proxyType, String proxyHost, int proxyPort,
-                                   String proxyUser, String proxyPassword, boolean syncable,
-                                   KeyPair keyPair, Date lastSync, ArchiveMode archiveMode,
-                                   boolean registerNewAccount) {
+    private AccountItem addAccount(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
+                                   boolean storePassword, String password, String token, Resourcepart resource,
+                                   int color, int order, boolean syncNotAllowed, int timestamp, int priority,
+                                   StatusMode statusMode, String statusText, boolean enabled, boolean saslEnabled,
+                                   TLSMode tlsMode, boolean compression, ProxyType proxyType, String proxyHost,
+                                   int proxyPort, String proxyUser, String proxyPassword, boolean syncable,
+                                   KeyPair keyPair, Date lastSync, ArchiveMode archiveMode, boolean registerNewAccount){
 
-        AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
-                resource, storePassword, password, token, null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText, enabled,
-                saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
-                proxyPassword, syncable, keyPair, lastSync, archiveMode, true);
+        AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName, resource, storePassword,
+                password, token, null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText,
+                enabled, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword,
+                syncable, keyPair, lastSync, archiveMode, true);
 
         AccountRepository.saveAccountToRealm(accountItem);
         addAccount(accountItem);
@@ -486,7 +484,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
                 storePassword, password, token, resource, getNextColorIndex(), getNextOrder(), false,
-                XabberAccountManager.getInstance().getCurrentTime(), 0, StatusMode.available,
+                XabberAccountManager.getInstance().getCurrentTime(), 67, StatusMode.available,
                 SettingsManager.statusText(), enabled, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);

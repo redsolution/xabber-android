@@ -264,18 +264,12 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     public ArchiveMode getArchiveMode() {
         return archiveMode;
     }
-
     void setArchiveMode(ArchiveMode archiveMode) {
         this.archiveMode = archiveMode;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    void setPriority(int priority) {
-        this.priority = getValidPriority(priority);
-    }
+    public int getPriority() { return priority; }
+    void setPriority(int priority) { this.priority = getValidPriority(priority); }
 
     void setStatus(StatusMode statusMode, String statusText) {
         this.statusMode = statusMode;
@@ -352,8 +346,12 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                     }
                 } else priority = this.priority;
 
-                return new Presence(Type.available, statusText, AccountItem.getValidPriority(priority),
-                        statusMode.getMode());
+                return new Presence(
+                        Type.available,
+                        statusText,
+                        AccountItem.getValidPriority(priority),
+                        statusMode.getMode()
+                );
         }
     }
 

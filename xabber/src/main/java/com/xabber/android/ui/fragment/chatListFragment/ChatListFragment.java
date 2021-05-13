@@ -360,8 +360,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivAvatar:
-                startActivity(AccountActivity.createIntent(getActivity(),
-                        AccountManager.getInstance().getFirstAccount()));
+                startActivity(
+                        AccountActivity.createIntent(getActivity(), AccountManager.getInstance().getFirstAccount()));
                 break;
             case R.id.tvTitle:
                 showTitlePopup(toolbarTitleTv);

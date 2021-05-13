@@ -146,8 +146,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     @NonNull
     public static Intent createConnectionSettingsIntent(Context context, AccountJid account) {
-        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account)
-                .build();
+        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
         intent.setAction(ACTION_CONNECTION_SETTINGS);
         return intent;
     }
