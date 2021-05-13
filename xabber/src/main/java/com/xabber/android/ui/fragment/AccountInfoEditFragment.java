@@ -198,7 +198,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             try {
                 vCard = ContactVcardViewerFragment.parseVCard(xmlVCard);
             } catch (Exception e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
 
@@ -362,7 +362,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             VCardManager.getInstance().requestByUser(account,
                     ContactJid.from(account.getFullJid().asBareJid()).getJid());
         } catch (ContactJid.ContactJidCreateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
@@ -650,7 +650,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                             try {
                                 stream.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             Uri rotatedImage;
                             if (imageType.equals("image/png")) {
@@ -757,7 +757,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                             try {
                                 stream.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             Uri rotatedImage = null;
                             if(imageFileType!=null) {
@@ -771,7 +771,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                             try {
                                 FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
 
                             Application.getInstance().runOnUiThread(() -> setUpAvatarView());
@@ -914,7 +914,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 }
             } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         } else if (newAvatarImageUri != null) {
             try {
@@ -931,7 +931,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 }
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
@@ -941,7 +941,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                     mng.unpublishAvatar();
                     isAvatarSuccessful = true;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
 
                 final boolean isSuccessfulFinal = isAvatarSuccessful;
@@ -961,7 +961,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                     isAvatarSuccessful = true;
                 } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
                         | InterruptedException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
 
                 final boolean isSuccessfulFinal = isAvatarSuccessful;

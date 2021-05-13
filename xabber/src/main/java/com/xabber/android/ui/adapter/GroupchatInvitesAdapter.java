@@ -90,7 +90,7 @@ public class GroupchatInvitesAdapter extends RecyclerView.Adapter<GroupchatInvit
             holder.avatar.setImageDrawable(AvatarManager.getInstance()
                     .getUserAvatarForContactList(ContactJid.from(inviteJid), inviteJid));
         } catch (ContactJid.ContactJidCreateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
 
         holder.inviteJid.setText(inviteJid);

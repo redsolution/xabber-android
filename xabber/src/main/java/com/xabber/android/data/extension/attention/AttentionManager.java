@@ -153,7 +153,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         try {
             from = ContactJid.from(stanza.getFrom());
         } catch (ContactJid.ContactJidCreateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
             return;
         }
 

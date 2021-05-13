@@ -58,7 +58,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
                 XMPPException.XMPPErrorException |
                 SmackException.NotConnectedException |
                 InterruptedException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
         LogManager.i(getLogTag(), "finished discovering and saving server info");
 

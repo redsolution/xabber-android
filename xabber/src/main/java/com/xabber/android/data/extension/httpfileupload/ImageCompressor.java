@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.util.Log;
 
+import com.xabber.android.data.log.LogManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -110,7 +112,7 @@ public class ImageCompressor {
                 newExif.saveAttributes();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.exception("ImageCompressor", e);
         }
 
         return result;

@@ -395,7 +395,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 mp.prepareAsync();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
@@ -428,7 +428,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
             deleteRecordedFile();
             tempOpusPath = tempOpusFile.getPath();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
@@ -482,7 +482,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 deleteRecordedFile();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
         return false;
     }

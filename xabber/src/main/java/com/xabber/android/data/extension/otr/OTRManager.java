@@ -756,7 +756,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 try {
                     refreshSession(entry.getFirst(), entry.getSecond());
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
             }
         }

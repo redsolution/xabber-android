@@ -489,10 +489,9 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                         try {
                             stream.close()
                         } catch (e: IOException) {
-                            e.printStackTrace()
+                            LogManager.exception(javaClass.simpleName, e)
                         }
-                        val rotatedImage: Uri?
-                        rotatedImage = if (imageType == "image/png") {
+                        val rotatedImage: Uri? = if (imageType == "image/png") {
                             FileManager.savePNGImage(data, AccountActivity.ROTATE_FILE_NAME)
                         } else {
                             FileManager.saveImage(data, AccountActivity.ROTATE_FILE_NAME)
@@ -585,7 +584,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                         try {
                             stream.close()
                         } catch (e: IOException) {
-                            e.printStackTrace()
+                            LogManager.exception(javaClass.simpleName, e)
                         }
                         var rotatedImage: Uri? = null
                         if (imageFileType != null) {
@@ -599,7 +598,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                         try {
                             FileUtils.writeByteArrayToFile(File(newAvatarImageUri?.path), data)
                         } catch (e: IOException) {
-                            e.printStackTrace()
+                            LogManager.exception(javaClass.simpleName, e)
                         }
                         Application.getInstance().runOnUiThread { checkAvatarSizeAndPublish() }
                     }

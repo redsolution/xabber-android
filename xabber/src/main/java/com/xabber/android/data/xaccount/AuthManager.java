@@ -238,7 +238,7 @@ public class AuthManager {
                         PrivateStorageManager.getInstance()
                                 .setXabberAccountBinding(AccountJid.from(jid), true);
                     } catch (XmppStringprepException e) {
-                        e.printStackTrace();
+                        LogManager.exception("AuthManager", e);
                     }
 
                     return XabberAccountManager.getInstance()

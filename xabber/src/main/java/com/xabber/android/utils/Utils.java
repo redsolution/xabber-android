@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.text.CustomQuoteSpan;
@@ -153,7 +154,7 @@ public class Utils {
                     }
                 } catch (UnsupportedEncodingException e) {
                     originalSpannable.setSpan(spanContainer.span, spanContainer.start, spanContainer.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    e.printStackTrace();
+                    LogManager.exception("Utils", e);
                 }
             }
         }

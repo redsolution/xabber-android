@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
@@ -87,7 +88,7 @@ public class ReferencesManager {
             Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());
             forwardedList.add(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception("ReferencesManager", e);
         }
 
         return new Forward(begin, end, forwardedList);

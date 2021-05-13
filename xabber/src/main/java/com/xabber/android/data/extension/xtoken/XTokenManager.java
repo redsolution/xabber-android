@@ -79,7 +79,7 @@ public class XTokenManager implements OnPacketListener {
         try {
             connection.sendStanza(revokeIQ);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
@@ -149,7 +149,7 @@ public class XTokenManager implements OnPacketListener {
         } catch (Exception e) {
             SessionsListener listener = wrListener.get();
             if (listener != null) listener.onError();
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 

@@ -74,7 +74,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
             pushThread(connection);
         });

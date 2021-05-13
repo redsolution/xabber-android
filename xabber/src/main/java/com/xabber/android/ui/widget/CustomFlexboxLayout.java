@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 
 public class CustomFlexboxLayout extends RelativeLayout {
 
@@ -38,7 +39,7 @@ public class CustomFlexboxLayout extends RelativeLayout {
             viewPartMain = this.findViewById(a.getResourceId(R.styleable.ImFlexboxLayout_viewPartMain, -1));
             viewPartSlave = this.findViewById(a.getResourceId(R.styleable.ImFlexboxLayout_viewPartSlave, -1));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 

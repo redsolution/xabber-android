@@ -89,7 +89,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
                     requestXMPPAuthCode(accountJid);
@@ -100,7 +100,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
             PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
         }

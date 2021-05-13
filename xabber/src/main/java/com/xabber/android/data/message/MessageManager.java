@@ -393,7 +393,7 @@ public class MessageManager implements OnPacketListener {
                             try {
                                 PresenceManager.INSTANCE.discardSubscription(account, contactJid);
                             } catch (NetworkException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_many_attempts));
@@ -450,7 +450,7 @@ public class MessageManager implements OnPacketListener {
         try {
             StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 

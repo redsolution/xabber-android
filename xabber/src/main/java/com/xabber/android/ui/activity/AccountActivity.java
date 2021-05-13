@@ -749,7 +749,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             try {
                                 stream.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             Uri rotatedImage;
                             if (imageType.equals("image/png")) {
@@ -863,7 +863,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             try {
                                 stream.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             Uri rotatedImage = null;
                             if (imageFileType != null) {
@@ -877,7 +877,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             try {
                                 FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
 
                             Application.getInstance().runOnUiThread(() -> checkAvatarSizeAndPublish());
@@ -907,7 +907,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 }
             } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
                 showProgressBar(false);
             }
         } else if (newAvatarImageUri != null) {
@@ -920,7 +920,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 }
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
                 showProgressBar(false);
             }
         }
@@ -932,7 +932,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     mng.unpublishAvatar();
                     isAvatarSuccessful = true;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
 
                 final boolean isSuccessfulFinal = isAvatarSuccessful;
@@ -954,7 +954,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     isAvatarSuccessful = true;
                 } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
                         | InterruptedException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
 
                 final boolean isSuccessfulFinal = isAvatarSuccessful;

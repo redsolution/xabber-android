@@ -198,7 +198,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 discoverInfo = ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(fromJid);
             } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException |
                     SmackException.NotConnectedException | InterruptedException | ClassCastException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
 
             isChatMarkersSupport = discoverInfo != null && discoverInfo.containsFeature(ChatMarkersElements.NAMESPACE);

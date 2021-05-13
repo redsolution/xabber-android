@@ -479,7 +479,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     }
                 }
             } catch (ContactJid.ContactJidCreateException | XmppStringprepException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
         getIntent().removeExtra(EXTRA_OTR_REQUEST);

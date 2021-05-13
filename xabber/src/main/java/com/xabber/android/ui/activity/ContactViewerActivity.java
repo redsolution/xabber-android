@@ -25,6 +25,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -235,7 +236,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
                     | InterruptedException
                     | SmackException.NoResponseException
                     | NetworkException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
                 stopAddContactProcess(false);
             }
         });

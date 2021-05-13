@@ -111,10 +111,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
                 ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
 
-            } catch (ContactJid.ContactJidCreateException e) {
-                e.printStackTrace();
-            } catch (XmppStringprepException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
         onContactsChanged(Collections.emptyList());

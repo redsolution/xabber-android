@@ -22,6 +22,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -99,7 +100,7 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
                     try {
                         BlockingManager.getInstance().blockContact(account, ContactJid.from(blockJid.getText().toString()), this);
                     } catch (ContactJid.ContactJidCreateException e) {
-                        e.printStackTrace();
+                        LogManager.exception(getClass().getSimpleName(), e);
                     }
                 }
                 break;

@@ -17,6 +17,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -310,7 +311,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.TO:
@@ -326,7 +327,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.FROM:
@@ -346,7 +347,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
                         }
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.NONE:
@@ -370,7 +371,7 @@ public class ContactEditFragment extends CircleEditorFragment implements OnConta
                         }
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
         }

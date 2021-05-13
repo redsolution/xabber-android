@@ -16,6 +16,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
@@ -43,7 +44,7 @@ public class ForwardedVH extends FileMessageVH {
         try {
             jid = ContactJid.from(messageRealmObject.getOriginalFrom());
         } catch (ContactJid.ContactJidCreateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);
         if (extraData.getGroupMember() != null)

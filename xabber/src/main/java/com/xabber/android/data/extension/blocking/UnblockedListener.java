@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.blocking.JidsUnblockedListener;
 import org.jxmpp.jid.Jid;
@@ -23,7 +24,7 @@ public class UnblockedListener implements JidsUnblockedListener {
             try {
                 blockedList.remove(ContactJid.from(jid));
             } catch (ContactJid.ContactJidCreateException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
 

@@ -50,7 +50,7 @@ public class LastActivityInteractor implements OnPacketListener {
                     requestNextContactLastActivity(account);
                 }
             } catch (ContactJid.ContactJidCreateException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
     }

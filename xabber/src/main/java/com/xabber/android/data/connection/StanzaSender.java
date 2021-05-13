@@ -62,7 +62,7 @@ public class StanzaSender {
             try {
                 sendStanza(account, stanza);
             } catch (NetworkException e) {
-                e.printStackTrace();
+                LogManager.exception("StanzaSender", e);
             }
         });
         bgThread.start();

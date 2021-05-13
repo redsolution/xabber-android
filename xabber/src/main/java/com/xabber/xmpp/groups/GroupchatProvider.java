@@ -6,6 +6,7 @@ import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatM
 import com.xabber.android.data.extension.groups.GroupIndexType;
 import com.xabber.android.data.extension.groups.GroupMembershipType;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -62,7 +63,7 @@ public class GroupchatProvider extends ExtensionElementProvider<GroupExtensionEl
         try {
             element = ReferencesProvider.INSTANCE.parse(parser, parser.getDepth());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
         if (element instanceof GroupchatMemberReference) {
             return (GroupchatMemberReference) element;

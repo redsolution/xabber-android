@@ -206,7 +206,7 @@ public class StringUtils {
                     }
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                LogManager.exception("StringUtils", e);
             }
         } else {
             result = Application.getInstance().getString(R.string.account_state_connected);

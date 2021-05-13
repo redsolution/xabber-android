@@ -1,5 +1,7 @@
 package com.xabber.xmpp.avatar;
 
+import com.xabber.android.data.log.LogManager;
+
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.stringencoder.Base64;
 import org.xmlpull.v1.XmlPullParser;
@@ -16,7 +18,7 @@ public class DataProvider extends ExtensionElementProvider<DataExtension> {
         try {
             data = Base64.decode(parser.nextText());
         } catch (XmlPullParserException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
         return new DataExtension(data);
     }

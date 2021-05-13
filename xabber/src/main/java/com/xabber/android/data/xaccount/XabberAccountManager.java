@@ -591,7 +591,7 @@ public class XabberAccountManager implements OnLoadListener {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        LogManager.exception(getClass().getSimpleName(), e);
                     }
                 }
             }

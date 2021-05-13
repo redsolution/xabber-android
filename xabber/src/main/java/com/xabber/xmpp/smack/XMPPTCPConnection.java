@@ -372,7 +372,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         try {
             saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
             if (e.getCause() instanceof XMPPException.StreamErrorException){
                 throw (XMPPException.StreamErrorException) e.getCause();
             }
@@ -432,7 +432,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             try {
                 smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
                 if (e instanceof XMPPException.StreamErrorException) {
                     throw (XMPPException.StreamErrorException) e;
                 } else {

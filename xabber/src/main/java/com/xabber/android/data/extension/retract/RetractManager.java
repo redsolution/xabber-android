@@ -149,7 +149,7 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
                             try {
                                 message[0] = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
                             if (ReferencesManager.messageHasMutableReferences(message[0])) {
                                 String body = message[0].getBody();

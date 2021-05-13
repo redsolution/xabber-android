@@ -28,6 +28,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -88,7 +89,7 @@ public class ContactTitleInflater {
                         //avatarQRView.setVisibility(View.VISIBLE);
                     }
                 } catch (WriterException e) {
-                    e.printStackTrace();
+                    LogManager.exception("ContactTitleInflater", e);
                 }
             }
             setStatus(context, titleView, abstractContact, true);

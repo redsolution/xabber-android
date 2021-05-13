@@ -884,7 +884,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             try {
                 PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), true);
             } catch (NetworkException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
 
@@ -919,7 +919,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             try {
                 PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), false);
             } catch (NetworkException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
 
@@ -1653,7 +1653,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                     }
                 } catch (XmppStringprepException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                     Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                 }
             });
@@ -2229,7 +2229,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 try {
                     PresenceManager.INSTANCE.discardSubscription(account, user);       // discard it on "X"-press
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
             }
             if (getChat() != null) getChat().setAddContactSuggested(true);                 // remember "X"-press
