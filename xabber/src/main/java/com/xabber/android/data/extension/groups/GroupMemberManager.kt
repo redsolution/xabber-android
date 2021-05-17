@@ -129,7 +129,7 @@ object GroupMemberManager : OnLoadListener {
 
     fun getGroupMemberById(id: String?): GroupMember? = id?.let { members[id] }
 
-    fun getMe(groupJid: ContactJid) = getGroupMembers(groupJid).first { member -> member?.isMe ?: false }
+    fun getMe(groupJid: ContactJid) = getGroupMembers(groupJid).firstOrNull { member -> member?.isMe ?: false }
 
     fun getGroupMembers(groupJid: ContactJid) = members.values.filter { it?.groupJid == groupJid.toString() }
 

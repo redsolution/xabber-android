@@ -287,9 +287,10 @@ public class MessageNotificationCreator {
 
     private Bitmap getMyAvatarBitmap(MessageNotificationManager.Chat chat){
         if (chat.isGroupChat()){
-            return AvatarManager.getInstance().getGroupMemberCircleBitmap(
-                    GroupMemberManager.INSTANCE.getMe(chat.getContactJid()), chat.getAccountJid());
-        } else return AvatarManager.getInstance().getAccountCircleBitmapAvatar(chat.getAccountJid());
+            GroupMember me = GroupMemberManager.INSTANCE.getMe(chat.getContactJid());
+            if (me != null) return AvatarManager.getInstance().getGroupMemberCircleBitmap(me, chat.getAccountJid());
+        }
+        return AvatarManager.getInstance().getAccountCircleBitmapAvatar(chat.getAccountJid());
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
