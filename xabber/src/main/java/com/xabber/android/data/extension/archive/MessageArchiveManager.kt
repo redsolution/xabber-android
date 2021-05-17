@@ -276,7 +276,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                .first()
+                .firstOrNull()
                 ?.timestamp
         } catch (e: Exception) {
             LogManager.exception(this, e)
@@ -297,7 +297,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
-                .first()
+                .firstOrNull()
                 ?.timestamp
         } catch (e: Exception) {
             LogManager.exception(this, e)
