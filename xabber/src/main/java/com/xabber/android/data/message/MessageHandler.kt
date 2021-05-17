@@ -174,8 +174,12 @@ object MessageHandler {
         val accountStartHistoryTimestamp =
             AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp?.time
 
-        // FileManager.processFileMessage(messageRealmObject);
-        val attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(messageStanza)
+        //FileManager.processFileMessage(messageRealmObject);
+        val attachmentRealmObjects = try {
+            HttpFileUploadManager.parseFileMessage(messageStanza)
+        } catch (e: Exception) {
+            null
+        }
 
         val id = UUID.randomUUID().toString()
 
@@ -205,7 +209,7 @@ object MessageHandler {
             this.messageStatus = if (isIncoming) MessageStatus.NONE else MessageStatus.DISPLAYED
             this.markupText = markupBody
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
-            this.attachmentRealmObjects = attachmentRealmObjects
+            (attachmentRealmObjects)?.let { this.attachmentRealmObjects = it }
             this.forwardedIds = forwardIdRealmObjects
             this.groupchatUserId = groupMember?.id
         }
