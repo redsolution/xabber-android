@@ -46,7 +46,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupAccountColorIndicator(holder: ChatViewHolder, chat: AbstractChat) {
         val color: Int = ColorManager.getInstance().accountPainter
-                .getAccountMainColor(chat.account)
+            .getAccountMainColor(chat.account)
         if (AccountManager.getInstance().enabledAccounts.size > 1) {
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
@@ -64,21 +64,23 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
-            holder.avatarIV.setImageDrawable(RosterManager.getInstance()
+            holder.avatarIV.setImageDrawable(
+                RosterManager.getInstance()
                     .getAbstractContact(chat.account, chat.contactJid)
-                    .getAvatar(true))
+                    .getAvatar(true)
+            )
         } else {
             holder.avatarIV.visibility = View.GONE
         }
     }
 
     private fun setupStatusBadge(holder: ChatViewHolder, chat: AbstractChat) =
-            StatusBadgeSetupHelper.setupImageViewForChat(chat, holder.statusIV)
+        StatusBadgeSetupHelper.setupImageViewForChat(chat, holder.statusIV)
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
         if (chat is GroupChat)
             holder.contactNameTV.text = chat.name
-                    ?: RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
+                ?: RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
         else holder.contactNameTV.text = RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
 
         val accountJid = chat.account
@@ -87,16 +89,24 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val statusLevel = rosterContact?.statusMode?.statusLevel
 
         val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(accountJid, contactJid)
+            .contactIsBlockedLocally(accountJid, contactJid)
         val isRosterContact = (rosterContact != null && !rosterContact.isDirtyRemoved)
                 || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)
 
         if (isBlocked || (!isRosterContact && statusLevel != null && statusLevel < 8)) {
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_second_line_text_color))
+            holder.contactNameTV.setTextColor(
+                Utils.getAttrColor(
+                    holder.contactNameTV.context,
+                    R.attr.contact_list_contact_second_line_text_color
+                )
+            )
         } else {
-            holder.contactNameTV.setTextColor(Utils.getAttrColor(holder.contactNameTV.context,
-                    R.attr.contact_list_contact_name_text_color))
+            holder.contactNameTV.setTextColor(
+                Utils.getAttrColor(
+                    holder.contactNameTV.context,
+                    R.attr.contact_list_contact_name_text_color
+                )
+            )
         }
     }
 
@@ -104,7 +114,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
         val resources = holder.itemView.context.resources
         val isCustomNotification = CustomNotifyPrefsManager.getInstance()
-                .isPrefsExist(Key.createKey(chat.account, chat.contactJid))
+            .isPrefsExist(Key.createKey(chat.account, chat.contactJid))
         val mode = chat.notificationState.determineModeByGlobalSettings()
         val iconId = when (mode) {
             NotificationState.NotificationMode.enabled -> R.drawable.ic_unmute
@@ -113,13 +123,18 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
             else -> R.drawable.ic_snooze_mini
         }
 
-        holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                if (iconId != 0) resources.getDrawable(iconId) else null, null)
+        holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(
+            null, null,
+            if (iconId != 0) resources.getDrawable(iconId) else null, null
+        )
 
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
-                        || mode == NotificationState.NotificationMode.byDefault))
-            holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    resources.getDrawable(R.drawable.ic_notif_custom), null)
+                    || mode == NotificationState.NotificationMode.byDefault)
+        )
+            holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(
+                null, null,
+                resources.getDrawable(R.drawable.ic_notif_custom), null
+            )
 
         holder.unreadCountTV.background.mutate().clearColorFilter()
         holder.unreadCountTV.setTextColor(resources.getColor(R.color.white))
@@ -136,11 +151,11 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         if (!chat.notifyAboutMessage()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 holder.unreadCountTV.background.mutate()
-                        .setColorFilter(resources.getColor(R.color.grey_500), PorterDuff.Mode.SRC_IN)
+                    .setColorFilter(resources.getColor(R.color.grey_500), PorterDuff.Mode.SRC_IN)
                 holder.unreadCountTV.setTextColor(resources.getColor(R.color.grey_100))
             } else {
                 holder.unreadCountTV.background.mutate()
-                        .setColorFilter(resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN)
+                    .setColorFilter(resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN)
                 holder.unreadCountTV.setTextColor(resources.getColor(R.color.black))
             }
         } else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
@@ -154,12 +169,16 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.timeTV.visibility = View.VISIBLE
         when {
             GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid) -> {
-                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                        Date(GroupInviteManager.getLastInvite(chat.account, chat.contactJid)!!.date))
+                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(
+                    holder.itemView.context,
+                    Date(GroupInviteManager.getLastInvite(chat.account, chat.contactJid)!!.date)
+                )
             }
             chat.lastMessage != null && chat.lastMessage?.isValid ?: false -> {
-                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context,
-                        Date(chat.lastMessage!!.timestamp))
+                holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(
+                    holder.itemView.context,
+                    Date(chat.lastMessage!!.timestamp)
+                )
             }
             else -> holder.timeTV.visibility = View.INVISIBLE
         }
@@ -172,94 +191,105 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val forwardedCount = lastMessage?.forwardedIds?.size
 
         fun getDecodedTextIfPossible() =
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                    try {
-                        Html.fromHtml(Utils.getDecodedSpannable(text).toString())
-                    } catch (e: Exception) {
-                        Html.fromHtml(text)
-                    }
-                } else text
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                try {
+                    Html.fromHtml(Utils.getDecodedSpannable(text).toString())
+                } catch (e: Exception) {
+                    Html.fromHtml(text)
+                }
+            } else text
 
-        fun colorizeIfPossible(){
-            if (holder.accountColorIndicator != null){
+        fun colorizeIfPossible() {
+            if (holder.accountColorIndicator != null) {
                 holder.messageTextTV.text = Html.fromHtml(
-                        StringUtils.getColoredText(holder.messageTextTV.text.toString(), holder.accountColorIndicator!!))
+                    StringUtils.getColoredText(holder.messageTextTV.text.toString(), holder.accountColorIndicator!!)
+                )
             }
         }
 
-        fun setItalicTypeface(){
+        fun setItalicTypeface() {
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
         }
 
-        fun setDefaultTypeface(){
+        fun setDefaultTypeface() {
             holder.messageTextTV.typeface = Typeface.DEFAULT
         }
 
-        fun setIncomingInvite(){
-            holder.messageTextTV.text = context.getString(R.string.groupchat_invitation_to_group_chat,
-                    (chat as GroupChat).privacyType.getLocalizedString()
-                    .decapitalize(ConfigurationCompat.getLocales(context.resources.configuration)[0]))
+        fun setIncomingInvite() {
+            holder.messageTextTV.text = context.getString(
+                R.string.groupchat_invitation_to_group_chat,
+                (chat as GroupChat).privacyType.getLocalizedString()
+                    .decapitalize(ConfigurationCompat.getLocales(context.resources.configuration)[0])
+            )
 
             colorizeIfPossible()
             setItalicTypeface()
         }
 
-        fun setGroupSystem(){
+        fun setGroupSystem() {
             holder.messageTextTV.text = lastMessage?.text
             setItalicTypeface()
         }
 
-        fun setGroupRegular(){
-            val nickname = GroupMemberManager.getGroupMemberById(lastMessage!!.groupchatUserId)?.nickname
+        fun setGroupRegular() {
+            val nickname =
+                if (lastMessage != null && lastMessage.groupchatUserId != null) {
+                    GroupMemberManager.getGroupMemberById(lastMessage.groupchatUserId)?.nickname
+                } else null
             val sender = StringUtils.getColoredText((nickname ?: "") + ":", holder.accountColorIndicator!!)
             holder.messageTextTV.text = Html.fromHtml("$sender ${getDecodedTextIfPossible()}")
         }
 
-        fun setChatState(){
-            holder.messageTextTV.text = ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
+        fun setChatState() {
+            holder.messageTextTV.text =
+                ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
 
             colorizeIfPossible()
             setDefaultTypeface()
         }
 
-        fun setToForwarded(){
-            holder.messageTextTV.text = String.format(context.resources.getQuantityString(
-                    R.plurals.forwarded_messages_count, forwardedCount ?: 0),
-                    forwardedCount)
+        fun setToForwarded() {
+            holder.messageTextTV.text = String.format(
+                context.resources.getQuantityString(
+                    R.plurals.forwarded_messages_count, forwardedCount ?: 0
+                ),
+                forwardedCount
+            )
 
             colorizeIfPossible()
             setDefaultTypeface()
         }
 
-        fun setToAttachments(){
+        fun setToAttachments() {
             holder.messageTextTV.text = StringUtils.getColoredAttachmentDisplayName(
-                    context, lastMessage?.attachmentRealmObjects ?: return, holder.accountColorIndicator!!)
+                context, lastMessage?.attachmentRealmObjects ?: return, holder.accountColorIndicator!!
+            )
 
             colorizeIfPossible()
             setDefaultTypeface()
         }
 
-        fun setNoMessages(){
+        fun setNoMessages() {
             holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
             setItalicTypeface()
         }
 
-        fun setAction(){
+        fun setAction() {
             holder.messageTextTV.text = lastMessage?.text
             setItalicTypeface()
         }
 
-        fun setEncrypted(){
+        fun setEncrypted() {
             holder.messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
             setItalicTypeface()
         }
 
-        fun setRegular(){
+        fun setRegular() {
             holder.messageTextTV.text = getDecodedTextIfPossible()
             setDefaultTypeface()
         }
 
-        if (chat is GroupChat){
+        if (chat is GroupChat) {
             when {
                 lastMessage == null && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid) -> {
                     setIncomingInvite()
@@ -275,7 +305,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                 else -> setNoMessages()
             }
         } else {
-            when{
+            when {
                 ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null -> {
                     setChatState()
                     return
@@ -292,7 +322,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     setEncrypted()
                     return
                 }
-                lastMessage!= null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> {
+                lastMessage != null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> {
                     setAction()
                     return
                 }
@@ -307,7 +337,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupMessageStatus(holder: ChatViewHolder, chat: AbstractChat) {
         if (chat.lastMessage != null
-                && !(chat is GroupChat && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid))) {
+            && !(chat is GroupChat && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid))
+        ) {
             MessageDeliveryStatusHelper.setupStatusImageView(chat.lastMessage!!, holder.messageStatusTV)
         } else holder.messageStatusTV.visibility = View.GONE
 
