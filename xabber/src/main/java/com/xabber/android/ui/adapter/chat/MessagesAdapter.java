@@ -240,7 +240,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         // groupchat user
         GroupMember groupMember =
-                GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId());
+                messageRealmObject.getGroupchatUserId() != null && !messageRealmObject.getGroupchatUserId().isEmpty() ?
+                    GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId()) : null;
 
         // need tail
         boolean needTail = false;
