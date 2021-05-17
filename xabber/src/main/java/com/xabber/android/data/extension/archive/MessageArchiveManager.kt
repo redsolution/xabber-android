@@ -137,10 +137,18 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener, OnAut
 
     fun loadLastMessageInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetwork {
-            AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+            val accountItem = AccountManager.getInstance().getAccount(chat.account)
+            accountItem?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
-                { },
-                { exception -> LogManager.exception(this, exception) }
+                {
+                    Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                        .map { it.onHistoryLoaded(accountItem) }
+                },
+                { exception ->
+                    LogManager.exception(this, exception)
+                    Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                        .map { it.onHistoryLoaded(accountItem) }
+                }
             )
         }
     }

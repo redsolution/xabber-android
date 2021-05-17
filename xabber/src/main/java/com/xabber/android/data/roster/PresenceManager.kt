@@ -67,8 +67,8 @@ import kotlin.collections.HashSet
  *
  * @author alexander.ivanov
  */
-object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketListener,
-    OnHistoryLoaded, OnDisconnectListener, OnAuthenticatedListener, OnRosterReceivedListener {
+object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketListener, OnHistoryLoaded,
+    OnDisconnectListener, OnAuthenticatedListener {
 
     private val subscriptionRequestProvider: EntityNotificationProvider<SubscriptionRequest?> =
         EntityNotificationProvider(R.drawable.ic_stat_add_circle)
@@ -97,14 +97,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             } catch (e: NetworkException) {
                 LogManager.exception(this, e)
             }
-        }
-    }
-
-    override fun onRosterReceived(accountItem: AccountItem) {
-        try {
-            sendAccountPresence(accountItem.account)
-        } catch (e: NetworkException) {
-            LogManager.exception(this, e)
         }
     }
 
@@ -485,6 +477,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 handleSubscriptionRequest(account, from)
             }
             Presence.Type.subscribed -> handleSubscriptionAccept(connection.getAccount(), from)
+            else -> {
+            }
         }
     }
 
@@ -581,30 +575,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         } else {
             userPresences.values.maxByOrNull(Presence::getPriority)?.clone()
                 ?: Presence(Presence.Type.unavailable).apply { from = user.bareJid }
-//            // Find the resource with the highest priority
-//            // Might be changed to use the resource with the highest availability instead.
-//            var presence: Presence? = null
-//            // This is used in case no available presence is found
-//            var unavailable: Presence? = null
-//            for (p in userPresences.values) {
-//                if (!p.isAvailable) {
-//                    unavailable = p
-//                    continue
-//                }
-//                // Chose presence with highest priority first.
-//                if (presence == null || p.priority > presence.priority) {
-//                    presence = p
-//                } else if (p.priority == presence.priority) {
-//                    if (p.mode ?: Presence.Mode.available < presence.mode ?: Presence.Mode.available) {
-//                        presence = p
-//                    }
-//                }
-//            }
-//            if (presence == null) {
-//                if (unavailable != null) {
-//                    unavailable.clone()
-//                } else Presence(Presence.Type.unavailable).apply { from = user.bareJid }
-//            } else presence.clone()
         }
     }
 
