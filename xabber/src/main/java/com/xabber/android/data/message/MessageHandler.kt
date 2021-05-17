@@ -119,7 +119,9 @@ object MessageHandler {
             return null
         }
 
-        val groupchatUser = ReferencesManager.getGroupchatUserFromReferences(messageStanza)
+        val groupMember = (ReferencesManager.getGroupchatUserFromReferences(messageStanza))?.let {
+            GroupMemberManager.saveOrUpdateGroupUser(it, contactJid.bareJid)
+        }
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
@@ -165,7 +167,7 @@ object MessageHandler {
         val isIncoming = messageStanza.from.asBareJid().equals(contactJid.jid.asBareJid())
 
         val stanzaId =
-            if (groupchatUser != null || isGroupSystem) {
+            if (groupMember != null || isGroupSystem) {
                 UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
             } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
 
@@ -176,9 +178,6 @@ object MessageHandler {
         val attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(messageStanza)
 
         val id = UUID.randomUUID().toString()
-
-        // groupchat
-        if (groupchatUser != null) GroupMemberManager.saveGroupUser(groupchatUser, contactJid.bareJid)
 
         val forwardIdRealmObjects = parseForwardedMessage(messageStanza, id, chat!!)
 
@@ -195,7 +194,7 @@ object MessageHandler {
             this.isEncrypted = encrypted
             this.isOffline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
-            this.isIncoming = isIncoming
+            this.isIncoming = isIncoming && !(groupMember?.isMe ?: false)
             this.stanzaId = stanzaId
             this.originId = originId
             this.originalStanza = messageStanza.toXML().toString()
@@ -208,7 +207,7 @@ object MessageHandler {
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
             this.attachmentRealmObjects = attachmentRealmObjects
             this.forwardedIds = forwardIdRealmObjects
-            this.groupchatUserId = groupchatUser?.id
+            this.groupchatUserId = groupMember?.id
         }
 
         saverBuffer.onNext(messageRealmObject ?: return null)
@@ -308,7 +307,7 @@ object MessageHandler {
                 LogManager.e(this, "Got possible rewrite, todo implement handling")
                 return null
             }
-            GroupMemberManager.saveGroupUser(groupchatUser, message.from.asBareJid())
+            GroupMemberManager.saveOrUpdateGroupUser(groupchatUser, message.from.asBareJid())
         }
 
         // forward comment (to support previous forwarded xep)

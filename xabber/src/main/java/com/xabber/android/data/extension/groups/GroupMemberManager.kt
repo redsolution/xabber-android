@@ -138,8 +138,8 @@ object GroupMemberManager : OnLoadListener {
         GroupMemberRepository.removeGroupMemberById(id)
     }
 
-    fun saveGroupUser(user: GroupMemberExtensionElement, groupJid: BareJid?) {
-        getGroupMemberFromGroupMemberExtensionElement(user, groupJid).let {
+    fun saveOrUpdateGroupUser(user: GroupMemberExtensionElement, groupJid: BareJid?): GroupMember {
+        return getGroupMemberFromGroupMemberExtensionElement(user, groupJid).also {
             members[it.id] = it
             GroupMemberRepository.saveOrUpdateGroupMember(it)
         }
@@ -594,7 +594,7 @@ object GroupMemberManager : OnLoadListener {
                     packet.listOfMembers.map { memberExtension ->
                         val id = memberExtension.id
                         if (members[id] == null) members[id] = GroupMember(id)
-                        members[id] ?: GroupMember(id)
+                        (members[id] ?: GroupMember(id))
                             .also { members[id] = it }
                             .apply {
                                 groupJid = groupchatJid.toString()

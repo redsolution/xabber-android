@@ -28,13 +28,9 @@ public class GroupMemberRepository {
         ArrayList<GroupMember> result = new ArrayList<>(groupMemberRealmObjects.size());
 
         for (GroupMemberRealmObject gro : groupMemberRealmObjects)
-            result.add(new GroupMember(gro.getUniqueId(), gro.getJid(), gro.getGroupJid(),
-                    gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
-                    gro.getAvatarUrl(), gro.getLastPresent(), gro.isMe(), gro.isCanRestrictMembers(),
-                    gro.isCanBlockMembers(), gro.isCanChangeBadge(), gro.isCanChangeNickname(),
-                    gro.isCanDeleteMessages(), gro.isRestrictedToSendMessages(),
-                    gro.isRestrictedToReadMessages(), gro.isRestrictedToSendInvitations(),
-                    gro.isRestrictedToSendAudio(), gro.isRestrictedToSendImages()));
+            result.add(new GroupMember(gro.getUniqueId(), gro.getJid(), gro.getGroupJid(), gro.getNickname(),
+                    gro.getRole(), gro.getBadge(), gro.getAvatarHash(), gro.getAvatarUrl(), gro.getLastPresent(),
+                    gro.isMe(), gro.isBlocked(), gro.isKicked()));
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
@@ -86,18 +82,8 @@ public class GroupMemberRepository {
                     gro.setLastPresent(groupMember.getLastPresent());
 
                     gro.setMe(groupMember.isMe());
-
-                    gro.setCanRestrictMembers(groupMember.isCanRestrictMembers());
-                    gro.setCanBlockMembers(groupMember.isCanBlockMembers());
-                    gro.setCanChangeBadge(groupMember.isCanChangeBadge());
-                    gro.setCanChangeNickname(groupMember.isCanChangeNickname());
-                    gro.setCanDeleteMessages(groupMember.isCanDeleteMessages());
-
-                    gro.setRestrictedToSendMessages(groupMember.isRestrictedToSendMessages());
-                    gro.setRestrictedToReadMessages(groupMember.isRestrictedToReadMessages());
-                    gro.setRestrictedToSendImages(groupMember.isRestrictedToSendImages());
-                    gro.setRestrictedToSendAudio(groupMember.isRestrictedToSendAudio());
-                    gro.setRestrictedToSendInvitations(groupMember.isRestrictedToSendInvitations());
+                    gro.setBlocked(groupMember.isBlocked());
+                    gro.setKicked(groupMember.isKicked());
 
                     realm1.insertOrUpdate(gro);
                 });
