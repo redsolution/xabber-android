@@ -47,7 +47,7 @@ public class ForwardedVH extends FileMessageVH {
             LogManager.exception(getClass().getSimpleName(), e);
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);
-        if (extraData.getGroupMember() != null)
+        if (extraData.getGroupMember() != null && !extraData.getGroupMember().isMe())
             author = extraData.getGroupMember().getNickname();
 
         if (author != null && !author.isEmpty()) {

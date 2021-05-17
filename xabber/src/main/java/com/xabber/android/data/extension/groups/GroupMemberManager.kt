@@ -138,10 +138,21 @@ object GroupMemberManager : OnLoadListener {
         GroupMemberRepository.removeGroupMemberById(id)
     }
 
-    fun saveOrUpdateGroupUser(user: GroupMemberExtensionElement, groupJid: BareJid?): GroupMember {
-        return getGroupMemberFromGroupMemberExtensionElement(user, groupJid).also {
-            members[it.id] = it
-            GroupMemberRepository.saveOrUpdateGroupMember(it)
+    fun saveOrUpdateMemberFromMessage(user: GroupMemberExtensionElement, groupJid: BareJid?): GroupMember? {
+        getGroupMemberFromGroupMemberExtensionElement(user, groupJid).also { newMember ->
+            if (members.contains(newMember.id)) {
+                members[newMember.id]?.apply {
+                    newMember.jid?.let { jid = it }
+                    newMember.nickname?.let { nickname = it }
+                    newMember.role?.let { role = it }
+                    newMember.badge?.let { badge = it }
+                    newMember.avatarHash?.let { avatarHash = it }
+                    newMember.avatarUrl?.let { avatarUrl = it }
+                    newMember.lastPresent?.let { lastPresent = it }
+                }
+            } else members[newMember.id] = newMember
+            GroupMemberRepository.saveOrUpdateGroupMember(newMember)
+            return members[newMember.id]
         }
     }
 

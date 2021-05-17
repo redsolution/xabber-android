@@ -119,8 +119,9 @@ object MessageHandler {
             return null
         }
 
+
         val groupMember = (ReferencesManager.getGroupchatUserFromReferences(messageStanza))?.let {
-            GroupMemberManager.saveOrUpdateGroupUser(it, contactJid.bareJid)
+            GroupMemberManager.saveOrUpdateMemberFromMessage(it, contactJid.bareJid)
         }
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
@@ -187,6 +188,8 @@ object MessageHandler {
 
         val originId = UniqueIdsHelper.getOriginId(messageStanza)
 
+        val isMe = groupMember?.isMe ?: false
+
         val messageRealmObject = if (originId != null) {
             MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
         } else MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
@@ -198,7 +201,7 @@ object MessageHandler {
             this.isEncrypted = encrypted
             this.isOffline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
-            this.isIncoming = isIncoming && !(groupMember?.isMe ?: false)
+            this.isIncoming = isIncoming && !isMe
             this.stanzaId = stanzaId
             this.originId = originId
             this.originalStanza = messageStanza.toXML().toString()
@@ -206,7 +209,7 @@ object MessageHandler {
             this.isForwarded = false
             this.isGroupchatSystem = isGroupSystem
             this.resource = resource ?: Resourcepart.EMPTY
-            this.messageStatus = if (isIncoming) MessageStatus.NONE else MessageStatus.DISPLAYED
+            this.messageStatus = if (isIncoming && !isMe) MessageStatus.NONE else MessageStatus.DISPLAYED
             this.markupText = markupBody
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
             (attachmentRealmObjects)?.let { this.attachmentRealmObjects = it }
@@ -311,7 +314,7 @@ object MessageHandler {
                 LogManager.e(this, "Got possible rewrite, todo implement handling")
                 return null
             }
-            GroupMemberManager.saveOrUpdateGroupUser(groupchatUser, message.from.asBareJid())
+            GroupMemberManager.saveOrUpdateMemberFromMessage(groupchatUser, message.from.asBareJid())
         }
 
         // forward comment (to support previous forwarded xep)
