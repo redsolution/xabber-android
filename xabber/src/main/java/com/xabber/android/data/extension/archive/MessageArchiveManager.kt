@@ -124,14 +124,20 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     fun loadLastMessageInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetwork {
+            LogManager.d(this, "Start loading last message in chat ${chat.account} with ${chat.contactJid}")
             val accountItem = AccountManager.getInstance().getAccount(chat.account)
             accountItem?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
                 {
+                    LogManager.d(this, "Finish loading last message in chat ${chat.account} with ${chat.contactJid}")
                     Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                         .map { it.onHistoryLoaded(accountItem) }
                 },
                 { exception ->
+                    LogManager.d(
+                        this,
+                        "Error while loading last message in chat ${chat.account} with ${chat.contactJid}"
+                    )
                     LogManager.exception(this, exception)
                     Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                         .map { it.onHistoryLoaded(accountItem) }
