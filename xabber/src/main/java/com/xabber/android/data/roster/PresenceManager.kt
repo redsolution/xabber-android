@@ -113,12 +113,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     private fun onLoaded() = NotificationManager.getInstance().registerNotificationProvider(subscriptionRequestProvider)
 
     /**
-     * @return `null` can be returned.
-     */
-    fun getSubscriptionRequest(account: AccountJid?, user: ContactJid?): SubscriptionRequest? =
-        subscriptionRequestProvider[account, user]
-
-    /**
      * Requests subscription to the contact.
      * Create chat with new contact if need.
      */
@@ -247,8 +241,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     /**
      * Check if we have an incoming subscription request
      */
-    fun hasSubscriptionRequest(account: AccountJid?, bareAddress: ContactJid?): Boolean =
-        getSubscriptionRequest(account, bareAddress) != null
+    fun hasSubscriptionRequest(account: AccountJid, bareAddress: ContactJid): Boolean =
+        subscriptionRequestProvider[account, bareAddress] != null
 
     fun getStatusMode(account: AccountJid, user: ContactJid): StatusMode {
         val presence = getPresence(account, user)
@@ -518,16 +512,15 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     fun onRosterEntriesUpdated(account: AccountJid, entries: Collection<Jid?>) {
-        for (entry in entries) {
-            try {
-                val user = ContactJid.from(entry)
-                if (subscriptionRequestProvider[account, user] != null) {
-                    subscriptionRequestProvider.remove(account, user)
-                    createChatForNewContact(account, user)
+        try {
+            entries.map { rosterEntry ->
+                subscriptionRequestProvider[account, ContactJid.from(rosterEntry)]?.let {
+                    subscriptionRequestProvider.remove(it)
+                    createChatForNewContact(it.account, it.contactJid)
                 }
-            } catch (e: ContactJidCreateException) {
-                LogManager.exception(this::class.java.simpleName, e)
             }
+        } catch (e: ContactJidCreateException) {
+            LogManager.exception(this::class.java.simpleName, e)
         }
     }
 
