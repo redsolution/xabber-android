@@ -175,7 +175,6 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     fun loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem: AccountItem) {
         Application.getInstance().runInBackgroundNetwork {
-            val timestamp = getLastAccountMessageInRealmTimestamp(accountItem.account)
 
             LogManager.i(this, "Start fetching whole missed messages for account ${accountItem.account}")
 
@@ -183,7 +182,8 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
             accountItem.connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
-                    timestamp = if (timestamp != null) Date(timestamp) else Date()
+                    timestamp =
+                    getLastAccountMessageInRealmTimestamp(accountItem.account)?.let { Date(it + 1) } ?: Date()
                 ),
                 {
                     LogManager.i(
@@ -223,8 +223,6 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
             val accountJid = chat.account
             val contactJid = chat.contactJid
 
-            val timestamp = getLastChatMessageInRealmTimestamp(chat)
-
             LogManager.i(this, "Start fetching missed messages in chat $accountJid with $contactJid")
 
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
@@ -235,7 +233,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
             accountItem?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
                     chat = chat,
-                    timestamp = if (timestamp != null) Date(timestamp) else Date(),
+                    timestamp = getLastChatMessageInRealmTimestamp(chat)?.let { Date(it + 1) } ?: Date(),
                 ),
                 {
                     Application.getInstance().getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
