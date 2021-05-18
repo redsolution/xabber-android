@@ -65,7 +65,7 @@ object MessageHandler {
                     var realm: Realm? = null
                     try {
                         realm = DatabaseManager.getInstance().defaultRealmInstance
-                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
+                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList.reversed()) }
                         SyncManager.getInstance().onMessageSaved()
                         checkForAttachmentsAndDownload(messagesList)
                         notifySamUiListeners(OnNewMessageListener::class.java)
