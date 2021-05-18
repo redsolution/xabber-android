@@ -122,30 +122,6 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         }
     }
 
-    fun loadLastMessageInChat(chat: AbstractChat) {
-        Application.getInstance().runInBackgroundNetwork {
-            LogManager.d(this, "Start loading last message in chat ${chat.account} with ${chat.contactJid}")
-            val accountItem = AccountManager.getInstance().getAccount(chat.account)
-            accountItem?.connection?.sendIqWithResponseCallback(
-                MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
-                {
-                    LogManager.d(this, "Finish loading last message in chat ${chat.account} with ${chat.contactJid}")
-                    Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                        .map { it.onHistoryLoaded(accountItem) }
-                },
-                { exception ->
-                    LogManager.d(
-                        this,
-                        "Error while loading last message in chat ${chat.account} with ${chat.contactJid}"
-                    )
-                    LogManager.exception(this, exception)
-                    Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                        .map { it.onHistoryLoaded(accountItem) }
-                }
-            )
-        }
-    }
-
     fun loadAllMessagesInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetwork {
             LogManager.i(this, "Start fetching all messages in chat ${chat.account} with ${chat.contactJid}")
@@ -165,11 +141,38 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     private fun loadLastMessagesInAllChats(accountItem: AccountItem) {
-        RosterManager.getInstance().getAccountRosterContacts(accountItem.account).forEach { rosterContact ->
-            loadLastMessageInChat(
-                ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
+        Application.getInstance().runInBackgroundNetwork {
+            val contacts = RosterManager.getInstance().getAccountRosterContacts(accountItem.account)
+            contacts.mapIndexed { index, rosterContact ->
+                val chat = ChatManager.getInstance().getChat(rosterContact.account, rosterContact.contactJid)
                     ?: ChatManager.getInstance().createRegularChat(rosterContact.account, rosterContact.contactJid)
-            )
+
+                LogManager.d(this, "Start loading last message in chat ${chat.account} with ${chat.contactJid}")
+                AccountManager.getInstance().getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+                    MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
+                    {
+                        LogManager.d(
+                            this,
+                            "Finish loading last message in chat ${chat.account} with ${chat.contactJid}"
+                        )
+                        if (index == contacts.size - 1) {
+                            Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                                .map { it.onHistoryLoaded(accountItem) }
+                        }
+                    },
+                    { exception ->
+                        LogManager.d(
+                            this,
+                            "Error while loading last message in chat ${chat.account} with ${chat.contactJid}"
+                        )
+                        LogManager.exception(this, exception)
+                        if (index == contacts.size - 1) {
+                            Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                                .map { it.onHistoryLoaded(accountItem) }
+                        }
+                    }
+                )
+            }
         }
     }
 
