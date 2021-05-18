@@ -93,7 +93,9 @@ object GroupInviteManager : OnLoadListener {
         if (hasActiveIncomingInvites(accountJid, groupJid)) {
             GroupInviteRepository.removeInviteFromRealm(accountJid, groupJid)
             invitesList.removeAll { it.accountJid == accountJid && it.groupJid == groupJid }
-            ChatManager.getInstance().removeChat(accountJid, groupJid)
+            ChatManager.getInstance().getChat(accountJid, groupJid)?.let {
+                ChatManager.getInstance().removeChat(it)
+            }
         }
     }
 
