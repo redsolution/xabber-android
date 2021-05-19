@@ -18,6 +18,10 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -103,7 +107,15 @@ public class BottomMessagesPanel extends Fragment {
     private String getNames(RealmResults<MessageRealmObject> messages) {
         HashSet<String> names = new HashSet<>();
         for (MessageRealmObject message : messages) {
-            String name = RosterManager.getDisplayAuthorName(message);
+            AbstractChat chat = ChatManager.getInstance().getChat(message.getAccount(), message.getUser());
+            String name = null;
+            if (chat instanceof GroupChat) {
+                if (GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()) != null) {
+                    name = GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()).getNickname();
+                } else if (!message.isIncoming() && GroupMemberManager.INSTANCE.getMe(chat.getContactJid()) != null) {
+                    name = GroupMemberManager.INSTANCE.getMe(chat.getContactJid()).getNickname();
+                }
+            } else name = RosterManager.getDisplayAuthorName(message);
             if (name == null) name = "null";
             int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);
             names.add("<font color='#" + Integer.toHexString(color).substring(2) + "'>" + name + "</font>");
