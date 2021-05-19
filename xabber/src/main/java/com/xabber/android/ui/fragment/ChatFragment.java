@@ -668,7 +668,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setupPinnedMessageView(){
         //todo privilege checking
-        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null){
+        AbstractChat chat = getChat();
+        if (chat instanceof GroupChat && ((GroupChat)chat).getPinnedMessageId() != null){
             MessageRealmObject message = MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
 
             pinnedMessageCrossIv.setOnClickListener(v ->
@@ -1209,6 +1210,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (accountJid.equals(account) && contactJid.equals(user)) {
                 if (needNotification) playMessageSound();
                 NotificationManager.getInstance().removeMessageNotification(account, user);
+                if (getChat() instanceof GroupChat) setupPinnedMessageView();
             }
         });
     }

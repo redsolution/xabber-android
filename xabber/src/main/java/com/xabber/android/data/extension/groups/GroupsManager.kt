@@ -13,7 +13,7 @@ import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.archive.MessageArchiveManager.loadMessageByStanzaId
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
@@ -99,19 +99,21 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             val presence = packet.getExtension(GroupPresenceExtensionElement.NAMESPACE) as GroupPresenceExtensionElement
             val accountJid = AccountJid.from(packet.to.toString())
             val contactJid = ContactJid.from(packet.from).bareUserJid
-            val chat =
-                (ChatManager.getInstance().getChat(accountJid, contactJid) as? RegularChat)
-                    ?.let { regularChat ->
-                        ChatManager.getInstance().removeChat(regularChat)
-                        ChatManager.getInstance().createGroupChat(accountJid, contactJid)
-                    } ?: ChatManager.getInstance().createGroupChat(accountJid, contactJid)
+            if (ChatManager.getInstance().getChat(accountJid, contactJid) == null) {
+                ChatManager.getInstance().createGroupChat(accountJid, contactJid)
+            } else if (ChatManager.getInstance().getChat(accountJid, contactJid) is RegularChat) {
+                ChatManager.getInstance().removeChat(accountJid, contactJid)
+                ChatManager.getInstance().createGroupChat(accountJid, contactJid)
+            }
+            val chat = ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
+
             if (presence.pinnedMessageId != null
                 && presence.pinnedMessageId.isNotEmpty()
                 && presence.pinnedMessageId != "0"
             ) {
                 val pinnedMessage = MessageRepository.getMessageFromRealmByStanzaId(presence.pinnedMessageId)
                 if (pinnedMessage == null || pinnedMessage.timestamp == null) {
-                    loadMessageByStanzaId(chat, presence.pinnedMessageId)
+                    MessageArchiveManager.loadMessageByStanzaId(chat, presence.pinnedMessageId)
                 }
                 chat.pinnedMessageId = presence.pinnedMessageId
             }
