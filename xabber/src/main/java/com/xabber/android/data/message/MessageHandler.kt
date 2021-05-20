@@ -65,7 +65,11 @@ object MessageHandler {
                     var realm: Realm? = null
                     try {
                         realm = DatabaseManager.getInstance().defaultRealmInstance
-                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList.reversed()) }
+                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
+                        messagesList
+                            .groupBy { ChatManager.getInstance().getChat(it.account, it.user) }
+                            .filter { it.key != null }
+                            .map { repairArchiveMessagesStatuses(it.key!!) }
                         SyncManager.getInstance().onMessageSaved()
                         checkForAttachmentsAndDownload(messagesList)
                         notifySamUiListeners(OnNewMessageListener::class.java)
@@ -76,6 +80,26 @@ object MessageHandler {
                     }
                 }
             }
+    }
+
+    private fun repairArchiveMessagesStatuses(chat: AbstractChat) {
+        Application.getInstance().runInBackground {
+            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                realm.executeTransaction { realmTransaction ->
+                    val messages = realmTransaction
+                        .where(MessageRealmObject::class.java)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                        .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                        .sort(MessageRealmObject.Fields.TIMESTAMP)
+                        .findAll()
+
+                    if (messages.last()?.isIncoming == true) {
+                        messages.dropLastWhile { it.isIncoming }.forEach { it.apply { isRead = true } }
+                        realmTransaction.copyToRealmOrUpdate(messages)
+                    } else realmTransaction.copyToRealmOrUpdate(messages.map { it.apply { isRead = true } })
+                }
+            }
+        }
     }
 
     fun parseMessage(

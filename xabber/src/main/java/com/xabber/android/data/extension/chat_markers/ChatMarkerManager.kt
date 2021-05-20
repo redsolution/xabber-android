@@ -1,6 +1,5 @@
 package com.xabber.android.data.extension.chat_markers
 
-import android.os.Looper
 import com.xabber.android.data.Application
 import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountManager
@@ -14,6 +13,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageStatus
+import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.ui.OnMessageUpdatedListener
@@ -75,22 +75,22 @@ object ChatMarkerManager : OnPacketListener {
             }
 
         }
-        val displayedNotification = Message(messageRealmObject.user.jid).apply {
-            addExtension(
-                ChatMarkersElements.DisplayedExtension(originalMessage.stanzaId).apply {
-                    setStanzaIdExtensions(stanzaIds)
+
+        try {
+            StanzaSender.sendStanza(
+                messageRealmObject.account,
+                Message(messageRealmObject.user.jid).apply {
+                    addExtension(
+                        ChatMarkersElements.DisplayedExtension(originalMessage.stanzaId).apply {
+                            setStanzaIdExtensions(stanzaIds)
+                        }
+                    )
+                    type = Message.Type.chat
                 }
             )
-            type = Message.Type.chat
+        } catch (e: NetworkException) {
+            LogManager.exception(ChatMarkerManager::class.java.simpleName, e)
         }
-
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            try {
-                StanzaSender.sendStanza(messageRealmObject.account, displayedNotification)
-            } catch (e: NetworkException) {
-                LogManager.exception(ChatMarkerManager::class.java.simpleName, e)
-            }
-        } else sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.account)
     }
 
     fun processCarbonsMessage(account: AccountJid?, message: Message, direction: CarbonExtension.Direction) {
@@ -132,20 +132,16 @@ object ChatMarkerManager : OnPacketListener {
 
     private fun sendReceived(message: Message, account: AccountJid) {
         if (message.stanzaId == null || message.stanzaId.isEmpty()) return
-        sendMessageInBackgroundUserRequest(
-            Message(message.from).apply {
-                addExtension(ChatMarkersElements.ReceivedExtension(message.stanzaId))
-                thread = message.thread
-                type = Message.Type.chat
-            },
-            account
-        )
-    }
-
-    private fun sendMessageInBackgroundUserRequest(message: Message, account: AccountJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                StanzaSender.sendStanza(account, message)
+                StanzaSender.sendStanza(
+                    account,
+                    Message(message.from).apply {
+                        addExtension(ChatMarkersElements.ReceivedExtension(message.stanzaId))
+                        thread = message.thread
+                        type = Message.Type.chat
+                    }
+                )
             } catch (e: NetworkException) {
                 LogManager.exception(ChatMarkerManager::class.java.simpleName, e)
             }
