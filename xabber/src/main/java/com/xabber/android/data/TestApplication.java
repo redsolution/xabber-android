@@ -339,7 +339,7 @@ public class TestApplication extends android.app.Application {
         addManager(NetworkManager.getInstance());
         addManager(ReconnectionManager.getInstance());
         addManager(ReceiptManager.getInstance());
-        addManager(ChatMarkerManager.getInstance());
+        addManager(ChatMarkerManager.INSTANCE);
         addManager(SSNManager.getInstance());
         addManager(AttentionManager.getInstance());
         addManager(CarbonManager.INSTANCE);

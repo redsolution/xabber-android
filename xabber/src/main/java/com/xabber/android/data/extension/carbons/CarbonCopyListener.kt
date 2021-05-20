@@ -10,26 +10,24 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smackx.carbons.CarbonCopyReceivedListener
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension
 
-internal class CarbonCopyListener(var account: AccountJid,
+internal class CarbonCopyListener(
+    var account: AccountJid,
 ) : CarbonCopyReceivedListener {
 
-    override fun onCarbonCopyReceived(direction: CarbonExtension.Direction,
-                                      carbonCopy: Message,
-                                      wrappingMessage: Message
+    override fun onCarbonCopyReceived(
+        direction: CarbonExtension.Direction,
+        carbonCopy: Message,
+        wrappingMessage: Message
     ) {
         Application.getInstance().runOnUiThread {
             try {
                 MessageManager.getInstance().processCarbonsMessage(account, carbonCopy, direction)
             } catch (e: Exception) {
-                LogManager.exception(LOG_TAG, e)
+                LogManager.exception(CarbonCopyListener::class.java.simpleName, e)
             }
-            ChatMarkerManager.getInstance().processCarbonsMessage(account, carbonCopy, direction)
+            ChatMarkerManager.processCarbonsMessage(account, carbonCopy, direction)
             ChatStateManager.getInstance().processCarbonsMessage(account, carbonCopy, direction)
         }
-    }
-
-    companion object {
-        private val LOG_TAG = CarbonCopyListener::class.java.simpleName
     }
 
 }
