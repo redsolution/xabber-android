@@ -26,7 +26,6 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -272,10 +271,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         updateBackpressure = new UpdateBackpressure(this);
 
         contactTitleView = findViewById(R.id.contact_title);
-        contactTitleView.setOnClickListener(v ->
-                startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account, user)));
+        contactTitleView.setOnClickListener(v -> {
+            if (account.getBareJid().toString().equals(user.getBareJid().toString())) {
+                startActivity(AccountActivity.createIntent(this, account));
+            } else startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account, user));
+        });
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         ImageView toolbarBackIv = findViewById(R.id.toolbar_arrow_back_iv);
         toolbarOverflowIv = findViewById(R.id.toolbar_overflow_iv);
         toolbarBackIv.setOnClickListener(v -> close());
@@ -701,19 +703,20 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
         if (abstractChat != null) {
             PopupMenu popupMenu = new PopupMenu(this, view);
-            MenuInflater inflater = popupMenu.getMenuInflater();
 
-            //if (abstractChat instanceof RegularChat) {
-            inflater.inflate(R.menu.menu_chat_regular, popupMenu.getMenu());
-            //}
+            if (account.getBareJid().toString().equals(user.getBareJid().toString())) {
+                popupMenu.getMenuInflater().inflate(R.menu.menu_chat_saved_messages, popupMenu.getMenu());
+            } else {
+                popupMenu.getMenuInflater().inflate(R.menu.menu_chat_regular, popupMenu.getMenu());
 
-            // archive/unarchive chat
-            popupMenu.getMenu().findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
-            popupMenu.getMenu().findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+                // archive/unarchive chat
+                popupMenu.getMenu().findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+                popupMenu.getMenu().findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
 
-            // mute chat
-            popupMenu.getMenu().findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
-            popupMenu.getMenu().findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
+                // mute chat
+                popupMenu.getMenu().findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
+                popupMenu.getMenu().findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
+            }
 
             popupMenu.setOnMenuItemClickListener(this::onMenuItemClick);
             popupMenu.show();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_search_chat"
+        android:enabled="false"
+        android:orderInCategory="2"
+        android:title="@string/search" />
+
+    <item
+        android:id="@+id/action_clear_history"
+        android:orderInCategory="9"
+        android:title="@string/clear_history"
+        app:showAsAction="never" />
+
+</menu>

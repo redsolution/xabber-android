@@ -29,6 +29,7 @@ import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -784,6 +785,21 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private int getLauncherLargeIconSize() {
         return HoneycombShortcutHelper.getLauncherLargeIconSize();
+    }
+
+    public Drawable getSavedMessagesAvatar(AccountJid accountJid){
+        Drawable background =
+                new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(accountJid));
+        Drawable icon =
+                ResourcesCompat.getDrawable(
+                        Application.getInstance().getApplicationContext().getResources(),
+                        R.drawable.ic_saved_messages, null
+                );
+
+        LayerDrawable result = new LayerDrawable( new Drawable[] { background, icon } );
+
+        result.setLayerInset(1, 12, 12, 12, 12);
+        return result;
     }
 
 }

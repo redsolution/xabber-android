@@ -55,9 +55,14 @@ public class NewContactTitleInflater {
         final ImageView avatarView = titleView.findViewById(R.id.ivAvatar);
 
         AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
-        if (chat instanceof GroupChat && !"".equals(((GroupChat) chat).getName()))
-            nameView.setText(((GroupChat) chat).getName());
-        else nameView.setText(abstractContact.getName());
+        if (chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString())){
+            nameView.setText(context.getResources().getText(R.string.saved_messages__header));
+        } else {
+            if (chat instanceof GroupChat && !"".equals(((GroupChat) chat).getName())) {
+                nameView.setText(((GroupChat) chat).getName());
+            } else nameView.setText(abstractContact.getName());
+        }
+
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.contact_list_contact_name_text_color, typedValue, true);
         nameView.setTextColor(typedValue.data);
@@ -93,12 +98,9 @@ public class NewContactTitleInflater {
                     resources.getDrawable(R.drawable.ic_notif_custom_large), null);
         }
 
-        // if it is account, not simple user contact
         if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
-            avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
-        } else {
-            avatarView.setImageDrawable(abstractContact.getAvatar());
-        }
+            avatarView.setImageDrawable(AvatarManager.getInstance().getSavedMessagesAvatar(abstractContact.getAccount()));
+        } else avatarView.setImageDrawable(abstractContact.getAvatar());
         setStatus(context, titleView, abstractContact);
     }
 
@@ -107,6 +109,7 @@ public class NewContactTitleInflater {
         AbstractChat chat = ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
 
         StatusBadgeSetupHelper.INSTANCE.setupImageViewForContact(abstractContact, statusModeView, chat);
+
         boolean isGroupchat = chat instanceof GroupChat;
         boolean isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
         boolean isBlocked = BlockingManager.getInstance()
@@ -147,9 +150,16 @@ public class NewContactTitleInflater {
 
         boolean isTyping = false;
         CharSequence statusText;
-        if (isBlocked) statusText = "Blocked";
-        else if (isServer) statusText = "Server";
-        else {
+        if (abstractContact.getAccount().getBareJid().toString().equals(
+                abstractContact.getContactJid().getBareJid().toString())
+        ) {
+            statusTextView.setVisibility(View.GONE);
+            return;
+        } else if (isBlocked) {
+            statusText = "Blocked";
+        } else if (isServer) {
+            statusText = "Server";
+        } else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
                     abstractContact.getAccount(), abstractContact.getContactJid());
             if (statusText == null) {

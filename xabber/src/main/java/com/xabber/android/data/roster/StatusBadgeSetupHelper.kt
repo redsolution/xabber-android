@@ -38,6 +38,7 @@ object StatusBadgeSetupHelper {
                 || abstractChat.privacyType == GroupPrivacyType.NONE)
         val isIncognitoGroupChat = abstractChat is GroupChat
                 && abstractChat.privacyType == GroupPrivacyType.INCOGNITO
+        val isSavedMessages = accountJid.bareJid.toString() == contactJid.bareJid.toString()
 
         val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
 
@@ -50,12 +51,16 @@ object StatusBadgeSetupHelper {
 
         // Hiding badges in disconnected\unavailable state only for regular chats
         imageView.visibility =
-            if (!isServer && !isPublicGroupChat && !isIncognitoGroupChat && !hasActiveIncomingInvite && !isBlocked
+            if (!isServer
+                && !isPublicGroupChat
+                && !isIncognitoGroupChat
+                && !hasActiveIncomingInvite
+                && !isBlocked
                 && (isUnavailable || !isAccountConnected)
-            )
+                || isSavedMessages
+            ) {
                 View.INVISIBLE
-            else
-                View.VISIBLE
+            } else View.VISIBLE
 
         when {
             isBlocked -> statusLevel = 11
@@ -79,8 +84,8 @@ object StatusBadgeSetupHelper {
 
     fun setupImageViewForChat(abstractChat: AbstractChat, imageView: ImageView) =
         setupImageViewForContact(
-            RosterManager.getInstance()
-                .getAbstractContact(abstractChat.account, abstractChat.contactJid), imageView,
+            RosterManager.getInstance().getAbstractContact(abstractChat.account, abstractChat.contactJid),
+            imageView,
             abstractChat
         )
 

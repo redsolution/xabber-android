@@ -9,6 +9,7 @@ import androidx.core.os.ConfigurationCompat
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager
@@ -64,11 +65,13 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
-            holder.avatarIV.setImageDrawable(
-                RosterManager.getInstance()
-                    .getAbstractContact(chat.account, chat.contactJid)
-                    .getAvatar(true)
-            )
+            if (chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()) {
+                holder.avatarIV.setImageDrawable(AvatarManager.getInstance().getSavedMessagesAvatar(chat.account))
+            } else {
+                holder.avatarIV.setImageDrawable(
+                    RosterManager.getInstance().getAbstractContact(chat.account, chat.contactJid).getAvatar(true)
+                )
+            }
         } else {
             holder.avatarIV.visibility = View.GONE
         }
@@ -78,13 +81,19 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         StatusBadgeSetupHelper.setupImageViewForChat(chat, holder.statusIV)
 
     private fun setupContactName(holder: ChatViewHolder, chat: AbstractChat) {
-        if (chat is GroupChat)
-            holder.contactNameTV.text = chat.name
-                ?: RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
-        else holder.contactNameTV.text = RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
-
         val accountJid = chat.account
         val contactJid = chat.contactJid
+
+        holder.contactNameTV.text = when {
+            accountJid.bareJid.toString() == contactJid.bareJid.toString() -> {
+                holder.itemView.context.getText(R.string.saved_messages__header)
+            }
+            chat is GroupChat -> {
+                chat.name ?: RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
+            }
+            else -> RosterManager.getInstance().getBestContact(chat.account, chat.contactJid).name
+        }
+
         val rosterContact = RosterManager.getInstance().getRosterContact(accountJid, contactJid)
         val statusLevel = rosterContact?.statusMode?.statusLevel
 
