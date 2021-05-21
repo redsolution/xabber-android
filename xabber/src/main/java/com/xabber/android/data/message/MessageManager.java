@@ -472,7 +472,11 @@ public class MessageManager implements OnPacketListener {
             }
             AccountManager.getInstance().startGracePeriod(account);
 
-        } else if (direction == CarbonExtension.Direction.received){
+            if (message.getType() == Message.Type.chat
+                    && account.toString().contains(companion.toString())
+                    && message.getFrom().toString().contains(message.getTo().toString())) return;
+
+        } else if (direction == CarbonExtension.Direction.received) {
 
             try {
                 companion = ContactJid.from(message.getFrom()).getBareUserJid();
@@ -481,6 +485,8 @@ public class MessageManager implements OnPacketListener {
                 return;
             }
         }
+        LogManager.d("BULLSHIT", "account:" + account + "; companion:" + companion + "; direction:" + direction +
+                "; type:" + message.getType() + "; to:" + message.getTo() + "; from:" + message.getFrom() + "; body:" + message.getBody());
         if (companion != null) MessageHandler.INSTANCE.parseMessage(account, companion, message, null);
     }
 

@@ -10,9 +10,7 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smackx.carbons.CarbonCopyReceivedListener
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension
 
-internal class CarbonCopyListener(
-    var account: AccountJid,
-) : CarbonCopyReceivedListener {
+internal class CarbonCopyListener(var account: AccountJid) : CarbonCopyReceivedListener {
 
     override fun onCarbonCopyReceived(
         direction: CarbonExtension.Direction,
