@@ -13,7 +13,7 @@ android {
         versionCode 984
         versionName '3.0.1(984)'
         vectorDrawables.useSupportLibrary = true
-    }gbye igfhbn
+    }
 
     lintOptions {
         // problems with generated "applicationId" string resource
