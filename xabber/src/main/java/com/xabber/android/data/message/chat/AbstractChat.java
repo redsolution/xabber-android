@@ -230,7 +230,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
-            messageRealmObject.setMessageStatus(MessageStatus.UPLOADING); //todo check this or set to NOT_SENT
+            messageRealmObject.setMessageStatus(MessageStatus.UPLOADING);
             messageRealmObject.setIncoming(false);
             realm1.copyToRealm(messageRealmObject);
         });
@@ -602,7 +602,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         if (message == null) {
-            messageRealmObject.setMessageStatus(MessageStatus.ERROR); //todo check this
+            messageRealmObject.setMessageStatus(MessageStatus.ERROR);
             messageRealmObject.setErrorDescription("Internal error: message is null");
         } else {
             message.setFrom(account.getFullJid());

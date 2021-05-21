@@ -17,9 +17,11 @@ import com.xabber.android.data.message.chat.GroupChat
 
 object StatusBadgeSetupHelper {
 
-    fun setupImageViewForContact(abstractContact: AbstractContact, imageView: ImageView,
-                                 abstractChat: AbstractChat? = ChatManager.getInstance()
-                                         .getChat(abstractContact.account, abstractContact.contactJid)) {
+    fun setupImageViewForContact(
+        abstractContact: AbstractContact, imageView: ImageView,
+        abstractChat: AbstractChat? = ChatManager.getInstance()
+            .getChat(abstractContact.account, abstractContact.contactJid)
+    ) {
 
         val accountJid = abstractContact.account
         val contactJid = abstractContact.contactJid
@@ -27,10 +29,10 @@ object StatusBadgeSetupHelper {
         var statusLevel = abstractContact.statusMode.statusLevel
         val isServer = abstractContact.contactJid.jid.isDomainBareJid
         val isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(accountJid, contactJid)
+            .contactIsBlockedLocally(accountJid, contactJid)
         val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
         val isAccountConnected = AccountManager.getInstance().connectedAccounts
-                .contains(accountJid)
+            .contains(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
                 || abstractChat.privacyType == GroupPrivacyType.NONE)
@@ -48,11 +50,12 @@ object StatusBadgeSetupHelper {
 
         // Hiding badges in disconnected\unavailable state only for regular chats
         imageView.visibility =
-                if (!isServer && !isPublicGroupChat && !isIncognitoGroupChat && !hasActiveIncomingInvite && !isBlocked
-                        && (isUnavailable || !isAccountConnected))
-                    View.INVISIBLE
-                else
-                    View.VISIBLE
+            if (!isServer && !isPublicGroupChat && !isIncognitoGroupChat && !hasActiveIncomingInvite && !isBlocked
+                && (isUnavailable || !isAccountConnected)
+            )
+                View.INVISIBLE
+            else
+                View.VISIBLE
 
         when {
             isBlocked -> statusLevel = 11
@@ -75,20 +78,32 @@ object StatusBadgeSetupHelper {
     }
 
     fun setupImageViewForChat(abstractChat: AbstractChat, imageView: ImageView) =
-            setupImageViewForContact(RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.account, abstractChat.contactJid), imageView,
-                    abstractChat)
+        setupImageViewForContact(
+            RosterManager.getInstance()
+                .getAbstractContact(abstractChat.account, abstractChat.contactJid), imageView,
+            abstractChat
+        )
 
-    fun setupImageView(statusMode: StatusMode = StatusMode.unavailable, offset: Int = 0,
-                       imageView: ImageView) {
-        imageView.setImageDrawable(ResourcesCompat.getDrawable(imageView.context.resources,
-                R.drawable.ic_status_combined, null))
+    fun setupImageView(
+        statusMode: StatusMode = StatusMode.unavailable, offset: Int = 0,
+        imageView: ImageView
+    ) {
+        imageView.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                imageView.context.resources,
+                R.drawable.ic_status_combined, null
+            )
+        )
         imageView.setImageLevel(statusMode.statusLevel + offset)
     }
 
-    fun setupDefaultGroupBadge(imageView: ImageView){
-        imageView.setImageDrawable(ResourcesCompat.getDrawable(imageView.context.resources,
-        R.drawable.ic_status_combined, null))
+    fun setupDefaultGroupBadge(imageView: ImageView) {
+        imageView.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                imageView.context.resources,
+                R.drawable.ic_status_combined, null
+            )
+        )
         imageView.setImageLevel(25)
     }
 

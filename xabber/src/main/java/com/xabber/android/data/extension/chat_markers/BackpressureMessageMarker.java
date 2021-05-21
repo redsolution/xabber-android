@@ -122,8 +122,8 @@ public class BackpressureMessageMarker {
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.getAccount().toString())
                 .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.getUser().toString())
                 .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, chatMarkerFieldState) //todo check this
-                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.UPLOADING.toString()) //todo check this
+                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, chatMarkerFieldState)
+                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.UPLOADING.toString())
                 .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, messageRealmObject.getTimestamp())
                 .findAll();
     }

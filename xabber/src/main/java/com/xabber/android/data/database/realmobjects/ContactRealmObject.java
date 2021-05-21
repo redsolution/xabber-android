@@ -21,7 +21,6 @@ public class ContactRealmObject extends RealmObject {
         public static final String CIRCLES = "circles";
     }
 
-    //TODO REALM UPDATE add status link
     @PrimaryKey
     private String id;
     private String accountJid;

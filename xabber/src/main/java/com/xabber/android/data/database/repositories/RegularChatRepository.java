@@ -96,7 +96,7 @@ public class RegularChatRepository {
                         regularChatRealmObject.setBlocked(isBlocked);
                         regularChatRealmObject.setArchived(isArchived);
                         regularChatRealmObject.setHistoryRequestAtStart(isHistoryRequestAtStart);
-                        regularChatRealmObject.setUnreadMessagesCount(unreadCount); //TODO REALM UPDATE also unread and notif prefs!
+                        regularChatRealmObject.setUnreadMessagesCount(unreadCount);
                         regularChatRealmObject.setNotificationState(notificationState);
 
                         if (!contactRealmObject.getChats().contains(regularChatRealmObject))

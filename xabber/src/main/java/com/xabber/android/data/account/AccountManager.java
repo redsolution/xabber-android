@@ -1107,7 +1107,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!accountItem.getLoadHistorySettings().equals(loadHistorySettings)) {
             accountItem.setLoadHistorySettings(loadHistorySettings);
             AccountRepository.saveAccountToRealm(accountItem);
-            // TODO request history if needed
         }
     }
 

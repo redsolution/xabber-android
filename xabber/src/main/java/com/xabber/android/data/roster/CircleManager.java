@@ -28,8 +28,7 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
-        CircleStateProvider {
+public class CircleManager implements OnLoadListener, OnAccountRemovedListener, CircleStateProvider {
 
     /**
      * Reserved group name for the rooms.
@@ -59,7 +58,6 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
 
     static {
         try {
-            // TODO: looks ugly, comes from times, when account was string.
             NO_ACCOUNT = AccountJid.from("com.xabber.android@data/NO_ACCOUNT");
         } catch (XmppStringprepException e) {
             LogManager.exception(CircleManager.class.getSimpleName(), e);

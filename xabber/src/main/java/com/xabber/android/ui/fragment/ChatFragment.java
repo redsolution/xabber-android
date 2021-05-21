@@ -881,7 +881,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ChatStateManager.getInstance().onChatOpening(account, user);
 
         if (getChat() != null && getChat() instanceof GroupChat) {
-            // TODO should probably move to groupchat manager
             try {
                 PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), true);
             } catch (NetworkException e) {
@@ -916,7 +915,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ChatStateManager.getInstance().onPaused(account, user);
 
         if (getChat() != null && getChat() instanceof GroupChat) {
-            // TODO should probably move to groupchat manager
             try {
                 PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), false);
             } catch (NetworkException e) {

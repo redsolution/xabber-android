@@ -66,7 +66,7 @@ public class BackpressureMessageReader {
         PublishSubject<MessageDataHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(holder -> { // TODO maybe move to background network
+                .subscribe(holder -> {
                     Application.getInstance().runInBackground(() -> {
                         Realm realm = null;
                         try {

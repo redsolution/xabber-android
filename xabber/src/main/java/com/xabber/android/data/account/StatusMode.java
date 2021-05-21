@@ -113,7 +113,6 @@ public enum StatusMode {
             case subscribe:
             case subscribed:
             case unsubscribe:
-                // TODO: 12.07.17 possibly bug
             case probe:
                 return StatusMode.unavailable;
         }
