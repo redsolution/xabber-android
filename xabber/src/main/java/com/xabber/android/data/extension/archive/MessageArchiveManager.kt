@@ -275,7 +275,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-                .first()
+                .firstOrNull()
                 ?.stanzaId
         } catch (e: Exception) {
             LogManager.exception(this, e)
