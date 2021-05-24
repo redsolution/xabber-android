@@ -798,7 +798,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
         LayerDrawable result = new LayerDrawable( new Drawable[] { background, icon } );
 
-        result.setLayerInset(1, 12, 12, 12, 12);
+        result.setLayerInset(1, 24, 24, 24, 24);
         return result;
     }
 
