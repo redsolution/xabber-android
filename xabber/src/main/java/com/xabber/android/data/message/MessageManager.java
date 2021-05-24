@@ -112,7 +112,7 @@ public class MessageManager implements OnPacketListener {
 
             MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
                     chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString());
-            message.setText(text);
+            message.setText(text.replaceAll("\0", ""));
             message.setIncoming(false);
             message.setOffline(false);
             message.setEncrypted(false);
