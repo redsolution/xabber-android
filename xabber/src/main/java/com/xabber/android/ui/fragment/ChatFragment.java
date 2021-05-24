@@ -2087,6 +2087,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())) show = true;
 
+        if (chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString())) {
+            show = false;
+        }
 
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
