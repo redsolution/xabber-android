@@ -1,5 +1,6 @@
 package com.xabber.xmpp.mam
 
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.message.chat.AbstractChat
@@ -48,6 +49,13 @@ class MamQueryIQ private constructor(
         ) = MamQueryIQ(
             archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
             dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
+        )
+
+        fun createMamRequestIqLastSavedMessage(
+            accountJid: AccountJid,
+        ) = MamQueryIQ(
+            dataFormExtension = MamDataFormExtension(with = accountJid.bareJid),
+            rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
         )
 
         fun createMamRequestIqLastMessageInChat(

@@ -56,6 +56,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         if (accountItem.startHistoryTimestamp == null) {
             accountItem.startHistoryTimestamp = Date()
             AccountRepository.saveAccountToRealm(accountItem)
+            loadLastSavedMessage(accountItem)
             loadLastMessagesInAllChats(accountItem)
         } else loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
     }
@@ -136,6 +137,28 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     }
                 },
                 { exception -> LogManager.exception(this, exception) }
+            )
+        }
+    }
+
+    private fun loadLastSavedMessage(accountItem: AccountItem) {
+        Application.getInstance().runInBackground {
+            accountItem.connection.sendIqWithResponseCallback(
+                MamQueryIQ.createMamRequestIqLastSavedMessage(accountItem.account),
+                {
+                    LogManager.d(this, "Finish loading last saved message of account ${accountItem.account}")
+                    if (RosterManager.getInstance().getAccountRosterContacts(accountItem.account).isEmpty()) {
+                        Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                            .map { it.onHistoryLoaded(accountItem) }
+                    }
+                },
+                {
+                    LogManager.d(this, "Error loading last saved message of account ${accountItem.account}")
+                    if (RosterManager.getInstance().getAccountRosterContacts(accountItem.account).isEmpty()) {
+                        Application.getInstance().getManagers(OnHistoryLoaded::class.java)
+                            .map { it.onHistoryLoaded(accountItem) }
+                    }
+                }
             )
         }
     }
