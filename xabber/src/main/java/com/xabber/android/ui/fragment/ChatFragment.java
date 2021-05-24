@@ -804,7 +804,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             messageRealmObjects = abstractChat.getMessages();
         }
 
-        IntroViewDecoration.decorateRecyclerViewWithChatIntroView(realmRecyclerView, getChat(), accountColor);
+        if (!accountJid.getBareJid().toString().contains(user.getBareJid().toString())){
+            IntroViewDecoration.decorateRecyclerViewWithChatIntroView(realmRecyclerView, getChat(), accountColor);
+        }
 
         if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())
                 && GroupInviteManager.INSTANCE.getLastInvite(getAccount(), getUser()).getReason() != null
@@ -827,7 +829,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inflateIncomingInvite(senderAvatar, senderName, invite.getReason(), accountColor);
         }
 
-        if (messageRealmObjects == null || messageRealmObjects.size() == 0){
+        if (messageRealmObjects == null || messageRealmObjects.size() == 0 &&
+                !accountJid.getBareJid().toString().equals(contactJid.getBareJid().toString())){
             inflateIntroView();
             messageRealmObjects.addChangeListener(
                     new RealmChangeListener<RealmResults<MessageRealmObject>>() {
@@ -1945,7 +1948,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void inflateIntroView() {
-        if (chatIntroLayout == null) {
+        if (chatIntroLayout == null && !account.getBareJid().toString().contains(user.getBareJid().toString())) {
             chatIntroLayout = (ViewGroup) stubIntro.inflate();
             chatIntroLayout.setVisibility(View.VISIBLE);
             IntroViewDecoration.setupView(chatIntroLayout, getActivity(), getChat(), accountColor);
