@@ -432,6 +432,7 @@ public class MessageManager implements OnPacketListener {
                 }
                 return;
             }
+            if (account.getBareJid().toString().contains(contactJid.getBareJid().toString())) return;
             MessageHandler.INSTANCE.parseMessage(account, contactJid, (Message) stanza, null);
         }
     }
@@ -472,10 +473,6 @@ public class MessageManager implements OnPacketListener {
             }
             AccountManager.getInstance().startGracePeriod(account);
 
-            if (message.getType() == Message.Type.chat
-                    && account.toString().contains(companion.toString())
-                    && message.getFrom().toString().contains(message.getTo().toString())) return;
-
         } else if (direction == CarbonExtension.Direction.received) {
 
             try {
@@ -485,8 +482,6 @@ public class MessageManager implements OnPacketListener {
                 return;
             }
         }
-        LogManager.d("BULLSHIT", "account:" + account + "; companion:" + companion + "; direction:" + direction +
-                "; type:" + message.getType() + "; to:" + message.getTo() + "; from:" + message.getFrom() + "; body:" + message.getBody());
         if (companion != null) MessageHandler.INSTANCE.parseMessage(account, companion, message, null);
     }
 
