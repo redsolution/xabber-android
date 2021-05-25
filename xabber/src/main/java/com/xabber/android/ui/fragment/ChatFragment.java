@@ -1553,6 +1553,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void deleteMessage(final ArrayList<MessageRealmObject> messages) {
         final List<String> ids = new ArrayList<>();
         boolean onlyOutgoing = true;
+        boolean isSavedMessages = account.getBareJid().toString().contains(user.getBareJid().toString());
         for (MessageRealmObject messageRealmObject : messages) {
             ids.add(messageRealmObject.getPrimaryKey());
             if (messageRealmObject.isIncoming()) onlyOutgoing = false;
@@ -1567,17 +1568,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .setTitle(getResources().getQuantityString(R.plurals.delete_message_title, size, size))
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
-                            RetractManager.getInstance().tryToRetractMessage(account, ids, checkBox.isChecked()))
-                    .setNegativeButton(R.string.cancel_action, (dialog13, which) -> {
-                    });
-            if (onlyOutgoing) dialog.setView(checkBoxView);
+                            RetractManager.getInstance().tryToRetractMessage(
+                                    account, ids, checkBox.isChecked() || !isSavedMessages))
+                    .setNegativeButton(R.string.cancel_action, (dialog13, which) -> { });
+            if (onlyOutgoing && !isSavedMessages) dialog.setView(checkBoxView);
             dialog.show();
         } else {
              new AlertDialog.Builder(getContext())
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog12, which) -> MessageManager.getInstance().removeMessage(ids))
-                    .setNegativeButton(R.string.cancel_action, (dialog1, which) -> {
-                    })
+                    .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })
                     .show();
         }
         bottomPanelMessagesIds.clear();
@@ -1680,8 +1680,21 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     public void clearHistory(AccountJid account, ContactJid user) {
-        ChatHistoryClearDialog.newInstance(account, user)
-                .show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+        if (account.getBareJid().toString().contains(user.getBareJid().toString())){
+            new AlertDialog.Builder(getContext())
+                    .setTitle(getResources().getString(R.string.dialog_delete_saved_messages__header))
+                    .setMessage(getResources().getString(R.string.dialog_delete_saved_messages__confirm))
+                    .setPositiveButton(R.string.delete, (dialog12, which) -> {
+                        if (RetractManager.getInstance().isSupported(account)) {
+                            RetractManager.getInstance().sendRetractAllMessagesRequest(account, user, false);
+                        } else MessageManager.getInstance().clearHistory(account, user);
+                    })
+                    .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })
+                    .show();
+        } else {
+            ChatHistoryClearDialog.newInstance(account, user)
+                    .show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+        }
     }
 
     public void callAttention() {

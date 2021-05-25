@@ -64,7 +64,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private final ColorStateList colorStateList;
     private final int mentionColor;
     private final String userName;
-    private final AccountJid account;
+    private final AbstractChat chat;
     private int prevItemCount;
     private String prevFirstItemId;
     private String firstUnreadMessageID;
@@ -97,15 +97,16 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         this.listener = listener;
         this.bindListener = bindListener;
         this.onMessageAvatarClickListener = avatarClickListener;
+        this.chat = chat;
 
-        account = chat.getAccount();
         ContactJid user = chat.getContactJid();
-        userName = RosterManager.getInstance().getName(account, user);
+        userName = RosterManager.getInstance().getName(chat.getAccount(), user);
         prevItemCount = getItemCount();
         prevFirstItemId = getFirstMessageId();
-        accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
-        colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
-        mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
+        accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(chat.getAccount());
+        colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(chat.getAccount());
+        mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(chat.getAccount());
+
     }
 
     @Override
@@ -139,7 +140,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
                 || (!messageRealmObject.isAttachmentImageOnly());
 
-        if (messageRealmObject.isIncoming()) {
+        boolean isSavedMessagesChat =
+                chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString());
+        //boolean hasForwarded = messageRealmObject.haveForwardedMessages();
+        //boolean isMessageFromMe = hasForwarded ? messageRealmObject.getForwardedIds().
+
+        if (messageRealmObject.isIncoming() && !isSavedMessagesChat) {
             if(isImage) {
                 return notJustImage? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
             } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
@@ -285,7 +291,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
                 if (holder instanceof ActionMessageVH) {
-                    ((ActionMessageVH)holder).bind(messageRealmObject, context, account, needDate);
+                    ((ActionMessageVH)holder).bind(messageRealmObject, context, chat.getAccount(), needDate);
                 }
                 break;
 

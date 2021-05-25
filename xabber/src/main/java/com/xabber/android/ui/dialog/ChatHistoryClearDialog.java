@@ -53,39 +53,34 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
         String contactName = RosterManager.getInstance().getBestContact(account, user).getName();
-        int colorIndicator = ColorManager.getInstance().getAccountPainter()
-                .getAccountMainColor(account);
+        int colorIndicator =
+                ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
         ((TextView) view.findViewById(R.id.clear_history_confirm)).setText(Html.fromHtml(getString(R.string.clear_chat_history_dialog_message, contactName)));
         ((TextView) view.findViewById(R.id.clear_history_warning)).setText(getString(R.string.clear_chat_history_dialog_warning));
 
         ((Button) view.findViewById(R.id.clear)).setTextColor(colorIndicator);
 
-        ((Button) view.findViewById(R.id.clear)).setOnClickListener(this);
-        ((Button) view.findViewById(R.id.cancel_clear)).setOnClickListener(this);
+        view.findViewById(R.id.clear).setOnClickListener(this);
+        view.findViewById(R.id.cancel_clear).setOnClickListener(this);
 
-        checkBox = (CheckBox) view.findViewById(R.id.clear_history_retract);
+        checkBox = view.findViewById(R.id.clear_history_retract);
 
-        if (RetractManager.getInstance().isSupported(account)){
-            checkBox.setVisibility(View.VISIBLE);
-        }
+        if (RetractManager.getInstance().isSupported(account)) checkBox.setVisibility(View.VISIBLE);
 
-        return builder.setTitle(R.string.clear_history)
-                .setView(view)
-                .create();
+        return builder.setTitle(R.string.clear_history).setView(view).create();
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.clear) {
             AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-            if (chat != null) {
-                chat.setLastActionTimestamp();
-            }
-            if (RetractManager.getInstance().isSupported(account))
+            if (chat != null) chat.setLastActionTimestamp();
+            if (RetractManager.getInstance().isSupported(account)) {
                 RetractManager.getInstance().sendRetractAllMessagesRequest(account, user, checkBox.isChecked());
-            else MessageManager.getInstance().clearHistory(account, user);
+            } else MessageManager.getInstance().clearHistory(account, user);
         }
         dismiss();
     }
+
 }
