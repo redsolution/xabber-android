@@ -114,18 +114,23 @@ public class MessageNotificationCreator {
     }
 
     public void createNotificationWithoutBannerJustSound(){
-        MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
-                RingtoneManager.getActualDefaultRingtoneUri(
-                        Application.getInstance().getApplicationContext(),
-                        RingtoneManager.TYPE_NOTIFICATION));
-        mediaPlayer.start();
+        try {
+            MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
+                    RingtoneManager.getActualDefaultRingtoneUri(
+                            Application.getInstance().getApplicationContext(),
+                            RingtoneManager.TYPE_NOTIFICATION));
+            mediaPlayer.start();
 
-        Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            v.vibrate(250);
+            Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                v.vibrate(250);
+            }
+        } catch (Exception e) {
+            LogManager.exception(this, e);
         }
+
     }
 
     public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
