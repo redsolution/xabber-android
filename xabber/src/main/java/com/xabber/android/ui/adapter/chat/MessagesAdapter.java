@@ -14,7 +14,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
@@ -70,6 +69,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
+    private boolean isSavedMessagesMode;
+
     private RecyclerView recyclerView;
     private final List<String> itemsNeedOriginalText = new ArrayList<>();
     private final List<String> checkedItemIds = new ArrayList<>();
@@ -83,10 +84,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     public MessagesAdapter(
-            Context context, RealmResults<MessageRealmObject> messageRealmObjects,
-            AbstractChat chat, MessageVH.MessageClickListener messageListener,
-            FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
-            Listener listener, IncomingMessageVH.BindListener bindListener,
+            Context context, RealmResults<MessageRealmObject> messageRealmObjects, AbstractChat chat,
+            MessageVH.MessageClickListener messageListener, FileMessageVH.FileListener fileListener,
+            ForwardedAdapter.ForwardListener fwdListener, Listener listener, IncomingMessageVH.BindListener bindListener,
             IncomingMessageVH.OnMessageAvatarClickListener avatarClickListener) {
         super(context, messageRealmObjects, true);
 
@@ -98,6 +98,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         this.bindListener = bindListener;
         this.onMessageAvatarClickListener = avatarClickListener;
         this.chat = chat;
+
+        this.isSavedMessagesMode =
+                chat.getAccount().getBareJid().toString().contains(chat.getContactJid().getBareJid().toString());
 
         ContactJid user = chat.getContactJid();
         userName = RosterManager.getInstance().getName(chat.getAccount(), user);
@@ -111,19 +114,68 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     @Override
     public int getItemCount() {
-        if (realmResults.isValid() && realmResults.isLoaded())
+        if (realmResults.isValid() && realmResults.isLoaded()) {
             return realmResults.size();
-        else return 0;
+        } else return 0;
     }
 
     private String getFirstMessageId() {
-        if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0)
+        if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0) {
             return Objects.requireNonNull(realmResults.first()).getPrimaryKey();
-        else return null;
+        } else return null;
     }
 
     @Override
     public int getItemViewType(int position) {
+//        MessageRealmObject messageRealmObject = getMessageItem(position);
+//
+//        if (messageRealmObject == null) return 0;
+//
+//        if (messageRealmObject.getAction() != null) return VIEW_TYPE_ACTION_MESSAGE;
+//
+//        if (messageRealmObject.isGroupchatSystem()) return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
+//
+//        boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
+//                && messageRealmObject.hasForwardedMessages()
+//                && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
+//
+//        if (isNeedUnpackSingleMessageForSavedMessages){
+//            MessageRealmObject innerSingleSavedMessage =
+//                    MessageRepository.getForwardedMessages(messageRealmObject).get(0);
+//
+//            boolean isUploadMessage = innerSingleSavedMessage.getText().equals(FileMessageVH.UPLOAD_TAG);
+//            boolean noFlex = innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments();
+//            boolean isImage = innerSingleSavedMessage.hasImage();
+//            boolean notJustImage =
+//                    (!innerSingleSavedMessage.getText().trim().isEmpty() && !isUploadMessage)
+//                            || (!innerSingleSavedMessage.isAttachmentImageOnly());
+//
+//            if (!innerSingleSavedMessage.getOriginalFrom().contains(chat.getAccount().getBareJid().toString())) {
+//                if(isImage) {
+//                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
+//                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+//            } else if (isImage) {
+//                return notJustImage ? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+//            } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+//
+//        } else {
+//
+//            // if noFlex is true, should use special layout without flexbox-style text
+//            boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
+//            boolean noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments();
+//            boolean isImage = messageRealmObject.hasImage();
+//            boolean notJustImage =
+//                    (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
+//                            || (!messageRealmObject.isAttachmentImageOnly());
+//
+//            if (messageRealmObject.isIncoming() && !isSavedMessagesMode) {
+//                if(isImage) {
+//                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
+//                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+//            } else if (isImage) {
+//                return notJustImage ? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+//            } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+//        }
         MessageRealmObject messageRealmObject = getMessageItem(position);
         if (messageRealmObject == null) return 0;
 
@@ -135,7 +187,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         // if noFlex is true, should use special layout without flexbox-style text
         boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
-        boolean noFlex = messageRealmObject.haveForwardedMessages() || messageRealmObject.haveAttachments();
+        boolean noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments();
         boolean isImage = messageRealmObject.hasImage();
         boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
                 || (!messageRealmObject.isAttachmentImageOnly());
@@ -226,14 +278,21 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         final int viewType = getItemViewType(position);
         MessageRealmObject messageRealmObject = getMessageItem(position);
 
+//        boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
+//                && messageRealmObject.hasForwardedMessages()
+//                && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
+//
+//        if (isNeedUnpackSingleMessageForSavedMessages) {
+//            messageRealmObject = MessageRepository.getForwardedMessages(messageRealmObject).get(0);
+//        }
+
         if (messageRealmObject == null) {
             LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
             return;
         }
 
         // setup message uniqueId
-        if (holder instanceof MessageVH)
-            ((MessageVH)holder).messageId = messageRealmObject.getPrimaryKey();
+        if (holder instanceof MessageVH) ((MessageVH)holder).messageId = messageRealmObject.getPrimaryKey();
 
         // setup message as unread
         boolean unread = messageRealmObject.getPrimaryKey().equals(firstUnreadMessageID);
@@ -254,11 +313,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         if (groupMember != null) {
             MessageRealmObject nextMessage = getMessageItem(position + 1);
             if (nextMessage != null) {
-                GroupMember user2 =
-                        GroupMemberManager.INSTANCE.getGroupMemberById(nextMessage.getGroupchatUserId());
-
-                if (user2 != null) needTail = !groupMember.getId().equals(user2.getId());
-                else needTail = true;
+                GroupMember user2 = GroupMemberManager.INSTANCE.getGroupMemberById(nextMessage.getGroupchatUserId());
+                if (user2 != null) {
+                    needTail = !groupMember.getId().equals(user2.getId());
+                } else needTail = true;
             } else needTail = true;
         } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
             needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));
@@ -269,7 +327,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean needName;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
         if (previousMessage != null) {
-            needDate = !Utils.isSameDay(messageRealmObject.getTimestamp(), previousMessage.getTimestamp());
+            needDate = !Utils.isSameDay(getMessageItem(position).getTimestamp(), previousMessage.getTimestamp());
             if (messageRealmObject.getGroupchatUserId() != null
                     && !messageRealmObject.getGroupchatUserId().isEmpty()
                     && previousMessage.getGroupchatUserId() != null
@@ -280,7 +338,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             needDate = true;
             needName = true;
         }
-
 
         Long mainMessageTimestamp = messageRealmObject.getTimestamp();
 
@@ -349,8 +406,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     @Nullable
     public MessageRealmObject getMessageItem(int position) {
         if (position == RecyclerView.NO_POSITION) return null;
-        if (position < realmResults.size()) return realmResults.get(position);
-        else return null;
+
+        if (position < realmResults.size()) {
+            return realmResults.get(position);
+        } else return null;
     }
 
     @Override
@@ -361,9 +420,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     @Override
-    public void onLongMessageClick(int position) {
-        addOrRemoveCheckedItem(position);
-    }
+    public void onLongMessageClick(int position) { addOrRemoveCheckedItem(position); }
 
     @Override
     public void onMessageAvatarClick(int position) {
@@ -372,9 +429,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         } else onMessageAvatarClickListener.onMessageAvatarClick(position);
     }
 
-    public void setFirstUnreadMessageId(String id) {
-        firstUnreadMessageID = id;
-    }
+    public void setFirstUnreadMessageId(String id) { firstUnreadMessageID = id; }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {
         if (itemsNeedOriginalText.contains(messageId)) {
@@ -412,19 +467,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     }
 
     @Override
-    public void onDownloadCancel() {
-        fileListener.onDownloadCancel();
-    }
+    public void onDownloadCancel() { fileListener.onDownloadCancel(); }
 
     @Override
-    public void onUploadCancel() {
-        fileListener.onUploadCancel();
-    }
+    public void onUploadCancel() { fileListener.onUploadCancel(); }
 
     @Override
-    public void onDownloadError(String error) {
-        fileListener.onDownloadError(error);
-    }
+    public void onDownloadError(String error) { fileListener.onDownloadError(error); }
 
     /** Checked items */
     private void addOrRemoveCheckedItem(int position) {
@@ -452,13 +501,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         listener.onChangeCheckedItems(checkedItemIds.size());
     }
 
-    public List<String> getCheckedItemIds() {
-        return checkedItemIds;
-    }
+    public List<String> getCheckedItemIds() { return checkedItemIds; }
 
-    public List<MessageRealmObject> getCheckedMessageRealmObjects(){
-        return checkedMessageRealmObjects;
-    }
+    public List<MessageRealmObject> getCheckedMessageRealmObjects(){ return checkedMessageRealmObjects; }
 
     public void resetCheckedItems() {
         if (checkedItemIds.size() > 0) {
@@ -490,12 +535,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         private final boolean needDate;
         private final boolean needName;
 
-        public MessageExtraData(FileMessageVH.FileListener listener,
-                                ForwardedAdapter.ForwardListener fwdListener,
+        public MessageExtraData(FileMessageVH.FileListener listener, ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
                                 GroupMember groupMember, int accountMainColor, int mentionColor, Long mainTimestamp,
-                                boolean showOriginalOTR, boolean unread, boolean checked,
-                                boolean needTail, boolean needDate, boolean needName) {
+                                boolean showOriginalOTR, boolean unread, boolean checked, boolean needTail,
+                                boolean needDate, boolean needName) {
             this.listener = listener;
             this.fwdListener = fwdListener;
             this.context = context;
@@ -513,63 +557,53 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             this.needName = needName;
         }
 
-        public FileMessageVH.FileListener getListener() {
-            return listener;
-        }
+        public FileMessageVH.FileListener getListener() { return listener; }
 
-        public ForwardedAdapter.ForwardListener getFwdListener() {
-            return fwdListener;
-        }
+        public ForwardedAdapter.ForwardListener getFwdListener() { return fwdListener; }
 
-        public Context getContext() {
-            return context;
-        }
+        public Context getContext() { return context; }
 
-        public String getUsername() {
-            return username;
-        }
+        public String getUsername() { return username; }
 
-        public ColorStateList getColorStateList() {
-            return colorStateList;
-        }
+        public ColorStateList getColorStateList() { return colorStateList; }
 
-        public int getAccountMainColor() {
-            return accountMainColor;
-        }
+        public int getAccountMainColor() { return accountMainColor; }
 
-        public int getMentionColor() {
-            return mentionColor;
-        }
+        public int getMentionColor() { return mentionColor; }
 
-        public GroupMember getGroupMember() {
-            return groupMember;
-        }
+        public GroupMember getGroupMember() { return groupMember; }
 
-        public Long getMainMessageTimestamp() {
-            return mainTimestamp;
-        }
+        public Long getMainMessageTimestamp() { return mainTimestamp; }
 
-        public boolean isShowOriginalOTR() {
-            return showOriginalOTR;
-        }
+        public boolean isShowOriginalOTR() { return showOriginalOTR; }
 
-        public boolean isUnread() {
-            return unread;
-        }
+        public boolean isUnread() { return unread; }
 
-        public boolean isChecked() {
-            return checked;
-        }
+        public boolean isChecked() { return checked; }
 
-        public boolean isNeedTail() {
-            return needTail;
-        }
+        public boolean isNeedTail() { return needTail; }
 
-        public boolean isNeedDate() {
-            return needDate;
-        }
+        public boolean isNeedDate() { return needDate; }
 
         public boolean isNeedName() { return needName; }
+    }
+
+    public static class SavedMessagesExtraData extends MessageExtraData {
+
+        private final MessageRealmObject innerMessage;
+
+        public SavedMessagesExtraData(FileMessageVH.FileListener listener, ForwardedAdapter.ForwardListener fwdListener,
+                                      Context context, String username, ColorStateList colorStateList,
+                                      GroupMember groupMember, int accountMainColor, int mentionColor,
+                                      Long mainTimestamp, boolean showOriginalOTR, boolean unread, boolean checked,
+                                      boolean needTail, boolean needDate, boolean needName,
+                                      MessageRealmObject innerMessage){
+            super(listener, fwdListener, context, username, colorStateList, groupMember, accountMainColor, mentionColor,
+                    mainTimestamp, showOriginalOTR, unread, checked, needTail, needDate, needName);
+            this.innerMessage = innerMessage;
+        }
+
+        public MessageRealmObject getInnerMessage() { return innerMessage; }
     }
 
     private int getSimpleType(int type) {

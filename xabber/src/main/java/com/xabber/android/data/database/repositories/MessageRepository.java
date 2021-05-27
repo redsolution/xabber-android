@@ -10,6 +10,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -94,8 +97,33 @@ public class MessageRepository {
             MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
                     .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId)
                     .findFirst();
-            return realm.copyFromRealm(messageRealmObject);
+            MessageRealmObject result = null;
+            if (messageRealmObject != null) result = realm.copyFromRealm(messageRealmObject);
+            realm.close();
+            return result;
         }
+    }
+
+    public static List<MessageRealmObject> getForwardedMessages(MessageRealmObject messageRealmObject) {
+        if (!Arrays.asList(messageRealmObject.getForwardedIdsAsArray()).contains(null)) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                return DatabaseManager.getInstance().getDefaultRealmInstance()
+                        .where(MessageRealmObject.class)
+                        .in(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.getForwardedIdsAsArray())
+                        .findAll()
+                        .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+            }
+            else {
+                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                List<MessageRealmObject> result = realm.copyFromRealm(
+                        realm.where(MessageRealmObject.class)
+                                .in(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.getForwardedIdsAsArray())
+                                .findAll()
+                                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING));
+                realm.close();
+                return result;
+            }
+        } else return null;
     }
 
 }

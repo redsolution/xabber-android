@@ -1,6 +1,6 @@
 package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
 
-/**
+/*
  * Created by valery.miller on 02.02.18.
  */
 
@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
@@ -101,14 +102,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         void onContactButtonClick(int adapterPosition);
     }
 
-    protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
-                        String name,
-                        String status, int statusId, int statusLevel, Drawable avatar,
-                        int mucIndicatorLevel, ContactJid contactJid, AccountJid accountJid, int unreadCount,
-                        boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
-                        boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat, boolean isServer, boolean isBlocked) {
+    protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack, String name, String status,
+                        int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel, ContactJid contactJid,
+                        AccountJid accountJid, int unreadCount, boolean mute,
+                        NotificationState.NotificationMode notificationMode, String messageText, boolean isOutgoing,
+                        Date time, int messageStatus, String messageOwner, boolean archived, String lastActivity,
+                        ContactClickListener listener, int forwardedCount, boolean isCustomNotification,
+                        boolean isGroupchat, boolean isServer, boolean isBlocked) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -149,7 +149,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int messageStatus = 0;
         int unreadCount = 0;
         int forwardedCount = 0;
-        String messageOwner = null;
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(contact.getAccount());
@@ -161,9 +160,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String name;
         AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
-        if (chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName()))
+        if (chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName())) {
             name = ((GroupChat)chat).getName();
-        else name = contact.getName();
+        } else name = contact.getName();
 
 
         statusLevel = contact.getStatusMode().getStatusLevel();
@@ -173,8 +172,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         String lastActivity = "";
 
-        if (chat == null)
+        if (chat == null) {
             chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
+        }
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
@@ -226,7 +226,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             }
 
             // forwarded
-            if (lastMessage.haveForwardedMessages()) {
+            if (lastMessage.hasForwardedMessages()) {
                 forwardedCount = lastMessage.getForwardedIds().size();
                 if (messageText.isEmpty()) {
                     String forwardText = lastMessage.getFirstForwardedMessageText(accountColorIndicator);
@@ -238,22 +238,20 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
 
         // notification icon
-        NotificationState.NotificationMode mode =
-                chat.getNotificationState().determineModeByGlobalSettings();
+        NotificationState.NotificationMode mode = chat.getNotificationState().determineModeByGlobalSettings();
 
         // custom notification
-        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
-                isPrefsExist(Key.createKey(contact.getAccount(), contact.getContactJid()));
+        boolean isCustomNotification =
+                CustomNotifyPrefsManager.getInstance().isPrefsExist(
+                        Key.createKey(contact.getAccount(), contact.getContactJid()));
 
         boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getContactJid());
 
-        return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
-                name, statusText, statusId,
-                statusLevel, avatar, 0, contact.getContactJid(), contact.getAccount(),
-                unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification, chat instanceof GroupChat,
-                contact.getContactJid().getJid().isDomainBareJid(), isBlocked);
+        return new ContactVO(accountColorIndicator, accountColorIndicatorBack, name, statusText, statusId, statusLevel,
+                avatar, 0, contact.getContactJid(), contact.getAccount(), unreadCount,
+                !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time, messageStatus, null,
+                chat.isArchived(), lastActivity, listener, forwardedCount, isCustomNotification,
+                chat instanceof GroupChat, contact.getContactJid().getJid().isDomainBareJid(), isBlocked);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -287,7 +285,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
 
-        /** set up ACCOUNT COLOR indicator */
+        /* set up ACCOUNT COLOR indicator */
         if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
@@ -299,13 +297,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (viewHolder.itemView.getBackground() != null){
             if (adapter.isSelected(position)) {
                 LogManager.d("ListSelection", "item at pos = " + position + " is selected");
-                viewHolder.itemView.getBackground().setColorFilter(new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
+                viewHolder.itemView.getBackground().setColorFilter(
+                        new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
             } else {
                 viewHolder.itemView.getBackground().setColorFilter(null);
             }
         }
 
-        /** set up AVATAR */
+        /* set up AVATAR */
         boolean showAvatars = SettingsManager.contactsShowAvatars();
         if (showAvatars) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
@@ -339,9 +338,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             switch (displayedStatus) {
                 case 6:
-                    if (!getLastActivity().isEmpty()) {
-                        viewHolder.tvStatus.setText(getLastActivity());
-                    }
+                    if (!getLastActivity().isEmpty()) viewHolder.tvStatus.setText(getLastActivity());
                     break;
                 case 10:
                     viewHolder.tvStatus.setText("Server");
@@ -352,21 +349,23 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                             viewHolder.ivAvatar.setImageAlpha(128);
-                        } else {
-                            viewHolder.ivAvatar.setAlpha(0.5f);
-                        }
+                        } else viewHolder.ivAvatar.setAlpha(0.5f);
                     }
-                    viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_second_line_text_color));
+                    viewHolder.tvContactName.setTextColor(
+                            Utils.getAttrColor(
+                                    viewHolder.tvContactName.getContext(),
+                                    R.attr.contact_list_contact_second_line_text_color));
                     break;
             }
             if (displayedStatus != 11) {
-                viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_name_text_color));
+                viewHolder.tvContactName.setTextColor(
+                        Utils.getAttrColor(
+                                viewHolder.tvContactName.getContext(),
+                                R.attr.contact_list_contact_name_text_color));
                 if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         viewHolder.ivAvatar.setImageAlpha(128);
-                    } else {
-                        viewHolder.ivAvatar.setAlpha(0.5f);
-                    }
+                    } else viewHolder.ivAvatar.setAlpha(0.5f);
                 }
             }
         }
@@ -379,35 +378,29 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.tvStatus.setText(contactJid.toString());
         }
 
-        /** set up CONTACT/MUC NAME */
+        /* set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
 
-        /** set up NOTIFICATION MUTE */
+        /* set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
         int resID = 0;
         NotificationState.NotificationMode mode = getNotificationMode();
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
         else if (mode != NotificationState.NotificationMode.byDefault) resID = R.drawable.ic_snooze_mini;
-        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                resID != 0 ? resources.getDrawable(resID) : null, null);
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                null, null, resID != 0 ? ResourcesCompat.getDrawable(resources, resID, null) : null, null);
 
-        /** set up CUSTOM NOTIFICATION */
+        /* set up CUSTOM NOTIFICATION */
         if (isCustomNotification() && (mode == NotificationState.NotificationMode.enabled
                 || mode == NotificationState.NotificationMode.byDefault))
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    resources.getDrawable(R.drawable.ic_notif_custom), null);
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                    null, null, ResourcesCompat.getDrawable(resources, R.drawable.ic_notif_custom, null), null);
 
-        //if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
         viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
         viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
-//        } else {
-//            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-//                    resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN);
-//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
-//        }
 
-        /** set up UNREAD COUNT */
+        /* set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
@@ -425,11 +418,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         PorterDuff.Mode.SRC_IN);
                 viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
             }
-        else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        }
 
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
             viewHolder.tvContactName.setTextColor(context.getResources().getColor(R.color.grey_200));
+        }
     }
 
     public String getId() {
@@ -618,9 +613,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 listener.onContactAvatarClick(getAdapterPosition());
             } else if (view.getId() == R.id.btnListAction) {
                 listener.onContactButtonClick(getAdapterPosition());
-            } else {
-                super.onClick(view);
-            }
+            } else super.onClick(view);
         }
     }
 
@@ -628,4 +621,5 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+
 }

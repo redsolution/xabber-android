@@ -21,8 +21,6 @@ import io.realm.RealmResults;
 
 public class ClipManager {
 
-    private static final String LOG_TAG = ClipManager.class.getSimpleName();
-
     public static void copyMessagesToClipboard(final List<String> messageIDs) {
         final String[] ids = messageIDs.toArray(new String[0]);
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
@@ -37,21 +35,18 @@ public class ClipManager {
     }
 
     private static void insertDataToClipboard(final String text) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) Application.getInstance()
-                        .getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Xabber", text);
-                if (clipboard !=null) clipboard.setPrimaryClip(clip);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                    Application.getInstance().getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Xabber", text);
+            if (clipboard !=null) clipboard.setPrimaryClip(clip);
         });
     }
 
     private static String messagesToText(Realm realm, String[] messagesIDs, int level) {
 
-        RealmResults<MessageRealmObject> items = realm.where(MessageRealmObject.class)
-                .in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIDs).findAll();
+        RealmResults<MessageRealmObject> items =
+                realm.where(MessageRealmObject.class).in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIDs).findAll();
 
         StringBuilder stringBuilder = new StringBuilder();
         long previousTimestamp = 1;
@@ -88,7 +83,7 @@ public class ClipManager {
         stringBuilder.append(name);
         stringBuilder.append(":\n");
 
-        if (message.haveForwardedMessages()) {
+        if (message.hasForwardedMessages()) {
             stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(), level + 1));
             stringBuilder.append("\n");
         }
@@ -113,8 +108,8 @@ public class ClipManager {
         Date date = new Date(timestamp);
         String strPattern = "EEEE, d MMMM, yyyy";
 
-        SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
-                Application.getInstance().getResources().getConfiguration().locale);
+        SimpleDateFormat pattern =
+                new SimpleDateFormat(strPattern, Application.getInstance().getResources().getConfiguration().locale);
         return pattern.format(date);
     }
 

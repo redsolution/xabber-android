@@ -48,7 +48,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         }
 
         // setup FORWARDED
-        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.hasForwardedMessages();
         if (haveForwarded) {
             setupForwarded(messageRealmObject, extraData);
 

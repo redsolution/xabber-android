@@ -25,15 +25,15 @@ public class ForwardedVH extends FileMessageVH {
 
     private final TextView tvForwardedCount;
 
-    public ForwardedVH(View itemView, MessageClickListener messageListener,
-                       MessageLongClickListener longClickListener, FileListener listener,
-                       int appearance) {
+    public ForwardedVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
+                       FileListener listener, int appearance) {
         super(itemView, messageListener, longClickListener, listener, appearance);
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData, String accountJid) {
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData,
+                     String accountJid) {
         super.bind(messageRealmObject, extraData);
 
         // hide STATUS ICONS
@@ -47,19 +47,20 @@ public class ForwardedVH extends FileMessageVH {
             LogManager.exception(getClass().getSimpleName(), e);
         }
         String author = RosterManager.getDisplayAuthorName(messageRealmObject);
-        if (extraData.getGroupMember() != null && !extraData.getGroupMember().isMe())
+        if (extraData.getGroupMember() != null && !extraData.getGroupMember().isMe()) {
             author = extraData.getGroupMember().getNickname();
+        }
 
         if (author != null && !author.isEmpty()) {
             messageHeader.setText(author);
-            messageHeader.setTextColor(ColorManager.changeColor(
-                    ColorGenerator.MATERIAL.getColor(author), 0.8f));
+            messageHeader.setTextColor(
+                    ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(author), 0.8f));
             messageHeader.setVisibility(View.VISIBLE);
         } else messageHeader.setVisibility(View.GONE);
 
         // setup FORWARDED
         Context context = extraData.getContext();
-        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.hasForwardedMessages();
         if (haveForwarded) {
             forwardLayout.setVisibility(View.VISIBLE);
             int forwardedCount = messageRealmObject.getForwardedIds().size();
@@ -73,8 +74,9 @@ public class ForwardedVH extends FileMessageVH {
                 tvForwardedCount.setAlpha(1);
             }
             else{
-                forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
-                        .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
+                forwardLeftBorder.setBackgroundColor(
+                        ColorManager.getInstance().getAccountPainter()
+                                .getAccountColorWithTint(messageRealmObject.getAccount(), 900));
                 forwardLeftBorder.setAlpha(0.6f);
                 tvForwardedCount.setAlpha(0.6f);
             }
@@ -106,10 +108,10 @@ public class ForwardedVH extends FileMessageVH {
             setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
         else {
             TypedValue typedValue = new TypedValue();
-            extraData.getContext().getTheme().resolveAttribute(R.attr.message_background,
-                    typedValue, true);
-            setUpMessageBalloonBackground(messageBalloon, AppCompatResources.getColorStateList(extraData.getContext(),
-                    typedValue.resourceId));
+            extraData.getContext().getTheme().resolveAttribute(
+                    R.attr.message_background, typedValue, true);
+            setUpMessageBalloonBackground(
+                    messageBalloon, AppCompatResources.getColorStateList(extraData.getContext(), typedValue.resourceId));
         }
 
     }

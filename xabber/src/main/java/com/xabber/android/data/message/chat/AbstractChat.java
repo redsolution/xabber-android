@@ -545,7 +545,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Message message = null;
 
         if (messageRealmObject.haveAttachments()) {
-            if (messageRealmObject.haveForwardedMessages()) {
+            if (messageRealmObject.hasForwardedMessages()) {
                 message = createFileAndForwardMessagePacket(
                         messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(),
                         messageRealmObject.getForwardedIdsAsArray(), text);
@@ -553,7 +553,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 message = createFileMessagePacket(
                         messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(), text);
             }
-        } else if (messageRealmObject.haveForwardedMessages()) {
+        } else if (messageRealmObject.hasForwardedMessages()) {
             if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {
                 message = createForwardMessageWithMarkupPacket(
                         messageRealmObject.getStanzaId(), messageRealmObject.getForwardedIdsAsArray(), text,

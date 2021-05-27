@@ -33,9 +33,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
     private final FileMessageVH.FileListener listener;
     private final ForwardListener fwdListener;
 
-    public interface ForwardListener {
-        void onForwardClick(String messageId);
-    }
+    public interface ForwardListener { void onForwardClick(String messageId);}
 
     public ForwardedAdapter(RealmResults<MessageRealmObject> realmResults,
                             MessagesAdapter.MessageExtraData extraData) {
@@ -51,31 +49,31 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
         if (messageRealmObject == null) return 0;
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
-        if (messageRealmObject.haveForwardedMessages()
+        if (messageRealmObject.hasForwardedMessages()
                 || messageRealmObject.haveAttachments()
                 || messageRealmObject.hasImage()) {
             if(messageRealmObject.haveAttachments()
                     && messageRealmObject.isAttachmentImageOnly()
-                    && messageRealmObject.getText().trim().isEmpty())
+                    && messageRealmObject.getText().trim().isEmpty()){
                 return VIEW_TYPE_IMAGE;
-            else return VIEW_TYPE_MESSAGE_NOFLEX;
+            } else return VIEW_TYPE_MESSAGE_NOFLEX;
         } else return VIEW_TYPE_MESSAGE;
     }
 
     @Override
     public int getItemCount() {
-        if (realmResults.isValid() && realmResults.isLoaded())
+        if (realmResults.isValid() && realmResults.isLoaded()) {
             return realmResults.size();
-        else return 0;
+        } else return 0;
     }
 
     @Nullable
     public MessageRealmObject getMessageItem(int position) {
         if (position == RecyclerView.NO_POSITION) return null;
 
-        if (position < realmResults.size())
+        if (position < realmResults.size()) {
             return realmResults.get(position);
-        else return null;
+        } else return null;
     }
 
     @NotNull
@@ -107,12 +105,13 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
         }
 
         // setup message uniqueId
-        if (holder instanceof MessageVH)
+        if (holder instanceof MessageVH) {
             ((MessageVH)holder).messageId = messageRealmObject.getPrimaryKey();
+        }
 
         // groupchat user
-        GroupMember groupMember = GroupMemberManager.INSTANCE
-                .getGroupMemberById(messageRealmObject.getGroupchatUserId());
+        GroupMember groupMember =
+                GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),
@@ -136,8 +135,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
     @Override
     public void onMessageClick(View caller, int position) {
         MessageRealmObject message = getItem(position);
-        if (message != null && message.haveForwardedMessages())
-            fwdListener.onForwardClick(message.getPrimaryKey());
+        if (message != null && message.hasForwardedMessages()) fwdListener.onForwardClick(message.getPrimaryKey());
     }
 
     @Override

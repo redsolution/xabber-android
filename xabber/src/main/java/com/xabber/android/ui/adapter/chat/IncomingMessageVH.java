@@ -31,16 +31,11 @@ public class IncomingMessageVH  extends FileMessageVH {
     public ImageView avatarBackground;
     private final BindListener listener;
 
-    public interface BindListener {
-        void onBind(MessageRealmObject message);
-    }
+    public interface BindListener { void onBind(MessageRealmObject message);}
 
-    public interface OnMessageAvatarClickListener{
-        void onMessageAvatarClick(int position);
-    }
+    public interface OnMessageAvatarClickListener{ void onMessageAvatarClick(int position);}
 
-    IncomingMessageVH(View itemView, MessageClickListener messageListener,
-                      MessageLongClickListener longClickListener,
+    IncomingMessageVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
                       FileListener fileListener, BindListener listener,
                       OnMessageAvatarClickListener avatarClickListener, @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
@@ -73,7 +68,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         statusIcon.setVisibility(View.GONE);
 
         // setup FORWARDED
-        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.hasForwardedMessages();
         if (haveForwarded) {
             setupForwarded(messageRealmObject, extraData);
 
@@ -157,7 +152,7 @@ public class IncomingMessageVH  extends FileMessageVH {
 
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
-                && !messageRealmObject.haveForwardedMessages()
+                && !messageRealmObject.hasForwardedMessages()
                 && !messageRealmObject.haveAttachments()) {
             messageBalloon.setVisibility(View.GONE);
             messageShadow.setVisibility(View.GONE);
@@ -210,22 +205,18 @@ public class IncomingMessageVH  extends FileMessageVH {
             Drawable placeholder;
 
             try {
-
                 ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString()
                         + "/"
                         + groupMember.getNickname());
-                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid,
-                        groupMember.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupMember.getNickname());
 
             } catch (ContactJid.ContactJidCreateException e) {
-
                placeholder = AvatarManager.getInstance().generateDefaultAvatar(
                        groupMember.getNickname(), groupMember.getNickname());
-
             }
             Glide.with(context)
-                    .load(AvatarManager.getInstance().getGroupMemberAvatar(groupMember,
-                            messageRealmObject.getAccount()))
+                    .load(AvatarManager.getInstance().getGroupMemberAvatar(
+                            groupMember, messageRealmObject.getAccount()))
                     .centerCrop()
                     .placeholder(placeholder)
                     .error(placeholder)
@@ -245,13 +236,11 @@ public class IncomingMessageVH  extends FileMessageVH {
 
             try {
                 contactJid = ContactJid.from(user.getJid().toString() + "/" + resource.toString());
-                avatar.setImageDrawable(AvatarManager.getInstance()
-                        .getOccupantAvatar(contactJid, nick));
+                avatar.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(contactJid, nick));
 
             } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
-                avatar.setImageDrawable(AvatarManager.getInstance()
-                        .generateDefaultAvatar(nick, nick));
+                avatar.setImageDrawable(AvatarManager.getInstance().generateDefaultAvatar(nick, nick));
             }
         }
     }

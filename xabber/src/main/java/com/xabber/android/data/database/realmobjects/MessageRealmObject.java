@@ -339,7 +339,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setForwardedIds(RealmList<ForwardIdRealmObject> forwardedMessages) { this.forwardedIds = forwardedMessages; }
 
-    public boolean haveForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
+    public boolean hasForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
 
     public String getOriginalStanza() { return originalStanza; }
 
@@ -372,7 +372,7 @@ public class MessageRealmObject extends RealmObject {
 
     public String getFirstForwardedMessageText(int color) {
         String text = null;
-        if (haveForwardedMessages()) {
+        if (hasForwardedMessages()) {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
                 Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();

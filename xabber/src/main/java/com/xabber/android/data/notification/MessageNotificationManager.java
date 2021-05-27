@@ -368,7 +368,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 text = FileCategory.getCategoryName(category, false) + attachmentRealmObject.getTitle();
             }
         }
-        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0 && text.isEmpty()) {
+        if (message.hasForwardedMessages() && message.getForwardedIds().size() > 0 && text.isEmpty()) {
             String forwardText = message.getFirstForwardedMessageText();
             if (forwardText != null && !forwardText.isEmpty()) {
                 text = forwardText;
