@@ -45,8 +45,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import rx.subscriptions.CompositeSubscription;
 
-public class FileMessageVH extends MessageVH
-        implements FilesAdapter.FileListListener, View.OnClickListener {
+public class FileMessageVH extends MessageVH implements FilesAdapter.FileListListener, View.OnClickListener {
 
     private static final String LOG_TAG = FileMessageVH.class.getSimpleName();
     //public static final int IMAGE_ROUNDED_CORNERS = 8;
@@ -87,8 +86,8 @@ public class FileMessageVH extends MessageVH
     }
 
     public FileMessageVH(View itemView, MessageClickListener messageListener,
-            MessageLongClickListener longClickListener,
-            FileListener listener, int appearance) {
+                         MessageLongClickListener longClickListener, FileListener listener, int appearance) {
+
         super(itemView, messageListener, longClickListener, appearance);
         this.listener = listener;
 

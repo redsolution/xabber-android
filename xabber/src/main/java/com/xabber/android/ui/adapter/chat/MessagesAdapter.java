@@ -14,6 +14,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
@@ -38,16 +39,26 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
-    public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
-    public static final int VIEW_TYPE_INCOMING_MESSAGE_NOFLEX = 5;
-    public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
-    private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
-    public static final int VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 6;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE = 1;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE = 2;
+    public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE = 3;
+
+    public static final int VIEW_TYPE_INCOMING_MESSAGE_NOFLEX = 4;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 5;
+    public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX = 6;
+
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE = 7;
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 8;
+    public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE = 353;
+
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT = 9;
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 10;
-    public static final int VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 11;
+    public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT = 11;
+
+    private static final int VIEW_TYPE_ACTION_MESSAGE = 12;
+    public static final int VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 13;
+
+
 
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
@@ -127,84 +138,55 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     @Override
     public int getItemViewType(int position) {
-//        MessageRealmObject messageRealmObject = getMessageItem(position);
-//
-//        if (messageRealmObject == null) return 0;
-//
-//        if (messageRealmObject.getAction() != null) return VIEW_TYPE_ACTION_MESSAGE;
-//
-//        if (messageRealmObject.isGroupchatSystem()) return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
-//
-//        boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
-//                && messageRealmObject.hasForwardedMessages()
-//                && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
-//
-//        if (isNeedUnpackSingleMessageForSavedMessages){
-//            MessageRealmObject innerSingleSavedMessage =
-//                    MessageRepository.getForwardedMessages(messageRealmObject).get(0);
-//
-//            boolean isUploadMessage = innerSingleSavedMessage.getText().equals(FileMessageVH.UPLOAD_TAG);
-//            boolean noFlex = innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments();
-//            boolean isImage = innerSingleSavedMessage.hasImage();
-//            boolean notJustImage =
-//                    (!innerSingleSavedMessage.getText().trim().isEmpty() && !isUploadMessage)
-//                            || (!innerSingleSavedMessage.isAttachmentImageOnly());
-//
-//            if (!innerSingleSavedMessage.getOriginalFrom().contains(chat.getAccount().getBareJid().toString())) {
-//                if(isImage) {
-//                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
-//                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
-//            } else if (isImage) {
-//                return notJustImage ? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
-//            } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
-//
-//        } else {
-//
-//            // if noFlex is true, should use special layout without flexbox-style text
-//            boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
-//            boolean noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments();
-//            boolean isImage = messageRealmObject.hasImage();
-//            boolean notJustImage =
-//                    (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
-//                            || (!messageRealmObject.isAttachmentImageOnly());
-//
-//            if (messageRealmObject.isIncoming() && !isSavedMessagesMode) {
-//                if(isImage) {
-//                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
-//                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
-//            } else if (isImage) {
-//                return notJustImage ? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
-//            } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
-//        }
         MessageRealmObject messageRealmObject = getMessageItem(position);
+
         if (messageRealmObject == null) return 0;
 
-        if (messageRealmObject.getAction() != null)
-            return VIEW_TYPE_ACTION_MESSAGE;
+        if (messageRealmObject.getAction() != null) return VIEW_TYPE_ACTION_MESSAGE;
 
-        if (messageRealmObject.isGroupchatSystem())
-            return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
+        if (messageRealmObject.isGroupchatSystem()) return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
 
-        // if noFlex is true, should use special layout without flexbox-style text
-        boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
-        boolean noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments();
-        boolean isImage = messageRealmObject.hasImage();
-        boolean notJustImage = (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
-                || (!messageRealmObject.isAttachmentImageOnly());
+        boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
+                && messageRealmObject.hasForwardedMessages()
+                && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
 
-        boolean isSavedMessagesChat =
-                chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString());
-        //boolean hasForwarded = messageRealmObject.haveForwardedMessages();
-        //boolean isMessageFromMe = hasForwarded ? messageRealmObject.getForwardedIds().
+        if (isNeedUnpackSingleMessageForSavedMessages){
+            MessageRealmObject innerSingleSavedMessage =
+                    MessageRepository.getForwardedMessages(messageRealmObject).get(0);
 
-        if (messageRealmObject.isIncoming() && !isSavedMessagesChat) {
-            if(isImage) {
-                return notJustImage? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
-            } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+            boolean isUploadMessage = innerSingleSavedMessage.getText().equals(FileMessageVH.UPLOAD_TAG);
+            boolean noFlex = innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments();
+            boolean isImage = innerSingleSavedMessage.hasImage();
+            boolean notJustImage =
+                    (!innerSingleSavedMessage.getText().trim().isEmpty() && !isUploadMessage)
+                            || (!innerSingleSavedMessage.isAttachmentImageOnly());
 
-        } else if(isImage)
-            return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
-        else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+            if (!innerSingleSavedMessage.getOriginalFrom().contains(chat.getAccount().getBareJid().toString())) {
+                if(isImage) {
+                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
+                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+            } else if (isImage) {
+                return notJustImage ? VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT : VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE;
+            } else return noFlex ? VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX : VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE;
+
+        } else {
+
+            // if noFlex is true, should use special layout without flexbox-style text
+            boolean isUploadMessage = messageRealmObject.getText().equals(FileMessageVH.UPLOAD_TAG);
+            boolean noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments();
+            boolean isImage = messageRealmObject.hasImage();
+            boolean notJustImage =
+                    (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
+                            || (!messageRealmObject.isAttachmentImageOnly());
+
+            if (messageRealmObject.isIncoming() && !isSavedMessagesMode) {
+                if(isImage) {
+                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
+                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+            } else if (isImage) {
+                return notJustImage ? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+            } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+        }
     }
 
     @Override
@@ -217,8 +199,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     @Override
     public BasicMessageVH onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         switch (viewType) {
+
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new ActionMessageVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_system_message, parent, false));
+            case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
+                return new GroupchatSystemMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_system_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
@@ -226,10 +212,19 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                         .inflate(R.layout.item_message_incoming, parent, false),
                         this, this, this, bindListener,
                         this, appearanceStyle);
-
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_noflex, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
+                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_image, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
+                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_image_text, parent, false),
                         this, this, this, bindListener,
                         this, appearanceStyle);
 
@@ -237,37 +232,36 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing, parent, false),
                         this, this, this, appearanceStyle);
-
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
                 return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing_noflex, parent, false),
                         this, this, this, appearanceStyle);
-
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
                 return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing_image, parent, false),
                         this, this, this, appearanceStyle);
-
-            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
-                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_message_incoming_image, parent, false),
-                        this, this, this, bindListener,
-                        this, appearanceStyle);
-
-            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
-                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_incoming_image_text, parent, false),
-                        this, this, this, bindListener,
-                        this, appearanceStyle);
-
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
                 return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_message_outgoing_image_text, parent, false),
                         this, this, this, appearanceStyle);
 
-            case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
-                return new GroupchatSystemMessageVH(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_system_message, parent, false));
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE:
+                return new SavedOwnMessageVh(LayoutInflater.from(parent.getContext()) //todo maybe
+                        .inflate(R.layout.item_message_outgoing, parent, false),
+                        this, this, this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX:
+                return new SavedOwnMessageVh(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_outgoing_noflex, parent, false),
+                        this, this, this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE:
+                return new SavedOwnMessageVh(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_outgoing_image, parent, false),
+                        this, this, this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT:
+                return new SavedOwnMessageVh(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_outgoing_image_text, parent, false),
+                        this, this, this, appearanceStyle);
+
             default: return null;
         }
     }
@@ -277,14 +271,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         final int viewType = getItemViewType(position);
         MessageRealmObject messageRealmObject = getMessageItem(position);
-
-//        boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
-//                && messageRealmObject.hasForwardedMessages()
-//                && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
-//
-//        if (isNeedUnpackSingleMessageForSavedMessages) {
-//            messageRealmObject = MessageRepository.getForwardedMessages(messageRealmObject).get(0);
-//        }
 
         if (messageRealmObject == null) {
             LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
@@ -382,6 +368,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
                 if (holder instanceof GroupchatSystemMessageVH) {
                     ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
+                }
+
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE:
+                if (holder instanceof SavedOwnMessageVh) {
+                    ((SavedOwnMessageVh) holder).bind(messageRealmObject, extraData);
                 }
         }
     }
@@ -614,12 +606,17 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
                 return 1;
 
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX:
             case VIEW_TYPE_OUTGOING_MESSAGE:
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
             case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
                 return 2;
 
+            case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
             case VIEW_TYPE_ACTION_MESSAGE:
                 return 3;
 
