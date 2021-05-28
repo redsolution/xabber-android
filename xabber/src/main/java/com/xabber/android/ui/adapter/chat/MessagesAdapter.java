@@ -41,19 +41,28 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 1;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 2;
+
     public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE = 3;
+    public static final int VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE = 76;
 
     public static final int VIEW_TYPE_INCOMING_MESSAGE_NOFLEX = 4;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 5;
+
     public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX = 6;
+    public static final int VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX = 2423;
 
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE = 7;
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 8;
+
     public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE = 353;
+    public static final int VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE = 3324;
 
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT = 9;
     public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 10;
+
     public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT = 11;
+    public static final int VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT = 1351;
+
 
     private static final int VIEW_TYPE_ACTION_MESSAGE = 12;
     public static final int VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 13;
@@ -163,8 +172,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
             if (!innerSingleSavedMessage.getOriginalFrom().contains(chat.getAccount().getBareJid().toString())) {
                 if(isImage) {
-                    return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
-                } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+                    return notJustImage ? VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT : VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE;
+                } else return noFlex ? VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX : VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE;
             } else if (isImage) {
                 return notJustImage ? VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT : VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE;
             } else return noFlex ? VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX : VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE;
@@ -224,6 +233,27 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                         this, appearanceStyle);
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_image_text, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE:
+                return new SavedCompanionMessageVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX:
+                return new SavedCompanionMessageVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_noflex, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE:
+                return new SavedCompanionMessageVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_image, parent, false),
+                        this, this, this, bindListener,
+                        this, appearanceStyle);
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT:
+                return new SavedCompanionMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_image_text, parent, false),
                         this, this, this, bindListener,
                         this, appearanceStyle);
@@ -365,15 +395,26 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                     ((NoFlexOutgoingMsgVH)holder).bind(messageRealmObject, extraData);
                 }
                 break;
+
             case VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE:
                 if (holder instanceof GroupchatSystemMessageVH) {
                     ((GroupchatSystemMessageVH)holder).bind(messageRealmObject);
                 }
 
             case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX:
             case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE:
+            case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT:
                 if (holder instanceof SavedOwnMessageVh) {
                     ((SavedOwnMessageVh) holder).bind(messageRealmObject, extraData);
+                }
+
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT:
+                if (holder instanceof SavedCompanionMessageVH) {
+                    ((SavedCompanionMessageVH) holder).bind(messageRealmObject, extraData);
                 }
         }
     }
@@ -604,6 +645,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
             case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT:
+            case VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX:
                 return 1;
 
             case VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE:
