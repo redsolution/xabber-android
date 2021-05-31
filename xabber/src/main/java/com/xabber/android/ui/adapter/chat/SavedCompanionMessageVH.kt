@@ -1,10 +1,8 @@
 package com.xabber.android.ui.adapter.chat
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.bumptech.glide.Glide
-import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.ContactJid
@@ -12,9 +10,7 @@ import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groups.GroupMember
 import com.xabber.android.data.extension.groups.GroupMemberManager
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
-import org.jxmpp.jid.parts.Resourcepart
 
 /**
  * Represents saved message, contained only one message from simple contact or group member
@@ -77,10 +73,13 @@ class SavedCompanionMessageVH(
                 .into(avatar)
             return
         } else {
-            avatar.setImageDrawable(
-                RosterManager.getInstance().getAbstractContact(messageRealmObject.account, messageRealmObject.user)
-                    .getAvatar(true)
-            )
+            messageRealmObject.originalFrom?.let { senderJid ->
+                avatar.setImageDrawable(
+                    RosterManager.getInstance().getAbstractContact(
+                        messageRealmObject.account, ContactJid.from(senderJid).bareUserJid
+                    ).getAvatar(true)
+                )
+            }
         }
     }
 
