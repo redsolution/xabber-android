@@ -621,24 +621,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         public boolean isNeedName() { return needName; }
     }
 
-    public static class SavedMessagesExtraData extends MessageExtraData {
-
-        private final MessageRealmObject innerMessage;
-
-        public SavedMessagesExtraData(FileMessageVH.FileListener listener, ForwardedAdapter.ForwardListener fwdListener,
-                                      Context context, String username, ColorStateList colorStateList,
-                                      GroupMember groupMember, int accountMainColor, int mentionColor,
-                                      Long mainTimestamp, boolean showOriginalOTR, boolean unread, boolean checked,
-                                      boolean needTail, boolean needDate, boolean needName,
-                                      MessageRealmObject innerMessage){
-            super(listener, fwdListener, context, username, colorStateList, groupMember, accountMainColor, mentionColor,
-                    mainTimestamp, showOriginalOTR, unread, checked, needTail, needDate, needName);
-            this.innerMessage = innerMessage;
-        }
-
-        public MessageRealmObject getInnerMessage() { return innerMessage; }
-    }
-
     private int getSimpleType(int type) {
         switch (type) {
             case VIEW_TYPE_INCOMING_MESSAGE:
