@@ -13,6 +13,7 @@ import android.os.Build;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.time.FastDateFormat;
 import com.xabber.android.ui.helper.BatteryHelper;
 
@@ -24,15 +25,23 @@ import java.util.Comparator;
 import java.util.Locale;
 
 class FileLog {
+    private final String REGULAR_LOG_FILE_NAME_PERFIX = Application.getInstance().getString(R.string.application_title_prefix).replaceAll("\\s+","") + "_ALL";
+    private final String XMPP_LOG_FILE_NAME_PERFIX = Application.getInstance().getString(R.string.application_title_prefix).replaceAll("\\s+","") + "_XMPP";
+    private FastDateFormat dateFormat;
+
     private OutputStreamWriter streamWriter = null;
-    private FastDateFormat dateFormat = null;
     private DispatchQueue logQueue = null;
     private File currentFile = null;
-    private File networkFile = null;
+
+    private OutputStreamWriter xmppStreaWriter = null;
+    private DispatchQueue xmppLogQueue = null;
+    private File xmppCurrentFile = null;
 
     private static final int LOG_FILE_MAX_SIZE = 8000000; // 8mb
     private static final int LOG_FILE_MAX_COUNT = 16;
+
     private static volatile FileLog Instance = null;
+
     public static FileLog getInstance() {
         FileLog localInstance = Instance;
         if (localInstance == null) {
@@ -47,18 +56,28 @@ class FileLog {
     }
 
     public FileLog() {
-        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss", Locale.US);
+        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss-SSS", Locale.US);
         try {
             logQueue = new DispatchQueue("logQueue");
             currentFile = createLogFile();
+            xmppLogQueue = new DispatchQueue("xmppLogQueue");
+            xmppCurrentFile = createXmppLogFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private File createLogFile() {
+    void createNewFilesIfNeed(){
+        if (currentFile == null)
+            createLogFile();
+
+        if (xmppCurrentFile == null)
+            createXmppLogFile();
+    }
+
+    private File createXmppLogFile(){
         File newLogFile = null;
-        String appName = Application.getInstance().getString(R.string.application_title_full).replaceAll("\\s+","");
+        String appName = XMPP_LOG_FILE_NAME_PERFIX;
         try {
             File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
             if (sdCard == null) {
@@ -66,7 +85,47 @@ class FileLog {
             }
             File dir = new File(sdCard.getAbsolutePath() + "/logs");
             dir.mkdirs();
-            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_NAME
+            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_CODE
+                    + "_" + dateFormat.format(System.currentTimeMillis()) + ".txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (xmppStreaWriter != null) {
+                xmppStreaWriter.flush();
+                xmppStreaWriter.close();
+            }
+            newLogFile.createNewFile();
+            xmppCurrentFile = newLogFile;
+            FileOutputStream stream = new FileOutputStream(newLogFile);
+            xmppStreaWriter = new OutputStreamWriter(stream);
+            xmppStreaWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
+                    + " " + appName
+                    + " " + BuildConfig.VERSION_NAME
+                    + " Android " + Build.VERSION.RELEASE
+                    + " SDK " + Build.VERSION.SDK_INT
+                    + " Battery optimization: " + BatteryHelper.isOptimizingBattery()
+                    +  "-----\n");
+            xmppStreaWriter.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // delete log files if need
+        deleteRedundantFiles();
+        return newLogFile;
+    }
+
+    private File createLogFile() {
+        File newLogFile = null;
+        String appName = REGULAR_LOG_FILE_NAME_PERFIX;
+        try {
+            File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
+            if (sdCard == null) {
+                return null;
+            }
+            File dir = new File(sdCard.getAbsolutePath() + "/logs");
+            dir.mkdirs();
+            newLogFile = new File(dir, appName + "_" + BuildConfig.VERSION_CODE
                     + "_" + dateFormat.format(System.currentTimeMillis()) + ".txt");
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,6 +136,7 @@ class FileLog {
                 streamWriter.close();
             }
             newLogFile.createNewFile();
+            currentFile = newLogFile;
             FileOutputStream stream = new FileOutputStream(newLogFile);
             streamWriter = new OutputStreamWriter(stream);
             streamWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
@@ -99,15 +159,19 @@ class FileLog {
         Controls list of log files. Allow only 6 log-files. Each no more than 8 mb size.
      */
     private void controlFileSize() {
-        // create new file if current file is too large
-        if (currentFile != null) {
+        if (currentFile != null)
             if (currentFile.length() >= LOG_FILE_MAX_SIZE) {
                 File newFile = createLogFile();
-                if (newFile != null) {
+                if (newFile != null)
                     currentFile = newFile;
-                }
             }
-        }
+
+        if (xmppCurrentFile != null)
+            if (xmppCurrentFile.length() >= LOG_FILE_MAX_SIZE) {
+                File newFile = createXmppLogFile();
+                if (newFile != null)
+                    xmppCurrentFile = newFile;
+            }
     }
 
     private void deleteRedundantFiles() {
@@ -119,7 +183,14 @@ class FileLog {
         File dir = new File(sdCard.getAbsolutePath() + "/logs");
         File[] files = dir.listFiles();
 
-        if (files != null && files.length > LOG_FILE_MAX_COUNT) {
+        if (files == null) return;
+
+//        for (File file : files) {
+//            if (file.length() < 150)
+//                file.delete();
+//        }
+
+        if (files.length > LOG_FILE_MAX_COUNT) {
             Arrays.sort(files, new Comparator<File>(){
                 public int compare(File f1, File f2) {
                     return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
@@ -129,22 +200,6 @@ class FileLog {
                 files[i].delete();
             }
         }
-    }
-
-    public static String getNetworkLogPath() {
-        try {
-            File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
-            if (sdCard == null) {
-                return "";
-            }
-            File dir = new File(sdCard.getAbsolutePath() + "/logs");
-            dir.mkdirs();
-            getInstance().networkFile = new File(dir, getInstance().dateFormat.format(System.currentTimeMillis()) + "_net.txt");
-            return getInstance().networkFile.getAbsolutePath();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 
     public static void e(final String tag, final String message, final Throwable exception) {
@@ -183,6 +238,28 @@ class FileLog {
     }
 
     public static void e(final String tag, final Throwable e) {
+        if (tag.equals(SmackDebugger.LOG_TAG)){
+            getInstance().controlFileSize();
+            if (getInstance().xmppStreaWriter != null) {
+                getInstance().xmppLogQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInstance().xmppStreaWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + e + "\n");
+                            StackTraceElement[] stack = e.getStackTrace();
+                            for (int a = 0; a < stack.length; a++) {
+                                getInstance().xmppStreaWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + stack[a] + "\n");
+                            }
+                            getInstance().xmppStreaWriter.flush();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } else {
+                e.printStackTrace();
+            }
+        }
         getInstance().controlFileSize();
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
@@ -203,9 +280,26 @@ class FileLog {
         } else {
             e.printStackTrace();
         }
+
     }
 
     public static void d(final String tag, final String message) {
+        if (tag.equals(SmackDebugger.LOG_TAG)){
+            getInstance().controlFileSize();
+            if (getInstance().xmppStreaWriter != null) {
+                getInstance().xmppLogQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInstance().xmppStreaWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " D/" + tag + "﹕ " + message + "\n");
+                            getInstance().xmppStreaWriter.flush();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
         getInstance().controlFileSize();
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
@@ -220,22 +314,39 @@ class FileLog {
                 }
             });
         }
+
     }
 
     public static void w(final String tag, final String message) {
-        getInstance().controlFileSize();
-        if (getInstance().streamWriter != null) {
-            getInstance().logQueue.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/" + tag + ": " + message + "\n");
-                        getInstance().streamWriter.flush();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        if (tag.equals(SmackDebugger.LOG_TAG)){
+            getInstance().controlFileSize();
+            if (getInstance().xmppStreaWriter != null) {
+                getInstance().xmppLogQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInstance().xmppStreaWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/" + tag + ": " + message + "\n");
+                            getInstance().xmppStreaWriter.flush();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
+            }
+            getInstance().controlFileSize();
+            if (getInstance().streamWriter != null) {
+                getInstance().logQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/" + tag + ": " + message + "\n");
+                            getInstance().streamWriter.flush();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -249,10 +360,8 @@ class FileLog {
         if (files != null) {
             for (int a = 0; a < files.length; a++) {
                 File file = files[a];
-                if (getInstance().currentFile != null && file.getAbsolutePath().equals(getInstance().currentFile.getAbsolutePath())) {
-                    continue;
-                }
-                if (getInstance().networkFile != null && file.getAbsolutePath().equals(getInstance().networkFile.getAbsolutePath())) {
+                if (SettingsManager.fileLog() && getInstance().currentFile != null && file.getAbsolutePath().equals(getInstance().currentFile.getAbsolutePath())
+                        || SettingsManager.fileLog() && getInstance().xmppCurrentFile != null && file.getAbsolutePath().equals(getInstance().xmppCurrentFile.getAbsolutePath())) {
                     continue;
                 }
                 file.delete();

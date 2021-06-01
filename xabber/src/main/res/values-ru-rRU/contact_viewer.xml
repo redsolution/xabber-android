@@ -47,6 +47,7 @@
     <string name="unknown">Не известно</string>
     <string name="edit_alias">Редактировать псевдоним</string>
     <string name="edit_contact_groups">Редактировать группы</string>
+    <string name="edit_contact">Редактировать</string>
     <string name="remove_contact">Удалить контакт</string>
     <string name="edit_account_user_info">Редактировать информацию о пользователе</string>
     <string name="edit_vcard">Редактировать</string>

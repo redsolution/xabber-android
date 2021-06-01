@@ -1,7 +1,5 @@
 package com.xabber.android.ui.adapter;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +7,25 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.BlockedListActivity;
+import com.xabber.android.ui.activity.BlockedListActivity.BlockedListState;
+import com.xabber.android.ui.color.ColorManager;
+
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,64 +34,156 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
+    private static final int BLOCKED_CONTACT = 0;
+    private static final int GROUP_INVITE = 1;
+    private static final int GROUP_INVITE_SUMMARY_FOOTER = 2;
     private AccountJid account;
     @SuppressWarnings("WeakerAccess")
-    List<UserJid> blockedContacts;
+    List<ContactJid> blockedContacts;
+
+    @SuppressWarnings("WeakerAccess")
+    List<ContactJid> groupInvites;
 
     @SuppressWarnings("WeakerAccess")
     @Nullable OnBlockedContactClickListener listener;
 
     @SuppressWarnings("WeakerAccess")
-    Set<UserJid> checkedContacts;
+    Set<ContactJid> checkedContacts;
+
+    @BlockedListState
+    private int currentBlockListState;
+    private boolean hasGroupInvites;
 
     public BlockedListAdapter(AccountJid account) {
         this.account = account;
         blockedContacts = new ArrayList<>();
         checkedContacts = new HashSet<>();
+        groupInvites = new ArrayList<>();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new BlockListItemViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_block, parent, false));
+        if (viewType == 1) {
+            return new BlockListGroupInvitesVH(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_block_group_invites, parent, false));
+        } else if (viewType == 2) {
+            return new BlockListGroupSummaryVH(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_block_group_invites_summary, parent, false));
+        } else {
+            return new BlockListItemViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_block, parent, false));
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final BlockListItemViewHolder viewHolder = (BlockListItemViewHolder) holder;
-        final UserJid contact = blockedContacts.get(position);
+        if (holder instanceof BlockListItemViewHolder) {
+            final BlockListItemViewHolder viewHolder = (BlockListItemViewHolder) holder;
+            final ContactJid contact = blockedContacts.get(position);
 
-        final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
+            final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
+            final AbstractChat abstractChat = ChatManager.getInstance().getChat(account, contact);
+            String name;
 
-        if (viewHolder.avatar != null) {
-            viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
+            if (viewHolder.avatar != null) {
+                viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
+            }
+
+            if (abstractChat != null && abstractChat.isGroupchat() || currentBlockListState == BlockedListActivity.GROUP_INVITES) {
+                viewHolder.status.setImageResource(R.drawable.ic_groupchat_14_border);
+                viewHolder.status.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.status.setVisibility(View.GONE);
+            }
+            if (rosterContact.getName().equals(contact.getBareJid().toString()) && currentBlockListState == BlockedListActivity.BLOCKED_LIST) {
+                if (contact.getBareJid().isDomainBareJid()) {
+                    name = Application.getInstance().getString(R.string.blocked_domain);
+                } else {
+                    if (abstractChat != null && abstractChat.isGroupchat()) {
+                        name = Application.getInstance().getString(R.string.blocked_group);
+                    } else {
+                        name = Application.getInstance().getString(R.string.blocked_contact);
+                    }
+                }
+            } else {
+                name = rosterContact.getName();
+            }
+            viewHolder.name.setText(name);
+            viewHolder.jid.setText(contact.getJid());
+
+            viewHolder.checkBox.setChecked(checkedContacts.contains(contact));
+        } else if (holder instanceof BlockListGroupInvitesVH) {
+            BlockListGroupInvitesVH viewHolder = (BlockListGroupInvitesVH) holder;
+            viewHolder.invite.setImageResource(R.drawable.ic_email_add_small);
+            viewHolder.invite.setCircleBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+            viewHolder.groupInvitesCount.setText(String.valueOf(groupInvites.size()));
         }
+    }
 
-        viewHolder.name.setText(rosterContact.getName());
-        viewHolder.name.setVisibility(View.VISIBLE);
-
-        viewHolder.checkBox.setChecked(checkedContacts.contains(contact));
+    @Override
+    public int getItemViewType(int position) {
+        if (hasGroupInvites && position == blockedContacts.size() && currentBlockListState == BlockedListActivity.BLOCKED_LIST) {
+            return GROUP_INVITE;
+        } else if (currentBlockListState == BlockedListActivity.GROUP_INVITES && position == blockedContacts.size()) {
+            return GROUP_INVITE_SUMMARY_FOOTER;
+        } else {
+            return BLOCKED_CONTACT;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return blockedContacts.size();
+        return blockedContacts.size() + addToItemCountIfNeeded();
+    }
+
+    private int addToItemCountIfNeeded() {
+        return (currentBlockListState == BlockedListActivity.BLOCKED_LIST && hasGroupInvites)
+                || currentBlockListState == BlockedListActivity.GROUP_INVITES ? 1 : 0;
     }
 
     @Override
     public void onChange() {
         blockedContacts.clear();
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
+        groupInvites.clear();
+        hasGroupInvites = false;
+        final Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts != null) {
-            this.blockedContacts.addAll(blockedContacts);
+            // list of blocked contacts after filtering out group invites.
+            Collection<ContactJid> newBlockedContacts = new ArrayList<>();
+            // list of group invites
+            Collection<ContactJid> groupInvites = new ArrayList<>();
+            for (ContactJid user : blockedContacts) {
+                if (user.getJid().getResourceOrEmpty().equals(Resourcepart.EMPTY)) {
+                    // Any contact with a BareJid block address is considered as a
+                    // normal blocked contact, since our clients normally block with BareJids
+                    newBlockedContacts.add(user);
+                } else {
+                    // And contacts with resources are considered group invites, since we use
+                    // the blocking mechanism to differentiate between new and old invitations
+                    groupInvites.add(user);
+                    hasGroupInvites = true;
+                }
+            }
+
+            if (hasGroupInvites) {
+                this.groupInvites.addAll(groupInvites);
+            }
+
+            if (currentBlockListState == BlockedListActivity.BLOCKED_LIST) {
+                this.blockedContacts.addAll(newBlockedContacts);
+            } else {
+                this.blockedContacts.addAll(groupInvites);
+            }
         }
 
         // remove checked contacts not containing in new blocked list
-        final Iterator<UserJid> iterator = checkedContacts.iterator();
+        final Iterator<ContactJid> iterator = checkedContacts.iterator();
         while (iterator.hasNext()) {
-            final UserJid next = iterator.next();
+            final ContactJid next = iterator.next();
             if (!this.blockedContacts.contains(next)) {
                 iterator.remove();
             }
@@ -93,6 +194,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface OnBlockedContactClickListener {
         void onBlockedContactClick();
+        void onGroupInvitesClick();
     }
 
     public void setListener(@Nullable OnBlockedContactClickListener listener) {
@@ -105,7 +207,9 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private final String LOG_TAG = BlockListItemViewHolder.class.getSimpleName();
         @Nullable
         final ImageView avatar;
+        final ImageView status;
         final TextView name;
+        final TextView jid;
         final CheckBox checkBox;
 
         BlockListItemViewHolder(View view) {
@@ -118,7 +222,9 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 avatar = null;
             }
 
+            status = (ImageView) view.findViewById(R.id.iv_status);
             name = (TextView) view.findViewById(R.id.contact_list_item_name);
+            jid = (TextView) view.findViewById(R.id.contact_list_item_jid);
             checkBox = (CheckBox) view.findViewById(R.id.block_list_contact_checkbox);
             checkBox.setOnClickListener(this);
 
@@ -133,13 +239,13 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return;
             }
 
-            UserJid userJid = blockedContacts.get(adapterPosition);
+            ContactJid contactJid = blockedContacts.get(adapterPosition);
 
-            if (checkedContacts.contains(userJid)) {
-                checkedContacts.remove(userJid);
+            if (checkedContacts.contains(contactJid)) {
+                checkedContacts.remove(contactJid);
                 checkBox.setChecked(false);
             } else {
-                checkedContacts.add(userJid);
+                checkedContacts.add(contactJid);
                 checkBox.setChecked(true);
             }
 
@@ -150,11 +256,58 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public ArrayList<UserJid> getCheckedContacts() {
+    private class BlockListGroupInvitesVH extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
+
+        private final String LOG_TAG = BlockListGroupInvitesVH.class.getSimpleName();
+
+        private CircleImageView invite;
+        private TextView groupInvitesCount;
+
+        BlockListGroupInvitesVH(View view) {
+            super(view);
+            invite = view.findViewById(R.id.iv_group_invite);
+            groupInvitesCount = view.findViewById(R.id.group_invites_count);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+            if (listener != null) {
+                listener.onGroupInvitesClick();
+            }
+        }
+    }
+
+    private class BlockListGroupSummaryVH extends RecyclerView.ViewHolder {
+        BlockListGroupSummaryVH(View view) {
+            super(view);
+        }
+    }
+
+    public void setBlockedListState(@BlockedListState int state) {
+        this.currentBlockListState = state;
+    }
+
+    @BlockedListState
+    public int getCurrentBlockListState() {
+        return currentBlockListState;
+    }
+
+    public ArrayList<ContactJid> getCheckedContacts() {
         return new ArrayList<>(checkedContacts);
     }
 
-    public void setCheckedContacts(List<UserJid> checkedContacts) {
+    public ArrayList<ContactJid> getBlockedContacts() {
+        return new ArrayList<>(blockedContacts);
+    }
+
+    public void setCheckedContacts(List<ContactJid> checkedContacts) {
         this.checkedContacts.clear();
         this.checkedContacts.addAll(checkedContacts);
     }

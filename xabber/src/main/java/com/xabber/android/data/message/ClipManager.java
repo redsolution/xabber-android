@@ -2,11 +2,12 @@ package com.xabber.android.data.message;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.os.Looper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -19,18 +20,14 @@ import io.realm.RealmResults;
 
 public class ClipManager {
 
-    public static void copyMessagesToClipboard(final List<String> messageIDs) {
+    private static final String LOG_TAG = ClipManager.class.getSimpleName();
 
+    public static void copyMessagesToClipboard(final List<String> messageIDs) {
         final String[] ids = messageIDs.toArray(new String[0]);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                String text = messagesToText(realm, ids, 0);
-                realm.close();
-                if (!text.isEmpty()) insertDataToClipboard(text);
-            }
-        });
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        String text = messagesToText(realm, ids, 0);
+        if (!text.isEmpty()) insertDataToClipboard(text);
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     public static String createMessageTree(Realm realm, String id) {
@@ -52,13 +49,13 @@ public class ClipManager {
 
     private static String messagesToText(Realm realm, String[] messagesIDs, int level) {
 
-        RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                .in(MessageItem.Fields.UNIQUE_ID, messagesIDs).findAll();
+        RealmResults<MessageRealmObject> items = realm.where(MessageRealmObject.class)
+                .in(MessageRealmObject.Fields.UNIQUE_ID, messagesIDs).findAll();
 
         StringBuilder stringBuilder = new StringBuilder();
         long previousTimestamp = 1;
         if (items != null && !items.isEmpty()) {
-            for (MessageItem message : items) {
+            for (MessageRealmObject message : items) {
                 stringBuilder.append(messageToText(realm, message, previousTimestamp, level));
                 previousTimestamp = message.getTimestamp();
             }
@@ -67,7 +64,7 @@ public class ClipManager {
         return stringBuilder.toString().trim();
     }
 
-    private static String messageToText(Realm realm, MessageItem message,
+    private static String messageToText(Realm realm, MessageRealmObject message,
                                         long previousMessageTimestamp, int level) {
 
         String space = getSpace(level);
@@ -96,9 +93,9 @@ public class ClipManager {
         }
 
         if (message.haveAttachments()) {
-            for (Attachment attachment : message.getAttachments()) {
+            for (AttachmentRealmObject attachmentRealmObject : message.getAttachmentRealmObjects()) {
                 stringBuilder.append(space);
-                stringBuilder.append(attachment.getFileUrl());
+                stringBuilder.append(attachmentRealmObject.getFileUrl());
                 stringBuilder.append("\n");
             }
         }

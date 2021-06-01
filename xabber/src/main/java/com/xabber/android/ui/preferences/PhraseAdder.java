@@ -2,14 +2,19 @@ package com.xabber.android.ui.preferences;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
@@ -22,9 +27,16 @@ public class PhraseAdder extends BasePhrasePreferences {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_white_24dp);
+        Toolbar toolbar;
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.toolbar_save);
+        View view = toolbar.findViewById(R.id.action_save);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView)view).setTextColor(getResources().getColor(R.color.grey_600));
+            else ((TextView)view).setTextColor(Color.WHITE);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

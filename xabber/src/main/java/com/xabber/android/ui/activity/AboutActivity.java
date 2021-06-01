@@ -16,9 +16,11 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 
 public class AboutActivity extends ManagedActivity implements View.OnClickListener {
 
@@ -42,6 +45,11 @@ public class AboutActivity extends ManagedActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
+            TypedValue typedValue = new TypedValue();
+            this.getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
+            findViewById(R.id.main_content).setBackgroundColor(typedValue.data);
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -66,6 +74,7 @@ public class AboutActivity extends ManagedActivity implements View.OnClickListen
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(getString(R.string.application_title_short));
+        collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
 
         ((TextView) findViewById(R.id.about_version)).setText(Application.getInstance().getVersionName());
 

@@ -14,9 +14,10 @@
  */
 package com.xabber.android.data.roster;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -28,21 +29,21 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.ContactGroup;
-import com.xabber.android.data.database.realm.ContactRealm;
+import com.xabber.android.data.database.realmobjects.CircleRealmObject;
+import com.xabber.android.data.database.realmobjects.ContactRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
@@ -51,7 +52,6 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -93,26 +93,23 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public void onPreInitialize() {
-        List<ContactRealm> contacts = RosterCacheManager.loadContacts();
-        for (ContactRealm contactRealm : contacts) {
+        List<ContactRealmObject> contacts = ContactRepository.getContactsFromRealm();
+        for (ContactRealmObject contactRealmObject : contacts) {
             try {
-                AccountJid account = AccountJid.from(contactRealm.getAccount() + "/" + contactRealm.getAccountResource());
-                UserJid userJid = UserJid.from(contactRealm.getUser());
-                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealm.getName());
+                AccountJid account = AccountJid.from(contactRealmObject.getAccountJid()); //TODO REALM UPDATE possibly there we need there an account resource
+                ContactJid contactJid = ContactJid.from(contactRealmObject.getContactJid());
+                RosterContact contact = RosterContact.getRosterContact(account, contactJid, contactRealmObject.getBestName());
 
-                for (ContactGroup group : contactRealm.getGroups()) {
-                    contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
+                for (CircleRealmObject group : contactRealmObject.getCircles()) {
+                    contact.addGroupReference(new RosterCircleReference(new RosterCircle(account, group.getCircleName())));
                 }
 
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
-                MessageItem lastMessage = contactRealm.getLastMessage();
-                if (lastMessage != null) {
-                    MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser(), lastMessage);
-                } else MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+                ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
 
-            } catch (UserJid.UserJidCreateException e) {
+            } catch (ContactJid.UserJidCreateException e) {
                 e.printStackTrace();
             } catch (XmppStringprepException e) {
                 e.printStackTrace();
@@ -132,32 +129,97 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return Roster.getInstanceFor(accountItem.getConnection());
     }
 
-    @Nullable
-    public Presence getPresence(AccountJid account, UserJid user) {
-        final Roster roster = getRoster(account);
-        if (roster == null) {
-            return null;
-        } else {
-            return roster.getPresence(user.getJid().asBareJid());
+    public static String getDisplayAuthorName(MessageRealmObject messageRealmObject) {
+        ContactJid jid = null;
+        try {
+            jid = ContactJid.from(messageRealmObject.getOriginalFrom());
+        } catch (ContactJid.UserJidCreateException e) {
+            e.printStackTrace();
         }
+
+        String author;
+
+        if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
+            author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
+        else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
+
+        return author;
+    }
+
+    @Nullable
+    public Presence getPresence(AccountJid account, ContactJid user) {
+        return PresenceManager.getInstance().getPresence(account, user);
+        //final Roster roster = getRoster(account);
+        //if (roster == null) {
+        //    return null;
+        //} else {
+        //    return roster.getPresence(user.getJid().asBareJid());
+        //}
     }
 
     public List<Presence> getPresences(AccountJid account, Jid user) {
-        final Roster roster = getRoster(account);
-        if (roster == null) {
-            return new ArrayList<>();
-        } else {
-            return roster.getAvailablePresences(user.asBareJid());
-        }
+        return PresenceManager.getInstance().getAvailablePresences(account, user.asBareJid());
+        //final Roster roster = getRoster(account);
+        //if (roster == null) {
+        //    return new ArrayList<>();
+        //} else {
+        //    return roster.getAvailablePresences(user.asBareJid());
+        //}
     }
 
-    public boolean isSubscribed(AccountJid account, UserJid user) {
+    public boolean accountIsSubscribedTo(AccountJid account, ContactJid user) {
         final Roster roster = getRoster(account);
         if (roster == null) {
             return false;
         } else {
             return roster.iAmSubscribedTo(user.getJid());
         }
+    }
+
+    public boolean contactIsSubscribedTo(AccountJid account, ContactJid user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        } else {
+            return roster.isSubscribedToMyPresence(user.getJid());
+        }
+    }
+
+    public RosterPacket.ItemType getSubscriptionType(AccountJid account, ContactJid user) {
+        Roster roster = getRoster(account);
+        if (roster == null) {
+            return null;
+        }
+        RosterEntry entry = roster.getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return null;
+        }
+        return entry.getType();
+    }
+
+    /**
+     *  Check if we have an outgoing subscription request
+     */
+    public boolean hasSubscriptionPending(AccountJid account, ContactJid user) {
+        Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        }
+        RosterEntry entry = roster.getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return false;
+        }
+        return entry.isSubscriptionPending();
+    }
+
+    public SubscriptionState getSubscriptionState(AccountJid account, ContactJid user) {
+        boolean outgoingRequest = hasSubscriptionPending(account, user);
+        boolean incomingRequest = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
+        RosterPacket.ItemType subscription = getSubscriptionType(account, user);
+
+        SubscriptionState state = new SubscriptionState(subscription);
+        state.setPendingSubscriptions(incomingRequest, outgoingRequest);
+        return state;
     }
 
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
@@ -174,6 +236,14 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return Collections.unmodifiableCollection(contactsCopy);
     }
 
+    public Collection<AbstractContact> getAllContactsForEnabledAccounts(){
+        List<RosterContact> result = new ArrayList<>();
+        for (RosterContact rosterContact : getAllContacts())
+            if (AccountManager.getInstance().getEnabledAccounts().contains(rosterContact.getAccount()))
+                result.add(rosterContact);
+        return Collections.unmodifiableCollection(result);
+    }
+
     void onContactsAdded(final AccountJid account, Collection<Jid> addresses) {
         final Roster roster = RosterManager.getInstance().getRoster(account);
         final Collection<RosterContact> newContacts = new ArrayList<>(addresses.size());
@@ -185,18 +255,16 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                         contact.getUser().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
-                LastActivityInteractor.getInstance().requestLastActivityAsync(account, UserJid.from(jid));
-            } catch (UserJid.UserJidCreateException e) {
+                if (VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
+                    LastActivityInteractor.getInstance().requestLastActivityAsync(account, ContactJid.from(jid));
+                }
+            } catch (ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RosterCacheManager.saveContact(account, newContacts);
-            }
-        });
+        ContactRepository.saveContactToRealm(account, newContacts);
+
         onContactsChanged(newContacts);
     }
 
@@ -213,44 +281,40 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 removedContacts.add(contact);
             }
         }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RosterCacheManager.removeContact(removedContacts);
-            }
-        });
+
+        ContactRepository.removeContacts(removedContacts);
 
         onContactsChanged(removedContacts);
     }
 
     @NonNull
-    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) throws UserJid.UserJidCreateException {
+    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) throws ContactJid.UserJidCreateException {
         final RosterContact contact = RosterContact
-                .getRosterContact(account, UserJid.from(rosterEntry.getJid()), rosterEntry.getName());
+                .getRosterContact(account, ContactJid.from(rosterEntry.getJid()), rosterEntry.getName());
 
         final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
 
         contact.clearGroupReferences();
         for (org.jivesoftware.smack.roster.RosterGroup group : groups) {
             if (group.contains(rosterEntry)) {
-                contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getName())));
+                contact.addGroupReference(new RosterCircleReference(new RosterCircle(account, group.getName())));
             }
         }
         contact.setEnabled(true);
         contact.setConnected(true);
-
+        contact.setDirtyRemoved(false);
 
         return contact;
     }
 
-    public AbstractContact getAbstractContact(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
-        WeakReference<AbstractContact> contactWeakReference = contactsCache.get(accountJid.toString(), userJid.toString());
+    public AbstractContact getAbstractContact(@NonNull AccountJid accountJid, @NonNull ContactJid contactJid) {
+        WeakReference<AbstractContact> contactWeakReference = contactsCache.get(accountJid.toString(), contactJid.toString());
         if (contactWeakReference != null && contactWeakReference.get() != null) {
             return contactWeakReference.get();
         }
 
-        AbstractContact newContact = new AbstractContact(accountJid, userJid);
-        contactsCache.put(accountJid.toString(), userJid.toString(), new WeakReference<>(newContact));
+        AbstractContact newContact = new AbstractContact(accountJid, contactJid);
+        contactsCache.put(accountJid.toString(), contactJid.toString(), new WeakReference<>(newContact));
         return newContact;
     }
 
@@ -260,23 +324,19 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     @Nullable
-    public RosterContact getRosterContact(AccountJid accountJid, UserJid userJid) {
-        return getRosterContact(accountJid, userJid.getBareJid());
+    public RosterContact getRosterContact(AccountJid accountJid, ContactJid contactJid) {
+        return getRosterContact(accountJid, contactJid.getBareJid());
     }
 
     /**
-     * Gets {@link RoomContact}, {@link RosterContact}, {@link ChatContact} or
-     * creates new {@link ChatContact}.
      *
      * @param account
      * @param user
      * @return
      */
-    public AbstractContact getBestContact(AccountJid account, UserJid user) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        if (abstractChat != null && abstractChat instanceof RoomChat) {
-            return new RoomContact((RoomChat) abstractChat);
-        }
+    public AbstractContact getBestContact(AccountJid account, ContactJid user) {
+        AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
+
         RosterContact rosterContact = getRosterContact(account, user);
         if (rosterContact != null) {
             return rosterContact;
@@ -312,7 +372,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * @return Contact's name.
      */
-    public String getName(AccountJid account, UserJid user) {
+    public String getName(AccountJid account, ContactJid user) {
         RosterContact contact = getRosterContact(account, user);
         if (contact == null) {
             return user.toString();
@@ -321,9 +381,20 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     /**
+     * @return Roster contact's nickname if present.
+     */
+    public String getNickname(AccountJid account, ContactJid user) {
+        RosterContact contact = getRosterContact(account, user);
+        if (contact == null) {
+            return "";
+        }
+        return contact.getNickname();
+    }
+
+    /**
      * @return Contact's name or BareJid if that contacts not exist.
      */
-    public String getNameOrBareJid(AccountJid account, UserJid user) {
+    public String getNameOrBareJid(AccountJid account, ContactJid user) {
         RosterContact contact = getRosterContact(account, user);
         if (contact == null) {
             return user.getBareJid().toString();
@@ -334,7 +405,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * @return Contact's groups.
      */
-    public Collection<String> getGroups(AccountJid account, UserJid user) {
+    public Collection<String> getGroups(AccountJid account, ContactJid user) {
         RosterContact contact = getRosterContact(account, user);
         if (contact == null) {
             return Collections.emptyList();
@@ -351,7 +422,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @param groups
      * @throws NetworkException
      */
-    public void createContact(AccountJid account, UserJid user, String name,
+    public void createContact(AccountJid account, ContactJid user, String name,
                               Collection<String> groups)
             throws SmackException.NotLoggedInException, XMPPException.XMPPErrorException,
             SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
@@ -361,16 +432,15 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        if (user.getBareJid() != null) {
-            roster.createEntry(user.getBareJid(), name, groups.toArray(new String[groups.size()]));
-        }
+        roster.createEntry(user.getBareJid(), name, groups.toArray(new String[groups.size()]));
+
     }
 
     /**
      * Requests contact removing.
      *
      */
-    public void removeContact(AccountJid account, UserJid user) {
+    public void removeContact(AccountJid account, ContactJid user) {
 
         final Roster roster = getRoster(account);
 
@@ -384,11 +454,19 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        RosterContact contact = getRosterContact(account, user);
+        if (contact != null) {
+            contact.setDirtyRemoved(true);
+            EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        }
+
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
                     roster.removeEntry(entry);
+                    PresenceManager.getInstance().clearSingleContactPresences(account, user.getBareJid());
+                    EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
                     Application.getInstance().onError(R.string.NOT_CONNECTED);
                 } catch (SmackException.NoResponseException e) {
@@ -402,7 +480,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         });
     }
 
-    public void setGroups(AccountJid account, UserJid user, Collection<String> groups) throws NetworkException {
+    public void setGroups(AccountJid account, ContactJid user, Collection<String> groups) throws NetworkException {
         final Roster roster = getRoster(account);
 
         if (roster == null) {
@@ -426,7 +504,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         StanzaSender.sendStanza(account, packet);
     }
 
-    public void setName(AccountJid account, UserJid user, final String name) {
+    public void setName(AccountJid account, ContactJid user, final String name) {
         final Roster roster = getRoster(account);
 
         if (roster == null) {
@@ -468,7 +546,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 for (RosterEntry entry : group.getEntries()) {
@@ -516,7 +594,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         if (TextUtils.isEmpty(oldGroup)) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
                 @Override
                 public void run() {
                     createGroupForUnfiledEntries(newGroup, roster);
@@ -530,7 +608,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -645,7 +723,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Notifies registered {@link OnContactChangedListener}.
      */
-    public static void onContactChanged(AccountJid account, UserJid bareAddress) {
+    public static void onContactChanged(AccountJid account, ContactJid bareAddress) {
         final Collection<RosterContact> entities = new ArrayList<>();
         RosterContact rosterContact = getInstance().getRosterContact(account, bareAddress);
         if (rosterContact != null) {
@@ -657,7 +735,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Notifies registered {@link OnChatStateListener}.
      */
-    public static void onChatStateChanged(AccountJid account, UserJid bareAddress) {
+    public static void onChatStateChanged(AccountJid account, ContactJid bareAddress) {
         final Collection<RosterContact> entities = new ArrayList<>();
         RosterContact rosterContact = getInstance().getRosterContact(account, bareAddress);
         if (rosterContact != null) {
@@ -675,31 +753,101 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         });
     }
 
-    public static String getDisplayAuthorName(MessageItem messageItem) {
-        UserJid jid = null;
-        try {
-            jid = UserJid.from(messageItem.getOriginalFrom());
-        } catch (UserJid.UserJidCreateException e) {
-            e.printStackTrace();
+    //A wrapper for the current subscription type and any current
+    //pending subscription requests between contact and user.
+    public static class SubscriptionState {
+
+        //Subscription types
+        //no subscriptions
+        public static final int NONE = 0;
+
+        //subscription from us to contact
+        public static final int TO = 4;
+
+        //subscription from contact to us
+        public static final int FROM = 6;
+
+        //2-way subscription
+        public static final int BOTH = 8;
+
+
+        //Current state of pending subscriptions
+        //no pending subscriptions
+        public static final int PENDING_NONE = -1;
+
+        //pending incoming subscription
+        public static final int PENDING_IN = -2;
+
+        //pending outgoing subscription
+        public static final int PENDING_OUT = -3;
+
+        //pending outgoing and incoming subscription
+        public static final int PENDING_IN_OUT = -4;
+
+
+        private int subscriptionType;
+        private int pendingSubscription;
+
+        public SubscriptionState() {}
+
+        public SubscriptionState(RosterPacket.ItemType type) {
+            if (type == null) {
+                subscriptionType = NONE;
+            } else
+                switch (type) {
+                    case both:
+                        subscriptionType = BOTH;
+                        break;
+                    case to:
+                        subscriptionType = TO;
+                        break;
+                    case from:
+                        subscriptionType = FROM;
+                        break;
+                    default:
+                        subscriptionType = NONE;
+                        break;
+                }
         }
 
-        String author = null;
-        if (jid != null) {
-            EntityBareJid room = messageItem.getUser().getBareJid().asEntityBareJidIfPossible();
-            RoomChat roomChat = null;
-            if (room != null) roomChat = MUCManager.getInstance().getRoomChat(messageItem.getAccount(), room);
+        public int getSubscriptionType() {
+            return subscriptionType;
+        }
 
-            if (roomChat != null) {
-                if (!messageItem.isIncoming())
-                    author = MUCManager.getInstance().getNickname(messageItem.getAccount(), room).toString();
-                else author = jid.getJid().getResourceOrEmpty().toString();
-            } else {
-                if (!messageItem.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
-                    author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
-                else author = AccountManager.getInstance().getNickName(messageItem.getAccount());
+        public void setSubscriptionType(int subscriptionType) {
+            this.subscriptionType = subscriptionType;
+        }
+
+        public int getPendingSubscription() {
+            return pendingSubscription;
+        }
+
+        public void setPendingSubscription(int pendingSubscription) {
+            this.pendingSubscription = pendingSubscription;
+        }
+
+        public void setPendingSubscriptions(boolean incoming, boolean outgoing) {
+            if (incoming && outgoing) {
+                pendingSubscription = PENDING_IN_OUT;
+                return;
             }
+            if (incoming) {
+                pendingSubscription = PENDING_IN;
+                return;
+            }
+            if (outgoing) {
+                pendingSubscription = PENDING_OUT;
+                return;
+            }
+            pendingSubscription = PENDING_NONE;
         }
 
-        return author;
+        public boolean hasOutgoingSubscription() {
+            return pendingSubscription == PENDING_OUT || pendingSubscription == PENDING_IN_OUT;
+        }
+
+        public boolean hasIncomingSubscription() {
+            return pendingSubscription == PENDING_IN || pendingSubscription == PENDING_IN_OUT;
+        }
     }
 }

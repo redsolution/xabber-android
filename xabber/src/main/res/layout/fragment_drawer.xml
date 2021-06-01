@@ -9,13 +9,14 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/contact_list_background"
         >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/contact_list_background"
+            android:focusableInTouchMode="true"
             >
 
             <include layout="@layout/item_drawer_header"/>

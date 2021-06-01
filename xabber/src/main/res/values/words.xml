@@ -30,5 +30,12 @@
 
     <string name="got_it">Got it</string>
     <string name="search">Search</string>
+    <string name="clear">Clear</string>
     <string name="free">free</string>
+
+    <string name="contact_bar_chat">Chat</string>
+    <string name="contact_bar_call">Call</string>
+    <string name="contact_bar_notifications">Notifications</string>
+    <string name="contact_bar_block">Block</string>
+    <string name="contact_bar_unblock">Unblock</string>
 </resources>

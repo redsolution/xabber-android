@@ -10,6 +10,7 @@
     <string name="vcard_middle_name">Middle name</string>
     <string name="vcard_family_name">Family name</string>
     <string name="vcard_suffix_name">Suffix name</string>
+    <string name="vcard_basic_info">Your name and an optional profile picture</string>
     <string name="vcard_birth_date">Birthday</string>
     <string name="vcard_url">Web site</string>
     <string name="vcard_organization">Organization</string>
@@ -46,7 +47,8 @@
     <string name="unknown">Unknown</string>
     <string name="edit_alias">Edit alias</string>
     <string name="edit_contact_groups">Edit groups</string>
-    <string name="remove_contact">Remove contact</string>
+    <string name="edit_contact">Edit</string>
+    <string name="remove_contact">Delete contact</string>
     <string name="edit_account_user_info">Edit user info</string>
     <string name="edit_vcard">Edit</string>
     <string name="account_user_info_save_success">Account user info saved successfully</string>

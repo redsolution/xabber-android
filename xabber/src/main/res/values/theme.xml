@@ -22,6 +22,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="bars_color">#eeeeee</item>
+
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
 
@@ -61,6 +63,7 @@
         <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
         <item name="contact_list_muc_indicator_color">@color/black</item>
+        <item name="chat_list_ripple_color">@color/grey_400</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/grey_100</item>
         <item name="contact_list_active_chat_background">@color/grey_50</item>
@@ -85,11 +88,43 @@
         <item name="action_with_chat_background">@color/grey_400</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent</item>
         <item name="message_background">@color/message_color_state</item>
+        <item name="attachment_close_button_icon">@drawable/ic_down_circle</item>
+        <item name="round_background">@drawable/round_shape</item>
+        <item name="file_message_text_color">@color/grey_700</item>
+        <item name="shevron_file_icons_color">@color/grey_700</item>
+
+        <item name="standard_text_color">@color/black</item>
+        <item name="standard_background_color">@color/white</item>
+
+        <item name="standard_icons_color">@color/grey_600</item>
+        <item name="standard_arrow_left_icon">@drawable/ic_arrow_left_grey_24dp</item>
+        <item name="standard_search_icon">@drawable/ic_search_grey_24dp</item>
+        <item name="standard_clear_icon">@drawable/ic_clear_grey_24dp</item>
+        <item name="standard_add_icon">@drawable/ic_add_grey_24dp</item>
+        <item name="standard_overflow_icon">@drawable/ic_overflow_menu_grey_24dp</item>
+        <item name="standard_delete_icon">@drawable/ic_delete_grey_24dp</item>
+        <item name="standard_sync_icon">@drawable/ic_sync_grey_24dp</item>
+        <item name="standard_block_address_icon">@drawable/ic_block_address_grey_24dp</item>
+        <item name="standard_divider_drawable">@drawable/chatlist_divider_light</item>
+
+        <item name="discover_edittext_background_color">#80FFFFFF</item>
+        <item name="standard_arrow_back_icon">@drawable/ic_arrow_left_grey_24dp</item>
+        <item name="standard_tune_icon">@drawable/ic_tune_grey_24dp</item>
+
+        <item name="standard_show_password_icon">@drawable/ic_show_grey_24dp</item>
+        <item name="standard_hide_password_icon">@drawable/ic_hide_grey_24dp</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
 
+    <style name="ThemeBorderlessVcard" parent="Theme">
+        <item name="toolbarNavigationButtonStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
+        <item name="android:actionOverflowButtonStyle">@style/Widget.AppCompat.ActionButton.Overflow</item>
+    </style>
+
     <style name="Base.ThemeDark" parent="Theme.AppCompat">
+        <item name="bars_color">@color/black</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
@@ -104,49 +139,50 @@
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
 
         <item name="chat_background">@color/black</item>
-        <item name="chat_input_background">@color/grey_900</item>
+        <item name="chat_input_background">@color/black</item>
         <item name="chat_input_button_color">@color/grey_500</item>
         <item name="chat_send_button_color">@array/account_400</item>
         <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
         <item name="chat_unread_messages_background">@array/account_200</item>
 
-        <item name="contact_list_background">@color/grey_800</item>
+        <item name="contact_list_background">@color/black</item>
 
         <item name="current_chat_background">@array/account_contact_list_subgroup_background_dark</item>
-        <item name="contact_list_contact_archived_background">@color/grey_900</item>
+        <item name="contact_list_contact_archived_background">@color/black</item>
         <item name="contact_list_account_group_background">@array/account_900</item>
         <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_account_group_second_line_text_color">@color/grey_400</item>
         <item name="contact_list_account_group_small_right_icon_color">@color/white</item>
         <item name="contact_list_account_group_small_right_text_color">@color/white</item>
-        <item name="contact_list_account_group_status_icon_separator_color">@color/white</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/contact_list_separator_dark</item>
 
         <item name="contact_list_subgroup_background">@array/account_contact_list_subgroup_background_dark</item>
         <item name="contact_list_subgroup_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_subgroup_offline_indicator_color">@color/white</item>
         <item name="contact_list_subgroup_expander_color">@color/white</item>
 
-        <item name="contact_list_contact_background">@color/grey_950</item>
+        <item name="contact_list_contact_background">@color/black</item>
         <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
-        <item name="contact_list_contact_name_text_color">@color/grey_300</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_100</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/contact_item_text_second_dark</item>
         <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
         <item name="contact_list_muc_indicator_color">@color/grey_600</item>
+        <item name="chat_list_ripple_color">@color/grey_700</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
         <item name="contact_list_active_chat_background">@color/grey_200</item>
         <item name="contact_list_active_chat_text_color">@color/black</item>
-        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_active_chat_client_large_icon_color">@color/grey_400</item>
 
         <item name="account_main_color">@array/account_800</item>
         <item name="account_status_bar_color">@array/account_900</item>
         <item name="account_text_color">@array/account_400</item>
 
-        <item name="navigation_drawer_background">@color/grey_900</item>
+        <item name="navigation_drawer_background">@color/black</item>
 
         <item name="conference_filter_input_background">@color/black</item>
         <item name="message_status_item_background_color">@color/grey_800</item>
@@ -154,15 +190,45 @@
         <item name="settings_background_color">@color/grey_900</item>
         <item name="settings_separator_background_color">@color/grey_600</item>
 
-        <item name="bottom_navigation_background">@color/black</item>
+        <item name="bottom_navigation_background">@color/grey_900</item>
         <item name="half_transparent_background">@drawable/half_transparent_background_dark</item>
-        <item name="action_with_chat_background">@color/grey_800</item>
+        <item name="action_with_chat_background">@color/grey_950</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent_dark</item>
+        <item name="round_background">@drawable/round_shape_dark</item>
         <item name="message_background">@color/message_color_state_dark</item>
+        <item name="android:navigationBarColor">?attr/bars_color</item>
+        <item name="unread_counter_text_color">@color/black</item>
+        <item name="attachment_close_button_icon">@drawable/ic_down_circle_dark</item>
+        <item name="file_message_text_color">@color/grey_400</item>
+        <item name="shevron_file_icons_color">@color/grey_300</item>
+        <item name="android:colorEdgeEffect">@color/grey_500</item>
+
+        <item name="standard_text_color">@color/grey_500</item>
+        <item name="standard_background_color">@color/black</item>
+
+        <item name="standard_icons_color">@color/white</item>
+        <item name="standard_arrow_left_icon">@drawable/ic_arrow_left_white_24dp</item>
+        <item name="standard_search_icon">@drawable/ic_search_white_24dp</item>
+        <item name="standard_clear_icon">@drawable/ic_clear_white_24dp</item>
+        <item name="standard_add_icon">@drawable/ic_add_white_24dp</item>
+        <item name="standard_overflow_icon">@drawable/ic_overflow_menu_white_24dp</item>
+        <item name="standard_delete_icon">@drawable/ic_delete_white_24dp</item>
+        <item name="standard_sync_icon">@drawable/ic_sync_white_24dp</item>
+        <item name="standard_block_address_icon">@drawable/ic_block_address_white_24dp</item>
+        <item name="standard_divider_drawable">@drawable/chatlist_divider_dark</item>
+
+        <item name="discover_edittext_background_color">#20FFFFFF</item>
+        <item name="standard_arrow_back_icon">@drawable/ic_arrow_left_white_24dp</item>
+        <item name="standard_tune_icon">@drawable/ic_tune_white_24dp</item>
+
+        <item name="standard_show_password_icon">@drawable/ic_show_white_24dp</item>
+        <item name="standard_hide_password_icon">@drawable/ic_hide_white_24dp</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorSecondary">@color/grey_500</item>
     </style>
 
     <style name="AboutViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -178,6 +244,18 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ContactViewCollapsingToolbarNew" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
     </style>
 
 </resources>

@@ -25,10 +25,11 @@ import org.jxmpp.jid.Jid;
 public class BaseEntity extends AccountRelated implements
         Comparable<BaseEntity> {
 
-    protected final @NonNull UserJid user;
+    protected final @NonNull
+    ContactJid user;
     private static int counter = 0;
 
-    protected BaseEntity(@NonNull AccountJid account, @NonNull UserJid user) {
+    protected BaseEntity(@NonNull AccountJid account, @NonNull ContactJid user) {
         super(account);
         this.user = user;
         counter++;
@@ -39,7 +40,7 @@ public class BaseEntity extends AccountRelated implements
     }
 
     @NonNull
-    public UserJid getUser() {
+    public ContactJid getUser() {
         return user;
     }
 
@@ -51,7 +52,7 @@ public class BaseEntity extends AccountRelated implements
         return result;
     }
 
-    public boolean equals(AccountJid account, UserJid user) {
+    public boolean equals(AccountJid account, ContactJid user) {
         return this.account.equals(account) && this.user.equals(user);
     }
 

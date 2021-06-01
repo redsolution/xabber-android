@@ -19,7 +19,7 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 /**
  * Intent builder with account and user fields.
@@ -35,9 +35,9 @@ public class EntityIntentBuilder extends
         super(context, cls);
     }
 
-    private UserJid user;
+    private ContactJid user;
 
-    public EntityIntentBuilder setUser(UserJid user) {
+    public EntityIntentBuilder setUser(ContactJid user) {
         this.user = user;
         return this;
     }
@@ -55,7 +55,7 @@ public class EntityIntentBuilder extends
     }
 
     @Nullable
-    public static UserJid getUser(Intent intent) {
+    public static ContactJid getUser(Intent intent) {
         String segment = getSegment(intent, 1);
 
         if (segment == null) {
@@ -63,8 +63,8 @@ public class EntityIntentBuilder extends
         }
 
         try {
-            return UserJid.from(segment);
-        } catch (UserJid.UserJidCreateException e) {
+            return ContactJid.from(segment);
+        } catch (ContactJid.UserJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }

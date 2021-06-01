@@ -8,6 +8,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
@@ -23,7 +25,9 @@ public class ReconnectionManager implements OnConnectedListener,
      * will be used on first attempt. Next value will be used if reconnection
      * fails. Last value will be used if there is no more values in array.
      */
-    private final static int RECONNECT_AFTER[] = new int[]{0, 2, 10, 30, 60};
+    private final static int[] RECONNECT_AFTER = new int[]{0, 5, 10, 30, 60};
+    private final static int[] ERROR_RECONNECT_AFTER = new int[]{15, 30, 60, 120, 240};
+    private int tenSecondsCounter = 0;
     private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 
     /**
@@ -37,7 +41,6 @@ public class ReconnectionManager implements OnConnectedListener,
         if (instance == null) {
             instance = new ReconnectionManager();
         }
-
         return instance;
     }
 
@@ -47,25 +50,47 @@ public class ReconnectionManager implements OnConnectedListener,
 
     @Override
     public void onTimer() {
+        tenSecondsCounter++;
+        if (tenSecondsCounter >= 10){
+            tenSecondsCounter = 0;
+            ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
+        }
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
-
+//        checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
             checkConnection(AccountManager.getInstance().getAccount(accountJid),
                     getReconnectionInfo(accountJid));
         }
     }
 
+    private void checkCarbonStatus(){
+        Collection<AccountItem> accountItems = AccountManager.getInstance().getAllAccountItems();
+        for (AccountItem accountItem : accountItems){
+            LogManager.d(LOG_TAG, "For account " + accountItem.getAccount().toString() + " carbons status is: " + CarbonManager.getInstance().isCarbonsEnabledForConnection((ConnectionItem) accountItem));
+        }
+    }
+
     private void checkConnection(AccountItem accountItem, ReconnectionInfo reconnectionInfo) {
         if (!accountItem.isEnabled()) {
+            if (accountItem.getState() == ConnectionState.disconnecting) {
+                return;
+            }
             if (accountItem.getState() != ConnectionState.offline) {
                 ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
             }
-        }
+        } else if (accountItem.getState() == ConnectionState.connecting)
+            ((ConnectionItem)accountItem).updateState((ConnectionState.connecting));
 
         if ((!accountItem.isEnabled() || !accountItem.getRawStatusMode().isOnline())
                 && accountItem.getConnection().isConnected()) {
             accountItem.disconnect();
             return;
+        }
+
+        if (accountItem.isEnabled() && accountItem.getStreamError()) {
+            if (!isTimeToReconnectAfterError(reconnectionInfo)) {
+                return;
+            }
         }
 
         if (!isAccountNeedConnection(accountItem)) {
@@ -99,6 +124,21 @@ public class ReconnectionManager implements OnConnectedListener,
         return accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
                 && !accountItem.getConnection().isAuthenticated()
                 && SyncManager.getInstance().isAccountNeedConnection(accountItem);
+    }
+
+    /**
+     * Check whether it's time to reconnect after getting a stream error for the connection.
+     * @param reconnectionInfo reconnection info used for the current connection
+     * @return if we should reconnect
+     */
+    private boolean isTimeToReconnectAfterError(ReconnectionInfo reconnectionInfo) {
+        int reconnectAfter;
+        if (reconnectionInfo.getReconnectAttempts() < ERROR_RECONNECT_AFTER.length) {
+            reconnectAfter = ERROR_RECONNECT_AFTER[reconnectionInfo.getReconnectAttempts()];
+        } else {
+            reconnectAfter = ERROR_RECONNECT_AFTER[ERROR_RECONNECT_AFTER.length - 1];
+        }
+        return getTimeSinceLastReconnectionSeconds(reconnectionInfo) >= reconnectAfter;
     }
 
     private boolean isTimeToReconnect(ReconnectionInfo reconnectionInfo) {
@@ -143,6 +183,7 @@ public class ReconnectionManager implements OnConnectedListener,
     public void onConnected(ConnectionItem connection) {
         LogManager.i(LOG_TAG, "onConnected " + connection.getAccount());
         resetReconnectionInfo(connection.getAccount());
+        //ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
     }
 
     @Override

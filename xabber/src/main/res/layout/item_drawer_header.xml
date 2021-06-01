@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -72,6 +73,23 @@
 
 
                 </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/ivThemeChange"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        app:srcCompat="@drawable/ic_moon_rotated_45" />
+                </FrameLayout>
+
+
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/drawer_header_action_xabber_account"

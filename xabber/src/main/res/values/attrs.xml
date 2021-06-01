@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ContactListActivity">
+    <declare-styleable name="MainActivity">
         <attr name="toolbar_popup_theme" format="reference" />
         <attr name="recent_chats_background" format="reference" />
         <attr name="chat_background" format="reference" />
@@ -12,6 +12,10 @@
         <attr name="chat_unread_messages_background" format="reference" />
 
         <attr name="contact_list_background" format="reference" />
+
+        <attr name="bars_color" format="reference|color"/>
+        <attr name="unread_counter_text_color" format="reference|color"/>
+        <attr name="unread_counter_background_drawable" format="reference"/>
 
         <attr name="current_chat_background" format="reference" />
         <attr name="contact_list_account_group_background" format="reference" />
@@ -34,6 +38,7 @@
         <attr name="contact_list_contact_client_large_icon_color" format="reference" />
         <attr name="contact_list_contact_small_right_icon_alpha" format="reference" />
         <attr name="contact_list_muc_indicator_color" format="reference" />
+        <attr name="chat_list_ripple_color" format="reference" />
 
         <attr name="contact_list_active_chat_subgroup_background" format="reference" />
         <attr name="contact_list_active_chat_background" format="reference" />
@@ -44,6 +49,7 @@
         <attr name="account_main_color" format="reference" />
         <attr name="account_status_bar_color" format="reference" />
         <attr name="account_text_color" format="reference" />
+        <attr name="attachment_close_button_icon" format="reference"/>
 
         <attr name="navigation_drawer_background" format="reference" />
 
@@ -55,11 +61,37 @@
         <attr name="patreon_progress_background_color" format="reference|color" />
 
         <attr name="bottom_navigation_background" format="reference|color" />
+        <attr name="bottom_navigation_background_pressed" format="reference|color" />
         <attr name="half_transparent_background" format="reference" />
         <attr name="action_with_chat_background" format="reference|color" />
         <attr name="contact_list_contact_archived_background" format="reference|color" />
         <attr name="transparent_rounded_background" format="reference|color" />
         <attr name="message_background" format="color|reference" />
+        <attr name="round_background" format="reference"/>
+        <attr name="shevron_file_icons_color" format="reference"/>
+        <attr name="file_message_text_color" format="reference"/>
+
+        <attr name="standard_text_color" format="reference|color"/>
+        <attr name="standard_background_color" format="reference|color"/>
+
+        <attr name="standard_icons_color" format="reference|color"/>
+        <attr name="standard_arrow_left_icon" format="reference"/>
+        <attr name="standard_search_icon" format="reference"/>
+        <attr name="standard_clear_icon" format="reference"/>
+        <attr name="standard_add_icon" format="reference"/>
+        <attr name="standard_overflow_icon" format="reference"/>
+        <attr name="standard_delete_icon" format="reference"/>
+        <attr name="standard_sync_icon" format="reference"/>
+        <attr name="standard_block_address_icon" format="reference"/>
+        <attr name="standard_divider_drawable" format="reference" />
+
+        <attr name="standard_show_password_icon" format="reference"/>
+        <attr name="standard_hide_password_icon" format="reference"/>
+        <attr name="standard_tune_icon" format="reference"/>
+
+        <attr name="standard_arrow_back_icon" format="reference"/>
+
+        <attr name="discover_edittext_background_color" format="color"/>
     </declare-styleable>
     <declare-styleable name="ImFlexboxLayout">
         <attr name="viewPartMain" format="reference"></attr>

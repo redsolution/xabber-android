@@ -1,13 +1,15 @@
 package com.xabber.android.data.http;
 
-import androidx.annotation.Nullable;
+import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.realm.PatreonGoalRealm;
-import com.xabber.android.data.database.realm.PatreonRealm;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.PatreonGoalRealmObject;
+import com.xabber.android.data.database.realmobjects.PatreonRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
@@ -88,56 +90,58 @@ public class PatreonManager implements OnLoadListener {
 
     public Single<XabberComClient.Patreon> savePatreonToRealm(XabberComClient.Patreon patreon) {
 
-        RealmList<PatreonGoalRealm> patreonGoals = new RealmList<>();
+        RealmList<PatreonGoalRealmObject> patreonGoals = new RealmList<>();
         for (XabberComClient.PatreonGoal patreonGoal : patreon.getGoals()) {
-            PatreonGoalRealm patreonGoalRealm = new PatreonGoalRealm();
-            patreonGoalRealm.setGoal(patreonGoal.getGoal());
-            patreonGoalRealm.setTitle(patreonGoal.getTitle());
+            PatreonGoalRealmObject patreonGoalRealmObject = new PatreonGoalRealmObject();
+            patreonGoalRealmObject.setGoal(patreonGoal.getGoal());
+            patreonGoalRealmObject.setTitle(patreonGoal.getTitle());
 
-            patreonGoals.add(patreonGoalRealm);
+            patreonGoals.add(patreonGoalRealmObject);
         }
 
-        PatreonRealm patreonRealm = new PatreonRealm("1");
-        patreonRealm.setPledged(patreon.getPledged());
-        patreonRealm.setString(patreon.getString());
-        patreonRealm.setGoals(patreonGoals);
+        PatreonRealmObject patreonRealmObject = new PatreonRealmObject("1");
+        patreonRealmObject.setPledged(patreon.getPledged());
+        patreonRealmObject.setString(patreon.getString());
+        patreonRealmObject.setGoals(patreonGoals);
 
         // TODO: 13.03.18 ANR - WRITE
         final long startTime = System.currentTimeMillis();
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.beginTransaction();
-        PatreonRealm resultRealm = realm.copyToRealmOrUpdate(patreonRealm);
+        PatreonRealmObject resultRealm = realm.copyToRealmOrUpdate(patreonRealmObject);
         realm.commitTransaction();
         XabberComClient.Patreon result = patreonRealmToDTO(resultRealm);
-        realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save patreon data: " + (System.currentTimeMillis() - startTime));
 
         Log.d(LOG_TAG, "Patreon was saved to Realm");
-
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return Single.just(result);
     }
 
     @Nullable
     private XabberComClient.Patreon loadPatreonFromRealm() {
         XabberComClient.Patreon patreon = null;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<PatreonRealmObject> patreonRealmObjects = realm
+                .where(PatreonRealmObject.class)
+                .findAll();
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<PatreonRealm> patreonRealms = realm.where(PatreonRealm.class).findAll();
+        if (patreonRealmObjects.size() > 0)
+            patreon = patreonRealmToDTO(patreonRealmObjects.get(0));
 
-        if (patreonRealms.size() > 0)
-            patreon = patreonRealmToDTO(patreonRealms.get(0));
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
-        realm.close();
         return patreon;
     }
 
-    private XabberComClient.Patreon patreonRealmToDTO(PatreonRealm realmItem) {
+    private XabberComClient.Patreon patreonRealmToDTO(PatreonRealmObject realmItem) {
 
         List<XabberComClient.PatreonGoal> patreonGoals = new ArrayList<>();
-        for (PatreonGoalRealm patreonGoalRealm : realmItem.getGoals()) {
+        for (PatreonGoalRealmObject patreonGoalRealmObject : realmItem.getGoals()) {
             XabberComClient.PatreonGoal patreonGoal =
-                    new XabberComClient.PatreonGoal(patreonGoalRealm.getTitle(), patreonGoalRealm.getGoal());
+                    new XabberComClient.PatreonGoal(patreonGoalRealmObject.getTitle(), patreonGoalRealmObject.getGoal());
 
             patreonGoals.add(patreonGoal);
         }

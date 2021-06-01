@@ -22,8 +22,12 @@
     <string name="CONNECTION_FAILED">Connection error</string>
     <string name="contact_add">Add contact</string>
     <string name="contact_delete">Delete</string>
+    <string name="contact_delete_full">Delete contact</string>
     <string name="contact_block">Block contact</string>
+    <string name="contact_block_and_delete">Block &amp; Delete</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
+    <string name="contact_delete_confirm_short">Do you really want to delete contact &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="contact_delete_warning">You will be able to exchange messages and subscription requests</string>
     <string name="discard_subscription">Decline contact</string>
     <string name="archive_chat">Archive</string>
     <string name="unarchive_chat">Unarchive</string>
@@ -38,6 +42,10 @@
     <string name="exit">Exit</string>
     <string name="group_active_chat">Active chats</string>
     <string name="group_none">No groups</string>
+    <string name="no_group_contacts"><i>Contacts</i></string>
+    <string name="circle_remove">Delete circle</string>
+    <string name="circle_remove_confirm">Do you really want to delete circle %s? Users from this circle will stay in contact list.</string>
+    <string name="circle_rename">Rename circle</string>
     <string name="group_remove">Delete group</string>
     <string name="group_remove_confirm">Do you really want to delete group %s? Users from this group will stay in contact list.</string>
     <string name="group_rename">Rename group</string>
@@ -46,6 +54,7 @@
     <string name="NOT_CONNECTED">Connection not established</string>
     <string name="request_subscription">Request subscription</string>
     <string name="action_send_contact">Send contact</string>
+    <string name="share_qr_code">Share QR code</string>
     <string name="XMPP_EXCEPTION">Stream error</string>
     <string name="application_state_closing">Saving changes…\nApplication will be closed soon.</string>
     <string name="group_room">Conferences</string>
@@ -58,7 +67,7 @@
     <string name="start_at_boot">Run at startup</string>
     <string name="start_at_boot_suggest">Do you want to run Xabber at startup?\nThis can be changed in "Settings" → "Connection settings" → "Start when Android boots"</string>
     <string name="contact_search_hint">Search contacts</string>
-    <string name="sender_is_you">You</string>
+    <string name="sender_is_you">You: </string>
     <string name="xmpp_accounts">XMPP accounts</string>
     <string name="block_list">Block list</string>
     <string name="contact_blocked_successfully">Contact blocked successfully</string>
@@ -66,6 +75,8 @@
     <string name="contacts_unblocked_successfully">Contacts unblocked successfully</string>
     <string name="error_unblocking_contacts">Error unblocking contacts</string>
     <string name="block_contact_confirm">Do you really want to block contact %1$s from account %2$s?</string>
+    <string name="block_contact_confirm_short">Do you really want to block contact &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_warning">You will be unable to exchange messages and presence updates with &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Do you really want to unblock all contacts from account %1$s?</string>
     <string name="unblock_all">Unblock all</string>
     <string name="unblock_selected">Unblock selected</string>
@@ -80,6 +91,11 @@
     <string name="clear_log">Delete old log files</string>
     <string name="open_log_file">Open</string>
     <string name="send_log_file">Send</string>
+    <string name="send_all_log_files">Send all log files</string>
+
+    <string name="voice_download_dialog_message">Xabber can automatically download all incoming media files. It is way more convenient, but carries a privacy risk and may cause high data usage.</string>
+    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings.</b></string>
+    <string name="voice_download_dialog_agree">Download automatically</string>
 
     <string name="synchronize_bookmarks">Synchronize bookmarks</string>
     <string name="remove_all_bookmarks">Remove all</string>
@@ -94,13 +110,16 @@
     <string name="chat_was_unarchived">Removed from archive</string>
     <string name="undo">UNDO</string>
 
-    <string name="recent_chats">Recent chats</string>
-    <string name="unread_chats">Unread chats</string>
-    <string name="archived_chats">Archived chats</string>
+    <string name="recent_chats">Recent</string>
+    <string name="unread_chats">Unread</string>
+    <string name="archived_chats">Archived</string>
     <string name="all_chats">All chats</string>
     <string name="no_messages">No messages</string>
     <string name="show_all_chats">Show all chats</string>
     <string name="category_title_contacts">Contacts</string>
+    <string name="voice_message">Voice message</string>
+    <string name="image_message">Image</string>
+    <string name="file_message">File</string>
 
     <string name="showcase_contact_list_text_1">Swipe chat left or right to archive it</string>
 
@@ -111,4 +130,6 @@
     <string name="last_seen_yesterday">last seen yesterday at %1$s</string>
     <string name="last_seen_on_week">last seen on %1$s at %2$s</string>
     <string name="last_seen_date">last seen %1$s</string>
+    <string name="mark_all_as_read_button">Mark all as read</string>
+    <string name="all_chats_were_market_as_read_toast">All messages were marked as read</string>
 </resources>

@@ -7,13 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -21,7 +22,6 @@ import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountEmailLoginFragment;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
@@ -29,6 +29,7 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
+import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.net.SocketTimeoutException;
@@ -114,7 +115,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private void setupToolbar(boolean signIn) {
         if (signIn) {
             toolbar.setTitle(R.string.title_login_xabber_account);
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_black_24dp);
             toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
             barPainter.setLiteGrey();
         } else {

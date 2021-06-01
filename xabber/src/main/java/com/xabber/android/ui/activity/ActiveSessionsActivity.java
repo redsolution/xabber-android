@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -24,6 +25,9 @@ import com.xabber.android.data.extension.xtoken.SessionVO;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -37,9 +41,13 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private TextView tvCurrentIPAddress;
     private TextView tvCurrentDate;
     private TextView tvActiveSessions;
+    private TextView tvTokensUnavailable;
+    private TextView tvTokensUnavailableHeader;
     private View terminateAll;
     private ProgressBar progressBar;
     private View contentView;
+
+    private boolean XTokenEnabled = false;
 
     private AccountItem accountItem;
 
@@ -70,45 +78,79 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             return;
         }
 
+        if (accountItem.getConnectionSettings().getXToken() != null &&
+                !accountItem.getConnectionSettings().getXToken().isExpired()) {
+            XTokenEnabled = true;
+        } else {
+            XTokenEnabled = false;
+        }
+
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle(R.string.account_active_sessions);
+
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
         progressBar = findViewById(R.id.progressBar);
         contentView = findViewById(R.id.contentView);
         tvActiveSessions = findViewById(R.id.tvActiveSessions);
         terminateAll = findViewById(R.id.llTerminateAll);
-        terminateAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showTerminateAllSessionsDialog();
-            }
-        });
+        terminateAll.setOnClickListener(view -> showTerminateAllSessionsDialog());
+        tvTokensUnavailable = findViewById(R.id.tvTokensUnavailable);
+        tvTokensUnavailableHeader = findViewById(R.id.tvTokensUnavailableHeader);
 
         // other sessions
-        RecyclerView recyclerView = findViewById(R.id.rvSessions);
-        adapter = new SessionAdapter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        recyclerView.setNestedScrollingEnabled(false);
+        if (XTokenEnabled) {
+            RecyclerView recyclerView = findViewById(R.id.rvSessions);
+            adapter = new SessionAdapter(this);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(adapter);
+            recyclerView.setNestedScrollingEnabled(false);
 
-        // current session
-        tvCurrentClient = findViewById(R.id.tvClient);
-        tvCurrentDevice = findViewById(R.id.tvDevice);
-        tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
-        tvCurrentDate = findViewById(R.id.tvDate);
+            // current session
+            tvCurrentClient = findViewById(R.id.tvClient);
+            tvCurrentDevice = findViewById(R.id.tvDevice);
+            tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
+            tvCurrentDate = findViewById(R.id.tvDate);
 
-        updateData();
+            tvTokensUnavailable.setVisibility(View.GONE);
+            tvTokensUnavailableHeader.setVisibility(View.GONE);
+            getSessionsData();
+        } else {
+            tvTokensUnavailable.setVisibility(View.VISIBLE);
+            tvTokensUnavailable.setText(getString(R.string.account_active_sessions_not_supported, account.getFullJid().getDomain()));
+            tvTokensUnavailableHeader.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void updateData() {
+    private void refreshData(){
+        XTokenManager.getInstance().requestSessions(
+                accountItem.getConnectionSettings().getXToken().getUid(),
+                accountItem.getConnection(), new XTokenManager.SessionsListener() {
+                    @Override
+                    public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
+                        setCurrentSession(currentSession);
+                        adapter.setItems(sessions);
+                        adapter.notifyDataSetChanged();
+                        terminateAll.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                        tvActiveSessions.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(ActiveSessionsActivity.this,
+                                R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(XTokenManager.SessionsUpdateEvent sessionsUpdateEvent) { if (XTokenEnabled) refreshData(); }
+
+    private void getSessionsData() {
         progressBar.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.GONE);
         XTokenManager.getInstance().requestSessions(
@@ -153,7 +195,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), adapter.getItemsIDs());
-                    updateData();
+                    getSessionsData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -173,7 +215,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), uid);
-                    updateData();
+                    getSessionsData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

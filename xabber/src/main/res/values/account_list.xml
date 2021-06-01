@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="account_delete_confirm">Do you really want to delete account %s?\n(it won\'t be deleted from server, just from Xabber)</string>
+    <string name="account_delete_confirmation_question">Do you really want to delete account %s?\n</string>
+    <string name="account_delete_confirmation_explanation">Account will not be deleted from server, just from Xabber</string>
     <string name="account_add">Add account</string>
     <string name="account_register">Register new account</string>
     <string name="account_delete">Delete account</string>
@@ -8,7 +10,7 @@
     <string name="account_state_registration">Registering</string>
     <string name="account_state_authentication">Authorizing</string>
     <string name="account_state_connected">Online</string>
-    <string name="account_state_connecting">Connecting</string>
+    <string name="account_state_connecting">Connecting...</string>
     <string name="account_state_disconnecting">Disconnecting</string>
     <string name="account_state_offline">Offline</string>
     <string name="account_state_waiting">Waiting to reconnect</string>

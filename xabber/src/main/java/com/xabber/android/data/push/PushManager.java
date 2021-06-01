@@ -2,6 +2,7 @@ package com.xabber.android.data.push;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -13,20 +14,20 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.realm.PushLogRecord;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.PushLogRecordRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.http.PushApiClient;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.ExternalAPIs;
 import com.xabber.android.utils.Utils;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.push_notifications.element.EnablePushNotificationsIQ;
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
@@ -69,19 +70,38 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                AccountJid accountJid = connection.getAccount();
-                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                enablePushNotificationsIfNeed(accountItem);
+        Thread pushThread = new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            pushThread(connection);
         });
+        pushThread.setPriority(Thread.MIN_PRIORITY);
+        pushThread.setDaemon(true);
+        pushThread.start();
+        // Application.getInstance().runInBackground(new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         long start = System.currentTimeMillis();
+        //         try {
+        //             Thread.sleep(500);
+        //         } catch (InterruptedException e) {
+        //             e.printStackTrace();
+        //         }
+        //         AccountJid accountJid = connection.getAccount();
+        //         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        //         enablePushNotificationsIfNeed(accountItem);
+        //         LogManager.d("PushLogTiming", "time taken = " + (System.currentTimeMillis() - start) + " ms");
+        //     }
+        // });
+    }
+
+    public void pushThread(ConnectionItem connection) {
+        AccountJid accountJid = connection.getAccount();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        enablePushNotificationsIfNeed(accountItem);
     }
 
     public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
@@ -154,7 +174,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     public void disablePushNotification(AccountItem accountItem, boolean needConfirm) {
         if (accountItem != null) {
-            deleteEndpoint(accountItem);
+            //deleteEndpoint(accountItem);  //Disable to avoid sending annoying requests to PUSH-server
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
@@ -187,33 +207,51 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     /** Log */
 
     private void addToPushLog(String message) {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
-        realm.beginTransaction();
-        realm.copyToRealm(pushLogRecord);
-        realm.commitTransaction();
-        realm.close();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    PushLogRecordRealmObject pushLogRecordRealmObject = new PushLogRecordRealmObject(System.currentTimeMillis(), message);
+                    realm1.copyToRealm(pushLogRecordRealmObject);
+                });
+            } catch (Exception e) {
+                LogManager.exception("PushManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
+
     }
 
     public static List<String> getPushLogs() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
         List<String> logs = new ArrayList<>();
-        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class)
-                .findAllSorted(PushLogRecord.Fields.TIME, Sort.DESCENDING);
-        for (PushLogRecord record : records) {
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<PushLogRecordRealmObject> records = realm
+                .where(PushLogRecordRealmObject.class)
+                .findAll()
+                .sort(PushLogRecordRealmObject.Fields.TIME, Sort.DESCENDING);
+        for (PushLogRecordRealmObject record : records) {
             String time = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss",
                     Locale.getDefault()).format(new Date(record.getTime()));
             logs.add(time + ": " + record.getMessage());
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return logs;
     }
 
     public static void clearPushLog() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
-        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class).findAll();
-        realm.beginTransaction();
-        records.deleteAllFromRealm();
-        realm.commitTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(PushLogRecordRealmObject.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("PushLogManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
     }
 
     /** Private */
@@ -245,33 +283,33 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         String token = ExternalAPIs.getPushEndpointToken();
         if (token == null) return;
 
-        compositeSubscription.add(
-                PushApiClient.deleteEndpoint(
-                        token, accountItem.getAccount().toString())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<ResponseBody>() {
-                            @Override
-                            public void call(ResponseBody responseBody) {
-                                Log.d(LOG_TAG, "Endpoint successfully unregistered");
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
-                            }
-                        }));
+//        compositeSubscription.add(
+//                PushApiClient.deleteEndpoint(
+//                        token, accountItem.getAccount().toString())
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(new Action1<ResponseBody>() {
+//                            @Override
+//                            public void call(ResponseBody responseBody) {
+//                                Log.d(LOG_TAG, "Endpoint successfully unregistered");
+//                            }
+//                        }, new Action1<Throwable>() {
+//                            @Override
+//                            public void call(Throwable throwable) {
+//                                Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
+//                            }
+//                        }));
     }
 
     private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
         String stanzaID = null;
         try {
             EnablePushNotificationsIQ enableIQ = new EnablePushNotificationsIQ(
-                    UserJid.from(pushServiceJid).getJid(), node, null);
+                    ContactJid.from(pushServiceJid).getJid(), node, null);
             stanzaID = enableIQ.getStanzaId();
             waitingIQs.put(stanzaID, true);
             accountItem.getConnection().sendStanza(enableIQ);
-        } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+        } catch (SmackException.NotConnectedException | InterruptedException | ContactJid.UserJidCreateException e) {
             Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
             waitingIQs.remove(stanzaID);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);

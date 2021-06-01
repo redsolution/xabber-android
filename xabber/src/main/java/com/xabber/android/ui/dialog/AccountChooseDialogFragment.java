@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
@@ -24,11 +24,11 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.AccountChooseDialogFragment.ARGUMENT_USER";
     public static final String ARGUMENT_TEXT = "com.xabber.android.ui.dialog.AccountChooseDialogFragment.ARGUMENT_TEXT";
 
-    UserJid user;
+    ContactJid user;
     private String text;
     private Adapter adapter;
 
-    public static DialogFragment newInstance(UserJid user, String text) {
+    public static DialogFragment newInstance(ContactJid user, String text) {
         AccountChooseDialogFragment fragment = new AccountChooseDialogFragment();
 
         Bundle arguments = new Bundle();
@@ -88,7 +88,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
     }
 
     public interface OnChooseListener {
-        void onChoose(AccountJid account, UserJid user, String text);
+        void onChoose(AccountJid account, ContactJid user, String text);
     }
 
 }

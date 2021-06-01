@@ -2,7 +2,7 @@ package com.xabber.android.ui.adapter.chat;
 
 import android.view.View;
 
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 
 public class NoFlexForwardedVH extends ForwardedVH {
 
@@ -13,8 +13,8 @@ public class NoFlexForwardedVH extends ForwardedVH {
     }
 
     @Override
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
-        super.bind(messageItem, extraData, accountJid);
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData, String accountJid) {
+        super.bind(messageRealmObject, extraData, accountJid);
         if (messageText.getText().toString().trim().isEmpty()) messageText.setVisibility(View.GONE);
     }
 }

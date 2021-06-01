@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.log.LogManager;
 
 
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -54,6 +55,10 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
 
     public @NonNull FullJid getFullJid() {
         return fullJid;
+    }
+
+    public BareJid getBareJid() {
+        return fullJid.asBareJid();
     }
 
     public void setOrder(int order) {

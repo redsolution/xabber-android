@@ -14,6 +14,8 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:orientation="horizontal"
@@ -40,27 +42,51 @@
         android:focusableInTouchMode="false"
         />
 
-    <TextView
-        android:id="@+id/contact_list_item_name"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:text="Contact list item name"
-        android:textColor="?android:attr/textColorPrimary"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="bold"
-        android:layout_toRightOf="@id/avatarView"
-        android:layout_toLeftOf="@id/block_list_contact_checkbox"
-        android:gravity="center_vertical"
-        />
-
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/grey_700"
-        android:layout_alignParentBottom="true"
-        />
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/block_list_contact_checkbox"
+        android:layout_toRightOf="@id/avatarView"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/contact_list_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="Contact list item name"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/contact_list_item_jid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:gravity="top"
+            android:text="name@example.comname@example.com"
+            android:textSize="12sp"
+            app:autoSizeMaxTextSize="12sp"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeTextType="uniform" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_status"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignRight="@+id/avatarView"
+        android:layout_alignBottom="@+id/avatarView"
+        android:layout_marginEnd="-1dp"
+        android:layout_marginRight="-1dp"
+        android:layout_marginBottom="-1dp"
+        android:visibility="visible"
+        tools:srcCompat="@drawable/ic_groupchat_14_border" />
 
 </RelativeLayout>

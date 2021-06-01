@@ -1,10 +1,9 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -15,36 +14,39 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.extension.vcard.VcardMaps;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.AccountInfoEditorActivity;
+import com.xabber.android.ui.activity.AccountInfoEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;
 import com.xabber.xmpp.vcard.TelephoneType;
+import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.vcard.VCardCustomProvider;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.xmlpull.v1.XmlPullParser;
@@ -64,7 +66,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static final int REQUEST_CODE_EDIT_VCARD = 1;
 
     AccountJid account;
-    UserJid user;
+    ContactJid user;
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
     private VCard vCard;
@@ -72,13 +74,14 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private View progressBar;
     private Listener listener;
     private Button editButton;
+    private final Handler handler = new Handler();
 
     public interface Listener {
         void onVCardReceived();
         void registerVCardFragment(ContactVcardViewerFragment fragment);
     }
 
-    public static ContactVcardViewerFragment newInstance(AccountJid account, UserJid user) {
+    public static ContactVcardViewerFragment newInstance(AccountJid account, ContactJid user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
 
         Bundle arguments = new Bundle();
@@ -90,8 +93,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     public static ContactVcardViewerFragment newInstance(AccountJid account) {
         try {
-            return newInstance(account, UserJid.from(account.getFullJid().asBareJid()));
-        } catch (UserJid.UserJidCreateException e) {
+            return newInstance(account, ContactJid.from(account.getFullJid().asBareJid()));
+        } catch (ContactJid.UserJidCreateException e) {
             throw new IllegalStateException("Cannot convert account to user. Account: " + account, e);
         }
     }
@@ -144,7 +147,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
             throw new IllegalStateException(parser.getNamespace());
         }
-        return (new VCardProvider()).parse(parser);
+        return (new VCardCustomProvider()).parse(parser);
     }
 
     @Nullable
@@ -159,15 +162,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
 
         editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (vCard != null) {
-                    Intent intent = AccountInfoEditorActivity.createIntent(getActivity(), account,
-                            vCard.getChildElementXML().toString());
+        editButton.setOnClickListener(v -> {
+            if (vCard != null) {
+                Intent intent = AccountInfoEditActivity.createIntent(getActivity(), account,
+                        vCard.getChildElementXML().toString());
 
-                    startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
-                }
+                startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
             }
         });
 
@@ -189,6 +189,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (vCard == null && !vCardError) {
+//            vCard = VCardManager.getInstance().getSavedVCard(account, user);
+//            updateVCard();
             requestVCard();
         } else {
             updateVCard();
@@ -200,6 +202,15 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
         VCardManager.getInstance().requestByUser(account, user.getJid());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (vCard == null && !vCardError) {
+                    progressBar.setVisibility(View.GONE);
+                    LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
+                }
+            }
+        }, 30000);
     }
 
     @Override
@@ -223,6 +234,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void onDetach() {
         super.onDetach();
 
+        handler.removeCallbacksAndMessages(null);
         listener = null;
     }
 
@@ -284,7 +296,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return source + splitter + value;
     }
 
-    public void updateContact(AccountJid account, UserJid bareAddress) {
+    public void updateContact(AccountJid account, ContactJid bareAddress) {
         this.account = account;
         this.user = bareAddress;
 
@@ -446,22 +458,22 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         addItemGroup(webList, contactInfoItems, R.drawable.ic_vcard_web_24dp);
 
         addAdditionalInfo(vCard);
-        addAddresses(vCard);
         addPhones(vCard);
         addEmails(vCard);
+        addAddresses(vCard);
     }
 
     private void addEmails(VCard vCard) {
         List<View> emailList = new ArrayList<>();
 
-        String emailHome = vCard.getEmailHome();
-        if (!"".equals(emailHome)) {
-            addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.HOME)), emailHome);
-        }
-
         String emailWork = vCard.getEmailWork();
         if (!"".equals(emailWork)) {
             addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.WORK)), emailWork);
+        }
+
+        String emailHome = vCard.getEmailHome();
+        if (!"".equals(emailHome)) {
+            addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.HOME)), emailHome);
         }
 
         addItemGroup(emailList, contactInfoItems, R.drawable.ic_vcard_email_24dp);
@@ -469,6 +481,17 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     private void addPhones(VCard vCard) {
         List<View> phoneList = new ArrayList<>();
+
+        for (TelephoneType type : TelephoneType.values()) {
+            String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.WORK));
+
+            String phoneWork = vCard.getPhoneWork(type.name());
+
+            if (!"".equals(phoneWork)) {
+                types = addString(types, getString(VcardMaps.getTelephoneTypeMap().get(type)), ", ");
+                addItem(phoneList, contactInfoItems, types, phoneWork);
+            }
+        }
 
         for (TelephoneType type : TelephoneType.values()) {
             String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.HOME));
@@ -482,13 +505,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         }
 
         for (TelephoneType type : TelephoneType.values()) {
-            String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.WORK));
+            String types = "Mobile";
 
-            String phoneHome = vCard.getPhoneWork(type.name());
+            String phoneMobile = vCard.getPhoneMobile(type.name());
 
-            if (!"".equals(phoneHome)) {
+            if (!"".equals(phoneMobile)) {
                 types = addString(types, getString(VcardMaps.getTelephoneTypeMap().get(type)), ", ");
-                addItem(phoneList, contactInfoItems, types, phoneHome);
+                addItem(phoneList, contactInfoItems, types, phoneMobile);
             }
         }
 
@@ -525,30 +548,30 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private void addOrganizationInfo(VCard vCard) {
         List<View> organizationList = new ArrayList<>();
 
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), vCard.getOrganization());
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE.toString()));
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization_unit), vCard.getOrganizationUnit());
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_role), vCard.getField(VCardProperty.ROLE.toString()));
-
-        String organization = vCard.getOrganization();
-        String unit = vCard.getOrganizationUnit();
-
-        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), addString(organization, unit, "\n"));
 
         addItemGroup(organizationList, contactInfoItems, R.drawable.ic_vcard_job_title_24dp);
     }
 
     private void addNameInfo(VCard vCard) {
         List<View> nameList = new ArrayList<>();
-
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getField(VCardProperty.FN.name()));
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getPrefix());
+        List<View> nickName = new ArrayList<>(1);
 
         addItem(nameList, contactInfoItems, getString(R.string.vcard_given_name), vCard.getFirstName());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_middle_name), vCard.getMiddleName());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_family_name), vCard.getLastName());
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getSuffix());
+        //addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getPrefix());
+        //addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getSuffix());
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getField(VCardProperty.FN.name()));
 
-        addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
+        addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_details_grey600_24dp);
+
+        addItem(nickName, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
+
+        addItemGroup(nickName, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
     }
 
     private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {

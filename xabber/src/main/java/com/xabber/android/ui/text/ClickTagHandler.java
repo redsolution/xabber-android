@@ -8,7 +8,12 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
+import androidx.core.graphics.ColorUtils;
+
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.xml.sax.XMLReader;
 
@@ -25,11 +30,22 @@ public class ClickTagHandler implements Html.TagHandler {
     private final static String TAG = "click";
 
     private Context context;
-    private int backgroundColor;
+    private int mainBackgroundColor;
+
+    private AccountJid accountJid;
+
 
     public ClickTagHandler(Context context, int backgroundColor) {
         this.context = context;
-        this.backgroundColor = backgroundColor;
+        this.mainBackgroundColor = backgroundColor;
+    }
+
+    public ClickTagHandler(Context context, AccountJid accountJid){
+        this.context = context;
+        this.accountJid = accountJid;
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            this.mainBackgroundColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(accountJid);
+        else this.mainBackgroundColor = ColorUtils.setAlphaComponent(ColorManager.getInstance().getAccountPainter().getAccountDarkColor(accountJid), 64);
     }
 
     @Override
@@ -60,12 +76,13 @@ public class ClickTagHandler implements Html.TagHandler {
 
             if (where != len && uri != null && type != null) {
                 output.setSpan(new ClickSpan(uri, type, context), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
                 if (ClickSpan.TYPE_MENTION.equals(type)) {
-                    output.setSpan(new BackgroundColorSpan(backgroundColor), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new BackgroundColorSpan(mainBackgroundColor), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     output.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.black_text)),
                             where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+
+
             }
         }
     }

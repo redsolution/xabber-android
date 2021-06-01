@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -7,15 +9,16 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
+import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -31,15 +34,17 @@ import org.jivesoftware.smack.filter.MessageTypeFilter;
 import org.jivesoftware.smack.filter.MessageWithBodiesFilter;
 import org.jivesoftware.smack.filter.NotFilter;
 import org.jivesoftware.smack.filter.StanzaFilter;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.jid.Jid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -47,6 +52,7 @@ import io.realm.RealmResults;
 
 public class ChatMarkerManager implements OnPacketListener {
 
+    private static final String LOG_TAG = ChatMarkerManager.class.getSimpleName();
     private static final StanzaFilter OUTGOING_MESSAGE_FILTER = new AndFilter(
             MessageTypeFilter.NORMAL_OR_CHAT,
             MessageWithBodiesFilter.INSTANCE,
@@ -87,24 +93,62 @@ public class ChatMarkerManager implements OnPacketListener {
                 sendReceived(message, connection.getAccount());
             } else if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
                 // received
-                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message).getId());
+                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message));
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
                 // displayed
-                markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message).getId());
+                markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message));
             } else if (ChatMarkersElements.AcknowledgedExtension.from(message) != null) {
                 // acknowledged
             }
         }
     }
 
-    public void sendDisplayed(MessageItem messageItem) {
-        if (messageItem.getStanzaId() == null || messageItem.getStanzaId().isEmpty()) return;
+    public void sendDisplayed(MessageRealmObject messageRealmObject) {
+        if (messageRealmObject.getStanzaId() == null && messageRealmObject.getOriginId() == null) return;
 
-        Message displayed = new Message(messageItem.getUser().getJid());
-        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
-        displayed.setType(Message.Type.chat);
+        Message displayedNotification = new Message(messageRealmObject.getUser().getJid());
+        Message originalMessage = null;
+        try {
+            originalMessage = PacketParserUtils.parseStanza(messageRealmObject.getOriginalStanza());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        sendMessageInBackgroundUserRequest(displayed, messageItem.getAccount());
+        if (originalMessage == null) return;
+
+        String messageId = originalMessage.getStanzaId();
+        List<ExtensionElement> stanzaIds = new ArrayList<>(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+
+        if (messageId == null || messageId.isEmpty()) {
+            if (stanzaIds.isEmpty()) return;
+            for (ExtensionElement stanzaIdElement : stanzaIds) {
+                if (stanzaIdElement instanceof StanzaIdElement) {
+                    String idBy = ((StanzaIdElement) stanzaIdElement).getBy();
+                    if (idBy != null && idBy.equals(messageRealmObject.getUser().getBareJid().toString())) {
+                        messageId = ((StanzaIdElement) stanzaIdElement).getId();
+                        break;
+                    } else {
+                        messageId = ((StanzaIdElement) stanzaIdElement).getId();
+                    }
+                }
+            }
+        }
+
+        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(messageId);
+        displayedExtension.setStanzaIdExtensions(stanzaIds);
+
+        displayedNotification.addExtension(displayedExtension);
+        displayedNotification.setType(Message.Type.chat);
+
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            try {
+                StanzaSender.sendStanza(messageRealmObject.getAccount(), displayedNotification);
+            } catch (NetworkException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sendMessageInBackgroundUserRequest(displayedNotification, messageRealmObject.getAccount());
+        }
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
@@ -112,15 +156,16 @@ public class ChatMarkerManager implements OnPacketListener {
             ChatMarkersElements.DisplayedExtension extension =
                     ChatMarkersElements.DisplayedExtension.from(message);
             if (extension != null) {
-                UserJid companion;
+                ContactJid companion;
                 try {
-                    companion = UserJid.from(message.getTo()).getBareUserJid();
-                } catch (UserJid.UserJidCreateException e) {
+                    companion = ContactJid.from(message.getTo()).getBareUserJid();
+                } catch (ContactJid.UserJidCreateException e) {
                     return;
                 }
-                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
+                AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
-                    chat.markAsRead(extension.getId(), false);
+                    chat.markAsRead(extension.getId(), extension.getStanzaId(), false);
+                    //chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
 
                     // start grace period
@@ -128,9 +173,22 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
             }
         }
+        else if (direction == CarbonExtension.Direction.received) {
+            if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
+                // received
+                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.ReceivedExtension.from(message).getId(),
+                        ChatMarkersElements.ReceivedExtension.from(message).getStanzaId(),
+                        ChatMarkersState.received, account);
+            } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
+                // displayed
+                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.DisplayedExtension.from(message).getId(),
+                        ChatMarkersElements.DisplayedExtension.from(message).getStanzaId(),
+                        ChatMarkersState.displayed, account);
+            }
+        }
     }
 
-    private boolean isClientSupportChatMarkers(AccountJid account, UserJid user) {
+    private boolean isClientSupportChatMarkers(AccountJid account, ContactJid user) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) return false;
 
@@ -166,7 +224,7 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void sendMessageInBackgroundUserRequest(final Message message, final AccountJid account) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -178,53 +236,82 @@ public class ChatMarkerManager implements OnPacketListener {
         });
     }
 
-    private void markAsDisplayed(final String messageID) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, messageID).findFirst();
-
-        if (first != null) {
-            RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                    .equalTo(MessageItem.Fields.INCOMING, false)
-                    .equalTo(MessageItem.Fields.DISPLAYED, false)
-                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                    .findAll();
-
-            if (results != null) {
-                realm.beginTransaction();
-                for (MessageItem item : results) {
-                    item.setDisplayed(true);
-                }
-                realm.commitTransaction();
-                EventBus.getDefault().post(new MessageUpdateEvent());
+    private void markAsDisplayed(ChatMarkersElements.DisplayedExtension displayedExtension) {
+        if (displayedExtension.getId() == null || displayedExtension.getId().isEmpty()) {
+            if (!displayedExtension.getStanzaId().isEmpty()) {
+                markAsDisplayed(displayedExtension.getStanzaId().get(0));
             }
-        }
+        } else markAsDisplayed(displayedExtension.getId());
+    }
+    private void markAsDisplayed(final String messageID) {
+        Application.getInstance().runInBackground(() ->  {
+                Realm realm = null;
+                try {
+                    realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                    realm.executeTransaction(realm1 ->  {
+                        MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.ORIGIN_ID, messageID).findFirst();
+
+                        if (first != null) {
+                            RealmResults<MessageRealmObject> results = realm1.where(MessageRealmObject.class)
+                                    .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
+                                    .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
+                                    .equalTo(MessageRealmObject.Fields.INCOMING, false)
+                                    .equalTo(MessageRealmObject.Fields.DISPLAYED, false)
+                                    .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                    .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
+                                    .findAll();
+
+                            if (results != null) {
+                                results.setBoolean(MessageRealmObject.Fields.DISPLAYED, true);
+                                EventBus.getDefault().post(new MessageUpdateEvent());
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally { if (realm != null) realm.close(); }
+        });
     }
 
-    private void markAsDelivered(final String stanzaID) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, stanzaID).findFirst();
-
-        if (first != null) {
-            RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                    .equalTo(MessageItem.Fields.INCOMING, false)
-                    .equalTo(MessageItem.Fields.DELIVERED, false)
-                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                    .findAll();
-
-            if (results != null) {
-                realm.beginTransaction();
-                for (MessageItem item : results) {
-                    item.setDelivered(true);
-                }
-                realm.commitTransaction();
-                EventBus.getDefault().post(new MessageUpdateEvent());
+    private void markAsDelivered(ChatMarkersElements.ReceivedExtension receivedExtension) {
+        if (receivedExtension.getId() == null || receivedExtension.getId().isEmpty()) {
+            if (!receivedExtension.getStanzaId().isEmpty()) {
+                markAsDelivered(receivedExtension.getStanzaId().get(0));
             }
-        }
+        } else markAsDelivered(receivedExtension.getId());
+    }
+    private void markAsDelivered(final String stanzaID) {
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                            .equalTo(MessageRealmObject.Fields.ORIGIN_ID, stanzaID).findFirst();
+
+                    if (first != null) {
+                        RealmResults<MessageRealmObject> results = realm1.where(MessageRealmObject.class)
+                                .equalTo(MessageRealmObject.Fields.ACCOUNT, first.getAccount().toString())
+                                .equalTo(MessageRealmObject.Fields.USER, first.getUser().toString())
+                                .equalTo(MessageRealmObject.Fields.INCOMING, false)
+                                .equalTo(MessageRealmObject.Fields.DELIVERED, false)
+                                .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                                .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.getTimestamp())
+                                .findAll();
+
+                        if (results != null) {
+                            results.setBoolean(MessageRealmObject.Fields.DELIVERED, true);
+                            EventBus.getDefault().post(new MessageUpdateEvent());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+
     }
 }

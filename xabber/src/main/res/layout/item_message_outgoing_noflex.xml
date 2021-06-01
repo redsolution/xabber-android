@@ -7,16 +7,12 @@
     android:paddingStart="@dimen/message_padding"
     >
 
-    <include layout="@layout/item_first_unread_message"/>
-
-    <include layout="@layout/item_message_date"/>
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/tvDate"
+        android:layout_alignParentTop="true"
         >
 
         <LinearLayout

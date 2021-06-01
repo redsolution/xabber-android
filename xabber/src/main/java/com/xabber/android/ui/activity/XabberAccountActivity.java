@@ -5,11 +5,8 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,7 +16,11 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -35,7 +36,6 @@ import com.xabber.android.utils.RetrofitErrorConverter;
 import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XabberAccountActivity extends BaseLoginActivity
@@ -68,15 +68,10 @@ public class XabberAccountActivity extends BaseLoginActivity
         setTheme(R.style.Theme_LightToolbar);
         setContentView(R.layout.activity_xabber_account_info);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_black_24dp);
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
         toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
         barPainter = new BarPainter(this, toolbar);
@@ -132,13 +127,13 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     protected void showProgress(String title) {
         if (fragmentInfo != null)
-            ((XabberAccountInfoFragment)fragmentInfo).showProgressInAccount(true);
+            ((XabberAccountInfoFragment) fragmentInfo).showProgressInAccount(true);
     }
 
     @Override
     protected void hideProgress() {
         if (fragmentInfo != null)
-            ((XabberAccountInfoFragment)fragmentInfo).showProgressInAccount(false);
+            ((XabberAccountInfoFragment) fragmentInfo).showProgressInAccount(false);
     }
 
     public void showProgressInAccount(boolean show) {
@@ -155,32 +150,34 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void subscribeForXabberAccount() {
         compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(new Action1<XabberAccount>() {
-                @Override
-                public void call(XabberAccount account) {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(account -> {
                     if (account != null) showInfoFragment();
                     else showLoginFragment();
-                }
-            }).subscribe());
+                }).subscribe());
     }
 
     @Override
     protected void onSynchronized() {
-        XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+        XabberAccountInfoFragment fragment =
+                (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
         if (fragment != null && fragment.isVisible())
             ((XabberAccountInfoFragment) fragmentInfo).getSettings();
     }
 
-    /** Social Auth */
+    /**
+     * Social Auth
+     */
 
     @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
         bindSocial(provider, credentials);
     }
 
-    /** XMPP-login */
+    /**
+     * XMPP-login
+     */
 
     @Override
     public void onAccountClick(String jid) {
@@ -198,17 +195,8 @@ public class XabberAccountActivity extends BaseLoginActivity
         Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<AuthManager.XMPPCode>() {
-                    @Override
-                    public void call(AuthManager.XMPPCode code) {
-                        handleSuccessRequestXMPPCode(code, jid);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorRequestXMPPCode(throwable);
-                    }
-                });
+                .subscribe(code -> handleSuccessRequestXMPPCode(code, jid),
+                        throwable -> handleErrorRequestXMPPCode(throwable));
         compositeSubscription.add(requestXMPPCodeSubscription);
     }
 
@@ -222,10 +210,13 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleErrorRequestXMPPCode(Throwable throwable) {
         // ! hide progress !
         // TODO: 07.09.18 сделать корректную обработку ошибок
-        Toast.makeText(this, "Error while xmpp-auth: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error while xmpp-auth: " + throwable.toString(),
+                Toast.LENGTH_LONG).show();
     }
 
-    /** Xabber Account Info */
+    /**
+     * Xabber Account Info
+     */
 
     public void onLogoutClick(boolean deleteAccounts) {
         if (checkInternetOrShowError()) logout(deleteAccounts);
@@ -280,7 +271,8 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     protected void updateAccountInfo(XabberAccount account) {
         if (account != null) {
-            XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+            XabberAccountInfoFragment fragment =
+                    (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
             if (fragment != null && fragment.isVisible())
                 ((XabberAccountInfoFragment) fragmentInfo).updateData(account);
         }
@@ -288,28 +280,27 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     @Override
     protected void updateLastSyncTime() {
-        XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+        XabberAccountInfoFragment fragment =
+                (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
         if (fragment != null && fragment.isVisible())
             ((XabberAccountInfoFragment) fragmentInfo).updateLastSyncTime();
     }
 
-    /** LOGOUT */
+    /**
+     * LOGOUT
+     */
 
     private void showLogoutDialog() {
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_logout_xabber_account, null);
-        final CheckBox chbDeleteAccounts = (CheckBox) view.findViewById(R.id.chbDeleteAccounts);
+        final CheckBox chbDeleteAccounts = view.findViewById(R.id.chbDeleteAccounts);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.progress_title_quit)
                 .setMessage(R.string.logout_summary)
                 .setView(view)
-                .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onLogoutClick(chbDeleteAccounts.isChecked());
-                    }
-                })
+                .setPositiveButton(R.string.button_quit, (dialog, which) ->
+                        onLogoutClick(chbDeleteAccounts.isChecked()))
                 .setNegativeButton(R.string.cancel, null);
         dialog = builder.create();
         dialog.show();
@@ -321,30 +312,27 @@ public class XabberAccountActivity extends BaseLoginActivity
         Subscription logoutSubscription = AuthManager.logout()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessLogout(s, deleteAccounts);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorLogout(throwable);
-                    }
-                });
+                .subscribe(s -> handleSuccessLogout(s, deleteAccounts),
+                        throwable -> handleErrorLogout(throwable));
         compositeSubscription.add(logoutSubscription);
     }
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
-        if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
+        if (deleteAccounts) XabberAccountManager.getInstance().deleteUnSyncedLocalAccounts();
         else AccountManager.getInstance().setAllAccountAutoLoginToXabber(false);
 
         XabberAccountManager.getInstance().removeAccount();
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
-        Intent intent = ContactListActivity.createIntent(XabberAccountActivity.this);
+
+        if (deleteAccounts) {
+            Application.getInstance().resetApplication();
+        }
+
+        Intent intent = MainActivity.createIntent(XabberAccountActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+
     }
 
     private void handleErrorLogout(Throwable throwable) {
@@ -364,7 +352,9 @@ public class XabberAccountActivity extends BaseLoginActivity
         hideProgress();
     }
 
-    /** RESET PASS */
+    /**
+     * RESET PASS
+     */
 
     private void onResetPassClick() {
         String email = null;
@@ -379,30 +369,22 @@ public class XabberAccountActivity extends BaseLoginActivity
         }
 
         if (email == null || email.isEmpty())
-            Toast.makeText(this, R.string.password_reset_need_email, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.password_reset_need_email,
+                    Toast.LENGTH_SHORT).show();
         else if (checkInternetOrShowError()) requestResetPass(email);
     }
 
     private void requestResetPass(final String email) {
         showProgress("");
         compositeSubscription.add(AuthManager.requestResetPassword(email)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<ResponseBody>() {
-                @Override
-                public void call(ResponseBody s) {
-                    handleSuccessResetPass(email);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    handleErrorResetPass();
-                }
-            }));
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> handleSuccessResetPass(email), throwable -> handleErrorResetPass()));
     }
 
     private void handleSuccessResetPass(String email) {
-        Toast.makeText(this, getString(R.string.password_reset_success, email), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.password_reset_success, email),
+                Toast.LENGTH_LONG).show();
         hideProgress();
     }
 

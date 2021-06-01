@@ -1,41 +1,42 @@
 package com.xabber.xmpp.smack;
 
-import android.os.Build;
-
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.DnssecMode;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.AlreadyConnectedException;
 import org.jivesoftware.smack.SmackException.AlreadyLoggedInException;
+import org.jivesoftware.smack.SmackException.ConnectionException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.SmackException.ConnectionException;
 import org.jivesoftware.smack.SmackException.SecurityRequiredByServerException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.SynchronizationPoint;
-import org.jivesoftware.smack.XMPPException.FailedNonzaException;
-import org.jivesoftware.smack.XMPPException.StreamErrorException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.FailedNonzaException;
+import org.jivesoftware.smack.XMPPException.StreamErrorException;
+import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.compress.packet.Compressed;
 import org.jivesoftware.smack.compression.XMPPInputOutputStream;
 import org.jivesoftware.smack.filter.StanzaFilter;
-import org.jivesoftware.smack.compress.packet.Compress;
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Mechanisms;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.StreamOpen;
-import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.Nonza;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StartTls;
 import org.jivesoftware.smack.packet.StreamError;
+import org.jivesoftware.smack.packet.StreamOpen;
+import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.Challenge;
 import org.jivesoftware.smack.sasl.packet.SaslStreamElements.SASLFailure;
@@ -56,9 +57,6 @@ import org.jivesoftware.smack.sm.packet.StreamManagement.Resumed;
 import org.jivesoftware.smack.sm.packet.StreamManagement.StreamManagementFeature;
 import org.jivesoftware.smack.sm.predicates.Predicate;
 import org.jivesoftware.smack.sm.provider.ParseStreamManagement;
-import org.jivesoftware.smack.packet.Nonza;
-import org.jivesoftware.smack.proxy.ProxyInfo;
-
 import org.jivesoftware.smack.util.ArrayBlockingQueueWithShutdown;
 import org.jivesoftware.smack.util.Async;
 import org.jivesoftware.smack.util.DNSUtil;
@@ -76,19 +74,6 @@ import org.jxmpp.util.XmppStringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.PasswordCallback;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -102,6 +87,7 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -128,6 +114,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.PasswordCallback;
 
 /**
  * Creates a socket connection to an XMPP server. This is the default connection
@@ -213,7 +212,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     private final SynchronizationPoint<FailedNonzaException> smResumedSyncPoint = new SynchronizationPoint<>(
             this, "stream resumed element");
 
-    private final SynchronizationPoint<SmackException> smEnabledSyncPoint = new SynchronizationPoint<>(
+    private final SynchronizationPoint<Exception> smEnabledSyncPoint = new SynchronizationPoint<>(
             this, "stream enabled element");
 
     /**
@@ -370,8 +369,14 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             SmackException, IOException, InterruptedException {
         // Authenticate using SASL
         SSLSession sslSession = secureSocket != null ? secureSocket.getSession() : null;
-        saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
-
+        try {
+            saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            if (e.getCause() instanceof XMPPException.StreamErrorException){
+                throw (XMPPException.StreamErrorException) e.getCause();
+            }
+        }
         // If compression is enabled then request the server to use stream compression. XEP-170
         // recommends to perform stream compression before resource binding.
         maybeEnableCompression();
@@ -403,12 +408,15 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         }
 
         // X-TOKEN
-        Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
-        List<String> mechanismsList = mechanisms.getMechanisms();
-        if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
-                !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
-            XTokenManager.getInstance().sendXTokenRequest(this);
+        if (getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE) != null){
+            Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
+            List<String> mechanismsList = mechanisms.getMechanisms();
+            if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
+                    !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
+                XTokenManager.getInstance().sendXTokenRequest(this);
+            }
         }
+
 
         // Now bind the resource. It is important to do this *after* we dropped an eventually
         // existing Stream Management state. As otherwise <bind/> and <session/> may end up in
@@ -420,7 +428,16 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             serverHandledStanzasCount = 0;
             // XEP-198 3. Enabling Stream Management. If the server response to 'Enable' is 'Failed'
             // then this is a non recoverable error and we therefore throw an exception.
-            smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
+            try {
+                smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (e instanceof XMPPException.StreamErrorException) {
+                    throw (XMPPException.StreamErrorException) e;
+                } else {
+                    throw (SmackException) e;
+                }
+            }
             synchronized (requestAckPredicates) {
                 if (requestAckPredicates.isEmpty()) {
                     // Assure that we have at lest one predicate set up that so that we request acks
@@ -568,6 +585,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                     // Create a *new* Socket before every connection attempt, i.e. connect() call, since Sockets are not
                     // re-usable after a failed connection attempt. See also SMACK-724.
                     socket = socketFactory.createSocket();
+                    debugSocketSettings(socket);
 
                     final InetAddress inetAddress = inetAddresses.next();
                     final String inetAddressAndPort = inetAddress + " at port " + port;
@@ -604,6 +622,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 failedAddresses.add(hostAddress);
             } else {
                 socket = socketFactory.createSocket();
+                debugSocketSettings(socket);
                 StringUtils.requireNotNullOrEmpty(host, "Host of HostAddress " + hostAddress + " must not be null when using a Proxy");
                 final String hostAndPort = host + " at port " + port;
                 LOGGER.finer("Trying to establish TCP connection via Proxy to " + hostAndPort);
@@ -624,6 +643,23 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         // throw an exception and report all tried
         // HostAddresses in the exception
         throw ConnectionException.from(failedAddresses);
+    }
+
+    private void debugSocketSettings(Socket socket) throws SocketException {
+        if (socket instanceof SSLSocket) {
+            LogManager.d("socket", "ssl socket");
+        } else {
+            LogManager.d("socket", "tcp socket");
+        }
+        LogManager.d("socket", "socket timeout = " + (socket.getSoTimeout() == 0 ? "infinite" : socket.getSoTimeout()));
+        LogManager.d("socket", "socket linger = " + (socket.getSoLinger() == -1 ? "turned off" : socket.getSoLinger()));
+        LogManager.d("socket", "socket keepAlive = " + socket.getKeepAlive());
+        if (socket.getSoTimeout() != 0) {
+            if (!socket.isClosed()) socket.setSoTimeout(0);
+        }
+        if (!socket.getKeepAlive()) {
+            socket.setKeepAlive(true);
+        }
     }
 
     /**
@@ -816,6 +852,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
         // Set that TLS was successful
         secureSocket = sslSocket;
+        debugSocketSettings(secureSocket);
     }
 
     /**
@@ -1043,6 +1080,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                                 case "error":
                                     StreamError streamError = PacketParserUtils.parseStreamError(parser);
                                     saslFeatureReceived.reportFailure(new StreamErrorException(streamError));
+                                    saslAuthentication.authenticationFailed(new StreamErrorException(streamError));
+                                    smEnabledSyncPoint.reportFailure(new StreamErrorException(streamError));
                                     // Mark the tlsHandled sync point as success, we will use the saslFeatureReceived sync
                                     // point to report the error, which is checked immediately after tlsHandled in
                                     // connectInternal().

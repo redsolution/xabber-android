@@ -35,10 +35,9 @@
     <FrameLayout
         android:id="@+id/containerBottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        />
+        android:layout_height="@dimen/bottom_navigation_height"
+        android:layout_alignParentBottom="true" />
 
-    <include layout="@layout/showcase_contact_list" android:visibility="gone" />
+<!--    <include layout="@layout/showcase_contact_list" android:visibility="gone" />-->
 
 </RelativeLayout>

@@ -1,157 +1,167 @@
+/**
+ * Copyright (c) 2013, Redsolution LTD. All rights reserved.
+ *
+ * This file is part of Xabber project; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License, Version 3.
+ *
+ * Xabber is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License,
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
 package com.xabber.android.ui.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-import android.text.InputType;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.dialog.BlockContactDialog;
-import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
-import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.ContactEditFragment;
 
-public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
+import org.jxmpp.jid.BareJid;
 
-    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
+import java.util.Collection;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, ContactEditActivity.class)
+public class ContactEditActivity extends ManagedActivity implements OnContactChangedListener,
+        OnAccountChangedListener, Toolbar.OnMenuItemClickListener {
+
+    private AccountJid account;
+    private ContactJid user;
+    private Toolbar toolbar;
+    private BarPainter barPainter;
+
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
+        Intent intent = new EntityIntentBuilder(context, ContactEditActivity.class)
                 .setAccount(account).setUser(user).build();
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        return intent;
     }
 
-    @Override
+    private static AccountJid getAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static ContactJid getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = getToolbar();
+        setContentView(R.layout.activity_with_toolbar_and_container);
 
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        if (rosterContact != null) {
-            toolbar.inflateMenu(R.menu.toolbar_contact);
-            toolbar.setOnMenuItemClickListener(this);
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-            onCreateOptionsMenu(toolbar.getMenu());
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.inflateMenu(R.menu.toolbar_save);
+        toolbar.setTitle(R.string.contact_title);
+        TextView tvSave = (TextView) findViewById(R.id.action_save);
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+            tvSave.setTextColor(getResources().getColor(R.color.grey_900));
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            tvSave.setTextColor(getResources().getColor(R.color.white));
+        }
+        tvSave.setPadding(tvSave.getPaddingLeft(), tvSave.getPaddingTop(), tvSave.getPaddingRight() + 20, tvSave.getPaddingBottom());
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        toolbarSetEnabled(false);
+
+        barPainter = new BarPainter(this, toolbar);
+
+        Intent intent = getIntent();
+        account = ContactEditActivity.getAccount(intent);
+        user = ContactEditActivity.getUser(intent);
+
+        update();
+
+        if (AccountManager.getInstance().getAccount(account) == null || user == null) {
+            Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
+            finish();
+        }
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, ContactEditFragment.newInstance(account, user)).commit();
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        update();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+    }
+
+    private void update() {
+        barPainter.updateWithAccountName(account);
+    }
+
+    public void toolbarSetEnabled(boolean active){
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(active);
+        View view = findViewById(R.id.action_save);
+        ((TextView)view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));
+    }
+
+    @Override
+    public void onContactsChanged(Collection<RosterContact> entities) {
+        BareJid thisBareAddress = user.getBareJid();
+        for (BaseEntity entity : entities) {
+            if (entity.equals(account, thisBareAddress)) {
+                update();
+                break;
+            }
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        if (rosterContact != null) {
-            menu.clear();
-            getMenuInflater().inflate(R.menu.toolbar_contact, menu);
-
-            // request subscription
-            menu.findItem(R.id.action_request_subscription).setVisible(!rosterContact.isSubscribed());
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        if (accounts.contains(account)) {
+            update();
         }
-
-        return true;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        return onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_request_subscription:
-                try {
-                    PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(e);
-                }
-                return true;
-
-            case R.id.action_send_contact:
-                sendContact();
-                return true;
-
-            case R.id.action_clear_history:
-                ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
-                return true;
-
-            case R.id.action_export_chat:
-                if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
-                    ChatExportDialogFragment.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), "CHAT_EXPORT");
-                }
-                return true;
-
-            case R.id.action_block_contact:
-                BlockContactDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), BlockContactDialog.class.getName());
-                return true;
-
-            case R.id.action_edit_alias:
-                editAlias();
-                return true;
-
-            case R.id.action_edit_groups:
-                startActivity(GroupEditActivity.createIntent(this, getAccount(), getUser()));
-                return true;
-
-            case R.id.action_remove_contact:
-                ContactDeleteDialogFragment.newInstance(getAccount(), getUser())
-                        .show(getFragmentManager(), "CONTACT_DELETE");
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_save:
+                ((ContactEditFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+                finish();
         }
-    }
-
-    private void editAlias() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.edit_alias);
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        input.setText(rosterContact.getName());
-        builder.setView(input);
-
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                RosterManager.getInstance().setName(getAccount(), getUser(), input.getText().toString());
-            }
-        });
-
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    private void sendContact() {
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        String text = rosterContact != null ? rosterContact.getName() + "\nxmpp:" + getUser().toString() : "xmpp:" + getUser().toString();
-
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+        return false;
     }
 }

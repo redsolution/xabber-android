@@ -94,7 +94,7 @@ public class TutorialActivity extends ManagedActivity {
         super.onResume();
 
         if (AccountManager.getInstance().hasAccounts() || XabberAccountManager.getInstance().getAccount() != null) {
-            Intent intent = ContactListActivity.createIntent(this);
+            Intent intent = MainActivity.createIntent(this);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             finish();
             startActivity(intent);

@@ -5,12 +5,16 @@
     <item android:id="@+id/action_unblock_selected"
         android:title="@string/unblock_selected"
         app:showAsAction="always"
-        android:orderInCategory="90"
         />
+
+    <item
+        android:id="@+id/action_block_manual"
+        android:icon="?attr/standard_block_address_icon"
+        android:title="@string/contact_bar_block"
+        app:showAsAction="always" />
 
     <item android:id="@+id/action_unblock_all"
         android:title="@string/unblock_all"
         app:showAsAction="never"
-        android:orderInCategory="100"
         />
 </menu>

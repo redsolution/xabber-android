@@ -8,10 +8,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class AccountPainter {
     private final int themeMainColor;
     private final int themeDarkColor;
@@ -25,6 +21,17 @@ public class AccountPainter {
     private final int[] accountRippleColors;
     private final int[] accountSendButtonColors;
 
+    private final int[] account50;
+    private final int[] account100;
+    private final int[] account200;
+    private final int[] account300;
+    private final int[] account400;
+    private final int[] account500;
+    private final int[] account600;
+    private final int[] account700;
+    private final int[] account800;
+    private final int[] account900;
+
     private final int greyMain;
     private final int greyDark;
 
@@ -37,6 +44,17 @@ public class AccountPainter {
         accountRippleColors = context.getResources().getIntArray(R.array.account_100);
         accountSendButtonColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.chat_send_button_color));
 
+        account50 = context.getResources().getIntArray(R.array.account_50);
+        account100 = context.getResources().getIntArray(R.array.account_100);
+        account200 = context.getResources().getIntArray(R.array.account_200);
+        account300 = context.getResources().getIntArray(R.array.account_300);
+        account400 = context.getResources().getIntArray(R.array.account_400);
+        account500 = context.getResources().getIntArray(R.array.account_500);
+        account600 = context.getResources().getIntArray(R.array.account_600);
+        account700 = context.getResources().getIntArray(R.array.account_700);
+        account800 = context.getResources().getIntArray(R.array.account_800);
+        account900 = context.getResources().getIntArray(R.array.account_900);
+
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
         themeMainColor = getThemeMainColor(context);
@@ -47,24 +65,12 @@ public class AccountPainter {
         greyDark = context.getResources().getColor(R.color.grey_700);
     }
 
-    public static AccountJid getFirstAccount() {
-        List<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getEnabledAccounts());
-        Collections.sort(list);
-
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return list.get(0);
-        }
-    }
-
     public static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 
     public static int getDefaultAccountColorLevel() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return 5;
         } else {
@@ -108,17 +114,56 @@ public class AccountPainter {
         return accountIndicatorBackColors[getAccountColorLevel(account)];
     }
 
+    /**
+     * Returns the specified tint of the standardColor of the account.
+     * @param account
+     * @param tint may be 50, 100, 200.. 900; else will return 0
+     * @return account standartColor with tint
+     */
+    public int getAccountColorWithTint(AccountJid account, int tint){
+        switch (tint){
+            case 50 : return account50[getAccountColorLevel(account)];
+            case 100 : return account100[getAccountColorLevel(account)];
+            case 200 : return account200[getAccountColorLevel(account)];
+            case 300 : return account300[getAccountColorLevel(account)];
+            case 400 : return account400[getAccountColorLevel(account)];
+            case 500 : return account500[getAccountColorLevel(account)];
+            case 600 : return account600[getAccountColorLevel(account)];
+            case 700 : return account700[getAccountColorLevel(account)];
+            case 800 : return account800[getAccountColorLevel(account)];
+            case 900 : return account900[getAccountColorLevel(account)];
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the specified tint of the default standartColor
+     * @param tint may be 50, 100, 200.. 900; else will return 0
+     * @return default standartColor with tint
+     */
+    public int getDefaultColorWithTint(int tint){
+        return getAccountColorWithTint(AccountManager.getInstance().getFirstAccount(), tint);
+    }
     public int getDefaultMainColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
-            return themeMainColor;
+            return accountMainColors[SettingsManager.getMainAccountColorLevel()];
         } else {
             return getAccountMainColor(firstAccount);
         }
     }
 
+    public int getDefaultRippleColor() {
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
+        if (firstAccount == null) {
+            return accountRippleColors[SettingsManager.getMainAccountColorLevel()];
+        } else {
+            return getAccountRippleColor(firstAccount);
+        }
+    }
+
     public int getDefaultIndicatorBackColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeMainColor;
         } else {
@@ -143,7 +188,7 @@ public class AccountPainter {
     }
 
     public int getDefaultTextColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeTextColor;
         } else {
@@ -152,7 +197,7 @@ public class AccountPainter {
     }
 
     public int getDefaultDarkColor() {
-        AccountJid firstAccount = getFirstAccount();
+        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
         if (firstAccount == null) {
             return themeDarkColor;
         } else {

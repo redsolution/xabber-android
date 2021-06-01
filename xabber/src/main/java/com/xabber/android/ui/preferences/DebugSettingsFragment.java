@@ -4,16 +4,14 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.widget.Toast;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.http.CrowdfundingManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 import java.util.Collection;
@@ -30,7 +28,8 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
+        if (BuildConfig.FLAVOR_build.equals("dev"))
+            preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.cache_clear_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
@@ -42,18 +41,6 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
                 return true;
             }
         });
-
-        Preference prefFetchCrowdfundingFeed = preferenceScreen.findPreference(getString(R.string.debug_fetch_crowdfunding_feed_key));
-        if (prefFetchCrowdfundingFeed != null) {
-            prefFetchCrowdfundingFeed.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    CrowdfundingManager.getInstance().fetchFeedForDebug();
-                    Toast.makeText(getActivity(), "Crowdfunding feed updated", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-            });
-        }
 
         if (!BuildConfig.DEBUG) {
             preferenceScreen.removePreference(prefDownloadArchive);
@@ -97,10 +84,10 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
     }
 
     private void startMessageArchiveDownload() {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
-                Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+                Collection<AbstractChat> chats = ChatManager.getInstance().getChats();
 
                 if (chats == null || chats.size() == 0) {
                     closeDownloadArchiveDialog();

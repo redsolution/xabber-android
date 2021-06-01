@@ -5,16 +5,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -79,7 +83,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +93,14 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         toolbar.setTitle(R.string.account_bookmarks);
         toolbar.inflateMenu(R.menu.toolbar_bookmark_list);
         toolbar.setOnMenuItemClickListener(this);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_grey_24dp));
+        }
+        else {
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        }
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
@@ -126,7 +138,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         progressBar.setVisibility(View.VISIBLE);
         tvNotSupport.setVisibility(View.GONE);
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean support = false;
@@ -214,7 +226,9 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         if (currentSize == 0) {
             toolbar.setTitle(getString(R.string.account_bookmarks));
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+            else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
             barPainter.updateWithAccountName(accountItem.getAccount());
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -226,7 +240,9 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
-            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+            else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
             barPainter.setGrey();
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {

@@ -7,15 +7,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.Person;
 import androidx.core.app.RemoteInput;
 import androidx.core.graphics.drawable.IconCompat;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -23,12 +28,10 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
@@ -36,7 +39,7 @@ import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -62,6 +65,8 @@ public class MessageNotificationCreator {
 
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
+
+
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))
@@ -96,6 +101,21 @@ public class MessageNotificationCreator {
         sendNotification(builder, chat.getNotificationId());
     }
 
+    public void createNotificationWithoutBannerJustSound(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
+                RingtoneManager.getActualDefaultRingtoneUri(
+                        Application.getInstance().getApplicationContext(),
+                        RingtoneManager.TYPE_NOTIFICATION));
+        mediaPlayer.start();
+
+        Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(250);
+        }
+    }
+
     public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
         boolean inForeground = isAppInForeground(context);
         List<MessageNotificationManager.Chat> sortedChats = new ArrayList<>(chats);
@@ -108,7 +128,7 @@ public class MessageNotificationCreator {
                 new NotificationCompat.Builder(context, getChannelID(lastChat))
                         .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                         .setWhen(lastChat != null ? lastChat.getLastMessageTimestamp() : System.currentTimeMillis())
-                        .setSmallIcon(R.drawable.ic_message)
+                        .setSmallIcon(R.drawable.ic_stat_chat)
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -218,9 +238,7 @@ public class MessageNotificationCreator {
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
         NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null) return prefs.isShowPreview();
-        else return chat.isGroupChat() ?
-                ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
-                : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
+        else return chat.isGroupChat() ? SettingsManager.eventsShowTextOnMuc() : SettingsManager.eventsShowText();
     }
 
     private int getMessageCount(List<MessageNotificationManager.Chat> chats) {
@@ -232,10 +250,8 @@ public class MessageNotificationCreator {
     }
 
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
-        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getUserJid());
-        if (MUCManager.getInstance().hasRoom(chat.getAccountJid(), chat.getUserJid().getJid().asEntityBareJidIfPossible()))
-            return AvatarManager.getInstance().getRoomBitmap(chat.getUserJid());
-        else return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
+        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
+        return AvatarManager.getInstance().getUserBitmap(chat.getContactJid(), name);
     }
 
     private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
@@ -279,21 +295,17 @@ public class MessageNotificationCreator {
                                   MessageNotificationManager.Chat notifChat, Context context) {
 
         AccountJid account = notifChat.getAccountJid();
-        UserJid user = notifChat.getUserJid();
+        ContactJid user = notifChat.getContactJid();
         boolean isMUC = notifChat.isGroupChat();
 
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
 
             Uri sound = getSound(notifChat, text, isMUC);
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
             boolean led = isMUC ? SettingsManager.eventsLightningForMuc() : SettingsManager.eventsLightning();
 
             com.xabber.android.data.notification.NotificationManager.getInstance()
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
-
-            // vibration
-            if (makeVibration) setVibration(notifChat, isMUC, context, notificationBuilder);
         }
     }
 
@@ -393,10 +405,10 @@ public class MessageNotificationCreator {
     }
 
     private PendingIntent createContentIntent(MessageNotificationManager.Chat chat) {
-        Intent backIntent = ContactListActivity.createIntent(Application.getInstance());
+        Intent backIntent = MainActivity.createIntent(Application.getInstance());
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getUserJid());
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getContactJid());
         intent.putExtra(ChatActivity.EXTRA_NEED_SCROLL_TO_UNREAD, true);
         return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
@@ -404,16 +416,16 @@ public class MessageNotificationCreator {
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
-                ContactListActivity.createClearStackIntent(context),
+                MainActivity.createClearStackIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getUserJid());
-        Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getUserJid(),
+        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getContactJid());
+        Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getContactJid(),
                 chat.getLastMessage().getMessageText().toString());
         return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(chat.getAccountJid(),
-                chat.getUserJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "", phraseID);
+                chat.getContactJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "", phraseID);
     }
 
     public class SortByLastMessage implements Comparator<MessageNotificationManager.Chat> {

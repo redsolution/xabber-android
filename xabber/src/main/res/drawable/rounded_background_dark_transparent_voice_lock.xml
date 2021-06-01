@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners
+                android:radius="14dp" />
+            <stroke android:width="1dp"
+                android:color="#261D1D1D"/>
+        </shape>
+    </item>
+    <item
+        android:bottom="1dp"
+        android:left="1dp"
+        android:right="1dp">
+        <shape>
+            <solid android:color="?attr/chat_input_background" />
+            <corners
+                android:radius="14dp" />
+            <padding
+                android:left="3dp"
+                android:right="3dp"/>
+        </shape>
+    </item>
+</layer-list>

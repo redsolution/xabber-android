@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.references;
 import android.util.Pair;
 
 import com.xabber.android.data.TestApplication;
+import com.xabber.android.data.extension.references.mutable.Forward;
 
 import org.jivesoftware.smack.packet.Message;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class ReferencesManagerTest {
 
         // -------
 
-        body2 = "https://upload02.xabber.org/5ff2744e91/iKIlTIyZ/guide.txt\nhello";
+        /*body2 = "https://upload02.xabber.org/5ff2744e91/iKIlTIyZ/guide.txt\nhello";
 
         message2 = new Message("test@jabber.com", body2);
         message2.addExtension(new Media(0, 57, null));
@@ -87,7 +88,7 @@ public class ReferencesManagerTest {
         body9 = "John Doe:\nHello from groupchat!";
 
         message9 = new Message("test@jabber.com", body9);
-        message9.addExtension(new Media(0, 9, null));
+        message9.addExtension(new Media(0, 9, null));*/
     }
 
     @Test

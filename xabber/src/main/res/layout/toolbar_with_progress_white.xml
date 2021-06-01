@@ -7,7 +7,6 @@
     android:layout_height="?attr/actionBarSize"
 
     app:titleTextAppearance="@style/ToolbarTitle"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="?attr/toolbar_popup_theme"
     android:elevation="8dp"
     app:contentInsetStartWithNavigation="0dp"

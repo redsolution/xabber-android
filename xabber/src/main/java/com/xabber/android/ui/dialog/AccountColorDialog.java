@@ -4,18 +4,23 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.adapter.AccountColorPickerAdapter;
 
-public class AccountColorDialog extends DialogFragment {
+public class AccountColorDialog extends DialogFragment implements AccountColorPickerAdapter.Listener{
     private static final String ARGUMENT_ACCOUNT = AccountColorDialog.class.getName();
-
+    private Dialog dialogEntity;
     AccountJid accountJid;
 
     public static DialogFragment newInstance(AccountJid account) {
@@ -36,25 +41,34 @@ public class AccountColorDialog extends DialogFragment {
 
     @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        int colorIndex = AccountManager.getInstance().getColorLevel(accountJid);
         dialog.setTitle(getString(R.string.account_color));
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_color_picker, null);
+
+        RecyclerView rv = view.findViewById(R.id.color_list);
+        TypedArray colors = getResources().obtainTypedArray(R.array.account_500); /*getResources().getIntArray(R.array.account_500)*/
+        //TypedArray darkColors = getResources().obtainTypedArray(R.array.account_700);
+        AccountColorPickerAdapter adapter = new AccountColorPickerAdapter(getResources().getStringArray(R.array.account_color_names),
+                 colors, /*darkColors,*/ colorIndex, this);
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rv.setAdapter(adapter);
+        dialog.setView(view);
         dialog.setPositiveButton(null, null);
         dialog.setNegativeButton(android.R.string.cancel, null);
-        int colorIndex = AccountManager.getInstance().getColorLevel(accountJid);
 
-        dialog.setSingleChoiceItems(R.array.account_color_names, colorIndex, selectItemListener);
-        return dialog.create();
+        dialogEntity = dialog.create();
+        return dialogEntity;
     }
 
-    DialogInterface.OnClickListener selectItemListener = new DialogInterface.OnClickListener() {
+    @Override
+    public void onColorClickListener(int position) {
+        AccountManager.getInstance().setColor(accountJid, position);
+        AccountManager.getInstance().setTimestamp(accountJid, XabberAccountManager.getInstance().getCurrentTime());
+        AccountManager.getInstance().onAccountChanged(accountJid);
 
-        @Override public void onClick(DialogInterface dialog, int which) {
-            AccountManager.getInstance().setColor(accountJid, which);
-            AccountManager.getInstance().setTimestamp(accountJid, XabberAccountManager.getInstance().getCurrentTime());
-            AccountManager.getInstance().onAccountChanged(accountJid);
-
-            if (XabberAccountManager.getInstance().getAccount() != null)
-                XabberAccountManager.getInstance().updateAccountSettings();
-            dialog.dismiss();
-        }
-    };
+        if (XabberAccountManager.getInstance().getAccount() != null)
+            XabberAccountManager.getInstance().updateRemoteAccountSettings();
+        dialogEntity.dismiss();
+    }
 }

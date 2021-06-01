@@ -25,6 +25,8 @@
     <string name="xep_0363_file_upload">XEP-0363: HTTP File Upload</string>
     <string name="xep_xxxx_muc_light">XEP-xxxx: Multi-User Chat Light</string>
     <string name="xep_0048_bookmarks">XEP-0048: Bookmarks</string>
+    <string name="xep_0rrr_retract">XEP-0RRR: Message delete and rewrite</string>
+    <string name="xep_0xxx_reliable_message_delivery">XEP-0XXX: Reliable Message Delivery</string>
 
     <string name="check_mark">✓</string>
     <string name="cross_mark">✗</string>

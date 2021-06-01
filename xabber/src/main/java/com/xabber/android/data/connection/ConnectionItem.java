@@ -22,17 +22,18 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.xtoken.XToken;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
-import com.xabber.android.data.extension.xtoken.XToken;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.jid.DomainBareJid;
@@ -66,11 +67,16 @@ public abstract class ConnectionItem {
      */
     @NonNull
     XMPPTCPConnection connection;
+    public static long defaultReplyTimeout = 30000; // in ms
 
     /**
      * Current state.
      */
     private ConnectionState state;
+    /**
+     * Whether the connection is outdated or not and needs to be recreated
+     */
+    private boolean connectionIsOutdated;
 
     @NonNull
     private final AccountRosterListener rosterListener;
@@ -145,10 +151,14 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        updateState(ConnectionState.connecting);
+        if(getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting) {
+            // if we wanted to connect during the disconnection process, we
+            // need to make sure our connection settings aren't outdated.
+            checkIfConnectionIsOutdated();
+        }
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
-        };
+        }
 
         return connectionThread.start();
     }
@@ -174,7 +184,7 @@ public abstract class ConnectionItem {
         connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
         connection.addConnectionListener(connectionListener);
 
-        PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+        refreshPingFailedListener(true);
     }
 
     /**
@@ -214,12 +224,7 @@ public abstract class ConnectionItem {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createNewConnection();
-                    }
-                });
+                Application.getInstance().runOnUiThread(() -> createNewConnection());
 
             }
 
@@ -258,7 +263,7 @@ public abstract class ConnectionItem {
     void createNewConnection() {
         LogManager.i(logTag, "createNewConnection");
 
-        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        refreshPingFailedListener(false);
 
         connection.removeConnectionListener(connectionListener);
         connection.removeAsyncStanzaListener(everyStanzaListener);
@@ -274,6 +279,7 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
+            EventBus.getDefault().post(new ConnectionStateChangedEvent(newState));
             if (newState == ConnectionState.connected) {
                 AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
             }
@@ -292,6 +298,25 @@ public abstract class ConnectionItem {
         return prevState != state;
     }
 
+    public void setConnectionIsOutdated(boolean outdated) {
+        connectionIsOutdated = outdated;
+    }
+
+    // recreates the connection if it's outdated
+    public void checkIfConnectionIsOutdated() {
+        if (connectionIsOutdated) {
+            LogManager.d(logTag, "connection is outdated, creating a new one");
+            connectionIsOutdated = false;
+            createNewConnection();
+        } else {
+            LogManager.d(logTag, "connection is not outdated");
+        }
+    }
+
+    public void refreshPingFailedListener(boolean register) {
+        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        if (register) PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+    }
 
     private StanzaListener everyStanzaListener = new StanzaListener() {
         @Override
@@ -315,5 +340,15 @@ public abstract class ConnectionItem {
             disconnect();
         }
     };
+
+    public static class ConnectionStateChangedEvent {
+        ConnectionState connectionState;
+
+        ConnectionStateChangedEvent(ConnectionState connectionState){
+            this.connectionState = connectionState;
+        }
+
+        public ConnectionState getConnectionState() { return connectionState; }
+    }
 
 }

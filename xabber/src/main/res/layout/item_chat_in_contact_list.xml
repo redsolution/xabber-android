@@ -1,48 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="64dp"
+    android:background="?attr/contact_list_contact_background"
     android:elevation="1dp">
-
-    <TextView
-        android:id="@+id/tvAction"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingRight="12dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:text="@string/archive_chat"
-        android:textAllCaps="true"
-        android:gravity="right|center"
-        android:drawableRight="@drawable/ic_arcived"
-        android:drawablePadding="12dp"
-        android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
-        />
-
-    <TextView
-        android:id="@+id/tvActionLeft"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="12dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:text="@string/archive_chat"
-        android:textAllCaps="true"
-        android:gravity="left|center"
-        android:drawableLeft="@drawable/ic_arcived"
-        android:drawablePadding="12dp"
-        android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
-        />
-
-    <LinearLayout
-        android:id="@+id/foregroundView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/contact_list_contact_background"
-        >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -54,8 +17,8 @@
 
         <include layout="@layout/avatar_view"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginRight="8dp"
@@ -66,7 +29,7 @@
             <TextView
                 android:id="@+id/tvContactName"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:singleLine="true"
                 android:drawablePadding="4dp"
                 android:textSize="14sp"
@@ -75,28 +38,18 @@
                 android:text="Erik Walton"
                 />
 
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvOutgoingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/avatarView"
-            android:layout_marginBottom="12dp"
-            android:text="@string/sender_is_you"
-            android:textColor="@color/green_500" />
+        </FrameLayout>
 
         <github.ankushsachdeva.emojicon.EmojiconTextView
             android:id="@+id/tvMessageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/tvOutgoingMessage"
+            android:layout_toRightOf="@id/avatarView"
             android:layout_toLeftOf="@+id/rlUnread"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
-            android:maxLines="1"
+            android:singleLine="true"
             android:ellipsize="end"
             android:textSize="14sp"
             android:textColor="?attr/contact_list_contact_second_line_text_color"
@@ -114,7 +67,7 @@
             android:text="12:30"
             />
 
-        <RelativeLayout
+        <FrameLayout
             android:id="@+id/rlUnread"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -128,7 +81,7 @@
                 android:id="@+id/ivMessageStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_message_delivered_14dp"
+                app:srcCompat="@drawable/ic_message_delivered_14dp"
                 />
 
             <TextView
@@ -146,7 +99,7 @@
                 android:text="1"
                 />
 
-        </RelativeLayout>
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"
@@ -157,7 +110,4 @@
             />
 
     </RelativeLayout>
-
-    </LinearLayout>
-
 </FrameLayout>

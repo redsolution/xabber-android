@@ -165,4 +165,17 @@ public enum StatusMode {
         return this != StatusMode.unavailable && this != unsubscribed;
     }
 
+    public static StatusMode fromString(String string){
+        switch (string){
+            case "available": return StatusMode.available;
+            case "dnd":return StatusMode.dnd;
+            case "xa": return StatusMode.xa;
+            case "chat": return StatusMode.chat;
+            case "away": return StatusMode.away;
+            case "unsubscribed": return StatusMode.unsubscribed;
+            case "invisible": return StatusMode.invisible;
+            default: return StatusMode.unavailable;
+        }
+    }
+
 }

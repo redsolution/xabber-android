@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 
@@ -35,7 +35,7 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
         ChatStateManager.getInstance().onPaused(getAccount(intent), getUser(intent));
     }
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, ComposingPausedReceiver.class)
                 .setAccount(account).setUser(user).build();
     }
@@ -44,7 +44,7 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

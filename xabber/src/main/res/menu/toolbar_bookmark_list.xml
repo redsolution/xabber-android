@@ -11,7 +11,7 @@
     <item android:id="@+id/action_synchronize"
         android:title="@string/synchronize_bookmarks"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_sync"
+        android:icon="?attr/standard_sync_icon"
         android:orderInCategory="90"
         />
 

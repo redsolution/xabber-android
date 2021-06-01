@@ -1,7 +1,13 @@
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import android.os.Looper;
+
+import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
@@ -24,16 +30,19 @@ import rx.subjects.PublishSubject;
  * */
 public class BackpressureMessageSaver {
 
+    private static final String LOG_TAG = BackpressureMessageSaver.class.getSimpleName();
+
     private static BackpressureMessageSaver instance;
-    private PublishSubject<MessageItem> subject;
+    private PublishSubject<MessageRealmObject> subject;
 
     public static BackpressureMessageSaver getInstance() {
         if (instance == null) instance = new BackpressureMessageSaver();
         return instance;
     }
 
-    public void saveMessageItem(MessageItem messageItem) {
-        subject.onNext(messageItem);
+    public void saveMessageItem(MessageRealmObject messageRealmObject) {
+        if (hasCopyInRealm(messageRealmObject)) return;
+        subject.onNext(messageRealmObject);
     }
 
     private BackpressureMessageSaver() {
@@ -42,30 +51,27 @@ public class BackpressureMessageSaver {
 
     private void createSubject() {
         subject = PublishSubject.create();
-        subject.buffer(500, TimeUnit.MILLISECONDS)
-            .onBackpressureBuffer(50)
+        subject.buffer(250, TimeUnit.MILLISECONDS)
+            .onBackpressureBuffer()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<MessageItem>>() {
+            .subscribe(new Action1<List<MessageRealmObject>>() {
                 @Override
-                public void call(final List<MessageItem> messageItems) {
-                    if (messageItems == null || messageItems.isEmpty()) return;
+                public void call(final List<MessageRealmObject> messageRealmObjects) {
+                    if (messageRealmObjects == null || messageRealmObjects.isEmpty()) return;
+                    Realm realm = null;
                     try {
-                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                        realm.executeTransactionAsync(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.copyToRealm(messageItems);
-                            }
-                        }, new Realm.Transaction.OnSuccess() {
-                            @Override
-                            public void onSuccess() {
-                                EventBus.getDefault().post(new NewMessageEvent());
-                                SyncManager.getInstance().onMessageSaved();
-                            }
+                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                        realm.executeTransactionAsync(realm1 -> {
+                            realm1.copyToRealm(messageRealmObjects);
+                        }, () ->  {
+                            EventBus.getDefault().post(new NewMessageEvent());
+                            SyncManager.getInstance().onMessageSaved();
+                            checkForAttachmentsAndDownload(messageRealmObjects);
                         });
                     } catch (Exception e) {
                         LogManager.exception(this, e);
-                    }
+                    } finally { if ( realm != null && Looper.myLooper() != Looper.getMainLooper())
+                        realm.close(); }
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -77,4 +83,70 @@ public class BackpressureMessageSaver {
             });
     }
 
+    //TODO refactor this method before releasing
+    private boolean hasCopyInRealm(final MessageRealmObject newIncomingMessageRealmObject){
+        boolean result = false;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageRealmObject item;
+
+        if (newIncomingMessageRealmObject.getUniqueId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, newIncomingMessageRealmObject.getUniqueId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+        }
+
+        if (newIncomingMessageRealmObject.getStanzaId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, newIncomingMessageRealmObject.getStanzaId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+        }
+
+        if (newIncomingMessageRealmObject.getOriginId() != null) {
+            item = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.ORIGIN_ID, newIncomingMessageRealmObject.getOriginId())
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, newIncomingMessageRealmObject.getAccount().toString())
+                    .findFirst();
+            if (item != null && !newIncomingMessageRealmObject.isForwarded()) {
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + newIncomingMessageRealmObject.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+        }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
+        return result;
+    }
+
+    private void checkForAttachmentsAndDownload(List<MessageRealmObject> messageRealmObjects) {
+        if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
+            for (MessageRealmObject message : messageRealmObjects) {
+                if (message.haveAttachments()) {
+                    for (AttachmentRealmObject attachmentRealmObject : message.getAttachmentRealmObjects()) {
+                        if (attachmentRealmObject.isVoice() && attachmentRealmObject.getFilePath() == null) {
+                            DownloadManager.getInstance().downloadFile(attachmentRealmObject, message.getAccount(), Application.getInstance());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

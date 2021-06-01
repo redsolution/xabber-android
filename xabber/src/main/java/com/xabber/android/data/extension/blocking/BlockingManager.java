@@ -2,26 +2,30 @@ package com.xabber.android.data.extension.blocking;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +45,7 @@ public class BlockingManager {
     @SuppressWarnings("WeakerAccess")
     Map<AccountJid, UnblockedAllListener> unblockedAllListeners;
 
-    private Map<AccountJid, List<UserJid>> cachedBlockedContacts;
+    private Map<AccountJid, List<ContactJid>> cachedBlockedContacts;
 
     public static BlockingManager getInstance() {
         if (instance == null) {
@@ -57,7 +61,7 @@ public class BlockingManager {
         blockedListeners = new ConcurrentHashMap<>();
         unblockedListeners = new ConcurrentHashMap<>();
         unblockedAllListeners = new ConcurrentHashMap<>();
-        cachedBlockedContacts = new HashMap<>();
+        cachedBlockedContacts = new ConcurrentHashMap<>();
     }
 
     public void onAuthorized(final ConnectionItem connection) {
@@ -70,15 +74,15 @@ public class BlockingManager {
 
             if (supportedByServer) {
                 // cache block list inside
-                List<UserJid> blockedContacts = new ArrayList<>();
+                List<ContactJid> blockedContacts = new ArrayList<>();
                 try {
                     List<Jid> blockedJids = blockingCommandManager.getBlockList();
                     for (Jid jid : blockedJids) {
-                        blockedContacts.add(UserJid.from(jid));
+                        blockedContacts.add(ContactJid.from(jid));
                     }
 
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                        | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
                     LogManager.exception(LOG_TAG, e);
                 }
                 // Cache block inside manager
@@ -169,19 +173,41 @@ public class BlockingManager {
         return supportForAccounts.get(account);
     }
 
-    public List<UserJid> getCachedBlockedContacts(AccountJid account) {
+    public List<ContactJid> getCachedBlockedContacts(AccountJid account) {
         if (cachedBlockedContacts.get(account) == null)
             return new ArrayList<>();
         else return cachedBlockedContacts.get(account);
     }
 
-    private void updateCachedBlockedContacts(AccountJid account, List<UserJid> blockedContacts) {
+    private void updateCachedBlockedContacts(AccountJid account, List<ContactJid> blockedContacts) {
         cachedBlockedContacts.remove(account);
         cachedBlockedContacts.put(account, blockedContacts);
     }
 
-    public List<UserJid> getBlockedContacts(AccountJid account) {
-        List<UserJid> blockedContacts = new ArrayList<>();
+    public boolean contactIsBlockedLocally(AccountJid account, ContactJid contactJid) {
+        Collection<ContactJid> cachedBlockedContacts = getCachedBlockedContacts(account);
+        for (ContactJid blockedContact : cachedBlockedContacts) {
+            if (blockedContact.getJid().equals(contactJid.getBareJid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean contactIsBlocked(AccountJid account, ContactJid user) {
+        Collection<ContactJid> blockedContacts = getBlockedContacts(account);
+        for (ContactJid blockedContact : blockedContacts) {
+            // we specifically check for the blocked contact's full jid
+            // to filter out jids blocked as a group-invite.
+            if (blockedContact.getJid().equals(user.getBareJid())) {
+                return true;
+            }
+        }
+        return  false;
+    }
+
+    public List<ContactJid> getBlockedContacts(AccountJid account) {
+        List<ContactJid> blockedContacts = new ArrayList<>();
 
         Boolean supported = isSupported(account);
 
@@ -191,11 +217,11 @@ public class BlockingManager {
             try {
                 List<Jid> blockedJids = blockingCommandManager.getBlockList();
                 for (Jid jid : blockedJids) {
-                    blockedContacts.add(UserJid.from(jid));
+                    blockedContacts.add(ContactJid.from(jid));
                 }
 
             } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                    | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                    | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
@@ -205,12 +231,12 @@ public class BlockingManager {
     }
 
     public interface BlockContactListener {
-        void onSuccess();
-        void onError();
+        void onSuccessBlock();
+        void onErrorBlock();
     }
 
-    public void blockContact(final AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+    public void blockContact(final AccountJid account, final ContactJid contactJid, final BlockContactListener listener) {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
@@ -230,15 +256,22 @@ public class BlockingManager {
                     }
                 }
 
+                if (success) {
+                    PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
+                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                    if (chat != null) {
+                        chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
+                    }
+                }
+
                 final boolean finalSuccess = success;
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            cachedBlockedContacts.get(account).add(contactJid);
-                            listener.onSuccess();
+                            listener.onSuccessBlock();
                         } else {
-                            listener.onError();
+                            listener.onErrorBlock();
                         }
                     }
                 });
@@ -264,18 +297,18 @@ public class BlockingManager {
         return BlockingCommandManager.getInstanceFor(connection);
     }
 
-    static void blockContactLocally(AccountJid account, UserJid contactJid) {
-        MessageManager.getInstance().closeChat(account, contactJid);
+    static void blockContactLocally(AccountJid account, ContactJid contactJid) {
+        ChatManager.getInstance().closeChat(account, contactJid);
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
 
     public interface UnblockContactListener {
-        void onSuccess();
-        void onError();
+        void onSuccessUnblock();
+        void onErrorUnblock();
     }
 
-    public void unblockContacts(final AccountJid account, final List<UserJid> contacts, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+    public void unblockContacts(final AccountJid account, final List<ContactJid> contacts, final UnblockContactListener listener) {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
@@ -284,8 +317,8 @@ public class BlockingManager {
 
                 if (blockingCommandManager != null) {
                     List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
-                    for (UserJid userJid : contacts) {
-                        jidsToUnblock.add(userJid.getBareJid());
+                    for (ContactJid contactJid : contacts) {
+                        jidsToUnblock.add(contactJid.getJid());
                     }
 
 
@@ -298,14 +331,23 @@ public class BlockingManager {
                     }
                 }
 
+                if (success) {
+                    for (ContactJid contactJid : contacts) {
+                        AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                        if (chat != null) {
+                            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
+                        }
+                    }
+                }
+
                 final boolean finalSuccess = success;
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            listener.onSuccess();
+                            listener.onSuccessUnblock();
                         } else {
-                            listener.onError();
+                            listener.onErrorUnblock();
                         }
                     }
                 });
@@ -315,7 +357,7 @@ public class BlockingManager {
     }
 
     public void unblockAll(final AccountJid account, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 boolean success = false;
@@ -337,9 +379,9 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            listener.onSuccess();
+                            listener.onSuccessUnblock();
                         } else {
-                            listener.onError();
+                            listener.onErrorUnblock();
                         }
                     }
                 });

@@ -8,12 +8,30 @@
     <string name="chat_delay">sent at %s</string>
     <string name="chat_input_hint">Type your message here</string>
     <string name="chat_send">Send</string>
+    <string name="chat_record">Record</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_chat_history_dialog_button">Clear</string>
-    <string name="clear_chat_history_dialog_message">Do you really want to clear all chat history with %s?</string>
+    <string name="clear_chat_history_dialog_message">Are you sure you want to clear your chat history with &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="clear_chat_history_dialog_warning">This operation can not be undone.</string>
+    <string name="clear_chat_history_for_companion_checkbox">Attempt to retract your messages from your chat partner\'s archive</string>
+    <string name="waiting_for_network">Waiting for network…</string>
+    <string name="contact_state_not_in_contact_list">Not in your contacts</string>
+    <string name="contact_state_no_subscriptions">No subscriptions</string>
+    <string name="contact_state_incoming_request">Incoming subscription request…</string>
+    <string name="contact_state_outgoing_request">Subscription request pending…</string>
+    <string name="contact_state_subscribed_to_account">Subscribed to your status</string>
+    <string name="chat_add_contact">Add &lt;b&gt;%s&lt;/b&gt; to contacts. If your request is accepted, you will have access to each other\'s presence information.</string>
+    <string name="chat_subscribe_request_incoming">Contact asks permission to see your presence information</string>
+    <string name="chat_subscribe_request_outgoing">Subscribe to see contact status information</string>
+    <string name="chat_subscribe">Subscribe</string>
+    <string name="chat_allow">Allow</string>
+    <string name="delete_chat_confirm">Are you sure you want to delete chat with &lt;b&gt;%s&lt;/b&gt;? Chat history will also be deleted from your message archive.</string>
+    <string name="delete_chat_warning">This operation can not be undone.</string>
+    <string name="delete_chat_button">Delete</string>
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <string name="FILE_NOT_FOUND">File not found</string>
+    <string name="VOICE_RECORDING_ERROR">There was an error with the recording software, the message will not be sent</string>
     <string name="message_copy">Copy</string>
     <string name="message_appeal">Mention</string>
     <string name="message_quote">Quote</string>
@@ -23,6 +41,9 @@
     <string name="save_history">Save local history\nStore message history locally</string>
     <string name="action_attention_called">Call attention was sent</string>
     <string name="action_attention_requested">Attention was requested</string>
+    <string name="action_contact_blocked">Contact blocked</string>
+    <string name="action_contact_unblocked">Contact unblocked</string>
+    <string name="action_contact_deleted">Contact deleted</string>
     <string name="action_ban">%1$s was banned</string>
     <string name="action_ban_by">%1$s was banned by %2$s</string>
     <string name="action_invite_error">Invitation was not received by %s</string>
@@ -50,13 +71,24 @@
     <string name="action_status_dnd">%1$s asks do not disturb</string>
     <string name="action_status_unavailable">%1$s is now unavailable</string>
     <string name="action_status_xa">%1$s away for a long time</string>
+    <string name="action_subscription_sent">Subscription request sent</string>
+    <string name="action_subscription_sent_add">%1$s added to your contacts</string>
+    <string name="action_subscription_received">Incoming subscription request</string>
+    <string name="action_subscription_received_add">%1$s added you to contacts</string>
     <string name="action_subject">%1$s has changed the subject to: %2$s</string>
     <string name="ATTENTION_IS_NOT_SUPPORTED">Contact doesn\'t support or has disabled attention</string>
     <string name="call_attention">Call attention</string>
+    <string name="chat_more_actions">More</string>
     <string name="chat_settings">Chat settings</string>
-    <string name="chat_state_composing">Typing…</string>
-    <string name="chat_state_paused">Entered text…</string>
+    <string name="chat_state_composing">typing…</string>
+    <string name="chat_state_composing_voice">recording a voice message…</string>
+    <string name="chat_state_composing_video">recording a video message…</string>
+    <string name="chat_state_composing_upload">sending a file…</string>
+    <string name="chat_state_paused">Stopped typing</string>
+    <string name="chat_state_paused_voice_and_video">Stopped recording</string>
+    <string name="chat_state_paused_upload">Stopped uploading</string>
     <string name="chat_typed">entered at %s</string>
+    <string name="delete_chat">Delete chat</string>
     <string name="export_chat">Export history</string>
     <string name="export_chat_done">History has been exported to SD Card</string>
     <string name="export_chat_mask">%2$s for %1$s.html</string>
@@ -73,6 +105,7 @@
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
     <string name="otr_not_decrypted_message">Message cannot be decrypted</string>
     <string name="forwarded_messages_count">%d forwarded message</string>
+    <string name="forwarded_messages_count_plural">%d forwarded messages</string>
     <string name="forwarded_support_text" translatable="false">%d forwarded messages. Use advanced client like Xabber to view them.</string>
     <string name="otr_verification">OTR verification</string>
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
@@ -96,6 +129,7 @@
     <string name="message_open_private_chat">Open private chat</string>
     <string name="no_permission_to_read_files">No permission to read files</string>
     <string name="no_permission_to_write_files">No permission to write files</string>
+    <string name="no_permission_storage">No permission to access storage</string>
     <string name="no_permission_to_camera">No permission for camera</string>
     <string name="error_description_title">Error description:</string>
     <string name="message_status_sent">Sent</string>
@@ -105,6 +139,7 @@
     <string name="message_status_error">Error</string>
     <string name="message_status_forwarded">Sent from another device </string>
     <string name="message_status_not_sent">Sending</string>
+    <string name="message_status_uploading">Sending..</string>
     <string name="too_many_files_at_once">You cannot send more than 10 items at once</string>
 
     <string name="toast_no_history">There are no more messages in the history</string>
@@ -117,6 +152,7 @@
 
     <string name="chat_notification_settings_title">Notification for this chat</string>
     <string name="error_file_upload_not_support">%1$s server does not seem to support file transfer. This may happen because Xabber didn\'t yet receive server capabilities, or because of some glitch.\n\nRefresh server info in Account settings → Server info. If that does not help, consider using a server that definitely does support file transfer. One such server is xabber.org</string>
+    <string name="error_file_upload_disco_in_progress">We\'re still determining whether or not %1$s server supports file transfer.</string>
     <string name="button_join_conference">Join conference</string>
 
     <string name="showcase_chat_text_1">Swipe right to open recent chats</string>
@@ -134,5 +170,18 @@
     <string name="xabber_chat_title">Xabber official</string>
     <string name="xabber_chat_description">News feed</string>
     <string name="xabber_join_button">Support Xabber</string>
+    <string name="action_incoming_subscription"></string>
     <string name="action_new_contact">New contact</string>
+    <string name="action_new_subscription_request">New subscription request</string>
+    <string name="open_this_link">Open this link?</string>
+    <string name="open">Open</string>
+    <string name="delete_for_all">Also delete for %s</string>
+    <string name="delete_message_title">Delete message</string>
+    <string name="delete_messages_title">Delete %s messages</string>
+    <string name="delete_message_question">Are you sure you want to delete this message?</string>
+    <string name="delete_messages_question">Are you sure you want to delete these messages?</string>
+    <string name="message_edit">Edit</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edited">(edited at %s)</string>
 </resources>

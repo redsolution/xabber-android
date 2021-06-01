@@ -23,8 +23,12 @@
     <string name="CONNECTION_FAILED">Ошибка подключения</string>
     <string name="contact_add">Добавить контакт</string>
     <string name="contact_delete">Удалить</string>
+    <string name="contact_delete_full">Удалить контакт</string>
     <string name="contact_block">Заблокировать контакт</string>
+    <string name="contact_block_and_delete">Заблокировать и удалить</string>
     <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+    <string name="contact_delete_confirm_short">Вы действительно хотите удалить контакт &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="contact_delete_warning">Вы все еще сможете обмениваться сообщениями и запросами о подписке</string>
     <string name="discard_subscription">Запретить подписку</string>
     <string name="archive_chat">Архивировать</string>
     <string name="unarchive_chat">Разархивировать</string>
@@ -67,6 +71,8 @@
     <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
     <string name="error_unblocking_contacts">Не удалось разблокировать контакты</string>
     <string name="block_contact_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+    <string name="block_contact_confirm_short">Вы действительно хотите удалить контакт &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_warning">Вы не сможете обмениваться сообщениями и посылать обновления присутствия &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Вы действительно хотите разблокировать все контакты из аккаунта %1$s?</string>
     <string name="unblock_all">Разблокировать всех</string>
     <string name="unblock_selected">Разблокировать выбранные</string>
@@ -79,6 +85,9 @@
     <string name="clear_log">Удалить старые файлы журнала</string>
     <string name="open_log_file">Открыть</string>
     <string name="send_log_file">Отправить</string>
+    <string name="voice_download_dialog_message">Xabber может автоматически загружать все входящие медиа файлы. Такой способ намного удобнее, но несет за собой повышенный риск конфиденциальности и может значительно повысить использование данных.</string>
+    <string name="voice_download_dialog_message_settings">Вы всегда можете изменить это поведение в <b>настройках подключения.</b></string>
+    <string name="voice_download_dialog_agree">Загружать автоматически</string>
     <string name="synchronize_bookmarks">Синхронизировать закладки</string>
     <string name="remove_all_bookmarks">Удалить все</string>
     <string name="remove_selected_bookmarks">Удалить выбранные</string>
@@ -96,6 +105,7 @@
     <string name="no_messages">Нет сообщений</string>
     <string name="show_all_chats">Показать все чаты</string>
     <string name="category_title_contacts">Контакты</string>
+    <string name="voice_message">Голосовое сообщение</string>
     <string name="showcase_contact_list_text_1">Смахните влево или вправо чтобы поместить чат в архив</string>
     <string name="last_seen_now">был в сети только что</string>
     <string name="last_seen_minutes">был в сети %1$s минут назад</string>

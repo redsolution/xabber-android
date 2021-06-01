@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="@layout/contact_add_header">
 
 
@@ -12,22 +13,70 @@
         android:layout_marginTop="10dp"
         />
 
-    <EditText
-        android:text=""
-        android:id="@+id/contact_user"
+    <RelativeLayout
+        android:id="@+id/username_field"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/user_domain_name"
-        android:singleLine="true"
-        android:inputType="textEmailAddress" />
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/contact_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_domain_name"
+            android:inputType="textEmailAddress"
+            android:paddingRight="45dp"
+            android:singleLine="true"
+            android:text="" />
+
+        <ImageView
+            android:id="@+id/imgQRcode"
+            style="@style/QRCodeLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/contact_user"
+            android:layout_alignRight="@id/contact_user"
+            android:layout_alignBottom="@id/contact_user"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/test_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            app:srcCompat="@drawable/qrcode_scan_icon_grey" />
+
+        <ImageView
+            android:id="@+id/imgCross"
+            style="@style/QRCodeLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/contact_user"
+            android:layout_alignRight="@id/contact_user"
+            android:layout_alignBottom="@id/contact_user"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/test_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:srcCompat="?attr/standard_clear_icon" />
+
+        <TextView
+            android:id="@+id/error_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contact_user"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="-10dp"
+            android:textColor="@color/red_A700"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            tools:text="123" />
+    </RelativeLayout>
+
 
     <TextView
-        android:text="@string/contact_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/username_field"
         android:layout_marginLeft="4dp"
-        />
+        android:text="@string/contact_name" />
 
     <EditText
         android:text=""
@@ -35,4 +84,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true" />
+
+
 </merge>

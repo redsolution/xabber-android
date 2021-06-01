@@ -47,6 +47,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     public void entriesUpdated(Collection<Jid> addresses) {
         LogManager.i(getLogTag(), "entriesUpdated " + addresses);
         RosterManager.getInstance().onContactsUpdated(account, addresses);
+        PresenceManager.getInstance().onRosterEntriesUpdated(account, addresses);
     }
 
     @Override

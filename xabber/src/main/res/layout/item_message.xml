@@ -25,8 +25,9 @@
             android:id="@+id/message_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="nickname@example.com"
-            android:textSize="12sp" />
+            android:includeFontPadding="false"
+            android:textSize="12sp"
+            tools:text="nickname@example.com" />
 
         <FrameLayout
             android:id="@+id/imageGridContainer"
@@ -89,12 +90,14 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
                 android:autoLink="all"
+                app:lineHeight="18dp"
                 />
 
             <LinearLayout
                 android:id="@+id/message_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -114,7 +117,7 @@
                     android:layout_height="12dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/message_time"
@@ -122,10 +125,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    tools:text="11:40"
                     android:singleLine="true"
                     android:textColor="@color/grey_600"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    tools:text="11:40" />
 
                 <ImageView
                     android:id="@+id/message_status_icon"

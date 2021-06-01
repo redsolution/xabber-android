@@ -1,7 +1,10 @@
 package com.xabber.android.data.extension.capability;
 
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.realm.DiscoveryInfoCache;
+import android.os.Looper;
+
+import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.DiscoveryInfoRealmObject;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.caps.cache.EntityCapsPersistentCache;
@@ -21,15 +24,19 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             return;
         }
 
-        // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    DiscoveryInfoRealmObject discoveryInfoRealmObject = new DiscoveryInfoRealmObject(nodeVer, info);
+                    realm1.copyToRealmOrUpdate(discoveryInfoRealmObject);
+                });
+            } catch (Exception e) {
+                LogManager.exception("EntityCapsCache", e);
+            } finally { if (realm != null) realm.close(); }
+        });
 
-        DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
-        realm.copyToRealmOrUpdate(discoveryInfoCache);
-
-        realm.commitTransaction();
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save discover info: " + (System.currentTimeMillis() - startTime));
 
@@ -37,36 +44,40 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public DiscoverInfo lookup(String nodeVer) {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        DiscoveryInfoCache discoveryInfoCache = realm.where(DiscoveryInfoCache.class)
-                .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
+        DiscoveryInfoRealmObject discoveryInfoRealmObject = realm
+                .where(DiscoveryInfoRealmObject.class)
+                .equalTo(DiscoveryInfoRealmObject.Fields.NODE_VER, nodeVer)
                 .findFirst();
 
         DiscoverInfo discoverInfo = null;
 
-        if (discoveryInfoCache != null) {
-            discoverInfo = realm.copyFromRealm(discoveryInfoCache).getDiscoveryInfo();
+        if (discoveryInfoRealmObject != null) {
+            discoverInfo = discoveryInfoRealmObject.getDiscoveryInfo();
         }
-
-        realm.close();
-
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         return discoverInfo;
     }
 
     @Override
     public void emptyCache() {
         final long startTime = System.currentTimeMillis();
-        // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(DiscoveryInfoRealmObject.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("EntityCapsCache", e);
+            } finally { if (realm != null) realm.close(); }
 
-        realm.beginTransaction();
-        realm.where(DiscoveryInfoCache.class)
-                .findAll()
-                .deleteAllFromRealm();
-        realm.commitTransaction();
+        });
 
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " delete discover cache: " + (System.currentTimeMillis() - startTime));
     }

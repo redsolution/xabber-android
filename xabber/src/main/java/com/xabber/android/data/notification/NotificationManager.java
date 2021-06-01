@@ -36,14 +36,14 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -318,11 +318,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         final Intent persistentIntent;
 
-        persistentIntent = ContactListActivity.createPersistentIntent(application);
+        persistentIntent = MainActivity.createPersistentIntent(application);
 
         if (SyncManager.getInstance().isSyncMode()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
-            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync);
+            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
             persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
         } else {
             if (connected > 0) {
@@ -400,8 +400,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
     }
 
-    public void onMessageNotification(MessageItem messageItem) {
-        MessageNotificationManager.getInstance().onNewMessage(messageItem);
+    public void onMessageNotification(MessageRealmObject messageRealmObject) {
+        MessageNotificationManager.getInstance().onNewMessage(messageRealmObject);
     }
 
     /**
@@ -411,7 +411,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         MessageNotificationManager.getInstance().rebuildAllNotifications();
     }
 
-    public void removeMessageNotification(final AccountJid account, final UserJid user) {
+    public void removeMessageNotification(final AccountJid account, final ContactJid user) {
         MessageNotificationManager.getInstance().removeChat(account, user);
     }
 

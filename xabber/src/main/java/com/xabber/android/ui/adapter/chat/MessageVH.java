@@ -3,9 +3,11 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,20 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Date;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -38,9 +42,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
+    public boolean isUnread;
 
     TextView tvFirstUnread;
-    TextView tvDate;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -49,6 +53,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
+    Long timestamp;
+    View messageInfo;
     View forwardLayout;
     View forwardLeftBorder;
 
@@ -67,7 +73,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.longClickListener = longClickListener;
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
-        tvDate = itemView.findViewById(R.id.tvDate);
+        messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
@@ -82,15 +88,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         itemView.setOnLongClickListener(this);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        if (extraData.isMuc()) {
-            messageHeader.setText(messageItem.getResource());
-            messageHeader.setTextColor(ColorManager.changeColor(
-                    ColorGenerator.MATERIAL.getColor(messageItem.getResource()), 0.8f));
-            messageHeader.setVisibility(View.VISIBLE);
-        } else {
-            messageHeader.setVisibility(View.GONE);
-        }
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+
+        messageHeader.setVisibility(View.GONE);
 
         // groupchat
         if (extraData.getGroupchatUser() != null) {
@@ -101,7 +101,12 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageHeader.setVisibility(View.VISIBLE);
         }
 
-        if (messageItem.isEncrypted()) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
+            else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
+
+        if (messageRealmObject.isEncrypted()) {
             ivEncrypted.setVisibility(View.VISIBLE);
         } else {
             ivEncrypted.setVisibility(View.GONE);
@@ -109,13 +114,35 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
-        if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
-            messageText.setText(Html.fromHtml(
-                    messageItem.getMarkupText().replace("\n", "<br/>").concat("&zwj;"),
-                    null, new ClickTagHandler(extraData.getContext(),
-                    extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
-        else messageText.setText(messageItem.getText().concat(String.valueOf(Character.MIN_VALUE)));
-        if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
+        // Try to decode to avoid ugly non-english links
+        if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()){
+            SpannableStringBuilder spannable = (SpannableStringBuilder) Html.fromHtml(
+                    messageRealmObject.getMarkupText()
+                            .trim().replace("\n", "<br/>").concat("&zwj;"),
+                    null,
+                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount())
+            );
+
+            int color;
+            DisplayMetrics displayMetrics = itemView.getContext().getResources().getDisplayMetrics();
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(messageRealmObject.getAccount());
+            } else {
+                color = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(messageRealmObject.getAccount());
+            }
+
+            Utils.modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
+            messageText.setText(spannable, TextView.BufferType.SPANNABLE);
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                messageText.setText(Utils.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
+                        TextView.BufferType.SPANNABLE);
+            } else {
+                messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+            }
+        }
+
+        if (OTRManager.getInstance().isEncrypted(messageRealmObject.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
             else messageText.setVisibility(View.GONE);
@@ -126,42 +153,33 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         }
         messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
 
-        String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
+        //Since the original and forwarded voice messages are basically the same, we need some help with properly differentiating them to avoid cases when
+        //original voice message and the forward with this voice message are showing the same progress change during playback.
+        //Saving any type of data from the base message (message that "houses" the forwarded messages) will help us differentiate
+        //original voice message and voice message inside forwards, as well as same forwarded messages in different replies.
+        //TODO:should probably swap timestamp to the UID of the message, since it's more versatile
+        timestamp = extraData.getMainMessageTimestamp();
 
-        Long delayTimestamp = messageItem.getDelayTimestamp();
+        String time = StringUtils.getTimeText(new Date(messageRealmObject.getTimestamp()));
+        Long delayTimestamp = messageRealmObject.getDelayTimestamp();
         if (delayTimestamp != null) {
-            String delay = extraData.getContext().getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
+            String delay = extraData.getContext().getString(messageRealmObject.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
+        }
+        Long editedTimestamp = messageRealmObject.getEditedTimestamp();
+        if (editedTimestamp != null) {
+            time += extraData.getContext().getString(R.string.edited, StringUtils.getTimeText(new Date (editedTimestamp)));
         }
 
         messageTime.setText(time);
 
-        // setup UNREAD
-        if (tvFirstUnread != null)
-            tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+        // set unread status
+        isUnread = extraData.isUnread();
 
-        // setup DATE
-        if (tvDate != null) {
-            if (extraData.isNeedDate()) {
-                tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
-                tvDate.setVisibility(View.VISIBLE);
-            } else tvDate.setVisibility(View.GONE);
-        }
-
-        // set DATE alpha
-        if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
-            final MessagesAdapter.MessageExtraData lExtraData = extraData;
-            tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    /** Work only with
-                     *  @see ChatFragment#updateTopDateIfNeed()
-                     *  called in recyclerView.onScrolled */
-                    setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
-                }
-            });
-        }
+        // set date
+        needDate = extraData.isNeedDate();
+        date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
@@ -169,23 +187,35 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         else itemView.setBackgroundDrawable(null);
     }
 
-    protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
+    protected void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+        String[] forwardedIDs = messageRealmObject.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
-            RealmResults<MessageItem> forwardedMessages =
-                    MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
-                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            RealmResults<MessageRealmObject> forwardedMessages = realm
+                            .where(MessageRealmObject.class)
+                            .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
+                            .findAll()
+                            .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
             if (forwardedMessages.size() > 0) {
                 RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
                 ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
                 recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
                 recyclerView.setAdapter(adapter);
-                forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-                forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                forwardLayout.setBackgroundColor(ColorManager
+                        .getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                    forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                    forwardLeftBorder.setAlpha(1);
+                }
+                else{
+                    forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
+                            .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
+                    forwardLeftBorder.setAlpha(0.6f);
+                }
                 forwardLayout.setVisibility(View.VISIBLE);
             }
+            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
         }
     }
 
@@ -210,13 +240,13 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         return true;
     }
 
+
     protected void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
         final Drawable originalBackgroundDrawable = view.getBackground();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             originalBackgroundDrawable.setTintList(colorList);
-
-        } else {
+        else {
             Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
             DrawableCompat.setTintList(wrapDrawable, colorList);
 
@@ -231,25 +261,5 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             view.setPadding(pL, pT, pR, pB);
         }
 
-    }
-
-    private void setDateAlpha(View viewDate, View viewAnchor) {
-        if (viewDate != null && viewAnchor != null) {
-            int specialCoordinates[] = new int[2];
-            int titleCoordinates[] = new int[2];
-            viewAnchor.getLocationOnScreen(titleCoordinates);
-            viewDate.getLocationOnScreen(specialCoordinates);
-            int deltaY = titleCoordinates[1] - specialCoordinates[1];
-            if (deltaY < 0) deltaY *= -1;
-
-            int total = viewAnchor.getMeasuredHeight();
-            int step = total / 100;
-            if (step == 0) step = 1;
-
-            if (deltaY < total * 2) {
-                if (deltaY < total) viewDate.setAlpha(0);
-                else viewDate.setAlpha((float) (deltaY - total / step)/100);
-            } else viewDate.setAlpha(1);
-        }
     }
 }

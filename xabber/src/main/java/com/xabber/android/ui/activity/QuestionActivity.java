@@ -29,7 +29,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -56,7 +56,7 @@ public class QuestionActivity extends ManagedActivity implements
     public static final String EXTRA_FIELD_CANCEL = "com.xabber.android.data.ui.QuestionViewer.CANCEL";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private boolean showQuestion;
     private boolean answerRequest;
     private EditText questionView;
@@ -67,7 +67,7 @@ public class QuestionActivity extends ManagedActivity implements
      * @param user
      * @return Intent to cancel negotiation.
      */
-    public static Intent createCancelIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createCancelIntent(Context context, AccountJid account, ContactJid user) {
         Intent intent = new EntityIntentBuilder(context, QuestionActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_CANCEL, true);
@@ -84,7 +84,7 @@ public class QuestionActivity extends ManagedActivity implements
      *                      answerRequest are <code>true</code>.
      * @return
      */
-    public static Intent createIntent(Context context, AccountJid account, UserJid user,
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user,
                                       boolean showQuestion, boolean answerRequest, String question) {
         Intent intent = new EntityIntentBuilder(context, QuestionActivity.class)
                 .setAccount(account).setUser(user).build();
@@ -98,7 +98,7 @@ public class QuestionActivity extends ManagedActivity implements
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

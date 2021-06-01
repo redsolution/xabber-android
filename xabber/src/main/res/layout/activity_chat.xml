@@ -4,8 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,30 +20,25 @@
         android:contentInsetStart="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        >
+        app:contentInsetStartWithNavigation="0dp">
 
         <include
             android:id="@+id/contact_title"
-            layout="@layout/contact_title"
-            />
+            layout="@layout/contact_title" />
 
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/pager"
+    <RelativeLayout
+        android:id="@+id/chat_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:layout_below="@id/toolbar_default"
-    />
+        android:layout_below="@id/toolbar_default"/>
 
     <ViewStub
         android:id="@+id/showcaseView"
         android:inflatedId="@+id/showcaseView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout="@layout/showcase_chat_screen"
-        />
+        android:layout="@layout/showcase_chat_screen" />
 
 </RelativeLayout>

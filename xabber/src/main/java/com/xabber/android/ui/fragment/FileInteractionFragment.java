@@ -2,33 +2,39 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -38,6 +44,7 @@ import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.dialog.AttachDialog;
+import com.xabber.android.ui.dialog.VoiceDownloadDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.File;
@@ -47,10 +54,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
+import top.oply.opuslib.OpusEvent;
 
 public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
-        AttachDialog.Listener, ForwardedAdapter.ForwardListener {
+        ForwardedAdapter.ForwardListener, AttachDialog.Listener {
 
     private static final String LOG_TAG = FileInteractionFragment.class.getSimpleName();
 
@@ -65,13 +77,23 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
+    static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 37;
 
     private int clickedAttachmentPos;
     private String clickedMessageUID;
+    private String clickedAttachmentUID;
     private String currentPicturePath;
+    private Long messageTimestamp;
+    private List<String> forwardIds = new ArrayList<>();
+    boolean sendImmediately = false;
+    boolean ignoreReceiver = true;
+
+    private OpusReceiver opusReceiver = new OpusReceiver();
+    private PublishSubject<DownloadManager.ProgressData> voiceDownload;
+    private Subscription voiceDownloadSubscription;
 
     protected AccountJid account;
-    protected UserJid user;
+    protected ContactJid user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +115,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
-    /** ActivityResult */
+    /**
+     * ActivityResult
+     */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
@@ -135,12 +159,27 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
+                if (forwardIds.size() == 0)
+                    HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
+                else {
+                    HttpFileUploadManager.getInstance().uploadFile(account, user, null, uris, forwardIds, null, null, getActivity());
+                    forwardIds.clear();
+                    if (getActivity() != null)
+                        ((ChatActivity) getActivity()).hideForwardPanel();
+                }
                 break;
         }
     }
 
-    /** Permissions */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
+    }
+
+    /**
+     * Permissions
+     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -149,40 +188,48 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ATTACH_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
-                    ((ChatActivity)getActivity()).showAttachDialog();
-                else Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+                    ((ChatActivity) getActivity()).showAttachDialog();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
                 break;
 
             case PERMISSIONS_REQUEST_CAMERA:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
                     startCamera();
-                else Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
                 break;
 
             case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
                     openFileOrDownload(clickedMessageUID, clickedAttachmentPos);
-                else Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
-    /** FileMessageVH.FileListener */
+    /**
+     * FileMessageVH.FileListener
+     */
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageRealmObject messageRealmObject = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageUID)
+                .findFirst();
 
-        if (messageItem == null) {
+        if (messageRealmObject == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
             return;
         }
 
-        if (messageItem.haveAttachments()) {
+        if (messageRealmObject.haveAttachments()) {
             try {
                 startActivity(ImageViewerActivity.createIntent(getActivity(),
-                        messageItem.getUniqueId(), attachmentPosition));
+                        messageRealmObject.getUniqueId(), attachmentPosition));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);
@@ -190,12 +237,13 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         } else {
             try {
                 startActivity(ImageViewerActivity.createIntent(getActivity(),
-                        messageItem.getUniqueId(), messageItem.getText()));
+                        messageRealmObject.getUniqueId(), messageRealmObject.getText()));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     @Override
@@ -205,6 +253,29 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(
                 this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
             openFileOrDownload(messageUID, attachmentPosition);
+    }
+
+    @Override
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp) {
+        clickedAttachmentPos = attachmentPosition;
+        clickedMessageUID = messageUID;
+        clickedAttachmentUID = attachmentId;
+        messageTimestamp = timestamp;
+        subscribeForVoiceDownloadProgress();
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
+            openFileOrDownload(messageUID, attachmentPosition);
+    }
+
+    protected void subscribeForVoiceDownloadProgress() {
+        voiceDownload = DownloadManager.getInstance().subscribeForProgress();
+        if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
+        voiceDownloadSubscription = voiceDownload.doOnNext(new Action1<DownloadManager.ProgressData>() {
+            @Override
+            public void call(DownloadManager.ProgressData progressData) {
+                waitForVoiceDownloadFinish(progressData);
+            }
+        }).subscribe();
     }
 
     @Override
@@ -223,7 +294,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     @Override
-    public void onFileLongClick(final Attachment attachment, View caller) {
+    public void onFileLongClick(final AttachmentRealmObject attachmentRealmObject, View caller) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
         popupMenu.inflate(R.menu.menu_file_attachment);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -231,10 +302,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_copy_link:
-                        onCopyFileLink(attachment);
+                        onCopyFileLink(attachmentRealmObject);
                         break;
                     case R.id.action_share:
-                        onShareClick(attachment);
+                        onShareClick(attachmentRealmObject);
                         break;
                 }
                 return true;
@@ -243,7 +314,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         popupMenu.show();
     }
 
-    /** AttachDialog.Listener */
+    /**
+     * AttachDialog.Listener
+     */
 
     @Override
     public void onRecentPhotosSend(List<String> paths) {
@@ -270,7 +343,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 PERMISSIONS_REQUEST_CAMERA)) startCamera();
     }
 
-    /** Forwarded Listener */
+    /**
+     * Forwarded Listener
+     */
 
     @Override
     public void onForwardClick(String messageId) {
@@ -282,23 +357,99 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             // show notification
             String serverName = account.getFullJid().getDomain().toString();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName))
-                    .setTitle(getString(R.string.error_sending_file, ""))
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+            builder.setTitle(getString(R.string.error_sending_file, ""))
+                   .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+            if (HttpFileUploadManager.getInstance().isFileUploadDiscoveryInProgress(account)) {
+                builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_disco_in_progress, serverName));
+            } else {
+                builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName));
+            }
             AlertDialog dialog = builder.create();
             dialog.show();
             return;
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            ((ChatActivity)getActivity()).showAttachDialog();
+            ((ChatActivity) getActivity()).showAttachDialog();
         }
     }
+
+    protected void forwardIdsForAttachments(List<String> forwardIds) {
+        if (forwardIds == null) {
+            this.forwardIds.clear();
+        } else {
+            this.forwardIds = new ArrayList<>(forwardIds);
+        }
+    }
+
+    protected final Runnable record = new Runnable() {
+        @Override
+        public void run() {
+            VoiceManager.getInstance().startRecording();
+        }
+    };
+
+    boolean releaseRecordedVoicePlayback(String filePath) {
+        VoiceManager.getInstance().releaseMediaPlayer();
+        VoiceMessagePresenterManager.getInstance().deleteOldPath(filePath);
+        File file = new File(filePath);
+        if (file.exists()) {
+            FileManager.deleteTempFile(file);
+            return !file.exists();
+        }
+        return true;
+    }
+
+    void sendStoppedVoiceMessage(String filePath) {
+        sendStoppedVoiceMessage(filePath, null);
+    }
+
+    void sendStoppedVoiceMessage(String filePath, List<String> forwardIDs) {
+        VoiceManager.getInstance().releaseMediaPlayer();
+        String path = VoiceManager.getInstance().getStoppedRecordingNewFilePath(filePath);
+        if (path != null) {
+            if (forwardIDs != null) {
+                uploadVoiceFile(path, forwardIDs);
+            } else {
+                uploadVoiceFile(path);
+            }
+        }
+    }
+
+    void stopRecordingAndSend(boolean send) {
+        stopRecordingAndSend(send, null);
+    }
+
+    void stopRecordingAndSend(boolean send, List<String> forwardIDs) {
+        if (send) {
+            sendImmediately = true;
+            //ignore = false;
+            forwardIdsForAttachments(forwardIDs);
+            VoiceManager.getInstance().stopRecording(false);
+        } else {
+            ignoreReceiver = true;
+            VoiceManager.getInstance().stopRecording(true);
+        }
+    }
+
+    void registerOpusBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(OpusEvent.ACTION_OPUS_UI_RECEIVER);
+        getActivity().registerReceiver(opusReceiver, filter);
+    }
+
+    void unregisterOpusBroadcastReceiver() {
+        getActivity().unregisterReceiver(opusReceiver);
+    }
+
+    //void stopRecordingIfPossibleAsync(final boolean saveFile) {
+    //    Application.getInstance().runInBackground(new Runnable() {
+    //        @Override
+    //        public void run() {
+    //            stopRecordingAndSend(saveFile);
+    //        }
+    //    });
+    //}
 
     private void startCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -327,7 +478,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                     Application.getInstance().getString(R.string.application_title_short));
             if (!storageDir.mkdirs()) {
-                if (!storageDir.exists()){
+                if (!storageDir.exists()) {
                     LogManager.w(LOG_TAG, "failed to create directory");
                     return null;
                 }
@@ -364,16 +515,45 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void uploadFile(String path) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        if (forwardIds.size() == 0)
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        else {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity) getActivity()).hideForwardPanel();
+        }
+    }
+
+    private void uploadVoiceFile(String path) {
+        uploadVoiceFile(path, null);
+    }
+
+    private void uploadVoiceFile(String path, List<String> forwardIds) {
+        List<String> paths = new ArrayList<>();
+        paths.add(path);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, "voice", getActivity());
+        if (forwardIds != null && forwardIds.size() != 0) {
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity) getActivity()).hideForwardPanel();
+        }
     }
 
     private void uploadFiles(List<String> paths) {
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        if (forwardIds.size() == 0)
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        else {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity) getActivity()).hideForwardPanel();
+        }
     }
 
-    private void onShareClick(Attachment attachment) {
-        if (attachment == null) return;
-        String path = attachment.getFilePath();
+    private void onShareClick(AttachmentRealmObject attachmentRealmObject) {
+        if (attachmentRealmObject == null) return;
+        String path = attachmentRealmObject.getFilePath();
 
         if (path != null) {
             File file = new File(path);
@@ -386,9 +566,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         Toast.makeText(getActivity(), R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
     }
 
-    private void onCopyFileLink(Attachment attachment) {
-        if (attachment == null) return;
-        String url = attachment.getFileUrl();
+    private void onCopyFileLink(AttachmentRealmObject attachmentRealmObject) {
+        if (attachmentRealmObject == null) return;
+        String url = attachmentRealmObject.getFileUrl();
 
         ClipboardManager clipboardManager = ((ClipboardManager)
                 getActivity().getSystemService(Context.CLIPBOARD_SERVICE));
@@ -398,46 +578,127 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     private void openFileOrDownload(String messageUID, int attachmentPosition) {
-        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageRealmObject messageRealmObject = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageUID)
+                .findFirst();
+        LogManager.d("VoiceDebug", "openFileOrDownload start! attachmentPosition = " + attachmentPosition + " messageUID = " + messageUID);
 
-        if (messageItem == null) {
+        if (messageRealmObject == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. UID: " + messageUID);
             return;
         }
 
-        if (messageItem.haveAttachments()) {
-            RealmList<Attachment> fileAttachments = new RealmList<>();
-            for (Attachment attachment : messageItem.getAttachments()) {
-                if (!attachment.isImage()) fileAttachments.add(attachment);
+        if (messageRealmObject.haveAttachments()) {
+            RealmList<AttachmentRealmObject> fileAttachmentRealmObjects = new RealmList<>();
+            for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+                if (!attachmentRealmObject.isImage()) fileAttachmentRealmObjects.add(attachmentRealmObject);
             }
 
-            Attachment attachment = fileAttachments.get(attachmentPosition);
-            if (attachment == null) return;
+            final AttachmentRealmObject attachmentRealmObject = fileAttachmentRealmObjects.get(attachmentPosition);
+            if (attachmentRealmObject == null) return;
 
-            if (attachment.getFilePath() != null) {
-                File file = new File(attachment.getFilePath());
+            LogManager.d("VoiceDebug", "openFileOrDownload fork! dl or open?");
+            if (attachmentRealmObject.getFilePath() != null) {
+                LogManager.d("VoiceDebug", "Opening file shortly!");
+                File file = new File(attachmentRealmObject.getFilePath());
                 if (!file.exists()) {
-                    MessageManager.setAttachmentLocalPathToNull(attachment.getUniqueId());
+                    MessageManager.setAttachmentLocalPathToNull(attachmentRealmObject.getUniqueId());
                     return;
                 }
 
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                String path = attachment.getFilePath();
-                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                        getActivity().getApplicationContext().getPackageName()
-                                + ".provider", new File(path)), attachment.getMimeType());
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                try {
-                    startActivity(i);
-                } catch (ActivityNotFoundException e) {
-                    LogManager.exception(LOG_TAG, e);
-                    Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
+                if (!attachmentRealmObject.isVoice()) {
+                    manageOpeningFile(attachmentRealmObject);
                 }
+            } else {
+                LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachmentRealmObject.getUniqueId());
+                DownloadManager.getInstance().downloadFile(attachmentRealmObject, account, getActivity());
+                if (attachmentRealmObject.isVoice()) {
+                    showAutoDownloadDialog();
+                }
+            }
+        }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+    }
 
-            } else DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
+    private void showAutoDownloadDialog() {
+        if (!SettingsManager.autoDownloadVoiceMessageSuggested()) {
+            if (!SettingsManager.chatsAutoDownloadVoiceMessage()) {
+                if (getFragmentManager() != null && getFragmentManager().findFragmentByTag("VoiceDownloadDialog") == null) {
+                    VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance(account);
+                    dialog.show(getFragmentManager(), "VoiceDownloadDialog");
+                }
+            }
         }
     }
 
+    private void manageOpeningFile(AttachmentRealmObject attachmentRealmObject) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        String path = attachmentRealmObject.getFilePath();
+        i.setDataAndType(FileProvider.getUriForFile(getActivity(),
+                getActivity().getApplicationContext().getPackageName()
+                        + ".provider", new File(path)), attachmentRealmObject.getMimeType());
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            LogManager.exception(LOG_TAG, e);
+            Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void waitForVoiceDownloadFinish(DownloadManager.ProgressData progressData) {
+        if (progressData.isCompleted()) {
+            if (progressData.getAttachmentId() != null && clickedAttachmentUID != null && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
+                VoiceManager.getInstance().voiceClicked(clickedMessageUID, clickedAttachmentPos, messageTimestamp);
+            }
+        }
+    }
+
+    class OpusReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ignoreReceiver) {
+                return;
+            }
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                int type = bundle.getInt(OpusEvent.EVENT_TYPE, 0);
+                switch (type) {
+                    case OpusEvent.CONVERT_STARTED:
+                    case OpusEvent.RECORD_STARTED:
+                    case OpusEvent.PLAY_PROGRESS_UPDATE:
+                    case OpusEvent.PLAY_GET_AUDIO_TRACK_INFO:
+                    case OpusEvent.PLAYING_PAUSED:
+                    case OpusEvent.PLAYING_STARTED:
+                    case OpusEvent.RECORD_PROGRESS_UPDATE:
+                        break;
+
+                    case OpusEvent.RECORD_FINISHED:
+                        if (sendImmediately) {
+                            String path = VoiceManager.getInstance().getNewFilePath();
+                            uploadVoiceFile(path, forwardIds);
+                        } else {
+                            String tempPath = VoiceManager.getInstance().getTempFilePath();
+                            ((ChatActivity)getActivity()).setUpVoiceMessagePresenter(tempPath);
+                        }
+                        ignoreReceiver = true;
+                        break;
+                    case OpusEvent.RECORD_FAILED:
+                        ((ChatActivity)getActivity()).finishVoiceRecordLayout();
+                        Toast.makeText(Application.getInstance(), getResources().getString(R.string.VOICE_RECORDING_ERROR), Toast.LENGTH_LONG).show();
+                        ignoreReceiver = true;
+                        break;
+                    case OpusEvent.PLAYING_FAILED:
+                    case OpusEvent.CONVERT_FAILED:
+                    case OpusEvent.CONVERT_FINISHED:
+                    case OpusEvent.PLAYING_FINISHED:
+                    default:
+                        break;
+                }
+            }
+        }
+    }
 }

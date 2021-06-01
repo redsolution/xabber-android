@@ -9,6 +9,13 @@
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
+    <!-- XEP-0GGG Group Chat -->
+    <extensionProvider>
+        <elementName>x</elementName>
+        <namespace>http://xabber.com/protocol/groupchat</namespace>
+        <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
+    </extensionProvider>
+
     <!-- Stanza Session Negotiation -->
     <extensionProvider>
         <elementName>feature</elementName>
@@ -22,5 +29,112 @@
         <namespace>urn:xmpp:http:upload</namespace>
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
+
+    <!-- Avatar Data -->
+    <extensionProvider>
+        <elementName>data</elementName>
+        <namespace>urn:xmpp:avatar:data</namespace>
+        <className>com.xabber.xmpp.avatar.DataProvider</className>
+    </extensionProvider>
+
+    <!-- Avatar Metadata -->
+    <extensionProvider>
+        <elementName>metadata</elementName>
+        <namespace>urn:xmpp:avatar:metadata</namespace>
+        <className>com.xabber.xmpp.avatar.MetadataProvider</className>
+    </extensionProvider>
+
+    <!-- Custom vCard Provider -->
+    <iqProvider>
+        <elementName>vCard</elementName>
+        <namespace>vcard-temp</namespace>
+        <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
+    </iqProvider>
+
+
+    <!--       XEP-0333 Chat Markers       -->
+    <!-- Displayed Message Marker Provider -->
+    <extensionProvider>
+        <elementName>displayed</elementName>
+        <namespace>urn:xmpp:chat-markers:0</namespace>
+        <className>com.xabber.xmpp.chat_markers.DisplayedProvider</className>
+    </extensionProvider>
+
+    <!-- Received Message Marker Provider -->
+    <extensionProvider>
+        <elementName>received</elementName>
+        <namespace>urn:xmpp:chat-markers:0</namespace>
+        <className>com.xabber.xmpp.chat_markers.ReceivedProvider</className>
+    </extensionProvider>
+
+    <!-- Marked Message Marker Provider -->
+    <extensionProvider>
+        <elementName>markable</elementName>
+        <namespace>urn:xmpp:chat-markers:0</namespace>
+        <className>com.xabber.xmpp.chat_markers.MarkableProvider</className>
+    </extensionProvider>
+
+    <!-- Acknowledged Message Marker Provider -->
+    <extensionProvider>
+        <elementName>acknowledged</elementName>
+        <namespace>urn:xmpp:chat-markers:0</namespace>
+        <className>com.xabber.xmpp.chat_markers.AcknowledgedProvider</className>
+    </extensionProvider>
+
+
+    <!--            XEP-0UUU + XEP-0085             -->
+    <!-- Extended Chat State Notifications Provider -->
+    <extensionProvider>
+        <elementName>active</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>composing</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>paused</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>inactive</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>gone</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+
+    <!--                XEP-0359                 -->
+    <!--  Stanza-id & Origin-id element provider -->
+    <extensionProvider>
+        <elementName>stanza-id</elementName>
+        <namespace>urn:xmpp:sid:0</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>origin-id</elementName>
+        <namespace>urn:xmpp:sid:0</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.OriginIdProvider</className>
+    </extensionProvider>
+
+
+    <!--           Time element provider         -->
+    <extensionProvider>
+        <elementName>time</elementName>
+        <namespace>http://xabber.com/protocol/delivery</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
+    </extensionProvider>
 
 </smackProviders>

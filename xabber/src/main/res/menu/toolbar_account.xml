@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_generate_qrcode"
+        android:icon="@drawable/image_qr_code_generate"
+        android:visible="true"
+        android:title="@string/share_qr_code"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_account_color"
+        android:icon="@drawable/ic_color_lens_white_24dp"
+        android:visible="true"
+        android:title="Change Account Color"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_account_switch"
         android:title=""

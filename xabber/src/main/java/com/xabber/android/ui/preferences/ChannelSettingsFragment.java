@@ -99,11 +99,9 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
         super.onResume();
 
         loadSound(R.string.events_sound_key, NotificationChannelUtils.ChannelType.privateChat);
-        loadSound(R.string.events_sound_muc_key, NotificationChannelUtils.ChannelType.groupChat);
         loadSound(R.string.chats_attention_sound_key, NotificationChannelUtils.ChannelType.attention);
 
         loadVibro(R.string.events_vibro_chat_key, NotificationChannelUtils.ChannelType.privateChat);
-        loadVibro(R.string.events_vibro_muc_key, NotificationChannelUtils.ChannelType.groupChat);
     }
 
     private void loadVibro(@StringRes int resid, final NotificationChannelUtils.ChannelType type) {

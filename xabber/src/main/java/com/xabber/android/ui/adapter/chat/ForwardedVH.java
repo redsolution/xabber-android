@@ -10,10 +10,12 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 public class ForwardedVH extends FileMessageVH {
 
@@ -26,20 +28,20 @@ public class ForwardedVH extends FileMessageVH {
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
-        super.bind(messageItem, extraData);
+    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData, String accountJid) {
+        super.bind(messageRealmObject, extraData);
 
         // hide STATUS ICONS
         statusIcon.setVisibility(View.GONE);
 
         // setup MESSAGE AUTHOR
-        UserJid jid = null;
+        ContactJid jid = null;
         try {
-            jid = UserJid.from(messageItem.getOriginalFrom());
-        } catch (UserJid.UserJidCreateException e) {
+            jid = ContactJid.from(messageRealmObject.getOriginalFrom());
+        } catch (ContactJid.UserJidCreateException e) {
             e.printStackTrace();
         }
-        String author = RosterManager.getDisplayAuthorName(messageItem);
+        String author = RosterManager.getDisplayAuthorName(messageRealmObject);
         if (extraData.getGroupchatUser() != null)
             author = extraData.getGroupchatUser().getNickname();
 
@@ -52,14 +54,24 @@ public class ForwardedVH extends FileMessageVH {
 
         // setup FORWARDED
         Context context = extraData.getContext();
-        boolean haveForwarded = messageItem.haveForwardedMessages();
+        boolean haveForwarded = messageRealmObject.haveForwardedMessages();
         if (haveForwarded) {
             forwardLayout.setVisibility(View.VISIBLE);
             tvForwardedCount.setText(String.format(extraData.getContext()
-                    .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
+                    .getResources().getString(R.string.forwarded_messages_count), messageRealmObject.getForwardedIds().size()));
             tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                forwardLeftBorder.setAlpha(1);
+                tvForwardedCount.setAlpha(1);
+            }
+            else{
+                forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
+                        .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
+                forwardLeftBorder.setAlpha(0.6f);
+                tvForwardedCount.setAlpha(0.6f);
+            }
         } else forwardLayout.setVisibility(View.GONE);
 
         // setup BACKGROUND
@@ -70,6 +82,28 @@ public class ForwardedVH extends FileMessageVH {
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
         messageBalloon.setBackgroundDrawable(balloonDrawable);
         messageShadow.setBackgroundDrawable(shadowDrawable);
+
+
+        float border = 3.5f;
+        if(messageRealmObject.haveAttachments()) {
+            if(messageRealmObject.isAttachmentImageOnly()) {
+                messageBalloon.setPadding(
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context));
+                /*messageBalloon.setPadding(
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-2f, context),
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-15f, context));*/
+                /*messageInfo.setPadding(
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(-7f, context),
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(0f, context));*/
+            }
+        }
 
         // setup BACKGROUND COLOR
         if (jid != null && !accountJid.equals(jid.getBareJid().toString()))

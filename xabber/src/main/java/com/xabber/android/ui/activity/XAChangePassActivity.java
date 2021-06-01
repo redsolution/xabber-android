@@ -51,7 +51,7 @@ public class XAChangePassActivity extends ManagedActivity {
         setContentView(R.layout.activity_change_xa_pass);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

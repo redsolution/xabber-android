@@ -16,7 +16,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.xabber.android">
 
-    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="true" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -40,6 +40,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -48,7 +49,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
-        tools:replace="label, icon, allowBackup">
+        tools:replace="label, icon, allowBackup"
+        android:requestLegacyExternalStorage="true"
+        android:hardwareAccelerated="true">
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -56,7 +59,7 @@
             />
 
         <activity
-            android:name=".ui.activity.ContactListActivity"
+            android:name=".ui.activity.MainActivity"
             android:label="@string/application_title_full"
             android:launchMode="singleTop">
             <intent-filter>
@@ -72,6 +75,12 @@
 
                 <data android:scheme="xmpp" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.activity.SearchActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -101,6 +110,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ui.activity.LoadActivity"
             android:noHistory="true"
             />
@@ -115,6 +125,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
+
         <activity
             android:name=".ui.activity.AccountListActivity"
             android:label="@string/preference_accounts"
@@ -139,7 +150,7 @@
             android:name=".ui.activity.ChatActivity"
             android:label="@string/chat_viewer"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.activity.ContactListActivity"
+            android:parentActivityName=".ui.activity.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -148,10 +159,10 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.GroupEditActivity"
+            android:name=".ui.activity.ContactEditActivity"
             android:parentActivityName=".ui.activity.ContactActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -162,7 +173,7 @@
         <activity
             android:name=".ui.activity.ContactAddActivity"
             android:label="@string/contact_add"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -173,6 +184,10 @@
         <activity
             android:name=".ui.activity.AccountAddActivity"
             android:label="@string/account_add"
+
+            android:screenOrientation="portrait"
+            tools:replace="screenOrientation"
+
             android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -181,34 +196,24 @@
                 android:value="com.xabber.android.ui.activity.AccountListActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.ConferenceAddActivity"
-            android:label="@string/muc_add"
-            android:parentActivityName=".ui.activity.ConferenceSelectActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ConferenceSelectActivity" />
-        </activity>
-        <activity
             android:name=".ui.activity.StatusEditActivity"
             android:label="@string/status_editor"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.PreferenceEditor"
             android:label="@string/preference_editor"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactActivity"
@@ -231,7 +236,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ContactEditActivity"
+            android:name=".ui.activity.ContactViewerActivity"
             android:label="@string/contact_viewer"
             android:parentActivityName=".ui.activity.ChatActivity">
 
@@ -242,21 +247,12 @@
         </activity>
         <activity
             android:name=".ui.activity.AccountActivity"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.AccountListActivity" />
-        </activity>
-        <activity
-            android:name=".ui.activity.AccountInfoEditorActivity"
-            android:parentActivityName=".ui.activity.AccountActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
         <activity
             android:name=".ui.activity.FingerprintActivity"
@@ -397,12 +393,12 @@
         </activity>
         <activity
             android:name=".ui.activity.ConferenceSelectActivity"
-            android:parentActivityName=".ui.activity.ContactListActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
         <activity android:name=".ui.activity.ConferenceFilterActivity" />
         <activity
@@ -418,6 +414,7 @@
         <service android:name=".service.XabberService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UploadService" />
+        <service android:name=".service.RecordService" />
         <service
             android:name=".service.PushService">
             <intent-filter>
@@ -530,7 +527,7 @@
             android:theme="@style/ThemeDark">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.MainActivity" />
         </activity>
 
         <activity android:name=".ui.activity.DeepLinkActivity" >
@@ -549,20 +546,6 @@
                 <data android:scheme="http" />
                 <data android:host="dev.xabber.com" />
                 <data android:pathPrefix="/account/emails/confirmation" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.facebook.CustomTabActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="@string/SOCIAL_AUTH_FACEBOOK_SCHEME" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.ForwardedActivity" >
@@ -584,6 +567,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.DebugSettings"/>
         </activity>
+        <activity android:name=".ui.activity.QRCodeScannerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.QRCodeActivity" />
+
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+        <activity
+            android:name=".ui.activity.AccountInfoEditActivity"
+            android:parentActivityName=".ui.activity.AccountActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.AccountActivity"/>
+        </activity>
+        <activity android:name=".ui.activity.AccountDeleteActivity" />
+        <activity android:name=".ui.activity.ConnectedDevicesActivity" />
     </application>
 
 </manifest>

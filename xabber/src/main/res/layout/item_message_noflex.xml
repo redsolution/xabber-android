@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,8 +24,9 @@
             android:id="@+id/message_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="nickname@example.com"
-            android:textSize="12sp" />
+            android:includeFontPadding="false"
+            android:textSize="12sp"
+            tools:text="nickname@example.com" />
 
         <FrameLayout
             android:id="@+id/imageGridContainer"
@@ -86,6 +86,7 @@
             android:layout_marginRight="4dp"
             android:layout_marginEnd="4dp"
             android:autoLink="all"
+            app:lineHeight="18dp"
             />
 
         <LinearLayout
@@ -98,8 +99,9 @@
                 android:id="@+id/message_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="right">
+                android:layout_gravity="right"
+                android:layout_marginRight="2dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/message_file_info"
@@ -111,31 +113,31 @@
                     android:visibility="gone"
                     tools:text="Uploading.. 1/3" />
 
-                <ProgressBar
-                    android:id="@+id/message_progress_bar"
-                    style="?android:attr/progressBarStyleSmall"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:visibility="gone"/>
-
                 <TextView
                     android:id="@+id/message_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
-                    tools:text="11:40"
                     android:singleLine="true"
                     android:textColor="@color/grey_600"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    tools:text="11:40" />
 
                 <ImageView
                     android:id="@+id/message_status_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_message_synced_14dp" />
+
+                <ProgressBar
+                    android:id="@+id/message_progress_bar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="0dp"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/message_encrypted_icon"

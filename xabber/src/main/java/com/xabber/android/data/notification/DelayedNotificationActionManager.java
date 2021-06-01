@@ -19,7 +19,7 @@ public class DelayedNotificationActionManager implements OnConnectedListener {
 
     @Override
     public void onConnected(ConnectionItem connection) {
-        Application.getInstance().runInBackground(new Runnable() {
+        /*Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -35,7 +35,8 @@ public class DelayedNotificationActionManager implements OnConnectedListener {
                     }
                 });
             }
-        });
+        });*/ // TODO check if swapping this/\ for this\/ breaks anything
+        Application.getInstance().runOnUiThreadDelay(this::onLoaded, 3000);
     }
 
     private void onLoaded() {

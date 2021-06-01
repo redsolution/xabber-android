@@ -43,9 +43,9 @@ public class NotificationState {
     }
 
     /** Used only for user interface */
-    public NotificationMode determineModeByGlobalSettings(boolean isMUC) {
+    public NotificationMode determineModeByGlobalSettings() {
         NotificationState.NotificationMode resultMode = NotificationState.NotificationMode.bydefault;
-        boolean globalMode = isMUC ? SettingsManager.eventsOnMuc() : SettingsManager.eventsOnChat();
+        boolean globalMode = SettingsManager.eventsOnChat();
         if (mode == NotificationState.NotificationMode.enabled && !globalMode)
             resultMode = NotificationState.NotificationMode.enabled;
         if ((mode != NotificationMode.enabled && mode != NotificationMode.bydefault) && globalMode)

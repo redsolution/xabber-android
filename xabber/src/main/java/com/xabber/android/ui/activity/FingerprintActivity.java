@@ -34,7 +34,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -47,6 +47,7 @@ import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class FingerprintActivity extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
@@ -56,7 +57,7 @@ public class FingerprintActivity extends ManagedActivity implements
     private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.activity.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private String remoteFingerprint;
     private String localFingerprint;
     /**
@@ -72,7 +73,7 @@ public class FingerprintActivity extends ManagedActivity implements
      */
     private IntentIntegrator integrator;
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, FingerprintActivity.class)
                 .setAccount(account).setUser(user).build();
     }
@@ -81,7 +82,7 @@ public class FingerprintActivity extends ManagedActivity implements
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static UserJid getUser(Intent intent) {
+    private static ContactJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -209,10 +210,23 @@ public class FingerprintActivity extends ManagedActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.scan:
-                integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setOrientationLocked(false)
+                        .setBeepEnabled(false)
+                        .setPrompt("")
+                        .addExtra("account", account)
+                        .setCaptureActivity(QRCodeScannerActivity.class)
+                        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+
+                //legacy:
+                //integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
                 break;
             case R.id.show:
-                integrator.shareText(localFingerprint);
+                Intent intent = QRCodeActivity.createIntent(this, account);
+                intent.putExtra("fingerprint", localFingerprint);
+                startActivity(intent);
+
+                //legacy:
+                //integrator.shareText(localFingerprint);
                 break;
             case R.id.copy:
                 ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))

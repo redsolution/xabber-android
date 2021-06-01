@@ -1,52 +1,55 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ListView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.adapter.GroupEditorAdapter;
+import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class GroupEditorFragment extends ListFragment implements TextWatcher, View.OnClickListener {
+/**
+ * This is a parent Fragment that helps initialize a RecyclerView with
+ * Contact's Circles adapter to any extending fragment.
+ * <p>
+ * For it to work properly, an extending fragment must have a RecyclerView
+ * list in the layout file with id = "@+id/rvCircles", as well as the
+ * super() call in {@link #onActivityCreated(Bundle)}
+ */
+public class GroupEditorFragment extends Fragment implements ContactCircleEditorAdapter.OnCircleActionListener {
 
-    protected static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_ACCOUNT";
-    protected static final String ARG_USER = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_USER";
+    static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_ACCOUNT";
+    static final String ARG_USER = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_USER";
 
     private static final String SAVED_GROUPS = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_GROUPS";
     private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_SELECTED";
     private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
 
-    private GroupEditorAdapter groupEditorAdapter;
+    private RecyclerView rvContactCircles;
+    private ContactCircleEditorAdapter contactCircleEditorAdapter;
 
-    private Collection<String> groups;
+    private Collection<String> groups = new ArrayList<>();
     private Collection<String> selected = new HashSet<>();
-
-    private EditText groupAddInput;
-    private CheckBox groupAddCheckBox;
-    private View footerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -55,7 +58,7 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     public GroupEditorFragment() {
     }
 
-    public static GroupEditorFragment newInstance(AccountJid account, UserJid user) {
+    public static GroupEditorFragment newInstance(AccountJid account, ContactJid user) {
         GroupEditorFragment fragment = new GroupEditorFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
@@ -64,12 +67,14 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         return fragment;
     }
 
-    public static void hideKeyboard(Activity activity) {
+    private static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
-        View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        if (activity != null) {
+            View view = activity.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
         }
     }
 
@@ -84,83 +89,103 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.circles_list_layout, container, false);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
-        setUpFooter();
-
-        groupEditorAdapter = new GroupEditorAdapter((ManagedActivity) getActivity(),
-                R.layout.item_group, new ArrayList<GroupEditorAdapter.Group>());
-
-        setListAdapter(groupEditorAdapter);
+        initRecyclerView(getView());
 
         if (savedInstanceState != null) {
             groups = savedInstanceState.getStringArrayList(SAVED_GROUPS);
             selected = savedInstanceState.getStringArrayList(SAVED_SELECTED);
-            groupAddInput.setText(savedInstanceState.getString(SAVED_ADD_GROUP_NAME));
+            String circleAddInput = savedInstanceState.getString(SAVED_ADD_GROUP_NAME);
+            contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
-            setAccountGroups();
-            if (user != null) {
-                selected = RosterManager.getInstance().getGroups(account, user);
+            if (account != null) {
+                groups = RosterManager.getInstance().getGroups(account);
+                if (user != null) {
+                    selected = RosterManager.getInstance().getGroups(account, user);
+                }
             }
         }
+    }
 
+    private void initRecyclerView(View rootView) {
+        if (rootView == null) return;
+
+        rvContactCircles = rootView.findViewById(R.id.rvCircles);
+        contactCircleEditorAdapter = new ContactCircleEditorAdapter(this);
+
+        rvContactCircles.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvContactCircles.setAdapter(contactCircleEditorAdapter);
+        rvContactCircles.setNestedScrollingEnabled(false);
     }
 
     protected void setAccountGroups() {
         groups = RosterManager.getInstance().getGroups(account);
     }
 
-    private void setUpFooter() {
-        footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.group_add_footer, null, false);
-        getListView().addFooterView(footerView);
-
-        groupAddInput = (EditText) footerView.findViewById(R.id.group_add_input);
-        groupAddInput.addTextChangedListener(this);
-
-        groupAddCheckBox = (CheckBox) footerView.findViewById(R.id.group_add_checkbox);
-        groupAddCheckBox.setVisibility(View.INVISIBLE);
-        groupAddCheckBox.setOnClickListener(this);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-
-        updateGroups();
+        updateCircles();
     }
 
-    protected void updateGroups() {
+    protected void updateCircles() {
         ArrayList<String> list = new ArrayList<>(groups);
+        ArrayList<ContactCircleEditorAdapter.ContactCircle> circles = new ArrayList<>(groups.size());
         Collections.sort(list);
-        groupEditorAdapter.clear();
+        contactCircleEditorAdapter.clear();
 
         for (int position = 0; position < list.size(); position++) {
-            String groupName = list.get(position);
-
-            GroupEditorAdapter.Group group = new GroupEditorAdapter.Group(groupName, selected.contains(groupName));
-
-            groupEditorAdapter.add(group);
+            String circleName = list.get(position);
+            circles.add(new ContactCircleEditorAdapter.ContactCircle(circleName, selected.contains(circleName)));
         }
+        if (circles.size() > 0) contactCircleEditorAdapter.add(circles);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-
         selected = getSelected();
 
         outState.putStringArrayList(SAVED_GROUPS, getGroups());
         outState.putStringArrayList(SAVED_SELECTED, new ArrayList<>(selected));
-        outState.putString(SAVED_ADD_GROUP_NAME, groupAddInput.getText().toString());
+        outState.putString(SAVED_ADD_GROUP_NAME, contactCircleEditorAdapter.getInputCircleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
+    }
 
+    RecyclerView getListView() {
+        return rvContactCircles;
+    }
+
+    protected ArrayList<String> getGroups() {
+        return contactCircleEditorAdapter.getCircles();
+    }
+
+    public ArrayList<String> getSelected() {
+        return contactCircleEditorAdapter.getSelected();
+    }
+
+    @Override
+    public void onCircleAdded() {
+        hideKeyboard(getActivity());
+    }
+
+    @Override
+    public void onCircleToggled() {
+    }
+
+    public void saveCircles() {
         selected = getSelected();
 
         if (account != null && user != null) {
@@ -170,72 +195,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
                 Application.getInstance().onError(e);
             }
         }
-
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        CheckBox checkBox = (CheckBox) v.findViewById(R.id.group_item_selected_checkbox);
-        checkBox.toggle();
-
-        GroupEditorAdapter.Group group = groupEditorAdapter.getItem(position - getListView().getHeaderViewsCount());
-
-        group.setIsSelected(checkBox.isChecked());
-    }
-
-    protected ArrayList<String> getGroups() {
-        ArrayList<String> groups = new ArrayList<>();
-        for (int position = 0; position < groupEditorAdapter.getCount(); position++)
-            groups.add(groupEditorAdapter.getItem(position).getGroupName());
-        return groups;
-    }
-
-    public ArrayList<String> getSelected() {
-        ArrayList<String> selectedGroups = new ArrayList<>();
-        for (int position = 0; position < groupEditorAdapter.getCount(); position++) {
-
-            GroupEditorAdapter.Group item = groupEditorAdapter.getItem(position);
-
-            if (item.isSelected()) {
-                selectedGroups.add(item.getGroupName());
-            }
-        }
-        return selectedGroups;
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        String groupName = groupAddInput.getText().toString().trim();
-        if (groupName.isEmpty() || getGroups().contains(groupName)) {
-            groupAddCheckBox.setVisibility(View.INVISIBLE);
-        } else {
-            groupAddCheckBox.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.group_add_checkbox) {
-            String groupName = groupAddInput.getText().toString().trim();
-            groupEditorAdapter.add(new GroupEditorAdapter.Group(groupName, true));
-
-            groupAddInput.getText().clear();
-            groupAddInput.clearFocus();
-            hideKeyboard(getActivity());
-            groupAddCheckBox.setChecked(false);
-        }
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
     }
 
     protected AccountJid getAccount() {
@@ -246,15 +205,11 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         this.account = account;
     }
 
-    protected UserJid getUser() {
+    protected ContactJid getUser() {
         return user;
     }
 
-    protected void setUser(UserJid user) {
+    protected void setUser(ContactJid user) {
         this.user = user;
-    }
-
-    protected View getFooterView() {
-        return footerView;
     }
 }

@@ -9,7 +9,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -33,7 +33,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Georg Lukas, Semyon Baranov
  */
 public class CarbonManager {
+
     private static CarbonManager instance;
+    private static final String LOG_TAG = CarbonManager.class.getSimpleName();
 
     @SuppressWarnings("WeakerAccess")
     Map<AccountJid, CarbonCopyListener> carbonCopyListeners;
@@ -42,7 +44,6 @@ public class CarbonManager {
         if (instance == null) {
             instance = new CarbonManager();
         }
-
         return instance;
     }
 
@@ -56,45 +57,95 @@ public class CarbonManager {
 
     @SuppressWarnings("WeakerAccess")
     void updateIsSupported(final ConnectionItem connectionItem) {
+
         org.jivesoftware.smackx.carbons.CarbonManager carbonManager
                 = org.jivesoftware.smackx.carbons.CarbonManager
                 .getInstanceFor(connectionItem.getConnection());
 
         try {
-            if (carbonManager.isSupportedByServer()) {
+            if (connectionItem.getConnection() != null && connectionItem.getConnection().getUser() != null && carbonManager.isSupportedByServer()) {
+                LogManager.d(LOG_TAG, "Smack reports that carbons are " + (carbonManager.getCarbonsEnabled() ? "enabled" : "disabled"));
                 if (carbonManager.getCarbonsEnabled()) {
-                    // Smack CarbonManager still thinks, that carbons enabled and does not sent IQ
-                    // it drops flag to false when on authorized listener, but it happens after this listener
-                    // so it is problem of unordered authorized listeners
-                    carbonManager.setCarbonsEnabled(false);
+                    // Sometimes Smack's CarbonManager still thinks that carbons are enabled during a
+                    // period of time between disconnecting on error and completing a new authorization.
+                    // Since our onAuthorized listener could be called earlier than the listener in Smack's CarbonManager,
+                    // it can introduce an incorrect behavior of .getCarbonsEnabled().
+                    // To avoid it we can use .enableCarbonsAsync(), and its' counterpart, to skip the Carbons's
+                    // state check and "forcefully" send the correct carbons state IQ
+                    changeCarbonsStateAsync(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
+                } else {
+                    changeCarbonsStateAsync(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
+                    //changeCarbonsState(carbonManager, connectionItem.getAccount(), SettingsManager.connectionUseCarbons());
                 }
-                carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
-
-                addListener(carbonManager, connectionItem.getAccount());
             }
-
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                 | SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
+            if (e instanceof SmackException.NoResponseException) {
+                if (SettingsManager.connectionUseCarbons()) {
+                    addListener(carbonManager, connectionItem.getAccount());
+                } else {
+                    removeListener(carbonManager, connectionItem.getAccount());
+                }
+            }
         }
+    }
+
+    // Async method sends carbons IQ without checking the current state, which is useful when the order of
+    // authorized listeners becomes messed up and Smack's Carbons state flag doesn't reflect the real state since it didn't update yet.
+    private void changeCarbonsStateAsync(org.jivesoftware.smackx.carbons.CarbonManager carbonManager, AccountJid account, boolean enable)
+            throws InterruptedException {
+        if (enable) {
+            carbonManager.enableCarbonsAsync(null);
+            addListener(carbonManager, account);
+            LogManager.d(LOG_TAG, "Forcefully sent <enable> carbons");
+        } else {
+            carbonManager.disableCarbonsAsync(null);
+            removeListener(carbonManager, account);
+            LogManager.d(LOG_TAG, "Forcefully sent <disable> carbons");
+        }
+    }
+
+    private void changeCarbonsState(org.jivesoftware.smackx.carbons.CarbonManager carbonManager, AccountJid account, boolean enable)
+            throws XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+        if (enable) {
+            carbonManager.setCarbonsEnabled(true);
+            addListener(carbonManager, account);
+        } else {
+            carbonManager.setCarbonsEnabled(false);
+            removeListener(carbonManager, account);
+        }
+        LogManager.d(LOG_TAG, "Tried to send normal settings dependent carbons = " +
+                (enable ? "enabled" : "disabled"));
     }
 
     // we need to remove old listener not to cause memory leak
     private void addListener(org.jivesoftware.smackx.carbons.CarbonManager carbonManager, AccountJid account) {
-        CarbonCopyListener carbonCopyListener = carbonCopyListeners.remove(account);
-        if (carbonCopyListener != null) {
-            carbonManager.removeCarbonCopyReceivedListener(carbonCopyListener);
-        }
+        removeListener(carbonManager, account);
 
-        carbonCopyListener = new CarbonCopyListener(account);
+        CarbonCopyListener carbonCopyListener = new CarbonCopyListener(account);
         carbonCopyListeners.put(account, carbonCopyListener);
         carbonManager.addCarbonCopyReceivedListener(carbonCopyListener);
     }
 
-    private boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
+    private void removeListener(org.jivesoftware.smackx.carbons.CarbonManager carbonManager, AccountJid account) {
+        CarbonCopyListener carbonCopyListener = carbonCopyListeners.remove(account);
+        if (carbonCopyListener != null) {
+            carbonManager.removeCarbonCopyReceivedListener(carbonCopyListener);
+        }
+    }
+
+    public boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
         return org.jivesoftware.smackx.carbons.CarbonManager
                 .getInstanceFor(connection.getConnection())
                 .getCarbonsEnabled();
+    }
+
+    public boolean isSupportedByServer(ConnectionItem connection) throws XMPPException.XMPPErrorException,
+            SmackException.NotConnectedException, InterruptedException, SmackException.NoResponseException {
+        return org.jivesoftware.smackx.carbons.CarbonManager
+                .getInstanceFor(connection.getConnection())
+                .isSupportedByServer();
     }
 
     /**
@@ -102,7 +153,7 @@ public class CarbonManager {
      * when this setting has been changed
      */
     public void onUseCarbonsSettingsChanged() {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
@@ -123,7 +174,6 @@ public class CarbonManager {
      * @param message      the <tt>Message</tt> to be sent
      */
     public void updateOutgoingMessage(AbstractChat abstractChat, Message message) {
-
         if (!SettingsManager.connectionUseCarbons()) {
             return;
         }
@@ -133,7 +183,6 @@ public class CarbonManager {
         }
 
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(abstractChat.getAccount(), abstractChat.getUser());
-
         if (securityLevel == SecurityLevel.plain || securityLevel == SecurityLevel.finished) {
             return;
         }
@@ -141,6 +190,7 @@ public class CarbonManager {
 //        if (isCarbonsEnabledForConnection(AccountManager.getInstance().getAccount(abstractChat.getAccount()))) {
 //            return;
 //        }
+
         CarbonExtension.Private.addTo(message);
     }
 

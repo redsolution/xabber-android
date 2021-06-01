@@ -6,13 +6,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
+import android.webkit.MimeTypeMap;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
@@ -21,6 +24,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
+import com.xabber.xmpp.uuu.ChatStateSubtype;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -55,17 +59,22 @@ public class UploadService extends IntentService {
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String XABBER_COMPRESSED_DIR = "Xabber/temp";
     private static final String XABBER_DIR = "Xabber";
+    private static final String XABBER_AUDIO_DIR = "Xabber Audio";
+    private static final String XABBER_DOCUMENTS_DIR = "Xabber Documents";
+    private static final String XABBER_IMAGES_DIR = "Xabber Images";
 
     public final static String KEY_RECEIVER = "receiver";
     public final static String KEY_ACCOUNT_JID = "account_jid";
     public final static String KEY_USER_JID = "user_jid";
     public final static String KEY_FILE_PATHS = "file_paths";
     public final static String KEY_FILE_URIS = "file_uris";
+    public final static String KEY_FORWARD_IDS = "attached_forwards";
     public final static String KEY_UPLOAD_SERVER_URL = "upload_server_url";
     public final static String KEY_FILE_COUNT = "file_count";
     public final static String KEY_PROGRESS = "progress";
     public final static String KEY_ERROR = "error";
     public final static String KEY_MESSAGE_ID = "message_id";
+    public final static String KEY_ATTACHMENT_TYPE = "attachment_type";
 
     public static final int UPDATE_PROGRESS_CODE = 2232;
     public static final int ERROR_CODE = 2233;
@@ -83,14 +92,16 @@ public class UploadService extends IntentService {
         if (intent == null) return;
         this.receiver = intent.getParcelableExtra(KEY_RECEIVER);
         AccountJid account = intent.getParcelableExtra(KEY_ACCOUNT_JID);
-        UserJid user = intent.getParcelableExtra(KEY_USER_JID);
+        ContactJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
+        List<String> forwardIds = intent.getStringArrayListExtra(KEY_FORWARD_IDS);
+        String messageAttachmentType = intent.getStringExtra(KEY_ATTACHMENT_TYPE);
         List<Uri> fileUris = intent.getParcelableArrayListExtra(KEY_FILE_URIS);
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
         String existMessageId = intent.getStringExtra(KEY_MESSAGE_ID);
 
-        if (filePaths != null) startWork(account, user, filePaths, uploadServerUrl, existMessageId);
-        else if (fileUris != null) startWorkWithUris(account, user, fileUris, uploadServerUrl);
+        if (filePaths != null) startWork(account, user, filePaths, forwardIds, uploadServerUrl, existMessageId, messageAttachmentType);
+        else if (fileUris != null) startWorkWithUris(account, user, fileUris, forwardIds, uploadServerUrl);
     }
 
     @Override
@@ -99,8 +110,8 @@ public class UploadService extends IntentService {
         needStop = true;
     }
 
-    private void startWorkWithUris(AccountJid account, UserJid user, List<Uri> fileUris,
-                           CharSequence uploadServerUrl) {
+    private void startWorkWithUris(AccountJid account, ContactJid user, List<Uri> fileUris, List<String> forwardIds,
+                                   CharSequence uploadServerUrl) {
 
         // determine which files are local or remote
         List<File> files = new ArrayList<>();
@@ -114,13 +125,15 @@ public class UploadService extends IntentService {
         // create message with progress
         String messageId;
         if (remoteFiles.isEmpty())
-            messageId = MessageManager.getInstance().createFileMessage(account, user, files);
-        else messageId = MessageManager.getInstance().createFileMessageFromUris(account, user, remoteFiles);
+            messageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
+        else messageId = MessageManager.getInstance().createFileMessageFromUrisWithForwards(account, user, remoteFiles, forwardIds);
+
+        ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.upload);
 
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists())
-            if (!directory.mkdir()) {
+            if (!directory.mkdirs()) {
                 publishError(messageId, "Directory not created");
                 return;
             }
@@ -155,8 +168,13 @@ public class UploadService extends IntentService {
         startWork(account, user, filePaths, uploadServerUrl, messageId);
     }
 
-    private void startWork(AccountJid account, UserJid user, List<String> filePaths,
+    private void startWork(AccountJid account, ContactJid user, List<String> filePaths,
                            CharSequence uploadServerUrl, String existMessageId) {
+        startWork(account, user, filePaths, null, uploadServerUrl, existMessageId, null);
+    }
+
+    private void startWork(AccountJid account, ContactJid user, List<String> filePaths, List<String> forwardIds,
+                           CharSequence uploadServerUrl, String existMessageId, String messageAttachmentType) {
 
         // get account item
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -180,8 +198,14 @@ public class UploadService extends IntentService {
             for (String filePath : filePaths) {
                 files.add(new File(filePath));
             }
-            fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+            if ("voice".equals(messageAttachmentType)) {
+                fileMessageId = MessageManager.getInstance().createVoiceMessageWithForwards(account, user, files, forwardIds);
+            } else {
+                fileMessageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
+                ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.upload);
+            }
         } else fileMessageId = existMessageId; // use existing fileMessage
+
 
         HashMap<String, String> uploadedFilesUrls = new HashMap<>();
         List<String> notUploadedFilesPaths = new ArrayList<>();
@@ -237,6 +261,7 @@ public class UploadService extends IntentService {
         MessageManager.getInstance().updateFileMessage(account, user, fileMessageId,
                 uploadedFilesUrls, notUploadedFilesPaths);
         publishCompleted(fileMessageId);
+        ChatStateManager.getInstance().cancelComposingSender();
 
         // if some files have errors move its to separate message
         if (notUploadedFilesPaths.size() > 0) {
@@ -319,13 +344,29 @@ public class UploadService extends IntentService {
     }
 
     private static String getCompressedDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        return Environment.getExternalStorageDirectory().getPath()
                 + File.separator + XABBER_COMPRESSED_DIR;
+        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        //        + File.separator + XABBER_COMPRESSED_DIR;
     }
 
     private static String getDownloadDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        return Environment.getExternalStorageDirectory().getPath()
                 + File.separator + XABBER_DIR;
+        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        //        + File.separator + XABBER_DIR;
+    }
+
+    private static String getAudioDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
+    }
+
+    private static String getDocumentsDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
+    }
+
+    private static String getImagesDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 
     private String generateErrorDescriptionForFiles(List<String> files, List<String> errors) {
@@ -343,14 +384,50 @@ public class UploadService extends IntentService {
 
     private String copyFileToLocalStorage(Uri uri) throws IOException {
         String fileName = UriUtils.getFullFileName(uri);
-        File file = new File(getDownloadDirPath(),  fileName);
+        File file;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+        String fileType = null;
+        if (extension != null) {
+            fileType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (fileType != null) {
+                int slash = fileType.indexOf("/");
+                if (slash != -1) {
+                    fileType = fileType.substring(0, slash);
+                }
+            }
+        }
+        if ("audio".equals(fileType) || (extension != null && extension.equals("ogg"))) {
+            file = new File(getAudioDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        } else if ("image".equals(fileType)) {
+            file = new File(getImagesDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        } else {
+            file = new File(getDocumentsDownloadDirPath());
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException();
+                }
+            }
+        }
+
+        fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
+        file = new File(file, fileName);
 
         OutputStream os = null;
         InputStream is = null;
 
         if (file.exists()) {
-            file = new File(getDownloadDirPath(),
-                    FileManager.generateUniqueNameForFile(getDownloadDirPath(), fileName));
+            file = new File(file.getParent(),
+                    FileManager.generateUniqueNameForFile(file.getParent(), fileName));
         }
 
         if (file.createNewFile()) {

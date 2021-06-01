@@ -14,16 +14,19 @@
  */
 package com.xabber.android.data.message;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -47,6 +50,8 @@ import io.realm.Realm;
  * @author alexander.ivanov
  */
 public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener {
+
+    private static final String LOG_TAG = ReceiptManager.class.getSimpleName();
 
     private static ReceiptManager instance;
 
@@ -90,12 +95,8 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         }
         final Message message = (Message) packet;
         if (message.getType() == Message.Type.error) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                @Override
-                public void run() {
-                    markAsError(account, message);
-                }
-            });
+            Application.getInstance().runInBackgroundUserRequest(() -> markAsError(account, message));
+
         } else {
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
@@ -120,23 +121,28 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsError(final AccountJid account, final Message message) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message)).findFirst();
-        if (first != null) {
-            first.setError(true);
-            XMPPError error = message.getError();
-            if (error != null) {
-                String errorStr = error.toString();
-                String descr = error.getDescriptiveText(null);
-                first.setErrorDescription(errorStr + "\n" + descr);
-            }
-        }
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent(account));
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                        .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.getStanzaId())
+                        .findFirst();
+                if (first != null) {
+                    first.setError(true);
+                    XMPPError error = message.getError();
+                    if (error != null) {
+                        String errorStr = error.toString();
+                        String descr = error.getDescriptiveText();
+                        first.setErrorDescription(errorStr + "\n" + descr);
+                    }
+                }
+            });
+            EventBus.getDefault().post(new MessageUpdateEvent(account));
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
     }
 
     @Override
@@ -147,19 +153,22 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             return;
         }
 
-        markAsDelivered(toJid, receiptId);
+        Application.getInstance().runInBackground(() -> markAsDelivered(toJid, receiptId));
     }
 
     private void markAsDelivered(final Jid toJid, final String receiptId) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-        if (first != null) {
-            first.setDelivered(true);
-        }
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent());
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                        .equalTo(MessageRealmObject.Fields.STANZA_ID, receiptId).findFirst();
+                first.setDelivered(true);
+            });
+
+            EventBus.getDefault().post(new MessageUpdateEvent());
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally { if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close(); }
     }
 }

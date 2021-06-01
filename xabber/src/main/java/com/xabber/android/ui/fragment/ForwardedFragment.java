@@ -2,21 +2,22 @@ package com.xabber.android.ui.fragment;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -25,6 +26,7 @@ import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class ForwardedFragment extends FileInteractionFragment {
@@ -37,13 +39,12 @@ public class ForwardedFragment extends FileInteractionFragment {
     private int accountMainColor;
     private int mentionColor;
     private ColorStateList colorStateList;
-    private boolean isMUC;
     private String messageId;
 
     private RecyclerView recyclerView;
     private View backgroundView;
 
-    public static ForwardedFragment newInstance(AccountJid account, UserJid user, String messageId) {
+    public static ForwardedFragment newInstance(AccountJid account, ContactJid user, String messageId) {
         ForwardedFragment fragment = new ForwardedFragment();
 
         Bundle arguments = new Bundle();
@@ -67,7 +68,6 @@ public class ForwardedFragment extends FileInteractionFragment {
             accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
             mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
             colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
-            isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         }
     }
 
@@ -87,7 +87,7 @@ public class ForwardedFragment extends FileInteractionFragment {
         // background
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                backgroundView.setBackgroundResource(R.drawable.chat_background_repeat_dark);
+                backgroundView.setBackgroundResource(R.color.black);
             } else {
                 backgroundView.setBackgroundResource(R.drawable.chat_background_repeat);
             }
@@ -95,20 +95,25 @@ public class ForwardedFragment extends FileInteractionFragment {
             backgroundView.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
         }
 
-        // messages adapter
-        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        RealmResults<MessageItem> forwardedMessages =
-                MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                        .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
+        // messages adapter
+        MessageRealmObject messageRealmObject = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                .findFirst();
+
+        RealmResults<MessageRealmObject> forwardedMessages = realm
+                .where(MessageRealmObject.class)
+                .in(MessageRealmObject.Fields.UNIQUE_ID, messageRealmObject.getForwardedIdsAsArray())
+                .findAll();
 
         // groupchat user
-        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
+        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
-                this, null, getActivity(),
-                userName, colorStateList, groupchatUser, accountMainColor, mentionColor, isMUC, false,
+                this, getActivity(), userName, colorStateList, groupchatUser,
+                accountMainColor, mentionColor, null, false,
                 false, false, false, false);
 
         if (forwardedMessages.size() > 0) {
@@ -117,5 +122,7 @@ public class ForwardedFragment extends FileInteractionFragment {
             recyclerView.setAdapter(adapter);
             ((ForwardedActivity)getActivity()).setToolbar(forwardedMessages.size());
         }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 }

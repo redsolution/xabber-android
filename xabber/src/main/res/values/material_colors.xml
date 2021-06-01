@@ -199,7 +199,7 @@
 
     <color name="amber_50">#fff8e1</color>
     <color name="amber_100">#ffecb3</color>
-    <color name="amber_200">#ffe082</color>
+    <color name="amber_200">#FFE082</color>
     <color name="amber_300">#ffd54f</color>
     <color name="amber_400">#ffca28</color>
     <color name="amber_500">#ffc107</color>
@@ -282,7 +282,7 @@
     <color name="black_text_secondary">#8a000000</color>
     <color name="black_text">#de000000</color>
 
-    <color name="white">#ffffff</color>
+    <color name="white">#FFFFFF</color>
     <color name="white_dividers">#1fffffff</color>
     <color name="white_text_disabled">#4dffffff</color>
     <color name="white_text_secondary">#b3ffffff</color>

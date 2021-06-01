@@ -5,6 +5,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 
 import org.jivesoftware.smack.packet.Message;
@@ -24,13 +25,15 @@ class CarbonCopyListener implements CarbonCopyReceivedListener {
 
     @Override
     public void onCarbonCopyReceived(final CarbonExtension.Direction direction,
-                                     final Message carbonCopy, Message wrappingMessage) {
+                                     final Message carbonCopy, final Message wrappingMessage) {
+        LogManager.d(LOG_TAG, "onCarbonCopyReceive reached, just before runOnUiThread() call. CarbonExtension.Direction: " + direction.toString() + " Message: " + carbonCopy.toString() + " Message: " + wrappingMessage);
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 MessageManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
                 ChatMarkerManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
                 ChatStateManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
+                LogManager.d(LOG_TAG, "invoked onCarbonCopyReceived on CarbonExtension.Direction: " + direction.toString() + " Message: " + carbonCopy.toString() + " Message: " + wrappingMessage);
             }
         });
     }

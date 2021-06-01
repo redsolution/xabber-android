@@ -18,10 +18,8 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.utils.StringUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -46,7 +44,7 @@ public class RosterContact extends AbstractContact {
     /**
      * Used groups with its names.
      */
-    private final Map<String, RosterGroupReference> groupReferences;
+    private final Map<String, RosterCircleReference> groupReferences;
 
     /**
      * Whether contact`s account is connected.
@@ -58,16 +56,16 @@ public class RosterContact extends AbstractContact {
      */
     protected boolean enabled;
 
+    /**
+     * Whether contact is in the process of being removed
+     */
+    private boolean dirtyRemoved;
+
     private static final  NestedMap<WeakReference<RosterContact>> instances = new NestedMap<>();
 
-    static RosterContact getRosterContact(AccountJid account, UserJid user, String name) {
+    static RosterContact getRosterContact(AccountJid account, ContactJid user, String name) {
         WeakReference<RosterContact> contactWeakReference = instances.get(account.toString(), user.toString());
         if (contactWeakReference != null && contactWeakReference.get() != null) {
-            // if formatted name is empty, then formatted name == userJid
-//            if (name == null){
-//                contactWeakReference.get().setName(user.toString());
-//            }
-//            else
                 contactWeakReference.get().setName(name);
             return contactWeakReference.get();
         }
@@ -77,7 +75,7 @@ public class RosterContact extends AbstractContact {
         return rosterContact;
     }
 
-    private RosterContact(AccountJid account, UserJid user, String name) {
+    private RosterContact(AccountJid account, ContactJid user, String name) {
         super(account, user);
 
         if (name == null) {
@@ -96,11 +94,11 @@ public class RosterContact extends AbstractContact {
     }
 
     @Override
-    public Collection<RosterGroupReference> getGroups() {
+    public Collection<RosterCircleReference> getGroups() {
         return Collections.unmodifiableCollection(groupReferences.values());
     }
 
-    Collection<String> getGroupNames() {
+    public Collection<String> getGroupNames() {
         return Collections.unmodifiableCollection(groupReferences.keySet());
     }
 
@@ -108,7 +106,7 @@ public class RosterContact extends AbstractContact {
         groupReferences.clear();
     }
 
-    void addGroupReference(RosterGroupReference groupReference) {
+    void addGroupReference(RosterCircleReference groupReference) {
         groupReferences.put(groupReference.getName(), groupReference);
     }
 
@@ -121,6 +119,14 @@ public class RosterContact extends AbstractContact {
     public String getName() {
         if (TextUtils.isEmpty(name)) {
             return super.getName();
+        } else {
+            return name;
+        }
+    }
+
+    public String getNickname() {
+        if (TextUtils.isEmpty(name)) {
+            return "";
         } else {
             return name;
         }
@@ -143,7 +149,15 @@ public class RosterContact extends AbstractContact {
         this.enabled = enabled;
     }
 
-    public String getLastActivity() {
-        return StringUtils.getLastActivityString(LastActivityInteractor.getInstance().getLastActivity(getUser()));
+    public boolean isDirtyRemoved() {
+        return dirtyRemoved;
     }
+
+    void setDirtyRemoved(boolean removed) {
+        this.dirtyRemoved = removed;
+    }
+
+//    public String getLastActivity() {
+//        return StringUtils.getLastActivityString(LastActivityInteractor.getInstance().getLastActivity(getUser()));
+//    }
 }

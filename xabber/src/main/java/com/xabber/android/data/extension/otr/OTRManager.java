@@ -15,16 +15,12 @@
 package com.xabber.android.data.extension.otr;
 
 import android.content.Intent;
-import android.database.Cursor;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnLoadListener;
@@ -34,18 +30,22 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.database.sqlite.OTRTable;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.database.repositories.OtrRepository;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.RegularChat;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatAction;
+import com.xabber.android.data.message.chat.RegularChat;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -155,27 +155,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     @Override
     public void onLoad() {
-        final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
-        Cursor cursor = OTRTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    String account = OTRTable.getAccount(cursor);
-                    String user = OTRTable.getUser(cursor);
-                    fingerprints.put(account, user,
-                            OTRTable.getFingerprint(cursor),
-                            OTRTable.isVerified(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(fingerprints);
-            }
-        });
+        onLoaded(OtrRepository.getFingerprintsFromRealm());
     }
 
     private void onLoaded(NestedNestedMaps<String, Boolean> fingerprints) {
@@ -184,7 +164,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         NotificationManager.getInstance().registerNotificationProvider(smProgressProvider);
     }
 
-    public void startSession(AccountJid account, UserJid user) throws NetworkException {
+    public void startSession(AccountJid account, ContactJid user) throws NetworkException {
         LogManager.i(this, "Starting session for " + user);
         try {
             getOrCreateSession(account.toString(), user.toString()).startSession();
@@ -194,7 +174,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         LogManager.i(this, "Started session for " + user);
     }
 
-    public void refreshSession(AccountJid account, UserJid user) throws NetworkException {
+    public void refreshSession(AccountJid account, ContactJid user) throws NetworkException {
         refreshSession(account.toString(), user.toString());
     }
 
@@ -225,14 +205,14 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Nullable
     private AbstractChat getChat(String account, String user) {
         try {
-            return MessageManager.getInstance().getChat(AccountJid.from(account), UserJid.from(user));
-        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            return ChatManager.getInstance().getChat(AccountJid.from(account), ContactJid.from(user));
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
             return null;
         }
     }
 
-    public void endSession(AccountJid account, UserJid user) throws NetworkException {
+    public void endSession(AccountJid account, ContactJid user) throws NetworkException {
         endSession(account.toString(), user.toString());
     }
 
@@ -267,6 +247,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         Message message = abstractChat.createMessagePacket(msg);
         CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        LogManager.d(OTRManager.class.toString(), "set message to ignore carbons");
         try {
             StanzaSender.sendStanza(abstractChat.getAccount(), message);
         } catch (NetworkException e) {
@@ -391,7 +372,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 actives.put(sessionID.getAccountID(), sessionID.getUserID(), value);
                 if (fingerprints.get(sessionID.getAccountID(), sessionID.getUserID(), value) == null) {
                     fingerprints.put(sessionID.getAccountID(), sessionID.getUserID(), value, false);
-                    requestToWrite(sessionID.getAccountID(), sessionID.getUserID(), value, false);
+                    OtrRepository.saveOtrToRealm(sessionID.getAccountID(), sessionID.getUserID(), value, false);
                 }
             }
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, isVerified(sessionID.getAccountID(),
@@ -428,8 +409,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     public void onContactChanged(SessionID sessionID) {
         try {
-            RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), UserJid.from(sessionID.getUserID()));
-        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), ContactJid.from(sessionID.getUserID()));
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -438,21 +419,21 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
         try {
             AccountJid accountJid = AccountJid.from(sessionID.getAccountID());
-            UserJid userJid = UserJid.from(sessionID.getUserID());
+            ContactJid contactJid = ContactJid.from(sessionID.getUserID());
 
             // set notify intent to chat
-            setNotifyIntentToChat(QuestionActivity.createIntent(Application.getInstance(), accountJid, userJid, question != null, true, question),
-                    accountJid, userJid);
+            setNotifyIntentToChat(QuestionActivity.createIntent(Application.getInstance(), accountJid, contactJid, question != null, true, question),
+                    accountJid, contactJid);
 
             // show android notification
             SMRequest request = new SMRequest(AccountJid.from(sessionID.getAccountID()),
-                    UserJid.from(sessionID.getUserID()), question);
+                    ContactJid.from(sessionID.getUserID()), question);
             smRequestProvider.add(request, true);
 
             // send event of adding auth request to fragment
-            EventBus.getDefault().post(new AuthAskEvent(accountJid, userJid));
+            EventBus.getDefault().post(new AuthAskEvent(accountJid, contactJid));
 
-        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -460,7 +441,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Transform outgoing message before sending.
      */
-    public String transformSending(AccountJid account, UserJid user, String content) throws OtrException {
+    public String transformSending(AccountJid account, ContactJid user, String content) throws OtrException {
         LogManager.i(this, "transform outgoing message... " + user);
         String parts[] = getOrCreateSession(account.toString(), user.toString()).transformSending(content, null);
         if (BuildConfig.DEBUG && parts.length != 1) {
@@ -473,7 +454,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Transform incoming message after receiving.
      */
-    public String transformReceiving(AccountJid account, UserJid user, String content) throws OtrException {
+    public String transformReceiving(AccountJid account, ContactJid user, String content) throws OtrException {
         LogManager.i(this, "transform incoming message... " + content, "transform incoming message... ***");
         Session session = getOrCreateSession(account.toString(), user.toString());
         try {
@@ -487,7 +468,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    public String transformReceivingIfSessionExist(AccountJid account, UserJid user, String content) throws OtrException {
+    public String transformReceivingIfSessionExist(AccountJid account, ContactJid user, String content) throws OtrException {
         LogManager.i(this, "transform incoming message... " + content, "transform incoming message... ***");
         Session session = getSession(account.toString(), user.toString());
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
@@ -506,7 +487,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    public SecurityLevel getSecurityLevel(AccountJid account, UserJid user) {
+    public SecurityLevel getSecurityLevel(AccountJid account, ContactJid user) {
         if (actives.get(account.toString(), user.toString()) == null) {
             if (finished.get(account.toString(), user.toString()) == null) {
                 return SecurityLevel.plain;
@@ -522,7 +503,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    public boolean isVerified(AccountJid account, UserJid user) {
+    public boolean isVerified(AccountJid account, ContactJid user) {
         return isVerified(account.toString(), user.toString());
     }
 
@@ -538,13 +519,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     private void setVerifyWithoutNotification(String account, String user, String fingerprint, boolean value) {
         fingerprints.put(account, user, fingerprint, value);
-        requestToWrite(account, user, fingerprint, value);
+        OtrRepository.saveOtrToRealm(account, user, fingerprint, value);
     }
 
     /**
      * Set whether fingerprint was verified. Add action to the chat history.
      */
-    public void setVerify(AccountJid account, UserJid user, String fingerprint, boolean value) {
+    public void setVerify(AccountJid account, ContactJid user, String fingerprint, boolean value) {
         setVerifyWithoutNotification(account.toString(), user.toString(), fingerprint, value);
         if (value) {
             newAction(account.toString(), user.toString(), null, ChatAction.otr_smp_verified);
@@ -581,7 +562,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         removeSMProgress(sessionID.getAccountID(), sessionID.getUserID());
     }
 
-    public String getRemoteFingerprint(AccountJid account, UserJid user) {
+    public String getRemoteFingerprint(AccountJid account, ContactJid user) {
         return actives.get(account.toString(), user.toString());
     }
 
@@ -615,7 +596,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Respond using SM protocol.
      */
-    public void respondSmp(AccountJid account, UserJid user, String question, String secret) throws NetworkException {
+    public void respondSmp(AccountJid account, ContactJid user, String question, String secret) throws NetworkException {
         LogManager.i(this, "responding smp... " + user);
         removeSMRequest(account, user);
         addSMProgress(account, user);
@@ -629,7 +610,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Initiate request using SM protocol.
      */
-    public void initSmp(AccountJid account, UserJid user, String question, String secret) throws NetworkException {
+    public void initSmp(AccountJid account, ContactJid user, String question, String secret) throws NetworkException {
         LogManager.i(this, "initializing smp... " + user);
         removeSMRequest(account.toString(), user.toString());
         addSMProgress(account, user);
@@ -643,7 +624,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Abort SM negotiation.
      */
-    public void abortSmp(AccountJid account, UserJid user) throws NetworkException {
+    public void abortSmp(AccountJid account, ContactJid user) throws NetworkException {
         LogManager.i(this, "aborting smp... " + user);
         removeSMRequest(account.toString(), user.toString());
         removeSMProgress(account.toString(), user.toString());
@@ -654,7 +635,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    private void removeSMRequest(AccountJid account, UserJid user) {
+    private void removeSMRequest(AccountJid account, ContactJid user) {
         // remove android notification
         smRequestProvider.remove(account, user);
 
@@ -667,13 +648,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     private void removeSMRequest(String account, String user) {
         try {
-            removeSMRequest(AccountJid.from(account), UserJid.from(user));
-        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            removeSMRequest(AccountJid.from(account), ContactJid.from(user));
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
 
-    private void addSMProgress(AccountJid account, UserJid user) {
+    private void addSMProgress(AccountJid account, ContactJid user) {
         // add android notification
         smProgressProvider.add(new SMProgress(account, user), false);
 
@@ -689,15 +670,15 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void removeSMProgress(String account, String user) {
         try {
             // remove android notification
-            smProgressProvider.remove(AccountJid.from(account), UserJid.from(user));
+            smProgressProvider.remove(AccountJid.from(account), ContactJid.from(user));
 
             // set notify intent to null in chat
-            setNotifyIntentToChat(null, AccountJid.from(account), UserJid.from(user));
+            setNotifyIntentToChat(null, AccountJid.from(account), ContactJid.from(user));
 
             // send event of cancel auth request to fragment
-            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(account), UserJid.from(user)));
+            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(account), ContactJid.from(user)));
 
-        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -742,19 +723,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         actives.clear(accountItem.getAccount().toString());
         finished.clear(accountItem.getAccount().toString());
         sessions.clear(accountItem.getAccount().toString());
-    }
-
-    /**
-     * Save chat specific otr settings.
-     */
-    private void requestToWrite(final String account, final String user,
-                                final String fingerprint, final boolean verified) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                OTRTable.getInstance().write(account, user, fingerprint, verified);
-            }
-        });
     }
 
     private void endAllSessions() {
@@ -829,8 +797,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         } else return false;
     }
 
-    private void setNotifyIntentToChat(Intent intent, AccountJid accountJid, UserJid userJid) {
-        RegularChat chat = (RegularChat) MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+    private void setNotifyIntentToChat(Intent intent, AccountJid accountJid, ContactJid contactJid) {
+        RegularChat chat = (RegularChat) ChatManager.getInstance().getOrCreateChat(accountJid, contactJid);
         chat.setIntent(intent);
     }
 }

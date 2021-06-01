@@ -9,8 +9,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -19,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
@@ -48,13 +49,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
     Activity activity;
 
     private int defaultAccountNameColor;
-
-    public interface Listener {
-        void onAccountClick(AccountJid account);
-        void onEditAccountStatus(AccountItem accountItem);
-        void onEditAccount(AccountItem accountItem);
-        void onDeleteAccount(AccountItem accountItem);
-    }
 
     public AccountListPreferenceAdapter(Activity activity, Listener listener) {
         this.accountItems = new ArrayList<>();
@@ -94,13 +88,16 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         accountHolder.avatar.setImageDrawable(
                 AvatarManager.getInstance().getAccountAvatar(accountItem.getAccount()));
 
-        accountHolder.avatarBorder.setBorderColor(accountItem.isEnabled() ? ColorManager.getInstance().getAccountPainter().
-                getAccountMainColor(accountItem.getAccount()) : activity.getResources().getColor(R.color.grey_400));
+        accountHolder.avatarBorder.setBorderColor(accountItem.isEnabled()
+                ? ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(accountItem.getAccount())
+                : activity.getResources().getColor(R.color.grey_400));
 
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
         if (xabberAccount == null || !xabberAccount.getFullUsername()
                 .equals(AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
-            accountHolder.avatarBorder.setBorderColor(activity.getResources().getColor(R.color.transparent));
+            accountHolder.avatarBorder
+                    .setBorderColor(activity.getResources().getColor(R.color.transparent));
 
         if (!accountItem.isEnabled()) {
             ColorMatrix matrix = new ColorMatrix();
@@ -109,17 +106,20 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             accountHolder.avatar.setColorFilter(filter);
         } else accountHolder.avatar.clearColorFilter();
 
-        accountHolder.name.setText(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
-        accountHolder.name.setTextColor(accountItem.isEnabled() ? ColorManager.getInstance().getAccountPainter().
-                getAccountMainColor(accountItem.getAccount()) : defaultAccountNameColor);
+        accountHolder.name.setText(AccountManager.getInstance()
+                .getVerboseName(accountItem.getAccount()));
+        accountHolder.name.setTextColor(accountItem.isEnabled()
+                ? ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(accountItem.getAccount())
+                : defaultAccountNameColor);
 
         accountHolder.status.setText(accountItem.getState().getStringId());
-
         // push state
         boolean pushEnabled = accountItem.getState().equals(ConnectionState.connected)
                 && accountItem.isPushWasEnabled();
         accountHolder.tvAccountPushStatus.setVisibility(pushEnabled ? View.VISIBLE : View.GONE);
-        if (pushEnabled) accountHolder.tvAccountPushStatus.setText(R.string.account_push_state_enabled);
+        if (pushEnabled)
+            accountHolder.tvAccountPushStatus.setText(R.string.account_push_state_enabled);
 
         accountHolder.enabledSwitch.setChecked(accountItem.isEnabled());
 
@@ -130,7 +130,18 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         return accountItems.size();
     }
 
-    private class AccountViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+    public interface Listener {
+        void onAccountClick(AccountJid account);
+
+        void onEditAccountStatus(AccountItem accountItem);
+
+        void onEditAccount(AccountItem accountItem);
+
+        void onDeleteAccount(AccountItem accountItem);
+    }
+
+    private class AccountViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
         CircleImageView avatar;
         CircleImageView avatarBorder;
         TextView name;
@@ -141,11 +152,11 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
         AccountViewHolder(View itemView) {
             super(itemView);
-            avatar = (CircleImageView) itemView.findViewById(R.id.avatar);
-            avatarBorder = (CircleImageView) itemView.findViewById(R.id.avatarBorder);
-            name = (TextView) itemView.findViewById(R.id.item_account_name);
-            status = (TextView) itemView.findViewById(R.id.item_account_status);
-            enabledSwitch = (SwitchCompat) itemView.findViewById(R.id.item_account_switch);
+            avatar = itemView.findViewById(R.id.avatar);
+            avatarBorder = itemView.findViewById(R.id.avatarBorder);
+            name = itemView.findViewById(R.id.item_account_name);
+            status = itemView.findViewById(R.id.item_account_status);
+            enabledSwitch = itemView.findViewById(R.id.item_account_switch);
             tvAccountPushStatus = itemView.findViewById(R.id.tvAccountPushStatus);
 
             // I used on click listener instead of on checked change listener to avoid callback in onBindViewHolder
@@ -167,7 +178,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
             switch (v.getId()) {
                 case R.id.item_account_switch:
-                    AccountManager.getInstance().setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
+                    AccountManager.getInstance()
+                            .setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
                     break;
                 default:
                     if (listener != null) {
@@ -177,7 +189,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        public void onCreateContextMenu(ContextMenu menu, View v,
+                                        ContextMenu.ContextMenuInfo menuInfo) {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) {
                 LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
@@ -189,7 +202,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.item_account, menu);
 
-            menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
+            menu.setHeaderTitle(AccountManager.getInstance()
+                    .getVerboseName(accountItem.getAccount()));
             menu.findItem(R.id.action_account_edit_status).setVisible(accountItem.isEnabled());
 
             menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);

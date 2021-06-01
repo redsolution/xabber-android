@@ -3,13 +3,16 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.core.app.NavUtils;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.ui.activity.ManagedActivity;
@@ -21,7 +24,7 @@ public class CustomNotifySettings extends ManagedActivity {
     private final static String PHRASE_ID_KEY = "phraseID";
 
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private String group;
     private Long phraseID;
 
@@ -29,7 +32,7 @@ public class CustomNotifySettings extends ManagedActivity {
         return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
     }
 
-    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
+    public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
         return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).setUser(user).build();
     }
 
@@ -57,7 +60,9 @@ public class CustomNotifySettings extends ManagedActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setTitle(getTitle());
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +71,7 @@ public class CustomNotifySettings extends ManagedActivity {
         });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
-        barPainter.updateWithAccountName(account);
+        barPainter.updateWithAccountName(AccountManager.getInstance().getFirstAccount());
 
         if (savedInstanceState == null) {
             Key key = Key.createKey(account, user, group, phraseID);

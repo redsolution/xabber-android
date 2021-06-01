@@ -23,6 +23,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.xtoken.XToken;
 
@@ -68,6 +69,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      * Whether roster contacts can be synchronized with system contact list.
      */
     private boolean syncable;
+
+    private boolean streamError;
 
     /**
      * Whether password must be stored in database.
@@ -173,7 +176,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     /**
      * @return ID in database.
      */
-    String getId() {
+    public String getId() {
         return id;
     }
 
@@ -314,8 +317,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         ConnectionState state = getState();
         if (state.isConnected()) {
             return statusMode;
-        } else if (state.isConnectable()) {
-            return StatusMode.connection;
         } else {
             return StatusMode.unavailable;
         }
@@ -392,6 +393,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.enabled = enabled;
     }
 
+    public void setStreamError(boolean error) {
+        streamError = error;
+    }
+
+    public boolean getStreamError() {
+        return streamError;
+    }
+
     /**
      * Update connection options
      */
@@ -429,7 +438,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     @Override
     protected void onPasswordChanged(String password) {
         super.onPasswordChanged(password);
-        AccountManager.getInstance().requestToWriteAccount(this);
+        AccountRepository.saveAccountToRealm(this);
     }
 
     @Override

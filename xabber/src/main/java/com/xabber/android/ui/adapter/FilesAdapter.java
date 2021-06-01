@@ -1,20 +1,36 @@
 package com.xabber.android.ui.adapter;
 
-import androidx.recyclerview.widget.RecyclerView;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
-import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
+import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.widget.PlayerVisualizerView;
+import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import org.apache.commons.io.FileUtils;
+
+import java.util.Locale;
 
 import io.realm.RealmList;
 import rx.functions.Action1;
@@ -22,18 +38,22 @@ import rx.subscriptions.CompositeSubscription;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHolder> {
 
-    private RealmList<Attachment> items;
+    private RealmList<AttachmentRealmObject> items;
     private FileListListener listener;
+    private Long timestamp;
 
     public interface FileListListener {
         void onFileClick(int position);
-        void onFileLongClick(Attachment attachment, View caller);
+        void onVoiceClick(int position, String attachmentId, boolean saved, Long timestamp);
+        void onVoiceProgressClick(int position, String attachmentId, Long timestamp, int current, int max);
+        void onFileLongClick(AttachmentRealmObject attachmentRealmObject, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
     }
 
-    public FilesAdapter(RealmList<Attachment> items, FileListListener listener) {
+    public FilesAdapter(RealmList<AttachmentRealmObject> items, Long timestamp, FileListListener listener) {
         this.items = items;
+        this.timestamp = timestamp;
         this.listener = listener;
     }
 
@@ -43,27 +63,92 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         return new FileViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final FileViewHolder holder, final int position) {
-        Attachment attachment = items.get(position);
+        final AttachmentRealmObject attachmentRealmObject = items.get(position);
 
-        holder.attachmentId = attachment.getUniqueId();
+        holder.attachmentId = attachmentRealmObject.getUniqueId();
 
-        // set file icon
-        holder.tvFileName.setText(attachment.getTitle());
-        Long size = attachment.getFileSize();
-        holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-        holder.ivFileIcon.setImageResource(attachment.getFilePath() != null
-                ? getFileIconByCategory(FileCategory.determineFileCategory(attachment.getMimeType()))
-                : R.drawable.ic_download);
+        if (attachmentRealmObject.isVoice()) {
+            holder.voiceMessage = true;
+            holder.subscribeForAudioProgress();
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            StringBuilder voiceText = new StringBuilder();
+            voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
+            if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
+                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
+                int width = Utils.dipToPx(140, holder.fileInfoLayout.getContext());
+                if (attachmentRealmObject.getDuration() < 10) {
+                    lp.width = width + Utils.dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
+                    holder.fileInfoLayout.setLayoutParams(lp);
+                } else {
+                    lp.width = width + Utils.dipToPx(60, holder.fileInfoLayout.getContext());
+                    holder.fileInfoLayout.setLayoutParams(lp);
+                }
+            }
+            holder.tvFileName.setText(voiceText);
+
+            Long size = attachmentRealmObject.getFileSize();
+
+            if (attachmentRealmObject.getFilePath() != null) {
+                holder.tvFileName.setVisibility(View.GONE);
+                holder.tvFileSize.setText((attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
+                        StringUtils.getDurationStringForVoiceMessage(0L, attachmentRealmObject.getDuration())
+                        : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachmentRealmObject.getFilePath(), holder.audioVisualizer);
+                holder.audioVisualizer.setVisibility(View.VISIBLE);
+                holder.audioVisualizer.setOnTouchListener(new PlayerVisualizerView.onProgressTouch() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        switch (motionEvent.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                            case MotionEvent.ACTION_MOVE:
+                                if (VoiceManager.getInstance().playbackInProgress(holder.attachmentId, timestamp)) {
+                                    LogManager.d("TOUCH", "down/move super");
+                                    return super.onTouch(view, motionEvent);
+                                }
+                                else {
+                                    LogManager.d("TOUCH", "down/move");
+                                    ((PlayerVisualizerView)view).updatePlayerPercent(0, true);
+                                    return true;
+                                }
+                            case MotionEvent.ACTION_UP:
+                                if (VoiceManager.getInstance().playbackInProgress(holder.attachmentId, timestamp))
+                                    listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, timestamp, (int)motionEvent.getX(), view.getWidth());
+                                LogManager.d("TOUCH", "up super");
+                                return super.onTouch(view, motionEvent);
+                        }
+                        LogManager.d("TOUCH", "empty");
+                        return super.onTouch(view, motionEvent);
+                    }
+                });
+            } else {
+                holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                if (SettingsManager.chatsAutoDownloadVoiceMessage())
+                    listener.onFileClick(position);
+            }
+            holder.ivFileIcon.setImageResource(R.drawable.ic_play);
+        } else {
+            // set file icon
+            holder.voiceMessage = false;
+            holder.tvFileName.setText(attachmentRealmObject.getTitle());
+            Long size = attachmentRealmObject.getFileSize();
+            holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+            holder.ivFileIcon.setImageResource(attachmentRealmObject.getFilePath() != null
+                    ? getFileIconByCategory(FileCategory.determineFileCategory(attachmentRealmObject.getMimeType()))
+                    : R.drawable.ic_download);
+        }
+        holder.ivFileIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                listener.onFileClick(position);
+            public void onClick(View view) {
+                if (holder.voiceMessage)
+                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachmentRealmObject.getFilePath()!=null, timestamp);
+                else
+                    listener.onFileClick(position);
             }
         });
-
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -84,6 +169,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             @Override
             public void onViewAttachedToWindow(View view) {
                 holder.subscribeForDownloadProgress();
+                holder.subscribeForAudioProgress();
             }
 
             @Override
@@ -125,19 +211,34 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         private CompositeSubscription subscriptions = new CompositeSubscription();
         String attachmentId;
+        boolean voiceMessage;
 
+        final View itemView;
+        final LinearLayout fileInfoLayout;
         final TextView tvFileName;
         final TextView tvFileSize;
         final ImageView ivFileIcon;
         final ProgressBar progressBar;
+        final SeekBar audioProgress;
+        final PlayerVisualizerView audioVisualizer;
         final ImageButton ivCancelDownload;
 
         public FileViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView.findViewById(R.id.file_message);
+            fileInfoLayout = itemView.findViewById(R.id.fileInfoLayout);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
+            audioProgress = itemView.findViewById(R.id.audioProgress);
+            /*audioProgress.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;
+                }
+            });*/
+            audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }
 
@@ -147,12 +248,69 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         public void subscribeForDownloadProgress() {
             subscriptions.add(DownloadManager.getInstance().subscribeForProgress()
-                .doOnNext(new Action1<DownloadManager.ProgressData>() {
-                    @Override
-                    public void call(DownloadManager.ProgressData progressData) {
-                        setUpProgress(progressData);
+                    .doOnNext(new Action1<DownloadManager.ProgressData>() {
+                        @Override
+                        public void call(DownloadManager.ProgressData progressData) {
+                            setUpProgress(progressData);
+                        }
+                    }).subscribe());
+        }
+
+        //public void subscribeForAudioProgress() {
+        //    subscriptions.add(FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress()
+        //            .doOnNext(new Action1<FileInteractionFragment.PublishAudioProgress.AudioInfo>() {
+        //                @Override
+        //                public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
+        //                    setUpAudioProgress(info);
+        //                }
+        //            }).subscribe());
+        //}
+
+        public void subscribeForAudioProgress() {
+            subscriptions.add(VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress()
+                    .doOnNext(new Action1<VoiceManager.PublishAudioProgress.AudioInfo>() {
+                        @Override
+                        public void call(VoiceManager.PublishAudioProgress.AudioInfo info) {
+                            setUpAudioProgress(info);
+                        }
+                    }).subscribe());
+        }
+
+        private void setUpAudioProgress(VoiceManager.PublishAudioProgress.AudioInfo info) {
+            if(info != null && info.getAttachmentIdHash() == attachmentId.hashCode()) {
+                if (info.getTimestamp() != null && info.getTimestamp().equals(timestamp)) {
+                    if (info.getDuration() != 0) {
+                        if (info.getDuration() > 1000) {
+                            audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / (float) info.getDuration()), false);
+                            audioProgress.setMax(info.getDuration());
+                            audioProgress.setProgress(info.getCurrentPosition());
+                        } else {
+                            audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)), false);
+                            audioProgress.setMax(info.getDuration() * 1000);
+                            audioProgress.setProgress(info.getCurrentPosition());
+                        }
+                        if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS) {
+                            ivFileIcon.setImageResource(R.drawable.ic_play);
+                            showProgress(false);
+                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
+                                    info.getDuration() > 1000 ?
+                                            (info.getDuration() / 1000) : info.getDuration()));
+                        } else if (info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS) {
+                            ivFileIcon.setImageResource(R.drawable.ic_play);
+                            showProgress(false);
+                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                    info.getDuration() > 1000 ?
+                                            (info.getDuration() / 1000) : info.getDuration()));
+                        } else {
+                            ivFileIcon.setImageResource(R.drawable.ic_pause);
+                            showProgress(false);
+                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                    info.getDuration() > 1000 ?
+                                            (info.getDuration() / 1000) : info.getDuration()));
+                        }
                     }
-                }).subscribe());
+                }
+            }
         }
 
         private void setUpProgress(DownloadManager.ProgressData progressData) {
@@ -180,7 +338,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 ivFileIcon.setVisibility(View.VISIBLE);
             }
         }
-
     }
 
 }

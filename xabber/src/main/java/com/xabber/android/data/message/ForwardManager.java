@@ -1,11 +1,18 @@
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.ForwardId;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.forward.ForwardComment;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -16,34 +23,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 
 public class ForwardManager {
 
-    public static void forwardMessage(List<String> messages, AccountJid account, UserJid user, String text) {
-        final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
-        final MessageItem messageItem = chat.createNewMessageItem(text);
+    private static final String LOG_TAG = ForwardManager.class.getSimpleName();
 
-        RealmList<ForwardId> ids = new RealmList<>();
+    public static void forwardMessage(List<String> messages, AccountJid account, ContactJid user, String text, @Nullable String markupText) {
+        final AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        final MessageRealmObject messageRealmObject = chat.createNewMessageItem(text);
+
+        if (markupText != null) messageRealmObject.setMarkupText(markupText);
+
+        RealmList<ForwardIdRealmObject> ids = new RealmList<>();
 
         for (String message : messages) {
-            ids.add(new ForwardId(message));
+            ids.add(new ForwardIdRealmObject(message));
         }
 
-        messageItem.setForwardedIds(ids);
+        messageRealmObject.setForwardedIds(ids);
 
-        MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransactionAsync(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.copyToRealm(messageItem);
-                        EventBus.getDefault().post(new NewMessageEvent());
-                        chat.sendMessages();
-                    }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->  {
+                    realm1.copyToRealm(messageRealmObject);
+                    EventBus.getDefault().post(new NewMessageEvent());
+                    chat.sendMessages();
                 });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+        });
     }
 
     public static String parseForwardComment(Stanza packet) {

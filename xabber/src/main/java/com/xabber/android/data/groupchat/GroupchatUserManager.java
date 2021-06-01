@@ -1,10 +1,13 @@
 package com.xabber.android.data.groupchat;
 
+import android.os.Looper;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.messagerealm.GroupchatUserRealm;
-import com.xabber.android.data.extension.references.RefUser;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.GroupchatUserRealmObject;
+import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.log.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,22 +27,25 @@ public class GroupchatUserManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        RealmResults<GroupchatUserRealm> users = realm.where(GroupchatUserRealm.class).findAll();
-        for (GroupchatUserRealm user : users) {
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        RealmResults<GroupchatUserRealmObject> users = realm
+                .where(GroupchatUserRealmObject.class)
+                .findAll();
+        for (GroupchatUserRealmObject user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     public GroupchatUser getGroupchatUser(String id) {
         return users.get(id);
     }
 
-    public void saveGroupchatUser(RefUser user) {
+    public void saveGroupchatUser(GroupchatUserExtension user) {
         saveGroupchatUser(user, System.currentTimeMillis());
     }
 
-    public void saveGroupchatUser(RefUser user, long timestamp) {
+    public void saveGroupchatUser(GroupchatUserExtension user, long timestamp) {
         if (!users.containsKey(user.getId())) {
             saveUser(user, timestamp);
         } else if (timestamp > users.get(user.getId()).getTimestamp()) {
@@ -47,27 +53,28 @@ public class GroupchatUserManager implements OnLoadListener {
         }
     }
 
-    private void saveUser(RefUser user, long timestamp) {
+    private void saveUser(GroupchatUserExtension user, long timestamp) {
         users.put(user.getId(), refUserToUser(user));
         saveGroupchatUserToRealm(refUserToRealm(user), timestamp);
     }
 
-    private void saveGroupchatUserToRealm(final GroupchatUserRealm user, final long timestamp) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                user.setTimestamp(timestamp);
-                Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(user);
-                realm.commitTransaction();
-                realm.close();
-            }
+    private void saveGroupchatUserToRealm(final GroupchatUserRealmObject user, final long timestamp) {
+        Application.getInstance().runInBackground(() -> {
+            user.setTimestamp(timestamp);
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.copyToRealmOrUpdate(user);
+                });
+            } catch (Exception e) {
+                LogManager.exception("GroupchatUserManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
-    private GroupchatUserRealm refUserToRealm(RefUser user) {
-        GroupchatUserRealm realmUser = new GroupchatUserRealm(user.getId());
+    private GroupchatUserRealmObject refUserToRealm(GroupchatUserExtension user) {
+        GroupchatUserRealmObject realmUser = new GroupchatUserRealmObject(user.getId());
         realmUser.setNickname(user.getNickname());
         realmUser.setRole(user.getRole());
         if (user.getJid() != null) realmUser.setJid(user.getJid());
@@ -76,17 +83,17 @@ public class GroupchatUserManager implements OnLoadListener {
         return realmUser;
     }
 
-    private GroupchatUser refUserToUser(RefUser refUser) {
-        GroupchatUser user = new GroupchatUser(refUser.getId());
-        user.setAvatar(refUser.getAvatar());
-        user.setBadge(refUser.getBadge());
-        user.setJid(refUser.getJid());
-        user.setNickname(refUser.getNickname());
-        user.setRole(refUser.getRole());
+    private GroupchatUser refUserToUser(GroupchatUserExtension groupchatUserExtension) {
+        GroupchatUser user = new GroupchatUser(groupchatUserExtension.getId());
+        user.setAvatar(groupchatUserExtension.getAvatar());
+        user.setBadge(groupchatUserExtension.getBadge());
+        user.setJid(groupchatUserExtension.getJid());
+        user.setNickname(groupchatUserExtension.getNickname());
+        user.setRole(groupchatUserExtension.getRole());
         return user;
     }
 
-    private GroupchatUser realmUserToUser(GroupchatUserRealm groupchatUser) {
+    private GroupchatUser realmUserToUser(GroupchatUserRealmObject groupchatUser) {
         GroupchatUser user = new GroupchatUser(groupchatUser.getUniqueId());
         user.setAvatar(groupchatUser.getAvatar());
         user.setBadge(groupchatUser.getBadge());

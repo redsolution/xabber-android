@@ -18,6 +18,21 @@
         <item name="android:tint">#000</item>
     </style>
 
+    <style name="QRCodeLoginButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:radius">40dp</item>
+    </style>
+    <style name="QRCodeLoginButtonRippleSmall" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:radius">1dp</item>
+    </style>
+
+    <style name="RecordVoiceButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:radius">80dp</item>
+    </style>
+
+    <style name="AddAccountButton" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:minHeight">30dp</item>
+    </style>
+
     <style name="ChatHeader" parent="@android:style/TextAppearance">
         <item name="android:textSize">12sp</item>
     </style>
@@ -106,6 +121,9 @@
 
         <item name="colorControlActivated">@color/red_700</item>
         <item name="colorControlHighlight">@color/red_700</item>
+    </style>
+
+    <style name="PopupMenuOverlapAnchor" parent="@style/Theme">
     </style>
 
 </resources>

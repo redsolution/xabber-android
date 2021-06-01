@@ -5,27 +5,16 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public abstract class ReferenceElement implements ExtensionElement {
 
-    public static final String NAMESPACE = "urn:xmpp:reference:0";
+    public static final String NAMESPACE = "https://xabber.com/protocol/reference";
     public static final String ELEMENT = "reference";
-    public static final String ELEMENT_BOLD = "bold";
-    public static final String ELEMENT_ITALIC = "italic";
-    public static final String ELEMENT_UNDERLINE = "underline";
-    public static final String ELEMENT_STRIKE = "strike";
-    public static final String ELEMENT_URI = "uri";
-    public static final String ELEMENT_MARKER = "marker";
-
     public static final String ATTRIBUTE_TYPE = "type";
     public static final String ATTRIBUTE_BEGIN = "begin";
     public static final String ATTRIBUTE_END = "end";
 
     public enum Type {
-        media,
-        forward,
-        markup,
-        mention,
-        quote,
-        voice,
-        groupchat
+        decoration,
+        mutable,
+        data
     }
 
     protected final int begin;

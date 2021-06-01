@@ -2,7 +2,6 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Log;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -10,7 +9,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -45,6 +44,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     public void addRequest(String requestId, String apiJid, String clientJid) {
+        LogManager.d(LOG_TAG, "http auth request received");
         onRequestReceived(new Request(requestId, clientJid, apiJid));
         addContactToRoster(apiJid, clientJid);
     }
@@ -65,6 +65,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             String clientJid = packet.getTo().toString();
             String requestId = packet.getStanzaId();
             String code = httpConfirmIq.getId();
+            LogManager.d(LOG_TAG, "stanza auth request received");
 
             if (requestId != null && code != null)
                 onRequestReceived(new Request(requestId, clientJid, apiJid, code));
@@ -73,95 +74,120 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
+        Thread authThread = new Thread(() -> startAuth(connection), "Auth Thread");
+        authThread.setPriority(Thread.MIN_PRIORITY);
+        authThread.setDaemon(true);
+        authThread.start();
+    }
 
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
-                AccountJid accountJid = connection.getAccount();
-                if (xabberAccount == null) {
-                    AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                    if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
-                            requestXMPPAuthCode(accountJid);
-                    }
-
-                } else if (xabberAccount.getFullUsername()
-                        .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
+    private void startAuth(ConnectionItem connection) {
+        XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
+        AccountJid accountJid = connection.getAccount();
+        if (xabberAccount == null) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
+                    requestXMPPAuthCode(accountJid);
             }
-        });
+
+        } else if (xabberAccount.getFullUsername()
+                .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
+        }
     }
 
     private void requestXMPPAuthCode(final AccountJid accountJid) {
-        Log.d(LOG_TAG, "request XMPP code for account: "
+        LogManager.d(LOG_TAG, "request XMPP code for account: "
                 + accountJid.getFullJid().toString());
         AuthManager.requestXMPPCode(accountJid.getFullJid().toString())
             .subscribe(new Action1<AuthManager.XMPPCode>() {
                 @Override
                 public void call(AuthManager.XMPPCode code) {
-                    Log.d(XMPPAuthManager.class.toString(), "xmpp auth code requested successfully");
+                    Log.d(LOG_TAG, "xmpp auth code requested successfully");
                     addRequest(code.getRequestId(), code.getApiJid(), accountJid.getFullJid().toString());
                 }
             }, new Action1<Throwable>() {
                 @Override
                 public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(), "request XMPP code failed: " + throwable.toString());
+                    Log.d(LOG_TAG, "request XMPP code failed: " + throwable.toString());
                 }
             });
     }
 
     private void confirmXMPP(Request request) {
-        Log.d(LOG_TAG, "confirm account: " + request.clientJid);
+        LogManager.d(LOG_TAG, "confirm account: " + request.clientJid);
         AuthManager.confirmXMPP(request.clientJid, request.code)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<XabberAccount>() {
                 @Override
                 public void call(XabberAccount account) {
-                    Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
-                    updateSettings();
+                    LogManager.d(LOG_TAG, "xabber account authorized successfully");
+                    //updateRemoteSettings();
+                    updateLocalSettings();
                     AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
                 }
             }, new Action1<Throwable>() {
                 @Override
                 public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(), "XMPP authorization failed: " + throwable.toString());
+                    LogManager.d(LOG_TAG, "XMPP authorization failed: " + throwable.toString());
                 }
             });
     }
 
-    protected void updateSettings() {
-        AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                @Override
-                public void call(List<XMPPAccountSettings> s) {
-                    Log.d(XMPPAuthManager.class.toString(),
-                            "xabber account settings updated successfully");
-                    XabberAccountManager.getInstance().registerEndpoint();
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    Log.d(XMPPAuthManager.class.toString(),
-                            "xabber account settings update failed: " + throwable.toString());
-                }
-            });
+
+    /**
+     * Get Xabber account settings from the server and save them locally.
+     */
+    protected void updateLocalSettings() {
+        AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        LogManager.d(LOG_TAG,
+                                "xabber account settings updated successfully");
+                        XabberAccountManager.getInstance().registerEndpoint();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        LogManager.d(LOG_TAG,
+                                "xabber account settings update failed: " + throwable.toString());
+                    }
+                });
     }
+
+    //protected void updateRemoteSettings() {
+    //    AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+    //        .subscribeOn(Schedulers.io())
+    //        .observeOn(AndroidSchedulers.mainThread())
+    //        .subscribe(new Action1<List<XMPPAccountSettings>>() {
+    //            @Override
+    //            public void call(List<XMPPAccountSettings> s) {
+    //                Log.d(XMPPAuthManager.class.toString(),
+    //                        "xabber account settings updated successfully");
+    //                XabberAccountManager.getInstance().registerEndpoint();
+    //            }
+    //        }, new Action1<Throwable>() {
+    //            @Override
+    //            public void call(Throwable throwable) {
+    //                Log.d(XMPPAuthManager.class.toString(),
+    //                        "xabber account settings update failed: " + throwable.toString());
+    //            }
+    //        });
+    //}
 
     private void onRequestReceived(Request request) {
         if (requests.containsKey(request.id)) {
@@ -171,17 +197,17 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     private void addContactToRoster(String apiJid, String clientJid) {
-        UserJid user;
+        ContactJid user;
         AccountJid account;
         try {
-            user = UserJid.from(apiJid);
+            user = ContactJid.from(apiJid);
             account = AccountJid.from(clientJid);
 
             RosterManager.getInstance().createContact(account, user,
                     "xabber", Collections.EMPTY_LIST);
             PresenceManager.getInstance().requestSubscription(account, user, false);
 
-        } catch (UserJid.UserJidCreateException | XmppStringprepException | InterruptedException |
+        } catch (ContactJid.UserJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {
             LogManager.exception(this, e);
             return;

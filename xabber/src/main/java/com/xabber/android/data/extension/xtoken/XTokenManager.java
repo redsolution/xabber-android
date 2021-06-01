@@ -8,15 +8,16 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.realm.XTokenRealm;
-import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 
 import java.lang.ref.WeakReference;
@@ -28,6 +29,7 @@ import java.util.List;
 
 public class XTokenManager implements OnPacketListener {
 
+    private static final String NAMESPACE = "http://xabber.com/protocol/auth-tokens";
     private static final String LOG_TAG = XTokenManager.class.getSimpleName();
     private static XTokenManager instance;
 
@@ -43,6 +45,8 @@ public class XTokenManager implements OnPacketListener {
             AccountManager.getInstance()
                     .updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
         }
+        if (packet instanceof Message && packet.hasExtension(NAMESPACE))
+            EventBus.getDefault().post(new SessionsUpdateEvent());
     }
 
     public void sendXTokenRequest(XMPPTCPConnection connection) {
@@ -79,7 +83,7 @@ public class XTokenManager implements OnPacketListener {
 
     public void requestSessions(final String currentTokenUID, final XMPPTCPConnection connection,
                                 final SessionsListener listener) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
             @Override
             public void run() {
                 sendSessionsRequestIQ(currentTokenUID, connection, new WeakReference<>(listener));
@@ -87,11 +91,11 @@ public class XTokenManager implements OnPacketListener {
         });
     }
 
-    public static XTokenRealm tokenToXTokenRealm(XToken token) {
-        return new XTokenRealm(token.getUid(), token.getToken(), token.getExpire());
+    public static XTokenRealmObject tokenToXTokenRealm(XToken token) {
+        return new XTokenRealmObject(token.getUid(), token.getToken(), token.getExpire());
     }
 
-    public static XToken xTokenRealmToXToken(XTokenRealm token) {
+    public static XToken xTokenRealmToXToken(XTokenRealmObject token) {
         return new XToken(token.getId(), token.getToken(), token.getExpire());
     }
 
@@ -181,4 +185,6 @@ public class XTokenManager implements OnPacketListener {
             }
         }
     }
+
+    public class SessionsUpdateEvent{    }
 }

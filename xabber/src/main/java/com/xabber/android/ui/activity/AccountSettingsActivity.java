@@ -3,13 +3,15 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -58,7 +60,9 @@ public class AccountSettingsActivity extends ManagedActivity
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setTitle(R.string.account_connection_settings);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +72,8 @@ public class AccountSettingsActivity extends ManagedActivity
         });
 
         toolbar.inflateMenu(R.menu.toolbar_account_connection_settings);
-        toolbar.setOnMenuItemClickListener(this);
+        //toolbar.setOnMenuItemClickListener(this);
+        toolbar.getMenu().findItem(R.id.action_remove_account).setVisible(false);
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);

@@ -1,6 +1,7 @@
 package com.xabber.android.data.connection;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
@@ -8,13 +9,19 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.sasl.SASLErrorException;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
@@ -39,7 +46,13 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connected(XMPPConnection connection) {
         LogManager.i(getLogTag(), "connected");
+        VCardManager.getInstance().setStart(System.currentTimeMillis());
+
         connectionItem.updateState(ConnectionState.authentication);
+
+        //
+        UserAvatarManager.getInstanceFor(connection).enable();
+        //
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -55,13 +68,34 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void authenticated(XMPPConnection connection, final boolean resumed) {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
         connectionItem.updateState(ConnectionState.connected);
+        connectionItem.refreshPingFailedListener(true);
+
+        try {
+            ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(connection.getXMPPServiceDomain());
+        } catch (SmackException.NoResponseException |
+                XMPPException.XMPPErrorException |
+                SmackException.NotConnectedException |
+                InterruptedException e) {
+            e.printStackTrace();
+        }
+        LogManager.i(getLogTag(), "finished discovering and saving server info");
 
         // just to see the order of call
         CarbonManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished carbonManger onAuthorized");
         BlockingManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished blockingManager onAuthorized");
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished httpFile onAuthorized");
         PresenceManager.getInstance().onAuthorized(connectionItem);
+        LogManager.i(getLogTag(), "finished presenceManager onAuthorized");
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
+        LogManager.i(getLogTag(), "finished bookmarksManager onAuthorized");
+        RrrManager.getInstance().subscribeForUpdates();
+        LogManager.i(getLogTag(), "finished rrrManager onAuthorized");
+        //UserAvatarManager.getInstanceFor(connection).onAuthorized();
+        //
+        //
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -74,11 +108,15 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosed() {
         LogManager.i(getLogTag(), "connectionClosed");
+        PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
+        VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
+        NextMamManager.getInstance().resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                connectionItem.checkIfConnectionIsOutdated();
                 for (OnDisconnectListener listener
                         : Application.getInstance().getManagers(OnDisconnectListener.class)) {
                     listener.onDisconnect(connectionItem);
@@ -91,12 +129,19 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosedOnError(final Exception e) {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
+        PresenceManager.getInstance().clearPresencesTiedToThisAccount(connectionItem.getAccount());
+        VCardManager.getInstance().resetLoadedState(connectionItem.getAccount());
+        NextMamManager.getInstance().resetContactHistoryIterator(connectionItem.getAccount());
         connectionItem.updateState(ConnectionState.waiting);
+        connectionItem.refreshPingFailedListener(false);
 
         if (e instanceof XMPPException.StreamErrorException) {
+            LogManager.e(getLogTag(), e.getMessage());
             String message = e.getMessage();
-            if (message.contains("conflict")) {
+            if (message != null && message.contains("conflict")) {
                 AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
+            } else {
+                ((AccountItem)connectionItem).setStreamError(true);
             }
         }
 
@@ -107,11 +152,12 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                connectionItem.checkIfConnectionIsOutdated();
                 /*
                   Send to chats action of disconnect
                   Then RoomChat set state in "waiting" which need for rejoin to room
                  */
-                MessageManager.getInstance().onDisconnect(connectionItem);
+                ChatManager.getInstance().onDisconnect(connectionItem);
             }
         });
     }

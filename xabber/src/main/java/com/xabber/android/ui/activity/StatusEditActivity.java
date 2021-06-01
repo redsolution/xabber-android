@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -16,8 +16,8 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -31,6 +31,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -81,22 +84,20 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         actionWithItem = null;
 
         setContentView(R.layout.activity_status);
-
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-             public void onClick(View v) {
-                 finish();
-             }
-        });
+        Toolbar toolbar;
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar = ToolbarHelper.setUpDefaultToolbar(this, null,
+                    R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, null,
+                R.drawable.ic_clear_white_24dp);
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.inflateMenu(R.menu.toolbar_set_status);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item);
-            }
-        });
-
+        toolbar.setOnMenuItemClickListener(item -> onOptionsItemSelected(item));
+        View view = toolbar.findViewById(R.id.action_change_status);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
+            else ((TextView) view).setTextColor(Color.WHITE);
         Intent intent = getIntent();
         account = StatusEditActivity.getAccount(intent);
 
@@ -113,14 +114,15 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         registerForContextMenu(listView);
         adapter = new StatusEditorAdapter(this);
 
-        View footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.status_history_footer, null, false);
+        View footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.status_history_footer, null, false);
         footerView.findViewById(R.id.clear_status_history_button).setOnClickListener(this);
         listView.addFooterView(footerView);
 
         setListAdapter(adapter);
 
-        statusTextView = (EditText) findViewById(R.id.status_text);
-        statusModeView = (Spinner) findViewById(R.id.status_icon);
+        statusTextView = findViewById(R.id.status_text);
+        statusModeView = findViewById(R.id.status_icon);
         statusModeView.setAdapter(new StatusModeAdapter(this));
 
         savedStatusesTextView = findViewById(R.id.saved_statuses_textview);

@@ -5,6 +5,7 @@
     <dimen name="contact_title_padding_right">16dp</dimen>
     <dimen name="contact_title_padding_bottom">10dp</dimen>
 
+    <dimen name="avatar_extra_large_size">108dp</dimen>
     <dimen name="avatar_large_size">72dp</dimen>
     <dimen name="avatar_normal_size">48dp</dimen>
     <dimen name="avatar_radius">56dp</dimen>
@@ -26,8 +27,12 @@
 
     <dimen name="expander_height">38dip</dimen>
 
+    <dimen name="chat_image_corner_radius">2dp</dimen>
+    <dimen name="chat_image_border_radius">2dp</dimen>
+    <dimen name="chat_image_border_width">1dp</dimen>
     <dimen name="min_chat_image_size">48dp</dimen>
     <dimen name="max_chat_image_size">288dp</dimen>
+    <dimen name="max_chat_image_height_size">400dp</dimen>
 
     <dimen name="intro_screen_bottom_space_height">48dp</dimen>
     <dimen name="intro_screen_right_space_wight">0dp</dimen>
@@ -49,4 +54,7 @@
     <dimen name="message_padding">50dp</dimen>
 
     <dimen tools:override="true" name="design_fab_size_normal">40dp</dimen>
+
+    <dimen name="input_view_height">52dp</dimen>
+    <dimen name="bottom_navigation_height">56dp</dimen>
 </resources>

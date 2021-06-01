@@ -22,12 +22,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textColor="@color/primary_text_default_material_dark"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="?attr/contact_list_contact_name_text_color"
             android:text="Lorem Ipsum"
             android:drawablePadding="4dp"
             android:layout_marginLeft="6dp"
             android:textSize="18sp"
-            android:textStyle="bold"
             />
 
         <TextView
@@ -35,18 +35,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textColor="@color/grey_200"
+            android:textColor="?attr/contact_list_contact_name_text_color"
             android:text="Lorem ipsum dolor sit amet"
             android:layout_marginLeft="6dp"
+            android:alpha="0.7"
             />
     </LinearLayout>
-
-    <!--<ImageView-->
-        <!--android:id="@+id/status_icon"-->
-        <!--android:src="@drawable/ic_status"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--/>-->
 
 </LinearLayout>

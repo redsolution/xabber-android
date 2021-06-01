@@ -18,8 +18,8 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
-import com.xabber.android.data.roster.GroupStateProvider;
+import com.xabber.android.data.roster.CircleManager;
+import com.xabber.android.data.roster.CircleStateProvider;
 import com.xabber.android.data.roster.ShowOfflineMode;
 
 import java.util.ArrayList;
@@ -66,12 +66,12 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     private final ShowOfflineMode showOfflineMode;
 
     public GroupConfiguration(AccountJid account, String group,
-                       GroupStateProvider groupStateProvider) {
+                       CircleStateProvider circleStateProvider) {
         this.account = account;
         this.group = group;
         abstractContacts = new ArrayList<>();
-        expanded = groupStateProvider.isExpanded(account, group);
-        showOfflineMode = groupStateProvider.getShowOfflineMode(account, group);
+        expanded = circleStateProvider.isExpanded(account, group);
+        showOfflineMode = circleStateProvider.getShowOfflineMode(account, group);
         empty = true;
         total = 0;
         online = 0;
@@ -167,10 +167,10 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
         int result = account.compareTo(another.getAccount());
         if (result != 0) {
             if (group.compareTo(another.getGroup()) != 0) {
-                if (group.equals(GroupManager.ACTIVE_CHATS)) {
+                if (group.equals(CircleManager.ACTIVE_CHATS)) {
                     return -1;
                 }
-                if (anotherGroup.equals(GroupManager.ACTIVE_CHATS)) {
+                if (anotherGroup.equals(CircleManager.ACTIVE_CHATS)) {
                     return 1;
                 }
             }
@@ -178,28 +178,28 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
         }
         result = group.compareTo(anotherGroup);
         if (result != 0) {
-            if (group.equals(GroupManager.ACTIVE_CHATS)) {
+            if (group.equals(CircleManager.ACTIVE_CHATS)) {
                 return -1;
             }
-            if (anotherGroup.equals(GroupManager.ACTIVE_CHATS)) {
+            if (anotherGroup.equals(CircleManager.ACTIVE_CHATS)) {
                 return 1;
             }
-            if (group.equals(GroupManager.IS_ACCOUNT)) {
+            if (group.equals(CircleManager.IS_ACCOUNT)) {
                 return -1;
             }
-            if (anotherGroup.equals(GroupManager.IS_ACCOUNT)) {
+            if (anotherGroup.equals(CircleManager.IS_ACCOUNT)) {
                 return 1;
             }
-            if (group.equals(GroupManager.NO_GROUP)) {
+            if (group.equals(CircleManager.NO_GROUP)) {
                 return -1;
             }
-            if (anotherGroup.equals(GroupManager.NO_GROUP)) {
+            if (anotherGroup.equals(CircleManager.NO_GROUP)) {
                 return 1;
             }
-            if (group.equals(GroupManager.IS_ROOM)) {
+            if (group.equals(CircleManager.IS_ROOM)) {
                 return -1;
             }
-            if (anotherGroup.equals(GroupManager.IS_ROOM)) {
+            if (anotherGroup.equals(CircleManager.IS_ROOM)) {
                 return 1;
             }
             return result;

@@ -37,22 +37,13 @@
         android:layout_below="@+id/toolbar_default"
         />
 
-    <TextView
-        android:id="@+id/tvTopDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingRight="8dp"
-        android:paddingLeft="8dp"
-        android:textStyle="bold"
-        android:text="21 January"
-        android:textColor="@color/white"
-        android:background="?attr/transparent_rounded_background"
-        android:visibility="visible"
-        />
+    <ViewStub
+        android:id="@+id/stubNewContact"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignTop="@id/chat_messages_recycler_view"
+        android:inflatedId="@+id/new_contact_chat_panel"
+        android:layout="@layout/layout_chat_new_contact" />
 
     <ViewStub
         android:id="@+id/stubNotify"
@@ -62,6 +53,14 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/secondBottomPanel"
         />
+
+    <ViewStub
+        android:id="@+id/stubIntro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:inflatedId="@+id/chat_intro"
+        android:layout="@layout/chat_intro_helper_view" />
 
     <View
         android:layout_width="match_parent"
@@ -77,7 +76,7 @@
         android:layout_above="@id/bottomPanel"
         />
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,7 +87,11 @@
         <include layout="@layout/view_chat_interaction"
             android:visibility="gone"/>
 
-    </RelativeLayout>
+        <include layout="@layout/view_chat_record"
+            android:visibility="gone"/>
+
+
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/btnScrollDown"
@@ -105,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:backgroundTint="?attr/chat_input_background"
-            android:src="@drawable/ic_arrow_down"
+            app:srcCompat="@drawable/ic_arrow_down"
             android:tint="?attr/chat_input_button_color"
             app:borderWidth="0dp"
             />
@@ -161,6 +164,52 @@
         android:layout_marginBottom="-8dp"
         android:visibility="gone"
         />
+
+    <LinearLayout
+        android:id="@+id/record_lock_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="86dp"
+        android:background="@drawable/rounded_background_dark_transparent_voice_lock"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/iv_record_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            app:srcCompat="@drawable/ic_security_plain_24dp" />
+
+        <ImageView
+            android:id="@+id/iv_record_chevron_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_record_lock"
+            app:srcCompat="@drawable/ic_chevron_up" />
+
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/record_float_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="-14dp"
+        android:layout_marginBottom="-12dp"
+        android:baselineAlignBottom="false"
+        android:clickable="false"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        app:fabCustomSize="78dp"
+        app:srcCompat="@drawable/ic_microphone" />
 
     <LinearLayout
         android:id="@+id/placeholder"

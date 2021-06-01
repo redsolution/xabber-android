@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ivCancelDownload"
-        android:src="@drawable/ic_close"
+        android:src="@drawable/ic_clear_white_24dp"
         android:tint="@color/white"
         android:background="@drawable/ripple_background_circle"
         android:padding="16dp"

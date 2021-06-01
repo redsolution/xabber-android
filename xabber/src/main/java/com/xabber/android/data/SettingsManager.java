@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -21,8 +21,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -175,6 +176,26 @@ public class SettingsManager implements OnInitializedListener,
         return Uri.parse(value);
     }
 
+    public static void resetCustomPrefs() {
+        getSharedPreferences().edit().clear().commit();
+    }
+
+    public static int getMainAccountColorLevel() {
+        return getInt(R.string.main_account_color_level, R.string.main_account_color_level_default);
+    }
+
+    public static void setMainAccountColorLevel(int colorLevel) {
+        setString(R.string.main_account_color_level, String.valueOf(colorLevel));
+    }
+
+    public static String getMainAvatarHash() {
+        return getString(R.string.main_account_avatar_hash, "0");
+    }
+
+    public static void setMainAvatarHash(String avatarHash) {
+        setString(R.string.main_account_avatar_hash, avatarHash);
+    }
+
     public static boolean contactsShowAvatars() {
         return getBoolean(R.string.contacts_show_avatars_key,
                 R.bool.contacts_show_avatars_default);
@@ -195,13 +216,13 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean contactsShowGroups() {
-        return getBoolean(R.string.contacts_show_groups_key,
-                R.bool.contacts_show_groups_default);
+        return getBoolean(R.string.contacts_show_circles_key,
+                R.bool.contacts_show_circles_default);
     }
 
     public static boolean contactsShowEmptyGroups() {
-        return getBoolean(R.string.contacts_show_empty_groups_key,
-                R.bool.contacts_show_empty_groups_default);
+        return getBoolean(R.string.contacts_show_empty_circles_key,
+                R.bool.contacts_show_empty_circles_default);
     }
 
     public static boolean contactsShowAccounts() {
@@ -399,6 +420,23 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.chats_send_by_enter_default);
     }
 
+    public static boolean chatsAutoDownloadVoiceMessage() {
+        return getBoolean(R.string.connection_auto_download_voice_messages_key,
+                R.bool.connection_auto_download_voice_messages_default);
+    }
+
+    public static void setChatsAutoDownloadVoiceMessage(boolean value) {
+        setBoolean(R.string.connection_auto_download_voice_messages_key, value);
+    }
+
+    public static boolean autoDownloadVoiceMessageSuggested() {
+        return getBoolean(R.string.auto_download_voice_message_suggested_key, false);
+    }
+
+    public static void setAutoDownloadVoiceMessageSuggested() {
+        setBoolean(R.string.auto_download_voice_message_suggested_key, true);
+    }
+
     public static ChatsShowStatusChange chatsShowStatusChange() {
         String value = getString(R.string.chats_show_status_change_key,
                 R.string.chats_show_status_change_default);
@@ -585,7 +623,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean debugLog() {
-        return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
+        return BuildConfig.FLAVOR_build.equals("dev") || getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
     public static boolean fileLog() {
@@ -697,7 +735,7 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.security_otr_history_default);
     }
 
-    public static int bootCount() {
+    public static int getBootCount() {
         return getSharedPreferences()
                 .getInt(Application.getInstance().getString(
                         R.string.boot_count_key), 0);
@@ -707,7 +745,7 @@ public class SettingsManager implements OnInitializedListener,
         Editor editor = getSharedPreferences().edit();
         editor.putInt(
                 Application.getInstance().getString(R.string.boot_count_key),
-                bootCount() + 1);
+                getBootCount() + 1);
         editor.commit();
     }
 
@@ -764,6 +802,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.interface_theme_dark_value));
     }
 
+    public static void setLightTheme() {
+        setString(R.string.interface_theme_key, Application.getInstance().getString(
+                R.string.interface_theme_light_value));
+    }
+
     public static boolean isBatteryOptimizationDisableSuggested() {
         return getBoolean(R.string.battery_optimization_disable_suggested_key, false);
     }
@@ -796,17 +839,12 @@ public class SettingsManager implements OnInitializedListener,
         setString(R.string.status_text_key, statusText);
     }
 
-    public static void setLastSyncDate(String lastSyncDate) {
-        setString(R.string.last_sync_date_key, lastSyncDate);
-    }
-
     public static String getLastSyncDate() {
         return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
     }
 
-    public static void setSyncAllAccounts(boolean syncAll) {
-        setBoolean(R.string.sync_all_key, syncAll);
-        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
+    public static void setLastSyncDate(String lastSyncDate) {
+        setString(R.string.last_sync_date_key, lastSyncDate);
     }
 
     public static boolean isSyncAllAccounts() {
@@ -814,60 +852,65 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.sync_all_key, true);
     }
 
-    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
-        setInt(R.string.order_last_timestamp_key, lastOrderChange);
+    public static void setSyncAllAccounts(boolean syncAll) {
+        setBoolean(R.string.sync_all_key, syncAll);
+        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
     }
 
     public static int getLastOrderChangeTimestamp() {
         return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
-    public static void setLastPatreonLoadTimestamp(int timestamp) {
-        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
+    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
+        setInt(R.string.order_last_timestamp_key, lastOrderChange);
     }
 
     public static int getLastPatreonLoadTimestamp() {
         return getInteger(R.string.patreon_last_load_timestamp_key, 1);
     }
 
-    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
+    public static void setLastPatreonLoadTimestamp(int timestamp) {
+        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
     }
 
     public static int getLastCrowdfundingLoadTimestamp() {
         return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
     }
 
-    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
+    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
     }
 
     public static int getLastLeaderCrowdfundingLoadTimestamp() {
         return getInteger(R.string.crowdfunding_leader_last_load_timestamp_key, 1);
     }
 
-    public static void setFirstAppRunTimestamp(int timestamp) {
-        setInt(R.string.first_app_run_timestamp_key, timestamp);
+    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
     }
 
     public static int getFirstAppRunTimestamp() {
         return getInteger(R.string.first_app_run_timestamp_key, 0);
     }
 
-    public static void setLastCrowdfundingPosition(int position) {
-        setInt(R.string.crowdfunding_last_position_key, position);
+    public static void setFirstAppRunTimestamp(int timestamp) {
+        setInt(R.string.first_app_run_timestamp_key, timestamp);
     }
 
     public static int getLastCrowdfundingPosition() {
         return getInteger(R.string.crowdfunding_last_position_key, 0);
     }
 
-    public static void setEnabledPushNodes(String enabledPushNodes) {
-        setString(R.string.enabled_push_nodes, enabledPushNodes);
+    public static void setLastCrowdfundingPosition(int position) {
+        setInt(R.string.crowdfunding_last_position_key, position);
     }
 
     public static String getEnabledPushNodes() {
         return getString(R.string.enabled_push_nodes, "");
+    }
+
+    public static void setEnabledPushNodes(String enabledPushNodes) {
+        setString(R.string.enabled_push_nodes, enabledPushNodes);
     }
 
     public static void resetPreferences(Context context, String preferencesName) {
@@ -938,6 +981,7 @@ public class SettingsManager implements OnInitializedListener,
             WakeLockManager.onWifiLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_use_carbons_key))) {
+            LogManager.d(SettingsManager.class.toString(), "Client preference \"Use carbons\" was changed!");
             CarbonManager.getInstance().onUseCarbonsSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.events_show_text_key))) {
@@ -954,7 +998,7 @@ public class SettingsManager implements OnInitializedListener,
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
                 SettingsManager.setDarkThemeSuggested();
             }
-        } else if(key.equals(Application.getInstance().getString(
+        } else if (key.equals(Application.getInstance().getString(
                 R.string.debug_file_log_key))) {
             LogManager.getInstance().onSettingsChanged();
         }

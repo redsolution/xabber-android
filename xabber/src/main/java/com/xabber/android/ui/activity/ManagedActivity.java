@@ -19,11 +19,14 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.account.AccountErrorEvent;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.dialog.AccountEnterPassDialog;
 import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
@@ -98,7 +101,11 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
-            AccountEnterPassDialog.newInstance(accountErrorEvent)
+            if (AccountManager.getInstance().getAccount(accountErrorEvent.getAccount())
+                    .getConnectionSettings().getXToken() != null
+                    && !accountErrorEvent.getMessage().contains("SASLError using X-TOKEN: not-authorized"))
+                ConnectionManager.getInstance().connectAll();
+            else AccountEnterPassDialog.newInstance(accountErrorEvent)
                     .show(getFragmentManager(), AccountEnterPassDialog.class.getSimpleName());
         } else {
             // show error dialog
