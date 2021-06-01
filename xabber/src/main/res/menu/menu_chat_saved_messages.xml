@@ -12,7 +12,7 @@
     <item
         android:id="@+id/action_clear_history"
         android:orderInCategory="9"
-        android:title="@string/clear_history"
+        android:title="@string/dialog_delete_messages__header"
         app:showAsAction="never" />
 
 </menu>
