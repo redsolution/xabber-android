@@ -73,6 +73,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -2598,7 +2599,19 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
-        ((ChatActivity) getActivity()).forwardMessages(forwardIds);
+        if (account.getBareJid().toString().contains(user.getBareJid().toString())){
+            ArrayList<String> rightSavedMessagesIds = new ArrayList<>();
+            for (String messageId : forwardIds){
+                MessageRealmObject message = MessageRepository.getMessageFromRealmByPrimaryKey(messageId);
+                if (message.getAccount().getBareJid().toString().contains(message.getUser().getBareJid().toString())
+                        && message.hasForwardedMessages()){
+                    for (ForwardIdRealmObject innerMessageId : message.getForwardedIds()){
+                        rightSavedMessagesIds.add(innerMessageId.getForwardMessageId());
+                    }
+                } else rightSavedMessagesIds.add(messageId);
+            }
+            ((ChatActivity) getActivity()).forwardMessages(rightSavedMessagesIds);
+        } else ((ChatActivity) getActivity()).forwardMessages(forwardIds);
     }
 
     private enum VoiceRecordState {

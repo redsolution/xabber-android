@@ -86,6 +86,24 @@ public class MessageRepository {
         });
     }
 
+    public static MessageRealmObject getMessageFromRealmByPrimaryKey(String primaryKey){
+        if (Looper.getMainLooper() == Looper.myLooper())
+            return DatabaseManager.getInstance().getDefaultRealmInstance()
+                    .where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
+                    .findFirst();
+        else {
+            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
+                    .findFirst();
+            MessageRealmObject result = null;
+            if (messageRealmObject != null) result = realm.copyFromRealm(messageRealmObject);
+            realm.close();
+            return result;
+        }
+    }
+
     public static MessageRealmObject getMessageFromRealmByStanzaId(String stanzaId){
         if (Looper.getMainLooper() == Looper.myLooper())
             return DatabaseManager.getInstance().getDefaultRealmInstance()
