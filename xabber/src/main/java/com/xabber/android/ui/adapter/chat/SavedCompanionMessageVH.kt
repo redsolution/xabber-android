@@ -57,34 +57,34 @@ class SavedCompanionMessageVH(
         if (!needTail) {
             avatar.visibility = View.INVISIBLE
             avatarBackground.visibility = View.INVISIBLE
-            return
-        }
-        avatar.visibility = View.VISIBLE
-        avatarBackground.visibility = View.VISIBLE
-        //groupchat avatar
-        if (groupMember != null) {
-            val placeholder: Drawable? = try {
-                val contactJid: ContactJid =
-                    ContactJid.from(messageRealmObject.user.jid.toString() + "/" + groupMember.nickname)
-                AvatarManager.getInstance().getOccupantAvatar(contactJid, groupMember.nickname)
-            } catch (e: ContactJidCreateException) {
-                AvatarManager.getInstance()
-                    .generateDefaultAvatar(groupMember.nickname ?: "", groupMember.nickname ?: "")
-            }
-            Glide.with(itemView.context)
-                .load(AvatarManager.getInstance().getGroupMemberAvatar(groupMember, messageRealmObject.account))
-                .centerCrop()
-                .placeholder(placeholder)
-                .error(placeholder)
-                .into(avatar)
-            return
         } else {
-            messageRealmObject.originalFrom?.let { senderJid ->
-                avatar.setImageDrawable(
-                    RosterManager.getInstance().getAbstractContact(
-                        messageRealmObject.account, ContactJid.from(senderJid).bareUserJid
-                    ).getAvatar(true)
-                )
+            avatar.visibility = View.VISIBLE
+            avatarBackground.visibility = View.VISIBLE
+            //groupchat avatar
+            if (groupMember != null) {
+                val placeholder: Drawable? = try {
+                    val contactJid: ContactJid =
+                        ContactJid.from(messageRealmObject.user.jid.toString() + "/" + groupMember.nickname)
+                    AvatarManager.getInstance().getOccupantAvatar(contactJid, groupMember.nickname)
+                } catch (e: ContactJidCreateException) {
+                    AvatarManager.getInstance()
+                        .generateDefaultAvatar(groupMember.nickname ?: "", groupMember.nickname ?: "")
+                }
+                Glide.with(itemView.context)
+                    .load(AvatarManager.getInstance().getGroupMemberAvatar(groupMember, messageRealmObject.account))
+                    .centerCrop()
+                    .placeholder(placeholder)
+                    .error(placeholder)
+                    .into(avatar)
+                return
+            } else {
+                messageRealmObject.originalFrom?.let { senderJid ->
+                    avatar.setImageDrawable(
+                        RosterManager.getInstance()
+                            .getAbstractContact(messageRealmObject.account, ContactJid.from(senderJid).bareUserJid)
+                            .getAvatar(true)
+                    )
+                }
             }
         }
     }
