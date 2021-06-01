@@ -339,17 +339,38 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         }
 
         // need date, need name
-        boolean needDate;
-        boolean needName;
+        boolean needDate = false;
+        boolean needName = false;
         MessageRealmObject previousMessage = getMessageItem(position - 1);
         if (previousMessage != null) {
-            needDate = !Utils.isSameDay(getMessageItem(position).getTimestamp(), previousMessage.getTimestamp());
-            if (messageRealmObject.getGroupchatUserId() != null
-                    && !messageRealmObject.getGroupchatUserId().isEmpty()
-                    && previousMessage.getGroupchatUserId() != null
-                    && !previousMessage.getGroupchatUserId().isEmpty()){
-                needName = !messageRealmObject.getGroupchatUserId().equals(previousMessage.getGroupchatUserId());
-            } else needName = true;
+            if (isSavedMessagesMode) {
+                MessageRealmObject currentMessage =
+                        (previousMessage.getAccount().getBareJid().toString().contains(previousMessage.getUser().getBareJid().toString())
+                                && messageRealmObject.hasForwardedMessages()) ?
+                                MessageRepository.getForwardedMessages(messageRealmObject).get(0) : messageRealmObject;
+                MessageRealmObject actualPrevious =
+                        (previousMessage.getAccount().getBareJid().toString().contains(previousMessage.getUser().getBareJid().toString())
+                                && previousMessage.hasForwardedMessages()) ?
+                                MessageRepository.getForwardedMessages(previousMessage).get(0) : previousMessage;
+
+                try {
+                    ContactJid currentMessageSender = ContactJid.from(currentMessage.getOriginalFrom());
+                    ContactJid previousMessageSender = ContactJid.from(actualPrevious.getOriginalFrom());
+                    needName =
+                            !currentMessageSender.getBareJid().toString().contains(previousMessageSender.getBareJid().toString());
+                } catch (Exception e) {
+                    LogManager.exception(this, e);
+                }
+
+            } else {
+                needDate = !Utils.isSameDay(getMessageItem(position).getTimestamp(), previousMessage.getTimestamp());
+                if (messageRealmObject.getGroupchatUserId() != null
+                        && !messageRealmObject.getGroupchatUserId().isEmpty()
+                        && previousMessage.getGroupchatUserId() != null
+                        && !previousMessage.getGroupchatUserId().isEmpty()) {
+                    needName = !messageRealmObject.getGroupchatUserId().equals(previousMessage.getGroupchatUserId());
+                } else needName = true;
+            }
         } else {
             needDate = true;
             needName = true;

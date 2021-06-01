@@ -2,15 +2,18 @@ package com.xabber.android.ui.adapter.chat
 
 import android.graphics.drawable.Drawable
 import android.view.View
+import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.bumptech.glide.Glide
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groups.GroupMember
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.ui.color.ColorManager
 
 /**
  * Represents saved message, contained only one message from simple contact or group member
@@ -38,6 +41,12 @@ class SavedCompanionMessageVH(
         val groupMember: GroupMember? = GroupMemberManager.getGroupMemberById(innerMessage.groupchatUserId)
         super.bind(innerMessage, extraData)
         setupAvatar(innerMessage, extraData.isNeedTail, groupMember)
+        setupName(
+            innerMessage.account,
+            innerMessage.originalFrom?.let { ContactJid.from(it) } ?: innerMessage.user,
+            extraData.isNeedName,
+            groupMember
+        )
     }
 
     private fun setupAvatar(
@@ -45,16 +54,13 @@ class SavedCompanionMessageVH(
         needTail: Boolean = false,
         groupMember: GroupMember? = null,
     ) {
-
         if (!needTail) {
             avatar.visibility = View.INVISIBLE
             avatarBackground.visibility = View.INVISIBLE
             return
         }
-
         avatar.visibility = View.VISIBLE
         avatarBackground.visibility = View.VISIBLE
-
         //groupchat avatar
         if (groupMember != null) {
             val placeholder: Drawable? = try {
@@ -81,6 +87,31 @@ class SavedCompanionMessageVH(
                 )
             }
         }
+    }
+
+    private fun setupName(
+        accountJid: AccountJid,
+        companionJid: ContactJid,
+        needName: Boolean = false,
+        groupMember: GroupMember? = null,
+    ) {
+        if (needName) {
+            if (groupMember != null && !groupMember.isMe) {
+                messageHeader.text = groupMember.nickname
+                messageHeader.setTextColor(
+                    ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(groupMember.nickname), 0.8f)
+                )
+            } else {
+                messageHeader.text = companionJid.bareJid.toString()
+                RosterManager.getInstance().getBestContact(accountJid, companionJid)?.let {
+                    messageHeader.text = it.name
+                    messageHeader.setTextColor(
+                        ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(it), 0.8f)
+                    )
+                }
+            }
+            messageHeader.visibility = View.VISIBLE
+        } else messageHeader.visibility = View.GONE
     }
 
 }
