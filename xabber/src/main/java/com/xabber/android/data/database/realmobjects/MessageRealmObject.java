@@ -295,9 +295,9 @@ public class MessageRealmObject extends RealmObject {
 
     public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
-    public static ChatAction getChatAction(MessageRealmObject messageRealmObject) { return ChatAction.valueOf(messageRealmObject.getAction()); }
+    public ChatAction getChatAction() { return ChatAction.valueOf(getAction()); }
 
-    public static Spannable getSpannable(MessageRealmObject messageRealmObject) { return new SpannableString(messageRealmObject.getText()); }
+    public Spannable getSpannable() { return new SpannableString(getText()); }
 
     public boolean isEncrypted() { return encrypted; }
 

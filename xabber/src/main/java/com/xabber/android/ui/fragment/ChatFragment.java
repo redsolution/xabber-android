@@ -1479,8 +1479,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && clickedMessage.getAccount().getBareJid().toString().contains(clickedMessage.getUser().getBareJid().toString())
                 && clickedMessage.hasForwardedMessages()
                 && MessageRepository.getForwardedMessages(clickedMessage).size() == 1){
-            spannable = MessageRealmObject.getSpannable(MessageRepository.getForwardedMessages(clickedMessage).get(0));
-        } else spannable = MessageRealmObject.getSpannable(clickedMessage);
+            spannable = MessageRepository.getForwardedMessages(clickedMessage).get(0).getSpannable();
+        } else spannable = clickedMessage.getSpannable();
         ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
                 .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
     }

@@ -13,16 +13,17 @@ class ActionMessageVH(itemView: View?) : BasicMessageVH(itemView) {
     fun bind(messageRealmObject: MessageRealmObject, context: Context?, account: AccountJid?, needDate: Boolean) {
         val name = RosterManager.getInstance().getBestContact(account, messageRealmObject.user).name
 
-        messageText.text = MessageRealmObject.getChatAction(messageRealmObject)
-                .getText(context, name, MessageRealmObject.getSpannable(messageRealmObject).toString())
+        messageText.text = messageRealmObject.chatAction.getText(context, name, messageRealmObject.spannable.toString())
 
         this.needDate = needDate
         date = StringUtils.getDateStringForMessage(messageRealmObject.timestamp)
 
-        itemView.setPadding(itemView.paddingLeft,
-                Utils.dipToPx(4f, itemView.context),
-                itemView.paddingRight,
-                Utils.dipToPx(4f, itemView.context))
+        itemView.setPadding(
+            itemView.paddingLeft,
+            Utils.dipToPx(4f, itemView.context),
+            itemView.paddingRight,
+            Utils.dipToPx(4f, itemView.context)
+        )
     }
 
 }
