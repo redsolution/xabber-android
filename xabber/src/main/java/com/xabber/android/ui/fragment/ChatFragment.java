@@ -1730,11 +1730,34 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onMessageAvatarClick(int position) {
+        MessageRealmObject messageClicked = chatMessageAdapter.getMessageItem(position);
         if (getChat() instanceof GroupChat){
-            String memberId = chatMessageAdapter.getMessageItem(position).getGroupchatUserId();
+            String memberId = messageClicked.getGroupchatUserId();
             startActivity(GroupchatMemberActivity.Companion
                     .createIntentForGroupchatAndMemberId(getActivity(), memberId, (GroupChat) getChat()));
-        } else LogManager.w(LOG_TAG, "onMessageAvatarClick on notGroupchat. Position: " + position);
+        } else if (account.getBareJid().toString().contains(user.getBareJid().toString())
+                && messageClicked.getAccount().getBareJid().toString().contains(messageClicked.getUser().getBareJid().toString())
+                && messageClicked.hasForwardedMessages()) {
+            try{
+                MessageRealmObject innerMessage = MessageRepository.getForwardedMessages(messageClicked).get(0);
+                ContactJid contactJid = innerMessage.getOriginalFrom() != null ?
+                        ContactJid.from(innerMessage.getOriginalFrom()) : innerMessage.getUser();
+                if (innerMessage.getGroupchatUserId() != null){
+                    startActivity(
+                            GroupchatMemberActivity.Companion
+                                    .createIntentForGroupchatAndMemberId(
+                                            getActivity(),
+                                            innerMessage.getGroupchatUserId(),
+                                            (GroupChat) ChatManager.getInstance().getChat(account, contactJid)
+                                    )
+                    );
+                } else startActivity(ContactViewerActivity.createIntent(getActivity(), account, contactJid));
+            } catch (Exception e) { LogManager.exception(this, e); }
+
+        } else {
+            LogManager.e(LOG_TAG,
+                    "onMessageAvatarClick cant handle avatar. It's regular chat or saved messages chat. Position: " + position);
+        }
     }
 
     @Override
