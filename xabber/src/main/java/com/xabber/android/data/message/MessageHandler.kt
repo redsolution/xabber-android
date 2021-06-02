@@ -31,6 +31,7 @@ import com.xabber.android.ui.OnNewMessageListener
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.xmpp.chat_state.ChatStateExtension
+import com.xabber.xmpp.groups.hasGroupExtensionElement
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
@@ -139,6 +140,12 @@ object MessageHandler {
 
         if (messageStanza.type == Message.Type.headline
             && XMPPAuthManager.getInstance().isXabberServiceMessage(messageStanza.stanzaId)
+        ) {
+            return null
+        }
+
+        if (accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
+            && messageStanza.hasGroupExtensionElement()
         ) {
             return null
         }
