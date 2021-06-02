@@ -1473,7 +1473,27 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         skipOnTextChanges = false;
     }
 
-    public void setQuote(String quote) {
+    private void makeCopy(MessageRealmObject clickedMessage){
+        Spannable spannable;
+        if (account.getBareJid().toString().contains(user.getBareJid().toString())
+                && clickedMessage.getAccount().getBareJid().toString().contains(clickedMessage.getUser().getBareJid().toString())
+                && clickedMessage.hasForwardedMessages()
+                && MessageRepository.getForwardedMessages(clickedMessage).size() == 1){
+            spannable = MessageRealmObject.getSpannable(MessageRepository.getForwardedMessages(clickedMessage).get(0));
+        } else spannable = MessageRealmObject.getSpannable(clickedMessage);
+        ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
+                .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
+    }
+
+    public void setQuote(MessageRealmObject clickedMessageRealmObject) {
+        String quote;
+        if (account.getBareJid().toString().contains(user.getBareJid().toString())
+                && clickedMessageRealmObject.getAccount().getBareJid().toString().contains(clickedMessageRealmObject.getUser().getBareJid().toString())
+                && clickedMessageRealmObject.hasForwardedMessages()
+                && MessageRepository.getForwardedMessages(clickedMessageRealmObject).size() == 1) {
+            quote = MessageRepository.getForwardedMessages(clickedMessageRealmObject).get(0).getText();
+        } else quote = clickedMessageRealmObject.getText() + "\n";
+
         skipOnTextChanges = true;
         int spanStart = 0;
         int spanEnd;
@@ -1710,15 +1730,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onMessageClick(View caller, int position) {
         int itemViewType = chatMessageAdapter.getItemViewType(position);
 
-        if (itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE
-                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE
-                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_NOFLEX
-                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX
-                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
-                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_IMAGE
-                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT
-                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT) {
-
+        if (itemViewType != MessagesAdapter.VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
+                && itemViewType != MessagesAdapter.VIEW_TYPE_ACTION_MESSAGE) {
             clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageRealmObject == null) {
                 LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
@@ -1848,15 +1861,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                     break;
                 case "action_message_copy":
-                    Spannable spannable = MessageRealmObject.getSpannable(clickedMessageRealmObject);
-                    ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                            .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
+                    makeCopy(clickedMessageRealmObject);
                     break;
                 case "action_message_appeal":
                     mentionUser(clickedMessageRealmObject.getResource().toString());
                     break;
                 case "action_message_quote":
-                    setQuote(clickedMessageRealmObject.getText() + "\n");
+                    setQuote(clickedMessageRealmObject);
                     break;
                 case "action_message_remove":
                     ArrayList<MessageRealmObject> arrayList = new ArrayList<>();

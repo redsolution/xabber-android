@@ -63,11 +63,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     public static final int VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT = 11;
     public static final int VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT = 1351;
 
-
-    private static final int VIEW_TYPE_ACTION_MESSAGE = 12;
+    public static final int VIEW_TYPE_ACTION_MESSAGE = 12;
     public static final int VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 13;
-
-
 
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
@@ -89,7 +86,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
-    private boolean isSavedMessagesMode;
+    final private boolean isSavedMessagesMode;
 
     private RecyclerView recyclerView;
     private final List<String> itemsNeedOriginalText = new ArrayList<>();
