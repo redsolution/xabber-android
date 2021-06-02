@@ -48,8 +48,10 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
         if (xmpptcpConnection.isAuthenticated())
             try {
                 return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
-            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-        LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+                LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+            }
         return false;
     }
 
@@ -167,7 +169,6 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }
-            LogManager.d(LOG_TAG, "Received receipt to message with origin id : " + originId);
             markMessageReceivedInDatabase(timestamp, originId, stanzaId);
             for (OnMessageUpdatedListener listener :
                     Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
