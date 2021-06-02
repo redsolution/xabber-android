@@ -169,8 +169,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
             boolean notJustImage =
                     (!innerSingleSavedMessage.getText().trim().isEmpty() && !isUploadMessage)
                             || (!innerSingleSavedMessage.isAttachmentImageOnly());
-
-            if (!innerSingleSavedMessage.getOriginalFrom().contains(chat.getAccount().getBareJid().toString())) {
+            String contact = innerSingleSavedMessage.getOriginalFrom() != null ?
+                    innerSingleSavedMessage.getOriginalFrom() : innerSingleSavedMessage.getUser().toString();
+            if (!contact.contains(chat.getAccount().getBareJid().toString())) {
                 if(isImage) {
                     return notJustImage ? VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT : VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE;
                 } else return noFlex ? VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX : VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE;
