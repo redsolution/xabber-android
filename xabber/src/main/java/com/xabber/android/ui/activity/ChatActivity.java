@@ -97,7 +97,8 @@ import java.util.List;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener, OnMessageUpdatedListener,
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener,
         OnBlockedListChangedListener, Toolbar.OnMenuItemClickListener, OnNewMessageListener,
-        UpdateBackpressure.UpdatableObject, SnoozeDialog.OnSnoozeListener, SensorEventListener {
+        UpdateBackpressure.UpdatableObject, SnoozeDialog.OnSnoozeListener, SensorEventListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";

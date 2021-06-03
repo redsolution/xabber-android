@@ -167,10 +167,9 @@ import io.realm.RealmResults;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
 
-public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
-        View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
-        MessagesAdapter.Listener, PopupWindow.OnDismissListener, OnAccountChangedListener,
-        BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
+public class ChatFragment extends FileInteractionFragment implements View.OnClickListener,
+        MessageVH.MessageClickListener, MessagesAdapter.Listener, PopupWindow.OnDismissListener,
+        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
         IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
         OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
         OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener {
@@ -1243,7 +1242,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void showSecurityMenu() {
         PopupMenu popup = new PopupMenu(getActivity(), securityButton);
         popup.inflate(R.menu.security);
-        popup.setOnMenuItemClickListener(this);
+        popup.setOnMenuItemClickListener((PopupMenu.OnMenuItemClickListener) getActivity());
 
         Menu menu = popup.getMenu();
 
@@ -1530,9 +1529,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         inputView.getText().clear();
         skipOnTextChanges = false;
     }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) { return ((ChatActivity) getActivity()).onMenuItemClick(item); }
 
     public void onExportChatClick() {
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
