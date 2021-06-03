@@ -1436,7 +1436,8 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     private void showSecurityButton(boolean show) {
-        securityButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        boolean isSavedMessages = account.getBareJid().toString().contains(user.getBareJid().toString());
+        securityButton.setVisibility(show && !isSavedMessages ? View.VISIBLE : View.GONE);
     }
 
     private void updateSendButtonSecurityLevel() {
