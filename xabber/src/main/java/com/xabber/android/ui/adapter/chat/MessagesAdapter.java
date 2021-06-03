@@ -117,7 +117,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         this.chat = chat;
 
         this.isSavedMessagesMode =
-                chat.getAccount().getBareJid().toString().contains(chat.getContactJid().getBareJid().toString());
+                chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString());
 
         ContactJid user = chat.getContactJid();
         userName = RosterManager.getInstance().getName(chat.getAccount(), user);
