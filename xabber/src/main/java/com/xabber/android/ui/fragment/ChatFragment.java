@@ -169,8 +169,8 @@ import rx.subjects.PublishSubject;
 
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
-        MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
+        MessagesAdapter.Listener, PopupWindow.OnDismissListener, OnAccountChangedListener,
+        BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
         IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
         OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
         OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener {
@@ -256,7 +256,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private Subscription audioProgressSubscription;
     private boolean isReply = false;
     private ChatViewerFragmentListener listener;
-    private MessageRealmObject clickedMessageRealmObject;
     private Timer stopTypingTimer = new Timer();
     private final Runnable timer = new Runnable() {
         @Override
@@ -1533,9 +1532,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return ((ChatActivity) getActivity()).onMenuItemClick(item);
-    }
+    public boolean onMenuItemClick(MenuItem item) { return ((ChatActivity) getActivity()).onMenuItemClick(item); }
 
     public void onExportChatClick() {
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
@@ -1732,12 +1729,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (itemViewType != MessagesAdapter.VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
                 && itemViewType != MessagesAdapter.VIEW_TYPE_ACTION_MESSAGE) {
-            clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position);
+            MessageRealmObject clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageRealmObject == null) {
                 LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
                 return;
             }
-            showCustomMenu(caller);
+            showCustomMenu(caller, clickedMessageRealmObject);
         }
     }
 
@@ -1798,7 +1795,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    public void showCustomMenu(View anchor) {
+    public void showCustomMenu(View anchor, MessageRealmObject clickedMessageRealmObject) {
         menuItems = new ArrayList<>();
 
         if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
@@ -1844,54 +1841,53 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             default:
         }
 
-        CustomMessageMenu.showMenu(getActivity(), anchor, menuItems, this, this);
-    }
+        AdapterView.OnItemClickListener listener = (parent, view, position, id) -> {
+            if (menuItems != null && menuItems.size() > position) {
+                HashMap<String, String> menuItem = menuItems.get(position);
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (menuItems != null && menuItems.size() > position) {
-            HashMap<String, String> menuItem = menuItems.get(position);
+                switch (menuItem.get(CustomMessageMenuAdapter.KEY_ID)) {
+                    case "action_message_repeat":
+                        if (clickedMessageRealmObject.haveAttachments()) {
+                            HttpFileUploadManager.getInstance()
+                                    .retrySendFileMessage(clickedMessageRealmObject, getActivity());
+                        } else sendMessage(clickedMessageRealmObject.getText());
 
-            switch (menuItem.get(CustomMessageMenuAdapter.KEY_ID)) {
-                case "action_message_repeat":
-                    if (clickedMessageRealmObject.haveAttachments()) {
-                        HttpFileUploadManager.getInstance()
-                                .retrySendFileMessage(clickedMessageRealmObject, getActivity());
-                    } else sendMessage(clickedMessageRealmObject.getText());
-
-                    break;
-                case "action_message_copy":
-                    makeCopy(clickedMessageRealmObject);
-                    break;
-                case "action_message_appeal":
-                    mentionUser(clickedMessageRealmObject.getResource().toString());
-                    break;
-                case "action_message_quote":
-                    setQuote(clickedMessageRealmObject);
-                    break;
-                case "action_message_remove":
-                    ArrayList<MessageRealmObject> arrayList = new ArrayList<>();
-                    arrayList.add(clickedMessageRealmObject);
-                    deleteMessage(arrayList);
-                    break;
-                case "action_message_show_original_otr":
-                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getPrimaryKey());
-                    chatMessageAdapter.notifyDataSetChanged();
-                    break;
-                case "action_message_status":
-                    if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
-                        showError(clickedMessageRealmObject.getErrorDescription());
-                    }
-                    break;
-                case "action_message_edit":
-                    getReadyForMessageEditing(clickedMessageRealmObject);
-                    break;
-                case "action_message_pin":
-                    GroupsManager.INSTANCE.sendPinMessageRequest(clickedMessageRealmObject);
-                default:
-                    break;
+                        break;
+                    case "action_message_copy":
+                        makeCopy(clickedMessageRealmObject);
+                        break;
+                    case "action_message_appeal":
+                        mentionUser(clickedMessageRealmObject.getResource().toString());
+                        break;
+                    case "action_message_quote":
+                        setQuote(clickedMessageRealmObject);
+                        break;
+                    case "action_message_remove":
+                        ArrayList<MessageRealmObject> arrayList = new ArrayList<>();
+                        arrayList.add(clickedMessageRealmObject);
+                        deleteMessage(arrayList);
+                        break;
+                    case "action_message_show_original_otr":
+                        chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getPrimaryKey());
+                        chatMessageAdapter.notifyDataSetChanged();
+                        break;
+                    case "action_message_status":
+                        if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
+                            showError(clickedMessageRealmObject.getErrorDescription());
+                        }
+                        break;
+                    case "action_message_edit":
+                        getReadyForMessageEditing(clickedMessageRealmObject);
+                        break;
+                    case "action_message_pin":
+                        GroupsManager.INSTANCE.sendPinMessageRequest(clickedMessageRealmObject);
+                    default:
+                        break;
+                }
             }
-        }
+        };
+
+        CustomMessageMenu.showMenu(getActivity(), anchor, menuItems, listener, this);
     }
 
     @Override
