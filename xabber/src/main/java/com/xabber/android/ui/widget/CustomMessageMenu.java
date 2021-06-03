@@ -8,8 +8,11 @@ import android.widget.FrameLayout;
 import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
+import com.xabber.android.utils.StringUtils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,28 +21,21 @@ import static android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
 /**
  * Created by valery.miller on 27.06.17.
  */
-
 public class CustomMessageMenu {
 
     public static void showMenu(Context context, View anchor, List<HashMap<String, String>> items,
                                 final AdapterView.OnItemClickListener itemClickListener,
                                 PopupWindow.OnDismissListener dismissListener) {
-
         // build popup
         final ListPopupWindow popup = new ListPopupWindow(context);
-        CustomMessageMenuAdapter adapter = new CustomMessageMenuAdapter(
-                context,
-                items);
+        CustomMessageMenuAdapter adapter = new CustomMessageMenuAdapter(context, items);
         popup.setAdapter(adapter);
         popup.setAnchorView(anchor);
         popup.setModal(true);
         popup.setSoftInputMode(SOFT_INPUT_ADJUST_NOTHING);
-        popup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                itemClickListener.onItemClick(parent, view, position, id);
-                popup.dismiss();
-            }
+        popup.setOnItemClickListener((parent, view, position, id) -> {
+            itemClickListener.onItemClick(parent, view, position, id);
+            popup.dismiss();
         });
         popup.setOnDismissListener(dismissListener);
 
@@ -60,9 +56,7 @@ public class CustomMessageMenu {
                 itemView = null;
             }
 
-            if (mMeasureParent == null) {
-                mMeasureParent = new FrameLayout(context);
-            }
+            if (mMeasureParent == null) mMeasureParent = new FrameLayout(context);
 
             itemView = adapter.getView(i, itemView, mMeasureParent);
             itemView.measure(widthMeasureSpec, heightMeasureSpec);
@@ -70,9 +64,7 @@ public class CustomMessageMenu {
             final int itemHeight = itemView.getMeasuredHeight();
             final int itemWidth = itemView.getMeasuredWidth();
 
-            if (itemWidth > maxWidth) {
-                maxWidth = itemWidth;
-            }
+            if (itemWidth > maxWidth) maxWidth = itemWidth;
             height += itemHeight;
         }
 
@@ -83,10 +75,27 @@ public class CustomMessageMenu {
     }
 
     public static void addMenuItem(List<HashMap<String, String>> items, String id, String title) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         map.put(CustomMessageMenuAdapter.KEY_ID, id);
         map.put(CustomMessageMenuAdapter.KEY_TITLE, title);
         items.add(map);
+    }
+
+    public static void addStatus(List<HashMap<String, String>> items, MessageStatus status) {
+        switch (status){
+            case ERROR:
+            case SENT:
+            case DISPLAYED:
+            case RECEIVED:
+            case DELIVERED:
+                addMenuItem(items, CustomMessageMenuAdapter.KEY_ID_STATUS, status.toString());
+                break;
+            default:
+        }
+    }
+
+    public static void addTimestamp(List<HashMap<String, String>> items, Long timestamp) {
+        addMenuItem(items, CustomMessageMenuAdapter.KEY_ID_TIMESTAMP, StringUtils.getDateTimeText(new Date(timestamp)));
     }
 
 }

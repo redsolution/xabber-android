@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.message.MessageStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +21,8 @@ import java.util.List;
 
 public class CustomMessageMenuAdapter extends BaseAdapter {
 
-    public final static String STATUS_ACK = "status_acknowledged";
-    public final static String STATUS_DELIVERED = "status_delivered";
-    public final static String STATUS_DISPLAYED = "status_displayed";
-    public final static String STATUS_ERROR = "status_error";
-    public final static String STATUS_FORWARDED = "status_forwarded";
-    public final static String STATUS_SYNCED = "status_synced";
-    public final static String STATUS_NOT_SEND = "status_not_send";
+    public final static String KEY_ID_STATUS = "action_message_status";
+    public final static String KEY_ID_TIMESTAMP = "action_message_timestamp";
 
     public final static String KEY_ID = "id";
     public final static String KEY_TITLE = "title";
@@ -58,47 +54,44 @@ public class CustomMessageMenuAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         HashMap<String, String> item = items.get(position);
 
-        View view = convertView;
+        View view;
         TextView textView;
         ImageView ivStatus;
 
-        if (item.get(KEY_ID).equals("action_message_status")) {
+        if (item.get(KEY_ID).equals(KEY_ID_TIMESTAMP)) {
+            view = lInflater.inflate(R.layout.item_menu_message_timestamp, parent, false);
+            textView = (TextView) view.findViewById(R.id.tvStatus);
+            textView.setText(item.get(KEY_TITLE));
+        } else if (item.get(KEY_ID).equals(KEY_ID_STATUS)) {
+
             view = lInflater.inflate(R.layout.item_menu_message_status, parent, false);
             textView = (TextView) view.findViewById(R.id.tvStatus);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
 
-            switch (item.get(KEY_TITLE)) {
-                case STATUS_ACK:
-                    textView.setText(R.string.message_status_sent);
-                    ivStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
-                    break;
-                case STATUS_DELIVERED:
-                    textView.setText(R.string.message_status_delivered);
-                    ivStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
-                    break;
-                case STATUS_DISPLAYED:
-                    textView.setText(R.string.message_status_displayed);
-                    ivStatus.setImageResource(R.drawable.ic_message_displayed);
-                    break;
-                case STATUS_SYNCED:
-                    textView.setText(R.string.message_status_synced);
-                    ivStatus.setImageResource(R.drawable.ic_message_synced_14dp);
-                    break;
-                case STATUS_ERROR:
+            switch (MessageStatus.valueOf(item.get(KEY_TITLE))) {
+                case ERROR:
                     textView.setText(R.string.message_status_error);
                     ivStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
                     textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                     break;
-                case STATUS_FORWARDED:
-                    textView.setText(R.string.message_status_forwarded);
-                    ivStatus.setImageResource(R.drawable.ic_message_forwarded_14dp);
-                    break;
-                case STATUS_NOT_SEND:
+                case SENT:
                     textView.setText(R.string.message_status_not_sent);
                     ivStatus.setImageResource(R.drawable.ic_message_not_sent_14dp);
                     break;
+                case DISPLAYED:
+                    textView.setText(R.string.message_status_displayed);
+                    ivStatus.setImageResource(R.drawable.ic_message_displayed);
+                    break;
+                case RECEIVED:
+                    textView.setText(R.string.message_status_delivered);
+                    ivStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
+                    break;
+                case DELIVERED:
+                    textView.setText(R.string.message_status_sent);
+                    ivStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
+                    break;
+                default:
             }
-
         } else {
             view = lInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
             textView = (TextView) view.findViewById(android.R.id.text1);
@@ -106,4 +99,5 @@ public class CustomMessageMenuAdapter extends BaseAdapter {
         }
         return view;
     }
+
 }

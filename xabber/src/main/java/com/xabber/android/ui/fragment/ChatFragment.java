@@ -31,7 +31,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -1818,24 +1816,13 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         //todo checking privileges
         if (getChat() instanceof GroupChat) CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
 
-        switch (clickedMessageRealmObject.getMessageStatus()){
-            case ERROR:
-                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
-                break;
-            case SENT:
-                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
-                break;
-            case DISPLAYED:
-                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DISPLAYED);
-                break;
-            case RECEIVED:
-                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DELIVERED);
-                break;
-            case DELIVERED:
-                CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ACK);
-                break;
-            default:
+        if (account.getBareJid().toString().contains(user.getBareJid().toString())
+                && clickedMessageRealmObject.isIncoming() && clickedMessageRealmObject.hasForwardedMessages()) {
+            MessageRealmObject innerMessage = MessageRepository.getForwardedMessages(clickedMessageRealmObject).get(0);
+            CustomMessageMenu.addTimestamp(menuItems, innerMessage.getTimestamp());
         }
+
+        CustomMessageMenu.addStatus(menuItems, clickedMessageRealmObject.getMessageStatus());
 
         AdapterView.OnItemClickListener listener = (parent, view, position, id) -> {
             if (menuItems != null && menuItems.size() > position) {
@@ -1867,7 +1854,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                         chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageRealmObject.getPrimaryKey());
                         chatMessageAdapter.notifyDataSetChanged();
                         break;
-                    case "action_message_status":
+                    case CustomMessageMenuAdapter.KEY_ID_STATUS:
                         if (clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.ERROR)) {
                             showError(clickedMessageRealmObject.getErrorDescription());
                         }
