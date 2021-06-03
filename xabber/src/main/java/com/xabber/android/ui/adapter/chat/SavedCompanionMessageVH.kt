@@ -47,6 +47,7 @@ class SavedCompanionMessageVH(
             extraData.isNeedName,
             groupMember
         )
+        setupTime(extraData, messageRealmObject)
     }
 
     private fun setupAvatar(

@@ -26,6 +26,7 @@ class SavedOwnMessageVh(
             MessageRepository.getForwardedMessages(messageRealmObject)?.first() ?: messageRealmObject,
             extraData
         )
+        setupTime(extraData, messageRealmObject)
     }
 
 }
