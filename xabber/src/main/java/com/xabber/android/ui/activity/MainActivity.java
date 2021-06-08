@@ -404,8 +404,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void hideKeyboard() {
         if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager =
-                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
     }
@@ -616,7 +615,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         setStatusBarColor();
 
         if (currentActiveFragmentType.equals(ActiveFragmentType.DISCOVER))
-            startActivity(SearchActivity.createSearchIntent(getApplicationContext()));
+            startActivity(SearchActivity.Companion.createSearchIntent(this));
 
     }
 

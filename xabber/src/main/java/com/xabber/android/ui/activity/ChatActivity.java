@@ -819,11 +819,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 onSnoozed();
                 return true;
 
-            case R.id.action_invite_to_chat:
-                startActivity(SearchActivity.createRoomInviteIntent(this, account,
-                        user.getBareUserJid()));
-                return true;
-
             /* contact info menu */
             case R.id.action_edit_contact:
                 startActivity(ContactEditActivity.createIntent(this, account, user));
@@ -862,10 +857,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void forwardMessages(ArrayList<String> messagesIds) {
-        Intent sendIntent = SearchActivity.createIntent(this);
-        sendIntent.setAction(ACTION_FORWARD);
-        sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
-        startActivity(sendIntent);
+        startActivity(SearchActivity.Companion.createForwardIntent(this, messagesIds));
     }
 
     public void showAttachDialog() {

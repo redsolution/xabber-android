@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.message.chat.AbstractChat
 
-class ChatListAdapter(val list: MutableList<AbstractChat>,
-                      val listener: ChatListItemListener,
-                      private val swipable: Boolean = true)
-    : RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener {
+class ChatListAdapter(
+    val list: MutableList<AbstractChat>,
+    val listener: ChatListItemListener,
+    private val swipable: Boolean = true
+) : RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -23,8 +24,8 @@ class ChatListAdapter(val list: MutableList<AbstractChat>,
 
     private fun getAbstractContactFromPosition(position: Int) = list[position]
 
-    private fun getAbstractContactFromView(v: View?) =
-            getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v!!))
+    private fun getAbstractContactFromView(v: View) =
+        getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v))
 
     fun addItem(index: Int, item: AbstractChat) {
         this.list.add(index, item)
@@ -47,7 +48,7 @@ class ChatListAdapter(val list: MutableList<AbstractChat>,
     }
 
     private fun deleteItemByAbstractContact(contact: AbstractChat) =
-            deleteItemByPosition(list.indexOf(contact))
+        deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder) {
         val swipedContact = getAbstractContactFromView(holder.itemView)
@@ -56,19 +57,20 @@ class ChatListAdapter(val list: MutableList<AbstractChat>,
         if (itemCount == 0) listener.onListBecomeEmpty()
     }
 
-    override fun onClick(v: View?) {
-        if (v!!.id == R.id.ivAvatar) listener.onChatAvatarClick(
-                list[recyclerView.getChildLayoutPosition(v.parent as View)])
+    override fun onClick(v: View) {
+        if (v.id == R.id.ivAvatar) listener.onChatAvatarClick(
+            list[recyclerView.getChildLayoutPosition(v.parent as View)]
+        )
         else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
-            listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) =
+        listener.onChatItemContextMenu(menu, getAbstractContactFromView(v))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
-            ChatViewHolder(LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.item_chat_in_contact_list, parent, false))
+        ChatViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_chat_in_contact_list, parent, false)
+        )
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler

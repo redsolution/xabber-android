@@ -80,8 +80,10 @@ class AccountSpinner : LinearLayout {
         }
     }
 
-    fun setup(hintText: String? = null, promtText: String? = null, accountsList: List<AccountJid>,
-              avatarsList: List<Drawable?>, names: List<String?>, listener: Listener? = null) {
+    fun setup(
+        hintText: String? = null, promtText: String? = null, accountsList: List<AccountJid>,
+        avatarsList: List<Drawable?>, names: List<String?>, listener: Listener? = null
+    ) {
 
         this.listener = listener
 
@@ -108,17 +110,17 @@ class AccountSpinner : LinearLayout {
 
     private fun toggleRecyclerExpanded() {
 
-        fun toggleChevron(textView: TextView){
-            if (isExpanded){
+        fun toggleChevron(textView: TextView) {
+            if (isExpanded) {
                 val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_down)
-                if (Build.VERSION.SDK_INT >= 17){
+                if (Build.VERSION.SDK_INT >= 17) {
                     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
                 } else {
-                    textView.setCompoundDrawablesWithIntrinsicBounds(null, null ,chevron, null)
+                    textView.setCompoundDrawablesWithIntrinsicBounds(null, null, chevron, null)
                 }
             } else {
                 val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_up)
-                if (Build.VERSION.SDK_INT  >= 17){
+                if (Build.VERSION.SDK_INT >= 17) {
                     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
                 } else {
                     textView.setCompoundDrawablesWithIntrinsicBounds(null, null, chevron, null)
@@ -136,7 +138,7 @@ class AccountSpinner : LinearLayout {
 
                 override fun onAnimationEnd(animation: Animation?) {
                     recyclerView.visibility = View.GONE
-                    if (Build.VERSION.SDK_INT >= 21){
+                    if (Build.VERSION.SDK_INT >= 21) {
                         elevation = 0f
                     }
                 }
@@ -147,7 +149,7 @@ class AccountSpinner : LinearLayout {
         } else {
             recyclerView.visibility = View.VISIBLE
             recyclerView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_in_top))
-            if (Build.VERSION.SDK_INT >= 21){
+            if (Build.VERSION.SDK_INT >= 21) {
                 elevation = 16f
             }
         }
@@ -177,12 +179,14 @@ class AccountSpinner : LinearLayout {
         val jidTv: TextView = view.findViewById(R.id.jid_tv)
     }
 
-    private class AccountsAdapter(private val jids: List<AccountJid>, private val avatars: List<Drawable?>,
-                                  private val names: List<String?>, private val listener: Listener
+    private class AccountsAdapter(
+        private val jids: List<AccountJid>, private val avatars: List<Drawable?>,
+        private val names: List<String?>, private val listener: Listener
     ) : RecyclerView.Adapter<AccountViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = AccountViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.account_spinner_list_item, parent, false))
+            LayoutInflater.from(parent.context).inflate(R.layout.account_spinner_list_item, parent, false)
+        )
 
         override fun getItemCount() = jids.size
 

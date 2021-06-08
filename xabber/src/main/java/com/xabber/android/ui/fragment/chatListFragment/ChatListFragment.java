@@ -444,8 +444,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         } else hidePlaceholder();
 
         /* Update items in RecyclerView */
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items,
-                newItems, adapter), false);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items, newItems, adapter), false);
         items.clear();
         items.addAll(newItems);
         adapter.addItems(newItems);
@@ -462,10 +461,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
      * Setup Toolbar scroll behavior according to count of visible chat items
      */
     private void setupToolbarLayout() {
-        if (recyclerView != null) {
-            int count = items.size();
-            setToolbarScrollEnabled(count > maxItemsOnScreen);
-        }
+        if (recyclerView != null) setToolbarScrollEnabled(items.size() > maxItemsOnScreen);
     }
 
     /**
@@ -490,8 +486,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onChatItemSwiped(@NotNull AbstractChat abstractContact) {
-        AbstractChat abstractChat = ChatManager.getInstance()
-                .getChat(abstractContact.getAccount(), abstractContact.getContactJid());
+        AbstractChat abstractChat =
+                ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
         ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid())
                 .setArchived(!abstractChat.isArchived());
         showSnackbar(abstractContact, currentChatsState);
@@ -522,10 +518,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onChatItemContextMenu(@NotNull ContextMenu menu, @NotNull AbstractChat contact) {
         try {
-            AbstractContact abstractContact = RosterManager.getInstance()
-                    .getAbstractContact(contact.getAccount(), contact.getContactJid());
-            ContextMenuHelper.createContactContextMenu(getActivity(), this,
-                    abstractContact, menu);
+            ContextMenuHelper.createContactContextMenu(
+                    getActivity(),
+                    this,
+                    RosterManager.getInstance().getAbstractContact(contact.getAccount(), contact.getContactJid()),
+                    menu);
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);
         }

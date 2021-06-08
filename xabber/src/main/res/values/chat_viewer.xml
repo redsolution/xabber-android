@@ -191,6 +191,7 @@
     <string name="saved_messages__header">Saved messages</string>
     <string name="chat_settings__button_delete_all">Delete all</string>
     <string name="dialog_forward_message__header">Forward message</string>
+    <string name="dialog_choose_recipient_header">Choose recipient</string>
     <string name="chat_list__placeholder">Please select a chat to start messaging</string>
     <string name="chat_settings__button_unblock_contact">Unblock contact</string>
     <string name="chat_settings__button_delete_contact">Delete contact</string>

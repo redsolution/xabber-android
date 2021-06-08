@@ -115,7 +115,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     }
 
     private void startSearchActivity() {
-        Intent intent = SearchActivity.createSearchIntent(getContext());
+        Intent intent = SearchActivity.Companion.createSearchIntent(requireContext());
         startActivity(intent);
     }
 
@@ -160,10 +160,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
             toolbarAccountColorIndicatorBack.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
         } else {
-            toolbarAccountColorIndicator.setBackgroundColor(
-                    getResources().getColor(R.color.transparent));
-            toolbarAccountColorIndicatorBack.setBackgroundColor(
-                    getResources().getColor(R.color.transparent));
+            toolbarAccountColorIndicator.setBackgroundColor(getResources().getColor(R.color.transparent));
+            toolbarAccountColorIndicatorBack.setBackgroundColor(getResources().getColor(R.color.transparent));
         }
     }
 
