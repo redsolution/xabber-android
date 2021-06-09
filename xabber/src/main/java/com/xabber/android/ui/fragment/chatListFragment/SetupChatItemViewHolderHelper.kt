@@ -30,7 +30,11 @@ import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
 import java.util.*
 
-class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractChat) {
+class SetupChatItemViewHolderHelper(
+    private val holder: ChatViewHolder,
+    private val contact: AbstractChat,
+    private val isSavedMessagesChatSpecialText: Boolean = false
+) {
 
     fun setup() {
         holder.messageRealmObject = contact.lastMessage
@@ -41,7 +45,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
         setupTime(holder, contact)
-        setupMessageText(holder, contact)
+        setupMessageText(holder, contact, isSavedMessagesChatSpecialText)
         setupMessageStatus(holder, contact)
     }
 
@@ -193,8 +197,18 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         }
     }
 
-    private fun setupMessageText(holder: ChatViewHolder, chat: AbstractChat) {
+    private fun setupMessageText(
+        holder: ChatViewHolder,
+        chat: AbstractChat,
+        isSavedMessagesChatSpecialText: Boolean = false
+    ) {
         val context = holder.itemView.context
+
+        if (isSavedMessagesChatSpecialText && chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()) {
+            holder.messageTextTV.text = context.getString(R.string.saved_messages__hint_forward_here)
+            return
+        }
+
         val lastMessage = chat.lastMessage
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size

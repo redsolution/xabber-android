@@ -127,7 +127,9 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             layoutManager = LinearLayoutManager(this@SearchActivity).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            adapter = ChatListAdapter(getFilteredChatsItems(), this@SearchActivity, false)
+            adapter = ChatListAdapter(getFilteredChatsItems(), this@SearchActivity, false).apply {
+                if (action != ACTION_SEARCH) isSavedMessagesSpecialText = true
+            }
             itemAnimator = null
             addItemDecoration(
                 DividerItemDecoration(context, RecyclerView.VERTICAL).apply {

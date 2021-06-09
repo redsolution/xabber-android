@@ -20,6 +20,8 @@ class ChatListAdapter(
     lateinit var activity: Activity
     private val holdersMap: HashMap<Int, ChatViewHolder> = HashMap()
 
+    var isSavedMessagesSpecialText: Boolean = false
+
     override fun getItemCount(): Int = list.size
 
     private fun getAbstractContactFromPosition(position: Int) = list[position]
@@ -37,9 +39,7 @@ class ChatListAdapter(
         this.list.addAll(newItemsList)
     }
 
-    fun clear() {
-        list.clear()
-    }
+    fun clear() = list.clear()
 
     private fun deleteItemByPosition(position: Int) {
         list.removeAt(position)
@@ -83,7 +83,7 @@ class ChatListAdapter(
         holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
 
-        SetupChatItemViewHolderHelper(holder, list[position]).setup()
+        SetupChatItemViewHolderHelper(holder, list[position], isSavedMessagesSpecialText).setup()
         holdersMap[position] = holder
     }
 
