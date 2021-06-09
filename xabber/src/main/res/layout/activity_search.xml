@@ -14,4 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <TextView
+        android:id="@+id/search_empty_state_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/application_state_nobody_by_filter"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

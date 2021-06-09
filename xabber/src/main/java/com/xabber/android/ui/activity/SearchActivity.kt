@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.ContextMenu
+import android.view.View
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
@@ -141,10 +143,19 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
         updateContactsList()
     }
 
+    private fun showEmptyStatePlaceholder(visibility: Boolean = true) {
+        recyclerView.visibility = if (visibility) View.GONE else View.VISIBLE
+        findViewById<TextView>(R.id.search_empty_state_placeholder).visibility =
+            if (visibility) View.VISIBLE else View.GONE
+    }
+
     private fun updateContactsList(filter: String = "") =
         with(recyclerView.adapter as ChatListAdapter) {
             clear()
-            addItems(getFilteredChatsItems(filter))
+            getFilteredChatsItems(filter).let { contactsList ->
+                addItems(contactsList)
+                showEmptyStatePlaceholder(contactsList.isEmpty())
+            }
             notifyDataSetChanged()
         }
 
