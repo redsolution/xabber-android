@@ -93,7 +93,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onResume() {
         super.onResume();
-        update();
+        updateToolbar();
     }
 
     /**
@@ -123,15 +123,14 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
      * Update toolbarRelativeLayout via current state
      */
     public void updateToolbar() {
+        if (!isAdded()) return;
         /* Update avatar and status ImageViews via current settings and main user */
-        if (SettingsManager.contactsShowAvatars()
-                && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
+        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
             AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
             AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-            Drawable mainAccountAvatar = AvatarManager.getInstance()
-                    .getAccountAvatar(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
             toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
             toolbarStatusIv.setImageLevel(mainAccountStatusMode);
@@ -143,8 +142,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
                 AccountManager.getInstance().getFirstAccount() != null)
-            toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+            toolbarRelativeLayout.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getAccountRippleColor(
+                            AccountManager.getInstance().getFirstAccount()
+                    )
+            );
         else {
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
@@ -165,18 +167,14 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public void update() {
-        updateToolbar();
-    }
-
     @Override
     public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
-        Application.getInstance().runOnUiThread(this::update);
+        Application.getInstance().runOnUiThread(this::updateToolbar);
     }
 
     @Override
     public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
-        Application.getInstance().runOnUiThread(this::update);
+        Application.getInstance().runOnUiThread(this::updateToolbar);
     }
 
 }
