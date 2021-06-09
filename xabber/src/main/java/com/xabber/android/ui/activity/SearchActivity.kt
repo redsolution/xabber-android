@@ -125,7 +125,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             layoutManager = LinearLayoutManager(this@SearchActivity).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            adapter = ChatListAdapter(java.util.ArrayList(), this@SearchActivity, false)
+            adapter = ChatListAdapter(getFilteredChatsItems(), this@SearchActivity, false)
             itemAnimator = null
             addItemDecoration(
                 DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
@@ -148,7 +148,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             notifyDataSetChanged()
         }
 
-    private fun getFilteredChatsItems(filterString: String): MutableList<AbstractChat> {
+    private fun getFilteredChatsItems(filterString: String = ""): MutableList<AbstractChat> {
         val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
         return ChatManager.getInstance().chatsOfEnabledAccounts
             .sortedByDescending(AbstractChat::getLastTime)
@@ -193,10 +193,57 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
     }
 
     override fun onChatAvatarClick(contact: AbstractChat) {
-        if (action == ACTION_SEARCH) {
-            if (hasActiveIncomingInvites(contact.account, contact.contactJid)) {
-                onChatItemClick(contact)
-            } else startActivity(ContactViewerActivity.createIntent(this, contact.account, contact.contactJid))
+        when (action) {
+            ACTION_SEARCH ->
+                if (hasActiveIncomingInvites(contact.account, contact.contactJid)) {
+                    onChatItemClick(contact)
+                } else {
+                    startActivity(ContactViewerActivity.createIntent(this, contact.account, contact.contactJid))
+                }
+
+            Intent.ACTION_SEND ->
+                if (intent.type?.contains("text/plain") != true && intent.extras != null) {
+                    startActivity(
+                        ChatActivity.createSendUriIntent(
+                            this, contact.account, contact.contactJid, intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                        )
+                    )
+                } else {
+                    startActivity(ChatActivity.createSendIntent(this, contact.account, contact.contactJid, sendText))
+                }
+
+            Intent.ACTION_SEND_MULTIPLE ->
+                if (intent.extras != null) {
+                    startActivity(
+                        ChatActivity.createSendUrisIntent(
+                            this,
+                            contact.account,
+                            contact.contactJid,
+                            intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                        )
+                    )
+                }
+
+            Intent.ACTION_CREATE_SHORTCUT -> {
+                val intent = ShortcutBuilder.createPinnedShortcut(
+                    this, RosterManager.getInstance().getAbstractContact(contact.account, contact.contactJid)
+                )
+                if (intent != null) setResult(RESULT_OK, intent)
+            }
+
+            ACTION_FORWARD ->
+                if (forwardedIds != null) {
+                    startActivity(
+                        ChatActivity.createForwardIntent(
+                            this, contact.account, contact.contactJid, forwardedIds
+                        )
+                    )
+                }
+
+            else -> startActivityForResult(
+                ChatActivity.createSpecificChatIntent(this, contact.account, contact.contactJid),
+                MainActivity.CODE_OPEN_CHAT
+            )
         }
     }
 
