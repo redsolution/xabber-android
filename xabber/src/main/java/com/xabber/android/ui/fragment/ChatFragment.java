@@ -1303,7 +1303,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 inputView.getSelectionStart(), inputView.getSelectionEnd());
     }
 
-    private void sendMessage() {
+    public void sendMessage() {
         Editable editable = inputView.getEditableText();
         String text;
         String markupText = null;

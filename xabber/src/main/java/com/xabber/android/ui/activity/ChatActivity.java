@@ -105,7 +105,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
-    public static final String ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD";
+    private static final String ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD";
 
     public static final String EXTRA_NEED_SCROLL_TO_UNREAD = "com.xabber.android.data.EXTRA_NEED_SCROLL_TO_UNREAD";
     public static final String EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST";
@@ -418,6 +418,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
             } else showUploadNotSupportedDialog();
         } else attachmentUri = fileUri;
+        if (account.getBareJid().toString().equals(user.getBareJid().toString())){
+            chatFragment.sendMessage();
+            finish();
+        }
     }
 
     @Override
@@ -458,6 +462,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             } else showUploadNotSupportedDialog();
 
         } else attachmentUris = uris;
+
+        if (account.getBareJid().toString().equals(user.getBareJid().toString())){
+            chatFragment.sendMessage();
+            finish();
+        }
 
     }
 
@@ -642,6 +651,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (forwardsIds == null || forwardsIds.isEmpty() || chatFragment == null) return;
         chatFragment.setBottomPanelMessagesIds(forwardsIds, BottomMessagesPanel.Purposes.FORWARDING);
         forwardsIds = null;
+        if (account.getBareJid().toString().equals(user.getBareJid().toString())){
+            chatFragment.sendMessage();
+            finish();
+        }
     }
 
     public void hideForwardPanel() {
@@ -666,6 +679,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             chatFragment.setInputText(extraText);
             extraText = null;
             exitOnSend = true;
+            if (account.getBareJid().toString().equals(user.getBareJid().toString())){
+                chatFragment.sendMessage();
+                finish();
+            }
         }
     }
 
