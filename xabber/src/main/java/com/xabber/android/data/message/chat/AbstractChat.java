@@ -36,6 +36,8 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
+import com.xabber.android.data.extension.delivery.RetryReceiptRequestElement;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -43,8 +45,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.references.decoration.Markup;
-import com.xabber.android.data.extension.delivery.DeliveryManager;
-import com.xabber.android.data.extension.delivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.MessageStatus;
@@ -574,10 +574,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             CarbonManager.INSTANCE.updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
-            if (DeliveryManager.getInstance().isSupported(account))
-                if (!messageRealmObject.getMessageStatus().equals(MessageStatus.SENT)) {
-                    message.addExtension(new RetryReceiptRequestElement());
-                }
+            MessageStatus currentMessageStatus = messageRealmObject.getMessageStatus();
+
+            if (DeliveryManager.getInstance().isSupported(account)
+                    && (currentMessageStatus == MessageStatus.SENT || currentMessageStatus == MessageStatus.ERROR)
+                    && messageRealmObject.getTimestamp() + 5000 > System.currentTimeMillis()){
+                if (messageRealmObject.getTimestamp() + 60000 < System.currentTimeMillis()) {
+                    messageRealmObject.setMessageStatus(MessageStatus.ERROR);
+                    return false;
+                } else message.addExtension(new RetryReceiptRequestElement());
+            }
+
             if (delayTimestamp != null) message.addExtension(new DelayInformation(delayTimestamp));
 
             final String messageId = messageRealmObject.getPrimaryKey();

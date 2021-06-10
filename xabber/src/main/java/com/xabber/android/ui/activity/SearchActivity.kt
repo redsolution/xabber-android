@@ -262,10 +262,11 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
 
     override fun onChatItemClick(contact: AbstractChat) {
         when (action) {
-            ACTION_SEARCH -> startActivityForResult(
-                ChatActivity.createSendIntent(this, contact.account, contact.contactJid, null),
-                MainActivity.CODE_OPEN_CHAT
-            )
+            ACTION_SEARCH ->
+                startActivityForResult(
+                    ChatActivity.createSendIntent(this, contact.account, contact.contactJid, null),
+                    MainActivity.CODE_OPEN_CHAT
+                )
 
             Intent.ACTION_SEND ->
                 if (intent.type?.contains("text/plain") != true && intent.extras != null) {
