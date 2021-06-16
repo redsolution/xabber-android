@@ -13,15 +13,16 @@ import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import org.jivesoftware.smackx.xdata.FormField
 
-class GroupStatusAdapter(private val statuses: List<FormField.Option>, val groupchat: GroupChat,
-                         private val descriptions: List<FormField>, val listener: Listener)
-    : RecyclerView.Adapter<GroupStatusVH>(){
+class GroupStatusAdapter(
+    private val statuses: List<FormField.Option>, val groupchat: GroupChat,
+    private val descriptions: List<FormField>, val listener: Listener
+) : RecyclerView.Adapter<GroupStatusVH>() {
 
     override fun getItemCount() = statuses.size
 
     override fun onBindViewHolder(holder: GroupStatusVH, position: Int) {
         val option = statuses[position]
-        holder.bind(option, descriptions[position], object: GroupStatusVH.Listener{
+        holder.bind(option, descriptions[position], object : GroupStatusVH.Listener {
             override fun onClick() {
                 listener.onStatusClicked(option)
             }
@@ -29,27 +30,31 @@ class GroupStatusAdapter(private val statuses: List<FormField.Option>, val group
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = GroupStatusVH(
-            LayoutInflater.from(parent.context)
-                    .inflate(R.layout.group_status_item_vh, parent, false),
-            groupchat)
+        LayoutInflater.from(parent.context)
+            .inflate(R.layout.group_status_item_vh, parent, false),
+        groupchat
+    )
 
-    interface Listener{
+    interface Listener {
         fun onStatusClicked(option: FormField.Option)
     }
 
 }
 
-class GroupStatusVH(itemView: View, val groupchat: GroupChat): RecyclerView.ViewHolder(itemView){
+class GroupStatusVH(itemView: View, val groupchat: GroupChat) : RecyclerView.ViewHolder(itemView) {
 
-    fun bind(status: FormField.Option, description: FormField, listener: Listener){
+    fun bind(status: FormField.Option, description: FormField, listener: Listener) {
         itemView.findViewById<TextView>(R.id.group_status_item_tv).text = status.label
 
         val statusLevelOffset = if (groupchat.privacyType == GroupPrivacyType.INCOGNITO)
             StatusMode.INCOGNITO_GROUP_OFFSET
         else StatusMode.PUBLIC_GROUP_OFFSET
 
-        StatusBadgeSetupHelper.setupImageView(StatusMode.createStatusMode(description.values[0]),
-                statusLevelOffset, itemView.findViewById(R.id.group_status_item_iv))
+        StatusBadgeSetupHelper.setupImageView(
+            StatusMode.createStatusMode(description.values[0]),
+            statusLevelOffset,
+            itemView.findViewById(R.id.group_status_item_iv)
+        )
 
         itemView.setOnClickListener { listener.onClick() }
         itemView.setOnLongClickListener {
@@ -58,7 +63,7 @@ class GroupStatusVH(itemView: View, val groupchat: GroupChat): RecyclerView.View
         }
     }
 
-    interface Listener{
+    interface Listener {
         fun onClick()
     }
 

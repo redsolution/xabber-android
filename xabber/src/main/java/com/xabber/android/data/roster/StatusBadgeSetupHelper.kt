@@ -19,20 +19,48 @@ object StatusBadgeSetupHelper {
 
     fun setupImageViewForContact(
         abstractContact: AbstractContact, imageView: ImageView,
-        abstractChat: AbstractChat? = ChatManager.getInstance()
-            .getChat(abstractContact.account, abstractContact.contactJid)
+        abstractChat: AbstractChat =
+            ChatManager.getInstance().getChat(abstractContact.account, abstractContact.contactJid)
+                ?: ChatManager.getInstance().createRegularChat(abstractContact.account, abstractContact.contactJid)
     ) {
+        imageView.setImageLevel(getStatusImageLevel(abstractChat))
+        imageView.visibility = if (isStatusVisibile(abstractChat)) View.VISIBLE else View.INVISIBLE
+        if (isStatusBadgeFiltered(abstractChat)) {
+            imageView.colorFilter = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
+        } else imageView.setColorFilter(0)
+    }
 
-        val accountJid = abstractContact.account
-        val contactJid = abstractContact.contactJid
+    fun setupImageView(imageView: ImageView, imageLevel: Int, isVisible: Boolean, isFiltered: Boolean) {
+        imageView.setImageLevel(imageLevel)
+        imageView.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+        if (isFiltered) {
+            imageView.colorFilter = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
+        } else imageView.setColorFilter(0)
+    }
 
-        var statusLevel = abstractContact.statusMode.statusLevel
-        val isServer = abstractContact.contactJid.jid.isDomainBareJid
-        val isBlocked = BlockingManager.getInstance()
-            .contactIsBlockedLocally(accountJid, contactJid)
-        val isUnavailable = statusLevel == StatusMode.unavailable.ordinal
-        val isAccountConnected = AccountManager.getInstance().connectedAccounts
-            .contains(accountJid)
+    fun isStatusBadgeFiltered(abstractChat: AbstractChat): Boolean {
+        val accountJid = abstractChat.account
+
+        val isServer = abstractChat.contactJid.jid.isDomainBareJid
+        val isAccountConnected = AccountManager.getInstance().connectedAccounts.contains(accountJid)
+        val isPublicGroupChat = abstractChat is GroupChat
+                && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
+                || abstractChat.privacyType == GroupPrivacyType.NONE)
+        val isIncognitoGroupChat = abstractChat is GroupChat
+                && abstractChat.privacyType == GroupPrivacyType.INCOGNITO
+
+        return (isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected
+    }
+
+    fun isStatusVisibile(abstractChat: AbstractChat): Boolean {
+        val accountJid = abstractChat.account
+        val contactJid = abstractChat.contactJid
+        val isServer = abstractChat.contactJid.jid.isDomainBareJid
+        val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(accountJid, contactJid)
+        val isUnavailable =
+            RosterManager.getInstance().getAbstractContact(accountJid, contactJid).statusMode.statusLevel ==
+                    StatusMode.unavailable.ordinal
+        val isAccountConnected = AccountManager.getInstance().connectedAccounts.contains(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
                 || abstractChat.privacyType == GroupPrivacyType.NONE)
@@ -42,44 +70,43 @@ object StatusBadgeSetupHelper {
 
         val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
 
-        if (hasActiveIncomingInvite) statusLevel = StatusMode.available.statusLevel
-
-        if (statusLevel == StatusMode.unavailable.statusLevel || statusLevel == StatusMode.connection.statusLevel)
-            statusLevel = 5
-
-        //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
-
-        // Hiding badges in disconnected\unavailable state only for regular chats
-        imageView.visibility =
-            if (!isServer
+        return !(!isServer
                 && !isPublicGroupChat
                 && !isIncognitoGroupChat
                 && !hasActiveIncomingInvite
                 && !isBlocked
                 && (isUnavailable || !isAccountConnected)
-                || isSavedMessages
-            ) {
-                View.INVISIBLE
-            } else View.VISIBLE
+                || isSavedMessages)
+    }
+
+    fun getStatusImageLevel(abstractChat: AbstractChat): Int {
+        val accountJid = abstractChat.account
+        val contactJid = abstractChat.contactJid
+
+        var statusLevel = RosterManager.getInstance().getAbstractContact(accountJid, contactJid).statusMode.statusLevel
+        val isServer = abstractChat.contactJid.jid.isDomainBareJid
+        val isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(accountJid, contactJid)
+        val isPublicGroupChat =
+            abstractChat is GroupChat
+                    && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
+                    || abstractChat.privacyType == GroupPrivacyType.NONE)
+        val isIncognitoGroupChat = abstractChat is GroupChat && abstractChat.privacyType == GroupPrivacyType.INCOGNITO
+
+        val hasActiveIncomingInvite = GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)
+
+        if (hasActiveIncomingInvite) statusLevel = StatusMode.available.statusLevel
+
+        if (statusLevel == StatusMode.unavailable.statusLevel || statusLevel == StatusMode.connection.statusLevel)
+            statusLevel = 5
 
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 90
             isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
             isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
-            //todo isPrivateChat, isBot, isChannel, isRss, isMail, isMobile etc
         }
 
-        imageView.setImageLevel(statusLevel)
-
-        if ((isServer || isPublicGroupChat || isIncognitoGroupChat) && !isAccountConnected) {
-            val colorMatrix = ColorMatrix()
-            colorMatrix.setSaturation(0f)
-            val colorFilter = ColorMatrixColorFilter(colorMatrix)
-            imageView.colorFilter = colorFilter
-        } else
-            imageView.setColorFilter(0)
-
+        return statusLevel
     }
 
     fun setupImageViewForChat(abstractChat: AbstractChat, imageView: ImageView) =

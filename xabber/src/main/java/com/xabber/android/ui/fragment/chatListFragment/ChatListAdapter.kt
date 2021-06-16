@@ -1,6 +1,5 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
-import android.app.Activity
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ class ChatListAdapter(
 ) : RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener {
 
     lateinit var recyclerView: RecyclerView
-    lateinit var activity: Activity
     private val holdersMap: HashMap<Int, ChatViewHolder> = HashMap()
 
     var isSavedMessagesSpecialText: Boolean = false
@@ -30,16 +28,20 @@ class ChatListAdapter(
         getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v))
 
     fun addItem(index: Int, item: AbstractChat) {
-        this.list.add(index, item)
+        list.add(index, item)
         notifyItemChanged(index)
     }
 
     fun addItems(newItemsList: MutableList<AbstractChat>) {
-        this.list.clear()
-        this.list.addAll(newItemsList)
+        list.clear()
+        list.addAll(newItemsList)
+        notifyDataSetChanged()
     }
 
-    fun clear() = list.clear()
+    fun clear() {
+        list.clear()
+        notifyDataSetChanged()
+    }
 
     private fun deleteItemByPosition(position: Int) {
         list.removeAt(position)
@@ -58,10 +60,9 @@ class ChatListAdapter(
     }
 
     override fun onClick(v: View) {
-        if (v.id == R.id.ivAvatar) listener.onChatAvatarClick(
-            list[recyclerView.getChildLayoutPosition(v.parent as View)]
-        )
-        else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
+        if (v.id == R.id.ivAvatar) {
+            listener.onChatAvatarClick(list[recyclerView.getChildLayoutPosition(v.parent as View)])
+        } else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) =
@@ -69,7 +70,8 @@ class ChatListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
         ChatViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_chat_in_contact_list, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_chat_in_contact_list, parent, false),
+            this
         )
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
@@ -80,10 +82,12 @@ class ChatListAdapter(
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         holder.itemView.setOnClickListener(this)
-        holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
 
-        SetupChatItemViewHolderHelper(holder, list[position], isSavedMessagesSpecialText).setup()
+        holder.bind(
+            ChatListItemData.createFromChat(list[position], holder.itemView.context), isSavedMessagesSpecialText
+        )
+
         holdersMap[position] = holder
     }
 
