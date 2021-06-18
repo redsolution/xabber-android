@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -49,7 +48,6 @@ import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
@@ -67,7 +65,6 @@ import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.DividerItemDecoration;
-import com.xabber.android.utils.StringUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -78,9 +75,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
@@ -96,7 +91,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private RecyclerView recyclerView;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
-    private String filterString;
     private int maxItemsOnScreen;
     /* Placeholder variables */
     private View placeholderView;
@@ -128,7 +122,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public ChatListFragment() {
         super();
         updateRequest
-                .debounce(500, TimeUnit.MILLISECONDS)
+                .debounce(1000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> update());
     }
@@ -420,14 +414,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     /**
-     * Show contacts filtered by filterString
-     */
-    public void search(String filterString) {
-        this.filterString = filterString;
-        updateRequest.onNext(null);
-    }
-
-    /**
      * Update chat items in adapter
      */
     private void updateItems(List<AbstractChat> newItems) {
@@ -441,10 +427,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived), null);
                     break;
                 default:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
-                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts));
+                    showPlaceholder(
+                            Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts)
+                    );
                     placeholderButton.setOnClickListener(
-                            view -> startActivity(ContactAddActivity.createIntent(getActivity())));
+                            view -> startActivity(ContactAddActivity.createIntent(getActivity()))
+                    );
                     break;
             }
         } else hidePlaceholder();
@@ -494,8 +483,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public void onChatItemSwiped(@NotNull AbstractChat abstractContact) {
         AbstractChat abstractChat =
                 ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid());
-        ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid())
-                .setArchived(!abstractChat.isArchived());
+        ChatManager.getInstance().getChat(
+                abstractContact.getAccount(), abstractContact.getContactJid()).setArchived(!abstractChat.isArchived()
+        );
         showSnackbar(abstractContact, currentChatsState);
         updateRequest.onNext(null);
     }
@@ -551,56 +541,32 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     private void update() {
-
         List<AbstractChat> newList = new ArrayList<>();
-
-        if (Looper.myLooper() != Looper.getMainLooper()) LogManager.e("PROBLEMKI", "Incorrect thread");
-
-        /* If filterString is empty, build regular chat list */
-        if (filterString == null || filterString.equals("")) {
-            Collection<AbstractChat> allChats = ChatManager.getInstance().getChatsOfEnabledAccounts();
-            switch (currentChatsState){
-                case recent:
-                    for (AbstractChat abstractChat : allChats)
-                        if ((abstractChat.getLastMessage() != null
-                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                                && !abstractChat.isArchived())
-                            newList.add(abstractChat);
-                    break;
-                case unread:
-                    for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                        if ((abstractChat.getLastMessage() != null
-                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                                && abstractChat.getUnreadMessageCount() != 0)
-                            newList.add(abstractChat);
-                    break;
-                case archived:
-                    for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
-                        if ((abstractChat.getLastMessage() != null
-                                || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
-                                && abstractChat.isArchived())
-                            newList.add(abstractChat);
-            }
-
-            Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
-
-        } else {
-
-            ArrayList<AbstractChat> chatsList = new ArrayList<>(
-                    getFilteredChatsOfEnabledAccountsByString(
-                            ChatManager.getInstance().getChatsOfEnabledAccounts(), filterString));
-
-            Collections.sort(chatsList, (o1, o2) ->
-                    Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
-
-            ArrayList<AbstractChat> contactList = new ArrayList<>(
-                    getFilteredContactsOfEnabledAccountsByString(
-                            RosterManager.getInstance().getAllContactsForEnabledAccounts(), filterString));
-
-            newList.clear();
-            newList.addAll(concatLists(chatsList, contactList));
-
+        Collection<AbstractChat> allChats = ChatManager.getInstance().getChatsOfEnabledAccounts();
+        switch (currentChatsState){
+            case recent:
+                for (AbstractChat abstractChat : allChats)
+                    if ((abstractChat.getLastMessage() != null
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            && !abstractChat.isArchived())
+                        newList.add(abstractChat);
+                break;
+            case unread:
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                    if ((abstractChat.getLastMessage() != null
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            && abstractChat.getUnreadMessageCount() != 0)
+                        newList.add(abstractChat);
+                break;
+            case archived:
+                for (AbstractChat abstractChat : ChatManager.getInstance().getChatsOfEnabledAccounts())
+                    if ((abstractChat.getLastMessage() != null
+                            || GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractChat.getAccount(), abstractChat.getContactJid()))
+                            && abstractChat.isArchived())
+                        newList.add(abstractChat);
         }
+
+        Collections.sort(newList, (o1, o2) -> Long.compare(o2.getLastTime().getTime(), o1.getLastTime().getTime()));
 
         setupMarkAllTheReadButton(newList.size());
 
@@ -609,22 +575,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         updateItems(newList);
         if (chatListFragmentListener != null)
             chatListFragmentListener.onChatListUpdated();
-    }
-
-    private ArrayList<AbstractChat> concatLists(ArrayList<AbstractChat> chatList,
-                                                ArrayList<AbstractChat> contactsList) {
-        ArrayList<AbstractChat> result = new ArrayList<>(chatList);
-        for (AbstractChat abstractChat : contactsList) {
-            boolean isDuplicating = false;
-            for (AbstractChat abstractChat1 : chatList)
-                if (abstractChat.getContactJid() == abstractChat1.getContactJid()) {
-                    isDuplicating = true;
-                    break;
-                }
-            if (!isDuplicating) result.add(abstractChat);
-        }
-
-        return result;
     }
 
     private void setupMarkAllTheReadButton(int listSize) {
@@ -654,40 +604,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 toast.show();
             });
         } else markAllAsReadButton.setVisibility(View.GONE);
-    }
-
-    private Collection<AbstractChat> getFilteredChatsOfEnabledAccountsByString(
-            Collection<AbstractChat> abstractChats, String filterString) {
-        String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
-        Collection<AbstractChat> resultCollection = new ArrayList<>();
-        for (AbstractChat abstractChat : abstractChats) {
-            AbstractContact abstractContact = RosterManager.getInstance()
-                    .getAbstractContact(abstractChat.getAccount(), abstractChat.getContactJid());
-            if (abstractChat.getLastMessage() == null)
-                continue;
-            if (abstractChat.getContactJid().toString().contains(filterString)
-                    || abstractChat.getContactJid().toString().contains(transliteratedFilterString)
-                    || abstractContact.getName().contains(filterString)
-                    || abstractContact.getName().contains(transliteratedFilterString))
-                resultCollection.add(abstractChat);
-        }
-        return resultCollection;
-    }
-
-    private Collection<AbstractChat> getFilteredContactsOfEnabledAccountsByString(
-            Collection<AbstractContact> abstractContacts, String filterString) {
-        String transliteratedFilterString = StringUtils.translitirateToLatin(filterString);
-        Collection<AbstractChat> resultCollection = new ArrayList<>();
-        for (AbstractContact abstractContact : abstractContacts) {
-
-            if (abstractContact.getContactJid().toString().contains(filterString)
-                    || abstractContact.getContactJid().toString().contains(transliteratedFilterString)
-                    || abstractContact.getName().contains(filterString)
-                    || abstractContact.getName().contains(transliteratedFilterString))
-                resultCollection.add(new RegularChat(abstractContact.getAccount(),
-                        abstractContact.getContactJid()));
-        }
-        return resultCollection;
     }
 
     private void showPlaceholder(String message, @Nullable String buttonMessage) {
