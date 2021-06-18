@@ -1,29 +1,18 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
 import android.graphics.PorterDuff
-import android.graphics.Typeface
-import android.os.Build
 import android.text.Html
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.os.ConfigurationCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.extension.chat_state.ChatStateManager
-import com.xabber.android.data.extension.groups.GroupInviteManager
-import com.xabber.android.data.extension.groups.GroupMemberManager
-import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.NotificationState
-import com.xabber.android.data.message.chat.AbstractChat
-import com.xabber.android.data.message.chat.ChatAction
-import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
-import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
@@ -41,7 +30,7 @@ class ChatViewHolder(
     private val accountColorIndicatorBackView: View = itemView.findViewById(R.id.accountColorIndicatorBack)
     private val accountColorIndicatorView: View = itemView.findViewById(R.id.accountColorIndicator)
 
-    fun bind(chatListItemData: ChatListItemData, isSavedMessageMode: Boolean = false) {
+    fun bind(chatListItemData: ChatListItemData) {
         setupContactAvatar(chatListItemData)
         setupAccountColorIndicator(chatListItemData)
         setupContactName(chatListItemData)
@@ -50,7 +39,7 @@ class ChatViewHolder(
         setupTime(chatListItemData)
         setupMessageStatus(chatListItemData)
         setupStatusBadge(chatListItemData)
-        //setupMessageText(contact, isSavedMessageMode, chatListItemData)
+        setupMessageText(chatListItemData)
     }
 
     private fun setupAccountColorIndicator(itemData: ChatListItemData) {
@@ -154,163 +143,8 @@ class ChatViewHolder(
         } else timeTV.visibility = View.INVISIBLE
     }
 
-    private fun setupMessageText(
-        chat: AbstractChat,
-        isSavedMessagesChatSpecialText: Boolean = false,
-        chatListItemData: ChatListItemData
-    ) {
-        val context = itemView.context
-
-        if (isSavedMessagesChatSpecialText && chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()) {
-            messageTextTV.text = context.getString(R.string.saved_messages__hint_forward_here)
-            return
-        }
-
-        val lastMessage = chat.lastMessage
-        val text = lastMessage?.text
-        val forwardedCount = lastMessage?.forwardedIds?.size
-
-        fun getDecodedTextIfPossible() =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                try {
-                    Html.fromHtml(Utils.getDecodedSpannable(text).toString())
-                } catch (e: Exception) {
-                    Html.fromHtml(text)
-                }
-            } else text
-
-        fun colorizeIfPossible() {
-            messageTextTV.text = Html.fromHtml(
-                StringUtils.getColoredText(messageTextTV.text.toString(), chatListItemData.accountColorIndicator)
-            )
-        }
-
-        fun setItalicTypeface() {
-            messageTextTV.setTypeface(messageTextTV.typeface, Typeface.ITALIC)
-        }
-
-        fun setDefaultTypeface() {
-            messageTextTV.typeface = Typeface.DEFAULT
-        }
-
-        fun setIncomingInvite() {
-            messageTextTV.text = context.getString(
-                R.string.groupchat_invitation_to_group_chat,
-                (chat as GroupChat).privacyType.getLocalizedString()
-                    .decapitalize(ConfigurationCompat.getLocales(context.resources.configuration)[0])
-            )
-
-            colorizeIfPossible()
-            setItalicTypeface()
-        }
-
-        fun setGroupSystem() {
-            messageTextTV.text = lastMessage?.text
-            setItalicTypeface()
-        }
-
-        fun setGroupRegular() {
-            val nickname =
-                if (lastMessage != null && lastMessage.groupchatUserId != null) {
-                    GroupMemberManager.getGroupMemberById(lastMessage.groupchatUserId)?.nickname
-                } else null
-            val sender = StringUtils.getColoredText((nickname ?: "") + ":", chatListItemData.accountColorIndicator)
-            messageTextTV.text = Html.fromHtml("$sender ${getDecodedTextIfPossible()}")
-        }
-
-        fun setChatState() {
-            messageTextTV.text =
-                ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid)
-
-            colorizeIfPossible()
-            setDefaultTypeface()
-        }
-
-        fun setToForwarded() {
-            messageTextTV.text = String.format(
-                context.resources.getQuantityString(
-                    R.plurals.forwarded_messages_count, forwardedCount ?: 0
-                ),
-                forwardedCount
-            )
-
-            colorizeIfPossible()
-            setDefaultTypeface()
-        }
-
-        fun setToAttachments() {
-            messageTextTV.text = StringUtils.getColoredAttachmentDisplayName(
-                context, lastMessage?.attachmentRealmObjects ?: return, chatListItemData.accountColorIndicator
-            )
-
-            colorizeIfPossible()
-            setDefaultTypeface()
-        }
-
-        fun setNoMessages() {
-            messageTextTV.text = context.resources.getString(R.string.no_messages)
-            setItalicTypeface()
-        }
-
-        fun setAction() {
-            messageTextTV.text = lastMessage?.text
-            setItalicTypeface()
-        }
-
-        fun setEncrypted() {
-            messageTextTV.text = context.getText(R.string.otr_not_decrypted_message)
-            setItalicTypeface()
-        }
-
-        fun setRegular() {
-            messageTextTV.text = getDecodedTextIfPossible()
-            setDefaultTypeface()
-        }
-
-        if (chat is GroupChat) {
-            when {
-                lastMessage == null && GroupInviteManager.hasActiveIncomingInvites(chat.account, chat.contactJid) -> {
-                    setIncomingInvite()
-                    return
-                }
-                lastMessage != null && lastMessage.isGroupchatSystem -> {
-                    setGroupSystem()
-                    return
-                }
-                //todo group message with attachment
-                //todo group message with fwr
-                lastMessage != null -> setGroupRegular()
-                else -> setNoMessages()
-            }
-        } else {
-            when {
-                ChatStateManager.getInstance().getFullChatStateString(chat.account, chat.contactJid) != null -> {
-                    setChatState()
-                    return
-                }
-                forwardedCount != null && forwardedCount > 0 -> {
-                    setToForwarded()
-                    return
-                }
-                lastMessage != null && lastMessage.haveAttachments() -> {
-                    setToAttachments()
-                    return
-                }
-                OTRManager.getInstance().isEncrypted(text) -> {
-                    setEncrypted()
-                    return
-                }
-                lastMessage != null && lastMessage.action != null && lastMessage.action != ChatAction.contact_deleted.toString() -> {
-                    setAction()
-                    return
-                }
-                lastMessage == null -> {
-                    setNoMessages()
-                    return
-                }
-                else -> setRegular()
-            }
-        }
+    private fun setupMessageText(chatListItemData: ChatListItemData) {
+        messageTextTV.text = Html.fromHtml(chatListItemData.messageText)
     }
 
     private fun setupMessageStatus(chatListItemData: ChatListItemData) {

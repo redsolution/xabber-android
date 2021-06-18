@@ -286,6 +286,10 @@ public class StringUtils {
                 "</font> ";
     }
 
+    public static String getItalicTypeface(String text) {
+        return "<i>" + text + "</i> ";
+    }
+
     public static String getColoredText(String text, int color) {
         String hexColor = String.format("#%06X", 0xFFFFFF & color);
         return getColoredText(text, hexColor);

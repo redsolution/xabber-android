@@ -84,9 +84,7 @@ class ChatListAdapter(
         holder.itemView.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
 
-        holder.bind(
-            ChatListItemData.createFromChat(list[position], holder.itemView.context), isSavedMessagesSpecialText
-        )
+        holder.bind(ChatListItemData.createFromChat(list[position], holder.itemView.context))
 
         holdersMap[position] = holder
     }
