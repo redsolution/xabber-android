@@ -75,13 +75,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter,
-        OnMessageUpdatedListener, OnStatusChangeListener, ChatListUpdateBackpressure.UpdatableObject,
-        OnConnectionStateChangedListener, OnChatUpdatedListener {
+        OnMessageUpdatedListener, OnStatusChangeListener, OnConnectionStateChangedListener, OnChatUpdatedListener {
 
-    private ChatListUpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
     private List<AbstractChat> items;
     private Snackbar snackbar;
@@ -109,13 +113,24 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
 
+    final private PublishSubject<Object> updateRequest = PublishSubject.create();
+
     public static ChatListFragment newInstance(@Nullable AccountJid account) {
         ChatListFragment fragment = new ChatListFragment();
         Bundle args = new Bundle();
-        if (account != null)
+        if (account != null) {
             args.putSerializable("account_jid", account);
+        }
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public ChatListFragment() {
+        super();
+        updateRequest
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(action -> update());
     }
 
     @Override
@@ -123,7 +138,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (getContext() instanceof ChatListFragmentListener){
             chatListFragmentListener = (ChatListFragmentListener) context;
             chatListFragmentListener.onChatListStateChanged(currentChatsState);
-            updateBackpressure = new ChatListUpdateBackpressure(this);
         } else {
             LogManager.exception(ChatListFragment.class.getSimpleName(), new Exception("Context must implement " +
                     "ChatListFragmentListener"));
@@ -151,17 +165,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onPause() {
         super.onPause();
-
         MessageNotificationManager.getInstance().setShowBanners(true);
-
-        updateBackpressure.removeRefreshRequests();
     }
 
     @Override
     public void onResume() {
-
-        updateBackpressure.build();
-
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnStatusChangeListener.class, this);
         Application.getInstance().addUIListener(OnConnectionStateChangedListener.class, this);
@@ -178,29 +186,29 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             currentChatsState = ChatListState.recent;
             chatListFragmentListener.onChatListStateChanged(ChatListState.recent);
         }
-        updateBackpressure.refreshRequest();
+        update();
 
         super.onResume();
     }
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, String statusText) {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(() -> updateRequest.onNext(null));
     }
 
     @Override
     public void onStatusChanged(AccountJid account, ContactJid user, StatusMode statusMode, String statusText) {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(() -> updateRequest.onNext(null));
     }
 
     @Override
     public void onConnectionStateChanged(@NotNull ConnectionState newConnectionState) {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(() -> updateRequest.onNext(null));
     }
 
     @Override
     public void onAction() {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(() -> updateRequest.onNext(null));
     }
 
     public void onStateSelected(ChatListState state) {
@@ -281,9 +289,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void updateContactList() {
-        updateBackpressure.refreshRequest();
-    }
+    public void updateContactList() { updateRequest.onNext(null); }
 
     /**
      * Update toolbarRelativeLayout via current state
@@ -418,7 +424,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
      */
     public void search(String filterString) {
         this.filterString = filterString;
-        updateBackpressure.refreshRequest();
+        updateRequest.onNext(null);
     }
 
     /**
@@ -491,7 +497,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         ChatManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getContactJid())
                 .setArchived(!abstractChat.isArchived());
         showSnackbar(abstractContact, currentChatsState);
-        updateBackpressure.refreshRequest();
+        updateRequest.onNext(null);
     }
 
     @Override
@@ -531,7 +537,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onListBecomeEmpty() {
         if (currentChatsState != ChatListState.recent) currentChatsState = ChatListState.recent;
-        updateBackpressure.refreshRequest();
+        updateRequest.onNext(null);
     }
 
     @Override
@@ -544,8 +550,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
     }
 
-    @Override
-    public void update() {
+    private void update() {
 
         List<AbstractChat> newList = new ArrayList<>();
 
@@ -710,7 +715,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         snackbar.setAction(R.string.undo, view -> {
             abstractChat.setArchived(!archived);
             onStateSelected(previousState);
-            updateBackpressure.refreshRequest();
+            updateRequest.onNext(null);
         });
         snackbar.setActionTextColor(Color.YELLOW);
         snackbar.show();
