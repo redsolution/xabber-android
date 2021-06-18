@@ -7,13 +7,11 @@ import android.util.TypedValue
 import android.view.ContextMenu
 import android.view.View
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
-import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.entity.BaseEntity
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
@@ -21,7 +19,6 @@ import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
-import com.xabber.android.ui.fragment.chatListFragment.ChatItemDiffUtil
 import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment
 import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener
@@ -31,6 +28,7 @@ import com.xabber.android.ui.widget.SearchToolbar
 import com.xabber.android.ui.widget.ShortcutBuilder
 import com.xabber.android.utils.StringUtils
 import java.util.*
+
 
 class SearchActivity : ManagedActivity(), ChatListItemListener {
 
@@ -125,11 +123,12 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
     }
 
     private fun initAndSetupContactsList() {
-        recyclerView = findViewById<RecyclerView>(R.id.recycler_view).apply {
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.apply {
             layoutManager = LinearLayoutManager(this@SearchActivity).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            adapter = ChatListAdapter(getFilteredList(), this@SearchActivity, false).apply {
+            adapter = ChatListAdapter(buildChatsListWithFilter(null), this@SearchActivity, false).apply {
                 if (action != ACTION_SEARCH) isSavedMessagesSpecialText = true
             }
             itemAnimator = null
@@ -155,116 +154,66 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
 
     private fun updateContactsList(filter: String = "") {
         val adapter = recyclerView.adapter as ChatListAdapter
-        val newContactsList = getFilteredList(filter)
-        val diffResult = DiffUtil.calculateDiff(ChatItemDiffUtil(adapter.list, newContactsList, adapter), false)
+        val newContactsList = buildChatsListWithFilter(filter)
+        //val diffResult = DiffUtil.calculateDiff(ChatItemDiffUtil(adapter.list, newContactsList, adapter), false)
         adapter.clear()
         adapter.addItems(newContactsList)
-        diffResult.dispatchUpdatesTo(adapter)
+        adapter.notifyDataSetChanged()
         showEmptyStatePlaceholder(newContactsList.isEmpty())
     }
 
-//    private fun getFilteredChatsItems(filterString: String = ""): MutableList<AbstractChat> {
-//        val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
-//        return ChatManager.getInstance().chatsOfEnabledAccounts
-//            .sortedByDescending(AbstractChat::getLastTime)
-//            .union(
-//                RosterManager.getInstance().allContactsForEnabledAccounts.map {
-//                    RegularChat(it.account, it.contactJid)
-//                }
-//            )
-//            .union(
-//                AccountManager.getInstance().enabledAccounts.map {
-//                    RegularChat(it, ContactJid.from(it.bareJid))
-//                }
-//            )
-//            .filter {
-//                val contactName = RosterManager.getInstance().getBestContact(it.account, it.contactJid).name
-//                    .toLowerCase(Locale.getDefault())
-//                it.contactJid.toString().contains(filterString)
-//                        || it.contactJid.toString().contains(transliteratedFilterString)
-//                        || contactName.contains(filterString)
-//                        || contactName.contains(transliteratedFilterString)
-//            }
-//            .sortedWith { o1, o2 ->
-//                when {
-//                    o1.account.bareJid.toString() == o1.contactJid.bareJid.toString() -> -1
-//                    o2.account.bareJid.toString() == o2.contactJid.bareJid.toString() -> 1
-//                    else -> 0
-//                }
-//            }
-//            .toMutableList()
-//    }
-
-    private fun getFilteredList(filterString: String = ""): MutableList<AbstractChat> {
-        if (filterString.isEmpty()) {
-            return getFilteredChatsList()
-        } else return mergeChats(getFilteredChatsList(filterString), getFilteredChatsForContacts(filterString))
+    fun buildChatsListWithFilter(filterString: String?): MutableList<AbstractChat> {
+        if (filterString != null && filterString.isNotEmpty()) {
+            return ChatManager.getInstance().chatsOfEnabledAccounts
+                .filter { it.lastMessage != null && it.lastTime != null }
+                .filteredByString(filterString)
+                .sortedBy { it.lastTime }
+                .unionWith(
+                    RosterManager.getInstance().allContactsForEnabledAccounts
+                        .filteredByString(filterString)
+                        .map { RegularChat(it.account, it.contactJid) }
+                )
+        } else {
+            return ChatManager.getInstance().chatsOfEnabledAccounts.toMutableList()
+                .filter { it.lastTime != null }
+                .sortedWith { chat1, chat2 ->
+                    when {
+                        chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
+                                && chat2.account.bareJid.toString() != chat2.contactJid.bareJid.toString()
+                                || chat1.lastTime > chat2.lastTime -> -1
+                        chat2.account.bareJid.toString() == chat2.contactJid.bareJid.toString()
+                                && chat1.account.bareJid.toString() != chat1.contactJid.bareJid.toString()
+                                || chat2.lastTime > chat1.lastTime -> 1
+                        else -> 0
+                    }
+                }.toMutableList()
+        }
     }
 
-    private fun getFilteredChatsList(filterString: String = ""): MutableList<AbstractChat> {
-        val resultList = mutableListOf<AbstractChat>()
-        ChatManager.getInstance().chatsOfEnabledAccounts.map {
-            if (it.account.bareJid.toString() != it.contactJid.bareJid.toString() && it.lastTime != null) {
-                resultList.add(it)
-            }
-        }
-        AccountManager.getInstance().enabledAccounts.map {
-            resultList.add(0, RegularChat(it, ContactJid.from(it.bareJid.toString())))
-        }
-        resultList.sortWith { chat1, chat2 ->
-            when {
-                chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
-                        && chat2.account.bareJid.toString() == chat2.contactJid.bareJid.toString()
-                        || chat1.lastTime > chat2.lastTime -> -1
-                chat2.account.bareJid.toString() == chat2.contactJid.bareJid.toString()
-                        && chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
-                        || chat2.lastTime > chat1.lastTime -> 1
-                else -> 0
-            }
-        }
-        if (filterString.isNotEmpty()) {
-            return resultList.filter {
-                val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
-                val contactName =
-                    RosterManager.getInstance().getBestContact(it.account, it.contactJid).name
-                        .toLowerCase(Locale.getDefault())
-                it.contactJid.toString().contains(filterString)
-                        || it.contactJid.toString().contains(transliteratedFilterString)
-                        || contactName.contains(filterString)
-                        || contactName.contains(transliteratedFilterString)
-            }.toMutableList()
-        }
-        return resultList
-    }
+    private fun <T : BaseEntity> Collection<T>.filteredByString(filterString: String): List<T> {
+        val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
+        return this.filter {
+            val contactName = RosterManager.getInstance()
+                .getBestContact(it.account, it.contactJid)
+                .name
+                .toLowerCase(Locale.getDefault())
 
-    private fun getFilteredChatsForContacts(filterString: String): MutableList<AbstractChat> {
-        return RosterManager.getInstance().allContactsForEnabledAccounts.map {
-            RegularChat(it.account, it.contactJid)
-        }.filter {
-            val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
-            val contactName = RosterManager.getInstance().getBestContact(it.account, it.contactJid).name
             it.contactJid.toString().contains(filterString)
                     || it.contactJid.toString().contains(transliteratedFilterString)
                     || contactName.contains(filterString)
                     || contactName.contains(transliteratedFilterString)
-        }.toMutableList()
+        }
     }
 
-    private fun mergeChats(
-        chatsList: MutableList<AbstractChat>, contactsList: MutableList<AbstractChat>
-    ): MutableList<AbstractChat> {
-        val result = mutableListOf<AbstractChat>()
-        result.addAll(chatsList)
-        contactsList.map { contactChat ->
-            var isAlreadyExists = false
-            chatsList.map { chatChat ->
-                if (chatChat.account == contactChat.account && chatChat.contactJid == contactChat.contactJid) {
-                    isAlreadyExists = true
-                }
+    private infix fun List<AbstractChat>.unionWith(contactsEmptyChats: List<AbstractChat>): MutableList<AbstractChat> {
+        val result = this.toMutableList()
+        for (abstractChat in contactsEmptyChats) {
+            var isDuplicating = false
+            for (abstractChat1 in this) if (abstractChat.contactJid === abstractChat1.contactJid) {
+                isDuplicating = true
+                break
             }
-            if (!isAlreadyExists) {
-                result.add(contactChat)
-            }
+            if (!isDuplicating) result.add(abstractChat)
         }
         return result
     }
@@ -273,7 +222,6 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
         setContentView(R.layout.activity_search)
 
         initActions(savedInstanceState, intent)
-
         initAndSetupToolbar()
         initAndSetupStatusBar()
         initAndSetupContactsList()
