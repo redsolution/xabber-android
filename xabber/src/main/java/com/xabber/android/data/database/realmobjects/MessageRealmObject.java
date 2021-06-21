@@ -186,7 +186,7 @@ public class MessageRealmObject extends RealmObject {
                                                                           ContactJid contactJid,
                                                                           String stanzaId){
         MessageRealmObject messageRealmObject =
-                new MessageRealmObject(createPrimaryKey(accountJid, contactJid, stanzaId));
+                new MessageRealmObject(DatabaseManager.createPrimaryKey(accountJid, contactJid, stanzaId));
 
         messageRealmObject.account = accountJid.toString();
         messageRealmObject.user = contactJid.toString();
@@ -199,17 +199,13 @@ public class MessageRealmObject extends RealmObject {
                                                                          ContactJid contactJid,
                                                                          String originId){
         MessageRealmObject messageRealmObject =
-                new MessageRealmObject(createPrimaryKey(accountJid, contactJid, originId));
+                new MessageRealmObject(DatabaseManager.createPrimaryKey(accountJid, contactJid, originId));
 
         messageRealmObject.account = accountJid.toString();
         messageRealmObject.user = contactJid.toString();
         messageRealmObject.originId = originId;
 
         return messageRealmObject;
-    }
-
-    private static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String someId){
-        return accountJid.toString() + "#" + contactJid.toString() + "#" + someId;
     }
 
     public MessageRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
