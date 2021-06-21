@@ -16,9 +16,9 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.NotificationChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
+import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -293,7 +293,9 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private void addNotification(Chat chat, boolean alert) {
-        if (chat.isGroupChat()) GroupMemberManager.INSTANCE.requestMe(chat.getAccountJid(), chat.getContactJid());
+        if (chat.isGroupChat() && GroupMemberManager.INSTANCE.getMe(chat.contactJid) == null) {
+            GroupMemberManager.INSTANCE.requestMe(chat.getAccountJid(), chat.getContactJid());
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
