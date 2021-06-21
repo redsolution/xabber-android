@@ -681,9 +681,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             pinnedRootView.setVisibility(View.VISIBLE);
 
             if (message.isIncoming()){
-                if (GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()) != null){
+                if (GroupMemberManager.INSTANCE.getGroupMemberById(
+                        message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                ) != null){
                     pinnedMessageHeaderTv.setText(
-                            GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()).getBestName());
+                            GroupMemberManager.INSTANCE.getGroupMemberById(
+                                    message.getAccount(),
+                                    message.getUser(),
+                                    message.getGroupchatUserId()).getBestName()
+                    );
                 } else {
                     pinnedMessageHeaderTv.setText(message.getUser().toString());
                 }
@@ -699,7 +705,10 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            GroupMember member = GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId());
+            GroupMember member =
+                    GroupMemberManager.INSTANCE.getGroupMemberById(
+                            message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                    );
             if (member != null){
                 if (member.getBadge() != null){
                     pinnedMessageBadgeTv.setVisibility(View.VISIBLE);

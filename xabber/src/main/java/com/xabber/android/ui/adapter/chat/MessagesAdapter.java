@@ -320,7 +320,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         // groupchat user
         GroupMember groupMember =
                 messageRealmObject.getGroupchatUserId() != null && !messageRealmObject.getGroupchatUserId().isEmpty() ?
-                    GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId()) : null;
+                    GroupMemberManager.INSTANCE.getGroupMemberById(
+                            chat.getAccount(), chat.getContactJid(), messageRealmObject.getGroupchatUserId()
+                    ) : null;
 
         // need tail
         boolean needTail = true;
@@ -352,9 +354,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 }
             } else {
                 if (groupMember != null) {
-                    GroupMember user2 = GroupMemberManager.INSTANCE.getGroupMemberById(nextMessage.getGroupchatUserId());
+                    GroupMember user2 = GroupMemberManager.INSTANCE.getGroupMemberById(
+                            chat.getAccount(), chat.getContactJid(), nextMessage.getGroupchatUserId()
+                    );
                     if (user2 != null) {
-                        needTail = !groupMember.getId().equals(user2.getId());
+                        needTail = !groupMember.getMemberId().equals(user2.getMemberId());
                     } else needTail = true;
                 } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
                     needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));

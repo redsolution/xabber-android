@@ -28,6 +28,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -281,8 +282,10 @@ public class MessageNotificationCreator {
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {
         if (chat.isGroupChat()){
             List<MessageNotificationManager.Message> messages = chat.getMessages();
-            GroupMember member = GroupMemberManager.INSTANCE
-                    .getGroupMemberById(messages.get(messages.size() - 1).getGroupMemberId());
+            MessageNotificationManager.Message message = messages.get(messages.size() - 1);
+            GroupMember member = GroupMemberManager.INSTANCE.getGroupMemberById(
+                    chat.getAccountJid(), chat.getContactJid(), message.getGroupMemberId()
+            );
             return AvatarManager.getInstance().getGroupMemberCircleBitmap(member, chat.getAccountJid());
         } else {
             String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());

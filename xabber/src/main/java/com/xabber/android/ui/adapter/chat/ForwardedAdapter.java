@@ -111,7 +111,11 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
 
         // groupchat user
         GroupMember groupMember =
-                GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId());
+                GroupMemberManager.INSTANCE.getGroupMemberById(
+                        messageRealmObject.getAccount(),
+                        messageRealmObject.getUser(),
+                        messageRealmObject.getGroupchatUserId()
+                );
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, this.extraData.getContext(), messageRealmObject.getOriginalFrom(),

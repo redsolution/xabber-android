@@ -5,6 +5,8 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 
@@ -28,27 +30,32 @@ public class GroupMemberRepository {
         ArrayList<GroupMember> result = new ArrayList<>(groupMemberRealmObjects.size());
 
         for (GroupMemberRealmObject gro : groupMemberRealmObjects)
-            result.add(new GroupMember(gro.getUniqueId(), gro.getJid(), gro.getGroupJid(), gro.getNickname(),
-                    gro.getRole(), gro.getBadge(), gro.getAvatarHash(), gro.getAvatarUrl(), gro.getLastPresent(),
-                    gro.isMe(), gro.isBlocked(), gro.isKicked()));
+            result.add(new GroupMember(gro.getPrimaryKey(), gro.getMemberId(), gro.getAccountJid(), gro.getGroupJid(),
+                    gro.getJid(), gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
+                    gro.getAvatarUrl(), gro.getLastSeen(), gro.isMe(), gro.isBlocked(), gro.isKicked()));
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         return result;
     }
 
-    public static void removeGroupMemberById(String id) {
+    public static void removeGroupMemberById(AccountJid accountJid, ContactJid groupJid, String memberId) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                      GroupMemberRealmObject gro = realm1.where(GroupMemberRealmObject.class)
-                            .equalTo(GroupMemberRealmObject.Fields.UNIQUE_ID, id)
+                            .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, accountJid.getBareJid().toString())
+                            .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.getBareJid().toString())
+                            .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberId)
                             .findFirst();
-                     if (gro != null && !"".equals(gro.getUniqueId()))
+                     if (gro != null && !"".equals(gro.getMemberId()))
                          gro.deleteFromRealm();
-                     else LogManager.e(LOG_TAG, "Tried to delete from realm groupchat member with id " + id + ", but realm hasn't it");
+                     else LogManager.e(LOG_TAG,
+                             "Tried to delete from realm group member from group: " + groupJid.toString()
+                                     +  ", accountJid: " + accountJid.getBareJid().toString()
+                                     + ", memberId: " + memberId + ", but realm hasn't it");
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -66,20 +73,21 @@ public class GroupMemberRepository {
                 realm.executeTransaction(realm1 -> {
 
                     GroupMemberRealmObject gro = realm1.where(GroupMemberRealmObject.class)
-                            .equalTo(GroupMemberRealmObject.Fields.UNIQUE_ID, groupMember.getId())
+                            .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, groupMember.getAccountJid().toString())
+                            .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupMember.getGroupJid().getBareJid().toString())
+                            .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, groupMember.getMemberId())
                             .findFirst();
 
-                    if (gro == null)
-                        gro = new GroupMemberRealmObject(groupMember.getId());
+                    if (gro == null) gro = GroupMemberRealmObject.createGroupMemberRealmObject(
+                            groupMember.getAccountJid(), groupMember.getGroupJid(), groupMember.getMemberId());
 
                     gro.setJid(groupMember.getJid());
-                    gro.setGroupJid(groupMember.getGroupJid());
                     gro.setNickname(groupMember.getNickname());
                     gro.setRole(groupMember.getRole());
                     gro.setBadge(groupMember.getBadge());
                     gro.setAvatarHash(groupMember.getAvatarHash());
                     gro.setAvatarUrl(groupMember.getAvatarUrl());
-                    gro.setLastPresent(groupMember.getLastPresent());
+                    gro.setLastSeen(groupMember.getLastPresent());
 
                     gro.setMe(groupMember.isMe());
                     gro.setBlocked(groupMember.isBlocked());

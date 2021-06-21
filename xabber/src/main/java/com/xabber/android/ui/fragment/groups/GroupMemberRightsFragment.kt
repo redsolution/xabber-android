@@ -91,7 +91,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
         if (isThisGroup(groupchat))
             for (field in iq.dataFrom!!.fields)
                 if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
-                    && groupMember.id == field.values[0]
+                    && groupMember.memberId == field.values[0]
                 ) {
                     oldDataForm = iq.dataFrom
                     Application.getInstance().runOnUiThread {

@@ -1,9 +1,16 @@
 package com.xabber.android.data.extension.groups
 
+import com.xabber.android.data.entity.AccountJid
+import com.xabber.android.data.entity.ContactJid
+
 data class GroupMember(
-    val id: String,
+    val primaryKey: String,
+
+    val memberId: String,
+    val accountJid: AccountJid,
+    val groupJid: ContactJid,
+
     var jid: String? = null,
-    var groupJid: String? = null,
     var nickname: String? = null,
     var role: String? = null,
     var badge: String? = null,
@@ -15,5 +22,5 @@ data class GroupMember(
     var isKicked: Boolean = false,
 ) {
     val bestName: String
-        get() = nickname ?: jid ?: id
+        get() = nickname ?: jid ?: memberId
 }

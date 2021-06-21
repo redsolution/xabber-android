@@ -184,7 +184,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     public void onMemberClick(GroupMember groupMember) {
         Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(
                 getActivity(),
-                groupMember.getId(), (GroupChat) groupChat);
+                groupMember.getMemberId(), (GroupChat) groupChat);
         startActivity(intent);
     }
 

@@ -123,8 +123,9 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         accountJid: AccountJid, groupchatJid: ContactJid,
         groupchatMemberId: String
     ) {
-        if (accountJid == this.accountJid && groupchatJid == this.groupchatJid
-            && groupchatMemberId == this.groupMember?.id
+        if (accountJid == this.accountJid
+            && groupchatJid == this.groupchatJid
+            && groupchatMemberId == this.groupMember.memberId
         ) {
             Application.getInstance().runOnUiThread {
                 setupAvatar()
@@ -135,12 +136,13 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
-            groupMember = GroupMemberManager.getGroupMemberById(it) ?: return
-        }
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
         groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
+        intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
+            groupMember = GroupMemberManager.getGroupMemberById(accountJid ?: return, groupchatJid ?: return, it)
+                ?: return
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
@@ -261,7 +263,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         super.onResume()
         //ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true)
         Application.getInstance().addUIListener(OnGroupchatRequestListener::class.java, this)
-        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember?.id)
+        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
         appBarResize()
     }
 
@@ -365,7 +367,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             if (newAvatarImageUri == null) {
                 try {
                     //publishing empty (avatar) metadata
-                    GroupMemberManager.removeMemberAvatar(groupchat, groupMember.id)
+                    GroupMemberManager.removeMemberAvatar(groupchat, groupMember.memberId)
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
                     onAvatarSettingEnded(false)
@@ -375,7 +377,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 try {
                     GroupMemberManager.publishMemberAvatar(
                         groupchat,
-                        groupMember.id,
+                        groupMember.memberId,
                         avatarData ?: return@runInBackgroundUserRequest,
                         AccountActivity.FINAL_IMAGE_SIZE,
                         AccountActivity.FINAL_IMAGE_SIZE,

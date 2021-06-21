@@ -38,7 +38,9 @@ class SavedCompanionMessageVH(
 
     override fun bind(messageRealmObject: MessageRealmObject, extraData: MessagesAdapter.MessageExtraData) {
         val innerMessage: MessageRealmObject = MessageRepository.getForwardedMessages(messageRealmObject).first()
-        val groupMember: GroupMember? = GroupMemberManager.getGroupMemberById(innerMessage.groupchatUserId)
+        val groupMember: GroupMember? = GroupMemberManager.getGroupMemberById(
+            innerMessage.account, innerMessage.user, innerMessage.groupchatUserId
+        )
         super.bind(innerMessage, extraData)
         setupAvatar(innerMessage, extraData.isNeedTail, groupMember)
         setupName(

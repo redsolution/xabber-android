@@ -110,8 +110,12 @@ public class BottomMessagesPanel extends Fragment {
             AbstractChat chat = ChatManager.getInstance().getChat(message.getAccount(), message.getUser());
             String name = null;
             if (chat instanceof GroupChat) {
-                if (GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()) != null) {
-                    name = GroupMemberManager.INSTANCE.getGroupMemberById(message.getGroupchatUserId()).getNickname();
+                if (GroupMemberManager.INSTANCE.getGroupMemberById(
+                        message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                ) != null) {
+                    name = GroupMemberManager.INSTANCE.getGroupMemberById(
+                            message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                    ).getNickname();
                 } else if (!message.isIncoming() && GroupMemberManager.INSTANCE.getMe(chat.getContactJid()) != null) {
                     name = GroupMemberManager.INSTANCE.getMe(chat.getContactJid()).getNickname();
                 }

@@ -1,5 +1,11 @@
 package com.xabber.android.data.database.realmobjects;
 
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
+
+import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -10,33 +16,70 @@ public class GroupMemberRealmObject extends RealmObject {
 
     @PrimaryKey
     @Required
-    private String uniqueId;
-    private String jid;
+    private String primaryKey;
+
+    private String memberId;
+    private String accountJid;
     private String groupJid;
+
+    private String jid;
     private String nickname;
     private String role;
     private String badge;
     private String avatarHash;
     private String avatarUrl;
-    private String lastPresent;
-    private boolean isMe;
-    private boolean isBlocked;
-    private boolean isKicked;
+    private String lastSeen;
 
-    public GroupMemberRealmObject(String uniqueId) {
-        this.uniqueId = uniqueId;
+    private boolean isMe = false;
+    private boolean isBlocked = false;
+    private boolean isKicked = false;
+
+    private GroupMemberRealmObject(String uniqueId) {
+        this.primaryKey = uniqueId;
     }
     public GroupMemberRealmObject() {
-        this.uniqueId = UUID.randomUUID().toString();
+        this.primaryKey = UUID.randomUUID().toString();
     }
+
+    public static GroupMemberRealmObject createGroupMemberRealmObject(AccountJid accountJid, ContactJid groupJid,
+                                                                      String memberId){
+        GroupMemberRealmObject gmro =
+                new GroupMemberRealmObject(DatabaseManager.createPrimaryKey(accountJid, groupJid, memberId));
+
+        gmro.accountJid = accountJid.toString();
+        gmro.groupJid = groupJid.toString();
+        gmro.memberId = memberId;
+
+        return gmro;
+    }
+
+    public String getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public ContactJid getGroupJid() {
+        try {
+            return ContactJid.from(groupJid);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+            return null;
+        }
+    }
+
+    public AccountJid getAccountJid() {
+        try {
+            return AccountJid.from(accountJid);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+            return null;
+        }
+    }
+
+    public String getMemberId() { return memberId; }
 
     public boolean isMe() { return isMe; }
     public void setMe(boolean me) {
         if (me) isMe = true;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
     }
 
     public String getJid() {
@@ -67,13 +110,6 @@ public class GroupMemberRealmObject extends RealmObject {
         this.badge = badge;
     }
 
-    public String getGroupJid() {
-        return groupJid;
-    }
-    public void setGroupJid(String groupJid) {
-        this.groupJid = groupJid;
-    }
-
     public String getAvatarHash() {
         return avatarHash;
     }
@@ -88,12 +124,8 @@ public class GroupMemberRealmObject extends RealmObject {
         this.avatarUrl = avatarUrl;
     }
 
-    public String getLastPresent() {
-        return lastPresent;
-    }
-    public void setLastPresent(String lastPresent) {
-        this.lastPresent = lastPresent;
-    }
+    public String getLastSeen() { return lastSeen; }
+    public void setLastSeen(String lastSeen) { this.lastSeen = lastSeen; }
 
     public boolean isBlocked() { return isBlocked; }
     public void setBlocked(boolean blocked) { isBlocked = blocked; }
@@ -102,15 +134,17 @@ public class GroupMemberRealmObject extends RealmObject {
     public void setKicked(boolean kicked) { isKicked = kicked; }
 
     public static class Fields {
-        public static final String UNIQUE_ID = "uniqueId";
-        public static final String JID = "jid";
+        public static final String PRIMARY_KEY = "primaryKey";
+        public static final String MEMBER_ID = "memberId";
+        public static final String ACCOUNT_JID = "groupJid";
         public static final String GROUP_JID = "groupJid";
+        public static final String JID = "jid";
         public static final String NICKNAME = "nickname";
         public static final String ROLE = "role";
         public static final String BADGE = "badge";
         public static final String AVATAR_HASH = "avatarHash";
         public static final String AVATAR_URL = "avatarUrl";
-        public static final String LAST_PRESENT = "lastPresent";
+        public static final String LAST_SEEN = "lastSeen";
         public static final String TIMESTAMP = "timestamp";
 
         public static final String IS_ME = "isMe";

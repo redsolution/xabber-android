@@ -264,18 +264,12 @@ public final class UserAvatarManager extends Manager {
 
             ItemsExtension itemsExtension = new ItemsExtension(
                     ItemsExtension.ItemsElementType.items,
-                    (DATA_NAMESPACE + "#" + groupMember.getId()),
+                    (DATA_NAMESPACE + "#" + groupMember.getMemberId()),
                     Collections.singletonList(new Item(avatarHash)));
 
-            BareJid groupchatJid = null;
-            try {
-                groupchatJid = JidCreate.bareFrom(groupMember.getGroupJid());
-            } catch (XmppStringprepException e) {
-                LogManager.exception(LOG_TAG, e);
-                groupchatMemberAvatarRequests.remove(avatarHash);
-            }
-            if (groupchatJid == null) return;
-            PubSub avatarRequest = PubSub.createPubsubPacket(groupchatJid, IQ.Type.get, itemsExtension, null);
+            PubSub avatarRequest = PubSub.createPubsubPacket(
+                    groupMember.getGroupJid().getBareJid(), IQ.Type.get, itemsExtension, null
+            );
             PubSub reply;
             try {
                  reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow();

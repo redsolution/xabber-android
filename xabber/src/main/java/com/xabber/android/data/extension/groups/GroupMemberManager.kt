@@ -6,6 +6,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.OnLoadListener
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.repositories.GroupMemberRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
@@ -51,7 +52,6 @@ import org.jivesoftware.smackx.pubsub.PayloadItem
 import org.jivesoftware.smackx.pubsub.PublishItem
 import org.jivesoftware.smackx.pubsub.packet.PubSub
 import org.jivesoftware.smackx.xdata.packet.DataForm
-import org.jxmpp.jid.BareJid
 import org.jxmpp.jid.Jid
 import org.jxmpp.jid.impl.JidCreate
 import java.util.*
@@ -63,7 +63,7 @@ object GroupMemberManager : OnLoadListener {
     private val members: MutableMap<String, GroupMember?> = HashMap()
 
     override fun onLoad() {
-        GroupMemberRepository.getAllGroupMembersFromRealm().map { members[it.id] = it }
+        GroupMemberRepository.getAllGroupMembersFromRealm().map { members[it.primaryKey] = it }
     }
 
     fun removeMemberAvatar(group: GroupChat, memberId: String) {
@@ -127,21 +127,25 @@ object GroupMemberManager : OnLoadListener {
         }
     }
 
-    fun getGroupMemberById(id: String?): GroupMember? = id?.let { members[it] }
+    fun getGroupMemberById(account: AccountJid, groupJid: ContactJid, memberId: String): GroupMember? =
+        members[DatabaseManager.createPrimaryKey(account, groupJid, memberId)]
 
     fun getMe(groupJid: ContactJid) = getGroupMembers(groupJid).firstOrNull { member -> member?.isMe ?: false }
 
-    fun getGroupMembers(groupJid: ContactJid) = members.values.filter { it?.groupJid == groupJid.toString() }
+    fun getGroupMembers(groupJid: ContactJid) = members.values.filter { it?.groupJid == groupJid }
 
-    fun removeGroupMember(id: String) {
-        members.remove(id)
-        GroupMemberRepository.removeGroupMemberById(id)
+    fun removeGroupMember(account: AccountJid, groupJid: ContactJid, memberId: String) {
+        members.remove(DatabaseManager.createPrimaryKey(account, groupJid, memberId))
+        GroupMemberRepository.removeGroupMemberById(account, groupJid, memberId)
     }
 
-    fun saveOrUpdateMemberFromMessage(user: GroupMemberExtensionElement, groupJid: BareJid?): GroupMember? {
-        getGroupMemberFromGroupMemberExtensionElement(user, groupJid).also { newMember ->
-            if (members.contains(newMember.id)) {
-                members[newMember.id]?.apply {
+    fun saveOrUpdateMemberFromMessage(
+        user: GroupMemberExtensionElement, account: AccountJid, groupJid: ContactJid
+    ): GroupMember? {
+        getGroupMemberFromGroupMemberExtensionElement(user, account, groupJid).also { newMember ->
+            val primaryKey = DatabaseManager.createPrimaryKey(account, groupJid, newMember.memberId)
+            if (members.contains(primaryKey)) {
+                members[primaryKey]?.apply {
                     newMember.jid?.let { jid = it }
                     newMember.nickname?.let { nickname = it }
                     newMember.role?.let { role = it }
@@ -150,9 +154,9 @@ object GroupMemberManager : OnLoadListener {
                     newMember.avatarUrl?.let { avatarUrl = it }
                     newMember.lastPresent?.let { lastPresent = it }
                 }
-            } else members[newMember.id] = newMember
+            } else members[primaryKey] = newMember
             GroupMemberRepository.saveOrUpdateGroupMember(newMember)
-            return members[newMember.id]
+            return members[primaryKey]
         }
     }
 
@@ -170,7 +174,7 @@ object GroupMemberManager : OnLoadListener {
                     } else {
                         AccountManager.getInstance().getAccount(groupChat.account)?.connection
                             ?.sendIqWithResponseCallback(
-                                KickGroupMemberIQ(groupMember.id, fullJid),
+                                KickGroupMemberIQ(groupMember.memberId, fullJid),
                                 listener,
                                 listener
                             )
@@ -194,7 +198,7 @@ object GroupMemberManager : OnLoadListener {
                     } else {
                         AccountManager.getInstance().getAccount(groupChat.account)?.connection
                             ?.sendIqWithResponseCallback(
-                                BlockGroupMemberIQ(fullJid, groupMember.id),
+                                BlockGroupMemberIQ(fullJid, groupMember.memberId),
                                 listener,
                                 listener
                             )
@@ -367,7 +371,7 @@ object GroupMemberManager : OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    CreatePtpGroupIQ(groupChat, groupMember.id),
+                    CreatePtpGroupIQ(groupChat, groupMember.memberId),
                     { packet: Stanza ->
                         if (packet is ResultIq && packet.type == IQ.Type.result) {
                             try {
@@ -404,14 +408,16 @@ object GroupMemberManager : OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    ChangeGroupchatMemberPreferencesIQ(groupChat, groupMember.id, badge, null),
+                    ChangeGroupchatMemberPreferencesIQ(groupChat, groupMember.memberId, badge, null),
                     { packet: Stanza? ->
                         if (packet is IQ && packet.type == IQ.Type.result) {
                             groupMember.badge = badge
                             GroupMemberRepository.saveOrUpdateGroupMember(groupMember)
                             Application.getInstance().getUIListeners(OnGroupchatRequestListener::class.java)
                                 .forEachOnUi {
-                                    it.onGroupchatMemberUpdated(groupChat.account, groupChat.contactJid, groupMember.id)
+                                    it.onGroupchatMemberUpdated(
+                                        groupChat.account, groupChat.contactJid, groupMember.memberId
+                                    )
                                 }
 
                         }
@@ -439,7 +445,7 @@ object GroupMemberManager : OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    ChangeGroupchatMemberPreferencesIQ(groupChat, groupMember.id, null, nickname),
+                    ChangeGroupchatMemberPreferencesIQ(groupChat, groupMember.memberId, null, nickname),
                     { packet: Stanza? ->
                         if (packet is IQ && packet.type == IQ.Type.result) {
                             groupMember.nickname = nickname
@@ -449,7 +455,7 @@ object GroupMemberManager : OnLoadListener {
                                     it.onGroupchatMemberUpdated(
                                         groupChat.account,
                                         groupChat.contactJid,
-                                        groupMember.id
+                                        groupMember.memberId
                                     )
                                 }
                         }
@@ -567,7 +573,7 @@ object GroupMemberManager : OnLoadListener {
             if (accountItem != null) {
                 try {
                     accountItem.connection.sendIqWithResponseCallback(
-                        GroupchatMemberRightsQueryIQ(chat, groupMember.id),
+                        GroupchatMemberRightsQueryIQ(chat, groupMember.memberId),
                         GroupchatMemberRightsFormResultListener(accountJid, groupchatJid)
                     )
                 } catch (e: Exception) {
@@ -594,8 +600,7 @@ object GroupMemberManager : OnLoadListener {
     }
 
     private class GroupchatMeResultListener(
-        private val accountJid: AccountJid,
-        private val groupchatJid: ContactJid,
+        private val accountJid: AccountJid, private val groupchatJid: ContactJid,
     ) : StanzaListener {
         override fun processStanza(packet: Stanza) {
             if (packet is GroupchatMembersResultIQ) {
@@ -603,12 +608,13 @@ object GroupMemberManager : OnLoadListener {
                     && accountJid.bareJid.equals(packet.getTo().asBareJid())
                 ) {
                     packet.listOfMembers.map { memberExtension ->
-                        val id = memberExtension.id
-                        if (members[id] == null) members[id] = GroupMember(id)
-                        (members[id] ?: GroupMember(id))
+                        val id = DatabaseManager.createPrimaryKey(accountJid, groupchatJid, memberExtension.id)
+                        if (members[id] == null) {
+                            members[id] = GroupMember(id, memberExtension.id, accountJid, groupchatJid)
+                        }
+                        (members[id] ?: GroupMember(id, memberExtension.id, accountJid, groupchatJid))
                             .also { members[id] = it }
                             .apply {
-                                groupJid = groupchatJid.toString()
                                 role = memberExtension.role
                                 nickname = memberExtension.nickname
                                 badge = memberExtension.badge
@@ -621,7 +627,7 @@ object GroupMemberManager : OnLoadListener {
                                 isMe = true
                             }.also {
                                 if (memberExtension.subscription != null && memberExtension.subscription != "both") {
-                                    removeGroupMember(it.id)
+                                    removeGroupMember(accountJid, groupchatJid, it.memberId)
                                 } else GroupMemberRepository.saveOrUpdateGroupMember(it)
                             }
                     }
@@ -633,8 +639,7 @@ object GroupMemberManager : OnLoadListener {
     }
 
     private class GroupchatMembersResultListener(
-        private val account: AccountJid,
-        private val groupchatJid: ContactJid,
+        private val account: AccountJid, private val groupchatJid: ContactJid,
     ) : StanzaListener {
         override fun processStanza(packet: Stanza) {
             if (packet is GroupchatMembersResultIQ) {
@@ -642,12 +647,14 @@ object GroupMemberManager : OnLoadListener {
                     && account.bareJid.equals(packet.getTo().asBareJid())
                 ) {
                     packet.listOfMembers.map { memberExtension ->
-                        val id = memberExtension.id
-                        members[id] ?: GroupMember(id)
-                            .also {
-                                members[id] = it
-                            }.apply {
-                                groupJid = groupchatJid.toString()
+                        val id = DatabaseManager.createPrimaryKey(account, groupchatJid, memberExtension.id)
+                        members[id] ?: GroupMember(
+                            DatabaseManager.createPrimaryKey(account, groupchatJid, memberExtension.id),
+                            memberExtension.id,
+                            account,
+                            groupchatJid
+                        ).also { members[id] = it }
+                            .apply {
                                 role = memberExtension.role
                                 nickname = memberExtension.nickname
                                 badge = memberExtension.badge
@@ -675,10 +682,13 @@ object GroupMemberManager : OnLoadListener {
     }
 
     private fun getGroupMemberFromGroupMemberExtensionElement(
-        memberExtensionElement: GroupMemberExtensionElement,
-        memberGroupJid: BareJid?
-    ) = GroupMember(memberExtensionElement.id).apply {
-        (memberGroupJid)?.let { groupJid = it.toString() }
+        memberExtensionElement: GroupMemberExtensionElement, accountJid: AccountJid, memberGroupJid: ContactJid
+    ) = GroupMember(
+        DatabaseManager.createPrimaryKey(accountJid, memberGroupJid, memberExtensionElement.id),
+        memberExtensionElement.id,
+        accountJid,
+        memberGroupJid,
+    ).apply {
         (memberExtensionElement.avatarInfo)?.let {
             avatarHash = it.id
             avatarUrl = it.url.toString()

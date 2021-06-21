@@ -98,7 +98,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 // update notification
                 if (action.getActionType() == Action.ActionType.reply) {
                     String groupMemberId = chat.isGroupChat() ?
-                            GroupMemberManager.INSTANCE.getMe(chat.contactJid).getId() : null;
+                            GroupMemberManager.INSTANCE.getMe(chat.contactJid).getMemberId() : null;
                     addMessage(chat, "", action.getReplyText(), false, groupMemberId);
                     NotificationChatRepository.INSTANCE.saveOrUpdateToRealm(chat);
                 }
@@ -141,7 +141,10 @@ public class MessageNotificationManager implements OnLoadListener {
         }
 
         String sender = isGroup ?
-                GroupMemberManager.INSTANCE.getGroupMemberById(messageRealmObject.getGroupchatUserId()).getNickname()
+                GroupMemberManager.INSTANCE.getGroupMemberById(
+                        messageRealmObject.getAccount(),
+                        messageRealmObject.getUser(),
+                        messageRealmObject.getGroupchatUserId()).getNickname()
                 : RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
 
         addMessage(chat, sender, getNotificationText(messageRealmObject), true,

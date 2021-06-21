@@ -152,6 +152,15 @@ public class StringUtils {
         else return new SimpleDateFormat("dd MM yyyy HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
     }
 
+    public static Date getDateByGroupMemberPresenceTimeFormat(String groupMemberLastSeen) {
+        try {
+            return groupchatMemberPresenceTimeFormat.parse(groupMemberLastSeen);
+        } catch (Exception e) {
+            LogManager.exception("StringUtils", e);
+            return new Date();
+        }
+    }
+
     @NonNull
     public static String getLastPresentString(String lastPresent) {
         String result = null;

@@ -65,7 +65,9 @@ data class ChatListItemData(
                         )
                     else ->
                         StringUtils.getColoredText(
-                            GroupMemberManager.getGroupMemberById(lastMessage.groupchatUserId)?.bestName + ":",
+                            GroupMemberManager.getGroupMemberById(
+                                lastMessage.account, lastMessage.user, lastMessage.groupchatUserId
+                            )?.bestName + ":",
                             ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
                         )
                 }

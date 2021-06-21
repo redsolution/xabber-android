@@ -152,7 +152,7 @@ object MessageHandler {
 
 
         val groupMember = (ReferencesManager.getGroupchatUserFromReferences(messageStanza))?.let {
-            GroupMemberManager.saveOrUpdateMemberFromMessage(it, contactJid.bareJid)
+            GroupMemberManager.saveOrUpdateMemberFromMessage(it, accountJid, contactJid)
         }
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
@@ -245,7 +245,7 @@ object MessageHandler {
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
             (attachmentRealmObjects)?.let { this.attachmentRealmObjects = it }
             this.forwardedIds = forwardIdRealmObjects
-            this.groupchatUserId = groupMember?.id
+            this.groupchatUserId = groupMember?.memberId
         }
 
         saverBuffer.onNext(messageRealmObject ?: return null)
@@ -345,7 +345,7 @@ object MessageHandler {
                 LogManager.e(this, "Got possible rewrite, todo implement handling")
                 return null
             }
-            GroupMemberManager.saveOrUpdateMemberFromMessage(groupchatUser, message.from.asBareJid())
+            GroupMemberManager.saveOrUpdateMemberFromMessage(groupchatUser, chat.account, ContactJid.from(message.from))
         }
 
         // forward comment (to support previous forwarded xep)

@@ -163,8 +163,8 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
             Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
-    override fun onMemberClick(groupMember: GroupMember?) = startActivity(
-        createIntentForGroupchatAndMemberId(this, groupMember!!.id, groupchat)
+    override fun onMemberClick(groupMember: GroupMember) = startActivity(
+        createIntentForGroupchatAndMemberId(this, groupMember.memberId, groupchat)
     )
 
     private fun isThisChat(account: AccountJid, contactJid: ContactJid) =
