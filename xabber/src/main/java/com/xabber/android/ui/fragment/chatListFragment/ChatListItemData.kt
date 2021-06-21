@@ -57,11 +57,18 @@ data class ChatListItemData(
             val forwardedCount = lastMessage?.forwardedIds?.size ?: 0
             val attachmentsCount = lastMessage?.attachmentRealmObjects?.size ?: 0
             val coloredMemberNameOrNull =
-                StringUtils.getColoredText(
-                    GroupMemberManager.getGroupMemberById(lastMessage?.groupchatUserId)?.nickname + ":",
-                    ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
-                )
-
+                when {
+                    lastMessage?.groupchatUserId == null || !lastMessage.isIncoming ->
+                        StringUtils.getColoredText(
+                            GroupMemberManager.getMe(contact)?.bestName,
+                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
+                        )
+                    else ->
+                        StringUtils.getColoredText(
+                            GroupMemberManager.getGroupMemberById(lastMessage.groupchatUserId)?.bestName + ":",
+                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
+                        )
+                }
             val color500 = ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 500)
             val noMessagesText = StringUtils.getItalicTypeface(context.resources.getString(R.string.no_messages))
 
