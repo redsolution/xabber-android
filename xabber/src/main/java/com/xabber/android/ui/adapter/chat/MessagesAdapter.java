@@ -354,9 +354,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 }
             } else {
                 if (groupMember != null) {
-                    GroupMember user2 = GroupMemberManager.INSTANCE.getGroupMemberById(
-                            chat.getAccount(), chat.getContactJid(), nextMessage.getGroupchatUserId()
-                    );
+                    GroupMember user2 = nextMessage.getGroupchatUserId() == null ? null
+                            : GroupMemberManager.INSTANCE.getGroupMemberById(
+                                    chat.getAccount(), chat.getContactJid(), nextMessage.getGroupchatUserId());
                     if (user2 != null) {
                         needTail = !groupMember.getMemberId().equals(user2.getMemberId());
                     } else needTail = true;
