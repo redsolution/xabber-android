@@ -20,7 +20,23 @@ data class GroupMember(
     var isMe: Boolean = false,
     var isBlocked: Boolean = false,
     var isKicked: Boolean = false,
+    var subscriptionState: SubscriptionState = SubscriptionState.NONE
 ) {
+
     val bestName: String
         get() = nickname ?: jid ?: memberId
+
+    enum class SubscriptionState {
+        BOTH, NONE;
+
+        companion object {
+            @JvmStatic
+            fun fromXml(text: String?) =
+                when (text) {
+                    "both" -> BOTH
+                    else -> NONE
+                }
+        }
+    }
+
 }

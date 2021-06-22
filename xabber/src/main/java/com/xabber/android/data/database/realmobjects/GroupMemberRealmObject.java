@@ -3,9 +3,9 @@ package com.xabber.android.data.database.realmobjects;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 
-import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -29,6 +29,8 @@ public class GroupMemberRealmObject extends RealmObject {
     private String avatarHash;
     private String avatarUrl;
     private String lastSeen;
+
+    private String subscriptionState;
 
     private boolean isMe = false;
     private boolean isBlocked = false;
@@ -133,6 +135,13 @@ public class GroupMemberRealmObject extends RealmObject {
     public boolean isKicked() { return isKicked; }
     public void setKicked(boolean kicked) { isKicked = kicked; }
 
+    public GroupMember.SubscriptionState getSubscriptionState() {
+        return GroupMember.SubscriptionState.valueOf(subscriptionState);
+    }
+    public void setSubscriptionState(GroupMember.SubscriptionState subscriptionState) {
+        this.subscriptionState = subscriptionState.toString();
+    }
+
     public static class Fields {
         public static final String PRIMARY_KEY = "primaryKey";
         public static final String MEMBER_ID = "memberId";
@@ -146,7 +155,7 @@ public class GroupMemberRealmObject extends RealmObject {
         public static final String AVATAR_URL = "avatarUrl";
         public static final String LAST_SEEN = "lastSeen";
         public static final String TIMESTAMP = "timestamp";
-
+        public static final String SUBSCRIPTION_STATE = "subscriptionState";
         public static final String IS_ME = "isMe";
     }
 

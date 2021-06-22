@@ -32,7 +32,8 @@ public class GroupMemberRepository {
         for (GroupMemberRealmObject gro : groupMemberRealmObjects)
             result.add(new GroupMember(gro.getPrimaryKey(), gro.getMemberId(), gro.getAccountJid(), gro.getGroupJid(),
                     gro.getJid(), gro.getNickname(), gro.getRole(), gro.getBadge(), gro.getAvatarHash(),
-                    gro.getAvatarUrl(), gro.getLastSeen(), gro.isMe(), gro.isBlocked(), gro.isKicked()));
+                    gro.getAvatarUrl(), gro.getLastSeen(), gro.isMe(), gro.isBlocked(), gro.isKicked(),
+                    gro.getSubscriptionState()));
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
@@ -88,6 +89,7 @@ public class GroupMemberRepository {
                     gro.setAvatarHash(groupMember.getAvatarHash());
                     gro.setAvatarUrl(groupMember.getAvatarUrl());
                     gro.setLastSeen(groupMember.getLastPresent());
+                    gro.setSubscriptionState(groupMember.getSubscriptionState());
 
                     gro.setMe(groupMember.isMe());
                     gro.setBlocked(groupMember.isBlocked());

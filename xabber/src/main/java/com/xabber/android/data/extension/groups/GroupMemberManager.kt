@@ -153,6 +153,7 @@ object GroupMemberManager : OnLoadListener {
                     newMember.avatarHash?.let { avatarHash = it }
                     newMember.avatarUrl?.let { avatarUrl = it }
                     newMember.lastPresent?.let { lastPresent = it }
+                    subscriptionState = newMember.subscriptionState
                 }
             } else members[primaryKey] = newMember
             GroupMemberRepository.saveOrUpdateGroupMember(newMember)
@@ -618,11 +619,14 @@ object GroupMemberManager : OnLoadListener {
                                 role = memberExtension.role
                                 nickname = memberExtension.nickname
                                 badge = memberExtension.badge
-                                (memberExtension.jid)?.let { jid = it }
-                                (memberExtension.lastPresent)?.let { lastPresent = it }
-                                (memberExtension.avatarInfo)?.let {
+                                memberExtension.jid?.let { jid = it }
+                                memberExtension.lastPresent?.let { lastPresent = it }
+                                memberExtension.avatarInfo?.let {
                                     avatarHash = it.id
                                     avatarUrl = it.url.toString()
+                                }
+                                memberExtension.subscription?.let {
+                                    subscriptionState = GroupMember.SubscriptionState.fromXml(it)
                                 }
                                 isMe = true
                             }.also {
@@ -658,11 +662,14 @@ object GroupMemberManager : OnLoadListener {
                                 role = memberExtension.role
                                 nickname = memberExtension.nickname
                                 badge = memberExtension.badge
-                                (memberExtension.jid)?.let { jid = it }
-                                (memberExtension.lastPresent)?.let { lastPresent = it }
-                                (memberExtension.avatarInfo)?.let {
+                                memberExtension.jid?.let { jid = it }
+                                memberExtension.lastPresent?.let { lastPresent = it }
+                                memberExtension.avatarInfo?.let {
                                     avatarHash = it.id
                                     avatarUrl = it.url.toString()
+                                }
+                                memberExtension.subscription?.let {
+                                    GroupMember.SubscriptionState.fromXml(it).also { subscriptionState = it }
                                 }
                             }.also {
                                 if (memberExtension.subscription != null && memberExtension.subscription != "both") {
@@ -698,6 +705,7 @@ object GroupMemberManager : OnLoadListener {
         jid = memberExtensionElement.jid
         nickname = memberExtensionElement.nickname
         role = memberExtensionElement.role
+        subscriptionState = GroupMember.SubscriptionState.fromXml(memberExtensionElement.subscription)
     }
 
 }
