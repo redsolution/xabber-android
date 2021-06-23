@@ -4,13 +4,13 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.bumptech.glide.Glide
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.avatar.AvatarManager
-import com.xabber.android.data.extension.groups.GroupMember
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
@@ -38,7 +38,7 @@ class SavedCompanionMessageVH(
 
     override fun bind(messageRealmObject: MessageRealmObject, extraData: MessagesAdapter.MessageExtraData) {
         val innerMessage: MessageRealmObject = MessageRepository.getForwardedMessages(messageRealmObject).first()
-        val groupMember: GroupMember? = GroupMemberManager.getGroupMemberById(
+        val groupMember: GroupMemberRealmObject? = GroupMemberManager.getGroupMemberById(
             innerMessage.account, innerMessage.user, innerMessage.groupchatUserId
         )
         super.bind(innerMessage, extraData)
@@ -55,7 +55,7 @@ class SavedCompanionMessageVH(
     private fun setupAvatar(
         messageRealmObject: MessageRealmObject,
         needTail: Boolean = false,
-        groupMember: GroupMember? = null,
+        groupMember: GroupMemberRealmObject? = null,
     ) {
         if (!needTail) {
             avatar.visibility = View.INVISIBLE
@@ -96,7 +96,7 @@ class SavedCompanionMessageVH(
         accountJid: AccountJid,
         companionJid: ContactJid,
         needName: Boolean = false,
-        groupMember: GroupMember? = null,
+        groupMember: GroupMemberRealmObject? = null,
     ) {
         if (needName) {
             if (groupMember != null && !groupMember.isMe) {

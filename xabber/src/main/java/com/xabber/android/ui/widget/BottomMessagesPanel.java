@@ -116,8 +116,8 @@ public class BottomMessagesPanel extends Fragment {
                     name = GroupMemberManager.INSTANCE.getGroupMemberById(
                             message.getAccount(), message.getUser(), message.getGroupchatUserId()
                     ).getNickname();
-                } else if (!message.isIncoming() && GroupMemberManager.INSTANCE.getMe(chat.getContactJid()) != null) {
-                    name = GroupMemberManager.INSTANCE.getMe(chat.getContactJid()).getNickname();
+                } else if (!message.isIncoming() && GroupMemberManager.INSTANCE.getMe((GroupChat) chat) != null) {
+                    name = GroupMemberManager.INSTANCE.getMe((GroupChat) chat).getNickname();
                 }
             } else name = RosterManager.getDisplayAuthorName(message);
             if (name == null) name = "null";

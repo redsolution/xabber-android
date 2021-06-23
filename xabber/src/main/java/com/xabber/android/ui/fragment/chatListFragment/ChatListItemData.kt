@@ -60,7 +60,7 @@ data class ChatListItemData(
                 when {
                     lastMessage?.groupchatUserId == null || !lastMessage.isIncoming ->
                         StringUtils.getColoredText(
-                            GroupMemberManager.getMe(contact)?.bestName + ":",
+                            (chat as? GroupChat)?.let { GroupMemberManager.getMe(it)?.nickname } + ":",
                             ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
                         )
                     else ->

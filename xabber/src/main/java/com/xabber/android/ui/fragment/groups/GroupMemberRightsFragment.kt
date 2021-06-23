@@ -10,18 +10,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
-import com.xabber.android.data.extension.groups.GroupMember
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupMemberRightsListener
 import com.xabber.android.ui.activity.GroupchatMemberActivity
 import com.xabber.android.ui.adapter.groups.rights.RightsFormListAdapter
 import com.xabber.android.ui.color.ColorManager
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: GroupChat) : Fragment(),
+class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val groupchat: GroupChat) : Fragment(),
     OnGroupMemberRightsListener, RightsFormListAdapter.Listener {
 
     var recyclerView: RecyclerView? = null
@@ -42,7 +42,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupMemberManager.requestGroupchatMemberRightsForm(groupchat.account, groupchat.contactJid, groupMember)
+        GroupMemberManager.requestGroupchatMemberRightsForm(groupchat, groupMember.memberId)
 
         return view
     }
@@ -72,10 +72,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMember, val groupchat: Gro
     override fun onSuccessfullyChanges(groupchat: GroupChat) {
         if (isThisGroup(groupchat)) {
             newFields.clear()
-            GroupMemberManager.requestGroupchatMemberRightsForm(
-                groupchat.account,
-                groupchat.contactJid, groupMember
-            )
+            GroupMemberManager.requestGroupchatMemberRightsForm(groupchat, groupMember.memberId)
             notifyActivityAboutNewFieldSizeChanged()
         }
     }

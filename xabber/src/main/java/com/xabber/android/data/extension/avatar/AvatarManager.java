@@ -43,10 +43,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnContactChangedListener;
@@ -513,7 +513,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    public Drawable getGroupMemberAvatar(GroupMember member, AccountJid account) {
+    public Drawable getGroupMemberAvatar(GroupMemberRealmObject member, AccountJid account) {
         String avatarHash = member.getAvatarHash();
         Drawable drawable;
         if (avatarHash != null) {
@@ -537,7 +537,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupMember member, AccountItem accountItem) {
+    private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupMemberRealmObject member, AccountItem accountItem) {
         Application.getInstance().runInBackgroundUserRequest(() -> {
             byte[] avatarValue = AvatarStorage.getInstance().read(member.getAvatarHash());
             if (avatarValue != null) {
@@ -558,7 +558,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
     }
 
-    public Bitmap getGroupMemberCircleBitmap(GroupMember groupMember, AccountJid accountJid){
+    public Bitmap getGroupMemberCircleBitmap(GroupMemberRealmObject groupMember, AccountJid accountJid){
         return getCircleBitmap(drawableToBitmap(getGroupMemberAvatar(groupMember, accountJid)));
     }
 
@@ -627,7 +627,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return drawable;
     }
 
-    private Drawable getDefaultMemberAvatar(GroupMember member) {
+    private Drawable getDefaultMemberAvatar(GroupMemberRealmObject member) {
         Drawable drawable = groupchatMemberDefaultDrawables.get(member.getBestName());
         if (drawable == null) {
             drawable = generateDefaultRoomAvatar(member.getBestName());

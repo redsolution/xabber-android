@@ -28,16 +28,16 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
@@ -283,7 +283,7 @@ public class MessageNotificationCreator {
         if (chat.isGroupChat()){
             List<MessageNotificationManager.Message> messages = chat.getMessages();
             MessageNotificationManager.Message message = messages.get(messages.size() - 1);
-            GroupMember member = GroupMemberManager.INSTANCE.getGroupMemberById(
+            GroupMemberRealmObject member = GroupMemberManager.INSTANCE.getGroupMemberById(
                     chat.getAccountJid(), chat.getContactJid(), message.getGroupMemberId()
             );
             return AvatarManager.getInstance().getGroupMemberCircleBitmap(member, chat.getAccountJid());
@@ -295,7 +295,9 @@ public class MessageNotificationCreator {
 
     private Bitmap getMyAvatarBitmap(MessageNotificationManager.Chat chat){
         if (chat.isGroupChat()){
-            GroupMember me = GroupMemberManager.INSTANCE.getMe(chat.getContactJid());
+            GroupMemberRealmObject me = GroupMemberManager.INSTANCE.getMe(
+                    (GroupChat) ChatManager.getInstance().getChat(chat.getAccountJid(), chat.getContactJid())
+            );
             if (me != null) return AvatarManager.getInstance().getGroupMemberCircleBitmap(me, chat.getAccountJid());
         }
         return AvatarManager.getInstance().getAccountCircleBitmapAvatar(chat.getAccountJid());
@@ -431,7 +433,9 @@ public class MessageNotificationCreator {
     private NotificationCompat.Action createReplyAction(MessageNotificationManager.Chat chat, AccountJid accountJid) {
         String label;
         if (chat.isGroupChat() && chat.getPrivacyType().equals(GroupPrivacyType.INCOGNITO)){
-            GroupMember me = GroupMemberManager.INSTANCE.getMe(chat.getContactJid());
+            GroupMemberRealmObject me = GroupMemberManager.INSTANCE.getMe(
+                            (GroupChat)ChatManager.getInstance().getChat(accountJid, chat.getContactJid())
+            );
             if ( me != null){
                 label = context.getString(R.string.groupchat_reply_as, me.getNickname());
             } else label = context.getString(R.string.groupchat_incognito_reply);

@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -110,7 +110,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageRealmObjec
         }
 
         // groupchat user
-        GroupMember groupMember = messageRealmObject.getGroupchatUserId() == null ? null :
+        GroupMemberRealmObject groupMember = messageRealmObject.getGroupchatUserId() == null ? null :
                 GroupMemberManager.INSTANCE.getGroupMemberById(
                         messageRealmObject.getAccount(),
                         messageRealmObject.getUser(),

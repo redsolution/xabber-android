@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -318,7 +318,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageRealmObject.getPrimaryKey());
 
         // groupchat user
-        GroupMember groupMember =
+        GroupMemberRealmObject groupMember =
                 messageRealmObject.getGroupchatUserId() != null && !messageRealmObject.getGroupchatUserId().isEmpty() ?
                     GroupMemberManager.INSTANCE.getGroupMemberById(
                             chat.getAccount(), chat.getContactJid(), messageRealmObject.getGroupchatUserId()
@@ -354,7 +354,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                 }
             } else {
                 if (groupMember != null) {
-                    GroupMember user2 = nextMessage.getGroupchatUserId() == null ? null
+                    GroupMemberRealmObject user2 = nextMessage.getGroupchatUserId() == null ? null
                             : GroupMemberManager.INSTANCE.getGroupMemberById(
                                     chat.getAccount(), chat.getContactJid(), nextMessage.getGroupchatUserId());
                     if (user2 != null) {
@@ -610,7 +610,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
         private final int accountMainColor;
         private final int mentionColor;
         private final Long mainTimestamp;
-        private final GroupMember groupMember;
+        private final GroupMemberRealmObject groupMember;
 
         private final boolean showOriginalOTR;
         private final boolean unread;
@@ -621,7 +621,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         public MessageExtraData(FileMessageVH.FileListener listener, ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
-                                GroupMember groupMember, int accountMainColor, int mentionColor, Long mainTimestamp,
+                                GroupMemberRealmObject groupMember, int accountMainColor, int mentionColor, Long mainTimestamp,
                                 boolean showOriginalOTR, boolean unread, boolean checked, boolean needTail,
                                 boolean needDate, boolean needName) {
             this.listener = listener;
@@ -655,7 +655,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         public int getMentionColor() { return mentionColor; }
 
-        public GroupMember getGroupMember() { return groupMember; }
+        public GroupMemberRealmObject getGroupMember() { return groupMember; }
 
         public Long getMainMessageTimestamp() { return mainTimestamp; }
 

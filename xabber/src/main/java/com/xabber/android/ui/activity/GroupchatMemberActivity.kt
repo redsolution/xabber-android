@@ -36,11 +36,11 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
-import com.xabber.android.data.extension.groups.GroupMember
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.log.LogManager
@@ -72,8 +72,8 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private var accountJid: AccountJid? = null
     private var groupchatJid: ContactJid? = null
-    lateinit private var groupMember: GroupMember
-    lateinit private var groupchat: GroupChat
+    private lateinit var groupMember: GroupMemberRealmObject
+    private lateinit var groupchat: GroupChat
 
     private var toolbar: Toolbar? = null
     private var contactTitleView: View? = null
@@ -228,7 +228,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
-                GroupMemberManager.sendSetMemberNicknameIqRequest(groupchat, groupMember, et.text.toString())
+                GroupMemberManager.sendSetMemberNicknameIqRequest(groupchat, groupMember.memberId, et.text.toString())
             }
             adb.show()
         }
@@ -237,7 +237,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
         findViewById<TextView>(R.id.groupchat_member_title).text = getString(
             R.string.groupchat_member_of_group_name,
-            groupMember.role?.capitalize(Locale.getDefault()),
+            groupMember.role?.toString()?.capitalize(Locale.getDefault()),
             groupchat.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
             groupchat.name
         )
@@ -682,18 +682,18 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         val textView = findViewById<TextView>(R.id.first_button_text)
 
         imageButton.setOnClickListener {
-            if (groupchat!!.privacyType != GroupPrivacyType.INCOGNITO
-                && !groupMember!!.jid.isNullOrEmpty()
+            if (groupchat.privacyType != GroupPrivacyType.INCOGNITO
+                && !groupMember.jid.isNullOrEmpty()
             ) {
-                val contactJid = ContactJid.from(groupMember!!.jid)
+                val contactJid = ContactJid.from(groupMember.jid)
                 startActivityForResult(
                     ChatActivity.createSpecificChatIntent(
                         this,
-                        groupchat!!.account, contactJid
+                        groupchat.account, contactJid
                     ), MainActivity.CODE_OPEN_CHAT
                 )
             } else {
-                GroupMemberManager.createChatWithIncognitoMember(groupchat!!, groupMember)
+                GroupMemberManager.createChatWithIncognitoMember(groupchat, groupMember.memberId)
             }
         }
 
@@ -727,7 +727,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
         imageButton?.setOnClickListener {
             val adb = AlertDialog.Builder(this)
-            adb.setTitle(groupMember?.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
+            adb.setTitle(groupMember.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize())
 
             val et = AppCompatEditText(this)
             et.layoutParams = LinearLayout.LayoutParams(
@@ -735,12 +735,12 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
             et.isSingleLine = true
-            et.hint = groupMember?.badge
+            et.hint = groupMember.badge
             adb.setView(et, 64, 0, 64, 0)
 
             adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
-                GroupMemberManager.sendSetMemberBadgeIqRequest(groupchat, groupMember, et.text.toString())
+                GroupMemberManager.sendSetMemberBadgeIqRequest(groupchat, groupMember.memberId, et.text.toString())
             }
             adb.show()
         }
@@ -782,7 +782,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             setMessage(
                 context.getString(
                     R.string.groupchat_do_you_really_want_to_kick_membername,
-                    groupMember?.nickname
+                    groupMember.nickname
                 )
             )
             setButton(
@@ -790,7 +790,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 "                                 " + context.getString(R.string.groupchat_kick)
             )
             { _, _ ->
-                GroupMemberManager.kickMember(groupMember, groupchat,
+                GroupMemberManager.kickMember(groupMember.memberId, groupchat,
                     object : BaseIqResultUiListener {
                         override fun onSend() {}
                         override fun onIqError(error: XMPPError) {
@@ -829,7 +829,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 "                                 " + context.getString(R.string.groupchat_kick_and_block)
             )
             { _, _ ->
-                GroupMemberManager.kickAndBlockMember(groupMember, groupchat,
+                GroupMemberManager.kickAndBlockMember(groupMember.memberId, groupchat,
                     object : BaseIqResultUiListener {
                         override fun onSend() {}
 

@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.MessagesActivity;
@@ -117,7 +117,7 @@ public class ForwardedFragment extends FileInteractionFragment {
                     .findAll();
 
             // groupchat user
-            GroupMember groupMember =
+            GroupMemberRealmObject groupMember =
                     GroupMemberManager.INSTANCE.getGroupMemberById(
                             messageRealmObject.getAccount(),
                             messageRealmObject.getUser(),
@@ -158,4 +158,5 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
+
 }

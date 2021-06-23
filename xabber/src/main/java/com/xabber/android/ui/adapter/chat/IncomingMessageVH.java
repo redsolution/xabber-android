@@ -16,10 +16,10 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 
@@ -177,7 +177,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         });
     }
 
-    private void setUpAvatar(Context context, GroupMember groupMember,
+    private void setUpAvatar(Context context, GroupMemberRealmObject groupMember,
                              MessageRealmObject messageRealmObject, boolean needTail) {
 
         boolean needAvatar = SettingsManager.chatsShowAvatars();

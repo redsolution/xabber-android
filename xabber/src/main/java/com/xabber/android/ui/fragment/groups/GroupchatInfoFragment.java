@@ -18,14 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupIndexType;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupMembershipType;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -51,7 +51,6 @@ import java.util.Collections;
 public class GroupchatInfoFragment extends Fragment implements OnGroupchatRequestListener,
         GroupchatMembersAdapter.OnMemberClickListener, OnVCardListener, OnGroupPresenceUpdatedListener {
 
-    private static final String LOG_TAG = GroupchatInfoFragment.class.getSimpleName();
     private static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.ARGUMENT_ACCOUNT";
     private static final String ARGUMENT_CONTACT = "com.xabber.android.ui.fragment.groups.GroupchatInfoFragment.ARGUMENT_CONTACT";
 
@@ -181,7 +180,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onMemberClick(GroupMember groupMember) {
+    public void onMemberClick(GroupMemberRealmObject groupMember) {
         Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(
                 getActivity(),
                 groupMember.getMemberId(), (GroupChat) groupChat);
@@ -286,8 +285,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private void updateViewsWithMemberList() {
         if (membersAdapter != null) {
 
-            ArrayList<GroupMember> list =
-                    new ArrayList<>(GroupMemberManager.INSTANCE.getGroupMembers(groupchatContact));
+            ArrayList<GroupMemberRealmObject> list =
+                    new ArrayList<>(GroupMemberManager.INSTANCE.getGroupMembers((GroupChat) groupChat));
 
             Collections.sort(list, (o1, o2) -> {
                 if (o1.isMe() && !o2.isMe()) return -1;

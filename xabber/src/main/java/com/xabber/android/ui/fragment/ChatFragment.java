@@ -73,6 +73,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -84,7 +85,6 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -705,7 +705,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                         .getAccountColorWithTint(getAccount(), 500));
             }
 
-            GroupMember member =
+            GroupMemberRealmObject member =
                     GroupMemberManager.INSTANCE.getGroupMemberById(
                             message.getAccount(), message.getUser(), message.getGroupchatUserId()
                     );
@@ -717,7 +717,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
                 if (member.getRole() != null){
                     pinnedMessageRoleTv.setVisibility(View.VISIBLE);
-                    pinnedMessageRoleTv.setText(member.getRole());
+                    pinnedMessageRoleTv.setText(member.getRole().toString());
                     pinnedMessageRoleTv.setBackgroundColor(
                             ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(getAccount(), 50));
                 } else pinnedMessageRoleTv.setVisibility(View.GONE);

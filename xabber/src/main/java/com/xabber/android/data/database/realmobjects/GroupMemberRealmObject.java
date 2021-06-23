@@ -1,10 +1,11 @@
 package com.xabber.android.data.database.realmobjects;
 
-import com.xabber.android.data.database.DatabaseManager;
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 
 import java.util.UUID;
 
@@ -45,12 +46,38 @@ public class GroupMemberRealmObject extends RealmObject {
 
     public static GroupMemberRealmObject createGroupMemberRealmObject(AccountJid accountJid, ContactJid groupJid,
                                                                       String memberId){
-        GroupMemberRealmObject gmro =
-                new GroupMemberRealmObject(DatabaseManager.createPrimaryKey(accountJid, groupJid, memberId));
+        GroupMemberRealmObject gmro = new GroupMemberRealmObject(createPrimaryKey(accountJid, groupJid, memberId));
 
         gmro.accountJid = accountJid.toString();
         gmro.groupJid = groupJid.toString();
         gmro.memberId = memberId;
+
+        return gmro;
+    }
+
+    private static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String memberId){
+        return accountJid.toString() + "#" + contactJid.toString() + "#" + memberId;
+    }
+
+    @NonNull
+    public static GroupMemberRealmObject createFromMemberExtensionElement(GroupMemberExtensionElement extensionElement,
+                                                                          AccountJid accountJid, ContactJid groupJid) {
+        GroupMemberRealmObject gmro = createGroupMemberRealmObject(accountJid, groupJid, extensionElement.getId());
+
+        if (extensionElement.getAvatarInfo() != null) {
+            gmro.setAvatarHash(extensionElement.getAvatarInfo().getId());
+            gmro.setAvatarUrl(extensionElement.getAvatarInfo().getUrl().toString());
+        }
+
+        if (extensionElement.getSubscription() != null) {
+            gmro.setSubscriptionState(SubscriptionState.valueOf(extensionElement.getSubscription()));
+        }
+
+        gmro.setLastSeen(extensionElement.getLastPresent());
+        gmro.setBadge(extensionElement.getBadge());
+        gmro.setJid(extensionElement.getJid());
+        gmro.setNickname(extensionElement.getNickname());
+        gmro.setRole(Role.valueOf(extensionElement.getRole()));
 
         return gmro;
     }
@@ -98,11 +125,11 @@ public class GroupMemberRealmObject extends RealmObject {
         this.nickname = nickname;
     }
 
-    public String getRole() {
-        return role;
+    public Role getRole() {
+        return Role.valueOf(role);
     }
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(Role role) {
+        this.role = role.toString();
     }
 
     public String getBadge() {
@@ -135,17 +162,15 @@ public class GroupMemberRealmObject extends RealmObject {
     public boolean isKicked() { return isKicked; }
     public void setKicked(boolean kicked) { isKicked = kicked; }
 
-    public GroupMember.SubscriptionState getSubscriptionState() {
-        return GroupMember.SubscriptionState.valueOf(subscriptionState);
-    }
-    public void setSubscriptionState(GroupMember.SubscriptionState subscriptionState) {
+    public SubscriptionState getSubscriptionState() { return SubscriptionState.valueOf(subscriptionState); }
+    public void setSubscriptionState(SubscriptionState subscriptionState) {
         this.subscriptionState = subscriptionState.toString();
     }
 
     public static class Fields {
         public static final String PRIMARY_KEY = "primaryKey";
         public static final String MEMBER_ID = "memberId";
-        public static final String ACCOUNT_JID = "groupJid";
+        public static final String ACCOUNT_JID = "accountJid";
         public static final String GROUP_JID = "groupJid";
         public static final String JID = "jid";
         public static final String NICKNAME = "nickname";
@@ -157,6 +182,20 @@ public class GroupMemberRealmObject extends RealmObject {
         public static final String TIMESTAMP = "timestamp";
         public static final String SUBSCRIPTION_STATE = "subscriptionState";
         public static final String IS_ME = "isMe";
+    }
+
+    public String getBestName() {
+        if (nickname != null) return nickname;
+        else if (jid != null) return jid;
+        else return memberId;
+    }
+
+    public enum SubscriptionState {
+        both, none
+    }
+
+    public enum Role {
+        owner, admin, member, none
     }
 
 }

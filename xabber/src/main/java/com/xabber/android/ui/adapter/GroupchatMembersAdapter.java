@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.utils.StringUtils;
 
@@ -21,19 +21,19 @@ import java.util.ArrayList;
 public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembersAdapter.GroupchatMemberViewHolder>
         implements View.OnClickListener {
 
-    private ArrayList<GroupMember> groupMembers;
+    private ArrayList<GroupMemberRealmObject> groupMembers;
     private final GroupChat chat;
     private final OnMemberClickListener listener;
     private RecyclerView recyclerView;
 
-    public GroupchatMembersAdapter(ArrayList<GroupMember> groupMembers, GroupChat chat,
+    public GroupchatMembersAdapter(ArrayList<GroupMemberRealmObject> groupMembers, GroupChat chat,
                                    OnMemberClickListener listener) {
         this.groupMembers = groupMembers;
         this.chat = chat;
         this.listener = listener;
     }
 
-    public void setItems(ArrayList<GroupMember> groupMembers) {
+    public void setItems(ArrayList<GroupMemberRealmObject> groupMembers) {
         this.groupMembers = groupMembers;
         notifyDataSetChanged();
     }
@@ -59,7 +59,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     @Override
     public void onBindViewHolder(@NonNull GroupchatMemberViewHolder holder, int position) {
-        GroupMember bindMember = groupMembers.get(position);
+        GroupMemberRealmObject bindMember = groupMembers.get(position);
 
         holder.root.setOnClickListener(this);
 
@@ -93,7 +93,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
             holder.memberRole.setVisibility(View.GONE);
         }
 
-        String memberStatus = StringUtils.getLastPresentString(bindMember.getLastPresent());
+        String memberStatus = StringUtils.getLastPresentString(bindMember.getLastSeen());
         holder.memberStatus.setText(memberStatus);
         if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected)))
             holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
@@ -109,12 +109,12 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     static class GroupchatMemberViewHolder extends RecyclerView.ViewHolder {
 
-        private View root;
-        private ImageView avatar;
-        private ImageView memberRole;
-        private TextView memberName;
-        private TextView memberStatus;
-        private TextView memberBadge;
+        private final View root;
+        private final ImageView avatar;
+        private final ImageView memberRole;
+        private final TextView memberName;
+        private final TextView memberStatus;
+        private final TextView memberBadge;
 
         public GroupchatMemberViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -128,6 +128,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
     }
 
     public interface OnMemberClickListener{
-        void onMemberClick(GroupMember groupMember);
+        void onMemberClick(GroupMemberRealmObject groupMember);
     }
+
 }

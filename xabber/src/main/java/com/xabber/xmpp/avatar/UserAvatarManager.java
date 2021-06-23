@@ -1,9 +1,9 @@
 package com.xabber.xmpp.avatar;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.Manager;
@@ -33,8 +33,6 @@ import org.jivesoftware.smackx.pubsub.filter.EventExtensionFilter;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -252,7 +250,7 @@ public final class UserAvatarManager extends Manager {
         }
     }
 
-    public void requestAvatarOfGroupchatMember(GroupMember groupMember) {
+    public void requestAvatarOfGroupchatMember(GroupMemberRealmObject groupMember) {
         if (groupMember == null || groupMember.getGroupJid() == null || groupMember.getAvatarHash() == null) return;
         if (groupchatMemberAvatarRequests.contains(groupMember.getAvatarHash())) return;
 

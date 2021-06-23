@@ -5,8 +5,6 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnCloseListener;
-import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.Realm;
@@ -70,10 +68,6 @@ public class DatabaseManager implements OnClearListener, OnCloseListener {
                 LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null ) realm.close(); }
         });
-    }
-
-    public static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String someId){
-        return accountJid.toString() + "#" + contactJid.toString() + "#" + someId;
     }
 
 }

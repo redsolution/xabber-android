@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groups.GroupMember
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
@@ -104,29 +104,31 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.filter_group_members_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter = GroupchatMembersAdapter(arrayListOf<GroupMember>(), groupchat, this)
+        adapter = GroupchatMembersAdapter(arrayListOf<GroupMemberRealmObject>(), groupchat, this)
         recyclerView.adapter = adapter
     }
 
     private fun updateRecyclerView() {
         if (filterString.isNotEmpty()) {
-            val newList = ArrayList<GroupMember>()
-            for (groupchatMember in GroupMemberManager.getGroupMembers(groupchat.contactJid))
+            val newList = ArrayList<GroupMemberRealmObject>()
+            for (groupchatMember in GroupMemberManager.getGroupMembers(groupchat))
                 if (groupchatMember?.nickname?.toLowerCase()?.contains(filterString) == true
                     || groupchatMember?.nickname?.toLowerCase()
                         ?.contains(StringUtils.translitirateToLatin(filterString)) == true
                     || (groupchatMember?.jid != null
                             && groupchatMember.jid?.toLowerCase()?.contains(filterString) == true)
                     || (groupchatMember?.jid != null
-                            && groupchatMember.jid?.toLowerCase()?.contains(StringUtils.translitirateToLatin(filterString)) == true)
-                )
+                            && groupchatMember.jid?.toLowerCase()
+                        ?.contains(StringUtils.translitirateToLatin(filterString)) == true)
+                ) {
                     newList.add(groupchatMember)
+                }
             adapter.setItems(newList)
         } else {
             val list = ArrayList(
-                GroupMemberManager.getGroupMembers(groupchat.contactJid)
+                GroupMemberManager.getGroupMembers(groupchat)
             )
-            list.sortWith { o1: GroupMember?, o2: GroupMember? ->
+            list.sortWith { o1, o2 ->
                 if (o1?.isMe == true && o2?.isMe != true) return@sortWith -1
                 if (o2?.isMe == true && o1?.isMe != true) return@sortWith 1
                 0
@@ -150,8 +152,7 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
 
 
     override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String) {
-        if (isThisChat(accountJid, groupchatJid))
-            Application.getInstance().runOnUiThread(::updateRecyclerView)
+        if (isThisChat(accountJid, groupchatJid)) Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
     override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
@@ -159,11 +160,10 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     }
 
     override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {
-        if (isThisChat(accountJid, groupchatJid))
-            Application.getInstance().runOnUiThread(::updateRecyclerView)
+        if (isThisChat(accountJid, groupchatJid)) Application.getInstance().runOnUiThread(::updateRecyclerView)
     }
 
-    override fun onMemberClick(groupMember: GroupMember) = startActivity(
+    override fun onMemberClick(groupMember: GroupMemberRealmObject) = startActivity(
         createIntentForGroupchatAndMemberId(this, groupMember.memberId, groupchat)
     )
 

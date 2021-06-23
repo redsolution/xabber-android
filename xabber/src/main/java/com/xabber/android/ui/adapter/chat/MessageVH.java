@@ -20,8 +20,8 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.groups.GroupMember;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -94,7 +94,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // groupchat
         if (extraData.getGroupMember() != null && !extraData.getGroupMember().isMe()) {
-            GroupMember user = extraData.getGroupMember();
+            GroupMemberRealmObject user = extraData.getGroupMember();
             messageHeader.setText(user.getNickname());
             messageHeader.setTextColor(ColorManager.changeColor(
                     ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));
