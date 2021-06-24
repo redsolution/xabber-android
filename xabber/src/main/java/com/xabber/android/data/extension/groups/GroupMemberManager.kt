@@ -152,17 +152,25 @@ object GroupMemberManager {
             )
         }
 
-    fun getGroupMembers(group: GroupChat): List<GroupMemberRealmObject?> =
+    fun getCurrentGroupMembers(group: GroupChat): List<GroupMemberRealmObject?> =
         if (Looper.getMainLooper() == Looper.getMainLooper()) {
             DatabaseManager.getInstance().defaultRealmInstance.where(GroupMemberRealmObject::class.java)
                 .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, group.account.toString())
                 .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, group.contactJid.toString())
+                .equalTo(
+                    GroupMemberRealmObject.Fields.SUBSCRIPTION_STATE,
+                    GroupMemberRealmObject.SubscriptionState.both.toString()
+                )
                 .findAll()
         } else DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
             realm.copyFromRealm(
                 realm.where(GroupMemberRealmObject::class.java)
                     .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, group.account.toString())
                     .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, group.contactJid.toString())
+                    .equalTo(
+                        GroupMemberRealmObject.Fields.SUBSCRIPTION_STATE,
+                        GroupMemberRealmObject.SubscriptionState.both.toString()
+                    )
                     .findAll()
             )
         }

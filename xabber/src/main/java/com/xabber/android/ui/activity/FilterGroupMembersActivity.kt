@@ -111,7 +111,7 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     private fun updateRecyclerView() {
         if (filterString.isNotEmpty()) {
             val newList = ArrayList<GroupMemberRealmObject>()
-            for (groupchatMember in GroupMemberManager.getGroupMembers(groupchat))
+            for (groupchatMember in GroupMemberManager.getCurrentGroupMembers(groupchat))
                 if (groupchatMember?.nickname?.toLowerCase()?.contains(filterString) == true
                     || groupchatMember?.nickname?.toLowerCase()
                         ?.contains(StringUtils.translitirateToLatin(filterString)) == true
@@ -126,7 +126,7 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
             adapter.setItems(newList)
         } else {
             val list = ArrayList(
-                GroupMemberManager.getGroupMembers(groupchat)
+                GroupMemberManager.getCurrentGroupMembers(groupchat)
             )
             list.sortWith { o1, o2 ->
                 if (o1?.isMe == true && o2?.isMe != true) return@sortWith -1

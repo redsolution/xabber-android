@@ -286,7 +286,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (membersAdapter != null) {
 
             ArrayList<GroupMemberRealmObject> list =
-                    new ArrayList<>(GroupMemberManager.INSTANCE.getGroupMembers((GroupChat) groupChat));
+                    new ArrayList<>(GroupMemberManager.INSTANCE.getCurrentGroupMembers((GroupChat) groupChat));
 
             Collections.sort(list, (o1, o2) -> {
                 if (o1.isMe() && !o2.isMe()) return -1;
