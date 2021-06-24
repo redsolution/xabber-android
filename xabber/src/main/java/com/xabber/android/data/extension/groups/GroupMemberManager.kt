@@ -118,21 +118,20 @@ object GroupMemberManager {
     }
 
     fun getGroupMemberById(account: AccountJid, groupJid: ContactJid, memberId: String): GroupMemberRealmObject? {
-        if (Looper.getMainLooper() == Looper.getMainLooper()) {
-            val gmro = DatabaseManager.getInstance().defaultRealmInstance.where(GroupMemberRealmObject::class.java)
+        return if (Looper.getMainLooper() == Looper.getMainLooper()) {
+            DatabaseManager.getInstance().defaultRealmInstance.where(GroupMemberRealmObject::class.java)
                 .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
                 .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.toString())
                 .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberId)
                 .findFirst()
-            return gmro
         } else DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-            val gmro = realm.where(GroupMemberRealmObject::class.java)
-                .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
-                .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.toString())
-                .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberId)
-                .findFirst()
-            val result = realm.copyFromRealm(gmro)
-            return result
+            realm.copyFromRealm(
+                realm.where(GroupMemberRealmObject::class.java)
+                    .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
+                    .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.toString())
+                    .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberId)
+                    .findFirst()
+            )
         }
     }
 
@@ -617,18 +616,22 @@ object GroupMemberManager {
         private val accountJid: AccountJid, private val groupchatJid: ContactJid,
     ) : StanzaListener {
         override fun processStanza(packet: Stanza) {
-            if (packet is GroupchatMembersResultIQ) {
-                if (groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
-                    && accountJid.bareJid.equals(packet.getTo().asBareJid())
-                ) {
+            if (packet is GroupchatMembersResultIQ
+                && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
+                && accountJid.bareJid.equals(packet.getTo().asBareJid())
+            ) {
+                Application.getInstance().runInBackground {
                     DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
                         realm.executeTransaction { realm1 ->
                             packet.listOfMembers.map { memberExtension ->
-                                realm1.where(GroupMemberRealmObject::class.java)
+                                (realm1.where(GroupMemberRealmObject::class.java)
                                     .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
                                     .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupchatJid.toString())
                                     .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberExtension.id)
                                     .findFirst()
+                                    ?: GroupMemberRealmObject.createGroupMemberRealmObject(
+                                        accountJid, groupchatJid, memberExtension.id
+                                    ))
                                     ?.apply {
                                         role = GroupMemberRealmObject.Role.valueOf(memberExtension.role)
                                         nickname = memberExtension.nickname
@@ -659,18 +662,22 @@ object GroupMemberManager {
         private val account: AccountJid, private val groupchatJid: ContactJid,
     ) : StanzaListener {
         override fun processStanza(packet: Stanza) {
-            if (packet is GroupchatMembersResultIQ) {
-                if (groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
-                    && account.bareJid.equals(packet.getTo().asBareJid())
-                ) {
+            if (packet is GroupchatMembersResultIQ
+                && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
+                && account.bareJid.equals(packet.getTo().asBareJid())
+            ) {
+                Application.getInstance().runInBackground {
                     DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
                         realm.executeTransaction { realm1 ->
                             packet.listOfMembers.map { memberExtension ->
-                                realm1.where(GroupMemberRealmObject::class.java)
+                                (realm1.where(GroupMemberRealmObject::class.java)
                                     .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
                                     .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupchatJid.toString())
                                     .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberExtension.id)
                                     .findFirst()
+                                    ?: GroupMemberRealmObject.createGroupMemberRealmObject(
+                                        account, groupchatJid, memberExtension.id
+                                    ))
                                     ?.apply {
                                         role = GroupMemberRealmObject.Role.valueOf(memberExtension.role)
                                         nickname = memberExtension.nickname

@@ -40,9 +40,7 @@ public class GroupMemberRealmObject extends RealmObject {
     private GroupMemberRealmObject(String uniqueId) {
         this.primaryKey = uniqueId;
     }
-    public GroupMemberRealmObject() {
-        this.primaryKey = UUID.randomUUID().toString();
-    }
+    public GroupMemberRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
 
     public static GroupMemberRealmObject createGroupMemberRealmObject(AccountJid accountJid, ContactJid groupJid,
                                                                       String memberId){

@@ -32,8 +32,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
     private val newFields = mutableMapOf<String, FormField>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         val view = inflater.inflate(R.layout.simple_nested_scroll_with_recycler_view, container, false)
