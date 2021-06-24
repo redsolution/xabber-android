@@ -538,14 +538,18 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     private void checkIfMemberAvatarIsSavedLocallyAndLoad(GroupMemberRealmObject member, AccountItem accountItem) {
+        final String memberId = member.getMemberId();
+        final ContactJid groupJid = member.getGroupJid();
+        final String avatarHash = member.getAvatarHash();
         Application.getInstance().runInBackgroundUserRequest(() -> {
-            byte[] avatarValue = AvatarStorage.getInstance().read(member.getAvatarHash());
+            byte[] avatarValue = AvatarStorage.getInstance().read(avatarHash);
             if (avatarValue != null) {
                 Bitmap bitmap = makeBitmap(avatarValue);
-                bitmaps.put(member.getAvatarHash(), bitmap == null ? EMPTY_BITMAP : bitmap);
+                bitmaps.put(avatarHash, bitmap == null ? EMPTY_BITMAP : bitmap);
             } else {
                 if (accountItem != null) {
-                    UserAvatarManager.getInstanceFor(accountItem.getConnection()).requestAvatarOfGroupchatMember(member);
+                    UserAvatarManager.getInstanceFor(accountItem.getConnection())
+                            .requestAvatarOfGroupchatMember(memberId, groupJid, avatarHash);
                 }
             }
         });

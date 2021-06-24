@@ -250,23 +250,21 @@ public final class UserAvatarManager extends Manager {
         }
     }
 
-    public void requestAvatarOfGroupchatMember(GroupMemberRealmObject groupMember) {
-        if (groupMember == null || groupMember.getGroupJid() == null || groupMember.getAvatarHash() == null) return;
-        if (groupchatMemberAvatarRequests.contains(groupMember.getAvatarHash())) return;
+    public void requestAvatarOfGroupchatMember(String memberId, ContactJid groupJid, String avatarHash) {
+        if (groupchatMemberAvatarRequests.contains(avatarHash)) return;
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
-            String avatarHash = groupMember.getAvatarHash();
             if (groupchatMemberAvatarRequests.contains(avatarHash)) return;
 
             groupchatMemberAvatarRequests.add(avatarHash);
 
             ItemsExtension itemsExtension = new ItemsExtension(
                     ItemsExtension.ItemsElementType.items,
-                    (DATA_NAMESPACE + "#" + groupMember.getMemberId()),
+                    (DATA_NAMESPACE + "#" + memberId),
                     Collections.singletonList(new Item(avatarHash)));
 
             PubSub avatarRequest = PubSub.createPubsubPacket(
-                    groupMember.getGroupJid().getBareJid(), IQ.Type.get, itemsExtension, null
+                    groupJid.getBareJid(), IQ.Type.get, itemsExtension, null
             );
             PubSub reply;
             try {
