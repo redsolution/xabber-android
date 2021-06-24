@@ -115,6 +115,7 @@
     <string name="groupchat_block">Block</string>
     <string name="groupchat_private_chat">Private chat</string>
     <string name="settings_group_member__placeholder_not_a_member">Not a member</string>
+    <string name="settings_group_member__placeholder_blocked">Blocked</string>
     <string name="group_settings__members__label_last_seen">Last seen</string>
     <string name="group_chat__pinned_message__tooltip_unpin">Unpin</string>
     <string name="group_settings__properties__tooltip_copy_by_click">Click to copy</string>

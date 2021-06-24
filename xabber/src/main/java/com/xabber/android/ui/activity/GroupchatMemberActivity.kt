@@ -42,6 +42,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.GroupMemberManager.requestGroupchatBlocklistList
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
@@ -58,7 +59,10 @@ import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALL
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import com.xabber.android.utils.Utils
 import com.xabber.xmpp.avatar.UserAvatarManager
+import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement
 import org.apache.commons.io.FileUtils
+import org.jivesoftware.smack.ExceptionCallback
+import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.XMPPError
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -70,8 +74,8 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     private val LOG_TAG = this.javaClass.simpleName
 
-    private var accountJid: AccountJid? = null
-    private var groupchatJid: ContactJid? = null
+    private lateinit var accountJid: AccountJid
+    private lateinit var groupchatJid: ContactJid
     private lateinit var groupMember: GroupMemberRealmObject
     private lateinit var groupchat: GroupChat
 
@@ -89,7 +93,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
     private var newAvatarImageUri: Uri? = null
 
     var orientation = 0
-    private val blocked = false
+    private var blocked = false
 
     companion object {
 
@@ -112,8 +116,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
         if (account == groupchat.account && groupchatJid == groupchat.contactJid) {
-            Application.getInstance()
-                .runOnUiThread(::setupNameBlock)
+            Application.getInstance().runOnUiThread(::setupNameBlock)
         }
     }
 
@@ -134,6 +137,15 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         }
     }
 
+    private fun updateBlockedStatus() {
+        blocked = groupchat.listOfBlockedElements?.any {
+            it.itemType == GroupchatBlocklistItemElement.ItemType.id
+                    && it.blockedItem == groupMember.memberId
+                    || it.itemType == GroupchatBlocklistItemElement.ItemType.jid
+                    && it.blockedItem == groupMember.jid
+        } ?: false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
@@ -141,9 +153,23 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
         intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
             groupMember =
-                GroupMemberManager.getGroupMemberById(accountJid ?: return, groupchatJid ?: return, it)
+                GroupMemberManager.getGroupMemberById(accountJid, groupchatJid, it)
                     ?: return
         }
+
+        updateBlockedStatus()
+
+        requestGroupchatBlocklistList(
+            accountJid,
+            groupchatJid,
+            StanzaListener {
+                Application.getInstance().runOnUiThread {
+                    updateBlockedStatus()
+                    setupNameBlock()
+                }
+            },
+            ExceptionCallback { }
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
@@ -234,12 +260,20 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         if (groupchat.privacyType!! != GroupPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupMember.jid)
 
-        findViewById<TextView>(R.id.groupchat_member_title).text = getString(
-            R.string.groupchat_member_of_group_name,
-            groupMember.role?.toString()?.capitalize(Locale.getDefault()),
-            groupchat.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
-            groupchat.name
-        )
+        findViewById<TextView>(R.id.groupchat_member_title).text = when {
+            blocked ->
+                getString(R.string.settings_group_member__placeholder_blocked)
+
+            groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none ->
+                getString(R.string.settings_group_member__placeholder_not_a_member)
+
+            else -> getString(
+                R.string.groupchat_member_of_group_name,
+                groupMember.role?.toString()?.capitalize(Locale.getDefault()),
+                groupchat.privacyType?.getLocalizedString()?.decapitalize(Locale.getDefault()),
+                groupchat.name
+            )
+        }
     }
 
     private fun setupAvatar() {
@@ -341,7 +375,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 if (userAvatarManager.isSupportedByServer) {
                     //saving empty avatar
                     AvatarManager.getInstance()
-                        .onAvatarReceived(accountJid!!.fullJid.asBareJid(), "", null, "xep") //todo this
+                        .onAvatarReceived(accountJid.fullJid.asBareJid(), "", null, "xep") //todo this
                 }
             } catch (e: Exception) {
                 LogManager.exception(LOG_TAG, e)
