@@ -14,6 +14,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.message.chat.GroupChat;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -71,33 +72,37 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
         if (bindMember.getBadge() != null && !bindMember.getBadge().isEmpty()) {
             holder.memberBadge.setVisibility(View.VISIBLE);
-            if (bindMember.isMe())
-                holder.memberBadge.setText(bindMember.getBadge() + " " + Application.getInstance().getString(R.string.groupchat_this_is_you));
-            else holder.memberBadge.setText(bindMember.getBadge());
-        } else {
-            if (bindMember.isMe())
-                holder.memberBadge.setText(Application.getInstance().getString(R.string.groupchat_this_is_you));
-            else holder.memberBadge.setVisibility(View.GONE);
-        }
+            holder.memberBadge.setText(bindMember.getBadge());
+        } else holder.memberBadge.setVisibility(View.GONE);
 
         if (bindMember.getRole() != null && !bindMember.getBadge().isEmpty()) {
             holder.memberRole.setVisibility(View.VISIBLE);
-            if (bindMember.getRole().equals("owner")) {
-                holder.memberRole.setImageResource(R.drawable.ic_star_filled);
-            } else if (bindMember.getRole().equals("admin")) {
-                holder.memberRole.setImageResource(R.drawable.ic_star_outline);
-            } else {
-                holder.memberRole.setVisibility(View.GONE);
+            switch (bindMember.getRole()) {
+                case owner:
+                    holder.memberRole.setImageResource(R.drawable.ic_star_filled);
+                    break;
+                case admin:
+                    holder.memberRole.setImageResource(R.drawable.ic_star_outline);
+                    break;
+                default:
+                    holder.memberRole.setVisibility(View.GONE);
             }
         } else {
             holder.memberRole.setVisibility(View.GONE);
         }
 
-        String memberStatus = StringUtils.getLastPresentString(bindMember.getLastSeen());
-        holder.memberStatus.setText(memberStatus);
-        if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected)))
-            holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
-        else holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
+        if (bindMember.isMe()) {
+            holder.memberStatus.setText(holder.itemView.getContext().getText(R.string.groupchat_this_is_you));
+            holder.memberStatus.setTextColor(
+                    ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(chat.getAccount(), 500)
+            );
+        } else {
+            String memberStatus = StringUtils.getLastPresentString(bindMember.getLastSeen());
+            holder.memberStatus.setText(memberStatus);
+            if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected)))
+                holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
+            else holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
+        }
 
         holder.avatar.setImageDrawable(AvatarManager.getInstance().getGroupMemberAvatar(bindMember, chat.getAccount()));
     }
