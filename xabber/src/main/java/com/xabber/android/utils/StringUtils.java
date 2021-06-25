@@ -140,16 +140,16 @@ public class StringUtils {
         year.add(Calendar.YEAR, -1);
 
         if (year.getTimeInMillis() > timeStamp.getTime())
-            return new SimpleDateFormat("dd MMM yyyy", context.getResources().getConfiguration().locale).format(timeStamp);
+            return new SimpleDateFormat("dd MMM yyyy").format(timeStamp);
         else if (week.getTimeInMillis() > timeStamp.getTime())
-            return new SimpleDateFormat("MMM d", context.getResources().getConfiguration().locale).format(timeStamp);
+            return new SimpleDateFormat("MMM d").format(timeStamp);
         else if (hours.getTimeInMillis() > timeStamp.getTime())
-            return new SimpleDateFormat("E", context.getResources().getConfiguration().locale).format(timeStamp);
+            return new SimpleDateFormat("E").format(timeStamp);
         else if (day.getTimeInMillis() > timeStamp.getTime() && hours.getTimeInMillis() < timeStamp.getTime())
-            return new SimpleDateFormat("HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
+            return new SimpleDateFormat("HH:mm:ss").format(timeStamp);
         else if (day.getTimeInMillis() < timeStamp.getTime())
-            return new SimpleDateFormat("HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
-        else return new SimpleDateFormat("dd MM yyyy HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
+            return new SimpleDateFormat("HH:mm:ss").format(timeStamp);
+        else return new SimpleDateFormat("dd MM yyyy HH:mm:ss").format(timeStamp);
     }
 
     public static Date getDateByGroupMemberPresenceTimeFormat(String groupMemberLastSeen) {
