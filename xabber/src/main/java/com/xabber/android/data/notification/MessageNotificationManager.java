@@ -12,6 +12,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.NotificationChatRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -142,11 +143,13 @@ public class MessageNotificationManager implements OnLoadListener {
             chats.add(chat);
         }
 
-        String sender = isGroup ?
-                GroupMemberManager.INSTANCE.getGroupMemberById(
-                        messageRealmObject.getAccount(),
-                        messageRealmObject.getUser(),
-                        messageRealmObject.getGroupchatUserId()).getNickname()
+        GroupMemberRealmObject member = GroupMemberManager.INSTANCE.getGroupMemberById(
+                messageRealmObject.getAccount(),
+                messageRealmObject.getUser(),
+                messageRealmObject.getGroupchatUserId());
+
+        String sender = isGroup && member != null
+                ? member.getNickname()
                 : RosterManager.getInstance().getBestContact(messageRealmObject.getAccount(), messageRealmObject.getUser()).getName();
 
         addMessage(chat, sender, getNotificationText(messageRealmObject), true,
