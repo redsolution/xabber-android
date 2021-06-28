@@ -160,7 +160,14 @@ public class GroupMemberRealmObject extends RealmObject {
     public boolean isKicked() { return isKicked; }
     public void setKicked(boolean kicked) { isKicked = kicked; }
 
-    public SubscriptionState getSubscriptionState() { return SubscriptionState.valueOf(subscriptionState); }
+    public SubscriptionState getSubscriptionState() {
+        try {
+            return SubscriptionState.valueOf(subscriptionState);
+        } catch (Exception e) {
+            return SubscriptionState.none;
+        }
+    }
+
     public void setSubscriptionState(SubscriptionState subscriptionState) {
         this.subscriptionState = subscriptionState.toString();
     }
@@ -183,9 +190,11 @@ public class GroupMemberRealmObject extends RealmObject {
     }
 
     public String getBestName() {
-        if (nickname != null) return nickname;
-        else if (jid != null) return jid;
-        else return memberId;
+        if (nickname != null) {
+            return nickname;
+        } else if (jid != null) {
+            return jid;
+        } else return memberId;
     }
 
     public enum SubscriptionState {
