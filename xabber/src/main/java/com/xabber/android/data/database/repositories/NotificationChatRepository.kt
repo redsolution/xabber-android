@@ -7,6 +7,7 @@ import com.xabber.android.data.database.realmobjects.NotificationChatRealmObject
 import com.xabber.android.data.database.realmobjects.NotificationMessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.notification.MessageNotificationManager
 import io.realm.Realm
@@ -58,8 +59,13 @@ object NotificationChatRepository {
                 ).apply {
                     messages.addAll(realmObject.messages.map { message ->
                         MessageNotificationManager.getInstance().Message(
-                            message.id, message.author,
-                            message.text, message.timestamp, message.memberId
+                            message.id,
+                            message.author,
+                            message.text,
+                            message.timestamp,
+                            GroupMemberManager.getGroupMemberById(
+                                realmObject.account, realmObject.user, message.memberId
+                            )
                         )
                     })
                 }
@@ -138,7 +144,7 @@ object NotificationChatRepository {
     private fun MessageNotificationManager.Message.toRealmMessage() =
         NotificationMessageRealmObject(
             this.id, this.author.toString(), this.messageText.toString(),
-            this.timestamp, this.groupMemberId
+            this.timestamp, this.groupMember.memberId
         )
 
 }

@@ -278,7 +278,9 @@ object MessageHandler {
                     listener.onNewIncomingMessage(accountJid, contactJid, messageRealmObject, true)
                 }
             if (!ChatManager.getInstance().isVisibleChat(chat)) {
-                NotificationManager.getInstance().onMessageNotification(messageRealmObject)
+                if (groupMember != null) {
+                    NotificationManager.getInstance().onMessageNotification(messageRealmObject, groupMember)
+                } else NotificationManager.getInstance().onMessageNotification(messageRealmObject)
             }
         } else {
             Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)

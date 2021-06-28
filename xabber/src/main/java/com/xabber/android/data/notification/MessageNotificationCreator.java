@@ -283,10 +283,7 @@ public class MessageNotificationCreator {
         if (chat.isGroupChat()){
             List<MessageNotificationManager.Message> messages = chat.getMessages();
             MessageNotificationManager.Message message = messages.get(messages.size() - 1);
-            GroupMemberRealmObject member = GroupMemberManager.INSTANCE.getGroupMemberById(
-                    chat.getAccountJid(), chat.getContactJid(), message.getGroupMemberId()
-            );
-            return AvatarManager.getInstance().getGroupMemberCircleBitmap(member, chat.getAccountJid());
+            return AvatarManager.getInstance().getGroupMemberCircleBitmap(message.getGroupMember(), chat.getAccountJid());
         } else {
             String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getContactJid());
             return AvatarManager.getInstance().getContactCircleBitmap(chat.getContactJid(), name);
