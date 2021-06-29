@@ -107,6 +107,10 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             }
             val chat = ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
 
+            if (GroupMemberManager.getMe(chat) == null) {
+                GroupMemberManager.requestMe(accountJid, contactJid)
+            }
+
             if (presence.pinnedMessageId != null
                 && presence.pinnedMessageId.isNotEmpty()
                 && presence.pinnedMessageId != "0"
