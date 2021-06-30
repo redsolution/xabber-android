@@ -269,11 +269,11 @@ public class MessageNotificationManager implements OnLoadListener {
         }
         delayedActions.clear();
 
-        if (chats != null && chats.size() > 0) {
+        if (chats.size() > 0) {
             List<Message> messages = chats.get(chats.size() - 1).getMessages();
             if (messages != null && messages.size() > 0) {
                 lastMessage = messages.get(messages.size() - 1);
-                //rebuildAllNotifications();
+                rebuildAllNotifications();
             }
         }
     }

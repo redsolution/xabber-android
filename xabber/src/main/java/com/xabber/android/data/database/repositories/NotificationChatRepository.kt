@@ -143,8 +143,7 @@ object NotificationChatRepository {
 
     private fun MessageNotificationManager.Message.toRealmMessage() =
         NotificationMessageRealmObject(
-            this.id, this.author.toString(), this.messageText.toString(),
-            this.timestamp, this.groupMember.memberId
+            this.id, this.author.toString(), this.messageText.toString(), this.timestamp, this.groupMember?.memberId
         )
 
 }
