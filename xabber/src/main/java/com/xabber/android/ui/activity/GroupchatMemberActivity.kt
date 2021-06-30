@@ -69,8 +69,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
-    PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
+class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
 
     private val LOG_TAG = this.javaClass.simpleName
 
@@ -116,11 +115,22 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
         if (account == groupchat.account && groupchatJid == groupchat.contactJid) {
-            Application.getInstance().runOnUiThread(::setupNameBlock)
+            Application.getInstance().runOnUiThread {
+                updateBlockedStatus()
+                setupAvatar()
+                setupNameBlock()
+                setupContactBar(accountMainColor, orientation)
+            }
         }
     }
 
-    override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {}
+    override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {
+        Application.getInstance().runOnUiThread {
+            updateBlockedStatus()
+            setupNameBlock()
+            setupContactBar(accountMainColor, orientation)
+        }
+    }
 
     override fun onGroupchatMemberUpdated(
         accountJid: AccountJid, groupchatJid: ContactJid,
@@ -148,13 +158,11 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_JID)!!)
-        groupchatJid = ContactJid.from(intent.getStringExtra(GROUPCHAT_JID))
+        intent.getStringExtra(ACCOUNT_JID)?.let { accountJid = AccountJid.from(it) }
+        intent.getStringExtra(GROUPCHAT_JID)?.let { groupchatJid = ContactJid.from(it) }
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
         intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
-            groupMember =
-                GroupMemberManager.getGroupMemberById(accountJid, groupchatJid, it)
-                    ?: return
+            groupMember = GroupMemberManager.getGroupMemberById(accountJid, groupchatJid, it) ?: return
         }
 
         updateBlockedStatus()
@@ -166,6 +174,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                 Application.getInstance().runOnUiThread {
                     updateBlockedStatus()
                     setupNameBlock()
+                    setupContactBar(accountMainColor, orientation)
                 }
             },
             ExceptionCallback { }
@@ -261,11 +270,9 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
             findViewById<TextView>(R.id.address_text).text = (groupMember.jid)
 
         findViewById<TextView>(R.id.groupchat_member_title).text = when {
-            blocked ->
-                getString(R.string.settings_group_member__placeholder_blocked)
+            blocked -> getString(R.string.settings_group_member__placeholder_blocked)
 
-            groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none ->
-                getString(R.string.settings_group_member__placeholder_not_a_member)
+            groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> getString(R.string.settings_group_member__placeholder_not_a_member)
 
             else -> getString(
                 R.string.groupchat_member_of_group_name,
@@ -723,7 +730,7 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         imageButton.setColorFilter(color)
 
         imageButton.setOnClickListener {
-            //todo this
+            Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show()
         }
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -762,14 +769,101 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         else textView!!.visibility = View.VISIBLE
     }
 
-    private fun setupKickBlockButtonLayout(color: Int, orientation: Int) {
+    private fun unblock() {
+        GroupMemberManager.unblockGroupMember(
+            accountJid,
+            groupchatJid,
+            groupMember.memberId,
+            object : BaseIqResultUiListener {
+                override fun onSend() {}
+
+                override fun onResult() {
+                    Application.getInstance().runOnUiThread {
+                        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
+                    }
+                }
+
+                override fun onIqError(error: XMPPError) {
+                    if (error.condition == XMPPError.Condition.not_allowed) {
+                        Toast.makeText(
+                            this@GroupchatMemberActivity,
+                            getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@GroupchatMemberActivity,
+                            error.conditionText,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onOtherError(exception: Exception?) {
+                    Toast.makeText(
+                        this@GroupchatMemberActivity,
+                        exception?.stackTraceToString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        )
+    }
+
+    private fun block() {
+        GroupMemberManager.kickAndBlockMember(groupMember.memberId, groupchat,
+            object : BaseIqResultUiListener {
+                override fun onSend() {}
+
+                override fun onIqError(error: XMPPError) {
+                    Application.getInstance().runOnUiThread {
+                        if (error.condition == XMPPError.Condition.not_allowed) {
+                            Toast.makeText(
+                                this@GroupchatMemberActivity,
+                                getString(R.string.groupchat_you_have_no_permissions_to_do_it),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@GroupchatMemberActivity,
+                                getString(R.string.groupchat_error),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+
+                override fun onOtherError(exception: Exception?) {
+                    Application.getInstance().runOnUiThread {
+                        Toast.makeText(
+                            this@GroupchatMemberActivity,
+                            getString(R.string.groupchat_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onResult() {
+                    Application.getInstance().runOnUiThread {
+                        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
+                    }
+                }
+            })
+    }
+
+    private fun setupKickBlockButtonLayout(orientation: Int) {
         val imageButton = findViewById<ImageButton>(R.id.fourth_button)
         val textView = findViewById<TextView>(R.id.fourth_button_text)
 
-        imageButton.setOnClickListener { showKickBlockDialog() }
+        imageButton?.setOnClickListener {
+            when {
+                blocked -> unblock()
+                groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> block()
+                else -> showKickBlockDialog()
+            }
+        }
 
-        textView.setText(if (blocked) R.string.contact_bar_unblock else R.string.contact_bar_block)
-        textView.setTextColor(
+        textView?.setTextColor(
             ResourcesCompat.getColor(
                 resources,
                 when {
@@ -782,27 +876,31 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         )
 
         imageButton.setColorFilter(resources.getColor(R.color.red_900))
-        imageButton.isEnabled = !blocked
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             textView.visibility = View.GONE
-        } else textView.visibility = View.VISIBLE
+        } else {
+            textView.visibility = View.VISIBLE
+        }
+
     }
 
     private fun showKickBlockDialog() {
         AlertDialog.Builder(this).create().apply {
+
             title = context.getString(R.string.groupchat_kick_member)
+
             setMessage(
                 context.getString(
                     R.string.groupchat_do_you_really_want_to_kick_membername,
                     groupMember.nickname
                 )
             )
+
             setButton(
                 AlertDialog.BUTTON_POSITIVE,
                 "                                 " + context.getString(R.string.groupchat_kick)
-            )
-            { _, _ ->
+            ) { _, _ ->
                 GroupMemberManager.kickMember(groupMember.memberId, groupchat,
                     object : BaseIqResultUiListener {
                         override fun onSend() {}
@@ -834,54 +932,24 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
                             }
                         }
 
-                        override fun onResult() {}
+                        override fun onResult() {
+                            Application.getInstance().runOnUiThread {
+                                GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
+                            }
+                        }
                     })
             }
+
             setButton(
                 AlertDialog.BUTTON_NEGATIVE,
                 "                                 " + context.getString(R.string.groupchat_kick_and_block)
-            )
-            { _, _ ->
-                GroupMemberManager.kickAndBlockMember(groupMember.memberId, groupchat,
-                    object : BaseIqResultUiListener {
-                        override fun onSend() {}
+            ) { _, _ -> block() }
 
-                        override fun onIqError(error: XMPPError) {
-                            Application.getInstance().runOnUiThread {
-                                if (error.condition == XMPPError.Condition.not_allowed) {
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.groupchat_you_have_no_permissions_to_do_it),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.groupchat_error),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-
-                        override fun onOtherError(exception: Exception?) {
-                            Application.getInstance().runOnUiThread {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.groupchat_error),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                        override fun onResult() {}
-                    })
-            }
             setButton(
                 AlertDialog.BUTTON_NEUTRAL,
                 "                                  " + context.getString(R.string.cancel)
-            )
-            { _, _ -> cancel() }
+            ) { _, _ -> cancel() }
+
             show()
         }
     }
@@ -890,14 +958,16 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         setupDirectChatButtonLayout(color, orientation)
         setupMessagesButtonLayout(color, orientation)
         setupSetBadgeLayout(color, orientation)
-        setupKickBlockButtonLayout(color, orientation)
+        setupKickBlockButtonLayout(orientation)
 
         val contactBarLayout =
             findViewById<ContactBarAutoSizingLayout>(R.id.contact_bar_layout)
 
-        contactBarLayout?.setForGroupchatMember()
+        contactBarLayout?.setForGroupchatMember(blocked)
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) contactBarLayout!!.redrawText()
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            contactBarLayout?.redrawText()
+        }
     }
 
     fun manageAvailableUsernameSpace() {
@@ -923,10 +993,6 @@ class GroupchatMemberActivity : ManagedActivity(), View.OnClickListener,
         val actionBarSize = styledAttributes.getDimension(0, 0f).toInt()
         styledAttributes.recycle()
         return actionBarSize
-    }
-
-    override fun onClick(v: View?) {
-        TODO("Not yet implemented")
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {

@@ -20,6 +20,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Utils;
@@ -152,6 +153,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
 
         if (messageRealmObject.isGroupchatSystem()) return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE;
 
+        boolean isMeInGroup = messageRealmObject.getGroupchatUserId() != null
+                && chat instanceof GroupChat
+                && GroupMemberManager.INSTANCE.getMe((GroupChat) chat) != null
+                && GroupMemberManager.INSTANCE.getMe((GroupChat) chat).getMemberId() != null
+                && GroupMemberManager.INSTANCE.getMe((GroupChat) chat).getMemberId()
+                .equals(messageRealmObject.getGroupchatUserId());
+
         boolean isNeedUnpackSingleMessageForSavedMessages = isSavedMessagesMode
                 && messageRealmObject.hasForwardedMessages()
                 && MessageRepository.getForwardedMessages(messageRealmObject).size() == 1;
@@ -186,7 +194,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageRealmObject
                     (!messageRealmObject.getText().trim().isEmpty() && !isUploadMessage)
                             || (!messageRealmObject.isAttachmentImageOnly());
 
-            if (messageRealmObject.isIncoming() && !isSavedMessagesMode) {
+            if (messageRealmObject.isIncoming() && !isSavedMessagesMode && !isMeInGroup) {
                 if(isImage) {
                     return notJustImage ? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
                 } else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;

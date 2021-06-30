@@ -49,16 +49,19 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
     public ContactBarAutoSizingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        buttonStrings = Arrays.asList(getResources().getString(R.string.contact_bar_chat),
+        buttonStrings = Arrays.asList(
+                getResources().getString(R.string.contact_bar_chat),
                 getResources().getString(R.string.contact_bar_call),
                 getResources().getString(R.string.contact_bar_notifications),
                 getResources().getString(R.string.contact_bar_block),
                 getResources().getString(R.string.contact_bar_unblock));
-        buttonGroupchatStrings = Arrays.asList(getResources().getString(R.string.contact_bar_chat),
+        buttonGroupchatStrings = Arrays.asList(
+                getResources().getString(R.string.contact_bar_chat),
                 getResources().getString(R.string.groupchat_bar_invite),
                 getResources().getString(R.string.contact_bar_notifications),
                 getResources().getString(R.string.groupchat_bar_leave));
-        buttonGroupchatMemberStrings = Arrays.asList(getResources().getString(R.string.groupchat_direct_chat),
+        buttonGroupchatMemberStrings = Arrays.asList(
+                getResources().getString(R.string.groupchat_direct_chat),
                 getResources().getString(R.string.groupchat_member_messages),
                 getResources().getString(R.string.groupchat_set_member_badge),
                 getResources().getString(R.string.contact_bar_block),
@@ -95,7 +98,7 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
         redrawText();
     }
 
-    public void setForGroupchatMember(){
+    public void setForGroupchatMember(Boolean isBlocked){
         isForGroupchatMember = true;
         for (int i = 0; i < textViews.size(); i++) {
             textViews.get(i).setText(getButtonStrings().get(i));
@@ -103,6 +106,12 @@ public class ContactBarAutoSizingLayout extends ViewGroup {
 
         button2.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_messages_white_24));
         button3.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_badge_24));
+
+        if (isBlocked) {
+            text4.setText(getButtonStrings().get(4));
+        } else {
+            text4.setText(getButtonStrings().get(3));
+        }
 
         redrawText();
     }
