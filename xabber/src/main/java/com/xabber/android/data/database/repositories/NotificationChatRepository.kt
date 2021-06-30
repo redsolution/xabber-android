@@ -18,12 +18,14 @@ object NotificationChatRepository {
     private val LOG_TAG = this::class.java.simpleName
 
     fun saveOrUpdateToRealm(chat: MessageNotificationManager.Chat) {
-        Application.getInstance().runInBackground {
-            var realm: Realm? = null
-            try {
-                realm = DatabaseManager.getInstance().defaultRealmInstance
-                realm?.executeTransaction { realm1: Realm ->
-                    realm1.copyToRealmOrUpdate(NotificationChatRealmObject(chat.id).apply {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            LogManager.e(this, "Writing to realm on ui thread was aborted!")
+            return
+        }
+        DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+            realm?.executeTransaction { realm1: Realm ->
+                realm1.copyToRealmOrUpdate(
+                    NotificationChatRealmObject(chat.id).apply {
                         account = chat.accountJid
                         user = chat.contactJid
                         chatTitle = chat.chatTitle.toString()
@@ -32,15 +34,18 @@ object NotificationChatRepository {
                         privacyType = chat.privacyType
                         messages = RealmList<NotificationMessageRealmObject>().apply {
                             synchronized(chat.messages) {
-                                addAll(chat.messages.map { chatMessage -> chatMessage.toRealmMessage() })
+                                addAll(chat.messages.map { chatMessage ->
+                                    NotificationMessageRealmObject(
+                                        chatMessage.id,
+                                        chatMessage.author.toString(),
+                                        chatMessage.messageText.toString(),
+                                        chatMessage.timestamp,
+                                        chatMessage.groupMember?.memberId
+                                    )
+                                })
                             }
                         }
                     })
-                }
-            } catch (e: Exception) {
-                LogManager.exception(LOG_TAG, e)
-            } finally {
-                realm?.close()
             }
         }
     }
@@ -140,10 +145,5 @@ object NotificationChatRepository {
             }
         }
     }
-
-    private fun MessageNotificationManager.Message.toRealmMessage() =
-        NotificationMessageRealmObject(
-            this.id, this.author.toString(), this.messageText.toString(), this.timestamp, this.groupMember?.memberId
-        )
 
 }
