@@ -75,7 +75,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
             holder.memberBadge.setText(bindMember.getBadge());
         } else holder.memberBadge.setVisibility(View.GONE);
 
-        if (bindMember.getRole() != null && !bindMember.getBadge().isEmpty()) {
+        if (bindMember.getRole() != null) {
             holder.memberRole.setVisibility(View.VISIBLE);
             switch (bindMember.getRole()) {
                 case owner:
