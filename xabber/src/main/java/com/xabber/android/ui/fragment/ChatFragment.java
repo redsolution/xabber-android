@@ -1576,6 +1576,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         final List<String> ids = new ArrayList<>();
         boolean onlyOutgoing = true;
         boolean isSavedMessages = account.getBareJid().toString().contains(user.getBareJid().toString());
+        boolean isGroup = getChat() instanceof GroupChat;
         for (MessageRealmObject messageRealmObject : messages) {
             ids.add(messageRealmObject.getPrimaryKey());
             if (messageRealmObject.isIncoming()) onlyOutgoing = false;
@@ -1584,19 +1585,19 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         if (RetractManager.getInstance().isSupported(account)) {
             View checkBoxView = View.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
-            checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
+            checkBox.setText(String.format(getResources().getString(R.string.delete_for_all),
                     RosterManager.getInstance().getBestContact(account, user).getName()));
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
+            AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext())
                     .setTitle(getResources().getQuantityString(R.plurals.delete_message_title, size, size))
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
                             RetractManager.getInstance().tryToRetractMessage(
-                                    account, ids, checkBox.isChecked() || !isSavedMessages))
+                                    account, ids, checkBox.isChecked() || !isSavedMessages || isGroup))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> { });
-            if (onlyOutgoing && !isSavedMessages) dialog.setView(checkBoxView);
+            if (onlyOutgoing && !isSavedMessages && !isGroup) dialog.setView(checkBoxView);
             dialog.show();
         } else {
-             new AlertDialog.Builder(getContext())
+             new AlertDialog.Builder(requireContext())
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog12, which) -> MessageManager.getInstance().removeMessage(ids))
                     .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })
