@@ -116,21 +116,20 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
                         AccountManager.getInstance().getAccount(accountJid).getConnection()
                                 .sendIqWithResponseCallback(iq, packet ->  {
                                     if (packet instanceof IQ) {
-                                        if (((IQ) packet).getType().equals(IQ.Type.error)){
-                                            LogManager.d(LOG_TAG, "Failed to retract message");
-                                            Toast.makeText(Application.getInstance().getBaseContext(),
-                                                    "Failed to retract message", Toast.LENGTH_SHORT).show();
-                                        }
                                         if (((IQ) packet).getType().equals(IQ.Type.result)){
                                             LogManager.d(LOG_TAG, "Message successfully retracted");
+                                            messageRealmObject.deleteFromRealm();
                                         }
                                     }
-                                });
+                                }, exception -> Toast.makeText(
+                                        Application.getInstance().getBaseContext(),
+                                        "Failed to retract message",
+                                        Toast.LENGTH_SHORT)
+                                        .show());
                     } catch (Exception e) {
                         LogManager.exception(LOG_TAG, e);
                     }
-                    //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
-                    messageRealmObject.deleteFromRealm();
+
                 });
 
             } catch (Exception e) {
