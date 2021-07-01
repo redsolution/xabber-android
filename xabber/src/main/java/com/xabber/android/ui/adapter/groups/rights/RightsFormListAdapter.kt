@@ -10,50 +10,76 @@ import com.xabber.android.R
 import org.jivesoftware.smackx.xdata.FormField
 import org.jivesoftware.smackx.xdata.packet.DataForm
 
-class RightsFormListAdapter(private val dataForm: DataForm, val color: Int,
-                            private val supportFragmentManager: FragmentManager,
-                            val listener: Listener) : FieldVH.Listener,
-        RecyclerView.Adapter<GroupRightsVH>() {
+class RightsFormListAdapter(
+    private val dataForm: DataForm,
+    val color: Int,
+    private val supportFragmentManager: FragmentManager,
+    val listener: Listener,
+) : ListSingleFieldVH.Listener, RecyclerView.Adapter<GroupRightsVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            when (viewType) {
-                TITLE_VIEW_TYPE -> TitleVH(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_group_member_rights_title, parent, false))
+        when (viewType) {
+            TITLE_VIEW_TYPE -> TitleVH(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_group_member_rights_title, parent, false)
+            )
 
-                FIELD_VIEW_TYPE -> FieldVH(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_group_member_rights_field, parent, false), this)
+            LIST_SINGLE_FIELD_VIEW_TYPE -> ListSingleFieldVH(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_group_member_rights_field, parent, false), this
+            )
 
-                else -> HiddenVH(View(parent.context).apply {
-                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT)
-                    visibility = View.GONE
-                })
-            }
+            NOT_A_TITLE_FIXED_FIELD_TYPE -> CheckboxField(
+                LayoutInflater.from(parent.context).inflate(R.layout.item_group_member_rights_field, parent, false)
+            )
+
+            else -> HiddenVH(View(parent.context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                visibility = View.GONE
+            })
+        }
 
 
     override fun onBindViewHolder(holder: GroupRightsVH, position: Int) {
         when (holder.itemViewType) {
             TITLE_VIEW_TYPE -> (holder as TitleVH).bind(dataForm.fields[position].values[0], color)
-            FIELD_VIEW_TYPE -> (holder as FieldVH).bind(dataForm.fields[position], supportFragmentManager)
+            LIST_SINGLE_FIELD_VIEW_TYPE ->
+                (holder as ListSingleFieldVH).bind(dataForm.fields[position], supportFragmentManager)
+            NOT_A_TITLE_FIXED_FIELD_TYPE ->
+                (holder as CheckboxField).bind(dataForm.fields[position])
         }
     }
 
-    override fun getItemViewType(position: Int) =
-            when (dataForm.fields[position].type) {
-                FormField.Type.list_single -> FIELD_VIEW_TYPE
-                FormField.Type.fixed -> TITLE_VIEW_TYPE
-                else -> HIDDEN_VIEW_TYPE
-            }
+    override fun getItemViewType(position: Int): Int {
+        val field = dataForm.fields[position]
+        val isTitleFixed = field.type == FormField.Type.fixed
+                && field.variable == RESTRICTIONS_FIELD_VAR || field.variable == PERMISSIONS_FIELD_VAR
+        return when {
+            field.type == FormField.Type.list_single -> LIST_SINGLE_FIELD_VIEW_TYPE
+            isTitleFixed -> TITLE_VIEW_TYPE
+            field.type == FormField.Type.fixed && !isTitleFixed -> NOT_A_TITLE_FIXED_FIELD_TYPE
+            else -> HIDDEN_VIEW_TYPE
+        }
+    }
+
 
     override fun getItemCount(): Int = dataForm.fields.size
 
-    override fun onPicked(formField: FormField, option: FormField.Option?, isChecked: Boolean)
-            = listener.onOptionPicked(formField, option, isChecked)
+    override fun onPicked(formField: FormField, option: FormField.Option?, isChecked: Boolean) =
+        listener.onOptionPicked(formField, option, isChecked)
 
     companion object {
         private const val TITLE_VIEW_TYPE = 0
-        private const val FIELD_VIEW_TYPE = 1
+        private const val LIST_SINGLE_FIELD_VIEW_TYPE = 1
+        private const val NOT_A_TITLE_FIXED_FIELD_TYPE = 2
         private const val HIDDEN_VIEW_TYPE = 3
+
+        private const val PERMISSIONS_FIELD_VAR = "permission"
+        private const val RESTRICTIONS_FIELD_VAR = "restriction"
+
     }
 
     interface Listener {

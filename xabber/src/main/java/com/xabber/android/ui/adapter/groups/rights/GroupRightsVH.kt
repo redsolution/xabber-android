@@ -25,56 +25,12 @@ class TitleVH(itemView: View) : GroupRightsVH(itemView) {
 
 }
 
-class FieldVH(itemView: View, val listener: Listener) : GroupRightsVH(itemView),
-        OptionPickerDialog.OptionPickerDialogListener {
+open class CheckboxField(itemView: View) : GroupRightsVH(itemView) {
 
-    private val fieldTitleTv = itemView.findViewById<TextView>(R.id.item_group_member_rights_field_tv)
-    private val checkBox = itemView.findViewById<CheckBox>(R.id.item_group_member_rights_checkbox)
-    private val timeTv = itemView.findViewById<TextView>(R.id.item_group_member_rights__timer_tv)
-    private val checkboxRoot = itemView.findViewById<LinearLayout>(R.id.item_group_member_rights_checkbox_root)
+    protected val checkBox: CheckBox = itemView.findViewById(R.id.item_group_member_rights_checkbox)
+    protected val timeTv: TextView = itemView.findViewById(R.id.item_group_member_rights__timer_tv)
 
-    private var formField: FormField? = null
-
-    fun bind(field: FormField, fragmentManager: FragmentManager) {
-        formField = field
-        fieldTitleTv.text = field.label
-
-        if (field.values != null && field.values.size > 0){
-            checkBox.isChecked = true
-            if (field.values[0] != "0") {
-                timeTv.text = field.values[0].toLong().getHumanReadableEstimatedTime()
-                timeTv.visibility = View.VISIBLE
-            }
-        }
-
-        checkBox.isClickable = false
-
-        checkboxRoot.setOnClickListener {
-            if (!checkBox.isChecked) {
-                OptionPickerDialog(field, this)
-                        .show(fragmentManager, OptionPickerDialog.OPTION_PICKER_TAG)
-            } else {
-                checkBox.isChecked = false
-                listener.onPicked(formField!!, null, false)
-                timeTv.visibility = View.GONE
-            }
-        }
-    }
-
-    override fun onCanceled() {}
-
-    override fun onOptionPicked(formField: FormField, option: FormField.Option) {
-        checkBox.isChecked = true
-        timeTv.visibility = View.VISIBLE
-        timeTv.text = option.label
-        listener.onPicked(formField, option, true)
-    }
-
-    interface Listener {
-        fun onPicked(formField: FormField, option: FormField.Option?, isChecked: Boolean)
-    }
-
-    private fun Long.getHumanReadableEstimatedTime(): String{
+    protected fun Long.getHumanReadableEstimatedTime(): String {
         require(this >= 0) { "Duration must be greater than zero!" }
 
         val currentTime = System.currentTimeMillis() / 1000
@@ -98,9 +54,60 @@ class FieldVH(itemView: View, val listener: Listener) : GroupRightsVH(itemView),
             days >= 1 -> resources.getQuantityString(R.plurals.estimated_in_days, days.toInt(), days)
             hours >= 1 -> resources.getQuantityString(R.plurals.estimated_in_hours, hours.toInt(), hours)
             minutes >= 1 -> resources.getQuantityString(R.plurals.estimated_in_minutes, minutes, minutes)
-            secondsLeft >= 1 -> resources.getQuantityString(R.plurals.estimated_in_seconds, secondsLeft.toInt(), secondsLeft)
+            secondsLeft >= 1 -> resources.getQuantityString(
+                R.plurals.estimated_in_seconds,
+                secondsLeft.toInt(),
+                secondsLeft
+            )
             else -> ""
         }
+    }
+
+    fun bind(field: FormField) {
+        itemView.findViewById<TextView>(R.id.item_group_member_rights_field_tv).text = field.label
+
+        checkBox.isClickable = false
+
+        if (field.values != null && field.values.isNotEmpty()) {
+            checkBox.isChecked = true
+            if (field.values[0] != "0") {
+                timeTv.text = field.values[0].toLong().getHumanReadableEstimatedTime()
+                timeTv.visibility = View.VISIBLE
+            }
+        }
+    }
+
+}
+
+class ListSingleFieldVH(
+    itemView: View, val listener: Listener
+) : CheckboxField(itemView), OptionPickerDialog.OptionPickerDialogListener {
+
+    fun bind(field: FormField, fragmentManager: FragmentManager) {
+        super.bind(field)
+
+        itemView.findViewById<LinearLayout>(R.id.item_group_member_rights_checkbox_root).setOnClickListener {
+            if (!checkBox.isChecked) {
+                OptionPickerDialog(field, this).show(fragmentManager, OptionPickerDialog.OPTION_PICKER_TAG)
+            } else {
+                checkBox.isChecked = false
+                listener.onPicked(field, null, false)
+                timeTv.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onCanceled() {}
+
+    override fun onOptionPicked(formField: FormField, option: FormField.Option) {
+        checkBox.isChecked = true
+        timeTv.visibility = View.VISIBLE
+        timeTv.text = option.label
+        listener.onPicked(formField, option, true)
+    }
+
+    interface Listener {
+        fun onPicked(formField: FormField, option: FormField.Option?, isChecked: Boolean)
     }
 
 }

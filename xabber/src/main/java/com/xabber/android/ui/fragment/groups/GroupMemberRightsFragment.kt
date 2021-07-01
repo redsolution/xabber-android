@@ -31,9 +31,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
 
     private val newFields = mutableMapOf<String, FormField>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.simple_nested_scroll_with_recycler_view, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
@@ -41,7 +39,9 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        GroupMemberManager.requestGroupchatMemberRightsForm(groupchat, groupMember.memberId)
+        GroupMemberManager.requestGroupchatMemberRightsForm(
+            groupchat, if (groupMember.isMe) "" else groupMember.memberId
+        )
 
         return view
     }
@@ -60,7 +60,8 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
         adapter = RightsFormListAdapter(
             dataForm,
             ColorManager.getInstance().accountPainter.getAccountSendButtonColor(groupchat.account),
-            fragmentManager!!, this
+            fragmentManager!!,
+            this,
         )
 
         recyclerView?.adapter = adapter
@@ -71,7 +72,9 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
     override fun onSuccessfullyChanges(groupchat: GroupChat) {
         if (isThisGroup(groupchat)) {
             newFields.clear()
-            GroupMemberManager.requestGroupchatMemberRightsForm(groupchat, groupMember.memberId)
+            GroupMemberManager.requestGroupchatMemberRightsForm(
+                groupchat, if (groupMember.isMe) "" else groupMember.memberId
+            )
             notifyActivityAboutNewFieldSizeChanged()
         }
     }
@@ -88,6 +91,7 @@ class GroupMemberRightsFragment(val groupMember: GroupMemberRealmObject, val gro
             for (field in iq.dataFrom!!.fields)
                 if (field.variable == GroupchatMemberRightsReplyIQ.FIELD_USER_ID
                     && groupMember.memberId == field.values[0]
+                    || groupMember.isMe && field.values[0] == ""
                 ) {
                     oldDataForm = iq.dataFrom
                     Application.getInstance().runOnUiThread {
