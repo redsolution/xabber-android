@@ -1592,7 +1592,10 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
                             RetractManager.getInstance().tryToRetractMessage(
-                                    account, ids, checkBox.isChecked() || !isSavedMessages || isGroup))
+                                    account,
+                                    isGroup ? user : null,
+                                    ids,
+                                    checkBox.isChecked() || !isSavedMessages || isGroup))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> { });
             if (onlyOutgoing && !isSavedMessages && !isGroup) dialog.setView(checkBoxView);
             dialog.show();

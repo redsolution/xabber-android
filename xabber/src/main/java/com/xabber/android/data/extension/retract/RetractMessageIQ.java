@@ -10,9 +10,9 @@ public class RetractMessageIQ extends IQ {
     public static final String ID_ATTRIBUTE = "id";
     public static final String BY_ATTRIBUTE = "by";
 
-    private String by;
-    private String id;
-    private boolean symmetric;
+    private final String by;
+    private final String id;
+    private final boolean symmetric;
 
     public String getNamespace(){ return NAMESPACE; }
     public String getElementName(){ return ELEMENT; }
@@ -23,7 +23,12 @@ public class RetractMessageIQ extends IQ {
         this.by = by;
         this.id = id;
         this.symmetric = symmetric;
-        this.setFrom(this.by);
+        this.setFrom(by);
+    }
+
+    RetractMessageIQ(String by, String archiveJid, String id, boolean symmetric){
+        this(by, id, symmetric);
+        this.setTo(archiveJid);
     }
 
     @Override

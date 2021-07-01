@@ -92,12 +92,14 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
         return true;
     }
 
-    public void tryToRetractMessage(AccountJid accountJid, List<String> list, boolean symmetrically) {
+    public void tryToRetractMessage(AccountJid accountJid, ContactJid archiveJid, List<String> list,
+                                    boolean symmetrically) {
         for (String id : list)
-            tryToRetractMessage(accountJid, id, symmetrically);
+            tryToRetractMessage(accountJid, archiveJid, id, symmetrically);
     }
 
-    public void tryToRetractMessage(final AccountJid accountJid, final String id, final boolean symmetrically) {
+    public void tryToRetractMessage(final AccountJid accountJid, ContactJid archiveJid, final String id,
+                                    final boolean symmetrically) {
         Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
             try {
@@ -106,7 +108,10 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
                     final MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
                             .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id).findFirst();
                     try {
-                        RetractMessageIQ iq = new RetractMessageIQ(accountJid.toString(),
+                        RetractMessageIQ iq = archiveJid != null ?
+                                new RetractMessageIQ(accountJid.toString(), archiveJid.toString(),
+                                        messageRealmObject.getStanzaId(), symmetrically) :
+                                new RetractMessageIQ(accountJid.toString(),
                                 messageRealmObject.getStanzaId(), symmetrically);
                         AccountManager.getInstance().getAccount(accountJid).getConnection()
                                 .sendIqWithResponseCallback(iq, packet ->  {
