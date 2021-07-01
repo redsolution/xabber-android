@@ -266,8 +266,13 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
             }
             adb.show()
         }
+
         if (groupchat.privacyType!! != GroupPrivacyType.INCOGNITO)
             findViewById<TextView>(R.id.address_text).text = (groupMember.jid)
+
+        if (groupMember.isMe) {
+            findViewById<TextView>(R.id.groupchat_member_this_is_you_label).visibility = View.VISIBLE
+        }
 
         findViewById<TextView>(R.id.groupchat_member_title).text = when {
             blocked -> getString(R.string.settings_group_member__placeholder_blocked)
