@@ -267,8 +267,14 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
             adb.show()
         }
 
-        if (groupchat.privacyType!! != GroupPrivacyType.INCOGNITO)
-            findViewById<TextView>(R.id.address_text).text = (groupMember.jid)
+        findViewById<TextView>(R.id.address_text).apply {
+            if (groupMember.jid != null) {
+                text = groupMember.jid
+                visibility = View.VISIBLE
+            } else {
+                visibility = View.GONE
+            }
+        }
 
         if (groupMember.isMe) {
             findViewById<TextView>(R.id.groupchat_member_this_is_you_label).visibility = View.VISIBLE
