@@ -42,7 +42,6 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
-import com.xabber.android.data.extension.groups.GroupMemberManager.requestGroupchatBlocklistList
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
@@ -61,8 +60,6 @@ import com.xabber.android.utils.Utils
 import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement
 import org.apache.commons.io.FileUtils
-import org.jivesoftware.smack.ExceptionCallback
-import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.XMPPError
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -167,17 +164,17 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
         updateBlockedStatus()
 
-        requestGroupchatBlocklistList(
+        GroupMemberManager.requestGroupchatBlocklistList(
             accountJid,
             groupchatJid,
-            StanzaListener {
+            {
                 Application.getInstance().runOnUiThread {
                     updateBlockedStatus()
                     setupNameBlock()
                     setupContactBar(accountMainColor, orientation)
                 }
             },
-            ExceptionCallback { }
+            { }
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
@@ -781,17 +778,28 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun unblock() {
+        val memberId = groupMember.memberId
         GroupMemberManager.unblockGroupMember(
             accountJid,
             groupchatJid,
-            groupMember.memberId,
+            memberId,
             object : BaseIqResultUiListener {
                 override fun onSend() {}
 
                 override fun onResult() {
-                    Application.getInstance().runOnUiThread {
-                        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
-                    }
+                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, memberId)
+                    GroupMemberManager.requestGroupchatBlocklistList(
+                        accountJid,
+                        groupchatJid,
+                        {
+                            Application.getInstance().runOnUiThread {
+                                updateBlockedStatus()
+                                setupNameBlock()
+                                setupContactBar(accountMainColor, orientation)
+                            }
+                        },
+                        { }
+                    )
                 }
 
                 override fun onIqError(error: XMPPError) {
@@ -822,7 +830,9 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun block() {
-        GroupMemberManager.kickAndBlockMember(groupMember.memberId, groupchat,
+        val memberId = groupMember.memberId
+
+        GroupMemberManager.kickAndBlockMember(memberId, groupchat,
             object : BaseIqResultUiListener {
                 override fun onSend() {}
 
@@ -855,9 +865,19 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                 }
 
                 override fun onResult() {
-                    Application.getInstance().runOnUiThread {
-                        GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
-                    }
+                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, memberId)
+                    GroupMemberManager.requestGroupchatBlocklistList(
+                        accountJid,
+                        groupchatJid,
+                        {
+                            Application.getInstance().runOnUiThread {
+                                updateBlockedStatus()
+                                setupNameBlock()
+                                setupContactBar(accountMainColor, orientation)
+                            }
+                        },
+                        { }
+                    )
                 }
             })
     }
