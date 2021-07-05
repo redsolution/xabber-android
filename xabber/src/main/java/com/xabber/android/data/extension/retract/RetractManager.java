@@ -121,11 +121,14 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
                                             messageRealmObject.deleteFromRealm();
                                         }
                                     }
-                                }, exception -> Toast.makeText(
-                                        Application.getInstance().getBaseContext(),
-                                        "Failed to retract message",
-                                        Toast.LENGTH_SHORT)
-                                        .show());
+                                }, exception -> Application.getInstance().runOnUiThread(() -> {
+                                    Toast.makeText(
+                                            Application.getInstance().getBaseContext(),
+                                            "Failed to retract message",
+                                            Toast.LENGTH_SHORT)
+                                            .show();
+                                }));
+
                     } catch (Exception e) {
                         LogManager.exception(LOG_TAG, e);
                     }
