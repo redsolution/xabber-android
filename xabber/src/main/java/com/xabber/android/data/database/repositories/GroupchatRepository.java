@@ -25,7 +25,7 @@ public class GroupchatRepository {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     GroupchatRealmObject gcro = realm1.where(GroupchatRealmObject.class)
-                            .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().getBareJid().toString())
+                            .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().toString())
                             .equalTo(GroupchatRealmObject.Fields.GROUPCHAT_JID, groupChat.getContactJid().toString())
                             .findFirst();
                     if (gcro != null) gcro.deleteFromRealm();

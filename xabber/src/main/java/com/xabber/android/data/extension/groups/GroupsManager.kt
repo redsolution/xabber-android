@@ -15,7 +15,9 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.avatar.AvatarManager
+import com.xabber.android.data.extension.retract.RetractManager
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
@@ -94,7 +96,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         }
     }
 
-    private fun processPresence(packet: Stanza) {
+    private fun processPresence(packet: Presence) {
         try {
             val presence = packet.getExtension(GroupPresenceExtensionElement.NAMESPACE) as GroupPresenceExtensionElement
             val accountJid = AccountJid.from(packet.to.toString())
@@ -123,9 +125,10 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             }
             chat.name = presence.name
             chat.numberOfOnlineMembers = presence.presentMembers
+
             Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java)
-                .forEachOnUi { listener -> listener.onGroupPresenceUpdated(contactJid) }
-            //todo etc...
+                .forEachOnUi { listener -> listener.onGroupPresenceUpdated(accountJid, contactJid, packet) }
+
             ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
         } catch (e: Exception) {
             LogManager.exception(this::class.java.simpleName, e)
@@ -146,19 +149,19 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     }
 
     /**
-     * Call when account blocked or kicked from group
-     * @param accountJid account that got unavailable presence
-     * @param contactJid of group that sent unavailable presence
+     * Call when account was been kicked from group or when group was been deleted
+     * @param accountJid account that got unsubscribed presence
+     * @param contactJid of group that sent unsubscribed presence
      */
-    fun onUnsubscribePresence(accountJid: AccountJid?, contactJid: ContactJid) {
-        LogManager.d(
-            this::class.java.simpleName,
-            "Subscription state for contact $contactJid, " +
-                    "state: ${
-                        RosterManager.getInstance().getSubscriptionState(accountJid, contactJid).subscriptionType
-                    }"
-
-        )
+    fun onUnsubscribePresence(accountJid: AccountJid, contactJid: ContactJid, presence: Presence) {
+        Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java).forEachOnUi {
+            it.onGroupPresenceUpdated(accountJid, contactJid, presence)
+        }
+        MessageManager.getInstance().clearHistory(accountJid, contactJid)
+        if (RetractManager.getInstance().isSupported(accountJid)) {
+            RetractManager.getInstance().sendRetractAllMessagesRequest(accountJid, contactJid, false)
+        }
+        RosterManager.getInstance().removeContact(accountJid, contactJid)
         ChatManager.getInstance().removeChat(accountJid, contactJid)
     }
 

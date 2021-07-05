@@ -386,7 +386,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             }
             Presence.Type.unsubscribe, Presence.Type.unsubscribed ->
                 if (ChatManager.getInstance().getChat(connection.getAccount(), from) is GroupChat) {
-                    GroupsManager.onUnsubscribePresence(connection.getAccount(), from)
+                    GroupsManager.onUnsubscribePresence(connection.getAccount(), from, stanza)
                     LogManager.d(PresenceManager::class.java.simpleName, "Got unsubscribed from group chat")
                 }
             Presence.Type.error -> {

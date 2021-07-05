@@ -24,6 +24,7 @@ import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterContact
 import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ
 import com.xabber.xmpp.vcard.VCard
+import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import org.jxmpp.jid.Jid
 
@@ -84,7 +85,7 @@ interface OnLastHistoryLoadErrorListener : BaseUIListener {
 }
 
 interface OnGroupPresenceUpdatedListener : BaseUIListener {
-    fun onGroupPresenceUpdated(groupJid: ContactJid)
+    fun onGroupPresenceUpdated(accountJid: AccountJid, groupJid: ContactJid, presence: Presence)
 }
 
 interface OnErrorListener : BaseUIListener {

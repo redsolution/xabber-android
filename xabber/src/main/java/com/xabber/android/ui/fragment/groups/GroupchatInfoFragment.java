@@ -344,9 +344,20 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     }
 
     @Override
-    public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
-        if (groupchatContact == groupJid) {
-            Application.getInstance().runOnUiThread(() -> updateChatInfo((GroupChat) groupChat));
+    public void onGroupPresenceUpdated(@NotNull AccountJid accountJid, @NotNull ContactJid groupJid,
+                                       @NotNull Presence presence) {
+        if (account == accountJid && groupchatContact == groupJid) {
+            if (presence.getType() != Presence.Type.unsubscribed) {
+                Application.getInstance().runOnUiThread(() -> updateChatInfo((GroupChat) groupChat));
+                //todo maybe add updating
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    getActivity().finish();
+                } catch (Exception e) {
+                    LogManager.exception(this, e);
+                }
+            }
         }
     }
 

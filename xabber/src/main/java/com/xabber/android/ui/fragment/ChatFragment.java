@@ -1197,10 +1197,21 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     @Override
-    public void onGroupPresenceUpdated(@NotNull ContactJid groupJid) {
+    public void onGroupPresenceUpdated(@NotNull AccountJid accountJid, @NotNull ContactJid groupJid,
+                                       @NotNull Presence presence) {
         Application.getInstance().runOnUiThread(() -> {
-            if (groupJid.getBareJid().equals(user.toString())) {
-                setupPinnedMessageView();
+            if (this.account == accountJid && this.user == groupJid) {
+                if (presence.getType() != Presence.Type.unsubscribe) {
+                    setupPinnedMessageView();
+                    //todo add toolbar updating
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                        getActivity().finish();
+                    } catch (Exception e) {
+                        LogManager.exception(this, e);
+                    }
+                }
             }
         });
     }
