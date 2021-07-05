@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
@@ -110,8 +111,9 @@ public class BottomMessagesPanel extends Fragment {
             AbstractChat chat = ChatManager.getInstance().getChat(message.getAccount(), message.getUser());
             String name = null;
             if (chat instanceof GroupChat) {
-                if (GroupMemberManager.INSTANCE.getGroupMemberById(
-                        message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                if (message.getGroupchatUserId() != null
+                        && GroupMemberManager.INSTANCE.getGroupMemberById(
+                                message.getAccount(), message.getUser(), message.getGroupchatUserId()
                 ) != null) {
                     name = GroupMemberManager.INSTANCE.getGroupMemberById(
                             message.getAccount(), message.getUser(), message.getGroupchatUserId()
@@ -119,7 +121,11 @@ public class BottomMessagesPanel extends Fragment {
                 } else if (!message.isIncoming() && GroupMemberManager.INSTANCE.getMe((GroupChat) chat) != null) {
                     name = GroupMemberManager.INSTANCE.getMe((GroupChat) chat).getNickname();
                 }
-            } else name = RosterManager.getDisplayAuthorName(message);
+            } else if (message.isIncoming()) {
+                name = RosterManager.getDisplayAuthorName(message);
+            } else {
+                name = AccountManager.getInstance().getNickName(message.getAccount());
+            }
             if (name == null) name = "null";
             int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);
             names.add("<font color='#" + Integer.toHexString(color).substring(2) + "'>" + name + "</font>");
