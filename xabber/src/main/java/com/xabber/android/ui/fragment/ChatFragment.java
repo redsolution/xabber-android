@@ -1606,7 +1606,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                                     account,
                                     isGroup ? user : null,
                                     ids,
-                                    checkBox.isChecked() || !isSavedMessages || isGroup))
+                                    (checkBox.isChecked() || isGroup) && !isSavedMessages))
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> { });
             if (onlyOutgoing && !isSavedMessages && !isGroup) dialog.setView(checkBoxView);
             dialog.show();
