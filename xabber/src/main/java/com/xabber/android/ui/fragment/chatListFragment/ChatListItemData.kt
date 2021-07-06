@@ -84,8 +84,6 @@ data class ChatListItemData(
                 } else this
 
             return when {
-                lastMessage == null -> noMessagesText
-
                 GroupInviteManager.hasActiveIncomingInvites(account, contact) && chat is GroupChat -> {
                     StringUtils.getItalicTypeface(
                         StringUtils.getColoredText(
@@ -98,6 +96,8 @@ data class ChatListItemData(
                         )
                     )
                 }
+
+                lastMessage == null -> noMessagesText
 
                 chat.account.bareJid.toString() == chat.contactJid.bareJid.toString() && isSavedMessagesSpecialText -> {
                     context.getString(R.string.saved_messages__hint_forward_here)
