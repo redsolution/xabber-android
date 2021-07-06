@@ -193,8 +193,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                                 .map { it.onHistoryLoaded(accountItem) }
                         }
-                    },
-                    120000
+                    }
                 )
             }
         }
