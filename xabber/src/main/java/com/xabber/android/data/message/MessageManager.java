@@ -106,7 +106,6 @@ public class MessageManager implements OnPacketListener {
     private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-
         // TODO: 23.04.21 filemessages and forwards
         realm.executeTransactionAsync(realm1 -> {
 
@@ -356,7 +355,8 @@ public class MessageManager implements OnPacketListener {
         }
         boolean processed = false;
 
-        if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)) {
+        if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)
+                && !account.getBareJid().toString().equals(contactJid.getBareJid().toString())) {
             IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
                     IncomingInviteExtensionElement.NAMESPACE);
             long timestamp = 0;

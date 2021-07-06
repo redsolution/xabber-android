@@ -116,7 +116,9 @@ object MessageHandler {
             else -> Date().time
         }
 
-        if (messageStanza.hasIncomingInviteExtension()) {
+        if (messageStanza.hasIncomingInviteExtension()
+            && messageStanza.from.asBareJid().toString() != accountJid.bareJid.toString()
+        ) {
             GroupInviteManager.processIncomingInvite(
                 messageStanza.getIncomingInviteExtension()!!, accountJid, contactJid, timestamp
             )
