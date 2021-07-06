@@ -161,9 +161,13 @@ object MessageHandler {
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
             ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
 
-        val resource: Resourcepart? = messageStanza.from.resourceOrNull
-
-        if (resource != null && resource != Resourcepart.EMPTY) chat?.resource = resource
+        val resource =
+            if (messageStanza.from.asBareJid().toString() == chat.contactJid.bareJid.toString()
+                && messageStanza.from.resourceOrNull != null
+                && messageStanza.from.resourceOrNull != Resourcepart.EMPTY
+            ) {
+                messageStanza.from.resourceOrNull.also { chat?.resource = it }
+            } else null
 
         if (messageStanza.thread != null) chat?.threadId = messageStanza.thread
 
