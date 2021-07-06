@@ -890,11 +890,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         ChatStateManager.getInstance().onChatOpening(account, user);
 
         if (getChat() != null && getChat() instanceof GroupChat) {
-            try {
-                PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), true);
-            } catch (NetworkException e) {
-                LogManager.exception(getClass().getSimpleName(), e);
-            }
+            GroupsManager.INSTANCE.enableSendingPresenceToGroup((GroupChat) getChat(), true);
         }
 
         updateContact();
@@ -924,11 +920,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         ChatStateManager.getInstance().onPaused(account, user);
 
         if (getChat() != null && getChat() instanceof GroupChat) {
-            try {
-                PresenceManager.INSTANCE.sendPresenceToGroupchat(getChat(), false);
-            } catch (NetworkException e) {
-                LogManager.exception(getClass().getSimpleName(), e);
-            }
+            GroupsManager.INSTANCE.enableSendingPresenceToGroup((GroupChat) getChat(), false);
         }
 
         saveInputState();

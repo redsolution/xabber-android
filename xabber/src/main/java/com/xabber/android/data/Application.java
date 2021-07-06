@@ -152,18 +152,6 @@ public class Application extends android.app.Application {
      */
     private boolean closed;
 
-    /*
-    private final RejectedExecutionHandler onExecutionReject =
-            new RejectedExecutionHandler() {
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                    if (fallbackNetworkExecutor == null) {
-                        fallbackNetworkExecutor = createFallbackExecutor();
-                    }
-                    fallbackNetworkExecutor.execute(r);
-                    // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
-                }
-            };
-            */
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
@@ -177,6 +165,7 @@ public class Application extends android.app.Application {
         }
 
     };
+
     /**
      * Future for loading process.
      */

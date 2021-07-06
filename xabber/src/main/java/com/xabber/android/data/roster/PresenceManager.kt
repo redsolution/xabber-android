@@ -41,7 +41,6 @@ import com.xabber.android.data.extension.iqlast.LastActivityInteractor
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
-import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.notification.EntityNotificationProvider
@@ -51,7 +50,6 @@ import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.utils.StringUtils
 import com.xabber.xmpp.groups.GroupExtensionElement
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
-import com.xabber.xmpp.groups.GroupPresenceNotificationExtensionElement
 import com.xabber.xmpp.groups.hasGroupExtensionElement
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Stanza
@@ -326,24 +324,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     @Throws(NetworkException::class)
-    fun sendPresenceToGroupchat(abstractChat: AbstractChat, isPresent: Boolean) {
-        LogManager.i(this, "sendPresenceToGroupchat: $abstractChat")
-        getAccountPresence(abstractChat.account)?.let { accountPresence ->
-            VCardManager.getInstance().addVCardUpdateToPresence(
-                accountPresence,
-                AvatarManager.getInstance().getHash(abstractChat.account.bareJid)
-            )
-            StanzaSender.sendStanza(
-                abstractChat.account,
-                accountPresence.apply {
-                    addExtension(GroupPresenceNotificationExtensionElement(isPresent))
-                    to = abstractChat.to
-                })
-        }
-    }
-
-    @Throws(NetworkException::class)
-    private fun getAccountPresence(account: AccountJid): Presence? =
+    fun getAccountPresence(account: AccountJid): Presence? =
         AccountManager.getInstance().getAccount(account)?.presence
 
     override fun onStanza(connection: ConnectionItem, stanza: Stanza) {

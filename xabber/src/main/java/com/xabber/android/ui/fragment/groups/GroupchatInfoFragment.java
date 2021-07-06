@@ -25,6 +25,7 @@ import com.xabber.android.data.extension.groups.GroupIndexType;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupMembershipType;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -107,11 +108,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         requestLists();
 
         if (groupChat != null && groupChat instanceof GroupChat) {
-            try {
-                PresenceManager.INSTANCE.sendPresenceToGroupchat(groupChat, true);
-            } catch (NetworkException e) {
-                LogManager.exception(getClass().getSimpleName(), e);
-            }
+            GroupsManager.INSTANCE.enableSendingPresenceToGroup((GroupChat) groupChat, true);
         }
     }
 
@@ -124,11 +121,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
 
         if (groupChat != null && groupChat instanceof GroupChat) {
-            try {
-                PresenceManager.INSTANCE.sendPresenceToGroupchat(groupChat, false);
-            } catch (NetworkException e) {
-                LogManager.exception(getClass().getSimpleName(), e);
-            }
+            GroupsManager.INSTANCE.enableSendingPresenceToGroup((GroupChat) groupChat, false);
         }
     }
 

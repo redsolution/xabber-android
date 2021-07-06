@@ -2,11 +2,10 @@ package com.xabber.android.data.extension.groups
 
 import android.widget.Toast
 import com.xabber.android.R
-import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
-import com.xabber.android.data.OnLoadListener
+import com.xabber.android.data.*
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.StanzaSender
 import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
@@ -16,11 +15,13 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.retract.RetractManager
+import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
+import com.xabber.android.data.roster.PresenceManager
 import com.xabber.android.data.roster.PresenceManager.addAutoAcceptGroupSubscription
 import com.xabber.android.data.roster.PresenceManager.requestSubscription
 import com.xabber.android.data.roster.RosterManager
@@ -31,6 +32,7 @@ import com.xabber.xmpp.avatar.MetadataInfo
 import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.GroupPinMessageIQ
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
+import com.xabber.xmpp.groups.GroupPresenceNotificationExtensionElement
 import com.xabber.xmpp.groups.create.CreateGroupchatIQ
 import com.xabber.xmpp.groups.create.CreateGroupchatIQ.ResultIq
 import com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsDataFormResultIQ
@@ -56,20 +58,66 @@ import org.jivesoftware.smackx.pubsub.packet.PubSub
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import org.jxmpp.jid.Jid
 import java.util.*
+import kotlin.jvm.Throws
 
 object GroupsManager : OnPacketListener, OnLoadListener {
 
     const val NAMESPACE = "https://xabber.com/protocol/groups"
     const val SYSTEM_MESSAGE_NAMESPACE = NAMESPACE + GroupSystemMessageExtensionElement.HASH_BLOCK
 
+    private const val PRESENCE_RESEND_CYCLE_MILLIS = 30000L
+
     private val availableGroupServers: MutableMap<AccountJid, MutableList<Jid>?> = HashMap()
     private val customGroupServers: MutableMap<AccountJid, MutableList<String>?> = HashMap()
+
+    /**
+     * We have agreed to send "present" presence to group every @see PRESENCE_RESEND_CYCLE_MILLIS
+     */
+    private val groupsToSendPresence = mutableListOf<GroupChat>()
+
+    private val presenceResendingRunnable = Runnable {
+        groupsToSendPresence.map { sendPresenceToGroup(it) }
+        startPresenceResendingRunnable()
+    }
+
+    private fun startPresenceResendingRunnable() {
+        Application.getInstance().runOnUiThreadDelay(presenceResendingRunnable, PRESENCE_RESEND_CYCLE_MILLIS)
+    }
 
     override fun onLoad() {
         availableGroupServers.clear()
         availableGroupServers.putAll(AccountRepository.getGroupServers())
         customGroupServers.clear()
         customGroupServers.putAll(AccountRepository.getCustomGroupServers())
+        startPresenceResendingRunnable()
+    }
+
+    private fun sendPresenceToGroup(group: GroupChat, isPresent: Boolean = true) {
+        try {
+            Application.getInstance().runInBackgroundNetworkUserRequest {
+                PresenceManager.getAccountPresence(group.account)?.let { accountPresence ->
+                    VCardManager.getInstance().addVCardUpdateToPresence(
+                        accountPresence, AvatarManager.getInstance().getHash(group.account.bareJid)
+                    )
+                    StanzaSender.sendStanza(
+                        group.account,
+                        accountPresence.apply {
+                            addExtension(GroupPresenceNotificationExtensionElement(isPresent))
+                            to = group.to
+                        })
+                }
+            }
+        } catch (ignore: NetworkException) {}
+    }
+
+    fun enableSendingPresenceToGroup(group: GroupChat, isPresent: Boolean = true) {
+        sendPresenceToGroup(group, isPresent)
+
+        if (isPresent) {
+            groupsToSendPresence.add(group)
+        } else {
+            groupsToSendPresence.remove(group)
+        }
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
