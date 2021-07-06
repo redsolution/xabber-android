@@ -20,6 +20,11 @@ public class ReplaceMessageIQ extends IQ {
         this.setType(Type.set);
     }
 
+    ReplaceMessageIQ(String id, String by, String to, Message message) {
+        this(id, by, message);
+        setTo(to);
+    }
+
     @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
         xml.attribute(BY_ATTRIBUTE, by);

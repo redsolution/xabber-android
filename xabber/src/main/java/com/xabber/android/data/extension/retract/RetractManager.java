@@ -18,6 +18,9 @@ import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -145,7 +148,7 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
                                   final String uniqueId, final String text){
         Application.getInstance().runInBackgroundNetworkUserRequest(() ->  {
             Realm realm = null;
-            final Message[] message = {new Message()};
+            final Message[] message = { new Message() };
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 ->  {
@@ -187,8 +190,15 @@ public class RetractManager implements OnPacketListener, OnAuthenticatedListener
             } finally { if (realm != null) realm.close(); }
             //now try to send packet to server
             try {
-                ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message[0].getStanzaId(),
-                        accountJid.toString(), message[0]);
+                ReplaceMessageIQ replaceMessageIQ;
+
+                AbstractChat chat = ChatManager.getInstance().getChat(accountJid, contactJid);
+                if (chat instanceof GroupChat && ((GroupChat) chat).getFullJidIfPossible() != null) {
+                    replaceMessageIQ = new ReplaceMessageIQ(message[0].getStanzaId(), accountJid.toString(),
+                            ((GroupChat) chat).getFullJidIfPossible().toString(), message[0]);
+                } else {
+                    replaceMessageIQ = new ReplaceMessageIQ(message[0].getStanzaId(), accountJid.toString(), message[0]);
+                }
                 AccountManager.getInstance().getAccount(accountJid).getConnection()
                         .sendIqWithResponseCallback(replaceMessageIQ, packet -> {
                                 //TODO implement iq replies handler
