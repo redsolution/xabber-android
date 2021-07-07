@@ -57,7 +57,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     private AccountJid account;
     private ContactJid groupchatContact;
     private AbstractChat groupChat;
-    private Presence groupchatPresence;
 
     // members list
     private ViewGroup membersLayout;
@@ -183,7 +182,6 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        groupchatPresence = PresenceManager.INSTANCE.getPresence(account, groupchatContact);
         groupChat = ChatManager.getInstance().getChat(account, groupchatContact);
 
         if (groupChat instanceof GroupChat) {
@@ -257,7 +255,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
             groupchatDescriptionLayout.setVisibility(View.VISIBLE);
         } else groupchatDescriptionLayout.setVisibility(View.GONE);
 
-        String status = groupchatPresence.getStatus();
+        String status = PresenceManager.INSTANCE.getPresence(account, groupchatContact).getStatus();
         if (status != null && !status.isEmpty()) {
             groupchatStatusText.setText(status);
             groupchatStatusLayout.setVisibility(View.VISIBLE);
