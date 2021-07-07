@@ -751,8 +751,8 @@ object GroupMemberManager {
                                         role = GroupMemberRealmObject.Role.valueOf(memberExtension.role)
                                         nickname = memberExtension.nickname
                                         badge = memberExtension.badge
+                                        lastSeen = memberExtension.lastPresent
                                         memberExtension.jid?.let { jid = it }
-                                        memberExtension.lastPresent?.let { lastSeen = it }
                                         memberExtension.avatarInfo?.let {
                                             avatarHash = it.id
                                             avatarUrl = it.url.toString()
