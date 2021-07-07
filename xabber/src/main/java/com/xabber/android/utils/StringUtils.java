@@ -55,8 +55,7 @@ public class StringUtils {
     private static final DateFormat timeFormat;
 
     static {
-        DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-                DateFormat.SHORT);
+        DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
         TIME = new SimpleDateFormat("HH:mm:ss");
         timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
         groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -152,15 +151,6 @@ public class StringUtils {
         else return new SimpleDateFormat("dd MM yyyy HH:mm:ss").format(timeStamp);
     }
 
-    public static Date getDateByGroupMemberPresenceTimeFormat(String groupMemberLastSeen) {
-        try {
-            return groupchatMemberPresenceTimeFormat.parse(groupMemberLastSeen);
-        } catch (Exception e) {
-            LogManager.exception("StringUtils", e);
-            return new Date();
-        }
-    }
-
     @NonNull
     public static String getLastPresentString(String lastPresent) {
         String result = null;
@@ -174,7 +164,6 @@ public class StringUtils {
                     long timeAgo = System.currentTimeMillis() - lastActivityTime;
                     long time;
                     String sTime;
-                    Date date = new Date(lastActivityTime);
                     Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
                     if (timeAgo < 60) {
@@ -187,30 +176,30 @@ public class StringUtils {
                     } else if (timeAgo < 7200) {
                         result = Application.getInstance().getString(R.string.last_seen_hours);
 
-                    } else if (isToday(date)) {
+                    } else if (isToday(lastPresentDate)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(date);
+                        sTime = pattern.format(lastPresentDate);
                         result = Application.getInstance().getString(R.string.last_seen_today, sTime);
 
-                    } else if (isYesterday(date)) {
+                    } else if (isYesterday(lastPresentDate)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(date);
+                        sTime = pattern.format(lastPresentDate);
                         result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
 
                     } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(date);
+                        sTime = pattern.format(lastPresentDate);
                         result = Application.getInstance().getString(R.string.last_seen_on_week,
-                                getDayOfWeek(date, locale), sTime);
+                                getDayOfWeek(lastPresentDate, locale), sTime);
 
-                    } else if (isCurrentYear(date)) {
+                    } else if (isCurrentYear(lastPresentDate)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
-                        sTime = pattern.format(date);
+                        sTime = pattern.format(lastPresentDate);
                         result = Application.getInstance().getString(R.string.last_seen_date, sTime);
 
-                    } else if (!isCurrentYear(date)) {
+                    } else if (!isCurrentYear(lastPresentDate)) {
                         SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
-                        sTime = pattern.format(date);
+                        sTime = pattern.format(lastPresentDate);
                         result = Application.getInstance().getString(R.string.last_seen_date, sTime);
                     }
                 }

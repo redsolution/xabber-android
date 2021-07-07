@@ -53,9 +53,9 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
     @NonNull
     @Override
     public GroupchatMemberViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new GroupchatMemberViewHolder(LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.item_groupchat_member, parent, false));
+        return new GroupchatMemberViewHolder(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_groupchat_member, parent, false)
+        );
     }
 
     @Override
@@ -73,7 +73,9 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
         if (bindMember.getBadge() != null && !bindMember.getBadge().isEmpty()) {
             holder.memberBadge.setVisibility(View.VISIBLE);
             holder.memberBadge.setText(bindMember.getBadge());
-        } else holder.memberBadge.setVisibility(View.GONE);
+        } else {
+            holder.memberBadge.setVisibility(View.GONE);
+        }
 
         if (bindMember.getRole() != null) {
             holder.memberRole.setVisibility(View.VISIBLE);
@@ -99,9 +101,11 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
         } else {
             String memberStatus = StringUtils.getLastPresentString(bindMember.getLastSeen());
             holder.memberStatus.setText(memberStatus);
-            if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected)))
+            if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected))) {
                 holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
-            else holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
+            } else {
+                holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.grey_500));
+            }
         }
 
         holder.avatar.setImageDrawable(AvatarManager.getInstance().getGroupMemberAvatar(bindMember, chat.getAccount()));

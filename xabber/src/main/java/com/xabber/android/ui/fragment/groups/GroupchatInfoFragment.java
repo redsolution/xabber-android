@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -342,7 +341,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (account == accountJid && groupchatContact == groupJid) {
             if (presence.getType() != Presence.Type.unsubscribed) {
                 Application.getInstance().runOnUiThread(() -> updateChatInfo((GroupChat) groupChat));
-                //todo maybe add updating
+                GroupMemberManager.INSTANCE.requestGroupchatMembers(accountJid, groupJid);
             } else {
                 try {
                     Thread.sleep(1000);
