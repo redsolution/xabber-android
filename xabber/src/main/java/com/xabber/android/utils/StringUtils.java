@@ -14,6 +14,7 @@
  */
 package com.xabber.android.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -151,68 +152,73 @@ public class StringUtils {
         else return new SimpleDateFormat("dd MM yyyy HH:mm:ss").format(timeStamp);
     }
 
+    @SuppressLint("StringFormatMatches")
     @NonNull
     public static String getLastPresentString(String lastPresent) {
-        String result = null;
         if (lastPresent != null && !lastPresent.isEmpty()) {
             try {
                 Date lastPresentDate = groupchatMemberPresenceTimeFormat.parse(lastPresent);
-                if (lastPresentDate == null) return Application.getInstance().getString(R.string.unavailable);
-                long lastActivityTime = lastPresentDate.getTime();
+                if (lastPresentDate == null) {
+                    return Application.getInstance().getString(R.string.unavailable);
+                }
 
-                if (lastActivityTime > 0) {
-                    long timeAgo = System.currentTimeMillis() - lastActivityTime;
-                    long time;
-                    String sTime;
+                if (lastPresentDate.getTime() > 0) {
+                    long timeAgo = (System.currentTimeMillis() - lastPresentDate.getTime()) / 1000;
                     Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
                     if (timeAgo < 60) {
-                        result = Application.getInstance().getString(R.string.last_seen_now);
+                        return Application.getInstance().getString(R.string.last_seen_now);
 
                     } else if (timeAgo < 3600) {
-                        time = TimeUnit.SECONDS.toMinutes(timeAgo);
-                        result = Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
+                        return Application.getInstance().getString(
+                                R.string.last_seen_minutes,
+                                String.valueOf(
+                                        TimeUnit.SECONDS.toMinutes(timeAgo)
+                                )
+                        );
 
                     } else if (timeAgo < 7200) {
-                        result = Application.getInstance().getString(R.string.last_seen_hours);
+                        return Application.getInstance().getString(R.string.last_seen_hours);
 
                     } else if (isToday(lastPresentDate)) {
-                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(lastPresentDate);
-                        result = Application.getInstance().getString(R.string.last_seen_today, sTime);
+                        return Application.getInstance().getString(
+                                R.string.last_seen_today,
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
 
                     } else if (isYesterday(lastPresentDate)) {
-                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(lastPresentDate);
-                        result = Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
+                        return Application.getInstance().getString(
+                                R.string.last_seen_yesterday,
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
 
                     } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
-                        SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
-                        sTime = pattern.format(lastPresentDate);
-                        result = Application.getInstance().getString(R.string.last_seen_on_week,
-                                getDayOfWeek(lastPresentDate, locale), sTime);
+                        return Application.getInstance().getString(
+                                R.string.last_seen_on_week,
+                                getDayOfWeek(lastPresentDate, locale),
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
 
                     } else if (isCurrentYear(lastPresentDate)) {
-                        SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
-                        sTime = pattern.format(lastPresentDate);
-                        result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+                        return Application.getInstance().getString(
+                                R.string.last_seen_date,
+                                new SimpleDateFormat("d MMMM", locale).format(lastPresentDate)
+                        );
 
                     } else if (!isCurrentYear(lastPresentDate)) {
-                        SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
-                        sTime = pattern.format(lastPresentDate);
-                        result = Application.getInstance().getString(R.string.last_seen_date, sTime);
+                        return Application.getInstance().getString(
+                                R.string.last_seen_date,
+                                new SimpleDateFormat("d MMMM yyyy", locale).format(lastPresentDate)
+                        );
                     }
                 }
             } catch (ParseException e) {
                 LogManager.exception("StringUtils", e);
             }
+            return Application.getInstance().getString(R.string.unavailable);
         } else {
-            result = Application.getInstance().getString(R.string.account_state_connected);
+            return Application.getInstance().getString(R.string.account_state_connected); // Online
         }
-        if (result == null) {
-             result = Application.getInstance().getString(R.string.unavailable);
-        }
-        return result;
     }
 
     public static boolean isCurrentYear(Date date){
