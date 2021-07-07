@@ -680,50 +680,9 @@ object GroupMemberManager {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                    GroupchatMembersQueryIQ(groupChat).apply { queryId = memberId }
-                ) { packet ->
-                    if (packet is GroupchatMembersResultIQ
-                        && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
-                        && accountJid.bareJid.equals(packet.getTo().asBareJid())
-                    ) {
-                        Application.getInstance().runInBackground {
-                            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-                                realm.executeTransaction { realm1 ->
-                                    packet.listOfMembers.map { memberExtension ->
-                                        (realm1.where(GroupMemberRealmObject::class.java)
-                                            .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
-                                            .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupchatJid.toString())
-                                            .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, memberExtension.id)
-                                            .findFirst()
-                                            ?: GroupMemberRealmObject.createGroupMemberRealmObject(
-                                                accountJid, groupchatJid, memberExtension.id
-                                            ))
-                                            ?.apply {
-                                                role = GroupMemberRealmObject.Role.valueOf(memberExtension.role)
-                                                nickname = memberExtension.nickname
-                                                badge = memberExtension.badge
-                                                memberExtension.jid?.let { jid = it }
-                                                memberExtension.lastPresent?.let { lastSeen = it }
-                                                memberExtension.avatarInfo?.let {
-                                                    avatarHash = it.id
-                                                    avatarUrl = it.url.toString()
-                                                }
-                                                memberExtension.subscription?.let {
-                                                    subscriptionState =
-                                                        GroupMemberRealmObject.SubscriptionState.valueOf(it)
-                                                }
-                                            }
-                                            ?.let { gmro -> realm1.insertOrUpdate(gmro) }
-                                    }
-                                }
-                            }
-                            Application.getInstance().getUIListeners(OnGroupchatRequestListener::class.java)
-                                .forEachOnUi { listener ->
-                                    listener.onGroupchatMembersReceived(accountJid, groupchatJid)
-                                }
-                        }
-                    }
-                }
+                    GroupchatMembersQueryIQ(groupChat).apply { queryId = memberId },
+                    GroupchatMembersResultListener(accountJid, groupchatJid)
+                )
             } catch (e: Exception) {
                 LogManager.exception(this.javaClass.simpleName, e)
             }
@@ -807,9 +766,11 @@ object GroupMemberManager {
                         }
                     }
 
-                    (ChatManager.getInstance().getChat(account, groupchatJid) as? GroupChat)?.let {
-                        it.membersListVersion = packet.queryVersion
-                        ChatManager.getInstance().saveOrUpdateChatDataToRealm(it)
+                    packet.queryVersion?.let { version ->
+                        (ChatManager.getInstance().getChat(account, groupchatJid) as? GroupChat)?.let{ group ->
+                            group.membersListVersion = version
+                            ChatManager.getInstance().saveOrUpdateChatDataToRealm(group)
+                        }
                     }
 
                     Application.getInstance().getUIListeners(OnGroupchatRequestListener::class.java)
