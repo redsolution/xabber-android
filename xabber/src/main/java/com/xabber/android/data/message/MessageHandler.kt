@@ -44,6 +44,7 @@ import net.java.otr4j.io.messages.PlainTextMessage
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.delay.packet.DelayInformation
+import org.jivesoftware.smackx.receipts.DeliveryReceipt
 import org.jxmpp.jid.parts.Resourcepart
 import org.jxmpp.util.XmppDateTime
 import rx.schedulers.Schedulers
@@ -126,8 +127,12 @@ object MessageHandler {
             return null
         }
 
-        if (messageStanza.getOptimalTextBody() == null && messageStanza.hasExtension(ChatStateExtension.NAMESPACE)) {
-            return null
+        if (messageStanza.getOptimalTextBody().isNullOrEmpty()) {
+            if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)
+                || messageStanza.hasExtension(DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE)
+            ) {
+                return null
+            }
         }
 
         if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE) &&
