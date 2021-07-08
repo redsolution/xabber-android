@@ -157,7 +157,7 @@ public class NewContactTitleInflater {
             return;
         } else if (isBlocked) {
             statusText = "Blocked";
-        } else if (isServer) {
+        } else if (isServer && !isGroupchat) {
             statusText = "Server";
         } else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(

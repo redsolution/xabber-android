@@ -458,13 +458,15 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
         Application.getInstance().runOnUiThread {
 
             val contactJid =
-                ContactJid.from(groupJidEt.text.toString() + serverTv.text.substring(3 until serverTv.text.length))
+                ContactJid.from(
+                    groupJidEt.text.toString()
+                            + "@"
+                            + serverTv.text.substring(3 until serverTv.text.length)
+                )
 
             if (activity is CreateGroupActivity) {
                 activity?.startActivity(
-                    ChatActivity.createSendIntent(
-                        context, accountSpinner.selected ?: getAccount(), contactJid, null
-                    )
+                    ChatActivity.createSendIntent(context, accountSpinner.selected ?: getAccount(), contactJid, null)
                 )
             }
         }
@@ -472,7 +474,6 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
     override fun onIqError(error: XMPPError) {
         Application.getInstance().runOnUiThread {
-
             Toast.makeText(
                 context,
                 error.descriptiveText ?: getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
