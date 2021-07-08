@@ -1384,7 +1384,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             RetractManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
             hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
-            sendMessage(text, markupText);
+            sendMessage(text, markupText, false);
         } else {
             return;
         }
@@ -1401,12 +1401,14 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     private void sendMessage(String text) {
-        sendMessage(text, null);
+        sendMessage(text, null, true);
     }
 
-    private void sendMessage(String text, String markupText) {
+    private void sendMessage(String text, String markupText, Boolean needToPullDown) {
         MessageManager.getInstance().sendMessage(account, user, text, markupText);
-        setFirstUnreadMessageId(null);
+        if (needToPullDown) {
+            setFirstUnreadMessageId(null);
+        }
     }
 
 
