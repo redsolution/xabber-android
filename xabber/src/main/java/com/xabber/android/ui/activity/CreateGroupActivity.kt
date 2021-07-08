@@ -34,9 +34,11 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
         findViewById<Toolbar>(R.id.toolbar_default).apply {
             toolbar = this
 
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 setNavigationIcon(R.drawable.ic_clear_grey_24dp)
-            } else setNavigationIcon(R.drawable.ic_clear_white_24dp)
+            } else {
+                setNavigationIcon(R.drawable.ic_clear_white_24dp)
+            }
 
             setNavigationOnClickListener { finish() }
 
@@ -48,11 +50,14 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
             }
         }
 
-        val view = toolbar.findViewById<View>(R.id.action_create_groupchat) ?: toolbar.findViewById(R.id.action_create_incognito_groupchat)
+        val view = toolbar.findViewById<View>(R.id.action_create_groupchat)
+            ?: toolbar.findViewById(R.id.action_create_incognito_groupchat)
         if (view != null && view is TextView) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 view.setTextColor(resources.getColor(R.color.grey_900))
-            } else view.setTextColor(Color.WHITE)
+            } else {
+                view.setTextColor(Color.WHITE)
+            }
         }
 
         toolbarSetEnabled(false)
@@ -60,11 +65,11 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
         barPainter = BarPainter(this, toolbar)
         barPainter.setDefaultColor()
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragment_container, CreateGroupFragment.newInstance(isIncognito), FRAGMENT_TAG)
-                    .commit()
+                .beginTransaction()
+                .add(R.id.fragment_container, CreateGroupFragment.newInstance(isIncognito), FRAGMENT_TAG)
+                .commit()
         }
     }
 
@@ -78,28 +83,32 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
         toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.isVisible = !show
     }
 
-    override fun toolbarSetEnabled(enabled: Boolean){
+    override fun toolbarSetEnabled(enabled: Boolean) {
         toolbar.menu.findItem(R.id.action_create_groupchat)?.isEnabled = enabled
         toolbar.menu.findItem(R.id.action_create_incognito_groupchat)?.isEnabled = enabled
-        val view = findViewById<View>(R.id.action_create_groupchat) ?: findViewById(R.id.action_create_incognito_groupchat)
+        val view = findViewById<View>(R.id.action_create_groupchat)
+            ?: findViewById(R.id.action_create_incognito_groupchat)
+
         if (view is TextView) view.setTextColor(view.textColors.withAlpha(if (enabled) 255 else 127))
     }
 
     companion object {
 
         private const val FRAGMENT_TAG = "com.xabber.android.ui.fragment.groups.CreateGroupchatFragment"
-        private const val CREATE_INCOGNITO_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_INCOGNITO_GROUPCHAT_INTENT"
-        private const val CREATE_PUBLIC_GROUPCHAT_INTENT = "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_PUBLIC_GROUPCHAT_INTENT"
+        private const val CREATE_INCOGNITO_GROUPCHAT_INTENT =
+            "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_INCOGNITO_GROUPCHAT_INTENT"
+        private const val CREATE_PUBLIC_GROUPCHAT_INTENT =
+            "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_PUBLIC_GROUPCHAT_INTENT"
 
         fun createCreateIncognitoGroupchatIntent() =
-                Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
-                    action = CREATE_INCOGNITO_GROUPCHAT_INTENT
-                }
+            Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
+                action = CREATE_INCOGNITO_GROUPCHAT_INTENT
+            }
 
         fun createCreatePublicGroupchatIntent() =
-                Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
-                    action = CREATE_PUBLIC_GROUPCHAT_INTENT
-                }
+            Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
+                action = CREATE_PUBLIC_GROUPCHAT_INTENT
+            }
 
     }
 

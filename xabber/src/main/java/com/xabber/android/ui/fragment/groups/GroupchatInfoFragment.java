@@ -173,8 +173,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
     @Override
     public void onMemberClick(GroupMemberRealmObject groupMember) {
         Intent intent = GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId(
-                getActivity(),
-                groupMember.getMemberId(), (GroupChat) groupChat);
+                getActivity(), groupMember.getMemberId(), (GroupChat) groupChat);
         startActivity(intent);
     }
 
@@ -240,7 +239,7 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
         if (privacyType != null) {
             switch (privacyType) {
                 case PUBLIC:
-                    groupchatAnonymityText.setText(getContext().getString(R.string.groupchat_public_group));
+                    groupchatAnonymityText.setText(getString(R.string.groupchat_public_group));
                     break;
                 case INCOGNITO:
                     groupchatAnonymityText.setText(getString(R.string.groupchat_incognito_group));

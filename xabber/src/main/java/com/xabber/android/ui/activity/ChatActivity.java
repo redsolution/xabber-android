@@ -65,6 +65,7 @@ import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.OnChatStateListener;
 import com.xabber.android.ui.OnContactChangedListener;
+import com.xabber.android.ui.OnGroupPresenceUpdatedListener;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.android.ui.color.ColorManager;
@@ -82,6 +83,7 @@ import com.xabber.android.ui.preferences.CustomNotifySettings;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
@@ -98,7 +100,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener,
         OnBlockedListChangedListener, Toolbar.OnMenuItemClickListener, OnNewMessageListener,
         UpdateBackpressure.UpdatableObject, SnoozeDialog.OnSnoozeListener, SensorEventListener,
-        PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener, OnGroupPresenceUpdatedListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
@@ -346,6 +348,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
         Application.getInstance().addUIListener(OnNewMessageListener.class, this);
         Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
+        Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener.class, this);
 
         this.showArchived = getIntent().getBooleanExtra(KEY_SHOW_ARCHIVED, false);
 
@@ -557,6 +560,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
+    public void onGroupPresenceUpdated(@NotNull AccountJid accountJid, @NotNull ContactJid groupJid,
+                                       @NotNull Presence presence) {
+        update();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         updateBackpressure.removeRefreshRequests();
@@ -567,6 +576,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         Application.getInstance().removeUIListener(OnNewMessageListener.class, this);
         Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
+        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener.class, this);
 
         if (exitOnSend) ActivityManager.getInstance().cancelTask(this);
     }
@@ -616,8 +626,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateToolbar() {
-        NewContactTitleInflater.updateTitle(contactTitleView, this,
-                RosterManager.getInstance().getBestContact(account, user), getNotifMode());
+        NewContactTitleInflater.updateTitle(
+                contactTitleView, this, RosterManager.getInstance().getBestContact(account, user), getNotifMode()
+        );
 
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){

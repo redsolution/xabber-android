@@ -148,6 +148,7 @@ object ChatMarkerManager : OnPacketListener {
         }
     }
 
+    //possible bug
     private fun markAsDisplayed(displayedExtension: ChatMarkersElements.DisplayedExtension) {
         if (displayedExtension.getId() == null || displayedExtension.getId().isEmpty()) {
             if (displayedExtension.stanzaId.isNotEmpty()) markAsDisplayed(displayedExtension.stanzaId.first())
@@ -189,6 +190,7 @@ object ChatMarkerManager : OnPacketListener {
         }
     }
 
+    //possible bug
     private fun markAsReceived(receivedExtension: ChatMarkersElements.ReceivedExtension) {
         if (receivedExtension.getId() == null || receivedExtension.getId().isEmpty()) {
             if (receivedExtension.stanzaId.isNotEmpty()) markAsReceived(receivedExtension.stanzaId.first())

@@ -104,9 +104,12 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
             String circleAddInput = savedInstanceState.getString(SAVED_ADD_CIRCLE_NAME);
             contactCircleEditorAdapter.setInputCircleName(circleAddInput);
         } else {
-            if (account != null) circles = RosterManager.getInstance().getCircles(getAccount());
-            if (contactJid != null)
+            if (account != null) {
+                circles = RosterManager.getInstance().getCircles(getAccount());
+            }
+            if (contactJid != null) {
                 selected = RosterManager.getInstance().getCircles(getAccount(), getContactJid());
+            }
         }
     }
 
@@ -133,8 +136,9 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     @Override
     public void onResume() {
         super.onResume();
-        if (circles != null)
+        if (circles != null) {
             updateCircles();
+        }
     }
 
     protected void updateCircles() {
@@ -161,9 +165,10 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         if (getAccount() != null){
             titleTv.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
         } else {
-            if (!AccountManager.getInstance().getEnabledAccounts().isEmpty())
+            if (!AccountManager.getInstance().getEnabledAccounts().isEmpty()) {
                 titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
                         .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
+            }
         }
 
         toggleVisibility(AccountManager.getInstance().getEnabledAccounts().size() == 1 || getAccount() != null);
@@ -214,8 +219,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     }
 
     @Override
-    public void onCircleToggled() {
-    }
+    public void onCircleToggled() { }
 
     public void saveCircles() {
         selected = getSelected();

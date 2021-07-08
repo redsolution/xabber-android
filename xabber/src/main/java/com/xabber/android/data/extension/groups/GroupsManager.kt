@@ -58,7 +58,6 @@ import org.jivesoftware.smackx.pubsub.packet.PubSub
 import org.jivesoftware.smackx.xdata.packet.DataForm
 import org.jxmpp.jid.Jid
 import java.util.*
-import kotlin.jvm.Throws
 
 object GroupsManager : OnPacketListener, OnLoadListener {
 
@@ -256,13 +255,17 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                             val account = AccountJid.from(packet.getTo().toString())
                             addAutoAcceptGroupSubscription(account, contactJid)
                             requestSubscription(account, contactJid, false)
-                            ChatManager.getInstance().createGroupChat(account, contactJid).apply {
+                            val chat = ChatManager.getInstance().createGroupChat(account, contactJid)
+
+                            chat.apply {
                                 name = groupName
                                 description = groupDescription
                                 indexType = groupIndexType
                                 membershipType = groupMembershipType
                                 privacyType = groupPrivacyType
                             }
+
+                            ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
                             listener?.onResult()
                         } catch (e: Exception) {
                             LogManager.exception(this::class.java.simpleName, e)
