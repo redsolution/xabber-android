@@ -231,6 +231,15 @@ object MessageHandler {
             MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
         } else MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
 
+        val messageStatus =
+            when {
+                isIncoming && !isMe -> MessageStatus.NONE
+                messageStanza.hasExtension(
+                    ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE
+                ) -> MessageStatus.DELIVERED
+                else -> MessageStatus.DISPLAYED
+            }
+
         messageRealmObject.apply {
             this.text = body ?: ""
             this.isRead = !isIncoming || isGroupSystem
@@ -246,7 +255,7 @@ object MessageHandler {
             this.isForwarded = false
             this.isGroupchatSystem = isGroupSystem
             this.resource = resource ?: Resourcepart.EMPTY
-            this.messageStatus = if (isIncoming && !isMe) MessageStatus.NONE else MessageStatus.DISPLAYED
+            this.messageStatus = messageStatus
             this.markupText = markupBody
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
             (attachmentRealmObjects)?.let { this.attachmentRealmObjects = it }
