@@ -17,6 +17,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.retract.RetractManager;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
@@ -91,6 +94,14 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
 
                 // remove groupchat from roster
                 RosterManager.getInstance().removeContact(account, groupchatJid);
+
+                MessageManager.getInstance().clearHistory(account, groupchatJid);
+                if (RetractManager.getInstance().isSupported(account)) {
+                    RetractManager.getInstance().sendRetractAllMessagesRequest(account, groupchatJid, false);
+                }
+                RosterManager.getInstance().removeContact(account, groupchatJid);
+                ChatManager.getInstance().removeChat(account, groupchatJid);
+
                 for (OnChatUpdatedListener listener :
                         Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
                     listener.onAction();
