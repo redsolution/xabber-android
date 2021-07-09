@@ -249,7 +249,6 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      * Creates and adds new regular chat to be managed.
      */
     public RegularChat createRegularChat(AccountJid account, ContactJid user) {
-        LogManager.exception(this, new Exception("Created regular chat"));
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
@@ -260,7 +259,6 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
      * Creates and adds new group chat to be managed.
      */
     public GroupChat createGroupChat(AccountJid account, ContactJid groupJid) {
-        LogManager.exception(this, new Exception("Created group chat"));
         GroupChat chat = new GroupChat(account, groupJid);
         addChat(chat);
         saveOrUpdateChatDataToRealm(chat);
