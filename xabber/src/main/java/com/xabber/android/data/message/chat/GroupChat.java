@@ -45,6 +45,8 @@ public class GroupChat extends AbstractChat {
     private int numberOfMembers;
     private int numberOfOnlineMembers;
 
+    private String retractVersion;
+
     //Permissions and restrictions
     private boolean canInvite;
     private boolean canChangeSettings;
@@ -64,7 +66,7 @@ public class GroupChat extends AbstractChat {
                      String membersListVersion, boolean canInvite, boolean canChangeSettings,
                      boolean canChangeUsersSettings, boolean canChangeNicknames, boolean canChangeBadge,
                      boolean canBlockUsers, boolean canChangeAvatars, Resourcepart resource,
-                     NotificationState notificationState) {
+                     NotificationState notificationState, String retractVersion) {
         super(account, user);
         this.indexType = indexType;
         this.membershipType = membershipType;
@@ -84,6 +86,7 @@ public class GroupChat extends AbstractChat {
         this.canChangeAvatars = canChangeAvatars;
         this.resource = resource;
         this.setNotificationState(notificationState, false);
+        this.retractVersion = retractVersion;
     }
 
     @Override
@@ -225,5 +228,8 @@ public class GroupChat extends AbstractChat {
             return 1;
         } else return super.getUnreadMessageCount();
     }
+
+    public String getRetractVersion() { return retractVersion; }
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
 
 }

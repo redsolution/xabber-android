@@ -11,12 +11,13 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageHandler;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.groups.GroupExtensionElement;
-import com.xabber.xmpp.sid.UniqueIdsHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.packet.Message;
@@ -34,7 +35,6 @@ import io.realm.RealmResults;
 public class DeliveryManager implements OnPacketListener, OnConnectedListener {
 
     public static final String NAMESPACE = "https://xabber.com/protocol/delivery";
-    public static final String LOG_TAG = DeliveryManager.class.getSimpleName();
 
     private static DeliveryManager instance;
 
@@ -49,8 +49,8 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             try {
                 return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
             } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
-                LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+                LogManager.exception(this, e);
+                LogManager.d(this, "To check supporting connection should be connected!");
             }
         return false;
     }
@@ -94,7 +94,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                                         ChatManager.getInstance().getChat(messageRealmObject.getAccount(),
                                                 messageRealmObject.getUser()).sendMessage(messageRealmObject);
 
-                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: "
+                                        LogManager.d(this, "Retry sending message with stanza: "
                                                 + messageRealmObject.getOriginalStanza());
                                     }
                                 }
@@ -102,7 +102,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     }
                 });
             } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
+                LogManager.exception(this, e);
             } finally { if (realm != null) realm.close(); }
         });
     }
@@ -120,9 +120,13 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                             .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, originId)
                             .findFirst();
                     if (messageRealmObject == null){
-                        LogManager.exception(LOG_TAG, new NullPointerException("Warning! Got delivery receipt for " +
-                                "origin id: " + originId + ", but can't find message in database"));
+                        LogManager.e(
+                                this,
+                                "Got delivery receipt for " + "origin id: " + originId + ", but can't find message in database"
+                        );
                     } else {
+                        LogManager.d(this,
+                                "Got delivery receipt for " + "origin id: " + originId + "; stanza id: " + stanzaId);
                         messageRealmObject.setStanzaId(stanzaId);
                         messageRealmObject.setMessageStatus(MessageStatus.DELIVERED);
                         if (time != null && !time.isEmpty()){
@@ -133,7 +137,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     }
                 });
             } catch (Exception e) {
-                LogManager.exception(LOG_TAG, e);
+                LogManager.exception(this, e);
             } finally { if (realm != null) realm.close(); }
         });
     }
@@ -147,32 +151,29 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
     public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (stanza instanceof Message && ((Message) stanza).getType().equals(Message.Type.headline)
                 && stanza.hasExtension(ReceivedExtensionElement.NAMESPACE)) {
-            String timestamp = "";
-            String originId = "";
-            String stanzaId = "";
             try{
                 if (stanza.hasExtension(ReceivedExtensionElement.ELEMENT, ReceivedExtensionElement.NAMESPACE)){
                     ReceivedExtensionElement receipt = (ReceivedExtensionElement) stanza.getExtension(NAMESPACE);
-                    timestamp = receipt.getTimeElement().getTimeStamp();
-                    originId = receipt.getOriginIdElement().getId();
-                    stanzaId = receipt.getStanzaIdElement().getId();
+                    markMessageReceivedInDatabase(
+                            receipt.getTimeElement().getTimeStamp(),
+                            receipt.getOriginIdElement().getId(),
+                            receipt.getStanzaIdElement().getId()
+                    );
+                    for (OnMessageUpdatedListener listener :
+                            Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                        listener.onAction();
+                    }
                 } else if (stanza.hasExtension(GroupExtensionElement.ELEMENT, NAMESPACE)) {
                     StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
-                    Message message = PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString());
-                    originId = UniqueIdsHelper.getOriginId(message);
-                    stanzaId = UniqueIdsHelper.getStanzaIdBy(message, stanza.getFrom().asBareJid().toString());
-                    if (echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE) != null){
-                        timestamp = echoElement.getFirstElement(TimeElement.ELEMENT, TimeElement.NAMESPACE)
-                                .getAttributeValue(TimeElement.ATTRIBUTE_STAMP);
-                    }
+                    MessageHandler.INSTANCE.parseMessage(
+                            connection.getAccount(),
+                            ContactJid.from(stanza.getFrom()),
+                            PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString()),
+                            null
+                    );
                 }
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            }
-            markMessageReceivedInDatabase(timestamp, originId, stanzaId);
-            for (OnMessageUpdatedListener listener :
-                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onAction();
+            } catch (Exception e) {
+                LogManager.exception(this, e);
             }
         }
     }

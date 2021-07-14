@@ -99,6 +99,9 @@ public class AccountRepository {
                     if (accountItem.getStartHistoryTimestamp() != null){
                         accountRealmObject.setStartHistoryTimestamp(accountItem.getStartHistoryTimestamp().getTime());
                     }
+                    if (accountItem.getRetractVersion() != null) {
+                        accountRealmObject.setRetractVersion(accountItem.getRetractVersion());
+                    }
 
                     realm1.copyToRealmOrUpdate(accountRealmObject);
                     LogManager.d(LOG_TAG, "Account " + accountItem.getAccount().getBareJid() + " has been successfully " +

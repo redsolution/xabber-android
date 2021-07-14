@@ -47,6 +47,7 @@ public class AccountRealmObject extends RealmObject {
         public static final String UPLOAD_SERVER = "uploadServer";
         public static final String GROUP_SERVERS = "groupServers";
         public static final String CUSTOM_GROUP_SERVERS = "customGroupServers";
+        public static final String RETRACT_VERSION = "retractVersion";
     }
 
     @PrimaryKey
@@ -102,6 +103,7 @@ public class AccountRealmObject extends RealmObject {
     private boolean clearHistoryOnExit;
     private String mamDefaultBehavior;
     private String loadHistorySettings;
+    private String retractVersion;
 
     /**
      * First history (cold boot) loading timestamp
@@ -478,5 +480,8 @@ public class AccountRealmObject extends RealmObject {
     public void setStartHistoryTimestamp(long startHistoryTimestamp) {
         this.startHistoryTimestamp = startHistoryTimestamp;
     }
+
+    public String getRetractVersion() { return retractVersion; }
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
 
 }

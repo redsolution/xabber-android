@@ -132,13 +132,15 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      *  */
     private Date startHistoryTimestamp;
 
+    private String retractVersion;
+
     public AccountItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
                        Resourcepart resource, boolean storePassword, String password, String token, XToken xToken,
                        int colorIndex, int order, boolean syncNotAllowed, int timestamp, int priority,
                        StatusMode statusMode, String statusText, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                        boolean compression, ProxyType proxyType, String proxyHost, int proxyPort, String proxyUser,
                        String proxyPassword, boolean syncable, KeyPair keyPair, Date lastSync, ArchiveMode archiveMode,
-                       boolean xabberAutoLoginEnabled) {
+                       boolean xabberAutoLoginEnabled, String retractVersion) {
         super(custom, host, port, serverName, userName, resource, storePassword, password, token, xToken, saslEnabled,
                 tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         this.id = UUID.randomUUID().toString();
@@ -161,6 +163,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
         this.loadHistorySettings = LoadHistorySettings.all;
         this.successfulConnectionHappened = false;
+        this.retractVersion = retractVersion;
     }
 
     /**
@@ -467,5 +470,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     public void setStartHistoryTimestamp(Date startHistoryTimestamp) {
         this.startHistoryTimestamp = startHistoryTimestamp;
     }
+
+    public String getRetractVersion() { return retractVersion; }
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
 
 }

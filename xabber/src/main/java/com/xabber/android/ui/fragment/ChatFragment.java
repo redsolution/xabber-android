@@ -69,6 +69,7 @@ import androidx.transition.TransitionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.BaseIqResultUiListener;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
@@ -144,6 +145,8 @@ import com.xabber.xmpp.chat_state.ChatStateSubtype;
 
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -170,7 +173,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener,
         IncomingMessageVH.OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
         OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
-        OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener {
+        OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener, BaseIqResultUiListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -1381,7 +1384,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
-            RetractManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
+            RetractManager.INSTANCE.sendReplaceMessageTextRequest(
+                    account, user, bottomPanelMessagesIds.get(0), text, this
+            );
             hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
             sendMessage(text, markupText, false);
@@ -1587,7 +1592,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             if (messageRealmObject.isIncoming()) onlyOutgoing = false;
         }
         int size = ids.size();
-        if (RetractManager.getInstance().isSupported(account)) {
+        if (RetractManager.INSTANCE.isSupported(account)) {
             View checkBoxView = View.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
             checkBox.setText(String.format(getResources().getString(R.string.delete_for_all),
@@ -1596,11 +1601,14 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     .setTitle(getResources().getQuantityString(R.plurals.delete_message_title, size, size))
                     .setMessage(getResources().getQuantityString(R.plurals.delete_message_question, size))
                     .setPositiveButton(R.string.delete, (dialog14, which) ->
-                            RetractManager.getInstance().tryToRetractMessage(
+                            RetractManager.INSTANCE.sendRetractMessagesRequest(
                                     account,
-                                    isGroup ? user : null,
+                                    user,
                                     ids,
-                                    (checkBox.isChecked() || isGroup) && !isSavedMessages))
+                                    (checkBox.isChecked() || isGroup) && !isSavedMessages,
+                                    this
+                            )
+                    )
                     .setNegativeButton(R.string.cancel_action, (dialog13, which) -> { });
             if (onlyOutgoing && !isSavedMessages && !isGroup) dialog.setView(checkBoxView);
             dialog.show();
@@ -1716,15 +1724,17 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     .setTitle(getResources().getString(R.string.dialog_delete_saved_messages__header))
                     .setMessage(getResources().getString(R.string.dialog_delete_saved_messages__confirm))
                     .setPositiveButton(R.string.delete, (dialog12, which) -> {
-                        if (RetractManager.getInstance().isSupported(account)) {
-                            RetractManager.getInstance().sendRetractAllMessagesRequest(account, user, false);
+                        if (RetractManager.INSTANCE.isSupported(account)) {
+                            RetractManager.INSTANCE.sendRetractAllMessagesRequest(account, user, false, this);
                         } else MessageManager.getInstance().clearHistory(account, user);
                     })
                     .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })
                     .show();
         } else {
-            ChatHistoryClearDialog.newInstance(account, user)
-                    .show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+            ChatHistoryClearDialog.Companion.newInstance(account, user).show(
+                    requireFragmentManager(),
+                    ChatHistoryClearDialog.class.getSimpleName()
+            );
         }
     }
 
@@ -1786,7 +1796,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     @Override
     public void onChangeCheckedItems(int checkedItems) {
         boolean isEditable = checkedItems == 1
-                && RetractManager.getInstance().isSupported(account)
+                && RetractManager.INSTANCE.isSupported(account)
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).isIncoming()
                 && !chatMessageAdapter.getCheckedMessageRealmObjects().get(0).haveAttachments()
                 && (chatMessageAdapter.getCheckedMessageRealmObjects().get(0).getMessageStatus().equals(MessageStatus.DELIVERED)
@@ -2644,6 +2654,28 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             }
             ((ChatActivity) getActivity()).forwardMessages(rightSavedMessagesIds);
         } else ((ChatActivity) getActivity()).forwardMessages(forwardIds);
+    }
+
+    @Override
+    public void onSend() { }
+    @Override
+    public void onResult() { }
+    @Override
+    public void onOtherError(@org.jetbrains.annotations.Nullable Exception exception) { }
+    @Override
+    public void onOtherErrors(@NotNull List<? extends Exception> exceptions) { }
+    @Override
+    public void onIqErrors(@NotNull List<? extends XMPPError> errors) { }
+    @Override
+    public void processStanza(@org.jetbrains.annotations.Nullable Stanza packet) { }
+    @Override
+    public void processException(@org.jetbrains.annotations.Nullable Exception exception) { }
+
+    @Override
+    public void onIqError(@NotNull XMPPError error) {
+        Application.getInstance().runOnUiThread( () ->
+                Toast.makeText(requireContext(), error.getConditionText(), Toast.LENGTH_SHORT).show()
+        );
     }
 
     private enum VoiceRecordState {

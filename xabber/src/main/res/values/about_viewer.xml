@@ -28,8 +28,10 @@
     <string name="about_text_license">Xabber source code is licensed under GNU GPL v.3 license and is available on GitHub.\n\nGraphical images are licensed under Creative Commons Attribution Share-Alike (CC BY-SA) license.\n\nXabber &amp; Redsolution logo are property of Redsolution, Inc.\n\nMore detailed information on Xabber <a href="https://github.com/redsolution/xabber-android/blob/master/LICENSE">license file</a>.</string>
 
     <string name="translation_unavailable">Translation unavailable</string>
-    <string name="translation_unavailable_message">Unfortunately, Xabber does not have a translation to your language, but you can help us fix that.\nXabber is open-source, and all translations are provided by community, and it is easy to join.</string>
+    <string name="translation_unavailable_message">\t Unfortunately, Xabber does not have a translation to your
+        language, but you can help us fix that.\n \tXabber is open-source, and all translations are provided by
+        community, and it is easy to join. Help us make Xabber better and make it accessible for your friends who do not know english!</string>
     <string name="help_translate_xabber">Help translate Xabber</string>
-    <string name="translation_url">https://crowdin.com/project/xabber</string>
+    <string name="translation_url">https://translations.xabber.com/</string>
 
 </resources>

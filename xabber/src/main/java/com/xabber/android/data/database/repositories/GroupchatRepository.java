@@ -74,6 +74,7 @@ public class GroupchatRepository {
                     groupchatRealmObject.setCanChangeBadge(groupChat.isCanChangeBadge());
                     groupchatRealmObject.setCanBlockUsers(groupChat.isCanBlockUsers());
                     groupchatRealmObject.setCanChangeAvatars(groupChat.isCanChangeAvatars());
+                    groupchatRealmObject.setRetractVersion(groupChat.getRetractVersion());
 
                     groupchatRealmObject.setNotificationState(groupChat.getNotificationState());
                     if (groupChat.getResource() != null) groupchatRealmObject.setResource(groupChat.getResource());
@@ -107,7 +108,8 @@ public class GroupchatRepository {
                         gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
                         gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
                         gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                        gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource(), gro.getNotificationState()));
+                        gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource(),
+                        gro.getNotificationState(), gro.getRetractVersion()));
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }

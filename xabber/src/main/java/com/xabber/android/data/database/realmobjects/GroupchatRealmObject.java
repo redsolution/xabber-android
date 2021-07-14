@@ -22,12 +22,8 @@ public class GroupchatRealmObject extends RealmObject {
     private static final String LOG_TAG = GroupchatRealmObject.class.getSimpleName();
 
     public static final class Fields {
-        public static final String PRIMARY_KEY = "primaryKey";
         public static final String GROUPCHAT_JID = "groupchatJid";
         public static final String ACCOUNT_JID = "accountJid";
-        public static final String OWNER = "owner";
-        public static final String NOTIFICATION_MODE = "notificationMode";
-        public static final String NOTIFICATION_TIMESTAMP = "notificationTimestamp";
     }
 
     @PrimaryKey
@@ -59,6 +55,7 @@ public class GroupchatRealmObject extends RealmObject {
     private String resource;
     private String notificationMode;
     private long notificationTimestamp;
+    private String retractVersion;
 
     public GroupchatRealmObject() {
         this.primary = UUID.randomUUID().toString();
@@ -264,5 +261,9 @@ public class GroupchatRealmObject extends RealmObject {
                     notificationTimestamp);
         } else return new NotificationState(NotificationState.NotificationMode.byDefault, 0);
     }
+
+    public String getRetractVersion() { return retractVersion; }
+
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
 
 }

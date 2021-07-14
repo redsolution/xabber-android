@@ -91,9 +91,7 @@ public class MessageManager implements OnPacketListener {
     }
 
     public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
-
-        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-        sendMessage(text, markupText, chat);
+        sendMessage(text, markupText, ChatManager.getInstance().getChat(account, user));
 
         // stop grace period
         AccountManager.getInstance().stopGracePeriod(account);
@@ -106,11 +104,10 @@ public class MessageManager implements OnPacketListener {
     private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        // TODO: 23.04.21 filemessages and forwards
         realm.executeTransactionAsync(realm1 -> {
-
             MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
-                    chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString());
+                    chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString()
+            );
             message.setText(text.replaceAll("\0", ""));
             message.setIncoming(false);
             message.setOffline(false);

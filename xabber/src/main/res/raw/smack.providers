@@ -208,7 +208,34 @@
         <className>com.xabber.xmpp.mam.MamResultExtensionElementProvider</className>
     </extensionProvider>
 
+    <!--              XEP-RETRACT               -->
+    <!--            Replaced element            -->
+    <extensionProvider>
+        <elementName>replaced</elementName>
+        <namespace>https://xabber.com/protocol/rewrite</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.ReplacedExtensionElementProvider</className>
+    </extensionProvider>
 
+    <!--            Retract message element            -->
+    <extensionProvider>
+        <elementName>retract-message</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractExtensionProvider</className>
+    </extensionProvider>
+
+    <!--            Retract all element            -->
+    <extensionProvider>
+        <elementName>retract-all</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractAllExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--            Replace message element            -->
+    <extensionProvider>
+        <elementName>replace</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingReplaceExtensionElementProvider</className>
+    </extensionProvider>
 
     <!--              XEP-DELIVERY               -->
     <!--           Time element provider         -->

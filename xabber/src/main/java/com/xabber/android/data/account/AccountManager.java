@@ -290,7 +290,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealmObject.getKeyPair(),
                     accountRealmObject.getLastSync(),
                     accountRealmObject.getArchiveMode(),
-                    accountRealmObject.isXabberAutoLoginEnabled());
+                    accountRealmObject.isXabberAutoLoginEnabled(),
+                    accountRealmObject.getRetractVersion());
             accountItem.setId(accountRealmObject.getId());
             accountItem.setClearHistoryOnExit(accountRealmObject.isClearHistoryOnExit());
             if (accountRealmObject.getStartHistoryTimestamp() != 0L){
@@ -415,7 +416,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName, resource, storePassword,
                 password, token, null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText,
                 enabled, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword,
-                syncable, keyPair, lastSync, archiveMode, true);
+                syncable, keyPair, lastSync, archiveMode, true, null);
 
         AccountRepository.saveAccountToRealm(accountItem);
         addAccount(accountItem);

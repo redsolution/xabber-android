@@ -433,7 +433,7 @@ public class Application extends android.app.Application {
         addManager(XTokenManager.getInstance());
         addManager(GroupsManager.INSTANCE);
         addManager(GroupMemberManager.INSTANCE);
-        addManager(RetractManager.getInstance());
+        addManager(RetractManager.INSTANCE);
         addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
         addManager(GroupInviteManager.INSTANCE);

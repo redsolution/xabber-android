@@ -138,7 +138,11 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
                 return true;
 
             case R.id.action_clear_history:
-                ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+                ChatHistoryClearDialog.Companion.newInstance(
+                        getAccount(),
+                        getUser()).show(getSupportFragmentManager(),
+                        ChatHistoryClearDialog.class.getSimpleName()
+                );
                 return true;
 
             case R.id.action_export_chat:

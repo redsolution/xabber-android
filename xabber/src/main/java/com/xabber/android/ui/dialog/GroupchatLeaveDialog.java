@@ -96,8 +96,8 @@ public class GroupchatLeaveDialog extends DialogFragment implements View.OnClick
                 RosterManager.getInstance().removeContact(account, groupchatJid);
 
                 MessageManager.getInstance().clearHistory(account, groupchatJid);
-                if (RetractManager.getInstance().isSupported(account)) {
-                    RetractManager.getInstance().sendRetractAllMessagesRequest(account, groupchatJid, false);
+                if (RetractManager.INSTANCE.isSupported(account)) {
+                    RetractManager.INSTANCE.sendRetractAllMessagesRequest(account, groupchatJid, false, null);
                 }
                 RosterManager.getInstance().removeContact(account, groupchatJid);
                 ChatManager.getInstance().removeChat(account, groupchatJid);
