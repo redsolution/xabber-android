@@ -24,7 +24,7 @@ class ReplacedExtensionElement(val timestamp: String) : ExtensionElement {
 
         fun Message.hasReplacedElement() = this.hasExtension(ELEMENT_NAME, RetractManager.NAMESPACE)
 
-        fun Message.getReplacedElement(): ReplacedExtensionElement =
+        fun Message.getReplacedElement(): ReplacedExtensionElement? =
             this.getExtension(ELEMENT_NAME, RetractManager.NAMESPACE)
     }
 

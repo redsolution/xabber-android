@@ -35,6 +35,7 @@ import com.xabber.xmpp.groups.hasGroupExtensionElement
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
+import com.xabber.xmpp.retract.incoming.elements.ReplacedExtensionElement.Companion.getReplacedElement
 import com.xabber.xmpp.retract.incoming.elements.ReplacedExtensionElement.Companion.hasReplacedElement
 import com.xabber.xmpp.sid.UniqueIdsHelper
 import io.realm.Realm
@@ -166,6 +167,7 @@ object MessageHandler {
         val groupMember = (ReferencesManager.getGroupchatUserFromReferences(messageStanza))?.let {
             GroupMemberManager.saveOrUpdateMemberFromMessage(it, accountJid, contactJid)
         }
+
         val isGroupSystem = messageStanza.hasGroupSystemMessage()
 
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
@@ -177,9 +179,13 @@ object MessageHandler {
                 && messageStanza.from.resourceOrNull != Resourcepart.EMPTY
             ) {
                 messageStanza.from.resourceOrNull.also { chat?.resource = it }
-            } else null
+            } else {
+                null
+            }
 
-        if (messageStanza.thread != null) chat?.threadId = messageStanza.thread
+        if (messageStanza.thread != null) {
+            chat?.threadId = messageStanza.thread
+        }
 
         var body = messageStanza.getOptimalTextBody()
         val otrMessage: AbstractMessage? = try {
@@ -202,12 +208,16 @@ object MessageHandler {
                     LogManager.exception(this, e)
                     return null
                 }
-            } else body = (otrMessage as PlainTextMessage).cleanText
+            } else {
+                body = (otrMessage as PlainTextMessage).cleanText
+            }
         }
 
         // forward comment (to support previous forwarded xep)
         val forwardComment = ForwardManager.parseForwardComment(messageStanza)
-        if (forwardComment != null) body = forwardComment
+        if (forwardComment != null) {
+            body = forwardComment
+        }
 
         // modify body with references
         val bodies = ReferencesManager.modifyBodyWithReferences(messageStanza, body)
@@ -219,7 +229,9 @@ object MessageHandler {
         val stanzaId =
             if (groupMember != null || isGroupSystem) {
                 UniqueIdsHelper.getStanzaIdBy(messageStanza, contactJid.bareJid.toString())
-            } else UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
+            } else {
+                UniqueIdsHelper.getStanzaIdBy(messageStanza, accountJid.bareJid.toString())
+            }
 
         val accountStartHistoryTimestamp =
             AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp?.time
@@ -239,9 +251,14 @@ object MessageHandler {
 
         val isMe = groupMember?.isMe ?: false
 
-        val messageRealmObject = if (originId != null) {
-            MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
-        } else MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
+        val messageRealmObject =
+            if (originId != null) {
+                MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
+            } else {
+                MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
+            }
+
+        val editedTime = messageStanza.getReplacedElement()?.timestamp
 
         val messageStatus =
             when {
@@ -270,18 +287,23 @@ object MessageHandler {
             this.messageStatus = messageStatus
             this.markupText = markupBody
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
-            (attachmentRealmObjects)?.let { this.attachmentRealmObjects = it }
             this.forwardedIds = forwardIdRealmObjects
             this.groupchatUserId = groupMember?.memberId
+            attachmentRealmObjects?.let { this.attachmentRealmObjects = it }
+            editedTime?.let { this.editedTimestamp = XmppDateTime.parseDate(it).time }
         }
 
         saverBuffer.onNext(messageRealmObject ?: return null)
 
         // remove notifications if get outgoing message with 2 sec delay
-        if (!isIncoming) MessageNotificationManager.getInstance().removeChatWithTimer(chat.account, chat.contactJid)
+        if (!isIncoming) {
+            MessageNotificationManager.getInstance().removeChatWithTimer(chat.account, chat.contactJid)
+        }
 
         // when getting new message, unarchive chat if chat not muted
-        if (chat.notifyAboutMessage()) chat.isArchived = false
+        if (chat.notifyAboutMessage()) {
+            chat.isArchived = false
+        }
 
         // update last id in chat
         chat.lastMessageId = messageRealmObject.stanzaId
@@ -295,7 +317,9 @@ object MessageHandler {
         ) {
             isNotify = false
         }
-        if (isNotify || !isIncoming) chat.openChat()
+        if (isNotify || !isIncoming) {
+            chat.openChat()
+        }
 
         chat.enableNotificationsIfNeed()
 
@@ -307,7 +331,9 @@ object MessageHandler {
             if (!ChatManager.getInstance().isVisibleChat(chat)) {
                 if (groupMember != null) {
                     NotificationManager.getInstance().onMessageNotification(messageRealmObject, groupMember)
-                } else NotificationManager.getInstance().onMessageNotification(messageRealmObject)
+                } else {
+                    NotificationManager.getInstance().onMessageNotification(messageRealmObject)
+                }
             }
         } else {
             Application.getInstance().getUIListeners(OnNewIncomingMessageListener::class.java)
