@@ -11,7 +11,7 @@ class IncomingReplaceExtensionElementTest {
     fun `test toXml`() {
         val element = IncomingReplaceExtensionElement(
             messageStanzaId = "stanzaId",
-            contactJid = ContactJid.from("contact@server.domain"),
+            conversationContactJid = ContactJid.from("contact@server.domain"),
             message = Message().apply { stanzaId = "messageId" },
             version = "100500"
         )

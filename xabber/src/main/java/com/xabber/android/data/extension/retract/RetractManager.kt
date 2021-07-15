@@ -75,7 +75,7 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
                 packet.hasIncomingReplaceExtensionElement() ->
                     handleReplaceMessage(
                         connection.account,
-                        packet.getIncomingReplaceExtensionElement()!!.contactJid,
+                        packet.getIncomingReplaceExtensionElement()!!.conversationContactJid,
                         packet.getIncomingReplaceExtensionElement()!!.version,
                         packet.getIncomingReplaceExtensionElement()!!.message
                     )
@@ -289,6 +289,7 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
     private fun handleReplaceMessage(
         accountJid: AccountJid, contactJid: ContactJid, version: String?, newMessage: Message
     ) {
+        newMessage.from = contactJid.jid // hack because inner replaced message has not any from
         MessageHandler.parseMessage(accountJid, contactJid, newMessage)
         version?.let { updateRetractVersion(accountJid, contactJid, it) }
     }

@@ -42,7 +42,7 @@ class IncomingReplaceExtensionElementProviderTest {
         val element = IncomingReplaceExtensionElementProvider().parse(parser, 0)
 
         Assert.assertEquals("Failed to parse message stanza id", "capulet321", element.messageStanzaId)
-        Assert.assertEquals("Failed to parse contact jid", "juliet@capulet.lit", element.contactJid.toString())
+        Assert.assertEquals("Failed to parse contact jid", "juliet@capulet.lit", element.conversationContactJid.toString())
         Assert.assertEquals("Failed to parse version", "c1", element.version)
 
         Assert.assertThat(

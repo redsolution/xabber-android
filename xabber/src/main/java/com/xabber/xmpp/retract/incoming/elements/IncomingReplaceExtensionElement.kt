@@ -8,9 +8,10 @@ import org.jivesoftware.smack.util.XmlStringBuilder
 
 class IncomingReplaceExtensionElement(
     val messageStanzaId: String,
-    val contactJid: ContactJid,
+    val conversationContactJid: ContactJid,
     val message: Message,
     val version: String? = null,
+    val by: String? = null,
 ) : ExtensionElement {
 
     override fun getElementName() = ELEMENT_NAME
@@ -21,7 +22,8 @@ class IncomingReplaceExtensionElement(
         halfOpenElement(ELEMENT_NAME)
         xmlnsAttribute(RetractManager.NAMESPACE_NOTIFY)
         attribute(ID_ATTRIBUTE, messageStanzaId)
-        attribute(BY_ATTRIBUTE, contactJid.bareJid.toString())
+        attribute(CONVERSATION_ATTRIBUTE, conversationContactJid.bareJid.toString())
+        by?.let { attribute(BY_ATTRIBUTE, by) }
         version?.let { attribute(VERSION_ATTRIBUTE, it) }
         rightAngleBracket()
         append(message.toXML())
@@ -33,6 +35,7 @@ class IncomingReplaceExtensionElement(
         const val ID_ATTRIBUTE = "id"
         const val BY_ATTRIBUTE = "by"
         const val VERSION_ATTRIBUTE = "version"
+        const val CONVERSATION_ATTRIBUTE = "conversation"
 
         fun Message.hasIncomingReplaceExtensionElement() =
             this.hasExtension(ELEMENT_NAME, RetractManager.NAMESPACE_NOTIFY)

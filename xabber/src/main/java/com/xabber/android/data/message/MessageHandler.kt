@@ -35,6 +35,7 @@ import com.xabber.xmpp.groups.hasGroupExtensionElement
 import com.xabber.xmpp.groups.hasGroupSystemMessage
 import com.xabber.xmpp.groups.invite.incoming.getIncomingInviteExtension
 import com.xabber.xmpp.groups.invite.incoming.hasIncomingInviteExtension
+import com.xabber.xmpp.retract.incoming.elements.ReplacedExtensionElement.Companion.hasReplacedElement
 import com.xabber.xmpp.sid.UniqueIdsHelper
 import io.realm.Realm
 import io.realm.RealmList
@@ -141,9 +142,13 @@ object MessageHandler {
             return null
         }
 
-        if (messageStanza.type != Message.Type.chat) return null
+        if (messageStanza.type != Message.Type.chat && !messageStanza.hasReplacedElement()) {
+            return null
+        }
 
-        if (delayInformation != null && "Offline Storage" == delayInformation.reason) return null
+        if (delayInformation != null && "Offline Storage" == delayInformation.reason) {
+            return null
+        }
 
         if (messageStanza.type == Message.Type.headline
             && XMPPAuthManager.getInstance().isXabberServiceMessage(messageStanza.stanzaId)
@@ -190,7 +195,9 @@ object MessageHandler {
                 try {
                     // this transforming just decrypt message if have keys. No action as injectMessage or something else
                     body = OTRManager.getInstance().transformReceivingIfSessionExist(accountJid, contactJid, body)
-                    if (OTRManager.getInstance().isEncrypted(body)) return null
+                    if (OTRManager.getInstance().isEncrypted(body)) {
+                        return null
+                    }
                 } catch (e: Exception) {
                     LogManager.exception(this, e)
                     return null
