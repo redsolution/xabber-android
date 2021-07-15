@@ -275,7 +275,6 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
                 realm.executeTransaction { realmTransaction: Realm ->
                     realmTransaction.where(MessageRealmObject::class.java)
                         .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                        .equalTo(MessageRealmObject.Fields.USER, contactJid.bareJid.toString())
                         .equalTo(MessageRealmObject.Fields.STANZA_ID, messageStanzaId)
                         .findFirst()
                         ?.deleteFromRealm()
