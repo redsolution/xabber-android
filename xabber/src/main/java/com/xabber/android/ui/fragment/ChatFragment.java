@@ -144,6 +144,7 @@ import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.chat_state.ChatStateSubtype;
 
 import org.jetbrains.annotations.NotNull;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
@@ -2669,7 +2670,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     @Override
     public void processStanza(@org.jetbrains.annotations.Nullable Stanza packet) { }
     @Override
-    public void processException(@org.jetbrains.annotations.Nullable Exception exception) { }
+    public void processException(@org.jetbrains.annotations.Nullable Exception exception) {
+        Application.getInstance().runOnUiThread( () ->
+                Toast.makeText(
+                        requireContext(),
+                        ((XMPPException.XMPPErrorException)exception).getXMPPError().getStanza().toXML().toString(),
+                        Toast.LENGTH_SHORT
+                ).show()
+        );
+    }
 
     @Override
     public void onIqError(@NotNull XMPPError error) {

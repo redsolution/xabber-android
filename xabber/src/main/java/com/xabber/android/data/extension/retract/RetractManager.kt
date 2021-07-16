@@ -136,29 +136,27 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
             listener?.onSend()
 
             DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-                realm.executeTransaction { realmTransaction: Realm ->
-                    realmTransaction.where(MessageRealmObject::class.java)
-                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messagePrimaryKey)
-                        .findFirst()
-                        ?.let { message ->
-                            AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                                RetractMessageIq(
-                                    message.stanzaId,
-                                    accountJid,
-                                    symmetrically,
-                                    if (isGroup) contactJid else null
-                                ),
-                                { packet: Stanza? ->
-                                    if (packet is IQ && packet.type == IQ.Type.result) {
-                                        message.deleteFromRealm()
-                                        notifySamUiListeners(OnMessageUpdatedListener::class.java)
-                                        listener?.onResult()
-                                    }
-                                },
-                                listener
-                            )
-                        }
-                }
+                realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messagePrimaryKey)
+                    .findFirst()
+                    ?.let { message ->
+                        AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                            RetractMessageIq(
+                                message.stanzaId,
+                                accountJid,
+                                symmetrically,
+                                if (isGroup) contactJid else null
+                            ),
+                            { packet: Stanza? ->
+                                if (packet is IQ && packet.type == IQ.Type.result) {
+                                    MessageManager.getInstance().removeMessage(messagePrimaryKey)
+                                    notifySamUiListeners(OnMessageUpdatedListener::class.java)
+                                    listener?.onResult()
+                                }
+                            },
+                            listener
+                        )
+                    }
             }
         }
     }
