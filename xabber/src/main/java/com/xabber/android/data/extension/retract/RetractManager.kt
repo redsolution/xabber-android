@@ -202,17 +202,7 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
                         messageStanza,
                         contactJid.takeIf { isGroup }
                     ),
-                    { packet ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            realm.executeTransaction { transactionRealm ->
-                                transactionRealm.where(MessageRealmObject::class.java)
-                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
-                                    .findFirst()
-                                    ?.apply { text = newMessageText }
-                                    ?.also { transactionRealm.copyToRealmOrUpdate(it) }
-                            }
-                        }
-                    },
+                    {},
                     baseIqResultUiListener
                 )
             }
