@@ -12,6 +12,7 @@ import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
@@ -23,7 +24,6 @@ import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElem
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElement.Companion.hasIncomingRetractAllExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractExtensionElement.Companion.getIncomingRetractExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractExtensionElement.Companion.hasIncomingRetractExtensionElement
-import com.xabber.xmpp.retract.incoming.elements.ReplacedExtensionElement.Companion.getReplacedElement
 import com.xabber.xmpp.retract.outgoing.ReplaceMessageIq
 import com.xabber.xmpp.retract.outgoing.RetractAllIq
 import com.xabber.xmpp.retract.outgoing.RetractMessageIq
@@ -37,7 +37,6 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.util.PacketParserUtils
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
-import org.jxmpp.util.XmppDateTime
 
 object RetractManager : OnPacketListener, OnAuthenticatedListener {
 
@@ -294,26 +293,20 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
         newMessage: Message,
         messageStanzaId: String,
     ) {
-//        newMessage.from = contactJid.jid // hack because inner replaced message has not any from
-//        MessageHandler.parseMessage(accountJid, contactJid, newMessage)
         Application.getInstance().runInBackground {
             DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-                realm.executeTransaction { realmTransaction ->
-                    realmTransaction.where(MessageRealmObject::class.java)
-                        .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
-                        .equalTo(MessageRealmObject.Fields.STANZA_ID, messageStanzaId)
-                        .findFirst()
-                        ?.apply {
-                            text = newMessage.body
-                            newMessage.getReplacedElement()?.timestamp?.let {
-                                editedTimestamp = XmppDateTime.parseDate(it).time
-                            }
-                        }
-                        ?.also { message -> realmTransaction.copyToRealmOrUpdate(message) }
-                }
+                val isIncoming = realm.where(MessageRealmObject::class.java)
+                    .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                    .equalTo(MessageRealmObject.Fields.STANZA_ID, messageStanzaId)
+                    .findFirst()
+                    ?.isIncoming ?: false
+
+                // hack because inner replaced message has not any from
+                newMessage.from = if (isIncoming) contactJid.jid else accountJid.fullJid
+
+                MessageHandler.parseMessage(accountJid, contactJid, newMessage)
             }
         }
-
         version?.let { updateRetractVersion(accountJid, contactJid, it) }
     }
 
