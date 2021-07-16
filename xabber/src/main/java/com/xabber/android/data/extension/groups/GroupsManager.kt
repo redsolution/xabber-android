@@ -206,7 +206,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         }
         MessageManager.getInstance().clearHistory(accountJid, contactJid)
         if (RetractManager.isSupported(accountJid)) {
-            RetractManager.sendRetractAllMessagesRequest(accountJid, contactJid, false)
+            RetractManager.sendRetractAllMessagesRequest(accountJid, contactJid)
         }
         RosterManager.getInstance().removeContact(accountJid, contactJid)
         ChatManager.getInstance().removeChat(accountJid, contactJid)

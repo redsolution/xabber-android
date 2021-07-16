@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -25,7 +24,6 @@ import org.jivesoftware.smack.packet.XMPPError
 
 class ChatHistoryClearDialog : DialogFragment(), View.OnClickListener, BaseIqResultUiListener {
 
-    private lateinit var checkBox: CheckBox
     private lateinit var account: AccountJid
     private lateinit var user: ContactJid
 
@@ -62,10 +60,6 @@ class ChatHistoryClearDialog : DialogFragment(), View.OnClickListener, BaseIqRes
             findViewById<View>(R.id.cancel_clear).setOnClickListener(this@ChatHistoryClearDialog)
         }
 
-        if (isSupported(account)) {
-            checkBox.visibility = View.VISIBLE
-        }
-
         return AlertDialog.Builder(activity).setTitle(R.string.clear_history).setView(view).create()
     }
 
@@ -74,7 +68,7 @@ class ChatHistoryClearDialog : DialogFragment(), View.OnClickListener, BaseIqRes
             ChatManager.getInstance().getChat(account, user)?.setLastActionTimestamp()
 
             if (isSupported(account)) {
-                sendRetractAllMessagesRequest(account, user, checkBox.isChecked, this)
+                sendRetractAllMessagesRequest(account, user, this)
             } else {
                 MessageManager.getInstance().clearHistory(account, user)
             }

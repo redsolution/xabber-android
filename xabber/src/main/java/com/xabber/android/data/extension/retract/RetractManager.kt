@@ -210,7 +210,6 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
     fun sendRetractAllMessagesRequest(
         accountJid: AccountJid,
         contactJid: ContactJid,
-        symmetric: Boolean,
         listener: BaseIqResultUiListener? = null
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
@@ -221,7 +220,7 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
             AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
                 RetractAllIq(
                     contactJid,
-                    symmetric,
+                    false,
                     if (isGroup) contactJid else null
                 ),
                 { packet ->

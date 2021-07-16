@@ -1726,7 +1726,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     .setMessage(getResources().getString(R.string.dialog_delete_saved_messages__confirm))
                     .setPositiveButton(R.string.delete, (dialog12, which) -> {
                         if (RetractManager.INSTANCE.isSupported(account)) {
-                            RetractManager.INSTANCE.sendRetractAllMessagesRequest(account, user, false, this);
+                            RetractManager.INSTANCE.sendRetractAllMessagesRequest(account, user, this);
                         } else MessageManager.getInstance().clearHistory(account, user);
                     })
                     .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })

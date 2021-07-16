@@ -28,15 +28,6 @@
         android:textAppearance="@style/ChatText"
         android:textSize="16sp" />
 
-    <CheckBox
-        android:id="@+id/clear_history_retract"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginRight="24dp"
-        android:text="@string/clear_chat_history_for_companion_checkbox" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
