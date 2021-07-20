@@ -676,7 +676,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             pinnedMessageCrossIv.setOnClickListener(v ->
                     GroupsManager.INSTANCE.sendUnPinMessageRequest((GroupChat)getChat()));
             pinnedRootView.setOnClickListener(v ->
-                    startActivity(MessagesActivity.createIntentShowPinned(getContext(),
+                    startActivity(MessagesActivity.Companion.createIntentShowPinned(getContext(),
                     message.getPrimaryKey(), user, account)));
 
             if (message == null)

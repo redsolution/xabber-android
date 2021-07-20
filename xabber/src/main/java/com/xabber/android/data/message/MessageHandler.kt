@@ -243,10 +243,6 @@ object MessageHandler {
             null
         }
 
-        val id = UUID.randomUUID().toString()
-
-        val forwardIdRealmObjects = parseForwardedMessage(messageStanza, id, chat!!)
-
         val originId = UniqueIdsHelper.getOriginId(messageStanza)
 
         val isMe = groupMember?.isMe ?: false
@@ -257,6 +253,8 @@ object MessageHandler {
             } else {
                 MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
             }
+
+        val forwardIdRealmObjects = parseForwardedMessage(messageStanza, messageRealmObject.primaryKey, chat!!)
 
         val editedTime = messageStanza.getReplacedElement()?.timestamp
 
@@ -365,19 +363,29 @@ object MessageHandler {
         parentMessageId: String,
         chat: AbstractChat,
     ): RealmList<ForwardIdRealmObject>? {
-        var forwarded = ReferencesManager.getForwardedFromReferences(packet)
-        if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet)
-        if (forwarded.isEmpty()) return null
+        val forwarded =
+            when {
+                ReferencesManager.getForwardedFromReferences(packet).isNotEmpty() ->
+                    ReferencesManager.getForwardedFromReferences(packet)
 
-        val forwardedIds = RealmList<ForwardIdRealmObject>()
-        for (forward in forwarded) {
-            val stanza = forward.forwardedStanza
-            val timestamp = forward.delayInformation.stamp
-            if (stanza is Message) {
-                forwardedIds.add(ForwardIdRealmObject(parseInnerMessage(stanza, timestamp, parentMessageId, chat)))
+                ForwardManager.getForwardedFromStanza(packet).isNotEmpty() ->
+                    ForwardManager.getForwardedFromStanza(packet)
+
+                else -> return null
             }
+        return RealmList<ForwardIdRealmObject>().apply {
+            addAll(
+                forwarded
+                    .filter { it.forwardedStanza is Message }
+                    .map {
+                        ForwardIdRealmObject(
+                            parseInnerMessage(
+                                it.forwardedStanza as Message, it.delayInformation.stamp, parentMessageId, chat
+                            )
+                        )
+                    }
+            )
         }
-        return forwardedIds
     }
 
     private fun parseInnerMessage(
@@ -387,7 +395,9 @@ object MessageHandler {
         chat: AbstractChat,
     ): String? {
 
-        if (message.type == Message.Type.error) return null
+        if (message.type == Message.Type.error) {
+            return null
+        }
 
         var text: String? = message.body ?: return null
 
@@ -405,7 +415,9 @@ object MessageHandler {
 
         // forward comment (to support previous forwarded xep)
         val forwardComment = ForwardManager.parseForwardComment(message)
-        if (forwardComment != null && forwardComment.isNotEmpty()) text = forwardComment
+        if (forwardComment != null && forwardComment.isNotEmpty()) {
+            text = forwardComment
+        }
 
         // modify body with references
         val bodies = ReferencesManager.modifyBodyWithReferences(message, text)
@@ -415,9 +427,14 @@ object MessageHandler {
         val stanzaId =
             UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()) ?: UUID.randomUUID().toString()
 
-        val messageRealmObject = if (originId != null) {
-            MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
-        } else MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, stanzaId)
+        val messageRealmObject =
+            if (originId != null) {
+                MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
+            } else {
+                MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, stanzaId)
+            }
+
+        val forwardIdRealmObjects = parseForwardedMessage(message, messageRealmObject.primaryKey, chat)
 
         messageRealmObject.apply {
             this.text = text ?: ""
@@ -440,9 +457,12 @@ object MessageHandler {
             this.delayTimestamp = DelayInformation.from(message)?.stamp?.time
             this.attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message) ?: null
             this.groupchatUserId = groupchatUserId
+            this.forwardedIds = forwardIdRealmObjects
         }
 
-        if (messageRealmObject != null) saverBuffer.onNext(messageRealmObject)
+        if (messageRealmObject != null) {
+            saverBuffer.onNext(messageRealmObject)
+        }
 
         return messageRealmObject.primaryKey
     }

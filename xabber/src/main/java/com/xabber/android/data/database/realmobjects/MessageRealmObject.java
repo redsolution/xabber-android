@@ -339,7 +339,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setForwardedIds(RealmList<ForwardIdRealmObject> forwardedMessages) { this.forwardedIds = forwardedMessages; }
 
-    public boolean hasForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
+    public boolean hasForwardedMessages() { return forwardedIds != null && !forwardedIds.isEmpty(); }
 
     public String getOriginalStanza() { return originalStanza; }
 

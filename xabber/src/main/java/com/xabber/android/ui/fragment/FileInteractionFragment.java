@@ -340,7 +340,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     @Override
     public void onForwardClick(String messageId) {
-        startActivity(MessagesActivity.createIntentShowForwarded(getActivity(), messageId, user, account));
+        startActivity(MessagesActivity.Companion.createIntentShowForwarded(getActivity(), messageId, user, account));
     }
 
     protected void onAttachButtonPressed() {
