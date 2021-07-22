@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.retract
 
+import android.os.Looper
 import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.account.AccountItem
@@ -231,6 +232,10 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         accountJid: AccountJid, contactJid: ContactJid, version: String?, messageStanzaId: String
     ) {
         Application.getInstance().runInBackground {
+            if (!isMessageExistsInDatabase(accountJid, contactJid, messageStanzaId)) {
+                return@runInBackground
+            }
+
             DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
                 realm.executeTransaction { realmTransaction: Realm ->
                     realmTransaction.where(MessageRealmObject::class.java)
@@ -255,6 +260,10 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         messageStanzaId: String,
     ) {
         Application.getInstance().runInBackground {
+            if (!isMessageExistsInDatabase(accountJid, contactJid, messageStanzaId)) {
+                return@runInBackground
+            }
+
             DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
                 val isIncoming = realm.where(MessageRealmObject::class.java)
                     .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
@@ -290,14 +299,16 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
     fun sendMissedChangesInRemoteArchiveForChatRequest(accountJid: AccountJid, contactJid: ContactJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             AccountManager.getInstance().getAccount(accountJid)?.let { account ->
-                if (!account.retractVersion.isNullOrEmpty()) {
-                    account.connection.sendIqWithResponseCallback(
-                        RequestRetractsIq(version = account.retractVersion, archiveAddress = contactJid),
-                        { /* ignore */ },
-                        {
-                            LogManager.exception(this, it)
-                        }
-                    )
+                (ChatManager.getInstance().getChat(accountJid, contactJid) as? GroupChat)?.let { chat ->
+                    if (!account.retractVersion.isNullOrEmpty()) {
+                        account.connection.sendIqWithResponseCallback(
+                            RequestRetractsIq(version = chat.retractVersion, archiveAddress = contactJid),
+                            { /* ignore */ },
+                            {
+                                LogManager.exception(this, it)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -367,6 +378,21 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         AccountManager.getInstance().getAccount(accountJid)
             ?.apply { retractVersion = version }
             .also { AccountRepository.saveAccountToRealm(it) }
+    }
+
+    /**
+     * If database doesn't contains message, we must ignore replace or retract request
+     */
+    private fun isMessageExistsInDatabase(accountJid: AccountJid, contactJid: ContactJid, stanzaId: String): Boolean {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw IllegalThreadStateException("This method isn't ready to be used in main thread")
+        }
+        DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+            return realm.where(MessageRealmObject::class.java)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
+                .equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId) != null
+        }
     }
 
 }
