@@ -667,72 +667,82 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
-    private void setupPinnedMessageView(){
-        //todo privilege checking
-        AbstractChat chat = getChat();
-        if (chat instanceof GroupChat && ((GroupChat)chat).getPinnedMessageId() != null){
-            MessageRealmObject message = MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
+    private void setupPinnedMessageView() {
+        if (getChat() instanceof GroupChat && ((GroupChat)getChat()).getPinnedMessageId() != null) {
+
+            MessageRealmObject message =
+                    MessageRepository.getMessageFromRealmByStanzaId(((GroupChat)getChat()).getPinnedMessageId());
+
+            if (message == null){
+                return;
+            }
 
             pinnedMessageCrossIv.setOnClickListener(v ->
-                    GroupsManager.INSTANCE.sendUnPinMessageRequest((GroupChat)getChat()));
-            pinnedRootView.setOnClickListener(v ->
-                    startActivity(MessagesActivity.Companion.createIntentShowPinned(getContext(),
-                    message.getPrimaryKey(), user, account)));
+                    GroupsManager.INSTANCE.sendUnPinMessageRequest(
+                            (GroupChat)getChat()
+                    )
+            );
 
-            if (message == null)
-                return;
+            pinnedRootView.setOnClickListener(v ->
+                    startActivity(
+                            MessagesActivity.Companion.createIntentShowPinned(
+                                    requireContext(), message.getPrimaryKey(), user, account
+                            )
+                    )
+            );
 
             pinnedRootView.setVisibility(View.VISIBLE);
 
-            if (message.isIncoming()){
-                if (GroupMemberManager.INSTANCE.getGroupMemberById(
-                        message.getAccount(), message.getUser(), message.getGroupchatUserId()
-                ) != null){
+            if (message.getGroupchatUserId() != null) {
+                GroupMemberRealmObject groupMember =
+                        GroupMemberManager.INSTANCE.getGroupMemberById(
+                                message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                        );
+                if (groupMember != null) {
                     pinnedMessageHeaderTv.setText(
                             GroupMemberManager.INSTANCE.getGroupMemberById(
                                     message.getAccount(),
                                     message.getUser(),
                                     message.getGroupchatUserId()).getBestName()
                     );
-                } else {
-                    pinnedMessageHeaderTv.setText(message.getUser().toString());
-                }
-                pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
-                        .getAccountColorWithTint(getAccount(), 600));
-                pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
-                        .getAccountColorWithTint(getAccount(), 600));
-            } else {
-                pinnedMessageHeaderTv.setText("Me"); //todo change to sender name
-                pinnedMessageHeaderTv.setTextColor(ColorManager.getInstance().getAccountPainter()
-                        .getAccountColorWithTint(getAccount(), 500));
-                pinnedMessageIv.setColorFilter(ColorManager.getInstance().getAccountPainter()
-                        .getAccountColorWithTint(getAccount(), 500));
-            }
 
-            GroupMemberRealmObject member =
-                    GroupMemberManager.INSTANCE.getGroupMemberById(
-                            message.getAccount(), message.getUser(), message.getGroupchatUserId()
+                    pinnedMessageHeaderTv.setTextColor(
+                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(
+                                    getAccount(), 600
+                            )
                     );
-            if (member != null){
-                if (member.getBadge() != null){
-                    pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
-                    pinnedMessageBadgeTv.setText(member.getBadge());
-                } else pinnedMessageBadgeTv.setVisibility(View.GONE);
 
-                if (member.getRole() != null){
-                    pinnedMessageRoleTv.setVisibility(View.VISIBLE);
-                    pinnedMessageRoleTv.setText(member.getRole().toString());
-                    pinnedMessageRoleTv.setBackgroundColor(
-                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(getAccount(), 50));
-                } else pinnedMessageRoleTv.setVisibility(View.GONE);
+                    pinnedMessageIv.setColorFilter(
+                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(
+                                    getAccount(), 600
+                            )
+                    );
+
+                    if (groupMember.getBadge() != null){
+                        pinnedMessageBadgeTv.setVisibility(View.VISIBLE);
+                        pinnedMessageBadgeTv.setText(groupMember.getBadge());
+                    } else {
+                        pinnedMessageBadgeTv.setVisibility(View.GONE);
+                    }
+
+                    if (groupMember.getRole() != null){
+                        pinnedMessageRoleTv.setVisibility(View.VISIBLE);
+                        pinnedMessageRoleTv.setText(groupMember.getRole().toString());
+                        pinnedMessageRoleTv.setBackgroundColor(
+                                ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(
+                                        getAccount(), 50
+                                )
+                        );
+                    } else {
+                        pinnedMessageRoleTv.setVisibility(View.GONE);
+                    }
+                }
             }
-
 
             setupPinnedMessageText(message);
         } else {
             pinnedRootView.setVisibility(View.GONE);
         }
-
     }
 
     private void setupPinnedMessageText(MessageRealmObject message){
