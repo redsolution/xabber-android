@@ -311,7 +311,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             AccountManager.getInstance().getAccount(accountJid)?.let { account ->
                 account.connection.sendIqWithResponseCallback(
-                    RequestRetractsIq(),
+                    RequestRetractsIq(lessThan = null),
                     { stanza ->
                         if (stanza is RetractsResultIq && stanza.type == IQ.Type.result && stanza.version != null) {
                             updateAccountLocalArchiveRetractVersion(accountJid, stanza.version)
@@ -333,7 +333,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             AccountManager.getInstance().getAccount(accountJid)?.let { account ->
                 account.connection.sendIqWithResponseCallback(
-                    RequestRetractsIq(archiveAddress = contactJid),
+                    RequestRetractsIq(archiveAddress = contactJid, lessThan = null),
                     { stanza ->
                         if (stanza is RetractsResultIq && stanza.type == IQ.Type.result && stanza.version != null) {
                             updateRetractVersion(accountJid, contactJid, stanza.version)
