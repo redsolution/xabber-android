@@ -4,11 +4,11 @@ import com.xabber.android.data.entity.ContactJid
 import org.junit.Assert
 import org.junit.Test
 
-class SubscribeToRetractNotificationsIqTest {
+class RequestRetractsIqTest {
 
     @Test
     fun `test toXml() with special version and with special archive address without limitations`() {
-        val iq = SubscribeToRetractNotificationsIq(
+        val iq = RequestRetractsIq(
             archiveAddress = ContactJid.from("archive@address.co"),
             version = "someVersion",
             lessThan = 10
@@ -24,7 +24,7 @@ class SubscribeToRetractNotificationsIqTest {
 
     @Test
     fun `test toXml() without anything`() {
-        val iq = SubscribeToRetractNotificationsIq()
+        val iq = RequestRetractsIq()
 
         iq.stanzaId = "iqId"
 

@@ -2,9 +2,9 @@ package com.xabber.android.data.extension.retract
 
 import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
 import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
@@ -16,6 +16,7 @@ import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.ui.OnMessageUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.xmpp.retract.incoming.elements.IncomingReplaceExtensionElement.Companion.getIncomingReplaceExtensionElement
@@ -24,10 +25,11 @@ import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElem
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElement.Companion.hasIncomingRetractAllExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractExtensionElement.Companion.getIncomingRetractExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractExtensionElement.Companion.hasIncomingRetractExtensionElement
+import com.xabber.xmpp.retract.incoming.elements.RetractsResultIq
 import com.xabber.xmpp.retract.outgoing.ReplaceMessageIq
+import com.xabber.xmpp.retract.outgoing.RequestRetractsIq
 import com.xabber.xmpp.retract.outgoing.RetractAllIq
 import com.xabber.xmpp.retract.outgoing.RetractMessageIq
-import com.xabber.xmpp.retract.outgoing.SubscribeToRetractNotificationsIq
 import com.xabber.xmpp.sid.OriginIdElement
 import com.xabber.xmpp.sid.StanzaIdElement
 import com.xabber.xmpp.smack.XMPPTCPConnection
@@ -38,34 +40,16 @@ import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.util.PacketParserUtils
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
 
-object RetractManager : OnPacketListener, OnAuthenticatedListener {
+object RetractManager : OnPacketListener, OnRosterReceivedListener {
 
     const val NAMESPACE = "https://xabber.com/protocol/rewrite"
     const val NAMESPACE_NOTIFY = "$NAMESPACE#notify"
 
-    override fun onAuthenticated(connectionItem: ConnectionItem) {
-        val accountJid = connectionItem.account
-        val xmppConnection = connectionItem.connection
-
-        Application.getInstance().runInBackgroundNetworkUserRequest {
-
-            /* Subscribe for changes and request missed changes with local archive */
-            xmppConnection.sendIqWithResponseCallback(
-                SubscribeToRetractNotificationsIq(
-                    AccountManager.getInstance().getAccount(accountJid)?.retractVersion
-                )
-            ) { /* ignore result */ }
-
-            /* Subscribe for changes and request missed changes with group remote archives */
-            ChatManager.getInstance().getChats(accountJid).map { abstractChat ->
-                (abstractChat as? GroupChat)?.let { groupChat ->
-                    xmppConnection.sendIqWithResponseCallback(
-                        SubscribeToRetractNotificationsIq(
-                            groupChat.retractVersion, groupChat.contactJid
-                        )
-                    ) { /* ignore result */ }
-                }
-            }
+    override fun onRosterReceived(accountItem: AccountItem) {
+        if (accountItem.retractVersion.isNullOrEmpty()) {
+            sendLocalArchiveRetractVersionRequest(accountItem.account)
+        } else {
+            sendMissedChangesInLocalArchiveRequest(accountItem.account)
         }
     }
 
@@ -161,16 +145,6 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
         }
     }
 
-    fun sendReplaceMessageRequest(
-        accountJid: AccountJid,
-        contactJid: ContactJid,
-        primaryKey: String,
-        message: Message,
-        baseIqResultUiListener: BaseIqResultUiListener? = null
-    ) {
-        //todo this
-    }
-
     fun sendReplaceMessageTextRequest(
         accountJid: AccountJid,
         contactJid: ContactJid,
@@ -200,7 +174,7 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
                         messageStanza,
                         contactJid.takeIf { isGroup }
                     ),
-                    {},
+                    { /* ignore */ },
                     baseIqResultUiListener
                 )
             }
@@ -297,16 +271,102 @@ object RetractManager : OnPacketListener, OnAuthenticatedListener {
         version?.let { updateRetractVersion(accountJid, contactJid, it) }
     }
 
+    private fun sendMissedChangesInLocalArchiveRequest(accountJid: AccountJid) {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
+            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+                if (!account.retractVersion.isNullOrEmpty()) {
+                    account.connection.sendIqWithResponseCallback(
+                        RequestRetractsIq(version = account.retractVersion),
+                        { /* ignore */ },
+                        {
+                            LogManager.exception(this, it)
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    fun sendMissedChangesInRemoteArchiveForChatRequest(accountJid: AccountJid, contactJid: ContactJid) {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
+            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+                if (!account.retractVersion.isNullOrEmpty()) {
+                    account.connection.sendIqWithResponseCallback(
+                        RequestRetractsIq(version = account.retractVersion, archiveAddress = contactJid),
+                        { /* ignore */ },
+                        {
+                            LogManager.exception(this, it)
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Request only current retract version from own local archive
+     * Mainly use after cold start (when account has no any retract version yet)
+     */
+    private fun sendLocalArchiveRetractVersionRequest(accountJid: AccountJid) {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
+            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+                account.connection.sendIqWithResponseCallback(
+                    RequestRetractsIq(),
+                    { stanza ->
+                        if (stanza is RetractsResultIq && stanza.type == IQ.Type.result && stanza.version != null) {
+                            updateAccountLocalArchiveRetractVersion(accountJid, stanza.version)
+                        }
+                    },
+                    {
+                        LogManager.exception(this, it)
+                    }
+                )
+            }
+        }
+    }
+
+    /**
+     * Request only current retract version from remote archive of chat
+     * Mainly use after cold start for groups (when we has no any retract version yet for group)
+     */
+    fun sendRemoteArchiveRetractVersionRequest(accountJid: AccountJid, contactJid: ContactJid) {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
+            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+                account.connection.sendIqWithResponseCallback(
+                    RequestRetractsIq(archiveAddress = contactJid),
+                    { stanza ->
+                        if (stanza is RetractsResultIq && stanza.type == IQ.Type.result && stanza.version != null) {
+                            updateRetractVersion(accountJid, contactJid, stanza.version)
+                        }
+                    },
+                    {
+                        LogManager.exception(this, it)
+                    }
+                )
+            }
+        }
+    }
+
+    /**
+     * Save current retract version to database with remote\local archive recognizing
+     */
     private fun updateRetractVersion(accountJid: AccountJid, contactJid: ContactJid, version: String) {
         if (ChatManager.getInstance().getChat(accountJid, contactJid) is GroupChat) {
             (ChatManager.getInstance().getChat(accountJid, contactJid) as? GroupChat)
                 ?.apply { retractVersion = version }
                 .also { ChatManager.getInstance().saveOrUpdateChatDataToRealm(it) }
         } else {
-            AccountManager.getInstance().getAccount(accountJid)
-                ?.apply { retractVersion = version }
-                .also { AccountRepository.saveAccountToRealm(it) }
+            updateAccountLocalArchiveRetractVersion(accountJid, version)
         }
+    }
+
+    /**
+     * Save local archive retract version to account
+     */
+    private fun updateAccountLocalArchiveRetractVersion(accountJid: AccountJid, version: String) {
+        AccountManager.getInstance().getAccount(accountJid)
+            ?.apply { retractVersion = version }
+            .also { AccountRepository.saveAccountToRealm(it) }
     }
 
 }

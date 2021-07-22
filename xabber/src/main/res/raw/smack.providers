@@ -237,6 +237,14 @@
         <className>com.xabber.xmpp.retract.incoming.providers.IncomingReplaceExtensionElementProvider</className>
     </extensionProvider>
 
+    <!--            Retracts result iq            -->
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/rewrite</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.RetractResultIqProvider</className>
+    </iqProvider>
+
+
     <!--              XEP-DELIVERY               -->
     <!--           Time element provider         -->
     <extensionProvider>

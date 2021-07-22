@@ -925,6 +925,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         Application.getInstance().addUIListener(OnAuthAskListener.class, this);
 
         loadHistoryIfNeed();
+
+        if (getChat() instanceof GroupChat) {
+            String retractVersion = ((GroupChat)getChat()).getRetractVersion();
+            if (retractVersion == null || retractVersion.isEmpty()) {
+                RetractManager.INSTANCE.sendRemoteArchiveRetractVersionRequest(account, user);
+            } else {
+                RetractManager.INSTANCE.sendMissedChangesInRemoteArchiveForChatRequest(account, user);
+            }
+        }
     }
 
     @Override

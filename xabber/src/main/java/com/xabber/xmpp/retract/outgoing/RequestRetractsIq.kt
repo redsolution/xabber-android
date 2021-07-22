@@ -2,13 +2,14 @@ package com.xabber.xmpp.retract.outgoing
 
 import com.xabber.android.data.entity.ContactJid
 
-class SubscribeToRetractNotificationsIq(
+class RequestRetractsIq(
     private val version: String? = null,
     archiveAddress: ContactJid? = null,
-    private val lessThan: Int? = 100,
+    private val lessThan: Int? = 250,
 ) : AbstractRetractIq(archiveAddress, ELEMENT) {
 
     init {
+        archiveAddress?.let { to = archiveAddress.jid }
         type = Type.get
     }
 
