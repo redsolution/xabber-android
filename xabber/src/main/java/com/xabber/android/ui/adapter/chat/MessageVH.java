@@ -22,8 +22,12 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.AbstractChat;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
@@ -91,14 +95,25 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
 
         messageHeader.setVisibility(View.GONE);
-
+        AbstractChat chat = ChatManager.getInstance().getChat(
+                messageRealmObject.getAccount(), messageRealmObject.getUser()
+        );
         // groupchat
-        if (extraData.getGroupMember() != null && !extraData.getGroupMember().isMe()) {
-            GroupMemberRealmObject user = extraData.getGroupMember();
-            messageHeader.setText(user.getNickname());
-            messageHeader.setTextColor(ColorManager.changeColor(
-                    ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));
-            messageHeader.setVisibility(View.VISIBLE);
+        if (extraData.getGroupMember() != null) {
+            if (!extraData.getGroupMember().isMe()) {
+                GroupMemberRealmObject user = extraData.getGroupMember();
+                messageHeader.setText(user.getNickname());
+                messageHeader.setTextColor(
+                        ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f)
+                );
+                messageHeader.setVisibility(View.VISIBLE);
+            } else if (chat instanceof GroupChat && ((GroupChat) chat).getPrivacyType() == GroupPrivacyType.INCOGNITO){
+                GroupMemberRealmObject user = extraData.getGroupMember();
+                messageHeader.setText(user.getNickname());
+                messageHeader.setTextColor(ColorManager.changeColor(
+                        ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));
+                messageHeader.setVisibility(View.VISIBLE);
+            }
         }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
