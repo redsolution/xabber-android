@@ -56,7 +56,7 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public void bind(final MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(final MessageRealmObject messageRealmObject, MessageExtraData extraData) {
 
         super.bind(messageRealmObject, extraData);
 

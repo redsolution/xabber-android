@@ -21,7 +21,7 @@ class SavedOwnMessageVh(
     appearance,
 ) {
 
-    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessagesAdapter.MessageExtraData) {
+    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         super.bind(
             MessageRepository.getForwardedMessages(messageRealmObject)?.first() ?: messageRealmObject,
             extraData

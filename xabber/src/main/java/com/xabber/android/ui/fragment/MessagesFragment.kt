@@ -12,11 +12,9 @@ import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
-import com.xabber.android.data.roster.RosterManager
+import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.ui.activity.MessagesActivity
-import com.xabber.android.ui.adapter.chat.ForwardedAdapter
-import com.xabber.android.ui.adapter.chat.MessagesAdapter.MessageExtraData
+import com.xabber.android.ui.adapter.chat.MessagesAdapter
 import com.xabber.android.ui.color.ColorManager
 
 class MessagesFragment : FileInteractionFragment() {
@@ -63,65 +61,27 @@ class MessagesFragment : FileInteractionFragment() {
             .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
             .findFirst()
             ?.let { messageRealmObject ->
-                if (action == MessagesActivity.ACTION_SHOW_FORWARDED) {
-                    val forwardedMessages = realm
-                        .where(MessageRealmObject::class.java)
-                        .`in`(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.forwardedIdsAsArray)
-                        .findAll()
-
-                    // groupchat user
-                    val extraData = MessageExtraData(
-                        this,
-                        this,
-                        activity,
-                        RosterManager.getInstance().getName(account, user),
-                        ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account),
-                        messageRealmObject.groupchatUserId?.let {
-                            getGroupMemberById(messageRealmObject.account, messageRealmObject.user, it)
-                        },
-                        ColorManager.getInstance().accountPainter.getAccountMainColor(account),
-                        ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(account),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true
-                    )
-                    if (forwardedMessages.size > 0) {
-                        recyclerView.layoutManager = LinearLayoutManager(activity)
-                        recyclerView.adapter = ForwardedAdapter(forwardedMessages, extraData)
-                        (activity as? MessagesActivity)?.setToolbar(forwardedMessages.size)
+                val messages =
+                    if (action == MessagesActivity.ACTION_SHOW_FORWARDED) {
+                        realm.where(MessageRealmObject::class.java)
+                            .`in`(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.forwardedIdsAsArray)
+                            .findAll()
+                            .also {
+                                (activity as? MessagesActivity)?.setToolbar(it.size)
+                            }
+                    } else {
+                        realm.where(MessageRealmObject::class.java)
+                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.primaryKey)
+                            .findAll()
+                            .also {
+                                (activity as? MessagesActivity)?.setToolbar(0)
+                            }
                     }
-                } else if (action == MessagesActivity.ACTION_SHOW_PINNED) {
 
-                    // groupchat user
-                    //GroupchatMember groupchatMember = GroupchatMemberManager.getInstance().getGroupchatUser(messageRealmObject.getGroupchatUserId());
-                    val extraData = MessageExtraData(
-                        this,
-                        this,
-                        activity,
-                        RosterManager.getInstance().getName(account, user),
-                        ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account),
-                        null,
-                        ColorManager.getInstance().accountPainter.getAccountMainColor(account),
-                        ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(account),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true
-                    )
-                    val messages = realm.where(MessageRealmObject::class.java)
-                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.primaryKey)
-                        .findAll()
-                    recyclerView.layoutManager = LinearLayoutManager(activity)
-                    recyclerView.adapter = ForwardedAdapter(messages, extraData)
-                    (activity as? MessagesActivity)?.setToolbar(0)
-                }
+                recyclerView.layoutManager = LinearLayoutManager(activity)
+                recyclerView.adapter = MessagesAdapter(
+                    requireContext(), messages, ChatManager.getInstance().getChat(account, user)!!
+                )
             }
     }
 

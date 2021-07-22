@@ -104,7 +104,7 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
         if (messageImage != null) messageImage.setOnClickListener(this);
     }
 
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
         setupImageOrFile(messageRealmObject, extraData.getContext());
     }

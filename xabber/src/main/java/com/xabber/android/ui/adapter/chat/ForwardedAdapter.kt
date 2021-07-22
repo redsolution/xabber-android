@@ -12,7 +12,6 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.adapter.chat.FileMessageVH.FileListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageLongClickListener
-import com.xabber.android.ui.adapter.chat.MessagesAdapter.MessageExtraData
 import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 
@@ -24,8 +23,8 @@ class ForwardedAdapter(
     MessageLongClickListener {
 
     private val appearanceStyle = SettingsManager.chatsAppearanceStyle()
-    private val listener: FileListener = extraData.listener
-    private val fwdListener: ForwardListener = extraData.fwdListener
+    private val listener: FileListener? = extraData.listener
+    private val fwdListener: ForwardListener? = extraData.fwdListener
 
     interface ForwardListener {
         fun onForwardClick(messageId: String?)
@@ -54,16 +53,12 @@ class ForwardedAdapter(
 
     override fun getItemCount() = if (realmResults.isValid && realmResults.isLoaded) realmResults.size else 0
 
-    fun getMessageItem(position: Int): MessageRealmObject? {
-        if (position == RecyclerView.NO_POSITION) {
-            return null
+    fun getMessageItem(position: Int): MessageRealmObject? =
+        when {
+            position == RecyclerView.NO_POSITION -> null
+            position < realmResults.size -> realmResults[position]
+            else -> null
         }
-        return if (position < realmResults.size) {
-            realmResults[position]
-        } else {
-            null
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
@@ -94,16 +89,24 @@ class ForwardedAdapter(
             holder.messageId = messageRealmObject.primaryKey
         }
 
-        // groupchat user
-        val groupMember = messageRealmObject.groupchatUserId?.let {
-            getGroupMemberById(messageRealmObject.account, messageRealmObject.user, it)
-        }
-
         val extraData = MessageExtraData(
-            null, null, extraData.context, messageRealmObject.originalFrom,
-            extraData.colorStateList, groupMember,
-            extraData.accountMainColor, extraData.mentionColor,
-            extraData.mainMessageTimestamp, false, false, false, false, true, true
+            null,
+            null,
+            extraData.context,
+            messageRealmObject.originalFrom,
+            colorStateList = extraData.colorStateList,
+            groupMember = messageRealmObject.groupchatUserId?.let {
+                getGroupMemberById(messageRealmObject.account, messageRealmObject.user, it)
+            },
+            accountMainColor = extraData.accountMainColor,
+            mentionColor = extraData.mentionColor,
+            mainMessageTimestamp = extraData.mainMessageTimestamp,
+            isShowOriginalOTR = false,
+            isUnread = false,
+            isChecked = false,
+            isNeedTail = false,
+            isNeedDate = true,
+            isNeedName = true
         )
         when (getItemViewType(position)) {
             VIEW_TYPE_IMAGE, VIEW_TYPE_MESSAGE_NOFLEX -> {
@@ -122,7 +125,7 @@ class ForwardedAdapter(
     override fun onMessageClick(caller: View, position: Int) {
         getItem(position)?.let { message ->
             if (message.hasForwardedMessages()) {
-                fwdListener.onForwardClick(message.primaryKey)
+                fwdListener?.onForwardClick(message.primaryKey)
             }
         }
     }

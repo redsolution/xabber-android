@@ -23,7 +23,7 @@ class SavedCompanionMessageVH(
     val messageListener: MessageClickListener,
     val longClickListener: MessageLongClickListener,
     val fileListener: FileListener,
-    val bindListener: BindListener,
+    val bindListener: BindListener?,
     val avatarListener: OnMessageAvatarClickListener,
     val appearance: Int,
 ) : NoFlexIncomingMsgVH(
@@ -36,7 +36,7 @@ class SavedCompanionMessageVH(
     appearance
 ) {
 
-    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessagesAdapter.MessageExtraData) {
+    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         val innerMessage: MessageRealmObject = MessageRepository.getForwardedMessages(messageRealmObject).first()
         val groupMember: GroupMemberRealmObject? = GroupMemberManager.getGroupMemberById(
             innerMessage.account, innerMessage.user, innerMessage.groupchatUserId

@@ -15,7 +15,6 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.ui.adapter.chat.MessagesAdapter.MessageExtraData
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.Utils
 

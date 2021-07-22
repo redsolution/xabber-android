@@ -12,7 +12,7 @@ public class NoFlexOutgoingMsgVH extends OutgoingMessageVH {
     }
 
     @Override
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
         if (messageText.getText().toString().trim().isEmpty()) messageText.setVisibility(View.GONE);
     }

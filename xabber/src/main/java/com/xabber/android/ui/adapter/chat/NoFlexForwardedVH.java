@@ -12,7 +12,7 @@ public class NoFlexForwardedVH extends ForwardedVH {
     }
 
     @Override
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData,
+    public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData,
                      String accountJid) {
 
         super.bind(messageRealmObject, extraData, accountJid);

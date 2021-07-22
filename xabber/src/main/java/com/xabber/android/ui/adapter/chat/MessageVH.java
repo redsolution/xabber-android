@@ -88,7 +88,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         itemView.setOnLongClickListener(this);
     }
 
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
 
         messageHeader.setVisibility(View.GONE);
 
@@ -167,7 +167,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         setupTime(extraData, messageRealmObject);
     }
 
-    protected void setupTime(MessagesAdapter.MessageExtraData extraData, MessageRealmObject messageRealmObject) {
+    protected void setupTime(MessageExtraData extraData, MessageRealmObject messageRealmObject) {
         //Since the original and forwarded voice messages are basically the same, we need some help with properly differentiating them to avoid cases when
         //original voice message and the forward with this voice message are showing the same progress change during playback.
         //Saving any type of data from the base message (message that "houses" the forwarded messages) will help us differentiate
@@ -190,7 +190,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageTime.setText(time);
     }
 
-    void setupForwarded(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    void setupForwarded(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         String[] forwardedIDs = messageRealmObject.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
             Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();

@@ -26,7 +26,7 @@ public class OutgoingMessageVH extends FileMessageVH {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public void bind(MessageRealmObject messageRealmObject, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
 
         final Context context = extraData.getContext();
