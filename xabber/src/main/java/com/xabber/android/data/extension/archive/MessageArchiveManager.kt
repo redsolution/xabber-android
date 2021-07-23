@@ -58,7 +58,9 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
             AccountRepository.saveAccountToRealm(accountItem)
             loadLastSavedMessage(accountItem)
             loadLastMessagesInAllChats(accountItem)
-        } else loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
+        } else {
+            loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem)
+        }
     }
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
@@ -85,6 +87,10 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 }
             }
         }
+    }
+
+    fun reInitMessagesForChat(accountJid: AccountJid, contactJid: ContactJid) {
+
     }
 
     fun isSupported(accountItem: AccountItem) = try {

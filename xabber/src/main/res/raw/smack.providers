@@ -216,6 +216,13 @@
         <className>com.xabber.xmpp.retract.incoming.providers.ReplacedExtensionElementProvider</className>
     </extensionProvider>
 
+    <!--           Invalidate message element            -->
+    <extensionProvider>
+        <elementName>invalidate</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingInvalidateExtensionElementProvider</className>
+    </extensionProvider>
+
     <!--            Retract message element            -->
     <extensionProvider>
         <elementName>retract-message</elementName>

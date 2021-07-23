@@ -19,8 +19,7 @@ class IncomingReplaceExtensionElementProvider : ExtensionElementProvider<Incomin
 
         outerloop@ while (true) {
             val name = parser.name
-            val eventType = parser.eventType
-            when (eventType) {
+            when (parser.eventType) {
 
                 XmlPullParser.START_TAG -> {
                     if (name == IncomingReplaceExtensionElement.ELEMENT_NAME) {

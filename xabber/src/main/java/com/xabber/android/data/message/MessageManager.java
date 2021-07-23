@@ -287,6 +287,10 @@ public class MessageManager implements OnPacketListener {
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
+    public void clearHistoryForAccount(final  AccountJid accountJid) {
+        //todo
+    }
+
     /**
      * Removes message from history.
      *

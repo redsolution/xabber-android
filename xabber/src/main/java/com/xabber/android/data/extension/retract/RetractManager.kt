@@ -20,6 +20,8 @@ import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.ui.OnMessageUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
+import com.xabber.xmpp.retract.incoming.elements.IncomingInvalidateExtensionElement.Companion.getIncomingInvalidateExtensionElement
+import com.xabber.xmpp.retract.incoming.elements.IncomingInvalidateExtensionElement.Companion.hasIncomingInvalidateExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingReplaceExtensionElement.Companion.getIncomingReplaceExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingReplaceExtensionElement.Companion.hasIncomingReplaceExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElement.Companion.getIncomingRetractAllExtensionElement
@@ -57,6 +59,13 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
         if (packet is Message && packet.type == Message.Type.headline) {
             when {
+                packet.hasIncomingInvalidateExtensionElement() ->
+                    handleInvalidateMessage(
+                        connection.account,
+                        ContactJid.from(packet.from),
+                        packet.getIncomingInvalidateExtensionElement().version
+                    )
+
                 packet.hasIncomingReplaceExtensionElement() ->
                     handleReplaceMessage(
                         connection.account,
@@ -209,6 +218,26 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
             )
 
         }
+    }
+
+    private fun handleInvalidateMessage(
+        accountJid: AccountJid,
+        from: ContactJid,
+        version: String? = null
+    ) {
+        if (accountJid.bareJid.toString() == from.bareJid.toString()) {
+            handleInvalidateLocalArchive(accountJid, version)
+        } else {
+            handleInvalidateRemoteArchive(accountJid, from, version)
+        }
+    }
+
+    private fun handleInvalidateLocalArchive(accountJid: AccountJid, version: String? = null) {
+
+    }
+
+    private fun handleInvalidateRemoteArchive(accountJid: AccountJid, contactJid: ContactJid, version: String? = null) {
+
     }
 
     private fun handleRetractAllMessage(accountJid: AccountJid, contactJid: ContactJid, version: String?) {
