@@ -10,7 +10,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -59,7 +58,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     private static ContactListPresenter instance;
     private ContactListView view;
 
-    private UpdateBackpressure updateBackpressure;
+    private final UpdateBackpressure updateBackpressure;
 
     public ContactListPresenter() {
         updateBackpressure = new UpdateBackpressure(this);
@@ -138,12 +137,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(updateBackpressure::refreshRequest);
     }
 
     @Override
     public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
-        Application.getInstance().runOnUiThread(() -> updateBackpressure.refreshRequest());
+        Application.getInstance().runOnUiThread(updateBackpressure::refreshRequest);
     }
 
     @Override
@@ -166,24 +165,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final CommonState commonState = AccountManager.getInstance().getCommonState();
         final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
-        /**
-         * Groups.
-         */
         final Map<String, GroupConfiguration> groups;
 
-        /**
-         * Contacts.
-         */
         final List<AbstractContact> contacts;
 
-        /**
-         * Whether there is at least one contact.
-         */
         boolean hasContacts = false;
 
-        /**
-         * Whether there is at least one visible contact.
-         */
         boolean hasVisibleContacts = false;
 
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
@@ -192,9 +179,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             accounts.put(account, null);
         }
 
-        /**
-         * List of rooms and active chats grouped by users inside accounts.
-         */
+        /* List of rooms and active chats grouped by users inside accounts. */
         final Map<AccountJid, Map<ContactJid, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : ChatManager.getInstance().getChats()) {
@@ -247,52 +232,34 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 hasVisibleContacts = true;
             }
         }
-        for (Map<ContactJid, AbstractChat> users : abstractChats.values())
-            for (AbstractChat abstractChat : users.values()) {
-                final AbstractContact abstractContact;
-                abstractContact = new ChatContact(abstractChat);
-                if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
-                    continue;
-                }
-                final String group;
-                final boolean online;
-                group = CircleManager.NO_GROUP;
-                online = false;
-                hasVisibleContacts = true;
-                ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
-                        showAccounts, showGroups);
-            }
 
         // BUILD STRUCTURE //
 
         // Remove empty groups, sort and apply structure.
         items.clear();
-
-        //if (hasVisibleContacts) {
-            if (showAccounts) {
-                for (AccountConfiguration rosterAccount : accounts.values()) {
-                    if (rosterAccount.getTotal() != 0) {
-                        if (showGroups) {
-                            createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
-                        } else {
-                            createContactListWithAccounts(items, rosterAccount, comparator);
-                        }
+        if (showAccounts) {
+            for (AccountConfiguration rosterAccount : accounts.values()) {
+                if (rosterAccount.getTotal() != 0) {
+                    if (showGroups) {
+                        createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
                     } else {
-                        AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
-                        ButtonVO button = ButtonVO.convert(rosterAccount,
-                                Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
-                        account.addSubItem(button);
-                        items.add(account);
+                        createContactListWithAccounts(items, rosterAccount, comparator);
                     }
-                }
-            } else {
-                if (showGroups) {
-                    createContactListWithGroups(items, showEmptyGroups, groups, comparator);
                 } else {
-                    createContactList(items, contacts, comparator);
+                    AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
+                    ButtonVO button = ButtonVO.convert(rosterAccount,
+                            Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
+                    account.addSubItem(button);
+                    items.add(account);
                 }
             }
-        //}
+        } else {
+            if (showGroups) {
+                createContactListWithGroups(items, showEmptyGroups, groups, comparator);
+            } else {
+                createContactList(items, contacts, comparator);
+            }
+        }
 
         if (view != null) {
             view.onContactListChanged(commonState, hasContacts, hasVisibleContacts);

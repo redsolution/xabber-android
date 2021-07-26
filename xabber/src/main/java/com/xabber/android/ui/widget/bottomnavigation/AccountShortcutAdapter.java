@@ -14,6 +14,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -24,9 +26,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcutAdapter.ViewHolder> {
 
-    private ArrayList<AccountShortcutVO> items;
-    private Context context;
-    private View.OnClickListener listener;
+    private final ArrayList<AccountShortcutVO> items;
+    private final Context context;
+    private final View.OnClickListener listener;
 
     public AccountShortcutAdapter(ArrayList<AccountShortcutVO> items, Context context,
                                   View.OnClickListener listener) {
@@ -43,13 +45,14 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
 
         public ViewHolder(View v) {
             super(v);
-            ivAvatar = (CircleImageView) v.findViewById(R.id.ivAvatar);
-            ivStatus = (ImageView) v.findViewById(R.id.ivStatus);
-            ivAvatarOverlay = (CircleImageView) v.findViewById(R.id.ivAvatarOverlay);
+            ivAvatar = v.findViewById(R.id.ivAvatar);
+            ivStatus = v.findViewById(R.id.ivStatus);
+            ivAvatarOverlay = v.findViewById(R.id.ivAvatarOverlay);
         }
     }
 
 
+    @NotNull
     @Override
     public AccountShortcutAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.avatar_view_small, parent, false);
@@ -94,4 +97,5 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
     public int getItemCount() {
         return items.size();
     }
+    
 }

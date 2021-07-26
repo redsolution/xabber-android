@@ -1,6 +1,5 @@
 package com.xabber.android.ui.fragment.contactListFragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +49,8 @@ import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutAdapter;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutVO;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,11 +74,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private RecyclerView recyclerView;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
-    private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
-    private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
+    private final ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
     private ArrayList<AccountJid> accountsJidList;
     /**
      * Default toolbar that is only being displayed
@@ -125,13 +123,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        contactListFragmentListener = (ContactListFragmentListener) activity;
-    }
-
-    @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         contactListFragmentListener = (ContactListFragmentListener) context;
     }
@@ -150,7 +142,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         recyclerView = view.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        coordinatorLayout = view.findViewById(R.id.coordinatorLayout);
 
         defaultToolbarLayout = view.findViewById(R.id.contact_list_default_toolbar);
 
@@ -196,7 +187,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (accountsJidList.size() > 1) {
             accountShortcutVOArrayList.clear();
             accountShortcutVOArrayList.addAll(AccountShortcutVO.convert(accountsJidList));
-            accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
+            AccountShortcutAdapter accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
             accountsRecyclerView.setAdapter(accountShortcutAdapter);
             accountsRecyclerView.setVisibility(View.VISIBLE);
             accountsRecyclerView.setOnClickListener(this);
@@ -217,7 +208,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenter = ContactListPresenter.getInstance();
         ((MainActivity) getActivity()).setStatusBarColor();
@@ -299,7 +290,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
             AccountJid accountJid = ((GroupVO) item).getAccountJid();
             ContextMenuHelper.createGroupContextMenu(getActivity(), presenter, accountJid,
                     ((GroupVO) item).getGroupName(), menu);
-            return;
         }
     }
 
@@ -364,21 +354,14 @@ public class ContactListFragment extends Fragment implements ContactListView,
             state = ContactListState.online;
             text = R.string.application_state_no_online;
             button = R.string.application_action_no_online;
-            listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SettingsManager.setContactsShowOffline(true);
-                    presenter.updateContactList();
-                }
+            listener = view -> {
+                SettingsManager.setContactsShowOffline(true);
+                presenter.updateContactList();
             };
         } else {
             defaultToolbarLayout.setVisibility(View.VISIBLE);
             switch (commonState) {
                 case online:
-                    //state = ContactListState.online;
-                    //text = R.string.application_state_no_contacts;
-                    //button = R.string.application_action_no_contacts;
-                    //listener = view -> startActivity(ContactAddActivity.createIntent(getActivity()));
                     defaultToolbarLayout.setVisibility(View.GONE);
                     infoView.setVisibility(View.GONE);
                     disconnectedView.clearAnimation();
@@ -458,7 +441,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     /**
      * Scroll contact list to specified account.
      *
-     * @param account
      */
     public void scrollToAccount(AccountJid account) {
 
