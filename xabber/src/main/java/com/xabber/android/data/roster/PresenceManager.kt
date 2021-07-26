@@ -28,9 +28,12 @@ import com.xabber.android.data.connection.StanzaSender
 import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
 import com.xabber.android.data.connection.listeners.OnDisconnectListener
 import com.xabber.android.data.connection.listeners.OnPacketListener
+import com.xabber.android.data.database.DatabaseManager
+import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.archive.MessageArchiveManager.isSupported
 import com.xabber.android.data.extension.archive.OnHistoryLoaded
 import com.xabber.android.data.extension.avatar.AvatarManager
@@ -43,6 +46,7 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.notification.EntityNotificationProvider
 import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.ui.OnStatusChangeListener
@@ -341,6 +345,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         }
         val isAccountPresence = isAccountPresence(connection.getAccount(), from.bareJid)
         val userPresences: MutableMap<Resourcepart, Presence>
+
         when (stanza.type) {
             Presence.Type.available -> {
                 userPresences =
@@ -351,6 +356,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 if (isAccountPresence) {
                     AccountManager.getInstance().onAccountChanged(connection.getAccount())
                 } else RosterManager.onContactChanged(connection.getAccount(), from)
+
+                checkEntityRightness(connection.account, from, stanza)
             }
             Presence.Type.unavailable -> {
                 // If no resource, this is likely an offline presence as part of
@@ -455,6 +462,36 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             else -> {
             }
         }
+    }
+
+    private fun checkEntityRightness(account: AccountJid, contactJid: ContactJid, presence: Presence) {
+        val chat = ChatManager.getInstance().getChat(account, contactJid)
+
+        fun clearHistory() {
+            Application.getInstance().runInBackground {
+                DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                    realm.executeTransaction { transaction ->
+                        transaction.where(MessageRealmObject::class.java)
+                            .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                            .equalTo(MessageRealmObject.Fields.USER, contactJid.bareJid.toString())
+                            .findAll()
+                            ?.deleteAllFromRealm()
+                    }
+                }
+            }
+        }
+
+        if (presence.hasGroupExtensionElement() && chat is RegularChat) {
+            ChatManager.getInstance().removeChat(chat)
+            ChatManager.getInstance().createGroupChat(account, contactJid)
+        } else if (!presence.hasGroupExtensionElement() && chat is GroupChat) {
+            ChatManager.getInstance().removeChat(chat)
+            ChatManager.getInstance().createRegularChat(account, contactJid)
+        }
+
+        clearHistory()
+        MessageArchiveManager.loadLastMessageInChat(account, contactJid)
+
     }
 
     private fun autoAcceptCreatedGroupSubscribeRequest(account: AccountJid, groupJid: ContactJid) {
