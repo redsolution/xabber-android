@@ -12,6 +12,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.MessageManager
@@ -226,18 +227,50 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         version: String? = null
     ) {
         if (accountJid.bareJid.toString() == from.bareJid.toString()) {
-            handleInvalidateLocalArchive(accountJid, version)
+            reInitLocalAtchive(accountJid, version)
         } else {
-            handleInvalidateRemoteArchive(accountJid, from, version)
+            reInitRemoteArchive(accountJid, from, version)
         }
     }
 
-    private fun handleInvalidateLocalArchive(accountJid: AccountJid, version: String? = null) {
-
+    private fun reInitLocalAtchive(accountJid: AccountJid, version: String? = null) {
+        Application.getInstance().runInBackground {
+            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                realm.executeTransaction { transaction ->
+                    transaction.where(MessageRealmObject::class.java)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                        .findAll()
+                        ?.deleteAllFromRealm()
+                }
+            }
+            AccountManager.getInstance().getAccount(accountJid)
+                ?.apply {
+                    startHistoryTimestamp = null
+                    retractVersion = version
+                }
+                ?.also {
+                    AccountRepository.saveAccountToRealm(it)
+                    MessageArchiveManager.onRosterReceived(it)
+                }
+        }
     }
 
-    private fun handleInvalidateRemoteArchive(accountJid: AccountJid, contactJid: ContactJid, version: String? = null) {
-
+    private fun reInitRemoteArchive(accountJid: AccountJid, contactJid: ContactJid, version: String? = null) {
+        Application.getInstance().runInBackground {
+            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                realm.executeTransaction { transaction ->
+                    transaction.where(MessageRealmObject::class.java)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                        .equalTo(MessageRealmObject.Fields.USER, contactJid.bareJid.toString())
+                        .findAll()
+                        ?.deleteAllFromRealm()
+                }
+            }
+            (ChatManager.getInstance().getChat(accountJid, contactJid) as? GroupChat)
+                ?.apply { retractVersion = version }
+                ?.also { ChatManager.getInstance().saveOrUpdateChatDataToRealm(it) }
+            MessageArchiveManager.loadLastMessageInChat(accountJid, contactJid)
+        }
     }
 
     private fun handleRetractAllMessage(accountJid: AccountJid, contactJid: ContactJid, version: String?) {

@@ -205,6 +205,30 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         }
     }
 
+    fun loadLastMessageInChat(accountJid: AccountJid, contactJid: ContactJid) {
+        Application.getInstance().runInBackgroundNetwork {
+            LogManager.d(this, "Start loading last message in chat $accountJid with $contactJid")
+            val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
+                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
+            AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
+                {
+                    LogManager.d(
+                        this,
+                        "Finish loading last message in chat $accountJid with $contactJid"
+                    )
+                },
+                { exception ->
+                    LogManager.d(
+                        this,
+                        "Error while loading last message in chat $accountJid with $contactJid"
+                    )
+                    LogManager.exception(this, exception)
+                }
+            )
+        }
+    }
+
     fun loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem: AccountItem) {
         Application.getInstance().runInBackgroundNetwork {
 
