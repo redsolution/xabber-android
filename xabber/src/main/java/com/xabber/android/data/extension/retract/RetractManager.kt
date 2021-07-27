@@ -185,7 +185,21 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                         messageStanza,
                         contactJid.takeIf { isGroup }
                     ),
-                    { /* ignore */ },
+                    {
+                        DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                            realm.executeTransaction { transaction ->
+                                transaction.where(MessageRealmObject::class.java)
+                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
+                                    .findFirst()
+                                    ?.apply {
+                                        text = newMessageText
+                                    }
+                                    ?.also {
+                                        transaction.copyToRealmOrUpdate(it)
+                                    }
+                            }
+                        }
+                    },
                     baseIqResultUiListener
                 )
             }

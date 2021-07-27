@@ -357,7 +357,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     AccountManager.getInstance().onAccountChanged(connection.getAccount())
                 } else RosterManager.onContactChanged(connection.getAccount(), from)
 
-                checkEntityRightness(connection.account, from, stanza)
+                //checkEntityRightness(connection.account, from, stanza)
             }
             Presence.Type.unavailable -> {
                 // If no resource, this is likely an offline presence as part of
