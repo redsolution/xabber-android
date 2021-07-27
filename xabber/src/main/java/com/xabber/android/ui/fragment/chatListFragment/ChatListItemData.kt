@@ -22,6 +22,7 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
+import com.xabber.android.ui.adapter.chat.FileMessageVH
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
@@ -123,7 +124,7 @@ data class ChatListItemData(
                     }
 
                     attachmentsCount > 0 -> when {
-                        lastMessage.text.isNullOrEmpty() -> {
+                        lastMessage.text.isNullOrEmpty() || lastMessage.text != FileMessageVH.UPLOAD_TAG -> {
                             coloredMemberNameOrNull + StringUtils.getColoredAttachmentDisplayName(
                                 context, lastMessage.attachmentRealmObjects, color500
                             )
@@ -164,14 +165,15 @@ data class ChatListItemData(
                         else -> lastMessage.text ?: noMessagesText
                     }
 
-                    attachmentsCount > 0 -> when {
-                        lastMessage.text.isNullOrEmpty() -> {
-                            StringUtils.getColoredAttachmentDisplayName(
-                                context, lastMessage.attachmentRealmObjects, color500
-                            )
+                    attachmentsCount > 0 ->
+                        when {
+                            lastMessage.text.isNullOrEmpty() || lastMessage.text != FileMessageVH.UPLOAD_TAG -> {
+                                StringUtils.getColoredAttachmentDisplayName(
+                                    context, lastMessage.attachmentRealmObjects, color500
+                                )
+                            }
+                            else -> lastMessage.text.tryToDecode().toString()
                         }
-                        else -> lastMessage.text.tryToDecode().toString()
-                    }
 
                     else -> lastMessage.text.tryToDecode().toString()
                 }

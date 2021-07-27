@@ -334,8 +334,16 @@ public class StringUtils {
                 if (singleAttachment.isVoice()) {
                     attachmentBuilder.append(context.getResources().getString(R.string.voice_message));
                     if (singleAttachment.getDuration() != null && singleAttachment.getDuration() != 0) {
-                        attachmentBuilder.append(String.format(Locale.getDefault(), ", %s",
-                                StringUtils.getDurationStringForVoiceMessage(null, singleAttachment.getDuration())));
+                        attachmentBuilder.append(
+                                String.format(
+                                        Locale.getDefault(),
+                                        ", %s",
+                                        StringUtils.getDurationStringForVoiceMessage(
+                                                null,
+                                                singleAttachment.getDuration()
+                                        )
+                                )
+                        );
                     }
                 } else {
                     if (singleAttachment.isImage()) {
@@ -344,7 +352,11 @@ public class StringUtils {
                         attachmentBuilder.append(context.getResources().getQuantityString(R.plurals.recent_chat__last_message__files, 1));
                     }
                     if (singleAttachment.getFileSize() != null && singleAttachment.getFileSize() != 0) {
-                        attachmentBuilder.append(", ").append(getHumanReadableFileSize(singleAttachment.getFileSize()));
+                        attachmentBuilder
+                                .append(", ")
+                                .append(
+                                        getHumanReadableFileSize(singleAttachment.getFileSize())
+                                );
                     }
                 }
             } else {
@@ -374,7 +386,11 @@ public class StringUtils {
                     attachmentBuilder.append(context.getResources().getString(
                             R.string.recent_chat__last_message__attachments, attachments.size()));
                 }
-                attachmentBuilder.append(", ").append(getHumanReadableFileSize(sizeOfAllAttachments));
+                attachmentBuilder
+                        .append(", ")
+                        .append(
+                                getHumanReadableFileSize(sizeOfAllAttachments)
+                        );
             }
 
 

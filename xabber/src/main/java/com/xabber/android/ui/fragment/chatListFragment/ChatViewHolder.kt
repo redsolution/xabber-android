@@ -52,8 +52,6 @@ class ChatViewHolder(
             accountColorIndicatorView.visibility = View.INVISIBLE
             accountColorIndicatorBackView.visibility = View.INVISIBLE
         }
-
-        //todo make decision about back view
     }
 
     private fun setupContactAvatar(itemData: ChatListItemData) {
