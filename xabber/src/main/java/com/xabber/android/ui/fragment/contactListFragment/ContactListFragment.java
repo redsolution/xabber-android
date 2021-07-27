@@ -282,7 +282,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             ContactJid contactJid = ((ContactVO) item).getContactJid();
             AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, contactJid);
-            ContextMenuHelper.createContactContextMenu(getActivity(), presenter, abstractContact, menu);
+            ContextMenuHelper.createContactContextMenu(
+                    getActivity(),
+                    presenter,
+                    abstractContact.getAccount(),
+                    abstractContact.getContactJid(),
+                    menu
+            );
             return;
         }
 

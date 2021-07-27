@@ -343,7 +343,8 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             ContextMenuHelper.createContactContextMenu(
                 this,
                 { updateContactsList(toolbar.searchText ?: "") },
-                RosterManager.getInstance().getAbstractContact(contact.account, contact.contactJid),
+                contact.account,
+                contact.contactJid,
                 menu
             )
         }

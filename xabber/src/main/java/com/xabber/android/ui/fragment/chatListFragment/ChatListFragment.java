@@ -517,7 +517,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             ContextMenuHelper.createContactContextMenu(
                     getActivity(),
                     this,
-                    RosterManager.getInstance().getAbstractContact(contact.getAccount(), contact.getContactJid()),
+                    contact.getAccount(),
+                    contact.getContactJid(),
                     menu);
         } catch (Exception e) {
             LogManager.exception(ChatListFragment.class.toString(), e);

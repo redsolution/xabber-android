@@ -60,13 +60,6 @@
                     android:title="@string/configure_notifications"
                     app:showAsAction="never" />
 
-                <!--<item android:id="@+id/action_clear_history"-->
-                <!--android:icon="@drawable/ic_clear_all_white_24dp"-->
-                <!--android:orderInCategory="160"-->
-                <!--android:title="@string/clear_history"-->
-                <!--app:showAsAction="never"-->
-                <!--/>-->
-
                 <item
                     android:id="@+id/action_export_chat"
                     android:orderInCategory="8"

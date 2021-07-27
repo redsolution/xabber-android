@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--<item android:id="@+id/action_chat"-->
-        <!--android:title="@string/chat_viewer" />-->
 
     <item android:id="@+id/action_accept_subscription"
         android:title="@string/accept_subscription" />
@@ -28,8 +26,11 @@
 
     <item android:id="@+id/action_more"
         android:title="@string/chat_more_actions">
+
         <menu>
+
             <group android:id="@+id/group_more_actions">
+
                 <item android:id="@+id/action_configure_notifications"
                     android:title="@string/configure_notifications" />
 
@@ -42,18 +43,14 @@
                 <item android:id="@+id/action_block_contact"
                     android:title="@string/contact_block" />
 
+                <item
+                    android:id="@+id/action_unblock_contact"
+                    android:title="@string/groupchat_unblock" />
+
             </group>
 
         </menu>
+
     </item>
-
-    <!--<item android:id="@+id/action_request_subscription"-->
-        <!--android:title="@string/request_subscription" />-->
-
-    <!--<item android:id="@+id/action_archive_chat"-->
-        <!--android:title="@string/archive_chat" />-->
-
-    <!--<item android:id="@+id/action_unarchive_chat"-->
-        <!--android:title="@string/unarchive_chat" />-->
 
 </menu>

@@ -322,10 +322,12 @@ public class BlockingManager implements OnAuthenticatedListener {
 
             final boolean finalSuccess = success;
             Application.getInstance().runOnUiThread(() -> {
-                if (finalSuccess) {
-                    listener.onSuccessUnblock();
-                } else {
-                    listener.onErrorUnblock();
+                if (listener != null) {
+                    if (finalSuccess) {
+                        listener.onSuccessUnblock();
+                    } else {
+                        listener.onErrorUnblock();
+                    }
                 }
             });
 
