@@ -231,7 +231,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     fun addAutoAcceptSubscription(account: AccountJid, user: ContactJid) {
         if (subscriptionRequestProvider[account, user] != null) {
             acceptSubscription(account, user)
-        } else addRequestedSubscription(account, user)
+        } else {
+            addRequestedSubscription(account, user)
+        }
     }
 
     fun removeAutoAcceptSubscription(account: AccountJid, user: ContactJid) =
@@ -456,7 +458,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 }
 
                 // subscription request
-                handleSubscriptionRequest(account, from)
+                if (!stanza.hasGroupExtensionElement()) {
+                    handleSubscriptionRequest(account, from)
+                }
             }
             Presence.Type.subscribed -> handleSubscriptionAccept(connection.getAccount(), from)
             else -> {
