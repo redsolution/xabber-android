@@ -38,7 +38,7 @@ class GroupPinMessageIQ(to: Jid, val messageId: String) : IQ(UPDATE_ELEMENT_NAME
         }
 
         private companion object {
-            const val PINNED_ELEMENT_NAME = "pinned"
+            const val PINNED_ELEMENT_NAME = "pinned-message"
         }
 
     }
