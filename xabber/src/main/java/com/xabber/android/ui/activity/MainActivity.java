@@ -97,7 +97,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
-
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.SearchActivity.ACTION_CONTACT_SUBSCRIPTION";
     private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.SearchActivity.ACTION_CLEAR_STACK";
 
@@ -574,22 +573,22 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
 
         /* Show recent if archived displayed */
-        if (currentChatListState == ChatListFragment.ChatListState.archived) {
-            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+        if (currentChatListState == ChatListFragment.ChatListState.ARCHIVED) {
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.RECENT);
             return;
         }
 
         /* Toggle between recent and unread when has unread */
         if (unreadMessagesCount > 0 && getChatListFragment().getCurrentChatsState()
-                != ChatListFragment.ChatListState.unread)
-            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
-        else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+                != ChatListFragment.ChatListState.UNREAD)
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.UNREAD);
+        else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.RECENT);
     }
 
     @Override
     public void onContactsClick() {
         showContactListFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         if (currentActiveFragmentType == ActiveFragmentType.CONTACTS)
             getContactListFragment().scrollTo(0);
     }
@@ -597,21 +596,21 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     public void onSettingsClick() {
         showMenuFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
     }
 
     @Override
     public void onCallsClick() {
         showCallsFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
     }
 
     @Override
     public void onDiscoverClick() {
         showDiscoverFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
 
         if (currentActiveFragmentType.equals(ActiveFragmentType.DISCOVER))
@@ -639,7 +638,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private ChatListFragment getChatListFragment() {
         if (getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG) != null) {
             return (ChatListFragment) getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG);
-        } else return ChatListFragment.newInstance(null);
+        } else return new ChatListFragment();
     }
 
     private DiscoverFragment getDiscoverFragment() {

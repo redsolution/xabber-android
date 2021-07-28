@@ -86,7 +86,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         ConcurrentHashMap()
 
     override fun onLoad() {
-        Application.getInstance().runOnUiThread { onLoaded() }
+        Application.getInstance().runOnUiThread {
+            NotificationManager.getInstance().registerNotificationProvider(subscriptionRequestProvider)
+        }
     }
 
     override fun onAuthenticated(connectionItem: ConnectionItem) {
@@ -111,8 +113,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     override fun onDisconnect(connection: ConnectionItem) = clearPresencesTiedToThisAccount(connection.account)
-
-    private fun onLoaded() = NotificationManager.getInstance().registerNotificationProvider(subscriptionRequestProvider)
 
     /**
      * Requests subscription to the contact.

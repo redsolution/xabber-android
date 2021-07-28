@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
@@ -46,7 +47,6 @@ import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 
@@ -371,8 +371,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         }
 
         /* Show grey jid instead of status in SearchActivity */
-        if (listener instanceof ChatListFragment
-                && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
+        if (((Fragment) listener).getActivity() instanceof SearchActivity
                 && viewHolder.tvStatus != null){
             viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
             viewHolder.tvStatus.setText(contactJid.toString());
