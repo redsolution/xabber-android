@@ -2,22 +2,33 @@
 <resources>
     <string name="accept_subscription">Accept contact</string>
     <string name="account_reconnect">Reconnect</string>
+
     <string name="application_action_disabled">Manage accounts</string>
     <string name="application_action_empty">Add account</string>
     <string name="application_action_no_contacts">Add contact</string>
+
     <string name="application_action_no_online">Show offline contacts</string>
     <string name="application_action_offline">Go online</string>
     <string name="application_action_waiting">Reconnect</string>
+    <string name="application_action_lets_go">Let\'s go!</string>
+
     <string name="application_state_connecting">Connecting…</string>
-    <string name="application_state_disabled">Accounts disabled</string>
-    <string name="application_state_empty">You don\'t have any accounts</string>
-    <string name="application_state_no_contacts">You have no contacts</string>
-    <string name="application_state_no_online">Nobody online</string>
-    <string name="application_state_nobody_by_filter">No contacts found</string>
-    <string name="application_state_offline">No online accounts</string>
     <string name="application_state_roster">Connected.</string>
     <string name="application_state_starting">Launching application…</string>
     <string name="application_state_waiting">Waiting for connection…</string>
+
+    <string name="application_state_disabled">No active accounts</string>
+    <string name="application_state_empty">You don\'t have any accounts</string>
+    <string name="application_state_no_contacts">You have no contacts</string>
+
+    <string name="placeholder_no_archived">No archived chats</string>
+    <string name="placeholder_no_unread">No unread chats</string>
+    <string name="placeholder_no_chats">Your chats will appear here</string>
+
+    <string name="application_state_no_online">Nobody online</string>
+    <string name="application_state_nobody_by_filter">No contacts found</string>
+    <string name="application_state_offline">No online accounts</string>
+
     <string name="chat_viewer">Chat</string>
     <string name="CONNECTION_FAILED">Connection error</string>
     <string name="contact_add">Add contact</string>
@@ -101,8 +112,6 @@
     <string name="remove_selected_bookmarks">Remove selected</string>
     <string name="remove_all_bookmarks_confirm">Do you really want to remove all bookmarks from account %1$s?</string>
     <string name="remove_selected_bookmarks_confirm">Do you really want to remove selected bookmarks from account %1$s?</string>
-    <string name="placeholder_no_archived">Archive has no chats</string>
-    <string name="placeholder_no_unread">No unread chats</string>
     <string name="chat_was_archived">Chat was archived</string>
     <string name="chat_was_unarchived">Removed from archive</string>
     <string name="undo">UNDO</string>

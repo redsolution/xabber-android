@@ -47,9 +47,11 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
         findViewById<Toolbar>(R.id.toolbar_default).apply {
             toolbar = this
 
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 setNavigationIcon(R.drawable.ic_clear_grey_24dp)
-            } else setNavigationIcon(R.drawable.ic_clear_white_24dp)
+            } else {
+                setNavigationIcon(R.drawable.ic_clear_white_24dp)
+            }
 
             setNavigationOnClickListener { finish() }
 
@@ -63,9 +65,11 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
 
         val view = findViewById<View>(R.id.action_add_contact)
         if (view is TextView) {
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 view.setTextColor(resources.getColor(R.color.grey_900))
-            } else view.setTextColor(resources.getColor(R.color.white))
+            } else {
+                view.setTextColor(resources.getColor(R.color.white))
+            }
         }
 
         toolbarSetEnabled(false)
@@ -75,9 +79,9 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
 
         if (savedInstanceState == null) {
             supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragment_container, newInstance(getAccount(intent), getUser(intent)))
-                    .commit()
+                .beginTransaction()
+                .add(R.id.fragment_container, newInstance(getAccount(intent), getUser(intent)))
+                .commit()
         }
 
     }
@@ -94,16 +98,23 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
     fun toolbarSetEnabled(active: Boolean) {
         toolbar.menu.findItem(R.id.action_add_contact).isEnabled = active
         val view = findViewById<View>(R.id.action_add_contact)
-        if (view is TextView) view.setTextColor(view.textColors.withAlpha(if (active) 255 else 127))
+        if (view is TextView) {
+            view.setTextColor(view.textColors.withAlpha(if (active) 255 else 127))
+        }
     }
 
     companion object {
 
         @JvmStatic
         @JvmOverloads
-        fun createIntent(context: Context?, account: AccountJid? = null, user: ContactJid? = null): Intent {
-            return EntityIntentBuilder(context, ContactAddActivity::class.java).setAccount(account).setUser(user).build()
-        }
+        fun createIntent(
+            context: Context?,
+            account: AccountJid? = null,
+            user: ContactJid? = null
+        ): Intent = EntityIntentBuilder(context, ContactAddActivity::class.java)
+            .setAccount(account)
+            .setUser(user)
+            .build()
 
         private fun getAccount(intent: Intent): AccountJid? {
             return EntityIntentBuilder.getAccount(intent)

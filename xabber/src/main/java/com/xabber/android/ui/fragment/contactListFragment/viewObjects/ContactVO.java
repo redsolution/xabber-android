@@ -4,6 +4,7 @@ package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
  * Created by valery.miller on 02.02.18.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -371,7 +372,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         }
 
         /* Show grey jid instead of status in SearchActivity */
-        if (((Fragment) listener).getActivity() instanceof SearchActivity
+        if (listener instanceof Fragment &&
+                ((Fragment) listener).getActivity() instanceof SearchActivity
                 && viewHolder.tvStatus != null){
             viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
             viewHolder.tvStatus.setText(contactJid.toString());

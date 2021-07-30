@@ -38,11 +38,7 @@ import com.xabber.android.data.roster.AbstractContact
 import com.xabber.android.data.roster.RosterContact
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.*
-import com.xabber.android.ui.activity.AccountActivity
-import com.xabber.android.ui.activity.AddActivity
-import com.xabber.android.ui.activity.ContactAddActivity.Companion.createIntent
-import com.xabber.android.ui.activity.ContactViewerActivity
-import com.xabber.android.ui.activity.MainActivity
+import com.xabber.android.ui.activity.*
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.helper.ContextMenuHelper
 import com.xabber.android.ui.helper.ContextMenuHelper.ListPresenter
@@ -53,37 +49,41 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener, OnChatStateListener, ListPresenter,
-    OnMessageUpdatedListener, OnStatusChangeListener, OnConnectionStateChangedListener, OnChatUpdatedListener {
+class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
+    OnChatStateListener, ListPresenter, OnMessageUpdatedListener, OnStatusChangeListener,
+    OnConnectionStateChangedListener, OnChatUpdatedListener {
 
-    private var adapter: ChatListAdapter? = null
-    private var items: MutableList<AbstractChat> = ArrayList()
     private var snackbar: Snackbar? = null
-    private var linearLayoutManager: LinearLayoutManager? = null
     private var chatListFragmentListener: ChatListFragmentListener? = null
+    private val updateRequest = PublishSubject.create<Any?>()
     var currentChatsState = ChatListState.RECENT
         private set
-    private var recyclerView: RecyclerView? = null
-    private var markAllAsReadButton: TextView? = null
-    private var markAllReadBackground: Drawable? = null
+
+    /* Chats list */
+    private var items: MutableList<AbstractChat> = ArrayList()
+    private val linearLayoutManager: LinearLayoutManager = LinearLayoutManager(activity)
+    private val adapter: ChatListAdapter = ChatListAdapter(items, this, true)
+    private lateinit var recyclerView: RecyclerView
+
+    /* Mark all as read button */
+    private lateinit var markAllAsReadButton: TextView
+    private lateinit var markAllReadBackground: Drawable
     private var maxItemsOnScreen = 0
 
-    /* Placeholder variables */
-    private var placeholderView: View? = null
-    private var placeholderMessage: TextView? = null
-    private var placeholderButton: Button? = null
-    private var showPlaceholders = 0
+    /* Placeholder */
+    private lateinit var placeholderView: View
+    private lateinit var placeholderMessage: TextView
+    private lateinit var placeholderButton: Button
 
-    /* Toolbar variables */
-    private var toolbarRelativeLayout: RelativeLayout? = null
-    private var toolbarAppBarLayout: AppBarLayout? = null
-    private var toolbarToolbarLayout: Toolbar? = null
-    private var toolbarAccountColorIndicator: View? = null
-    private var toolbarAccountColorIndicatorBack: View? = null
+    /* Toolbar */
+    private lateinit var toolbarRelativeLayout: RelativeLayout
+    private lateinit var toolbarAppBarLayout: AppBarLayout
+    private lateinit var toolbarToolbarLayout: Toolbar
+    private lateinit var toolbarAccountColorIndicator: View
+    private lateinit var toolbarAccountColorIndicatorBack: View
     private lateinit var toolbarTitleTv: TextView
-    private var toolbarAvatarIv: ImageView? = null
-    private var toolbarStatusIv: ImageView? = null
-    private val updateRequest = PublishSubject.create<Any?>()
+    private lateinit var toolbarAvatarIv: ImageView
+    private lateinit var toolbarStatusIv: ImageView
 
     override fun onAttach(context: Context) {
         if (getContext() is ChatListFragmentListener) {
@@ -91,7 +91,8 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
             chatListFragmentListener?.onChatListStateChanged(currentChatsState)
         } else {
             LogManager.exception(
-                this::class.java.simpleName, Exception("Context must implement ChatListFragmentListener")
+                this::class.java.simpleName,
+                Exception("Context must implement ChatListFragmentListener")
             )
         }
         super.onAttach(context)
@@ -104,15 +105,10 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
     override fun onStop() {
         Application.getInstance().removeUIListener(OnChatStateListener::class.java, this)
-        Application.getInstance().removeUIListener(
-            OnStatusChangeListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnConnectionStateChangedListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnMessageUpdatedListener::class.java, this
-        )
+        Application.getInstance().removeUIListener(OnStatusChangeListener::class.java, this)
+        Application.getInstance()
+            .removeUIListener(OnConnectionStateChangedListener::class.java, this)
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener::class.java, this)
         Application.getInstance().removeUIListener(OnChatUpdatedListener::class.java, this)
         super.onStop()
     }
@@ -125,12 +121,8 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
     override fun onResume() {
         Application.getInstance().addUIListener(OnChatStateListener::class.java, this)
         Application.getInstance().addUIListener(OnStatusChangeListener::class.java, this)
-        Application.getInstance().addUIListener(
-            OnConnectionStateChangedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnMessageUpdatedListener::class.java, this
-        )
+        Application.getInstance().addUIListener(OnConnectionStateChangedListener::class.java, this)
+        Application.getInstance().addUIListener(OnMessageUpdatedListener::class.java, this)
         Application.getInstance().addUIListener(OnChatUpdatedListener::class.java, this)
 
         MessageNotificationManager.getInstance().setShowBanners(false)
@@ -149,95 +141,117 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         super.onResume()
     }
 
-    override fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusText: String?) {
-        Application.getInstance().runOnUiThread { updateRequest.onNext(null) }
-    }
-
-    override fun onStatusChanged(
-        account: AccountJid?, user: ContactJid?, statusMode: StatusMode?, statusText: String?
-    ) {
-        Application.getInstance().runOnUiThread { updateRequest.onNext(null) }
-    }
-
-    override fun onConnectionStateChanged(newConnectionState: ConnectionState) {
-        Application.getInstance().runOnUiThread { updateRequest.onNext(null) }
-    }
-
-    override fun onAction() {
-        Application.getInstance().runOnUiThread { updateRequest.onNext(null) }
-    }
-
-    fun onStateSelected(state: ChatListState) {
-        currentChatsState = state
-        chatListFragmentListener?.onChatListStateChanged(state)
-        toolbarAppBarLayout?.setExpanded(true, false)
-        update()
-
-        snackbar?.dismiss()
-    }
-
-    fun scrollToTop() {
-        if (recyclerView?.adapter?.itemCount != 0) {
-            recyclerView?.scrollToPosition(0)
-            toolbarAppBarLayout?.setExpanded(true, false)
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_chat_list, container, false)
 
         recyclerView = view.findViewById(R.id.chatlist_recyclerview)
-        linearLayoutManager = LinearLayoutManager(activity)
-        recyclerView?.layoutManager = linearLayoutManager
+        recyclerView.layoutManager = linearLayoutManager
+        recyclerView.adapter = adapter
+        recyclerView.itemAnimator = null
 
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(recyclerView.context, linearLayoutManager.orientation)
+                .apply {
+                    setChatListOffsetMode(
+                        if (SettingsManager.contactsShowAvatars()) {
+                            ChatListAvatarState.SHOW_AVATARS
+                        } else {
+                            ChatListAvatarState.DO_NOT_SHOW_AVATARS
+                        }
+                    )
+                }
+        )
+
+        markAllReadBackground =
+            ResourcesCompat.getDrawable(resources, R.drawable.unread_button_background, null)!!
         markAllAsReadButton = view.findViewById(R.id.mark_all_as_read_button)
-        markAllReadBackground = ResourcesCompat.getDrawable(resources, R.drawable.unread_button_background, null)
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            markAllAsReadButton?.elevation = 2f
-        }
-        if (Build.VERSION.SDK_INT >= 16) {
-            markAllAsReadButton?.background = markAllReadBackground
+        markAllAsReadButton.apply {
+            if (Build.VERSION.SDK_INT >= 21) {
+                markAllAsReadButton.elevation = 2f
+            }
+            if (Build.VERSION.SDK_INT >= 16) {
+                markAllAsReadButton.background = markAllReadBackground
+            }
         }
 
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view)
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message)
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button)
-        adapter = ChatListAdapter(items, this, true)
-        recyclerView?.adapter = adapter
-        recyclerView?.itemAnimator = null
-        val divider = DividerItemDecoration(recyclerView?.context, linearLayoutManager!!.orientation)
-        divider.setChatListOffsetMode(if (SettingsManager.contactsShowAvatars()) ChatListAvatarState.SHOW_AVATARS else ChatListAvatarState.DO_NOT_SHOW_AVATARS)
-        recyclerView?.addItemDecoration(divider)
+
         MessageNotificationManager.getInstance().removeAllMessageNotifications()
+
         chatListFragmentListener?.onChatListStateChanged(currentChatsState)
 
-        /* Toolbar variables initialization */toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist)
+        /* Toolbar variables initialization */
+        toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist)
         toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar)
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator)
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack)
-        val toolbarAddIv = view.findViewById<ImageView>(R.id.ivAdd)
+
         toolbarTitleTv = view.findViewById(R.id.tvTitle)
+        toolbarTitleTv.apply {
+            text = context?.getString(R.string.account_state_connecting)
+            setOnClickListener(this@ChatListFragment)
+        }
+
         toolbarAvatarIv = view.findViewById(R.id.ivAvatar)
+        toolbarAvatarIv.setOnClickListener(this)
+
         toolbarStatusIv = view.findViewById(R.id.ivStatus)
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root)
-        toolbarTitleTv.text = Application.getInstance().applicationContext.getString(
-            R.string.account_state_connecting
-        )
-        toolbarAddIv.setOnClickListener { startActivity(Intent(activity, AddActivity::class.java)) }
-        toolbarAvatarIv?.setOnClickListener(this)
-        toolbarTitleTv.setOnClickListener(this)
         if (activity?.javaClass?.simpleName != MainActivity::class.java.simpleName) {
-            toolbarAppBarLayout?.visibility = View.GONE
+            toolbarAppBarLayout.visibility = View.GONE
+        }
+
+        view.findViewById<ImageView>(R.id.ivAdd).setOnClickListener {
+            startActivity(Intent(activity, AddActivity::class.java))
         }
 
         /* Find possible max recycler items*/
         context?.resources?.displayMetrics?.let { displayMetrics ->
             val dpHeight = (displayMetrics.heightPixels / displayMetrics.density).roundToInt()
             maxItemsOnScreen = ((dpHeight - 56 - 56) / 64).toFloat().roundToInt()
-            showPlaceholders = 0
         }
+
         return view
+    }
+
+    override fun onStatusChanged(account: AccountJid?, user: ContactJid?, statusText: String?) {
+        activity?.runOnUiThread { updateRequest.onNext(null) }
+    }
+
+    override fun onStatusChanged(
+        account: AccountJid?, user: ContactJid?, statusMode: StatusMode?, statusText: String?
+    ) {
+        activity?.runOnUiThread { updateRequest.onNext(null) }
+    }
+
+    override fun onConnectionStateChanged(newConnectionState: ConnectionState) {
+        activity?.runOnUiThread { updateRequest.onNext(null) }
+    }
+
+    override fun onAction() {
+        activity?.runOnUiThread { updateRequest.onNext(null) }
+    }
+
+    fun onStateSelected(state: ChatListState) {
+        currentChatsState = state
+        chatListFragmentListener?.onChatListStateChanged(state)
+        toolbarAppBarLayout.setExpanded(true, false)
+        update()
+
+        snackbar?.dismiss()
+    }
+
+    fun scrollToTop() {
+        if (recyclerView.adapter?.itemCount != 0) {
+            recyclerView.scrollToPosition(0)
+            toolbarAppBarLayout.setExpanded(true, false)
+        }
     }
 
     override fun updateContactList() {
@@ -260,47 +274,68 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
         /* Update avatar and status ImageViews via current settings and main user */
         if (SettingsManager.contactsShowAvatars()) {
-            toolbarAvatarIv?.visibility = View.VISIBLE
-            toolbarStatusIv?.visibility = View.VISIBLE
+            toolbarAvatarIv.visibility = View.VISIBLE
+            toolbarStatusIv.visibility = View.VISIBLE
 
-            AvatarManager.getInstance().mainAccountAvatar?.let { toolbarAvatarIv?.setImageDrawable(it) }
+            AvatarManager.getInstance().mainAccountAvatar?.let {
+                toolbarAvatarIv.setImageDrawable(
+                    it
+                )
+            }
 
             if (AccountManager.getInstance().enabledAccounts.isNotEmpty()) {
-                toolbarStatusIv?.setImageLevel(
+                toolbarStatusIv.setImageLevel(
                     AccountManager.getInstance().firstAccount?.let {
                         AccountManager.getInstance().getAccount(it)?.displayStatusMode?.statusLevel
                     } ?: StatusMode.unavailable.statusLevel
                 )
             } else {
-                toolbarStatusIv?.setImageLevel(StatusMode.unavailable.ordinal)
+                toolbarStatusIv.setImageLevel(StatusMode.unavailable.ordinal)
             }
         } else {
-            toolbarAvatarIv?.visibility = View.GONE
-            toolbarStatusIv?.visibility = View.GONE
+            toolbarAvatarIv.visibility = View.GONE
+            toolbarStatusIv.visibility = View.GONE
         }
 
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-            toolbarRelativeLayout?.setBackgroundColor(ColorManager.getInstance().accountPainter.defaultRippleColor)
+            toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().accountPainter.defaultRippleColor)
         } else if (context != null) {
             val typedValue = TypedValue()
             context?.theme?.resolveAttribute(R.attr.bars_color, typedValue, true)
-            toolbarRelativeLayout?.setBackgroundColor(typedValue.data)
+            toolbarRelativeLayout.setBackgroundColor(typedValue.data)
         }
 
         /* Update left color indicator via current main user */
         if (AccountManager.getInstance().enabledAccounts.size > 1) {
-            toolbarAccountColorIndicator?.setBackgroundColor(
+            toolbarAccountColorIndicator.setBackgroundColor(
                 ColorManager.getInstance().accountPainter.defaultMainColor
             )
-            toolbarAccountColorIndicatorBack?.setBackgroundColor(
+            toolbarAccountColorIndicatorBack.setBackgroundColor(
                 ColorManager.getInstance().accountPainter.defaultIndicatorBackColor
             )
         } else {
-            toolbarAccountColorIndicator?.setBackgroundColor(Color.TRANSPARENT)
-            toolbarAccountColorIndicatorBack?.setBackgroundColor(Color.TRANSPARENT)
+            toolbarAccountColorIndicator.setBackgroundColor(Color.TRANSPARENT)
+            toolbarAccountColorIndicatorBack.setBackgroundColor(Color.TRANSPARENT)
         }
-        setupToolbarLayout()
+
+        val enabled = items.size > maxItemsOnScreen
+
+        val toolbarLayoutParams = toolbarToolbarLayout.layoutParams as AppBarLayout.LayoutParams
+        val appBarLayoutParams =
+            toolbarAppBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+
+        if (enabled && toolbarLayoutParams.scrollFlags == 0) {
+            appBarLayoutParams.behavior = AppBarLayout.Behavior()
+            toolbarLayoutParams.scrollFlags =
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+        } else if (!enabled && toolbarLayoutParams.scrollFlags != 0) {
+            toolbarLayoutParams.scrollFlags = 0
+            appBarLayoutParams.behavior = null
+        }
+
+        toolbarToolbarLayout.layoutParams = toolbarLayoutParams
+        toolbarAppBarLayout.layoutParams = appBarLayoutParams
     }
 
     /**
@@ -319,7 +354,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
      * @return Return true when first element of chat list is on the top of the screen
      */
     val isOnTop: Boolean
-        get() = linearLayoutManager?.findFirstCompletelyVisibleItemPosition() == 0
+        get() = linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
 
     /**
      * @return Size of chat list
@@ -359,77 +394,32 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
      */
     private fun updateItems(newItems: List<AbstractChat>) {
         val tempIsOnTop = isOnTop
-        if (newItems.isEmpty() && showPlaceholders >= 3) {
-            when (currentChatsState) {
-                ChatListState.UNREAD -> showPlaceholder(
-                    Application.getInstance().applicationContext.getString(
-                        R.string.placeholder_no_unread
-                    ), null
-                )
-                ChatListState.ARCHIVED -> showPlaceholder(
-                    Application.getInstance().applicationContext.getString(R.string.placeholder_no_archived),
-                    null
-                )
-                else -> {
-                    showPlaceholder(
-                        Application.getInstance().applicationContext.getString(R.string.application_state_no_contacts),
-                        Application.getInstance().applicationContext.getString(R.string.application_action_no_contacts)
-                    )
-                    placeholderButton?.setOnClickListener {
-                        startActivity(createIntent(activity))
-                    }
-                }
-            }
-        } else {
-            hidePlaceholder()
-        }
+
+        updatePlaceholderWithParams(newItems.isEmpty())
 
         /* Update items in RecyclerView */
-        val diffResult = DiffUtil.calculateDiff(ChatItemDiffUtil(items, newItems, adapter!!), false)
+        val diffResult =
+            DiffUtil.calculateDiff(ChatItemDiffUtil(items, newItems, adapter), false)
         items.clear()
         items.addAll(newItems)
-        adapter?.addItems(newItems.toMutableList())
-        diffResult.dispatchUpdatesTo(adapter!!)
+        adapter.addItems(newItems.toMutableList())
+        diffResult.dispatchUpdatesTo(adapter)
         if (tempIsOnTop) {
             scrollToTop()
         }
     }
 
     override fun onChatStateChanged(entities: Collection<RosterContact>) {
-        Application.getInstance().runOnUiThread { update() }
-    }
-
-    /**
-     * Setup Toolbar scroll behavior according to count of visible chat items
-     */
-    private fun setupToolbarLayout() {
-        if (recyclerView != null) {
-            setToolbarScrollEnabled(items.size > maxItemsOnScreen)
-        }
-    }
-
-    /**
-     * Enable or disable Toolbar scroll behavior
-     */
-    private fun setToolbarScrollEnabled(enabled: Boolean) {
-        val toolbarLayoutParams = toolbarToolbarLayout!!.layoutParams as AppBarLayout.LayoutParams
-        val appBarLayoutParams = toolbarAppBarLayout!!.layoutParams as CoordinatorLayout.LayoutParams
-        if (enabled && toolbarLayoutParams.scrollFlags == 0) {
-            appBarLayoutParams.behavior = AppBarLayout.Behavior()
-            toolbarLayoutParams.scrollFlags =
-                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-        } else if (!enabled && toolbarLayoutParams.scrollFlags != 0) {
-            toolbarLayoutParams.scrollFlags = 0
-            appBarLayoutParams.behavior = null
-        }
-        toolbarToolbarLayout?.layoutParams = toolbarLayoutParams
-        toolbarAppBarLayout?.layoutParams = appBarLayoutParams
+        activity?.runOnUiThread { update() }
     }
 
     override fun onChatItemSwiped(abstractContact: AbstractChat) {
-        val abstractChat = ChatManager.getInstance().getChat(abstractContact.account, abstractContact.contactJid)
-        ChatManager.getInstance().getChat(abstractContact.account, abstractContact.contactJid)?.isArchived =
-            !abstractChat!!.isArchived
+        val abstractChat =
+            ChatManager.getInstance()
+                .getChat(abstractContact.account, abstractContact.contactJid)
+        ChatManager.getInstance()
+            .getChat(abstractContact.account, abstractContact.contactJid)
+            ?.isArchived = !abstractChat!!.isArchived
         showSnackbar(abstractContact, currentChatsState)
         updateRequest.onNext(null)
     }
@@ -440,7 +430,11 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         } else {
             val intent: Intent
             try {
-                intent = ContactViewerActivity.createIntent(activity, contact.account, contact.contactJid)
+                intent = ContactViewerActivity.createIntent(
+                    activity,
+                    contact.account,
+                    contact.contactJid
+                )
                 activity?.startActivity(intent)
             } catch (e: Exception) {
                 LogManager.exception(ChatListFragment::class.java.toString(), e)
@@ -448,7 +442,11 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         }
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
         super.onCreateContextMenu(menu, v, menuInfo)
     }
 
@@ -475,7 +473,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
     override fun onChatItemClick(contact: AbstractChat) {
         try {
-            chatListFragmentListener!!.onChatClick(
+            chatListFragmentListener?.onChatClick(
                 RosterManager.getInstance()
                     .getAbstractContact(contact.account, contact.contactJid)
             )
@@ -489,19 +487,31 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         val allChats = ChatManager.getInstance().chatsOfEnabledAccounts
         when (currentChatsState) {
             ChatListState.RECENT -> for (abstractChat in allChats) if ((abstractChat.lastMessage != null
-                        || hasActiveIncomingInvites(abstractChat.account, abstractChat.contactJid))
+                        || hasActiveIncomingInvites(
+                    abstractChat.account,
+                    abstractChat.contactJid
+                ))
                 && !abstractChat.isArchived
             ) {
                 newList.add(abstractChat)
             }
-            ChatListState.UNREAD -> for (abstractChat in ChatManager.getInstance().chatsOfEnabledAccounts) if ((abstractChat.lastMessage != null
-                        || hasActiveIncomingInvites(abstractChat.account, abstractChat.contactJid))
-                && abstractChat.unreadMessageCount != 0
-            ) {
-                newList.add(abstractChat)
-            }
+            ChatListState.UNREAD ->
+                for (abstractChat in ChatManager.getInstance().chatsOfEnabledAccounts) {
+                    if ((abstractChat.lastMessage != null
+                                || hasActiveIncomingInvites(
+                            abstractChat.account,
+                            abstractChat.contactJid
+                        ))
+                        && abstractChat.unreadMessageCount != 0
+                    ) {
+                        newList.add(abstractChat)
+                    }
+                }
             ChatListState.ARCHIVED -> for (abstractChat in ChatManager.getInstance().chatsOfEnabledAccounts) if ((abstractChat.lastMessage != null
-                        || hasActiveIncomingInvites(abstractChat.account, abstractChat.contactJid))
+                        || hasActiveIncomingInvites(
+                    abstractChat.account,
+                    abstractChat.contactJid
+                ))
                 && abstractChat.isArchived
             ) {
                 newList.add(abstractChat)
@@ -511,28 +521,28 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
         setupMarkAllTheReadButton(newList.size)
 
-        /* Update another elements */updateToolbar()
+        /* Update another elements */
+        updateToolbar()
         updateItems(newList)
-        if (chatListFragmentListener != null) {
-            chatListFragmentListener!!.onChatListUpdated()
-        }
+        chatListFragmentListener?.onChatListUpdated()
     }
 
     private fun setupMarkAllTheReadButton(listSize: Int) {
         if (currentChatsState == ChatListState.UNREAD && listSize > 0 && context != null) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                markAllReadBackground!!.setColorFilter(
-                    ColorManager.getInstance().accountPainter.defaultMainColor, PorterDuff.Mode.SRC_ATOP
+                markAllReadBackground.setColorFilter(
+                    ColorManager.getInstance().accountPainter.defaultMainColor,
+                    PorterDuff.Mode.SRC_ATOP
                 )
-                markAllAsReadButton!!.setTextColor(context!!.resources.getColor(R.color.white))
+                markAllAsReadButton.setTextColor(resources.getColor(R.color.white))
             } else {
-                markAllReadBackground!!.setColorFilter(
-                    context!!.resources.getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP
+                markAllReadBackground.setColorFilter(
+                    resources.getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP
                 )
-                markAllAsReadButton!!.setTextColor(ColorManager.getInstance().accountPainter.defaultMainColor)
+                markAllAsReadButton.setTextColor(ColorManager.getInstance().accountPainter.defaultMainColor)
             }
-            markAllAsReadButton!!.visibility = View.VISIBLE
-            markAllAsReadButton!!.setOnClickListener {
+            markAllAsReadButton.visibility = View.VISIBLE
+            markAllAsReadButton.setOnClickListener {
                 LogManager.d("ChatListFragment", "manually executing markAsReadAll")
                 for (chat in ChatManager.getInstance().chatsOfEnabledAccounts) {
                     chat.markAsReadAll(true)
@@ -550,29 +560,93 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
                 toast.show()
             }
         } else {
-            markAllAsReadButton?.visibility = View.GONE
+            markAllAsReadButton.visibility = View.GONE
         }
     }
 
-    private fun showPlaceholder(message: String, buttonMessage: String?) {
-        placeholderMessage?.text = message
-        if (buttonMessage != null) {
-            placeholderButton?.visibility = View.VISIBLE
-            placeholderButton?.text = buttonMessage
-        }
-        placeholderView?.visibility = View.VISIBLE
-    }
+    private fun updatePlaceholderWithParams(isChatsListEmpty: Boolean) {
 
-    private fun hidePlaceholder() {
-        recyclerView?.visibility = View.VISIBLE
-        placeholderView?.visibility = View.GONE
-        placeholderButton?.visibility = View.GONE
+        fun showPlaceholder(
+            message: String,
+            buttonMessage: String? = null,
+            buttonListener: View.OnClickListener? = null
+        ) {
+            placeholderMessage.text = message
+
+            if (buttonMessage != null) {
+                placeholderButton.visibility = View.VISIBLE
+                placeholderButton.text = buttonMessage
+            } else {
+                placeholderButton.visibility = View.GONE
+            }
+
+            buttonListener?.let { placeholderButton.setOnClickListener(it) }
+
+            placeholderView.visibility = View.VISIBLE
+        }
+
+        fun hidePlaceholder() {
+            recyclerView.visibility = View.VISIBLE
+            placeholderView.visibility = View.GONE
+            placeholderButton.visibility = View.GONE
+        }
+
+        val hasNoActiveContacts =
+            RosterManager.getInstance().allContactsForEnabledAccounts.isEmpty()
+
+        when {
+            !AccountManager.getInstance().hasAccounts() -> {
+                showPlaceholder(
+                    getString(R.string.application_state_empty),
+                    getString(R.string.application_action_empty)
+                ) {
+                    startActivity(AccountAddActivity.createIntent(context))
+                }
+            }
+
+            AccountManager.getInstance().enabledAccounts.isEmpty() -> {
+                showPlaceholder(
+                    getString(R.string.application_state_disabled),
+                    getString(R.string.application_action_disabled)
+                ) { chatListFragmentListener?.onManageAccountsClick() }
+            }
+
+            isChatsListEmpty && hasNoActiveContacts -> {
+                showPlaceholder(
+                    getString(R.string.application_state_no_contacts),
+                    getString(R.string.application_action_no_contacts)
+                ) { startActivity(ContactAddActivity.createIntent(context)) }
+            }
+
+            isChatsListEmpty ->
+                when (currentChatsState) {
+                    ChatListState.UNREAD -> {
+                        showPlaceholder(getString(R.string.placeholder_no_unread))
+                    }
+
+                    ChatListState.ARCHIVED -> {
+                        showPlaceholder(getString(R.string.placeholder_no_archived))
+                    }
+
+                    else -> {
+                        showPlaceholder(
+                            getString(R.string.placeholder_no_chats),
+                            getString(R.string.application_action_lets_go)
+                        ) { chatListFragmentListener?.onContactsClick() }
+                    }
+                }
+
+            else -> hidePlaceholder()
+        }
+
     }
 
     private fun showSnackbar(deletedItem: AbstractChat, previousState: ChatListState) {
         snackbar?.dismiss()
 
-        val abstractChat = ChatManager.getInstance().getChat(deletedItem.account, deletedItem.contactJid) ?: return
+        val abstractChat =
+            ChatManager.getInstance().getChat(deletedItem.account, deletedItem.contactJid)
+                ?: return
         val archived = abstractChat.isArchived
 
         snackbar = view?.let {
@@ -603,6 +677,8 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         fun onChatClick(contact: AbstractContact?)
         fun onChatListStateChanged(chatListState: ChatListState?)
         fun onChatListUpdated()
+        fun onManageAccountsClick()
+        fun onContactsClick()
     }
 
     enum class ChatListAvatarState {

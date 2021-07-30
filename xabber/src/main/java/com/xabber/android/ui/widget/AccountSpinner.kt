@@ -43,7 +43,11 @@ class AccountSpinner : LinearLayout {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(context)
     }
 
@@ -96,12 +100,13 @@ class AccountSpinner : LinearLayout {
         llm.orientation = RecyclerView.VERTICAL
 
         recyclerView.layoutManager = llm
-        recyclerView.adapter = AccountsAdapter(accountsList, avatarsList, names, object : AccountsAdapter.Listener {
-            override fun onClick(accountJid: AccountJid, avatar: Drawable?) {
-                onAccountSelected(accountJid, avatar)
-                toggleRecyclerExpanded()
-            }
-        })
+        recyclerView.adapter =
+            AccountsAdapter(accountsList, avatarsList, names, object : AccountsAdapter.Listener {
+                override fun onClick(accountJid: AccountJid, avatar: Drawable?) {
+                    onAccountSelected(accountJid, avatar)
+                    toggleRecyclerExpanded()
+                }
+            })
 
         onAccountSelected(accountsList.first(), avatarsList.first())
 
@@ -114,14 +119,24 @@ class AccountSpinner : LinearLayout {
             if (isExpanded) {
                 val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_down)
                 if (Build.VERSION.SDK_INT >= 17) {
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        null,
+                        null,
+                        chevron,
+                        null
+                    )
                 } else {
                     textView.setCompoundDrawablesWithIntrinsicBounds(null, null, chevron, null)
                 }
             } else {
                 val chevron = ContextCompat.getDrawable(context, R.drawable.ic_chevron_up)
                 if (Build.VERSION.SDK_INT >= 17) {
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null)
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        null,
+                        null,
+                        chevron,
+                        null
+                    )
                 } else {
                     textView.setCompoundDrawablesWithIntrinsicBounds(null, null, chevron, null)
                 }
@@ -185,7 +200,8 @@ class AccountSpinner : LinearLayout {
     ) : RecyclerView.Adapter<AccountViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = AccountViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.account_spinner_list_item, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.account_spinner_list_item, parent, false)
         )
 
         override fun getItemCount() = jids.size

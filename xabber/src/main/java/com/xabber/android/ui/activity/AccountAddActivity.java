@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -49,8 +48,9 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
@@ -59,20 +59,24 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
             getFragmentManager().beginTransaction().add(R.id.fragment_container,
                     AccountAddFragment.newInstance()).commit();
         }
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
-        else
+        } else {
             toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        }
         toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.inflateMenu(R.menu.toolbar_add_account);
         toolbar.getMenu().findItem(R.id.action_add_account).setIcon(null);
 
         toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(false);
         View view = toolbar.findViewById(R.id.action_add_account);
-        if (view != null && view instanceof TextView)
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        if (view != null && view instanceof TextView){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 ((TextView)view).setTextColor(getResources().getColor(R.color.grey_900));
-            else ((TextView)view).setTextColor(Color.WHITE);
+            } else {
+                ((TextView)view).setTextColor(Color.WHITE);
+            }
+        }
         toolbar.setOnMenuItemClickListener(this);
 
 
@@ -97,7 +101,9 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
             ((AccountAddFragment) getFragmentManager()
                     .findFragmentById(R.id.fragment_container)).addAccount();
             return true;
-        } else return super.onOptionsItemSelected(item);
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -106,8 +112,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     }
 
     public void toolbarSetEnabled(boolean active){
-        if (active) toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(true);
-        else toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(false);
+        toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(active);
     }
 
 }
