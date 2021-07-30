@@ -84,6 +84,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
     private lateinit var toolbarTitleTv: TextView
     private lateinit var toolbarAvatarIv: ImageView
     private lateinit var toolbarStatusIv: ImageView
+    private lateinit var toolbarAddIv: ImageView
 
     override fun onAttach(context: Context) {
         if (getContext() is ChatListFragmentListener) {
@@ -194,7 +195,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
         toolbarTitleTv = view.findViewById(R.id.tvTitle)
         toolbarTitleTv.apply {
-            text = context?.getString(R.string.account_state_connecting)
+            text = context?.getString(R.string.application_title_full)
             setOnClickListener(this@ChatListFragment)
         }
 
@@ -207,9 +208,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
             toolbarAppBarLayout.visibility = View.GONE
         }
 
-        view.findViewById<ImageView>(R.id.ivAdd).setOnClickListener {
-            startActivity(Intent(activity, AddActivity::class.java))
-        }
+        toolbarAddIv = view.findViewById(R.id.ivAdd)
 
         /* Find possible max recycler items*/
         context?.resources?.displayMetrics?.let { displayMetrics ->
@@ -265,12 +264,40 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         /* Update ChatState TextView display via current chat and connection state */
         toolbarTitleTv.setText(
             when {
-                AccountManager.getInstance().commonState == CommonState.online -> R.string.application_title_full
+                AccountManager.getInstance().commonState == CommonState.connecting -> {
+                    R.string.account_state_connecting
+                }
+                AccountManager.getInstance().commonState == CommonState.waiting -> {
+                    R.string.waiting_for_network
+                }
                 currentChatsState == ChatListState.UNREAD -> R.string.unread_chats
                 currentChatsState == ChatListState.ARCHIVED -> R.string.archived_chats
-                else -> R.string.account_state_connecting
+                else -> R.string.application_title_full
             }
         )
+
+        /* Update toolbar add iv behavior */
+        when {
+            !AccountManager.getInstance().hasAccounts() -> {
+                toolbarAddIv.setOnClickListener {
+                    startActivity(AccountAddActivity.createIntent(context))
+                }
+            }
+            AccountManager.getInstance().enabledAccounts.isEmpty() -> {
+                Toast.makeText(
+                    context,
+                    getString(R.string.application_state_disabled),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else -> {
+                toolbarAddIv.setOnClickListener {
+                    startActivity(
+                        Intent(activity, AddActivity::class.java)
+                    )
+                }
+            }
+        }
 
         /* Update avatar and status ImageViews via current settings and main user */
         if (SettingsManager.contactsShowAvatars()) {
@@ -278,19 +305,28 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
             toolbarStatusIv.visibility = View.VISIBLE
 
             AvatarManager.getInstance().mainAccountAvatar?.let {
-                toolbarAvatarIv.setImageDrawable(
-                    it
-                )
+                toolbarAvatarIv.setImageDrawable(it)
             }
 
             if (AccountManager.getInstance().enabledAccounts.isNotEmpty()) {
                 toolbarStatusIv.setImageLevel(
                     AccountManager.getInstance().firstAccount?.let {
-                        AccountManager.getInstance().getAccount(it)?.displayStatusMode?.statusLevel
+                        AccountManager.getInstance()
+                            .getAccount(it)?.displayStatusMode?.statusLevel
                     } ?: StatusMode.unavailable.statusLevel
                 )
+                toolbarTitleTv.visibility = View.VISIBLE
             } else {
-                toolbarStatusIv.setImageLevel(StatusMode.unavailable.ordinal)
+                context?.let {
+                    toolbarAvatarIv.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                            it.resources,
+                            R.drawable.xabber_logo_80dp,
+                            null
+                        )
+                    )
+                }
+                toolbarStatusIv.visibility = View.GONE
             }
         } else {
             toolbarAvatarIv.visibility = View.GONE
@@ -593,6 +629,8 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
         val hasNoActiveContacts =
             RosterManager.getInstance().allContactsForEnabledAccounts.isEmpty()
+
+        if (context == null) return
 
         when {
             !AccountManager.getInstance().hasAccounts() -> {
