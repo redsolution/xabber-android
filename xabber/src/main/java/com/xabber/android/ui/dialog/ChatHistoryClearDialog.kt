@@ -17,6 +17,7 @@ import com.xabber.android.data.extension.retract.RetractManager.isSupported
 import com.xabber.android.data.extension.retract.RetractManager.sendRetractAllMessagesRequest
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
 import org.jivesoftware.smack.packet.Stanza
@@ -39,12 +40,18 @@ class ChatHistoryClearDialog : DialogFragment(), View.OnClickListener, BaseIqRes
             )
         }
 
+        val isGroup = ChatManager.getInstance().getChat(account, user) is GroupChat
+
         val view = activity?.layoutInflater?.inflate(R.layout.dialog_clear_history, null)?.apply {
 
             findViewById<TextView>(R.id.clear_history_confirm).text =
                 Html.fromHtml(
                     getString(
-                        R.string.clear_chat_history_dialog_message,
+                        if (isGroup) {
+                            R.string.clear_group_chat_history_dialog_message
+                        } else {
+                            R.string.clear_chat_history_dialog_message
+                        },
                         RosterManager.getInstance().getBestContact(account, user).name
                     )
                 )
@@ -60,7 +67,10 @@ class ChatHistoryClearDialog : DialogFragment(), View.OnClickListener, BaseIqRes
             findViewById<View>(R.id.cancel_clear).setOnClickListener(this@ChatHistoryClearDialog)
         }
 
-        return AlertDialog.Builder(activity).setTitle(R.string.clear_history).setView(view).create()
+        return AlertDialog.Builder(activity)
+            .setTitle(R.string.delete_messages__header)
+            .setView(view)
+            .create()
     }
 
     override fun onClick(v: View) {

@@ -199,6 +199,7 @@
     <string name="chat_bottom__placeholder__blocked">blocked</string>
     <string name="mentions_list__placeholder">Please select mention to view in chat</string>
     <string name="delete_messages__header">Clear message archive</string>
+    <string name="clear_group_chat_history_dialog_message">All message history in this chat will be cleared. This action can not be undone.</string>
     <string name="delete_messages__confirm">Do you want to delete all messages from archive?</string>
     <string name="loading_history">Loading history…</string>
     <string name="loading_archived_messages_error">Error while loading archived messages</string>
