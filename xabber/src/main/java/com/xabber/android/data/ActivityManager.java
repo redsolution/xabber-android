@@ -44,7 +44,6 @@ import java.util.WeakHashMap;
 public class ActivityManager implements OnUnloadListener {
 
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
-    private static final long START_SERVICE_DELAY = 1000;
 
     private static final boolean LOG = true;
     private static ActivityManager instance;
@@ -188,10 +187,10 @@ public class ActivityManager implements OnUnloadListener {
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
             }
-            AccountManager.getInstance().onPreInitialize();
             RosterManager.getInstance().onPreInitialize();
-            Application.getInstance().runOnUiThreadDelay(
-                    () -> activity.startService(XabberService.createIntent(activity)), START_SERVICE_DELAY);
+            Application.getInstance().runOnUiThread(
+                    () -> activity.startService(XabberService.createIntent(activity))
+            );
         }
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);

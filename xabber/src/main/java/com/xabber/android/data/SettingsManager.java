@@ -55,8 +55,7 @@ import java.util.regex.Pattern;
  *
  * @author alexander.ivanov
  */
-public class SettingsManager implements OnInitializedListener,
-        OnMigrationListener, OnSharedPreferenceChangeListener {
+public class SettingsManager implements OnInitializedListener, OnSharedPreferenceChangeListener {
 
     public static final String NOTIFICATION_PREFERENCES = "notification_preferences";
 
@@ -896,47 +895,6 @@ public class SettingsManager implements OnInitializedListener,
     @Override
     public void onInitialized() {
         incrementBootCount();
-    }
-
-    @Override
-    public void onMigrate(int toVersion) {
-        switch (toVersion) {
-            case 32:
-                setBoolean(R.string.chats_show_status_change_key, false);
-                break;
-            case 40:
-                String value;
-                try {
-                    if (getBoolean(R.string.chats_show_status_change_key, false))
-                        value = Application.getInstance().getString(
-                                R.string.chats_show_status_change_always_value);
-                    else
-                        value = Application.getInstance().getString(
-                                R.string.chats_show_status_change_muc_value);
-                } catch (ClassCastException e) {
-                    value = Application.getInstance().getString(
-                            R.string.chats_show_status_change_default);
-                }
-                setString(R.string.chats_show_status_change_key, value);
-                break;
-            case 45:
-                setBoolean(R.string.chats_show_avatars_key,
-                        "message".equals(getString(R.string.chats_show_avatars_key,
-                                "")));
-                break;
-            case 65:
-                SharedPreferences settings = Application.getInstance()
-                        .getSharedPreferences("accounts", Context.MODE_PRIVATE);
-                int statusModeIndex = settings.getInt("status_mode",
-                        StatusMode.available.ordinal());
-                StatusMode statusMode = StatusMode.values()[statusModeIndex];
-                setString(R.string.status_mode_key, statusMode.name());
-                String statusText = settings.getString("status_text", "");
-                setString(R.string.status_text_key, statusText);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override

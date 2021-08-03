@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -215,11 +214,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public Collection<AbstractChat> getChatsOfEnabledAccounts() {
         List<AbstractChat> chats = new ArrayList<>();
 
-        HashSet<AccountJid> enabledAccounts = new HashSet<>();
-        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
-        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
-
-        for (AccountJid accountJid : enabledAccounts) {
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -98,7 +98,8 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeListener, OnAuthenticatedListener {
+public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeListener,
+        OnAuthenticatedListener {
 
     private static final String LOG_TAG = AccountManager.class.getSimpleName();
 
@@ -116,7 +117,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * List of accounts.
      */
     private final Map<AccountJid, AccountItem> accountItems;
-    private final List<AccountJid> cachedEnabledAccounts;
     private final BaseAccountNotificationProvider<AccountError> accountErrorProvider;
 
     private final Application application;
@@ -144,7 +144,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         this.application = Application.getInstance();
         accountItems = new ConcurrentHashMap<>();
         savedStatuses = new ArrayList<>();
-        cachedEnabledAccounts = new ArrayList<>();
         accountErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
@@ -159,47 +158,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public void setCallAccountUpdate(boolean call) {
         callAccountUpdate = call;
-    }
-
-    public void onPreInitialize() {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
-        RealmResults<AccountRealmObject> accountRealmObjects = realm.where(AccountRealmObject.class).findAll();
-
-        for (AccountRealmObject accountRealmObject : accountRealmObjects) {
-            DomainBareJid serverName = null;
-            try {
-                serverName = JidCreate.domainBareFrom(accountRealmObject.getServerName());
-            } catch (XmppStringprepException e) {
-                LogManager.exception(this, e);
-            }
-
-            Localpart userName = null;
-            try {
-                userName = Localpart.from(accountRealmObject.getUserName());
-            } catch (XmppStringprepException e) {
-                LogManager.exception(this, e);
-            }
-
-            Resourcepart resource = null;
-            try {
-                resource = Resourcepart.from(accountRealmObject.getResource());
-            } catch (XmppStringprepException e) {
-                LogManager.exception(this, e);
-            }
-
-            if (serverName == null || userName == null || resource == null) {
-                LogManager.e(LOG_TAG, "could not create account. username " + userName
-                        + ", server name " + serverName
-                        + ", resource " + resource);
-                continue;
-            }
-
-            if (accountRealmObject.isEnabled())
-                cachedEnabledAccounts.add(AccountJid.from(userName, serverName, resource));
-        }
-
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     @Override
@@ -311,10 +269,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
-        Application.getInstance().runOnUiThread(() -> onLoaded(savedStatuses, accountItems));
-    }
-
-    private void onLoaded(Collection<SavedStatus> savedStatuses, Collection<AccountItem> accountItems) {
         this.savedStatuses.addAll(savedStatuses);
         for (AccountItem accountItem : accountItems) {
             addAccount(accountItem);
@@ -530,7 +484,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         // remove contacts and account from cache
         ContactRepository.removeContacts(account);
-        cachedEnabledAccounts.remove(account);
 
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);
@@ -769,9 +722,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         // disable push
         if (!enabled) PushManager.getInstance().disablePushNotification(getAccount(account), false);
 
-        // remove from cached if disabled
-        if (!enabled) cachedEnabledAccounts.remove(account);
-
         accountItem.setEnabled(enabled);
         AccountRepository.saveAccountToRealm(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
@@ -804,11 +754,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
         }
         return Collections.unmodifiableCollection(connectedAccounts);
-    }
-
-    public Collection<AccountJid> getCachedEnabledAccounts() {
-        List<AccountJid> copyCachedEnabledAccounts = new ArrayList<>(cachedEnabledAccounts);
-        return Collections.unmodifiableCollection(copyCachedEnabledAccounts);
     }
 
     public boolean hasAccounts() {

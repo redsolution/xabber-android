@@ -116,7 +116,6 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
-    //private static ThreadPoolExecutor fallbackNetworkExecutor;
     private final ExecutorService backgroundNetworkExecutor;
     private final ExecutorService backgroundExecutorForUserActions;
     private final ExecutorService backgroundNetworkExecutorForUserActions;
@@ -212,40 +211,6 @@ public class Application extends android.app.Application {
         });
     }
 
-    /*private ExecutorService createMultiThreadCacheExecutor() {
-        return new ThreadPoolExecutor(1, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                backgroundThreadFactory);
-    }
-
-    private ExecutorService createFlexibleCacheExecutor() {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                1, 20,
-                30L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                backgroundThreadFactory);
-        threadPoolExecutor.setRejectedExecutionHandler(onExecutionReject);
-        return threadPoolExecutor;
-    }
-
-    private ThreadPoolExecutor createFallbackExecutor() {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                5, 5,
-                10L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(),
-                backgroundThreadFactory);
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-        return threadPoolExecutor;
-    }
-
-    private ExecutorService createFixedThreadPoolWithTimeout() {
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) createMultiThreadFixedPoolExecutor();
-        executor.setKeepAliveTime(60L, TimeUnit.SECONDS);
-        executor.allowCoreThreadTimeOut(true);
-        return executor;
-    } */
-
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
                 Math.max(2, Runtime.getRuntime().availableProcessors() / 2),
@@ -268,6 +233,10 @@ public class Application extends android.app.Application {
         }
     }
 
+    private void onApplicationStarted() {
+        AccountManager.getInstance().onLoad();
+    }
+
     private void onInitialized() {
         for (OnInitializedListener listener : getManagers(OnInitializedListener.class)) {
             LogManager.i(listener, "onInitialized");
@@ -280,10 +249,8 @@ public class Application extends android.app.Application {
 
     private void onClose() {
         LogManager.i(LOG_TAG, "onClose1");
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnCloseListener) {
-                ((OnCloseListener) manager).onClose();
-            }
+        for (OnCloseListener manager : getManagers(OnCloseListener.class)) {
+            manager.onClose();
         }
         closed = true;
         LogManager.i(LOG_TAG, "onClose2");
@@ -383,9 +350,7 @@ public class Application extends android.app.Application {
                     .build());
         }
 
-//        new ANRWatchDog()
-//                .setANRListener(error -> LogManager.exception("ANR Detected!", error))
-//                .start();
+        onApplicationStarted();
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
@@ -449,7 +414,7 @@ public class Application extends android.app.Application {
 
     @Override
     public void onLowMemory() {
-        LogManager.e(LOG_TAG, "Warning! Low memory!");
+        LogManager.w(LOG_TAG, "Warning! Low memory!");
         for (OnLowMemoryListener listener : getManagers(OnLowMemoryListener.class)) {
             listener.onLowMemory();
         }
@@ -598,20 +563,9 @@ public class Application extends android.app.Application {
     }
 
     public void runInBackground(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundExecutor.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/bg", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/bg", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/bg_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/bg_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
@@ -619,72 +573,33 @@ public class Application extends android.app.Application {
     }
 
     public void runInBackgroundNetwork(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundNetworkExecutor.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/Net", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/Net", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/Net_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/Net_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/Net_ExecutorInfo_completedTask", backgroundNetworkExecutor.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/Net_ExecutorInfo_queuedTask", backgroundNetworkExecutor.toString());
     }
 
     public void runInBackgroundUserRequest(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundExecutorForUserActions.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/UserAction", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/UserAction", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_completedTask", backgroundExecutorForUserActions.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_queuedTask", backgroundExecutorForUserActions.toString());
     }
 
     public void runInBackgroundNetworkUserRequest(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundNetworkExecutorForUserActions.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/Net-UserAction", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/Net-UserAction", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/Net-UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/Net-UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_completedTask", backgroundNetworkExecutorForUserActions.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_queuedTask", backgroundNetworkExecutorForUserActions.toString());
     }
 
     /**

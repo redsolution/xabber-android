@@ -29,7 +29,7 @@ import com.xabber.android.data.connection.ConnectionState
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.avatar.AvatarManager
-import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
+import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
@@ -55,7 +55,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
     private var snackbar: Snackbar? = null
     private var chatListFragmentListener: ChatListFragmentListener? = null
-    private val updateRequest = PublishSubject.create<Any?>()
+    private val updateRequest = PublishSubject.create<Nothing?>()
     var currentChatsState = ChatListState.RECENT
         private set
 
@@ -450,18 +450,15 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
     }
 
     override fun onChatItemSwiped(abstractContact: AbstractChat) {
-        val abstractChat =
-            ChatManager.getInstance()
-                .getChat(abstractContact.account, abstractContact.contactJid)
         ChatManager.getInstance()
             .getChat(abstractContact.account, abstractContact.contactJid)
-            ?.isArchived = !abstractChat!!.isArchived
+            ?.let { it.isArchived = !it.isArchived }
         showSnackbar(abstractContact, currentChatsState)
         updateRequest.onNext(null)
     }
 
     override fun onChatAvatarClick(contact: AbstractChat) {
-        if (hasActiveIncomingInvites(contact.account, contact.contactJid)) {
+        if (GroupInviteManager.hasActiveIncomingInvites(contact.account, contact.contactJid)) {
             onChatItemClick(contact)
         } else {
             val intent: Intent
@@ -519,47 +516,27 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
     }
 
     private fun update() {
-        val newList: MutableList<AbstractChat> = ArrayList()
-        val allChats = ChatManager.getInstance().chatsOfEnabledAccounts
-        when (currentChatsState) {
-            ChatListState.RECENT -> for (abstractChat in allChats) if ((abstractChat.lastMessage != null
-                        || hasActiveIncomingInvites(
-                    abstractChat.account,
-                    abstractChat.contactJid
-                ))
-                && !abstractChat.isArchived
-            ) {
-                newList.add(abstractChat)
+        ChatManager.getInstance().chatsOfEnabledAccounts
+            .filter {
+                it.lastMessage != null
+                        || GroupInviteManager.hasActiveIncomingInvites(
+                    it.account, it.contactJid
+                )
             }
-            ChatListState.UNREAD ->
-                for (abstractChat in ChatManager.getInstance().chatsOfEnabledAccounts) {
-                    if ((abstractChat.lastMessage != null
-                                || hasActiveIncomingInvites(
-                            abstractChat.account,
-                            abstractChat.contactJid
-                        ))
-                        && abstractChat.unreadMessageCount != 0
-                    ) {
-                        newList.add(abstractChat)
-                    }
+            .filter {
+                when (currentChatsState) {
+                    ChatListState.RECENT -> !it.isArchived
+                    ChatListState.UNREAD -> it.unreadMessageCount != 0
+                    ChatListState.ARCHIVED -> it.isArchived
                 }
-            ChatListState.ARCHIVED -> for (abstractChat in ChatManager.getInstance().chatsOfEnabledAccounts) if ((abstractChat.lastMessage != null
-                        || hasActiveIncomingInvites(
-                    abstractChat.account,
-                    abstractChat.contactJid
-                ))
-                && abstractChat.isArchived
-            ) {
-                newList.add(abstractChat)
             }
-        }
-        newList.sortWith { o1: AbstractChat, o2: AbstractChat -> o2.lastTime.time.compareTo(o1.lastTime.time) }
+            .sortedByDescending { it.lastTime }
+            .also {
+                setupMarkAllTheReadButton(it.size)
+                updateItems(it)
+            }
 
-        setupMarkAllTheReadButton(newList.size)
-
-        /* Update another elements */
         updateToolbar()
-        updateItems(newList)
         chatListFragmentListener?.onChatListUpdated()
     }
 
@@ -580,10 +557,10 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
             markAllAsReadButton.visibility = View.VISIBLE
             markAllAsReadButton.setOnClickListener {
                 LogManager.d("ChatListFragment", "manually executing markAsReadAll")
-                for (chat in ChatManager.getInstance().chatsOfEnabledAccounts) {
-                    chat.markAsReadAll(true)
-                    MessageNotificationManager.getInstance().removeAllMessageNotifications()
+                ChatManager.getInstance().chatsOfEnabledAccounts.forEach {
+                    it.markAsReadAll(true)
                 }
+                MessageNotificationManager.getInstance().removeAllMessageNotifications()
                 onStateSelected(ChatListState.RECENT)
                 val toast = Toast.makeText(
                     activity, R.string.all_chats_were_market_as_read_toast,
