@@ -2,15 +2,12 @@ package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -84,16 +81,11 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle(R.string.account_bookmarks);
         toolbar.inflateMenu(R.menu.toolbar_bookmark_list);
         toolbar.setOnMenuItemClickListener(this);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_grey_24dp));
         }
@@ -138,34 +130,23 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         progressBar.setVisibility(View.VISIBLE);
         tvNotSupport.setVisibility(View.GONE);
 
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                boolean support = false;
-                try {
-                   support = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
-                } catch (InterruptedException | SmackException.NoResponseException
-                        | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            boolean support = false;
+            try {
+               support = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
+            } catch (InterruptedException | SmackException.NoResponseException
+                    | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
 
-                if (!support) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showNotSupported();
-                        }
-                    });
-                } else {
-                    final List<BookmarkVO> bookmarks = getBookmarks(cleanCache);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            bookmarksAdapter.setItems(bookmarks);
-                        }
-                    });
-                }
+            if (!support) {
+                runOnUiThread(() -> showNotSupported());
+            } else {
+                final List<BookmarkVO> bookmarks = getBookmarks(cleanCache);
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    bookmarksAdapter.setItems(bookmarks);
+                });
             }
         });
     }
@@ -191,7 +172,9 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         List<BookmarkedConference> bookmarkedConferences;
         try {
-            bookmarkedConferences = BookmarksManager.getInstance().getConferencesFromBookmarks(accountItem.getAccount());
+            bookmarkedConferences = BookmarksManager.getInstance()
+                    .getConferencesFromBookmarks(accountItem.getAccount());
+
         } catch (SmackException.NoResponseException | InterruptedException |
                 SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
             LogManager.exception(this, e);
@@ -231,12 +214,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
             barPainter.updateWithAccountName(accountItem.getAccount());
 
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+            toolbar.setNavigationOnClickListener(v -> finish());
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
@@ -245,14 +223,11 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
             barPainter.setGrey();
 
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
-                    bookmarksAdapter.notifyDataSetChanged();
-                    updateToolbar();
-                    updateMenu();
-                }
+            toolbar.setNavigationOnClickListener(v -> {
+                bookmarksAdapter.setCheckedItems(new ArrayList<>());
+                bookmarksAdapter.notifyDataSetChanged();
+                updateToolbar();
+                updateMenu();
             });
         }
 
@@ -270,16 +245,13 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 AlertDialog dialog = builder
                         .setMessage(String.format(getString(R.string.remove_all_bookmarks_confirm),
                                 AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
-                        .setPositiveButton(R.string.remove_all_bookmarks, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
-                                        bookmarksAdapter.getAllWithoutXabberUrl());
-                                bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
-                                requestBookmarks(false);
-                                updateToolbar();
-                                updateMenu();
-                            }
+                        .setPositiveButton(R.string.remove_all_bookmarks, (dialog1, which) -> {
+                            BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
+                                    bookmarksAdapter.getAllWithoutXabberUrl());
+                            bookmarksAdapter.setCheckedItems(new ArrayList<>());
+                            requestBookmarks(false);
+                            updateToolbar();
+                            updateMenu();
                         })
                         .setNegativeButton(android.R.string.cancel, null).create();
                 dialog.show();
@@ -289,16 +261,13 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 AlertDialog dialog2 = builder2
                         .setMessage(String.format(getString(R.string.remove_selected_bookmarks_confirm),
                                 AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
-                        .setPositiveButton(R.string.remove_selected_bookmarks, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
-                                        bookmarksAdapter.getCheckedItems());
-                                bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
-                                requestBookmarks(false);
-                                updateToolbar();
-                                updateMenu();
-                            }
+                        .setPositiveButton(R.string.remove_selected_bookmarks, (dialog12, which) -> {
+                            BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
+                                    bookmarksAdapter.getCheckedItems());
+                            bookmarksAdapter.setCheckedItems(new ArrayList<>());
+                            requestBookmarks(false);
+                            updateToolbar();
+                            updateMenu();
                         })
                         .setNegativeButton(android.R.string.cancel, null).create();
                 dialog2.show();
@@ -307,4 +276,5 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 return true;
         }
     }
+
 }

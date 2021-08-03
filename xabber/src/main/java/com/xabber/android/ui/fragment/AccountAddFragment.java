@@ -53,7 +53,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState
+    ) {
         View view = inflater.inflate(R.layout.fragment_account_add, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
@@ -74,14 +76,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         passwordView = (EditText) view.findViewById(R.id.account_password);
         passwordView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -96,15 +93,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         passwordConfirmEditText = (EditText) view.findViewById(R.id.confirm_password);
         userView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -115,8 +106,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                 } else {
                     clearText.setVisibility(View.VISIBLE);
                     qrScan.setVisibility(View.GONE);
-                    if(!passwordView.getText().toString().equals(""))
+                    if(!passwordView.getText().toString().equals("")) {
                         ((AccountAddActivity)getActivity()).toolbarSetEnabled(true);
+                    }
                 }
             }
         });
@@ -125,8 +117,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
         qrScan.setOnClickListener(this);
 
-        ((TextView) view.findViewById(R.id.account_help))
-                .setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) view.findViewById(R.id.account_help)).setMovementMethod(
+                LinkMovementMethod.getInstance()
+        );
 
         return view;
     }
@@ -142,7 +135,6 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                 }
                 break;
             case R.id.imgQRcode:
-                //((AccountAddActivity)getActivity()).scanQR();
                 IntentIntegrator integrator = IntentIntegrator.forFragment(this);
                 integrator.setOrientationLocked(false)
                         .setBeepEnabled(false)
@@ -150,7 +142,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                         .setPrompt("")
                         .addExtra("caller","AccountAddFragment")
                         .setCaptureActivity(QRCodeScannerActivity.class)
-                        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+                        .initiateScan(Collections.singletonList(IntentIntegrator.QR_CODE));
                 break;
             default:
                 break;
@@ -161,22 +153,16 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode,resultCode, data);
         if(result!=null){
-            if(result.getContents()==null){
-                Toast.makeText(getActivity(), "no-go", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
+            if(result.getContents() != null){
                 if(result.getContents().length()>5) {
                     String[] s = result.getContents().split(":");
                     if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length>=2) {
                         userView.setText(s[1]);
-                        if(validationSuccess()) {
+                        if (validationSuccess()) {
                             passwordView.requestFocus();
-                            Toast.makeText(getActivity(), "XMPP ID is valid", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getActivity(), "XMPP ID is NOT valid", Toast.LENGTH_LONG).show();
+                            showIncorrectUsernameToast();
                         }
-                        //addAccount();
-                        //passwordView.requestFocus();
                     }
                 }
             }
@@ -185,43 +171,38 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    private void showIncorrectUsernameToast() {
+        Toast.makeText(
+                getActivity(),
+                getString(R.string.account_add__alert_incorrect_xmpp_id),
+                Toast.LENGTH_LONG
+        ).show();
+    }
+
     private boolean validationSuccess(){
         String contactString = userView.getText().toString();
         contactString = contactString.trim();
 
-        if (contactString.contains(" ")) {
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
+        if (contactString.contains(" ") || TextUtils.isEmpty(contactString)) {
+            showIncorrectUsernameToast();
             return false;
         }
 
         int slashIndex = contactString.indexOf('/');
         int atChar = contactString.indexOf('@');
 
-        if (atChar<=0) {
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        if (slashIndex != -1) {
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
+        if (atChar<=0 || slashIndex != -1) {
+            showIncorrectUsernameToast();
             return false;
         }
 
         String domainName = contactString.substring(atChar);
         String localName = contactString.substring(0, atChar);
 
-        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.account_add__alert_incorrect_xmpp_id), Toast.LENGTH_LONG).show();
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'
+            || localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'
+        ) {
+            showIncorrectUsernameToast();
             return false;
         }
 
@@ -230,18 +211,24 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
     public void addAccount() {
         if (chkUseTOR.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-            OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
+            OrbotInstallerDialog.newInstance().show(
+                    getFragmentManager(), OrbotInstallerDialog.class.getName()
+            );
             return;
         }
 
         if (createAccountCheckBox.isChecked() &&
-                !passwordView.getText().toString().contentEquals(passwordConfirmEditText.getText().toString())) {
+                !passwordView.getText().toString().contentEquals(
+                        passwordConfirmEditText.getText().toString()
+                )
+        ) {
             Toast.makeText(getActivity(), getString(R.string.settings_account__alert_passwords_do_not_match), Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(!validationSuccess())
+        if(!validationSuccess()) {
             return;
+        }
 
         AccountJid account;
         try {
@@ -261,10 +248,16 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         }
 
         // update remote settings
-        if (chkSync.isChecked()) XabberAccountManager.getInstance().updateSettingsWithSaveLastAccount(account);
+        if (chkSync.isChecked()) {
+            XabberAccountManager.getInstance().updateSettingsWithSaveLastAccount(account);
+        }
 
-        getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
+        getActivity().setResult(
+                Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account)
+        );
+
         startActivity(AccountActivity.createIntent(getActivity(), account));
         getActivity().finish();
     }
+
 }

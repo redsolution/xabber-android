@@ -3,7 +3,6 @@ package com.xabber.android.ui.adapter.accountoptions;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 
 public enum  AccountOption {
@@ -49,16 +48,7 @@ public enum  AccountOption {
     }
 
     public static AccountOption[] getValues() {
-        if (BuildConfig.FLAVOR.equals("dev")) {
-            return AccountOption.values();
-        } else {
-            int i = 0;
-            AccountOption[] values = new AccountOption[AccountOption.values().length - 1];
-            for (AccountOption option : AccountOption.values()) {
-                values[i] = option;
-                i++;
-            }
-            return values;
-        }
+        return AccountOption.values();
     }
+
 }
