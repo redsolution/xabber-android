@@ -24,9 +24,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.text.CustomQuoteSpan;
 
@@ -72,14 +70,6 @@ public class Utils {
 
     public static void startXabberServiceCompat(Context context) {
         startXabberServiceCompat(context, XabberService.createIntent(context));
-    }
-
-    public static void startXabberServiceCompatWithSyncMode(Context context, String pushNode) {
-        startXabberServiceCompat(context, SyncManager.createXabberServiceIntentWithSyncMode(context, pushNode));
-    }
-
-    public static void startXabberServiceCompatWithSyncMode(Context context, AccountJid accountJid) {
-        startXabberServiceCompat(context, SyncManager.createXabberServiceIntentWithSyncMode(context, accountJid));
     }
 
     private static void startXabberServiceCompat(Context context, Intent intent) {

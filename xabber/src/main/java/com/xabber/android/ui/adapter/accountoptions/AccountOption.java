@@ -12,7 +12,6 @@ public enum  AccountOption {
     SESSIONS(R.drawable.ic_key, R.string.account_active_sessions),
     VCARD(R.drawable.ic_vcard_contact_info_24dp, R.string.account_vcard),
     SYNCHRONIZATION(R.drawable.ic_cloud_sync, R.string.account_sync),
-    PUSH_NOTIFICATIONS(R.drawable.ic_sync_done, R.string.account_push),
     COLOR(R.drawable.ic_color_lens_grey600_24dp, R.string.account_color),
     BLOCK_LIST(R.drawable.ic_block_grey600_24dp, R.string.blocked_contacts),
     SERVER_INFO(R.drawable.ic_info_grey600_24dp, R.string.account_server_info),
@@ -56,10 +55,8 @@ public enum  AccountOption {
             int i = 0;
             AccountOption[] values = new AccountOption[AccountOption.values().length - 1];
             for (AccountOption option : AccountOption.values()) {
-                if (option != AccountOption.PUSH_NOTIFICATIONS) {
-                    values[i] = option;
-                    i++;
-                }
+                values[i] = option;
+                i++;
             }
             return values;
         }

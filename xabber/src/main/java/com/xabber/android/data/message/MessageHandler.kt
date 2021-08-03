@@ -24,7 +24,6 @@ import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.data.notification.NotificationManager
-import com.xabber.android.data.push.SyncManager
 import com.xabber.android.data.xaccount.XMPPAuthManager
 import com.xabber.android.ui.OnNewIncomingMessageListener
 import com.xabber.android.ui.OnNewMessageListener
@@ -74,7 +73,6 @@ object MessageHandler {
                             .groupBy { ChatManager.getInstance().getChat(it.account, it.user) }
                             .filter { it.key != null }
                             .map { repairArchiveMessagesStatuses(it.key!!) }
-                        SyncManager.getInstance().onMessageSaved()
                         checkForAttachmentsAndDownload(messagesList)
                         notifySamUiListeners(OnNewMessageListener::class.java)
                     } catch (e: Exception) {
@@ -98,9 +96,14 @@ object MessageHandler {
                         .findAll()
 
                     if (messages.last()?.isIncoming == true) {
-                        messages.dropLastWhile { it.isIncoming }.forEach { it.apply { isRead = true } }
+                        messages.dropLastWhile { it.isIncoming }
+                            .forEach { it.apply { isRead = true } }
                         realmTransaction.copyToRealmOrUpdate(messages)
-                    } else realmTransaction.copyToRealmOrUpdate(messages.map { it.apply { isRead = true } })
+                    } else realmTransaction.copyToRealmOrUpdate(messages.map {
+                        it.apply {
+                            isRead = true
+                        }
+                    })
                 }
             }
         }
@@ -138,7 +141,10 @@ object MessageHandler {
         }
 
         if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE) &&
-            !messageStanza.hasExtension(ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE)
+            !messageStanza.hasExtension(
+                ChatMarkersElements.MarkableExtension.ELEMENT,
+                ChatMarkersElements.NAMESPACE
+            )
         ) {
             return null
         }
@@ -200,7 +206,8 @@ object MessageHandler {
                 encrypted = true
                 try {
                     // this transforming just decrypt message if have keys. No action as injectMessage or something else
-                    body = OTRManager.getInstance().transformReceivingIfSessionExist(accountJid, contactJid, body)
+                    body = OTRManager.getInstance()
+                        .transformReceivingIfSessionExist(accountJid, contactJid, body)
                     if (OTRManager.getInstance().isEncrypted(body)) {
                         return null
                     }
@@ -249,12 +256,21 @@ object MessageHandler {
 
         val messageRealmObject =
             if (originId != null) {
-                MessageRealmObject.createMessageRealmObjectWithOriginId(accountJid, contactJid, originId)
+                MessageRealmObject.createMessageRealmObjectWithOriginId(
+                    accountJid,
+                    contactJid,
+                    originId
+                )
             } else {
-                MessageRealmObject.createMessageRealmObjectWithStanzaId(accountJid, contactJid, stanzaId)
+                MessageRealmObject.createMessageRealmObjectWithStanzaId(
+                    accountJid,
+                    contactJid,
+                    stanzaId
+                )
             }
 
-        val forwardIdRealmObjects = parseForwardedMessage(messageStanza, messageRealmObject.primaryKey, chat!!)
+        val forwardIdRealmObjects =
+            parseForwardedMessage(messageStanza, messageRealmObject.primaryKey, chat!!)
 
         val editedTime = messageStanza.getReplacedElement()?.timestamp
 
@@ -272,7 +288,8 @@ object MessageHandler {
             this.isRead = !isIncoming || isGroupSystem
                     || delayInformation != null && (timestamp <= accountStartHistoryTimestamp ?: 0)
             this.isEncrypted = encrypted
-            this.isOffline = MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
+            this.isOffline =
+                MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
             this.isIncoming = isIncoming && !isMe
             this.stanzaId = stanzaId
@@ -295,7 +312,8 @@ object MessageHandler {
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!isIncoming) {
-            MessageNotificationManager.getInstance().removeChatWithTimer(chat.account, chat.contactJid)
+            MessageNotificationManager.getInstance()
+                .removeChatWithTimer(chat.account, chat.contactJid)
         }
 
         // when getting new message, unarchive chat if chat not muted
@@ -328,7 +346,8 @@ object MessageHandler {
                 }
             if (!ChatManager.getInstance().isVisibleChat(chat)) {
                 if (groupMember != null) {
-                    NotificationManager.getInstance().onMessageNotification(messageRealmObject, groupMember)
+                    NotificationManager.getInstance()
+                        .onMessageNotification(messageRealmObject, groupMember)
                 } else {
                     NotificationManager.getInstance().onMessageNotification(messageRealmObject)
                 }
@@ -353,7 +372,8 @@ object MessageHandler {
                     pair.first.isVoice && pair.first.filePath == null
                 }
                 .map { pair: Pair<AttachmentRealmObject, AccountJid> ->
-                    DownloadManager.getInstance().downloadFile(pair.first, pair.second, Application.getInstance())
+                    DownloadManager.getInstance()
+                        .downloadFile(pair.first, pair.second, Application.getInstance())
                 }
         }
     }
@@ -380,7 +400,10 @@ object MessageHandler {
                     .map {
                         ForwardIdRealmObject(
                             parseInnerMessage(
-                                it.forwardedStanza as Message, it.delayInformation.stamp, parentMessageId, chat
+                                it.forwardedStanza as Message,
+                                it.delayInformation.stamp,
+                                parentMessageId,
+                                chat
                             )
                         )
                     }
@@ -410,7 +433,11 @@ object MessageHandler {
                 LogManager.e(this, "Got possible rewrite, todo implement handling")
                 return null
             }
-            GroupMemberManager.saveOrUpdateMemberFromMessage(groupchatUser, chat.account, ContactJid.from(message.from))
+            GroupMemberManager.saveOrUpdateMemberFromMessage(
+                groupchatUser,
+                chat.account,
+                ContactJid.from(message.from)
+            )
         }
 
         // forward comment (to support previous forwarded xep)
@@ -425,16 +452,26 @@ object MessageHandler {
 
         val originId = UniqueIdsHelper.getOriginId(message)
         val stanzaId =
-            UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString()) ?: UUID.randomUUID().toString()
+            UniqueIdsHelper.getStanzaIdBy(message, chat.contactJid.bareJid.toString())
+                ?: UUID.randomUUID().toString()
 
         val messageRealmObject =
             if (originId != null) {
-                MessageRealmObject.createMessageRealmObjectWithOriginId(chat.account, chat.contactJid, originId)
+                MessageRealmObject.createMessageRealmObjectWithOriginId(
+                    chat.account,
+                    chat.contactJid,
+                    originId
+                )
             } else {
-                MessageRealmObject.createMessageRealmObjectWithStanzaId(chat.account, chat.contactJid, stanzaId)
+                MessageRealmObject.createMessageRealmObjectWithStanzaId(
+                    chat.account,
+                    chat.contactJid,
+                    stanzaId
+                )
             }
 
-        val forwardIdRealmObjects = parseForwardedMessage(message, messageRealmObject.primaryKey, chat)
+        val forwardIdRealmObjects =
+            parseForwardedMessage(message, messageRealmObject.primaryKey, chat)
 
         messageRealmObject.apply {
             this.text = text ?: ""

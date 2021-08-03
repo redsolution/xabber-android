@@ -1,5 +1,8 @@
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO;
+import static com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -89,9 +92,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-
-import static com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO;
-import static com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
         OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener,
@@ -384,9 +384,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.VCARD.setDescription(getString(R.string.account_vcard_summary));
 
-        AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.isPushWasEnabled()
-                ? R.string.account_push_state_enabled : R.string.account_push_state_disabled));
-
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
         updateBlockListOption();
@@ -445,9 +442,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case VCARD:
                 startActivity(AccountInfoEditActivity.createIntent(this, account));
-                break;
-            case PUSH_NOTIFICATIONS:
-                startActivity(AccountPushActivity.createIntent(this, account));
                 break;
             case COLOR:
                 runColorPickerDialog();

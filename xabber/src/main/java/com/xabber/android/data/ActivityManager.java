@@ -22,7 +22,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.OnErrorListener;
@@ -181,8 +180,7 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onResume");
         }
-        if((!application.isInitialized() || SyncManager.getInstance().isSyncMode())
-                && !Application.getInstance().isClosing()) {
+        if(!application.isInitialized() && !Application.getInstance().isClosing()) {
 
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
@@ -200,7 +198,6 @@ public class ActivityManager implements OnUnloadListener {
 
         CertificateManager.getInstance().registerActivity(activity);
         AccountManager.getInstance().stopGracePeriod();
-        SyncManager.getInstance().onActivityResume();
     }
 
     /**

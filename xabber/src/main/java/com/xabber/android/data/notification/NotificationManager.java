@@ -43,7 +43,6 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.archive.OnMessageArchiveFetchingListener;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
@@ -321,7 +320,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         persistentIntent = MainActivity.createPersistentIntent(application);
 
-        if (SyncManager.getInstance().isSyncMode() || MessageArchiveManager.INSTANCE.isArchiveFetching()) {
+        if (MessageArchiveManager.INSTANCE.isArchiveFetching()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
             persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
         } else {

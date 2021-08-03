@@ -575,15 +575,7 @@
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
 
-        <activity android:name=".ui.activity.AccountPushActivity" />
-
         <activity android:name=".ui.activity.ActiveSessionsActivity" />
-
-        <activity android:name=".ui.activity.PushLogActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.DebugSettings"/>
-        </activity>
 
         <activity android:name=".ui.activity.QRCodeScannerActivity"
             android:screenOrientation="portrait"/>
@@ -626,13 +618,6 @@
         <service android:name=".service.UploadService" />
 
         <service android:name=".service.RecordService" />
-
-        <service
-            android:name=".service.PushService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
 
         <!-- Receivers -->
         <receiver android:name=".receiver.BootReceiver">

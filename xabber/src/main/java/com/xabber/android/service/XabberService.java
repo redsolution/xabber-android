@@ -25,7 +25,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.push.SyncManager;
 
 /**
  * Basic service to work in background.
@@ -65,7 +64,6 @@ public class XabberService extends Service {
         int result = super.onStartCommand(intent, flags, startId);
         LogManager.i(this, "onStartCommand");
         Application.getInstance().onServiceStarted();
-        SyncManager.getInstance().onServiceStarted(intent);
         return result;
     }
 
@@ -87,13 +85,10 @@ public class XabberService extends Service {
     }
 
     public boolean needForeground() {
-        if (SyncManager.getInstance().isSyncPeriod()) return true;
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
             if (accountItem != null) {
-                if (!accountItem.isPushWasEnabled()
-                        && SyncManager.getInstance().isAccountNeedConnection(accountItem))
-                    return true;
+                return true;
             }
         }
         return false;

@@ -56,7 +56,6 @@ import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -479,9 +478,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
-        // disable push
-        PushManager.getInstance().disablePushNotification(getAccount(account), false);
-
         // remove contacts and account from cache
         ContactRepository.removeContacts(account);
 
@@ -719,12 +715,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
-        // disable push
-        if (!enabled) PushManager.getInstance().disablePushNotification(getAccount(account), false);
-
         accountItem.setEnabled(enabled);
         AccountRepository.saveAccountToRealm(accountItem);
-        PushManager.getInstance().updateEnabledPushNodes();
     }
 
     /**
@@ -1258,28 +1250,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             stopGracePeriod(accountJid);
         }
-    }
-
-    public void setPushNode(AccountItem account, String pushNode, String pushServiceJid) {
-        account.setPushNode(pushNode);
-        account.setPushServiceJid(pushServiceJid);
-        AccountRepository.saveAccountToRealm(account);
-    }
-
-    public void setPushEnabled(final AccountItem accountItem, final boolean enabled) {
-        accountItem.setPushEnabled(enabled);
-        AccountRepository.saveAccountToRealm(accountItem);
-        Application.getInstance().runInBackground(() -> {
-            if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
-            else PushManager.getInstance().disablePushNotification(accountItem, true);
-        });
-        PushManager.getInstance().updateEnabledPushNodes();
-    }
-
-    public void setPushWasEnabled(AccountItem accountItem, boolean enabled) {
-        accountItem.setPushWasEnabled(enabled);
-        AccountRepository.saveAccountToRealm(accountItem);
-        PushManager.getInstance().updateEnabledPushNodes();
     }
 
 }

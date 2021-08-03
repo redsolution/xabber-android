@@ -24,7 +24,6 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -156,7 +155,6 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
             boolean mam = MessageArchiveManager.INSTANCE.isSupported(accountItem);
             boolean csi = ClientStateIndicationManager.isSupported(connection);
-            boolean push = PushManager.getInstance().isSupport(connection);
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
             boolean rewrite = RetractManager.INSTANCE.isSupported(connection);
@@ -170,7 +168,6 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0280_carbons) + " " + getCheckOrCross(carbons));
             serverInfoList.add(getString(R.string.xep_0313_mam) + " " + getCheckOrCross(mam));
             serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
-            serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
             serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
             serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(rewrite));

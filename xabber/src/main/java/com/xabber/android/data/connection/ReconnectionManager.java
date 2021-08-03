@@ -11,7 +11,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.delivery.DeliveryManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -123,8 +122,7 @@ public class ReconnectionManager implements OnConnectedListener,
 
     private boolean isAccountNeedConnection(AccountItem accountItem) {
         return accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
-                && !accountItem.getConnection().isAuthenticated()
-                && SyncManager.getInstance().isAccountNeedConnection(accountItem);
+                && !accountItem.getConnection().isAuthenticated();
     }
 
     /**

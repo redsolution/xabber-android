@@ -121,11 +121,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
-    private boolean pushEnabled;
-    private boolean pushWasEnabled;
-    private String pushNode;
-    private String pushServiceJid;
-
     /** Timestamp начала работы приложения,
      *  сообщения с timestamp раньше этого считаются прочитанными,
      *  позднее - непрочитанными.
@@ -444,27 +439,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     public void stopGracePeriod() { gracePeriodEndTime = 0L; }
 
     public boolean inGracePeriod() { return gracePeriodEndTime > System.currentTimeMillis(); }
-
-    public String getPushNode() { return pushNode; }
-
-    public void setPushNode(String pushNode) { this.pushNode = pushNode; }
-
-    public String getPushServiceJid() { return pushServiceJid; }
-
-    public void setPushServiceJid(String pushServiceJid) { this.pushServiceJid = pushServiceJid; }
-
-    public boolean isPushWasEnabled() { return pushWasEnabled; }
-
-    public void setPushWasEnabled(boolean pushWasEnabled) {
-        boolean changed = false;
-        if (this.pushWasEnabled != pushWasEnabled) changed = true;
-        this.pushWasEnabled = pushWasEnabled;
-        if (changed) AccountManager.getInstance().onAccountChanged(getAccount());
-    }
-
-    public void setPushEnabled(boolean enabled) { this.pushEnabled = enabled; }
-
-    public boolean isPushEnabled() { return pushEnabled; }
 
     public Date getStartHistoryTimestamp() { return startHistoryTimestamp; }
     public void setStartHistoryTimestamp(Date startHistoryTimestamp) {

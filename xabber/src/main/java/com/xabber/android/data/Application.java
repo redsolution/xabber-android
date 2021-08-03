@@ -69,7 +69,6 @@ import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
-import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -392,7 +391,6 @@ public class Application extends android.app.Application {
         addManager(MessageArchiveManager.INSTANCE);
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
-        addManager(PushManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());

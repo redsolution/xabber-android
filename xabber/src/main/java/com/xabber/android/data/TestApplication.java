@@ -27,6 +27,7 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.avatar.AvatarStorage;
@@ -37,7 +38,6 @@ import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -50,8 +50,6 @@ import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
-import com.xabber.android.data.push.PushManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -314,7 +312,6 @@ public class TestApplication extends android.app.Application {
     }
 
     private void addManagers() {
-        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(AvatarStorage.getInstance());
@@ -348,7 +345,6 @@ public class TestApplication extends android.app.Application {
         addManager(MessageArchiveManager.INSTANCE);
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
-        addManager(PushManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
     }
