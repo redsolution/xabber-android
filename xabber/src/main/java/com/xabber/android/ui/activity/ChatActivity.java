@@ -283,7 +283,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         toolbar = findViewById(R.id.toolbar_default);
         ImageView toolbarBackIv = findViewById(R.id.toolbar_arrow_back_iv);
         toolbarOverflowIv = findViewById(R.id.toolbar_overflow_iv);
-        toolbarBackIv.setOnClickListener(v -> close());
+        toolbarBackIv.setOnClickListener(v -> attemptToClose());
         toolbarOverflowIv.setOnClickListener(v -> setUpOptionsMenu(toolbarOverflowIv));
 
         interactionsRoot = findViewById(R.id.toolbar_chat_interactions_include);
@@ -389,6 +389,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         insertExtraText();
         setForwardMessages();
+    }
+
+    private void attemptToClose(){
+        if (!chatFragment.tryToResetEditingText()) {
+            close();
+        }
     }
 
     public void showToolbarInteractionsPanel(boolean isVisible, boolean isEditable, boolean isPinnable,
@@ -513,8 +519,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onBackPressed() {
-        close();
-        super.onBackPressed();
+        attemptToClose();
     }
 
     private void initChats() {

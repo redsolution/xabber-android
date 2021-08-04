@@ -1652,6 +1652,16 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         setInputText(messageRealmObject.getText());
     }
 
+    public boolean tryToResetEditingText(){
+        if (bottomPanelMessagesIds != null && !bottomPanelMessagesIds.isEmpty()
+            && bottomMessagesPanel.getPurpose() == BottomMessagesPanel.Purposes.EDITING
+            && !inputView.getText().toString().isEmpty()){
+            clearInputText();
+            hideBottomMessagePanel();
+            return true;
+        } else return false;
+    }
+
     public void showResourceChoiceAlert(final AccountJid account, final ContactJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
 
