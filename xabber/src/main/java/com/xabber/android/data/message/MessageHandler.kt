@@ -312,8 +312,7 @@ object MessageHandler {
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!isIncoming) {
-            MessageNotificationManager.getInstance()
-                .removeChatWithTimer(chat.account, chat.contactJid)
+            MessageNotificationManager.removeChatWithTimer(chat.account, chat.contactJid)
         }
 
         // when getting new message, unarchive chat if chat not muted

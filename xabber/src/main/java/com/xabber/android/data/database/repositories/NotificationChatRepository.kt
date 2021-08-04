@@ -58,19 +58,24 @@ object NotificationChatRepository {
         val results = realm.where(NotificationChatRealmObject::class.java)
             .findAll()
             .map { realmObject ->
-                MessageNotificationManager.getInstance().Chat(
-                    realmObject.id, realmObject.account, realmObject.user, realmObject.notificationID,
-                    realmObject.chatTitle, realmObject.isGroupChat, realmObject.privacyType
+                MessageNotificationManager.Chat(
+                    realmObject.id,
+                    realmObject.account,
+                    realmObject.user,
+                    realmObject.notificationID,
+                    realmObject.chatTitle,
+                    realmObject.isGroupChat,
+                    realmObject.privacyType
                 ).apply {
                     messages.addAll(realmObject.messages.map { message ->
-                        MessageNotificationManager.getInstance().Message(
+                        MessageNotificationManager.Message(
                             message.id,
                             message.author,
-                            message.text,
                             message.timestamp,
                             GroupMemberManager.getGroupMemberById(
                                 realmObject.account, realmObject.user, message.memberId
-                            )
+                            ),
+                            message.text
                         )
                     })
                 }
@@ -123,7 +128,10 @@ object NotificationChatRepository {
         }
     }
 
-    fun removeNotificationChatsForAccountAndContactInRealm(accountJid: AccountJid, contactJid: ContactJid) {
+    fun removeNotificationChatsForAccountAndContactInRealm(
+        accountJid: AccountJid,
+        contactJid: ContactJid
+    ) {
         Application.getInstance().runInBackground {
             var realm: Realm? = null
             try {

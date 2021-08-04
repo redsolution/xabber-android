@@ -24,7 +24,7 @@ public class DelayedNotificationActionManager implements OnConnectedListener {
 
     private void onLoaded() {
         for (FullAction action : delayedActions) {
-            MessageNotificationManager.getInstance().performAction(action);
+            MessageNotificationManager.INSTANCE.performAction(action);
         }
         delayedActions.clear();
     }

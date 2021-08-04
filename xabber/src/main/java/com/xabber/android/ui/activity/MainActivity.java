@@ -340,7 +340,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showPassDialogs();
 
         // remove all message notifications
-        MessageNotificationManager.getInstance().removeAllMessageNotifications();
+        MessageNotificationManager.INSTANCE.removeAllMessageNotifications();
         showBottomNavigation();
         showSavedOrCurrentFragment(currentActiveFragmentType);
         setStatusBarColor();

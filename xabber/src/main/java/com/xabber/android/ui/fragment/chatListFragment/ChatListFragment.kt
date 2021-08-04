@@ -116,7 +116,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
     override fun onPause() {
         super.onPause()
-        MessageNotificationManager.getInstance().setShowBanners(true)
+        MessageNotificationManager.isShowBanners = true
     }
 
     override fun onResume() {
@@ -126,7 +126,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         Application.getInstance().addUIListener(OnMessageUpdatedListener::class.java, this)
         Application.getInstance().addUIListener(OnChatUpdatedListener::class.java, this)
 
-        MessageNotificationManager.getInstance().setShowBanners(false)
+        MessageNotificationManager.isShowBanners = false
 
         val unreadCount =
             ChatManager.getInstance().chatsOfEnabledAccounts
@@ -183,7 +183,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message)
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button)
 
-        MessageNotificationManager.getInstance().removeAllMessageNotifications()
+        MessageNotificationManager.removeAllMessageNotifications()
 
         chatListFragmentListener?.onChatListStateChanged(currentChatsState)
 
@@ -560,7 +560,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
                 ChatManager.getInstance().chatsOfEnabledAccounts.forEach {
                     it.markAsReadAll(true)
                 }
-                MessageNotificationManager.getInstance().removeAllMessageNotifications()
+                MessageNotificationManager.removeAllMessageNotifications()
                 onStateSelected(ChatListState.RECENT)
                 val toast = Toast.makeText(
                     activity, R.string.all_chats_were_market_as_read_toast,

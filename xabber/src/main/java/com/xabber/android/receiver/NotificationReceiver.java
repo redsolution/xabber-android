@@ -30,13 +30,13 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
         if (Application.getInstance().isServiceNotStarted()) {
-            MessageNotificationManager.getInstance().onDelayedNotificationAction(createAction(intent));
+            MessageNotificationManager.INSTANCE.onDelayedNotificationAction(createAction(intent));
             if (accountJid != null) {
                 Utils.startXabberServiceCompat(context);
             }
 
         } else {
-            MessageNotificationManager.getInstance().onNotificationAction(createAction(intent));
+            MessageNotificationManager.INSTANCE.onNotificationAction(createAction(intent));
         }
     }
 

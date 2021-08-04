@@ -55,7 +55,7 @@ import java.util.List;
 public class MessageNotificationCreator {
 
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
-    private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
+    final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
 
     private final Application context;
     private final NotificationManager notificationManager;
@@ -191,7 +191,7 @@ public class MessageNotificationCreator {
     }
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
-        MessageNotificationManager.getInstance().setLastNotificationTime();
+        MessageNotificationManager.INSTANCE.updateLastNotificationTime();
         try {
             notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
@@ -204,7 +204,7 @@ public class MessageNotificationCreator {
 
     /** UTILS */
     private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
-        if (!MessageNotificationManager.getInstance().isTimeToNewFullNotification()) return true;
+        if (!MessageNotificationManager.INSTANCE.isTimeToNewFullNotification()) return true;
         if (chat == null) return false;
         AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
         if (accountItem != null) return accountItem.inGracePeriod();

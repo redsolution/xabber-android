@@ -13,7 +13,6 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageStatus
-import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.ui.OnMessageUpdatedListener
@@ -55,8 +54,10 @@ object ChatMarkerManager : OnPacketListener {
     fun sendDisplayed(messageRealmObject: MessageRealmObject) {
         if (messageRealmObject.stanzaId == null && messageRealmObject.originId == null) return
 
-        val originalMessage: Message = PacketParserUtils.parseStanza(messageRealmObject.originalStanza) ?: return
-        val stanzaIds = originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE)
+        val originalMessage: Message =
+            PacketParserUtils.parseStanza(messageRealmObject.originalStanza) ?: return
+        val stanzaIds =
+            originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE)
 
         if (originalMessage.stanzaId == null || originalMessage.stanzaId.isEmpty()) {
 
@@ -93,7 +94,11 @@ object ChatMarkerManager : OnPacketListener {
         }
     }
 
-    fun processCarbonsMessage(account: AccountJid?, message: Message, direction: CarbonExtension.Direction) {
+    fun processCarbonsMessage(
+        account: AccountJid,
+        message: Message,
+        direction: CarbonExtension.Direction
+    ) {
         if (direction == CarbonExtension.Direction.sent) {
             val extension = ChatMarkersElements.DisplayedExtension.from(message)
             if (extension != null) {
@@ -105,7 +110,7 @@ object ChatMarkerManager : OnPacketListener {
                 }
                 ChatManager.getInstance().getChat(account, companion)?.let {
                     it.markAsRead(extension.getId(), extension.stanzaId, false)
-                    MessageNotificationManager.getInstance().removeChatWithTimer(account, companion)
+                    MessageNotificationManager.removeChatWithTimer(account, companion)
 
                     // start grace period
                     AccountManager.getInstance().startGracePeriod(account)
@@ -164,7 +169,10 @@ object ChatMarkerManager : OnPacketListener {
                         .findFirst()
                         ?.let { first ->
                             realm1.where(MessageRealmObject::class.java)
-                                .equalTo(MessageRealmObject.Fields.ACCOUNT, first.account.toString())
+                                .equalTo(
+                                    MessageRealmObject.Fields.ACCOUNT,
+                                    first.account.toString()
+                                )
                                 .equalTo(MessageRealmObject.Fields.USER, first.user.toString())
                                 .equalTo(MessageRealmObject.Fields.INCOMING, false)
                                 .notEqualTo(
@@ -175,7 +183,10 @@ object ChatMarkerManager : OnPacketListener {
                                     MessageRealmObject.Fields.MESSAGE_STATUS,
                                     MessageStatus.UPLOADING.toString()
                                 )
-                                .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.timestamp)
+                                .lessThanOrEqualTo(
+                                    MessageRealmObject.Fields.TIMESTAMP,
+                                    first.timestamp
+                                )
                                 .findAll()
                                 ?.let { results ->
                                     results.setString(
@@ -206,7 +217,10 @@ object ChatMarkerManager : OnPacketListener {
                         .findFirst()
                         ?.let { first ->
                             realm1.where(MessageRealmObject::class.java)
-                                .equalTo(MessageRealmObject.Fields.ACCOUNT, first.account.toString())
+                                .equalTo(
+                                    MessageRealmObject.Fields.ACCOUNT,
+                                    first.account.toString()
+                                )
                                 .equalTo(MessageRealmObject.Fields.USER, first.user.toString())
                                 .equalTo(MessageRealmObject.Fields.INCOMING, false)
                                 .notEqualTo(
@@ -217,7 +231,10 @@ object ChatMarkerManager : OnPacketListener {
                                     MessageRealmObject.Fields.MESSAGE_STATUS,
                                     MessageStatus.UPLOADING.toString()
                                 )
-                                .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, first.timestamp)
+                                .lessThanOrEqualTo(
+                                    MessageRealmObject.Fields.TIMESTAMP,
+                                    first.timestamp
+                                )
                                 .findAll()
                                 ?.let { results ->
                                     results.setString(
@@ -235,18 +252,20 @@ object ChatMarkerManager : OnPacketListener {
 
     init {
         XMPPConnectionRegistry.addConnectionCreationListener { connection: XMPPConnection ->
-            ServiceDiscoveryManager.getInstanceFor(connection).addFeature(ChatMarkersElements.NAMESPACE)
+            ServiceDiscoveryManager.getInstanceFor(connection)
+                .addFeature(ChatMarkersElements.NAMESPACE)
 
-            val eligibleForChatMarkerFilter = object : StanzaExtensionFilter(ChatStateManager.NAMESPACE) {
-                override fun accept(message: Stanza): Boolean {
-                    if (!message.hasStanzaIdSet()) return false
-                    if (super.accept(message)) {
-                        message.getExtension(ChatStateManager.NAMESPACE).elementName
-                            ?.let { ChatState.valueOf(it) == ChatState.active }
+            val eligibleForChatMarkerFilter =
+                object : StanzaExtensionFilter(ChatStateManager.NAMESPACE) {
+                    override fun accept(message: Stanza): Boolean {
+                        if (!message.hasStanzaIdSet()) return false
+                        if (super.accept(message)) {
+                            message.getExtension(ChatStateManager.NAMESPACE).elementName
+                                ?.let { ChatState.valueOf(it) == ChatState.active }
+                        }
+                        return true
                     }
-                    return true
                 }
-            }
 
             val chatMarketFilter = object : StanzaExtensionFilter(ChatMarkersElements.NAMESPACE) {}
 

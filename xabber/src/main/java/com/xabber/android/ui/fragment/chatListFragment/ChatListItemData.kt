@@ -61,19 +61,27 @@ data class ChatListItemData(
                 when {
                     lastMessage?.groupchatUserId == null || !lastMessage.isIncoming ->
                         StringUtils.getColoredText(
-                            (chat as? GroupChat)?.let { GroupMemberManager.getMe(it)?.nickname } + ":",
-                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
+                            (chat as? GroupChat)?.let {
+                                GroupMemberManager.getMe(it)?.nickname
+                            } + ":",
+                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(
+                                account, 700
+                            )
                         )
                     else ->
                         StringUtils.getColoredText(
                             GroupMemberManager.getGroupMemberById(
                                 lastMessage.account, lastMessage.user, lastMessage.groupchatUserId
                             )?.bestName + ":",
-                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
+                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(
+                                account, 700
+                            )
                         )
                 }
-            val color500 = ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 500)
-            val noMessagesText = StringUtils.getItalicTypeface(context.resources.getString(R.string.no_messages))
+            val color500 =
+                ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 500)
+            val noMessagesText =
+                StringUtils.getItalicTypeface(context.resources.getString(R.string.no_messages))
 
             fun String.tryToDecode() =
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
@@ -85,7 +93,10 @@ data class ChatListItemData(
                 } else this
 
             return when {
-                GroupInviteManager.hasActiveIncomingInvites(account, contact) && chat is GroupChat -> {
+                GroupInviteManager.hasActiveIncomingInvites(
+                    account,
+                    contact
+                ) && chat is GroupChat -> {
                     StringUtils.getItalicTypeface(
                         StringUtils.getColoredText(
                             context.getString(
@@ -140,7 +151,8 @@ data class ChatListItemData(
                 }
 
                 chat is RegularChat -> when {
-                    ChatStateManager.getInstance().getFullChatStateString(account, contact) != null -> {
+                    ChatStateManager.getInstance()
+                        .getFullChatStateString(account, contact) != null -> {
                         StringUtils.getColoredText(
                             ChatStateManager.getInstance().getFullChatStateString(account, contact),
                             color500
@@ -148,7 +160,12 @@ data class ChatListItemData(
                     }
 
                     lastMessage.action != null -> {
-                        StringUtils.getItalicTypeface(StringUtils.getColoredText(lastMessage.action, color500))
+                        StringUtils.getItalicTypeface(
+                            StringUtils.getColoredText(
+                                lastMessage.action,
+                                color500
+                            )
+                        )
                     }
 
                     forwardedCount > 0 -> when {
@@ -192,7 +209,8 @@ data class ChatListItemData(
                 accountJid.bareJid.toString() == contactJid.bareJid.toString() ->
                     resources.getText(R.string.saved_messages__header).toString()
                 abstractChat is GroupChat ->
-                    abstractChat.name ?: RosterManager.getInstance().getBestContact(accountJid, contactJid).name
+                    abstractChat.name ?: RosterManager.getInstance()
+                        .getBestContact(accountJid, contactJid).name
                 else -> RosterManager.getInstance().getBestContact(accountJid, contactJid).name
             }
         }
@@ -201,20 +219,32 @@ data class ChatListItemData(
             if (abstractChat.account.bareJid.toString() == abstractChat.contactJid.bareJid.toString()) {
                 AvatarManager.getInstance().getSavedMessagesAvatar(abstractChat.account)
             } else {
-                RosterManager.getInstance().getAbstractContact(abstractChat.account, abstractChat.contactJid)
+                RosterManager.getInstance()
+                    .getAbstractContact(abstractChat.account, abstractChat.contactJid)
                     .getAvatar(true)
             }
 
         private fun getTime(abstractChat: AbstractChat, context: Context): String =
             when {
-                GroupInviteManager.hasActiveIncomingInvites(abstractChat.account, abstractChat.contactJid) -> {
+                GroupInviteManager.hasActiveIncomingInvites(
+                    abstractChat.account,
+                    abstractChat.contactJid
+                ) -> {
                     StringUtils.getSmartTimeTextForRoster(
                         context,
-                        Date(GroupInviteManager.getLastInvite(abstractChat.account, abstractChat.contactJid)!!.date)
+                        Date(
+                            GroupInviteManager.getLastInvite(
+                                abstractChat.account,
+                                abstractChat.contactJid
+                            )!!.date
+                        )
                     )
                 }
                 abstractChat.lastMessage != null && abstractChat.lastMessage?.isValid ?: false -> {
-                    StringUtils.getSmartTimeTextForRoster(context, Date(abstractChat.lastMessage!!.timestamp))
+                    StringUtils.getSmartTimeTextForRoster(
+                        context,
+                        Date(abstractChat.lastMessage!!.timestamp)
+                    )
                 }
                 else -> ""
             }
@@ -223,7 +253,9 @@ data class ChatListItemData(
             ColorManager.getInstance().accountPainter.getAccountMainColor(abstractChat.account)
 
         fun createFromChat(
-            abstractChat: AbstractChat, context: Context, isSavedMessagesSpecialText: Boolean = false
+            abstractChat: AbstractChat,
+            context: Context,
+            isSavedMessagesSpecialText: Boolean = false
         ): ChatListItemData {
             val accountJid = abstractChat.account
             val contactJid = abstractChat.contactJid
@@ -242,9 +274,11 @@ data class ChatListItemData(
                 messageText = getMessageText(abstractChat, context, isSavedMessagesSpecialText),
                 isRosterContact = (rosterContact != null && !rosterContact.isDirtyRemoved)
                         || !VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid),
-                isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(accountJid, contactJid),
+                isBlocked = BlockingManager.getInstance()
+                    .contactIsBlockedLocally(accountJid, contactJid),
                 isCustomNotification =
-                CustomNotifyPrefsManager.getInstance().isPrefsExist(Key.createKey(accountJid, contactJid)),
+                CustomNotifyPrefsManager.getInstance()
+                    .isPrefsExist(Key.createKey(accountJid, contactJid)),
                 isStatusBadgeVisible = StatusBadgeSetupHelper.isStatusVisibile(abstractChat),
                 isStatusBadgeFiltered = StatusBadgeSetupHelper.isStatusBadgeFiltered(abstractChat),
             )
