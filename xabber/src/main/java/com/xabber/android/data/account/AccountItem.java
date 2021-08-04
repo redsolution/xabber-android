@@ -312,9 +312,10 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      * editor.
      */
     public StatusMode getFactualStatusMode() {
-        if (getState().isConnected()) {
-            return statusMode;
-        } else return StatusMode.unavailable;
+//        if (getState().isConnected()) { //todo check this temp fix
+//            return statusMode;
+//        } else return StatusMode.unavailable;
+        return statusMode;
     }
 
     /**
