@@ -26,15 +26,21 @@ class MamQueryIQ private constructor(
 
     init {
         type = Type.set
-        if (archiveAddress != null) to = ContactJid.from(archiveAddress).bareJid
+        if (archiveAddress != null) {
+            to = ContactJid.from(archiveAddress).bareJid
+        }
 
-        if (dataFormExtension != null) addExtension(dataFormExtension)
-        if (rsmSet != null) addExtension(rsmSet)
+        dataFormExtension?.let { this.addExtension(it) }
+        rsmSet?.let { this.addExtension(it) }
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
-        if (queryId != null) optAttribute(QUERY_ID_ATTRIBUTE, queryId)
-        if (node != null) optAttribute(NODE_ATTRIBUTE, node)
+        if (queryId != null) {
+            optAttribute(QUERY_ID_ATTRIBUTE, queryId)
+        }
+        if (node != null) {
+            optAttribute(NODE_ATTRIBUTE, node)
+        }
         rightAngleBracket()
     }
 
@@ -86,27 +92,36 @@ class MamQueryIQ private constructor(
             dataFormExtension =
             if (chat is RegularChat) {
                 MamDataFormExtension(with = chat.contactJid.bareJid)
-            } else null,
+            } else {
+                null
+            },
             rsmSet = RSMSet(null, messageStanzaId, -1, -1, null, max, null, -1),
         )
 
         fun createMamRequestIqAllMessagesSince(
             chat: AbstractChat? = null,
             timestamp: Date = Date(),
+            max: Int = 50,
         ) = when (chat) {
             is GroupChat -> {
                 MamQueryIQ(
                     archiveAddress = chat.contactJid.bareJid,
-                    dataFormExtension = MamDataFormExtension(start = timestamp)
+                    dataFormExtension = MamDataFormExtension(start = timestamp),
+                    rsmSet = RSMSet(null, null, -1, -1, null, max, null, -1)
                 )
             }
-            is RegularChat -> MamQueryIQ(
-                dataFormExtension = MamDataFormExtension(
-                    with = chat.contactJid.bareJid,
-                    start = timestamp
+            is RegularChat ->
+                MamQueryIQ(
+                    dataFormExtension = MamDataFormExtension(
+                        with = chat.contactJid.bareJid,
+                        start = timestamp
+                    ),
+                    rsmSet = RSMSet(null, null, -1, -1, null, max, null, -1)
                 )
+            else -> MamQueryIQ(
+                dataFormExtension = MamDataFormExtension(start = timestamp),
+                rsmSet = RSMSet(null, null, -1, -1, null, max, null, -1)
             )
-            else -> MamQueryIQ(dataFormExtension = MamDataFormExtension(start = timestamp))
         }
 
     }

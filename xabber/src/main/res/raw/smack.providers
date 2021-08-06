@@ -193,20 +193,29 @@
         <className>com.xabber.xmpp.sid.OriginIdProvider</className>
     </extensionProvider>
 
+
+    <!--                XEP-0313 MAM                -->
+    <!--       Mam result extension element         -->
+    <extensionProvider>
+        <elementName>result</elementName>
+        <namespace>urn:xmpp:mam:2</namespace>
+        <className>com.xabber.xmpp.mam.MamResultExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--       Archived ID extension element        -->
     <extensionProvider>
         <elementName>archived</elementName>
         <namespace>urn:xmpp:mam:tmp</namespace>
         <className>com.xabber.xmpp.mam.ArchivedIdProvider</className>
     </extensionProvider>
 
-
-    <!--                XEP-0313                 -->
-    <!--             Message archive             -->
-    <extensionProvider>
-        <elementName>result</elementName>
+    <!--                Fin IQ                    -->
+    <iqProvider>
+        <elementName>fin</elementName>
         <namespace>urn:xmpp:mam:2</namespace>
-        <className>com.xabber.xmpp.mam.MamResultExtensionElementProvider</className>
-    </extensionProvider>
+        <className>com.xabber.xmpp.mam.MamFinIqProvider</className>
+    </iqProvider>
+
 
     <!--              XEP-RETRACT               -->
     <!--            Replaced element            -->
