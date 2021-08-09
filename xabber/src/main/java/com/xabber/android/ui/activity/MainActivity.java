@@ -148,7 +148,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     private static ContactJid getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
     @Override
@@ -257,9 +257,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
      */
     private void openChat(AccountJid account, ContactJid user, String text) {
         if (text == null) {
-            startActivity(ChatActivity.createSendIntent(this, account, user, null));
+            startActivity(ChatActivity.Companion.createSendIntent(this, account, user, null));
         } else {
-            startActivity(ChatActivity.createSendIntent(this, account, user, text));
+            startActivity(ChatActivity.Companion.createSendIntent(this, account, user, text));
         }
         finish();
     }
@@ -475,12 +475,12 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivityForResult(ChatActivity.createSendIntent(this,
+            startActivityForResult(ChatActivity.Companion.createSendIntent(this,
                     abstractContact.getAccount(), abstractContact.getContactJid(), null),
                     CODE_OPEN_CHAT);
             return;
         }
-        startActivityForResult(ChatActivity.createSpecificChatIntent(this,
+        startActivityForResult(ChatActivity.Companion.createSpecificChatIntent(this,
                 abstractContact.getAccount(), abstractContact.getContactJid()), CODE_OPEN_CHAT);
     }
 

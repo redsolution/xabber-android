@@ -60,7 +60,7 @@ public class GroupSettingsActivity extends ManagedActivity implements
     }
 
     private static ContactJid getGroupchatContact(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
     private static GroupchatSettingsType getSettingsType(Intent intent) {

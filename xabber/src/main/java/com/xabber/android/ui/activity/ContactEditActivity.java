@@ -63,7 +63,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
     }
 
     private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
     protected void onCreate(Bundle savedInstanceState) {

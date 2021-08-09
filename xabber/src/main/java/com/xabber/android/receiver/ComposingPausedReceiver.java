@@ -45,7 +45,7 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
     }
 
     private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
 }

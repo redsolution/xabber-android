@@ -101,7 +101,7 @@ public class QuestionActivity extends ManagedActivity implements
     }
 
     private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
     @Override

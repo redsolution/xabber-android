@@ -17,18 +17,24 @@ import com.xabber.android.ui.activity.CreateGroupActivity
 
 class AddFragment : Fragment(), OnAccountChangedListener {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.add_fragment, container, false)
 
         view.findViewById<LinearLayoutCompat>(R.id.add_contact_btn).setOnClickListener {
-            startActivity(ContactAddActivity.createIntent(activity))}
+            startActivity(ContactAddActivity.createIntent(activity))
+        }
 
         view.findViewById<LinearLayoutCompat>(R.id.create_groupchat_btn).setOnClickListener {
-            startActivity(CreateGroupActivity.createCreatePublicGroupchatIntent())}
+            startActivity(CreateGroupActivity.createCreatePublicGroupchatIntent())
+        }
 
-        view.findViewById<LinearLayoutCompat>(R.id.create_incognito_groupchat_btn).setOnClickListener {
-            startActivity(CreateGroupActivity.createCreateIncognitoGroupchatIntent())}
+        view.findViewById<LinearLayoutCompat>(R.id.create_incognito_groupchat_btn)
+            .setOnClickListener {
+                startActivity(CreateGroupActivity.createCreateIncognitoGroupchatIntent())
+            }
 
         if (AccountManager.getInstance().enabledAccounts.isEmpty()) showPlaceholder(true)
 
@@ -45,14 +51,14 @@ class AddFragment : Fragment(), OnAccountChangedListener {
         super.onPause()
     }
 
-    override fun onAccountsChanged(accounts: Collection<AccountJid?>?) {
+    override fun onAccountsChanged(accounts: Collection<AccountJid>) {
         if (AccountManager.getInstance().enabledAccounts.isEmpty()) {
             Application.getInstance().runOnUiThread { showPlaceholder(true) }
         }
     }
 
-    private fun showPlaceholder(show: Boolean){
-        if (show){
+    private fun showPlaceholder(show: Boolean) {
+        if (show) {
             view?.findViewById<LinearLayout>(R.id.placeholder)?.visibility = View.VISIBLE
             view?.findViewById<LinearLayout>(R.id.buttons)?.visibility = View.GONE
         } else {

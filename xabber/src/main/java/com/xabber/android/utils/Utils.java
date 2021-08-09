@@ -20,6 +20,7 @@ import android.view.Display;
 import android.view.HapticFeedbackConstants;
 import android.view.Surface;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
@@ -284,6 +285,17 @@ public class Utils {
         theme.resolveAttribute(attrId, value, true);
         return value.data;
     }
+
+    public static void hideKeyboard(Activity activity) {
+        if (activity.getSystemService(Context.INPUT_METHOD_SERVICE) instanceof InputMethodManager){
+            ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(
+                            activity.getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS
+                    );
+        }
+    }
+
 }
 
 class URLSpanContainer {

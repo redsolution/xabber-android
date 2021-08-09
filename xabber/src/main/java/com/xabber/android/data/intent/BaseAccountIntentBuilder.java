@@ -23,7 +23,7 @@ import com.xabber.android.data.entity.AccountJid;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
+public class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
         SegmentIntentBuilder<T> {
 
     private static final String LOG_TAG = BaseAccountIntentBuilder.class.getSimpleName();

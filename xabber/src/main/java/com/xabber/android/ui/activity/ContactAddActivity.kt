@@ -121,7 +121,7 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
         }
 
         private fun getUser(intent: Intent): ContactJid? {
-            return EntityIntentBuilder.getUser(intent)
+            return EntityIntentBuilder.getContactJid(intent)
         }
 
     }

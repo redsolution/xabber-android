@@ -183,7 +183,6 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     private static final String FORWARD_STATE = "FORWARD_STATE";
     private static final String FORWARD_MESSAGES = "FORWARD_MESSAGES";
     private static final String FORWARD_PURPOSE = "FORWARD_PURPOSE";
-    private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
     @SuppressWarnings("FieldCanBeLocal")
     private final long STOP_TYPING_DELAY = 2500; // in ms
@@ -662,7 +661,10 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     @Override
-    public void onLastHistoryLoadingError(@NotNull AccountJid accountJid, @NotNull ContactJid contactJid, @org.jetbrains.annotations.Nullable String errorText) {
+    public void onLastHistoryLoadingError(
+            @NotNull AccountJid accountJid, @NotNull ContactJid contactJid,
+             @org.jetbrains.annotations.Nullable String errorText
+    ) {
         String text = errorText != null ? errorText : getString(R.string.groupchat_error); //todo change to use specific string
         Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
@@ -703,7 +705,8 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                             GroupMemberManager.INSTANCE.getGroupMemberById(
                                     message.getAccount(),
                                     message.getUser(),
-                                    message.getGroupchatUserId()).getBestName()
+                                    message.getGroupchatUserId()
+                            ).getBestName()
                     );
 
                     pinnedMessageHeaderTv.setTextColor(
@@ -753,8 +756,10 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 pinnedMessageTv.setText(getResources().getQuantityString(R.plurals.forwarded_messages_count,
                         forwardedCount, forwardedCount));
             } else if (message != null && message.haveAttachments()) {
-                pinnedMessageTv.setText(StringUtils.getAttachmentDisplayName(getContext(),
-                        message.getAttachmentRealmObjects()));
+                pinnedMessageTv.setText(
+                        StringUtils.getAttachmentDisplayName(getContext(),
+                        message.getAttachmentRealmObjects())
+                );
                 pinnedMessageTv.setTypeface(Typeface.DEFAULT);
                 return;
             } else pinnedMessageTv.setText(this.getResources().getString(R.string.no_messages));
@@ -776,7 +781,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                         }
                     } else pinnedMessageTv.setText(text);
                 } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
+                    LogManager.exception(ChatFragment.class.getSimpleName(), e);
                     pinnedMessageTv.setText(text);
                 } finally {
                     pinnedMessageTv.setAlpha(1f);
@@ -793,7 +798,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
     public void onToolbarInteractionPinClick(){
         if (getChat() instanceof GroupChat){
-            GroupsManager.INSTANCE.sendPinMessageRequest(chatMessageAdapter.getCheckedMessageRealmObjects().get(0));
+            GroupsManager.INSTANCE.sendPinMessageRequest(
+                    chatMessageAdapter.getCheckedMessageRealmObjects().get(0)
+            );
             bottomPanelMessagesIds.clear();
             closeInteractionPanel();
         }
@@ -804,7 +811,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     public void onToolbarInteractionCopyClick(){
-        ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+        ClipManager.copyMessagesToClipboard(
+                new ArrayList<>(chatMessageAdapter.getCheckedItemIds())
+        );
         bottomPanelMessagesIds.clear();
         closeInteractionPanel();
     }
@@ -983,10 +992,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         }
         handler.removeCallbacks(record);
         handler.removeCallbacks(postAnimation);
-        if (audioProgressSubscription != null) audioProgressSubscription.unsubscribe();
-        //if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
-        //    stopRecordingIfPossibleAsync(false);
-        //}
+        if (audioProgressSubscription != null) {
+            audioProgressSubscription.unsubscribe();
+        }
         cleanUpVoice(false);
         unregisterOpusBroadcastReceiver();
     }
@@ -1150,19 +1158,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 //If keyboard is visible, simply show the emoji popup
                 if (popup.isKeyBoardOpen()) {
                     popup.showAtBottom();
-                    changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
-                }
-
-                //else, open the text keyboard first and immediately after that show the emoji popup
-                else {
+                } else { //else, open the text keyboard first and immediately after that show the emoji popup
                     inputView.setFocusableInTouchMode(true);
                     inputView.requestFocus();
                     popup.showAtBottomPending();
                     final InputMethodManager inputMethodManager = (InputMethodManager)
                             getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
-                    changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                 }
+                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
             }
 
             //If popup is showing, simply dismiss it to show the undrelying text keyboard
@@ -1178,7 +1182,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             int topVisible = layoutManager.findFirstVisibleItemPosition();
             if (topVisible <= 15 && topVisible != -1 && messagesCount != 0 || topVisible == -1 && messagesCount <= 30) {
                 AbstractChat chat = getChat();
-                if (chat != null) MessageArchiveManager.INSTANCE.loadNextMessagesPortionInChat(chat);
+                if (chat != null) {
+                    MessageArchiveManager.INSTANCE.loadNextMessagesPortionInChat(chat);
+                }
             }
         }
     }
@@ -1188,7 +1194,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
         if (abstractChat == null) {
             return ChatManager.getInstance().createRegularChat(account, user);
-        } else return  abstractChat;
+        } else {
+            return  abstractChat;
+        }
     }
 
     @Override
@@ -1241,9 +1249,13 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                                      MessageRealmObject message, boolean needNotification) {
         Application.getInstance().runOnUiThread(() -> {
             if (accountJid.equals(account) && contactJid.equals(user)) {
-                if (needNotification) playMessageSound();
+                if (needNotification) {
+                    playMessageSound();
+                }
                 NotificationManager.getInstance().removeMessageNotification(account, user);
-                if (getChat() instanceof GroupChat) setupPinnedMessageView();
+                if (getChat() instanceof GroupChat) {
+                    setupPinnedMessageView();
+                }
             }
         });
     }
@@ -1262,9 +1274,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSIONS_REQUEST_EXPORT_CHAT) {
-            if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
-            else
-                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+            if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                showExportChatDialog();
+            } else {
+                Toast.makeText(
+                        getActivity(),
+                        R.string.no_permission_to_write_files,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         }
     }
 
@@ -1282,9 +1300,12 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
 
         if (securityLevel == SecurityLevel.plain) {
-            menu.findItem(R.id.action_start_encryption).setVisible(true)
+            menu.findItem(R.id.action_start_encryption)
+                    .setVisible(true)
                     .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled);
-        } else menu.findItem(R.id.action_restart_encryption).setVisible(true);
+        } else {
+            menu.findItem(R.id.action_restart_encryption).setVisible(true);
+        }
 
 
         boolean isEncrypted = securityLevel != SecurityLevel.plain;
@@ -1299,9 +1320,13 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
     private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
-        if (empty) empty = (bottomPanelMessagesIds.isEmpty() || isReply);
+        if (empty) {
+            empty = (bottomPanelMessagesIds.isEmpty() || isReply);
+        }
 
-        if (empty != isInputEmpty) isInputEmpty = empty;
+        if (empty != isInputEmpty) {
+            isInputEmpty = empty;
+        }
 
         if (isInputEmpty) {
             sendButton.setVisibility(View.GONE);
@@ -1330,12 +1355,16 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
         skipOnTextChanges = false;
 
-        if (!inputView.getText().toString().isEmpty()) inputView.requestFocus();
+        if (!inputView.getText().toString().isEmpty()) {
+            inputView.requestFocus();
+        }
     }
 
     private void saveInputState() {
-        ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
-                inputView.getSelectionStart(), inputView.getSelectionEnd());
+        ChatManager.getInstance().setTyped(
+                account, user, inputView.getText().toString(),
+                inputView.getSelectionStart(), inputView.getSelectionEnd()
+        );
     }
 
     public void sendMessage() {
@@ -1421,7 +1450,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
                 && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            ChatActivity.hideKeyboard(getActivity());
+            Utils.hideKeyboard(getActivity());
         }
     }
 
@@ -1659,7 +1688,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             clearInputText();
             hideBottomMessagePanel();
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     public void showResourceChoiceAlert(final AccountJid account, final ContactJid user, final boolean restartSession) {
@@ -1756,7 +1787,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     .setPositiveButton(R.string.delete, (dialog12, which) -> {
                         if (RetractManager.INSTANCE.isSupported(account)) {
                             RetractManager.INSTANCE.sendRetractAllMessagesRequest(account, user, this);
-                        } else MessageManager.getInstance().clearHistory(account, user);
+                        } else {
+                            MessageManager.getInstance().clearHistory(account, user);
+                        }
                     })
                     .setNegativeButton(R.string.cancel_action, (dialog1, which) -> { })
                     .show();
@@ -1784,7 +1817,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 && itemViewType != MessagesAdapter.VIEW_TYPE_ACTION_MESSAGE) {
             MessageRealmObject clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageRealmObject == null) {
-                LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
+                LogManager.w(ChatFragment.class.getSimpleName(), "onMessageClick null message item. Position: " + position);
                 return;
             }
             showCustomMenu(caller, clickedMessageRealmObject);
@@ -1814,11 +1847,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                                             (GroupChat) ChatManager.getInstance().getChat(account, contactJid)
                                     )
                     );
-                } else startActivity(ContactViewerActivity.createIntent(getActivity(), account, contactJid));
+                } else {
+                    startActivity(
+                            ContactViewerActivity.createIntent(getActivity(), account, contactJid)
+                    );
+                }
             } catch (Exception e) { LogManager.exception(this, e); }
 
         } else {
-            LogManager.e(LOG_TAG,
+            LogManager.e(ChatFragment.class.getSimpleName(),
                     "onMessageAvatarClick cant handle avatar. It's regular chat or saved messages chat. Position: " + position);
         }
     }
@@ -1855,7 +1892,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             CustomMessageMenu.addMenuItem(menuItems, "action_message_repeat", getString(R.string.message_repeat));
         }
 
-        if (!clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) { //todo check this
+        if (!clickedMessageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_quote", getString(R.string.message_quote));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
@@ -1872,8 +1909,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
         }
 
-        //todo checking privileges
-        if (getChat() instanceof GroupChat) CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
+        if (getChat() instanceof GroupChat) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_pin", getString(R.string.message_pin));
+        }
 
         if (account.getBareJid().toString().contains(user.getBareJid().toString())
                 && clickedMessageRealmObject.isIncoming() && clickedMessageRealmObject.hasForwardedMessages()) {
@@ -1999,7 +2037,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             int unread = chat.getUnreadMessageCount();
             if ((position == 0 || fromNotification) && unread > 0) {
                 scrollToFirstUnread(unread);
-            } else if (position > 0) layoutManager.scrollToPosition(position);
+            } else if (position > 0) {
+                layoutManager.scrollToPosition(position);
+            }
             setFirstUnreadMessageId(chat.getFirstUnreadMessageId());
             updateNewReceivedMessageCounter(unread);
         }
@@ -2016,7 +2056,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
             notifyIntent = ((RegularChat) chat).getIntent();
             if (notifyIntent != null) {
                 setupNotifyLayout(notifyIntent);
-            } else if (notifyLayout != null) notifyLayout.setVisibility(View.GONE);
+            } else if (notifyLayout != null) {
+                notifyLayout.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -2047,7 +2089,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         tvNotifyAction = view.findViewById(R.id.tvNotifyAction);
         notifyLayout = view.findViewById(R.id.notifyLayout);
         notifyLayout.setOnClickListener(v -> {
-            if (notifyIntent != null) startActivity(notifyIntent);
+            if (notifyIntent != null) {
+                startActivity(notifyIntent);
+            }
             notifyLayout.setVisibility(View.GONE);
         });
     }
@@ -2103,7 +2147,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         if (userIsBlocked) {
             showBlockedBar();
         } else {
-            if (blockedView != null) blockedView.setVisibility(View.GONE);
+            if (blockedView != null) {
+                blockedView.setVisibility(View.GONE);
+            }
             inputLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -2111,7 +2157,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     private void showBlockedBar() {
         for (int i = 0; i < inputPanel.getChildCount(); i++) {
             View view = inputPanel.getChildAt(i);
-            if (view != null && view.getVisibility() == View.VISIBLE) view.setVisibility(View.GONE);
+            if (view != null && view.getVisibility() == View.VISIBLE) {
+                view.setVisibility(View.GONE);
+            }
 
         }
         if (blockedView == null) {
@@ -2120,7 +2168,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     getResources().getDimensionPixelOffset(R.dimen.input_view_height));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 blockedView.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button);
-            } else blockedView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Widget_Button);
+            } else {
+                blockedView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Widget_Button);
+            }
 
             blockedView.setTextColor(accountColor);
             blockedView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
@@ -2139,11 +2189,15 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     private void showNewContactLayoutIfNeed() {
 
         if (userIsBlocked) {
-            if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+            if (newContactLayout != null) {
+                newContactLayout.setVisibility(View.GONE);
+            }
             return;
         }
 
-        if (!VCardManager.getInstance().isRosterOrHistoryLoaded(account)) return;
+        if (!VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
+            return;
+        }
 
 
         AbstractChat chat = getChat();
@@ -2174,7 +2228,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 break;
         }
 
-        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())) show = true;
+        if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(getAccount(), getUser())) {
+            show = true;
+        }
 
         if (chat.getAccount().getBareJid().toString().equals(chat.getContactJid().getBareJid().toString())) {
             show = false;
@@ -2183,7 +2239,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
         } else {
-            if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+            if (newContactLayout != null) {
+                newContactLayout.setVisibility(View.GONE);
+            }
             PresenceManager.INSTANCE.clearSubscriptionRequestNotification(account, user);
         }
 
@@ -2191,7 +2249,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
     @SuppressLint("ClickableViewAccessibility")
     private void inflateNewContactLayout(final SubscriptionState subscriptionState, final boolean inRoster) {
-        if (newContactLayout == null) newContactLayout = (ViewGroup) stubNewContact.inflate();
+        if (newContactLayout == null) {
+            newContactLayout = (ViewGroup) stubNewContact.inflate();
+        }
 
         //intercept touch events to avoid clicking on the messages behind the panel.
         newContactLayout.setOnTouchListener((v, event) -> true);
@@ -2224,7 +2284,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                             // NONE = No current subscriptions or requests. Not in roster.
                             if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(account, user)) {
                                 setInvitedToGroupLayout();
-                            } else setNewContactAddLayout();
+                            } else {
+                                setNewContactAddLayout();
+                            }
                         }
                         break;
 
@@ -2275,7 +2337,7 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                         }
                     }
                 } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
+                    LogManager.exception(ChatFragment.class.getSimpleName(), e);
                 }
             });
             TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
@@ -2324,7 +2386,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     LogManager.exception(getClass().getSimpleName(), e);
                 }
             }
-            if (getChat() != null) getChat().setAddContactSuggested(true);                 // remember "X"-press
+            if (getChat() != null) {
+                getChat().setAddContactSuggested(true);                 // remember "X"-press
+            }
 
             TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
             newContactLayout.setVisibility(View.GONE);
@@ -2389,7 +2453,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
 
     private void updateUnread() {
         AbstractChat chat = getChat();
-        if (chat != null) updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
+        if (chat != null) {
+            updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
+        }
     }
 
     private void showScrollDownButtonIfNeed() {
@@ -2400,14 +2466,18 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                 || currentVoiceRecordingState == VoiceRecordState.TouchRecording
                 || currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
             btnScrollDown.setVisibility(View.GONE);
-        } else btnScrollDown.setVisibility(View.VISIBLE);
+        } else {
+            btnScrollDown.setVisibility(View.VISIBLE);
+        }
     }
 
     private void updateNewReceivedMessageCounter(int count) {
         tvNewReceivedCount.setText(String.valueOf(count));
         if (count > 0) {
             tvNewReceivedCount.setVisibility(View.VISIBLE);
-        } else tvNewReceivedCount.setVisibility(View.GONE);
+        } else {
+            tvNewReceivedCount.setVisibility(View.GONE);
+        }
     }
 
     private void setFirstUnreadMessageId(String id) {
@@ -2591,7 +2661,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     }
 
     public void beginTimer(boolean start) {
-        if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
+        if (start) {
+            voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
+        }
         if (start) {
             ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.voice);
             stopTypingTimer.cancel();
@@ -2619,7 +2691,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         if (getActivity() != null) {
             if (keepScreenOn) {
                 getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            } else getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else {
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
     }
 
@@ -2635,7 +2709,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
     public void hideBottomMessagePanel() {
         bottomPanelMessagesIds.clear();
         setUpInputViewButtons();
-        if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) inputView.setText("");
+        if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
+            inputView.setText("");
+        }
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();
@@ -2645,7 +2721,9 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
         }
     }
 
-    public void setBottomPanelMessagesIds(List<String> bottomPanelMessagesIds, BottomMessagesPanel.Purposes purpose) {
+    public void setBottomPanelMessagesIds(
+            List<String> bottomPanelMessagesIds, BottomMessagesPanel.Purposes purpose
+    ) {
         this.bottomPanelMessagesIds = bottomPanelMessagesIds;
         isReply = false;
         setUpInputViewButtons();
@@ -2680,10 +2758,14 @@ public class ChatFragment extends FileInteractionFragment implements View.OnClic
                     for (ForwardIdRealmObject innerMessageId : message.getForwardedIds()){
                         rightSavedMessagesIds.add(innerMessageId.getForwardMessageId());
                     }
-                } else rightSavedMessagesIds.add(messageId);
+                } else {
+                    rightSavedMessagesIds.add(messageId);
+                }
             }
             ((ChatActivity) getActivity()).forwardMessages(rightSavedMessagesIds);
-        } else ((ChatActivity) getActivity()).forwardMessages(forwardIds);
+        } else {
+            ((ChatActivity) getActivity()).forwardMessages(forwardIds);
+        }
     }
 
     @Override

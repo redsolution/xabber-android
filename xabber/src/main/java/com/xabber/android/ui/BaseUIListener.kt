@@ -114,7 +114,7 @@ interface OnAuthAskListener : BaseUIListener {
 }
 
 interface OnAccountChangedListener : BaseUIListener {
-    fun onAccountsChanged(accounts: Collection<AccountJid?>?)
+    fun onAccountsChanged(accounts: Collection<AccountJid>)
 }
 
 interface OnGroupchatRequestListener : BaseUIListener {

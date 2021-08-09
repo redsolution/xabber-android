@@ -62,7 +62,7 @@ class GroupStatusActivity : ManagedActivity() {
 
         private fun getAccount(intent: Intent) = AccountIntentBuilder.getAccount(intent)
 
-        private fun getGroupchatContact(intent: Intent) = EntityIntentBuilder.getUser(intent)
+        private fun getGroupchatContact(intent: Intent) = EntityIntentBuilder.getContactJid(intent)
 
     }
 

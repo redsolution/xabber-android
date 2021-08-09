@@ -45,8 +45,12 @@ public class ShortcutBuilder {
         }
 
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createClearTopIntent(context,
-                contact.getAccount(), contact.getContactJid()));
+        intent.putExtra(
+                Intent.EXTRA_SHORTCUT_INTENT,
+                ChatActivity.Companion.createClearTopIntent(
+                        context, contact.getAccount(), contact.getContactJid()
+                )
+        );
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, contact.getName());
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, getAvatar(contact));
         return intent;
@@ -58,7 +62,7 @@ public class ShortcutBuilder {
                 .setShortLabel(abstractContact.getName())
                 .setLongLabel(abstractContact.getName())
                 .setIcon(Icon.createWithBitmap(getAvatar(abstractContact)))
-                .setIntent(ChatActivity.createClearTopIntent(context,
+                .setIntent(ChatActivity.Companion.createClearTopIntent(context,
                         abstractContact.getAccount(), abstractContact.getContactJid()))
                 .build();
     }

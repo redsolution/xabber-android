@@ -203,7 +203,7 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
         }
 
         private fun getGroupchatContact(intent: Intent): ContactJid? {
-            return EntityIntentBuilder.getUser(intent)
+            return EntityIntentBuilder.getContactJid(intent)
         }
     }
 

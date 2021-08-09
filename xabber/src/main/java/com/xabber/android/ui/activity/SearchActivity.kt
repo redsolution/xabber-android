@@ -43,16 +43,22 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
     companion object {
 
         /* Constants for in app Intents */
-        private const val ACTION_FORWARD = "com.xabber.android.ui.activity.SearchActivity.ACTION_FORWARD"
-        private const val ACTION_SEARCH = "com.xabber.android.ui.activity.SearchActivity.ACTION_SEARCH"
+        private const val ACTION_FORWARD =
+            "com.xabber.android.ui.activity.SearchActivity.ACTION_FORWARD"
+        private const val ACTION_SEARCH =
+            "com.xabber.android.ui.activity.SearchActivity.ACTION_SEARCH"
 
         /* Intent extras ids */
-        private const val FORWARDED_IDS_EXTRA = "com.xabber.android.ui.activity.SearchActivity.FORWARDED_IDS_EXTRA"
+        private const val FORWARDED_IDS_EXTRA =
+            "com.xabber.android.ui.activity.SearchActivity.FORWARDED_IDS_EXTRA"
 
         /* Constants for saving state bundle */
-        private const val SAVED_ACTION = "com.xabber.android.ui.activity.SearchActivity.SAVED_ACTION"
-        private const val SAVED_FORWARDED_IDS = "com.xabber.android.ui.activity.SearchActivity.SAVED_FORWARDED_IDS"
-        private const val SAVED_SEND_TEXT = "com.xabber.android.ui.activity.SearchActivity.SAVED_SEND_TEXT"
+        private const val SAVED_ACTION =
+            "com.xabber.android.ui.activity.SearchActivity.SAVED_ACTION"
+        private const val SAVED_FORWARDED_IDS =
+            "com.xabber.android.ui.activity.SearchActivity.SAVED_FORWARDED_IDS"
+        private const val SAVED_SEND_TEXT =
+            "com.xabber.android.ui.activity.SearchActivity.SAVED_SEND_TEXT"
 
         fun createSearchIntent(context: Context) =
             Intent(context, SearchActivity::class.java).also { it.action = ACTION_SEARCH }
@@ -100,7 +106,8 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
         }
 
         toolbar.onBackPressedListener = SearchToolbar.OnBackPressedListener { onBackPressed() }
-        toolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener { text -> updateContactsList(text) }
+        toolbar.onTextChangedListener =
+            SearchToolbar.OnTextChangedListener { text -> updateContactsList(text) }
 
         when (action) {
             ACTION_SEARCH -> toolbar.setSearch()
@@ -128,9 +135,10 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             layoutManager = LinearLayoutManager(this@SearchActivity).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            adapter = ChatListAdapter(buildChatsListWithFilter(null), this@SearchActivity, false).apply {
-                if (action != ACTION_SEARCH) isSavedMessagesSpecialText = true
-            }
+            adapter =
+                ChatListAdapter(buildChatsListWithFilter(null), this@SearchActivity, false).apply {
+                    if (action != ACTION_SEARCH) isSavedMessagesSpecialText = true
+                }
             itemAnimator = null
             addItemDecoration(
                 DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
@@ -235,18 +243,34 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 if (hasActiveIncomingInvites(contact.account, contact.contactJid)) {
                     onChatItemClick(contact)
                 } else {
-                    startActivity(ContactViewerActivity.createIntent(this, contact.account, contact.contactJid))
+                    startActivity(
+                        ContactViewerActivity.createIntent(
+                            this,
+                            contact.account,
+                            contact.contactJid
+                        )
+                    )
                 }
 
             Intent.ACTION_SEND ->
                 if (intent.type?.contains("text/plain") != true && intent.extras != null) {
                     startActivity(
                         ChatActivity.createSendUriIntent(
-                            this, contact.account, contact.contactJid, intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                            this,
+                            contact.account,
+                            contact.contactJid,
+                            intent.getParcelableExtra(Intent.EXTRA_STREAM)
                         )
                     )
                 } else {
-                    startActivity(ChatActivity.createSendIntent(this, contact.account, contact.contactJid, sendText))
+                    startActivity(
+                        ChatActivity.createSendIntent(
+                            this,
+                            contact.account,
+                            contact.contactJid,
+                            sendText
+                        )
+                    )
                 }
 
             Intent.ACTION_SEND_MULTIPLE ->
@@ -263,16 +287,18 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
 
             Intent.ACTION_CREATE_SHORTCUT -> {
                 val intent = ShortcutBuilder.createPinnedShortcut(
-                    this, RosterManager.getInstance().getAbstractContact(contact.account, contact.contactJid)
+                    this,
+                    RosterManager.getInstance()
+                        .getAbstractContact(contact.account, contact.contactJid)
                 )
                 if (intent != null) setResult(RESULT_OK, intent)
             }
 
             ACTION_FORWARD ->
-                if (forwardedIds != null) {
+                forwardedIds?.let {
                     startActivity(
                         ChatActivity.createForwardIntent(
-                            this, contact.account, contact.contactJid, forwardedIds
+                            this, contact.account, contact.contactJid, it
                         )
                     )
                 }
@@ -296,11 +322,21 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 if (intent.type?.contains("text/plain") != true && intent.extras != null) {
                     startActivity(
                         ChatActivity.createSendUriIntent(
-                            this, contact.account, contact.contactJid, intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                            this,
+                            contact.account,
+                            contact.contactJid,
+                            intent.getParcelableExtra(Intent.EXTRA_STREAM)
                         )
                     )
                 } else {
-                    startActivity(ChatActivity.createSendIntent(this, contact.account, contact.contactJid, sendText))
+                    startActivity(
+                        ChatActivity.createSendIntent(
+                            this,
+                            contact.account,
+                            contact.contactJid,
+                            sendText
+                        )
+                    )
                 }
 
             Intent.ACTION_SEND_MULTIPLE ->
@@ -317,16 +353,18 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
 
             Intent.ACTION_CREATE_SHORTCUT -> {
                 val intent = ShortcutBuilder.createPinnedShortcut(
-                    this, RosterManager.getInstance().getAbstractContact(contact.account, contact.contactJid)
+                    this,
+                    RosterManager.getInstance()
+                        .getAbstractContact(contact.account, contact.contactJid)
                 )
                 if (intent != null) setResult(RESULT_OK, intent)
             }
 
             ACTION_FORWARD ->
-                if (forwardedIds != null) {
+                forwardedIds?.let {
                     startActivity(
                         ChatActivity.createForwardIntent(
-                            this, contact.account, contact.contactJid, forwardedIds
+                            this, contact.account, contact.contactJid, it
                         )
                     )
                 }

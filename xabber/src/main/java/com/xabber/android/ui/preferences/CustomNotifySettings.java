@@ -54,7 +54,7 @@ public class CustomNotifySettings extends ManagedActivity {
         setContentView(R.layout.activity_with_toolbar_and_container);
 
         account = EntityIntentBuilder.getAccount(getIntent());
-        user = EntityIntentBuilder.getUser(getIntent());
+        user = EntityIntentBuilder.getContactJid(getIntent());
         group = getIntent().getStringExtra(GROUP_KEY);
         phraseID = getIntent().getLongExtra(PHRASE_ID_KEY, -1);
 

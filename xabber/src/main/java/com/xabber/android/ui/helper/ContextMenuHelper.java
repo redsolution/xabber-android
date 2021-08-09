@@ -320,7 +320,7 @@ public class ContextMenuHelper {
     private static void showSnoozeDialog(AppCompatActivity activity, AbstractChat chat,
                                          final ListPresenter presenter) {
         SnoozeDialog dialog = SnoozeDialog.newInstance(chat, presenter::updateContactList);
-        dialog.show(activity.getSupportFragmentManager(), "snooze_fragment");
+        dialog.show(activity.getSupportFragmentManager(), SnoozeDialog.TAG);
     }
 
     public interface ListPresenter {

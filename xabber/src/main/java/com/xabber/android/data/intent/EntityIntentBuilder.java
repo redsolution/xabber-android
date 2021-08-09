@@ -26,8 +26,7 @@ import com.xabber.android.data.entity.ContactJid;
  *
  * @author alexander.ivanov
  */
-public class EntityIntentBuilder extends
-        BaseAccountIntentBuilder<EntityIntentBuilder> {
+public class EntityIntentBuilder extends BaseAccountIntentBuilder<EntityIntentBuilder> {
 
     private static final String LOG_TAG = EntityIntentBuilder.class.getSimpleName();
 
@@ -55,7 +54,7 @@ public class EntityIntentBuilder extends
     }
 
     @Nullable
-    public static ContactJid getUser(Intent intent) {
+    public static ContactJid getContactJid(Intent intent) {
         String segment = getSegment(intent, 1);
 
         if (segment == null) {

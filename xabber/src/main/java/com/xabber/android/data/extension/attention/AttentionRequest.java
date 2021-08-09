@@ -34,7 +34,9 @@ public class AttentionRequest extends BaseEntity implements
 
     @Override
     public Intent getIntent() {
-        return ChatActivity.createAttentionRequestIntent(Application.getInstance(), account, contactJid);
+        return ChatActivity.Companion.createAttentionRequestIntent(
+                Application.getInstance(), account, contactJid
+        );
     }
 
     @Override

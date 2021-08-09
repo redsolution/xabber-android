@@ -36,7 +36,9 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), account, contactJid);
+        Intent intent = ChatActivity.Companion.createClearTopIntent(
+                Application.getInstance(), account, contactJid
+        );
         intent.putExtra(ChatActivity.EXTRA_OTR_REQUEST, true);
         intent.putExtra(ChatActivity.KEY_ACCOUNT, account.toString());
         intent.putExtra(ChatActivity.KEY_USER, contactJid.toString());

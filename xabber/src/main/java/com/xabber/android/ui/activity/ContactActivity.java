@@ -121,7 +121,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return EntityIntentBuilder.getContactJid(intent);
     }
 
     protected Toolbar getToolbar() {
@@ -467,7 +467,7 @@ public class ContactActivity extends ManagedActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.first_button:
-                startActivity(ChatActivity.createSpecificChatIntent(this, account, user));
+                startActivity(ChatActivity.Companion.createSpecificChatIntent(this, account, user));
                 finish();
                 break;
             case R.id.second_button:

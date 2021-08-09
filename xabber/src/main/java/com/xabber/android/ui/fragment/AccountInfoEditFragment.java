@@ -45,8 +45,8 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnVCardListener;
 import com.xabber.android.ui.OnVCardSaveListener;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
@@ -890,7 +890,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     }
 
     public void saveVCard() {
-        ChatActivity.hideKeyboard(getActivity());
+        Utils.hideKeyboard(getActivity());
         updateVCardFromFields();
         enableProgressMode(getString(R.string.saving));
         saveAvatar();

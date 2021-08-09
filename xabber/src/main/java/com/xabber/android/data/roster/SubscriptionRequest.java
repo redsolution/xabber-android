@@ -34,7 +34,9 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
     @Override
     public Intent getIntent() {
         //return ContactListActivity.createContactSubscriptionIntent(Application.getInstance(), account, user);
-        return ChatActivity.createSpecificChatIntent(Application.getInstance(), account, contactJid);
+        return ChatActivity.Companion.createSpecificChatIntent(
+                Application.getInstance(), account, contactJid
+        );
     }
 
     @Override

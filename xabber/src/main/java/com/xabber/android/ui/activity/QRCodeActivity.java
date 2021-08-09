@@ -23,6 +23,9 @@ import com.xabber.android.ui.fragment.QRCodeFragment;
 
 public class QRCodeActivity extends ManagedActivity {
 
+    public static final String ACCOUNT_NAME_ARG = "com.xabber.android.ui.activity.account_name";
+    public static final String ACCOUNT_ADDRESS_ARG = "com.xabber.android.ui.activity.account_address";
+
     private Toolbar toolbar;
 
     public static Intent createIntent(Context context, AccountJid account) {
@@ -61,10 +64,10 @@ public class QRCodeActivity extends ManagedActivity {
         }
         shareIv.setImageDrawable(shareIcon);
         shareIv.setOnClickListener((view) -> {
-            if (intent.hasExtra("account_address")) {
+            if (intent.hasExtra(ACCOUNT_ADDRESS_ARG)) {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
-                String shareText = "xmpp:" + intent.getExtras().get("account_address").toString();
+                String shareText = "xmpp:" + intent.getExtras().get(ACCOUNT_ADDRESS_ARG).toString();
                 intent.putExtra(
                         android.content.Intent.EXTRA_TEXT,
                         shareText
@@ -87,10 +90,10 @@ public class QRCodeActivity extends ManagedActivity {
             }
         }
 
-        if(intent.hasExtra("account_name")&&intent.hasExtra("account_address")){
+        if(intent.hasExtra(ACCOUNT_NAME_ARG)&&intent.hasExtra(ACCOUNT_ADDRESS_ARG)){
             Bundle bundle = intent.getExtras();
-            String accountName = bundle.get("account_name").toString();
-            String accountAddress = bundle.get("account_address").toString();
+            String accountName = bundle.get(ACCOUNT_NAME_ARG).toString();
+            String accountAddress = bundle.get(ACCOUNT_ADDRESS_ARG).toString();
             if(savedInstanceState == null){
                 getFragmentManager()
                         .beginTransaction()
