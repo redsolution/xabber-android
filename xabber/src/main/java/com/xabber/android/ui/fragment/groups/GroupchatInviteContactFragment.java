@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -297,7 +298,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
                     boolean isServer = contact.getContactJid().getJid().isDomainBareJid();
 
                     if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()) {
-                        String filter = filterEt.getText().toString();
+                        String filter = filterEt.getText().toString().toLowerCase(Locale.ROOT);
                         String transliteratedFilterString = StringUtils.translitirateToLatin(filter);
 
                         String contactName = RosterManager.getInstance()
