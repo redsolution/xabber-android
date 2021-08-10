@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -91,15 +92,18 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private final OpusReceiver opusReceiver = new OpusReceiver();
     private Subscription voiceDownloadSubscription;
 
-    protected AccountJid account;
-    protected ContactJid user;
+    @NonNull
+    protected AccountJid accountJid;
+
+    @NonNull
+    protected ContactJid contactJid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            account = savedInstanceState.getParcelable(SAVE_ACCOUNT);
-            user = savedInstanceState.getParcelable(SAVE_USER);
+            accountJid = savedInstanceState.getParcelable(SAVE_ACCOUNT);
+            contactJid = savedInstanceState.getParcelable(SAVE_USER);
             currentPicturePath = savedInstanceState.getString(SAVE_CURRENT_PICTURE_PATH);
         }
     }
@@ -107,8 +111,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     @Override
     public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(SAVE_ACCOUNT, account);
-        outState.putParcelable(SAVE_USER, user);
+        outState.putParcelable(SAVE_ACCOUNT, accountJid);
+        outState.putParcelable(SAVE_USER, contactJid);
         if (!TextUtils.isEmpty(currentPicturePath)) {
             outState.putString(SAVE_CURRENT_PICTURE_PATH, currentPicturePath);
         }
@@ -159,9 +163,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 }
 
                 if (forwardIds.size() == 0)
-                    HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
+                    HttpFileUploadManager.getInstance().uploadFileViaUri(accountJid, contactJid, uris, getActivity());
                 else {
-                    HttpFileUploadManager.getInstance().uploadFile(account, user, null, uris, forwardIds, null, null, getActivity());
+                    HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, null, uris, forwardIds, null, null, getActivity());
                     forwardIds.clear();
                     if (getActivity() != null)
                         ((ChatActivity) getActivity()).hideForwardPanel();
@@ -340,17 +344,17 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     @Override
     public void onForwardClick(String messageId) {
-        startActivity(MessagesActivity.Companion.createIntentShowForwarded(getActivity(), messageId, user, account));
+        startActivity(MessagesActivity.Companion.createIntentShowForwarded(getActivity(), messageId, contactJid, accountJid));
     }
 
     protected void onAttachButtonPressed() {
-        if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+        if (!HttpFileUploadManager.getInstance().isFileUploadSupported(accountJid)) {
             // show notification
-            String serverName = account.getFullJid().getDomain().toString();
+            String serverName = accountJid.getFullJid().getDomain().toString();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(getString(R.string.error_sending_file, ""))
                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
-            if (HttpFileUploadManager.getInstance().isFileUploadDiscoveryInProgress(account)) {
+            if (HttpFileUploadManager.getInstance().isFileUploadDiscoveryInProgress(accountJid)) {
                 builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_disco_in_progress, serverName));
             } else {
                 builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName));
@@ -493,9 +497,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         List<String> paths = new ArrayList<>();
         paths.add(path);
         if (forwardIds.size() == 0)
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+            HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, paths, getActivity());
         else {
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, paths, null, forwardIds, null, null, getActivity());
             forwardIds.clear();
             if (getActivity() != null)
                 ((ChatActivity) getActivity()).hideForwardPanel();
@@ -509,7 +513,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void uploadVoiceFile(String path, List<String> forwardIds) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, "voice", getActivity());
+        HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, paths, null, forwardIds, null, "voice", getActivity());
         if (forwardIds != null && forwardIds.size() != 0) {
             forwardIds.clear();
             if (getActivity() != null)
@@ -519,9 +523,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     private void uploadFiles(List<String> paths) {
         if (forwardIds.size() == 0)
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+            HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, paths, getActivity());
         else {
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            HttpFileUploadManager.getInstance().uploadFile(accountJid, contactJid, paths, null, forwardIds, null, null, getActivity());
             forwardIds.clear();
             if (getActivity() != null)
                 ((ChatActivity) getActivity()).hideForwardPanel();
@@ -590,7 +594,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 }
             } else {
                 LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachmentRealmObject.getUniqueId());
-                DownloadManager.getInstance().downloadFile(attachmentRealmObject, account, getActivity());
+                DownloadManager.getInstance().downloadFile(attachmentRealmObject, accountJid, getActivity());
                 if (attachmentRealmObject.isVoice()) {
                     showAutoDownloadDialog();
                 }
@@ -603,7 +607,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (!SettingsManager.autoDownloadVoiceMessageSuggested()) {
             if (!SettingsManager.chatsAutoDownloadVoiceMessage()) {
                 if (getFragmentManager() != null && getFragmentManager().findFragmentByTag("VoiceDownloadDialog") == null) {
-                    VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance(account);
+                    VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance(accountJid);
                     dialog.show(getFragmentManager(), "VoiceDownloadDialog");
                 }
             }

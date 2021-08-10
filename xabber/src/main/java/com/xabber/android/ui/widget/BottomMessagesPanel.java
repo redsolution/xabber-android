@@ -46,27 +46,28 @@ public class BottomMessagesPanel extends Fragment {
     }
 
     public Purposes getPurpose() { return purpose; }
+    public List<String> getMessagesIds() { return messagesIds; }
 
-    public static BottomMessagesPanel newInstance(List<String> messagesIds, Purposes purpose) {
+    public static BottomMessagesPanel newInstance(
+            List<String> messagesIds, Purposes purpose, OnCloseListener listener
+    ) {
         BottomMessagesPanel panel = new BottomMessagesPanel();
         panel.messagesIds = messagesIds;
         panel.purpose = purpose;
+        panel.listener = listener;
         return panel;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (getParentFragment() instanceof OnCloseListener) {
-            listener = (OnCloseListener) getParentFragment();
-        } else {
-            throw new ClassCastException("must implement OnCloseListener");
-        }
+    public void onDestroy() {
+        listener = null;
+        super.onDestroy();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_chat_bottom_message_panel, container, false);
 
         tvText = view.findViewById(R.id.tvText);
@@ -145,4 +146,5 @@ public class BottomMessagesPanel extends Fragment {
         FORWARDING,
         EDITING
     }
+
 }

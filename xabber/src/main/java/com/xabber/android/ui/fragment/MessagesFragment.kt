@@ -28,14 +28,24 @@ class MessagesFragment : FileInteractionFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            account = it.getParcelable(ARGUMENT_ACCOUNT)
-            user = it.getParcelable(ARGUMENT_USER)
-            messageId = it.getString(KEY_MESSAGE_ID) ?: throw NullPointerException("Non-null message id is required!")
+
+            accountJid = it.getParcelable(ARGUMENT_ACCOUNT)
+                ?: throw NullPointerException("Non-null accountJid id is required!")
+
+            contactJid = it.getParcelable(ARGUMENT_USER)
+                ?: throw NullPointerException("Non-null contactJid id is required!")
+            messageId = it.getString(KEY_MESSAGE_ID)
+
+                ?: throw NullPointerException("Non-null message id is required!")
             action = it.getString(ACTION)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_forwarded, container, false).also {
             recyclerView = it.findViewById(R.id.recyclerView)
             backgroundView = it.findViewById(R.id.backgroundView)
@@ -64,14 +74,20 @@ class MessagesFragment : FileInteractionFragment() {
                 val messages =
                     if (action == MessagesActivity.ACTION_SHOW_FORWARDED) {
                         realm.where(MessageRealmObject::class.java)
-                            .`in`(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.forwardedIdsAsArray)
+                            .`in`(
+                                MessageRealmObject.Fields.PRIMARY_KEY,
+                                messageRealmObject.forwardedIdsAsArray
+                            )
                             .findAll()
                             .also {
                                 (activity as? MessagesActivity)?.setToolbar(it.size)
                             }
                     } else {
                         realm.where(MessageRealmObject::class.java)
-                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageRealmObject.primaryKey)
+                            .equalTo(
+                                MessageRealmObject.Fields.PRIMARY_KEY,
+                                messageRealmObject.primaryKey
+                            )
                             .findAll()
                             .also {
                                 (activity as? MessagesActivity)?.setToolbar(0)
@@ -80,7 +96,9 @@ class MessagesFragment : FileInteractionFragment() {
 
                 recyclerView.layoutManager = LinearLayoutManager(activity)
                 recyclerView.adapter = MessagesAdapter(
-                    requireContext(), messages, ChatManager.getInstance().getChat(account, user)!!
+                    requireContext(),
+                    messages,
+                    ChatManager.getInstance().getChat(accountJid, contactJid)!!
                 )
             }
     }

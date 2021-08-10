@@ -28,6 +28,7 @@ import com.xabber.android.ui.widget.SearchToolbar
 import com.xabber.android.ui.widget.ShortcutBuilder
 import com.xabber.android.utils.StringUtils
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SearchActivity : ManagedActivity(), ChatListItemListener {
@@ -63,10 +64,10 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
         fun createSearchIntent(context: Context) =
             Intent(context, SearchActivity::class.java).also { it.action = ACTION_SEARCH }
 
-        fun createForwardIntent(context: Context, forwardedIds: ArrayList<String>) =
+        fun createForwardIntent(context: Context, forwardedIds: List<String>) =
             Intent(context, SearchActivity::class.java).also {
                 it.action = ACTION_FORWARD
-                it.putStringArrayListExtra(FORWARDED_IDS_EXTRA, forwardedIds)
+                it.putStringArrayListExtra(FORWARDED_IDS_EXTRA, ArrayList(forwardedIds))
             }
 
     }

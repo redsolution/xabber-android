@@ -297,7 +297,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     private fun handleShareFileUris(uris: ArrayList<Uri>?) {
-        if (uris!!.size == 0) {
+        if (uris == null || uris.size == 0) {
             Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show()
             return
         }
@@ -549,7 +549,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         if (forwardsIds.isEmpty() || chatFragment == null) {
             return
         }
-        chatFragment?.setBottomPanelMessagesIds(
+        chatFragment?.showBottomMessagesPanel(
             forwardsIds,
             BottomMessagesPanel.Purposes.FORWARDING
         )
@@ -576,7 +576,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         if (extraText == null || extraText == "") {
             return
         }
-        chatFragment?.setInputText(extraText)
+        chatFragment?.setInputText(extraText!!)
         extraText = null
         exitOnSend = true
         if (accountJid.bareJid.toString() == contactJid.bareJid.toString()) {
@@ -587,7 +587,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
 
     override fun onMessageSent() {}
 
-    override fun registerChatFragment(chatFragment: ChatFragment) {
+    override fun registerChatFragment(chatFragment: ChatFragment?) {
         this.chatFragment = chatFragment
     }
 
@@ -794,7 +794,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
     }
 
-    fun forwardMessages(messagesIds: ArrayList<String>) {
+    fun forwardMessages(messagesIds: List<String>) {
         startActivity(
             createForwardIntent(this, messagesIds)
         )
