@@ -21,9 +21,11 @@
     android:orientation="vertical"
     android:id="@+id/root_view">
 
-    <include
-        android:id="@+id/pinned_message_include"
-        layout="@layout/pinned_message_layout" />
+    <FrameLayout
+        android:id="@+id/topPanelContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
@@ -37,7 +39,7 @@
         android:paddingTop="4dp"
         android:clipToPadding="false"
         android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/pinned_message_include"/>
+        android:layout_below="@+id/topPanelContainer"/>
 
     <ViewStub
         android:id="@+id/stubNewContact"
@@ -92,7 +94,6 @@
 
         <include layout="@layout/view_chat_record"
             android:visibility="gone"/>
-
 
     </FrameLayout>
 

@@ -6,7 +6,6 @@ import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioManager
@@ -51,7 +50,6 @@ import com.xabber.android.data.extension.groups.GroupInviteManager.acceptInvitat
 import com.xabber.android.data.extension.groups.GroupInviteManager.declineInvitation
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
-import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
 import com.xabber.android.data.extension.groups.GroupsManager.enableSendingPresenceToGroup
 import com.xabber.android.data.extension.groups.GroupsManager.sendPinMessageRequest
 import com.xabber.android.data.extension.groups.GroupsManager.sendUnPinMessageRequest
@@ -89,7 +87,7 @@ import com.xabber.android.ui.*
 import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.ContactViewerActivity
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
-import com.xabber.android.ui.activity.MessagesActivity.Companion.createIntentShowPinned
+import com.xabber.android.ui.activity.MessagesActivity
 import com.xabber.android.ui.activity.QuestionActivity
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter
 import com.xabber.android.ui.adapter.ResourceAdapter
@@ -105,7 +103,6 @@ import com.xabber.android.ui.text.CustomQuoteSpan
 import com.xabber.android.ui.widget.*
 import com.xabber.android.ui.widget.BottomMessagesPanel.Purposes
 import com.xabber.android.ui.widget.PlayerVisualizerView.onProgressTouch
-import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
@@ -114,7 +111,6 @@ import io.realm.RealmChangeListener
 import io.realm.RealmResults
 import org.jivesoftware.smack.XMPPException.XMPPErrorException
 import org.jivesoftware.smack.packet.Presence
-import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.packet.XMPPError
 import org.jxmpp.jid.parts.Resourcepart
 import org.jxmpp.stringprep.XmppStringprepException
@@ -171,15 +167,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private var rootViewHeight = 0f
     private var recordingPath: String? = null
 
-    //pinned message variables
-    private lateinit var pinnedRootView: View
-    private var pinnedMessageTv: TextView? = null
-    private var pinnedMessageHeaderTv: TextView? = null
-    private var pinnedMessageBadgeTv: TextView? = null
-    private var pinnedMessageRoleTv: TextView? = null
-    private var pinnedMessageCrossIv: ImageView? = null
-    private var pinnedMessageIv: ImageView? = null
-
     //Voice message recorder layout
     private lateinit var voiceMessageRecorderLayout: RelativeLayout
     private lateinit var recordButtonExpanded: FloatingActionButton
@@ -222,7 +209,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private var sendByEnter = false
 
     private var bottomMessagesPanel: BottomMessagesPanel? = null
-
+    private var topPinnedMessagePanel: PinnedMessagePanel? = null
 
     /* Fragment lifecycle overrided methods */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -525,13 +512,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                         (recordButtonExpanded.layoutParams as RelativeLayout.LayoutParams).bottomMargin
                 }
             })
-        pinnedRootView = view.findViewById(R.id.pinned_message_include)
-        pinnedMessageTv = view.findViewById(R.id.pinned_message_text)
-        pinnedMessageHeaderTv = view.findViewById(R.id.pinned_message_jid_tv)
-        pinnedMessageBadgeTv = view.findViewById(R.id.pinned_message_badge_tv)
-        pinnedMessageRoleTv = view.findViewById(R.id.pinned_message_role_tv)
-        pinnedMessageCrossIv = view.findViewById(R.id.pinned_message_close_iv)
-        pinnedMessageIv = view.findViewById(R.id.pinned_message_icon)
+
         setupPinnedMessageView()
         return view
     }
@@ -719,116 +700,43 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun setupPinnedMessageView() {
-        if (chat is GroupChat && (chat as GroupChat?)!!.pinnedMessageId != null) {
-            val message =
-                MessageRepository.getMessageFromRealmByStanzaId((chat as GroupChat?)!!.pinnedMessageId)
-                    ?: return
-            pinnedMessageCrossIv!!.setOnClickListener {
-                sendUnPinMessageRequest(
-                    (chat as GroupChat?)!!
-                )
-            }
-            pinnedRootView.setOnClickListener {
-                startActivity(
-                    createIntentShowPinned(
-                        requireContext(), message.primaryKey, contactJid, accountJid
-                    )
-                )
-            }
-            pinnedRootView.visibility = View.VISIBLE
-            if (message.groupchatUserId != null) {
-                val groupMember = getGroupMemberById(
-                    message.account, message.user, message.groupchatUserId
-                )
-                if (groupMember != null) {
-                    pinnedMessageHeaderTv!!.text = getGroupMemberById(
-                        message.account,
-                        message.user,
-                        message.groupchatUserId
-                    )!!.bestName
-                    pinnedMessageHeaderTv!!.setTextColor(
-                        ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                            accountJid, 600
-                        )
-                    )
-                    pinnedMessageIv!!.setColorFilter(
-                        ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                            accountJid, 600
-                        )
-                    )
-                    if (groupMember.badge != null) {
-                        pinnedMessageBadgeTv!!.visibility = View.VISIBLE
-                        pinnedMessageBadgeTv!!.text = groupMember.badge
-                    } else {
-                        pinnedMessageBadgeTv!!.visibility = View.GONE
-                    }
-                    if (groupMember.role != null) {
-                        pinnedMessageRoleTv!!.visibility = View.VISIBLE
-                        pinnedMessageRoleTv!!.text = groupMember.role.toString()
-                        pinnedMessageRoleTv!!.setBackgroundColor(
-                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                                accountJid, 50
+        if (activity != null && activity?.isFinishing != true) {
+            if (chat is GroupChat && (chat as? GroupChat)?.pinnedMessageId != null) {
+                val message =
+                    MessageRepository.getMessageFromRealmByStanzaId((chat as? GroupChat)?.pinnedMessageId)
+                        ?: return
+                val pinnedFragment = PinnedMessagePanel.newInstance(
+                    message = message,
+                    onClickListener = {
+                        this.startActivity(
+                            MessagesActivity.createIntentShowPinned(
+                                requireContext(), message.primaryKey, contactJid, accountJid
                             )
                         )
-                    } else {
-                        pinnedMessageRoleTv!!.visibility = View.GONE
+                    },
+                    { sendUnPinMessageRequest((chat as GroupChat)) }
+                )
+
+                pinnedFragment.also { panel ->
+                    topPinnedMessagePanel = panel
+                    with(childFragmentManager.beginTransaction()) {
+                        replace(R.id.topPanelContainer, panel)
+                        commit()
                     }
                 }
+
+            } else {
+                topPinnedMessagePanel?.let { panel ->
+                    with(childFragmentManager.beginTransaction()) {
+                        remove(panel)
+                        commit()
+                    }
+                }
+                topPinnedMessagePanel = null
             }
-            setupPinnedMessageText(message)
-        } else {
-            pinnedRootView.visibility = View.GONE
         }
     }
 
-    private fun setupPinnedMessageText(message: MessageRealmObject?) {
-        val text = message!!.text
-        val forwardedCount = message.forwardedIds.size
-        if (text == null || text.isEmpty()) {
-            when {
-                forwardedCount > 0 -> {
-                    pinnedMessageTv!!.text = resources.getQuantityString(
-                        R.plurals.forwarded_messages_count,
-                        forwardedCount, forwardedCount
-                    )
-                }
-                message.haveAttachments() -> {
-                    pinnedMessageTv!!.text = StringUtils.getAttachmentDisplayName(
-                        context,
-                        message.attachmentRealmObjects
-                    )
-                    pinnedMessageTv!!.typeface = Typeface.DEFAULT
-                    return
-                }
-                else -> pinnedMessageTv!!.text = this.resources.getString(R.string.no_messages)
-            }
-            pinnedMessageTv!!.setTypeface(pinnedMessageTv!!.typeface, Typeface.ITALIC)
-        } else {
-            pinnedMessageTv!!.typeface = Typeface.DEFAULT
-            pinnedMessageTv!!.visibility = View.VISIBLE
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                pinnedMessageTv!!.text = getText(R.string.otr_not_decrypted_message)
-                pinnedMessageTv!!.setTypeface(pinnedMessageTv!!.typeface, Typeface.ITALIC)
-            } else {
-                try {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        try {
-                            pinnedMessageTv!!.text =
-                                Html.fromHtml(Utils.getDecodedSpannable(text).toString())
-                        } catch (e: Exception) {
-                            pinnedMessageTv!!.text = Html.fromHtml(text)
-                        }
-                    } else pinnedMessageTv!!.text = text
-                } catch (e: Exception) {
-                    LogManager.exception(ChatFragment::class.java.simpleName, e)
-                    pinnedMessageTv!!.text = text
-                } finally {
-                    pinnedMessageTv!!.alpha = 1f
-                }
-            }
-            pinnedMessageTv!!.typeface = Typeface.DEFAULT
-        }
-    }
 
     fun onToolbarInteractionCloseClick() {
         hideBottomMessagePanel()
@@ -2095,7 +2003,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             )
             blockedView!!.layoutParams = layoutParams
             blockedView!!.gravity = Gravity.CENTER
-            blockedView!!.setOnClickListener { v: View? ->
+            blockedView!!.setOnClickListener {
                 startActivity(
                     ContactViewerActivity.createIntent(
                         context, accountJid, contactJid
