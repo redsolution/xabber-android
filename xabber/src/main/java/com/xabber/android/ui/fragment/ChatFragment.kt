@@ -107,7 +107,6 @@ import com.xabber.android.utils.Utils
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
-import io.realm.RealmChangeListener
 import io.realm.RealmResults
 import org.jivesoftware.smack.XMPPException.XMPPErrorException
 import org.jivesoftware.smack.packet.Presence
@@ -138,8 +137,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private var blockedView: TextView? = null
     private var stubNotify: ViewStub? = null
     private var stubInvite: ViewStub? = null
-    private var stubIntro: ViewStub? = null
-    private var chatIntroLayout: ViewGroup? = null
     private var notifyLayout: RelativeLayout? = null
     private var tvNotifyTitle: TextView? = null
     private var tvNotifyAction: TextView? = null
@@ -433,7 +430,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
         // interaction view
         interactionView = view.findViewById(R.id.interactionView)
-        stubIntro = view.findViewById(R.id.stubIntro)
         view.findViewById<View>(R.id.reply_tv).setOnClickListener {
             showBottomMessagesPanel(chatMessageAdapter!!.checkedItemIds, Purposes.FORWARDING)
             closeInteractionPanel()
@@ -808,18 +804,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 .getAbstractContact(accountJid, invite.senderJid.bareUserJid)
                 .getAvatar(true)
             inflateIncomingInvite(senderAvatar, senderName, invite.reason, accountColor)
-        }
-        if (messageRealmObjects == null || messageRealmObjects!!.size == 0 &&
-            accountJid.bareJid.toString() != contactJid.bareJid.toString()
-        ) {
-            inflateIntroView()
-            messageRealmObjects!!.addChangeListener(
-                object : RealmChangeListener<RealmResults<MessageRealmObject?>> {
-                    override fun onChange(messageRealmObjects: RealmResults<MessageRealmObject?>) {
-                        if (chatIntroLayout != null) chatIntroLayout!!.visibility = View.GONE
-                        messageRealmObjects.removeChangeListener(this)
-                    }
-                })
         }
         chatMessageAdapter = MessagesAdapter(
             activity!!, messageRealmObjects!!, chat,
@@ -1873,16 +1857,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             tvNotifyAction!!.setText(R.string.otr_verification_notify_button)
         }
         notifyLayout?.visibility = View.VISIBLE
-    }
-
-    private fun inflateIntroView() {
-        if (chatIntroLayout == null && !accountJid.bareJid.toString()
-                .contains(contactJid.bareJid.toString())
-        ) {
-            chatIntroLayout = stubIntro!!.inflate() as ViewGroup
-            chatIntroLayout!!.visibility = View.VISIBLE
-            IntroViewDecoration.setupView(chatIntroLayout, activity, chat, accountColor)
-        }
     }
 
     private fun inflateNotifyLayout() {

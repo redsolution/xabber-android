@@ -65,14 +65,6 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/secondBottomPanel" />
 
-    <ViewStub
-        android:id="@+id/stubIntro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:inflatedId="@+id/chat_intro"
-        android:layout="@layout/chat_intro_helper_view" />
-
     <FrameLayout
         android:id="@+id/secondBottomPanel"
         android:orientation="vertical"
