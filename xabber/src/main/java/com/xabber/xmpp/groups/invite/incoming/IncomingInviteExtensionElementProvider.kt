@@ -3,7 +3,8 @@ package com.xabber.xmpp.groups.invite.incoming
 import org.jivesoftware.smack.provider.ExtensionElementProvider
 import org.xmlpull.v1.XmlPullParser
 
-class IncomingInviteExtensionElementProvider : ExtensionElementProvider<IncomingInviteExtensionElement>() {
+class IncomingInviteExtensionElementProvider :
+    ExtensionElementProvider<IncomingInviteExtensionElement>() {
 
     override fun parse(parser: XmlPullParser, initialDepth: Int): IncomingInviteExtensionElement {
         val inviteElement = IncomingInviteExtensionElement()
@@ -14,17 +15,26 @@ class IncomingInviteExtensionElementProvider : ExtensionElementProvider<Incoming
                     when (parser.name) {
                         IncomingInviteExtensionElement.ELEMENT -> {
                             inviteElement.groupJid =
-                                parser.getAttributeValue("", IncomingInviteExtensionElement.JID_ATTRIBUTE) ?: ""
+                                parser.getAttributeValue(
+                                    "",
+                                    IncomingInviteExtensionElement.JID_ATTRIBUTE
+                                ) ?: ""
                         }
                         IncomingInviteExtensionElement.ReasonElement.ELEMENT_NAME -> {
-                            inviteElement.setReason(parser.text)
+                            parser.text?.let { inviteElement.setReason(it) }
                         }
                         IncomingInviteExtensionElement.UserElement.ELEMENT -> {
                             val userJid =
-                                parser.getAttributeValue("", IncomingInviteExtensionElement.UserElement.JID_ATTRIBUTE)
+                                parser.getAttributeValue(
+                                    "",
+                                    IncomingInviteExtensionElement.UserElement.JID_ATTRIBUTE
+                                )
                                     ?: ""
                             val userId =
-                                parser.getAttributeValue("", IncomingInviteExtensionElement.UserElement.ID_ATTRIBUTE)
+                                parser.getAttributeValue(
+                                    "",
+                                    IncomingInviteExtensionElement.UserElement.ID_ATTRIBUTE
+                                )
                                     ?: ""
                             inviteElement.setUser(userJid, userId)
                         }

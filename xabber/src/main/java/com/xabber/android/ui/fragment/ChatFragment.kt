@@ -26,9 +26,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Slide
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xabber.android.R
 import com.xabber.android.data.Application
@@ -42,12 +39,9 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
 import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.extension.blocking.BlockingManager.BlockContactListener
 import com.xabber.android.data.extension.capability.CapabilitiesManager
 import com.xabber.android.data.extension.capability.ClientInfo
 import com.xabber.android.data.extension.chat_state.ChatStateManager
-import com.xabber.android.data.extension.groups.GroupInviteManager.acceptInvitation
-import com.xabber.android.data.extension.groups.GroupInviteManager.declineInvitation
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
 import com.xabber.android.data.extension.groups.GroupsManager.enableSendingPresenceToGroup
@@ -76,12 +70,7 @@ import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.notification.NotificationManager
-import com.xabber.android.data.roster.PresenceManager.acceptSubscription
-import com.xabber.android.data.roster.PresenceManager.addAutoAcceptSubscription
 import com.xabber.android.data.roster.PresenceManager.clearSubscriptionRequestNotification
-import com.xabber.android.data.roster.PresenceManager.discardSubscription
-import com.xabber.android.data.roster.PresenceManager.subscribeForPresence
-import com.xabber.android.data.roster.PresenceManager.unsubscribeFromPresence
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.*
 import com.xabber.android.ui.activity.ChatActivity
@@ -136,7 +125,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private var lastHistoryProgressBar: View? = null
     private var blockedView: TextView? = null
     private var stubNotify: ViewStub? = null
-    private var stubInvite: ViewStub? = null
+    private var stubInviteFakeMessage: ViewStub? = null
     private var notifyLayout: RelativeLayout? = null
     private var tvNotifyTitle: TextView? = null
     private var tvNotifyAction: TextView? = null
@@ -146,10 +135,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private lateinit var layoutManager: LinearLayoutManager
     private var replySwipe: ReplySwipeCallback? = null
     private lateinit var inputLayout: LinearLayout
-    private var stubNewContact: ViewStub? = null
-    private var newContactLayout: ViewGroup? = null
-    private lateinit var addContact: TextView
-    private lateinit var blockContact: TextView
+
     private lateinit var btnScrollDown: RelativeLayout
     private var tvNewReceivedCount: TextView? = null
     private var interactionView: View? = null
@@ -203,10 +189,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private var toolbarElevation = 0f
     private var accountColor = 0
     private var notifyIntent: Intent? = null
-    private var sendByEnter = false
 
     private var bottomMessagesPanel: BottomMessagesPanel? = null
     private var topPinnedMessagePanel: PinnedMessagePanel? = null
+    private var topPanel: ChatFragmentTopPanel? = null
 
     /* Fragment lifecycle overrided methods */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -238,7 +224,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 rootViewHeight = view1.height.toFloat()
             }
         }
-        inputPanel = view.findViewById(R.id.bottomPanel)
+        inputPanel = view.findViewById(R.id.bottomContainer)
 
         sendButton = view.findViewById(R.id.button_send_message)
         sendButton.setColorFilter(ColorManager.getInstance().accountPainter.greyMain)
@@ -426,8 +412,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         inputLayout = view.findViewById(R.id.input_layout)
         inputLayout.setBackgroundColor(ColorManager.getInstance().chatInputBackgroundColor)
 
-        sendByEnter = SettingsManager.chatsSendByEnter()
-
         // interaction view
         interactionView = view.findViewById(R.id.interactionView)
         view.findViewById<View>(R.id.reply_tv).setOnClickListener {
@@ -460,8 +444,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
         })
         stubNotify = view.findViewById(R.id.stubNotify)
-        stubNewContact = view.findViewById(R.id.stubNewContact)
-        stubInvite = view.findViewById(R.id.stubInvite)
         NotificationManager.getInstance().removeMessageNotification(accountJid, contactJid)
         setChat(accountJid, contactJid)
         if (savedInstanceState != null) {
@@ -803,7 +785,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             val senderAvatar = RosterManager.getInstance()
                 .getAbstractContact(accountJid, invite.senderJid.bareUserJid)
                 .getAvatar(true)
-            inflateIncomingInvite(senderAvatar, senderName, invite.reason, accountColor)
+            inflateIncomingInviteFakeMessage(senderAvatar, senderName, invite.reason, accountColor)
         }
         chatMessageAdapter = MessagesAdapter(
             activity!!, messageRealmObjects!!, chat,
@@ -852,7 +834,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 sendMessage()
                 return@setOnEditorActionListener true
             } else if (event != null && actionId == EditorInfo.IME_NULL) {
-                if (sendByEnter && event.action == KeyEvent.ACTION_DOWN) {
+                if (SettingsManager.chatsSendByEnter() && event.action == KeyEvent.ACTION_DOWN) {
                     sendMessage()
                     return@setOnEditorActionListener true
                 }
@@ -860,7 +842,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             false
         }
         inputView.setOnKeyListener { _: View?, keyCode: Int, event: KeyEvent ->
-            if (sendByEnter) {
+            if (SettingsManager.chatsSendByEnter()) {
                 if (keyCode < 29 || keyCode > 54 || event.keyCode < 29 || event.keyCode > 54) {
                     LogManager.d(
                         "InputViewDebug", "onKeyListener called, "
@@ -870,7 +852,8 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     )
                 }
             }
-            if (keyCode == KeyEvent.KEYCODE_ENTER && sendByEnter
+            if (keyCode == KeyEvent.KEYCODE_ENTER
+                && SettingsManager.chatsSendByEnter()
                 && event.action == KeyEvent.ACTION_DOWN
             ) {
                 sendMessage()
@@ -910,7 +893,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun setUpIme() {
-        if (sendByEnter) {
+        if (SettingsManager.chatsSendByEnter()) {
             inputView.inputType =
                 inputView.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE.inv()
         } else {
@@ -1249,7 +1232,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         updateSecurityButton()
         updateSendButtonSecurityLevel()
         updateBlockedState()
-        showNewContactLayoutIfNeed()
+        showTopPaneltIfNeed()
     }
 
     private fun onScrollDownClick() {
@@ -1872,13 +1855,13 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    private fun inflateIncomingInvite(
+    private fun inflateIncomingInviteFakeMessage(
         senderAvatar: Drawable,
         senderName: String,
         reasonText: String,
         balloonColor: Int
     ) {
-        val view = stubInvite!!.inflate()
+        val view = stubInviteFakeMessage!!.inflate()
         (view.findViewById<View>(R.id.avatar) as ImageView).setImageDrawable(senderAvatar)
         (view.findViewById<View>(R.id.message_text) as TextView).text = reasonText
         (view.findViewById<View>(R.id.message_header) as TextView).text = senderName
@@ -1929,7 +1912,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun deflateIncomingInvite() {
-        Application.getInstance().runOnUiThread { stubInvite!!.visibility = View.GONE }
+        Application.getInstance().runOnUiThread { stubInviteFakeMessage!!.visibility = View.GONE }
     }
 
     private fun updateBlockedState() {
@@ -1990,11 +1973,20 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    private fun showNewContactLayoutIfNeed() {
-        if (userIsBlocked) {
-            if (newContactLayout != null) {
-                newContactLayout!!.visibility = View.GONE
+    private fun showTopPaneltIfNeed() {
+
+        fun removePanel() {
+            topPanel?.let { panel ->
+                with(childFragmentManager.beginTransaction()) {
+                    remove(panel)
+                    commit()
+                }
             }
+            topPanel = null
+        }
+
+        if (userIsBlocked) {
+            removePanel()
             return
         }
         if (!VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)) {
@@ -2002,7 +1994,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
         val subscriptionState =
             RosterManager.getInstance().getSubscriptionState(accountJid, contactJid)
-        val inRoster = RosterManager.getInstance().getRosterContact(accountJid, contactJid) != null
+
         var show = false
         when (subscriptionState.subscriptionType) {
             RosterManager.SubscriptionState.FROM, RosterManager.SubscriptionState.NONE -> {
@@ -2022,8 +2014,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     show = true
                 }
             }
-            RosterManager.SubscriptionState.TO -> if (subscriptionState.hasIncomingSubscription()) {
-                show = true
+            RosterManager.SubscriptionState.TO -> {
+                if (subscriptionState.hasIncomingSubscription()) {
+                    show = true
+                }
             }
         }
         if (hasActiveIncomingInvites(accountJid, contactJid)) {
@@ -2033,216 +2027,16 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             show = false
         }
         if (show) {
-            inflateNewContactLayout(subscriptionState, inRoster)
+            ChatFragmentTopPanel.newInstance(chat).also { panel ->
+                topPanel = panel
+                with(childFragmentManager.beginTransaction()) {
+                    replace(R.id.topPanelContainer, panel)
+                    commit()
+                }
+            }
         } else {
-            if (newContactLayout != null) {
-                newContactLayout!!.visibility = View.GONE
-            }
+            removePanel()
             clearSubscriptionRequestNotification(accountJid, contactJid)
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun inflateNewContactLayout(
-        subscriptionState: RosterManager.SubscriptionState,
-        inRoster: Boolean
-    ) {
-        if (newContactLayout == null) {
-            newContactLayout = stubNewContact!!.inflate() as ViewGroup
-        }
-
-        //intercept touch events to avoid clicking on the messages behind the panel.
-        newContactLayout!!.setOnTouchListener { _: View?, _: MotionEvent? -> true }
-        manageToolbarElevation(true)
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            newContactLayout!!.setBackgroundResource(R.color.grey_950)
-        }
-        val transition: Transition = Slide(Gravity.TOP)
-        transition.duration = 300
-        transition.addTarget(newContactLayout!!)
-        val bestContact = RosterManager.getInstance().getBestContact(accountJid, contactJid)
-        val name = if (bestContact != null) bestContact.name else contactJid.toString()
-        addContact = newContactLayout!!.findViewById(R.id.add_contact)
-        blockContact = newContactLayout!!.findViewById(R.id.block_contact)
-        val closeNewContactLayout =
-            newContactLayout!!.findViewById<ImageButton>(R.id.close_new_contact_layout)
-        when (subscriptionState.subscriptionType) {
-            RosterManager.SubscriptionState.FROM, RosterManager.SubscriptionState.NONE -> when (subscriptionState.pendingSubscription) {
-                RosterManager.SubscriptionState.PENDING_NONE -> if (inRoster) {
-                    // FROM = contact is subscribed to our presence. No pending subscription requests. Only in roster.
-                    // NONE = No current subscriptions or requests. In roster.
-                    setNewContactSubscribeLayout()
-                } else {
-                    // NONE = No current subscriptions or requests. Not in roster.
-                    if (hasActiveIncomingInvites(accountJid, contactJid)) {
-                        setInvitedToGroupLayout()
-                    } else {
-                        setNewContactAddLayout()
-                    }
-                }
-                RosterManager.SubscriptionState.PENDING_IN ->                         // NONE + PENDING_IN = No current subscriptions and a pending request from contact to us.
-                    setNewContactAddLayout()
-                RosterManager.SubscriptionState.PENDING_IN_OUT ->                         // NONE + PENDING_IN_OUT = No current subscriptions, pending requests to each other.
-                    setNewContactAllowLayout()
-            }
-            RosterManager.SubscriptionState.TO -> if (subscriptionState.pendingSubscription == RosterManager.SubscriptionState.PENDING_IN) {
-                // TO + PENDING_IN = We are subscribed to contact's presence. Contact sent us a subscription request.
-                setNewContactAllowLayout()
-            }
-        }
-        addContact.setTextColor(
-            ColorManager.getInstance().accountPainter.getAccountMainColor(
-                accountJid
-            )
-        )
-        addContact.setOnClickListener {
-            Application.getInstance().runInBackgroundNetworkUserRequest {
-                try {
-                    if (hasActiveIncomingInvites(accountJid, contactJid)) {
-                        acceptInvitation(accountJid, contactJid)
-                        deflateIncomingInvite()
-                    } else {
-                        if (!inRoster) {
-                            RosterManager.getInstance().createContact(
-                                accountJid,
-                                contactJid,
-                                name,
-                                ArrayList()
-                            ) // Create contact if not in roster. (subscription request is sent automatically)
-                        } else {
-                            if (subscriptionState.subscriptionType == RosterManager.SubscriptionState.FROM // Either only an active subscription to us OR
-                                || subscriptionState.subscriptionType == RosterManager.SubscriptionState.NONE
-                            ) {        // No active subscriptions.
-                                if (!subscriptionState.hasOutgoingSubscription()) {                                // No outgoing subscription at the moment
-                                    subscribeForPresence(
-                                        accountJid,
-                                        contactJid
-                                    ) // So we try to subscribe for contact's presence.
-                                }
-                            }
-                        }
-                        if (subscriptionState.subscriptionType == RosterManager.SubscriptionState.TO) {                   // If we are currently subscribed to contact
-                            addAutoAcceptSubscription(
-                                accountJid,
-                                contactJid
-                            ) // Preemptively allow incoming subscription request.
-                        } else if (subscriptionState.subscriptionType == RosterManager.SubscriptionState.NONE) {          // If there are no subscriptions
-                            if (subscriptionState.hasIncomingSubscription()) {                                   // If we have incoming subscription request
-                                acceptSubscription(
-                                    accountJid,
-                                    contactJid,
-                                    false
-                                ) // "quietly" accept it (since we are in the process of
-                            } else {                                                                             // adding a contact, we don't need to create unnecessary Action messages
-                                addAutoAcceptSubscription(
-                                    accountJid,
-                                    contactJid
-                                ) // or Preemptively allow incoming request.
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    LogManager.exception(ChatFragment::class.java.simpleName, e)
-                }
-            }
-            TransitionManager.beginDelayedTransition((rootView as ViewGroup?)!!, transition)
-            newContactLayout!!.visibility = View.GONE
-            manageToolbarElevation(false)
-        }
-        blockContact.setTextColor(
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) resources.getColor(
-                R.color.red_700
-            ) else resources.getColor(R.color.red_900)
-        )
-        blockContact.setOnClickListener {
-            try {
-                // fully discard subscription
-                if (hasActiveIncomingInvites(accountJid, contactJid)) {
-                    declineInvitation(accountJid, contactJid)
-                }
-                discardSubscription(accountJid, contactJid)
-                unsubscribeFromPresence(accountJid, contactJid)
-            } catch (e: NetworkException) {
-                Application.getInstance().onError(R.string.CONNECTION_FAILED)
-            }
-            if (!hasActiveIncomingInvites(accountJid, contactJid)) BlockingManager.getInstance()
-                .blockContact(accountJid, contactJid, object : BlockContactListener {
-                    override fun onSuccessBlock() {
-                        Toast.makeText(
-                            Application.getInstance(),
-                            R.string.contact_blocked_successfully,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        if (newContactLayout != null) {
-                            if (newContactLayout!!.visibility == View.VISIBLE) newContactLayout!!.visibility =
-                                View.GONE
-                        }
-                        activity!!.finish()
-                    }
-
-                    override fun onErrorBlock() {
-                        Toast.makeText(
-                            Application.getInstance(),
-                            R.string.error_blocking_contact,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                })
-            TransitionManager.beginDelayedTransition((rootView as ViewGroup?)!!, transition)
-        }
-        closeNewContactLayout.setOnClickListener {
-            if (subscriptionState.hasIncomingSubscription()) {                              // check if we have an incoming (IN) subscription
-                try {
-                    discardSubscription(accountJid, contactJid) // discard it on "X"-press
-                } catch (e: NetworkException) {
-                    LogManager.exception(javaClass.simpleName, e)
-                }
-            }
-            chat.isAddContactSuggested = true
-            TransitionManager.beginDelayedTransition((rootView as ViewGroup?)!!, transition)
-            newContactLayout!!.visibility = View.GONE
-            manageToolbarElevation(false)
-        }
-    }
-
-    private fun setInvitedToGroupLayout() {
-        val addContactMessage = newContactLayout!!.findViewById<TextView>(R.id.add_contact_message)
-        addContactMessage.visibility = View.GONE
-        addContact.setText(R.string.groupchat_join)
-        blockContact.setText(R.string.groupchat_decline)
-        blockContact.visibility = View.VISIBLE
-    }
-
-    private fun setNewContactSubscribeLayout() {
-        val addContactMessage = newContactLayout!!.findViewById<TextView>(R.id.add_contact_message)
-        addContact.setText(R.string.chat_subscribe)
-        addContactMessage.setText(R.string.chat_subscribe_request_outgoing)
-        addContactMessage.visibility = View.VISIBLE
-        blockContact.visibility = View.GONE
-    }
-
-    private fun setNewContactAddLayout() {
-        val addContactMessage = newContactLayout!!.findViewById<TextView>(R.id.add_contact_message)
-        addContactMessage.visibility = View.GONE
-        addContact.setText(R.string.contact_add)
-        blockContact.visibility = View.VISIBLE
-    }
-
-    private fun setNewContactAllowLayout() {
-        val addContactMessage = newContactLayout!!.findViewById<TextView>(R.id.add_contact_message)
-        addContact.setText(R.string.chat_allow)
-        addContactMessage.setText(R.string.chat_subscribe_request_incoming)
-        addContactMessage.visibility = View.VISIBLE
-        blockContact.visibility = View.GONE
-    }
-
-    // remove/recreate activity's toolbar elevation.
-    private fun manageToolbarElevation(remove: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if ((activity as ChatActivity?)!!.toolbar.elevation != 0f) {
-                toolbarElevation = (activity as ChatActivity?)!!.toolbar.elevation
-            }
-            (activity as ChatActivity?)!!.toolbar.elevation = if (remove) 0f else toolbarElevation
         }
     }
 
@@ -2516,7 +2310,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 .also { panel ->
                     bottomMessagesPanel = panel
                     with(childFragmentManager.beginTransaction()) {
-                        replace(R.id.secondBottomPanel, panel)
+                        replace(R.id.secondBottomContainer, panel)
                         commit()
                     }
                 }

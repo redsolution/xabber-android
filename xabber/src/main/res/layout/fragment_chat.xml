@@ -38,16 +38,8 @@
         tools:listitem="@layout/item_message_incoming"
         android:paddingTop="4dp"
         android:clipToPadding="false"
-        android:layout_above="@+id/secondBottomPanel"
+        android:layout_above="@+id/secondBottomContainer"
         android:layout_below="@+id/topPanelContainer"/>
-
-    <ViewStub
-        android:id="@+id/stubNewContact"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignTop="@id/chat_messages_recycler_view"
-        android:inflatedId="@+id/new_contact_chat_panel"
-        android:layout="@layout/layout_chat_new_contact" />
 
     <ViewStub
         android:id="@+id/stubNotify"
@@ -55,7 +47,7 @@
         android:layout="@layout/layout_chat_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/secondBottomPanel" />
+        android:layout_above="@+id/secondBottomContainer" />
 
     <ViewStub
         android:id="@+id/stubInvite"
@@ -63,17 +55,17 @@
         android:layout="@layout/item_message_incoming"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/secondBottomPanel" />
+        android:layout_above="@+id/secondBottomContainer" />
 
     <FrameLayout
-        android:id="@+id/secondBottomPanel"
+        android:id="@+id/secondBottomContainer"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottomPanel" />
+        android:layout_above="@id/bottomContainer" />
 
     <FrameLayout
-        android:id="@+id/bottomPanel"
+        android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -93,7 +85,7 @@
         android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/secondBottomPanel"
+        android:layout_above="@id/secondBottomContainer"
         android:layout_alignParentRight="true"
         android:clickable="true"
         android:visibility="gone">
@@ -128,21 +120,10 @@
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/chat_previous_history_progress_bar"
-        android:layout_below="@+id/toolbar_default"
-        android:indeterminate="true"
-        android:elevation="8dp"
-        android:layout_marginTop="-8dp"
-        android:visibility="gone" />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
         android:id="@+id/chat_last_history_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/secondBottomPanel"
+        android:layout_above="@id/secondBottomContainer"
         android:indeterminate="true"
         android:layout_marginBottom="-8dp"
         android:visibility="gone" />
@@ -192,15 +173,5 @@
         android:visibility="invisible"
         app:fabCustomSize="78dp"
         app:srcCompat="@drawable/ic_microphone" />
-
-    <LinearLayout
-        android:id="@+id/placeholder"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="true"
-        android:clickable="true"
-        android:elevation="8dp"
-        android:visibility="gone" />
 
 </RelativeLayout>
