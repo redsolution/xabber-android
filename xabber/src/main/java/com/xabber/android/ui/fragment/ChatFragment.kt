@@ -96,7 +96,6 @@ import com.xabber.android.utils.Utils
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
-import io.realm.RealmResults
 import org.jivesoftware.smack.XMPPException.XMPPErrorException
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
@@ -113,44 +112,57 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener,
     BaseIqResultUiListener {
 
-    private var isInputEmpty = true
-    private var inputPanel: FrameLayout? = null
+    private var bottomMessagesPanel: BottomMessagesPanel? = null
+    private var topPinnedMessagePanel: PinnedMessagePanel? = null
+    private var topPanel: ChatFragmentTopPanel? = null
+    private lateinit var interactionView: View
 
-    private lateinit var inputView: EditText
+    private var isInputEmpty = true
+    private var skipOnTextChanges = false
+
+    private lateinit var inputPanel: FrameLayout
+    private lateinit var inputLayout: LinearLayout
+    private lateinit var inputEditText: EditText
     private lateinit var sendButton: ImageButton
     private lateinit var securityButton: ImageButton
     private lateinit var attachButton: ImageButton
     private lateinit var recordButton: ImageButton
 
-    private var lastHistoryProgressBar: View? = null
+    private lateinit var rootView: View
+    private lateinit var lastHistoryProgressBar: ProgressBar
+    private lateinit var stubInviteFakeMessage: ViewStub
+
     private var blockedView: TextView? = null
-    private var stubNotify: ViewStub? = null
-    private var stubInviteFakeMessage: ViewStub? = null
+    private lateinit var stubNotify: ViewStub
     private var notifyLayout: RelativeLayout? = null
     private var tvNotifyTitle: TextView? = null
     private var tvNotifyAction: TextView? = null
-    private lateinit var rootView: View
-    private lateinit var realmRecyclerView: RecyclerView
-    private var chatMessageAdapter: MessagesAdapter? = null
-    private lateinit var layoutManager: LinearLayoutManager
-    private var replySwipe: ReplySwipeCallback? = null
-    private lateinit var inputLayout: LinearLayout
+    private var checkedResource = 0
 
+    private lateinit var realmRecyclerView: RecyclerView
+    private lateinit var chatMessageAdapter: MessagesAdapter
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var replySwipeCallback: ReplySwipeCallback
+
+    private lateinit var tvNewReceivedCount: TextView
     private lateinit var btnScrollDown: RelativeLayout
-    private var tvNewReceivedCount: TextView? = null
-    private var interactionView: View? = null
-    private var skipOnTextChanges = false
+
+    private var accountColor = 0
+    private var userIsBlocked = false
+    private var historyIsLoading = false //todo refactor this
+
+    //Voice message recorder variables!!!!
     private val handler = Handler()
     private var currentVoiceRecordingState = VoiceRecordState.NotRecording
     private var recordSaveAllowed = false
+    private var recordingPath: String? = null
+
     private var lockViewHeightSize = 0
     private var lockViewMarginBottom = 0
     private var fabMicViewHeightSize = 0
     private var fabMicViewMarginBottom = 0
     private var rootViewHeight = 0f
-    private var recordingPath: String? = null
 
-    //Voice message recorder layout
     private lateinit var voiceMessageRecorderLayout: RelativeLayout
     private lateinit var recordButtonExpanded: FloatingActionButton
     private lateinit var recordLockView: View
@@ -181,20 +193,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             .start()
         beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording)
     }
-    private var historyIsLoading = false
-    private var messageRealmObjects: RealmResults<MessageRealmObject?>? = null
+
     private var menuItems: List<HashMap<String, String>>? = null
-    private var userIsBlocked = false
-    private var checkedResource = 0 // use only for alert dialog
-    private var toolbarElevation = 0f
-    private var accountColor = 0
-    private var notifyIntent: Intent? = null
 
-    private var bottomMessagesPanel: BottomMessagesPanel? = null
-    private var topPinnedMessagePanel: PinnedMessagePanel? = null
-    private var topPanel: ChatFragmentTopPanel? = null
-
-    /* Fragment lifecycle overrided methods */
+    /* Fragment lifecycle methods */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         accountJid = arguments?.getParcelable(ARGUMENT_ACCOUNT)
@@ -271,7 +273,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
                     //FAB movement
                     val lockParams =
-                        recordLockChevronImage!!.layoutParams as LinearLayout.LayoutParams
+                        recordLockChevronImage?.layoutParams as LinearLayout.LayoutParams
                     val yRecordDiff = rootViewHeight
                     -(fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.y
                     val yLockDiff = rootViewHeight
@@ -287,7 +289,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                                     .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
                                     .setDuration(0)
                                     .start()
-                                recordLockChevronImage!!.alpha = 1f
+                                recordLockChevronImage?.alpha = 1f
                             }
                             motionEvent.y > -200 -> { //200 = height to the "locked" state
                                 recordButtonExpanded.animate()
@@ -303,8 +305,8 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                                 lockParams.topMargin = (motionEvent.y.toInt()
                                         * (recordLockChevronImage!!.height - recordLockImage!!.paddingTop)
                                         / 200)
-                                recordLockChevronImage!!.alpha = 1f + motionEvent.y / 200f
-                                recordLockChevronImage!!.layoutParams = lockParams
+                                recordLockChevronImage?.alpha = 1f + motionEvent.y / 200f
+                                recordLockChevronImage?.layoutParams = lockParams
                             }
                             else -> {
                                 currentVoiceRecordingState = VoiceRecordState.NoTouchRecording
@@ -323,18 +325,18 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                                     .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
                                     .setDuration(100)
                                     .start()
-                                cancelRecordingLayout!!.visibility = View.VISIBLE
-                                recordLockImage!!.setImageResource(R.drawable.ic_stop)
-                                recordLockImage!!.setPadding(0, 0, 0, 0)
-                                recordLockImage!!.setOnClickListener { view121: View? ->
+                                cancelRecordingLayout?.visibility = View.VISIBLE
+                                recordLockImage?.setImageResource(R.drawable.ic_stop)
+                                recordLockImage?.setPadding(0, 0, 0, 0)
+                                recordLockImage?.setOnClickListener {
                                     if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
                                         Utils.performHapticFeedback(rootView)
                                         stopRecording()
                                     }
                                 }
                                 lockParams.topMargin = -recordLockChevronImage!!.height
-                                recordLockChevronImage!!.layoutParams = lockParams
-                                recordLockChevronImage!!.alpha = 0f
+                                recordLockChevronImage?.layoutParams = lockParams
+                                recordLockChevronImage?.alpha = 0f
                                 Utils.performHapticFeedback(rootView)
                             }
                         }
@@ -343,10 +345,13 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     //"Slide To Cancel" movement;
                     val alpha = 1f + motionEvent.x / 400f
                     if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                        if (motionEvent.x < 0) slideToCancelLayout!!.animate().x(motionEvent.x)
-                            .setDuration(0).start() else slideToCancelLayout!!.animate().x(0f)
-                            .setDuration(0).start()
-                        slideToCancelLayout!!.alpha = alpha
+
+                        if (motionEvent.x < 0) {
+                            slideToCancelLayout?.animate()?.x(motionEvent.x)?.setDuration(0)
+                                ?.start()
+                        } else slideToCancelLayout?.animate()?.x(0f)?.setDuration(0)?.start()
+
+                        slideToCancelLayout?.alpha = alpha
 
                         //since alpha and slide are tied together, we can cancel recording by checking transparency value
                         if (alpha <= 0) {
@@ -366,12 +371,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
         }
         recordingPresenterLayout = view.findViewById(R.id.recording_presenter_layout)
-        val recordingPresenterPlaybarLayout =
-            view.findViewById<LinearLayout>(R.id.recording_playbar_layout)
-        recordingPresenterPlaybarLayout.background.setColorFilter(
-            accountColor,
-            PorterDuff.Mode.SRC_IN
-        )
+
+        view.findViewById<LinearLayout>(R.id.recording_playbar_layout)
+            ?.background?.setColorFilter(accountColor, PorterDuff.Mode.SRC_IN)
 
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer)
         recordingPresenter.setNotPlayedColor(Color.WHITE)
@@ -415,18 +417,18 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         // interaction view
         interactionView = view.findViewById(R.id.interactionView)
         view.findViewById<View>(R.id.reply_tv).setOnClickListener {
-            showBottomMessagesPanel(chatMessageAdapter!!.checkedItemIds, Purposes.FORWARDING)
+            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds, Purposes.FORWARDING)
             closeInteractionPanel()
         }
         view.findViewById<View>(R.id.reply_iv).setOnClickListener {
-            showBottomMessagesPanel(chatMessageAdapter!!.checkedItemIds, Purposes.FORWARDING)
+            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds, Purposes.FORWARDING)
             closeInteractionPanel()
         }
         view.findViewById<View>(R.id.forward_iv).setOnClickListener {
-            openChooserForForward(chatMessageAdapter!!.checkedItemIds)
+            openChooserForForward(chatMessageAdapter.checkedItemIds)
         }
         view.findViewById<View>(R.id.forward_tv).setOnClickListener {
-            openChooserForForward(chatMessageAdapter!!.checkedItemIds)
+            openChooserForForward(chatMessageAdapter.checkedItemIds)
         }
         sendButton.setOnClickListener { sendMessage() }
         setUpInputView(view)
@@ -444,6 +446,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
         })
         stubNotify = view.findViewById(R.id.stubNotify)
+        stubInviteFakeMessage = view.findViewById(R.id.stubInvite)
         NotificationManager.getInstance().removeMessageNotification(accountJid, contactJid)
         setChat(accountJid, contactJid)
         if (savedInstanceState != null) {
@@ -499,56 +502,45 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         super.onResume()
 
         ChatStateManager.getInstance().onChatOpening(accountJid, contactJid)
-        if (chat is GroupChat) {
-            enableSendingPresenceToGroup((chat as GroupChat?)!!, true)
+        (chat as? GroupChat)?.let {
+            enableSendingPresenceToGroup(it, true)
         }
+
         restoreState()
 
         updateContact()
 
         showHideNotifyIfNeed()
         ChatManager.getInstance().setVisibleChat(chat)
-        Application.getInstance().addUIListener(
-            OnAccountChangedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnNewIncomingMessageListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnNewMessageListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnGroupPresenceUpdatedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnMessageUpdatedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnLastHistoryLoadStartedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnLastHistoryLoadFinishedListener::class.java, this
-        )
-        Application.getInstance().addUIListener(
-            OnAuthAskListener::class.java, this
-        )
+
+        Application.getInstance().addUIListener(OnAccountChangedListener::class.java, this)
+        Application.getInstance().addUIListener(OnNewIncomingMessageListener::class.java, this)
+        Application.getInstance().addUIListener(OnNewMessageListener::class.java, this)
+        Application.getInstance().addUIListener(OnGroupPresenceUpdatedListener::class.java, this)
+        Application.getInstance().addUIListener(OnMessageUpdatedListener::class.java, this)
+        Application.getInstance().addUIListener(OnLastHistoryLoadStartedListener::class.java, this)
+        Application.getInstance().addUIListener(OnLastHistoryLoadFinishedListener::class.java, this)
+        Application.getInstance().addUIListener(OnAuthAskListener::class.java, this)
+
         loadHistoryIfNeed()
-        if (chat is GroupChat) {
-            val retractVersion = (chat as GroupChat?)!!.retractVersion
+
+        (chat as? GroupChat)?.let {
+            val retractVersion = it.retractVersion
             if (retractVersion == null || retractVersion.isEmpty()) {
                 sendRemoteArchiveRetractVersionRequest(accountJid, contactJid)
             } else {
                 sendMissedChangesInRemoteArchiveForChatRequest(accountJid, contactJid)
             }
         }
+
     }
 
     override fun onPause() {
         super.onPause()
         ChatStateManager.getInstance().onPaused(accountJid, contactJid)
-        if (chat is GroupChat) {
-            enableSendingPresenceToGroup((chat as GroupChat?)!!, false)
-        }
+
+        (chat as? GroupChat)?.let { enableSendingPresenceToGroup(it, false) }
+
         saveState()
         if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording
             || currentVoiceRecordingState == VoiceRecordState.TouchRecording
@@ -592,7 +584,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     override fun onDestroy() {
         super.onDestroy()
-        chatMessageAdapter!!.release()
+        chatMessageAdapter.release()
     }
 
     override fun onAttach(context: Context) {
@@ -614,20 +606,18 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         listener = null
         handler.removeCallbacks(record)
         handler.removeCallbacks(postAnimation)
-        if (audioProgressSubscription != null) {
-            audioProgressSubscription!!.unsubscribe()
-        }
+        audioProgressSubscription?.unsubscribe()
         cleanUpVoice(false)
         unregisterOpusBroadcastReceiver()
     }
-    /* ^ Fragment lifecycle overrided methods ^ */
+    /* ^ Fragment lifecycle methods ^ */
 
 
     private fun saveState() {
         // Save typed but not sent yet text
         ChatManager.getInstance().setTyped(
-            accountJid, contactJid, inputView.text.toString(),
-            inputView.selectionStart, inputView.selectionEnd
+            accountJid, contactJid, inputEditText.text.toString(),
+            inputEditText.selectionStart, inputEditText.selectionEnd
         )
 
         // Save messages position
@@ -636,7 +626,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         if (position == -1) {
             return
         }
-        if (position == chatMessageAdapter!!.itemCount - 1) {
+        if (position == chatMessageAdapter.itemCount - 1) {
             position = 0
         }
         chat.saveLastPosition(position)
@@ -645,14 +635,14 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private fun restoreState() { //todo rewrite it
         // Restore typed text
         skipOnTextChanges = true
-        inputView.setText(ChatManager.getInstance().getTypedMessage(accountJid, contactJid))
-        inputView.setSelection(
+        inputEditText.setText(ChatManager.getInstance().getTypedMessage(accountJid, contactJid))
+        inputEditText.setSelection(
             ChatManager.getInstance().getSelectionStart(accountJid, contactJid),
             ChatManager.getInstance().getSelectionEnd(accountJid, contactJid)
         )
         skipOnTextChanges = false
-        if (inputView.text.toString().isNotEmpty()) {
-            inputView.requestFocus()
+        if (inputEditText.text.toString().isNotEmpty()) {
+            inputEditText.requestFocus()
         }
 
         // Restore scroll position
@@ -723,28 +713,26 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     fun onToolbarInteractionPinClick() {
         if (chat is GroupChat) {
-            sendPinMessageRequest(
-                chatMessageAdapter!!.checkedMessageRealmObjects[0]!!
-            )
+            chatMessageAdapter.checkedMessageRealmObjects[0]?.let { sendPinMessageRequest(it) }
             hideBottomMessagePanel()
             closeInteractionPanel()
         }
     }
 
     fun onToolbarInteractionDeleteClick() {
-        deleteMessage(ArrayList(chatMessageAdapter!!.checkedMessageRealmObjects))
+        deleteMessage(ArrayList(chatMessageAdapter.checkedMessageRealmObjects))
     }
 
     fun onToolbarInteractionCopyClick() {
         ClipManager.copyMessagesToClipboard(
-            ArrayList(chatMessageAdapter!!.checkedItemIds)
+            ArrayList(chatMessageAdapter.checkedItemIds)
         )
         hideBottomMessagePanel()
         closeInteractionPanel()
     }
 
     fun onToolbarInteractionsEditClick() {
-        getReadyForMessageEditing(chatMessageAdapter!!.checkedMessageRealmObjects[0]!!)
+        chatMessageAdapter.checkedMessageRealmObjects[0]?.let { getReadyForMessageEditing(it) }
     }
 
     private fun setChat(accountJid: AccountJid, contactJid: ContactJid) {
@@ -752,7 +740,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         this.contactJid = contactJid
 
         showSecurityButton(chat is RegularChat)
-        messageRealmObjects = chat.messages
         if (!accountJid.bareJid.toString().contains(contactJid.bareJid.toString())) {
             IntroViewDecoration.decorateRecyclerViewWithChatIntroView(
                 realmRecyclerView,
@@ -761,41 +748,41 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             )
         }
         if (hasActiveIncomingInvites(accountJid, contactJid)
-            && getLastInvite(accountJid, contactJid)!!.reason != null && getLastInvite(
-                accountJid,
-                contactJid
-            )!!.reason.isNotEmpty()
+            && getLastInvite(accountJid, contactJid)?.reason != null
+            && getLastInvite(accountJid, contactJid)?.reason?.isNotEmpty() == true
         ) {
-            val invite = getLastInvite(accountJid, contactJid)
-            var senderName = invite!!.senderJid.toString()
-            if (VCardManager.getInstance().getName(invite.senderJid.jid) != null
-                && VCardManager.getInstance().getName(invite.senderJid.jid).isNotEmpty()
-            ) {
-                senderName = VCardManager.getInstance().getName(
-                    invite.senderJid.jid
-                )
-            } else if (RosterManager.getInstance()
-                    .getName(invite.accountJid, invite.senderJid) != null
-                && RosterManager.getInstance().getName(invite.accountJid, invite.senderJid)
-                    .isNotEmpty()
-            ) {
-                senderName =
-                    RosterManager.getInstance().getName(invite.accountJid, invite.senderJid)
+            getLastInvite(accountJid, contactJid)?.let { invite ->
+                val senderName = when {
+                    (VCardManager.getInstance().getName(invite.senderJid.jid) != null
+                            && VCardManager.getInstance().getName(invite.senderJid.jid)
+                        .isNotEmpty())
+                    -> VCardManager.getInstance().getName(invite.senderJid.jid)
+
+                    (RosterManager.getInstance()
+                        .getName(invite.accountJid, invite.senderJid) != null
+                            && RosterManager.getInstance()
+                        .getName(invite.accountJid, invite.senderJid).isNotEmpty())
+                    -> RosterManager.getInstance().getName(invite.accountJid, invite.senderJid)
+
+                    else -> invite.senderJid.toString()
+                }
+
+                val senderAvatar = RosterManager.getInstance()
+                    .getAbstractContact(accountJid, invite.senderJid.bareUserJid)
+                    .getAvatar(true)
+
+                inflateIncomingInviteFakeMessage(senderAvatar, senderName, invite.reason)
             }
-            val senderAvatar = RosterManager.getInstance()
-                .getAbstractContact(accountJid, invite.senderJid.bareUserJid)
-                .getAvatar(true)
-            inflateIncomingInviteFakeMessage(senderAvatar, senderName, invite.reason, accountColor)
         }
         chatMessageAdapter = MessagesAdapter(
-            activity!!, messageRealmObjects!!, chat,
+            requireActivity(), chat.messages, chat,
             this, this, this, this, this, this
         )
         realmRecyclerView.adapter = chatMessageAdapter
         realmRecyclerView.itemAnimator = null
         realmRecyclerView.addItemDecoration(MessageHeaderViewDecoration())
-        replySwipe = ReplySwipeCallback { position: Int ->
-            val messageRealmObject = chatMessageAdapter!!.getMessageItem(position)
+        replySwipeCallback = ReplySwipeCallback { position: Int ->
+            val messageRealmObject = chatMessageAdapter.getMessageItem(position)
             if (messageRealmObject != null) {
                 if (messageRealmObject.primaryKey != null) {
                     showBottomMessagesPanel(
@@ -806,20 +793,20 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 }
             }
         }
-        val itemTouchHelper = ItemTouchHelper(replySwipe!!)
+        val itemTouchHelper = ItemTouchHelper(replySwipeCallback)
         itemTouchHelper.attachToRecyclerView(realmRecyclerView)
         realmRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-                replySwipe!!.onDraw(c)
+                replySwipeCallback.onDraw(c)
             }
         })
         updateContact()
     }
 
     private fun setUpInputView(view: View) {
-        inputView = view.findViewById(R.id.chat_input)
+        inputEditText = view.findViewById(R.id.chat_input)
         setUpIme()
-        inputView.setOnEditorActionListener { _: TextView?, actionId: Int, event: KeyEvent? ->
+        inputEditText.setOnEditorActionListener { _: TextView?, actionId: Int, event: KeyEvent? ->
             LogManager.d(
                 "InputViewDebug", "editorActionListener called, actionId = "
                         + actionId + ", event != null ? " + (event != null) + ", "
@@ -841,7 +828,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
             false
         }
-        inputView.setOnKeyListener { _: View?, keyCode: Int, event: KeyEvent ->
+        inputEditText.setOnKeyListener { _: View?, keyCode: Int, event: KeyEvent ->
             if (SettingsManager.chatsSendByEnter()) {
                 if (keyCode < 29 || keyCode > 54 || event.keyCode < 29 || event.keyCode > 54) {
                     LogManager.d(
@@ -861,10 +848,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
             false
         }
-        inputView.addTextChangedListener(object : TextWatcher {
+        inputEditText.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (!skipOnTextChanges && stopTypingTimer != null) {
-                    stopTypingTimer!!.cancel()
+                    stopTypingTimer?.cancel()
                 }
             }
 
@@ -882,7 +869,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
         ChatStateManager.getInstance().onComposing(accountJid, contactJid, text)
         stopTypingTimer = Timer()
-        stopTypingTimer!!.schedule(object : TimerTask() {
+        stopTypingTimer?.schedule(object : TimerTask() {
             override fun run() {
                 Application.getInstance()
                     .runOnUiThread {
@@ -894,11 +881,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     private fun setUpIme() {
         if (SettingsManager.chatsSendByEnter()) {
-            inputView.inputType =
-                inputView.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE.inv()
+            inputEditText.inputType =
+                inputEditText.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE.inv()
         } else {
-            inputView.inputType =
-                inputView.inputType or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            inputEditText.inputType =
+                inputEditText.inputType or InputType.TYPE_TEXT_FLAG_MULTI_LINE
         }
     }
 
@@ -935,12 +922,12 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             if (emojicon == null) {
                 return@setOnEmojiconClickedListener
             }
-            val start = inputView.selectionStart
-            val end = inputView.selectionEnd
+            val start = inputEditText.selectionStart
+            val end = inputEditText.selectionEnd
             if (start < 0) {
-                inputView.append(emojicon.emoji)
+                inputEditText.append(emojicon.emoji)
             } else {
-                inputView.text.replace(
+                inputEditText.text.replace(
                     start.coerceAtMost(end),
                     start.coerceAtLeast(end), emojicon.emoji, 0,
                     emojicon.emoji.length
@@ -953,7 +940,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             val event = KeyEvent(
                 0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL
             )
-            inputView.dispatchKeyEvent(event)
+            inputEditText.dispatchKeyEvent(event)
         }
 
         // To toggle between text keyboard and emoji keyboard keyboard(Popup)
@@ -966,12 +953,14 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 if (popup.isKeyBoardOpen) {
                     popup.showAtBottom()
                 } else { //else, open the text keyboard first and immediately after that show the emoji popup
-                    inputView.isFocusableInTouchMode = true
-                    inputView.requestFocus()
+                    inputEditText.isFocusableInTouchMode = true
+                    inputEditText.requestFocus()
                     popup.showAtBottomPending()
-                    val inputMethodManager =
-                        activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT)
+
+                    (activity?.getSystemService(Context.INPUT_METHOD_SERVICE)
+                            as? InputMethodManager
+                            )?.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
+
                 }
                 changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp)
             } else {
@@ -982,7 +971,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     private fun loadHistoryIfNeed() {
         if (!historyIsLoading) {
-            val messagesCount = chatMessageAdapter!!.itemCount
+            val messagesCount = chatMessageAdapter.itemCount
             val topVisible = layoutManager.findFirstVisibleItemPosition()
             if (topVisible <= 15 && topVisible != -1 && messagesCount != 0
                 || topVisible == -1 && messagesCount <= 30
@@ -1001,7 +990,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     override fun onLastHistoryLoadStarted(accountJid: AccountJid, contactJid: ContactJid) {
         Application.getInstance().runOnUiThread {
             if (accountJid == accountJid && contactJid == contactJid) {
-                lastHistoryProgressBar!!.visibility = View.VISIBLE
+                lastHistoryProgressBar.visibility = View.VISIBLE
                 historyIsLoading = true
             }
         }
@@ -1010,7 +999,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     override fun onLastHistoryLoadFinished(accountJid: AccountJid, contactJid: ContactJid) {
         Application.getInstance().runOnUiThread {
             if (accountJid == accountJid && contactJid == contactJid) {
-                lastHistoryProgressBar!!.visibility = View.GONE
+                lastHistoryProgressBar.visibility = View.GONE
                 historyIsLoading = false
             }
         }
@@ -1028,7 +1017,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 } else {
                     try {
                         Thread.sleep(1000)
-                        activity!!.finish()
+                        activity?.finish()
                     } catch (e: Exception) {
                         LogManager.exception(this, e)
                     }
@@ -1113,7 +1102,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun setUpInputViewButtons() {
-        var empty = inputView.text.toString().trim { it <= ' ' }.isEmpty()
+        var empty = inputEditText.text.toString().trim { it <= ' ' }.isEmpty()
         if (empty) {
             empty = bottomMessagesPanel == null
         }
@@ -1138,7 +1127,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     fun sendMessage() {
-        val editable = inputView.editableText
+        val editable = inputEditText.editableText
         val text: String
         var markupText: String? = null
         val spannable = SpannableStringBuilder(editable)
@@ -1161,7 +1150,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 // check bottom paragraph boundary
                 if (endSpan != spannable.length && spannable[endSpan - 1] != '\n') continue
 
-                // split the quotespan into 1-line strings
+                // split the quote span into 1-line strings
                 val originalQuoteString = spannable.subSequence(startSpan, endSpan).toString()
                 val quoteLines = originalQuoteString.split("\n").toTypedArray()
                 spannable.delete(startSpan, endSpan)
@@ -1207,10 +1196,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             return
         }
         playMessageSound()
-        listener!!.onMessageSent()
+        listener?.onMessageSent()
         ChatStateManager.getInstance().cancelComposingSender()
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
-            || (activity!!.resources.getBoolean(R.bool.landscape)
+            || (activity?.resources?.getBoolean(R.bool.landscape) == true
                     && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)
         ) {
             Utils.hideKeyboard(activity)
@@ -1232,13 +1221,13 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         updateSecurityButton()
         updateSendButtonSecurityLevel()
         updateBlockedState()
-        showTopPaneltIfNeed()
+        showTopPanelIfNeed()
     }
 
     private fun onScrollDownClick() {
         val unread = chat.unreadMessageCount
         val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-        if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter!!.itemCount - unread) {
+        if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter.itemCount - unread) {
             // scroll down
             scrollDown()
 
@@ -1247,12 +1236,12 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun scrollDown() {
-        realmRecyclerView.scrollToPosition(chatMessageAdapter!!.itemCount - 1)
+        realmRecyclerView.scrollToPosition(chatMessageAdapter.itemCount - 1)
     }
 
     private fun scrollToFirstUnread(unreadCount: Int) {
         layoutManager.scrollToPositionWithOffset(
-            chatMessageAdapter!!.itemCount - unreadCount,
+            chatMessageAdapter.itemCount - unreadCount,
             200
         )
     }
@@ -1276,23 +1265,23 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     fun setInputText(additional: String) {
         skipOnTextChanges = true
-        inputView.setText(additional)
-        inputView.setSelection(additional.length)
+        inputEditText.setText(additional)
+        inputEditText.setSelection(additional.length)
         skipOnTextChanges = false
     }
 
     private fun setInputTextAtCursor(additional: String) {
         skipOnTextChanges = true
-        val currentText = inputView.text.toString()
+        val currentText = inputEditText.text.toString()
         if (currentText.isEmpty()) {
-            inputView.setText(additional)
-            inputView.setSelection(additional.length)
+            inputEditText.setText(additional)
+            inputEditText.setSelection(additional.length)
         } else {
-            val cursorPosition = inputView.selectionStart
+            val cursorPosition = inputEditText.selectionStart
             val first = currentText.substring(0, cursorPosition)
             val second = currentText.substring(cursorPosition)
-            inputView.setText(first + additional + second)
-            inputView.setSelection(first.length + additional.length)
+            inputEditText.setText(first + additional + second)
+            inputEditText.setSelection(first.length + additional.length)
         }
         skipOnTextChanges = false
     }
@@ -1317,9 +1306,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             setInputTextAtCursor(quote)
             return
         }
-        val currentText = inputView.editableText
+        val currentText = inputEditText.editableText
         if (currentText.isNotEmpty()) {
-            val cursorPosition = inputView.selectionStart
+            val cursorPosition = inputEditText.selectionStart
             spanStart = cursorPosition
             if (cursorPosition != 0 && currentText[cursorPosition - 1] != '\n') {
                 currentText.insert(cursorPosition, "\n")
@@ -1329,18 +1318,16 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         val spanEnd: Int = spanStart + quote.length
         currentText.insert(spanStart, quote)
         currentText.setSpan(
-            CustomQuoteSpan(
-                accountColor,
-                context!!.resources.displayMetrics
-            ), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            CustomQuoteSpan(accountColor, context?.resources?.displayMetrics),
+            spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        inputView.setSelection(spanEnd)
+        inputEditText.setSelection(spanEnd)
         skipOnTextChanges = false
     }
 
     private fun clearInputText() {
         skipOnTextChanges = true
-        inputView.text.clear()
+        inputEditText.text.clear()
         skipOnTextChanges = false
     }
 
@@ -1355,8 +1342,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun showExportChatDialog() {
-        ChatExportDialogFragment.newInstance(accountJid, contactJid)
-            .show(fragmentManager!!, "CHAT_EXPORT")
+        fragmentManager?.let {
+            ChatExportDialogFragment.newInstance(accountJid, contactJid)
+                .show(it, "CHAT_EXPORT") //todo make const
+        }
     }
 
     fun stopEncryption(account: AccountJid?, user: ContactJid?) {
@@ -1384,14 +1373,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun deleteMessage(messages: ArrayList<MessageRealmObject?>) {
-        val ids: MutableList<String> = ArrayList()
-        var onlyOutgoing = true
+        val ids = messages.filterNotNull().map { it.primaryKey }.toMutableList()
         val isSavedMessages = accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
         val isGroup = chat is GroupChat
-        for (messageRealmObject in messages) {
-            ids.add(messageRealmObject!!.primaryKey)
-            if (messageRealmObject.isIncoming) onlyOutgoing = false
-        }
         val size = ids.size
         if (isSupported(accountJid)) {
             val checkBoxView = View.inflate(context, R.layout.delete_for_companion_checkbox, null)
@@ -1415,7 +1399,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     )
                 }
                 .setNegativeButton(R.string.cancel_action) { _: DialogInterface?, _: Int -> }
-            if (onlyOutgoing && !isSavedMessages && !isGroup) dialog.setView(checkBoxView)
+            if (!messages.filterNotNull().any { it.isIncoming } && !isSavedMessages && !isGroup) {
+                dialog.setView(checkBoxView)
+            }
             dialog.show()
         } else {
             AlertDialog.Builder(requireContext())
@@ -1440,7 +1426,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         return if (bottomMessagesPanel != null
             && bottomMessagesPanel?.messagesIds?.isNotEmpty() == true
             && bottomMessagesPanel?.purpose == Purposes.EDITING
-            && inputView.text.toString().isNotEmpty()
+            && inputEditText.text.toString().isNotEmpty()
         ) {
             clearInputText()
             hideBottomMessagePanel()
@@ -1488,40 +1474,39 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         val adapter = ResourceAdapter(activity, items)
         adapter.checkedItem = checkedResource
         if (items.size > 0) {
-            val builder = AlertDialog.Builder(
-                activity!!
-            )
-            builder.setTitle(R.string.otr_select_resource)
-            builder.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                checkedResource = adapter.checkedItem
-            }
-            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                checkedResource = adapter.checkedItem
-                try {
-                    val chat = chat
-                    if (chat is RegularChat) {
-                        chat.otRresource =
-                            Resourcepart.from(items[checkedResource][ResourceAdapter.KEY_RESOURCE])
-                        if (restartSession) restartEncryption(account, user) else startEncryption(
-                            account,
-                            user
-                        )
-                    } else {
+            AlertDialog.Builder(requireActivity()).apply {
+                setTitle(R.string.otr_select_resource)
+                setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    checkedResource = adapter.checkedItem
+                }
+                setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    checkedResource = adapter.checkedItem
+                    try {
+                        val chat = chat
+                        if (chat is RegularChat) {
+                            chat.otRresource =
+                                Resourcepart.from(items[checkedResource][ResourceAdapter.KEY_RESOURCE])
+                            if (restartSession) {
+                                restartEncryption(account, user)
+                            } else {
+                                startEncryption(account, user)
+                            }
+                        } else {
+                            Toast.makeText(
+                                activity, R.string.otr_select_toast_error, Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } catch (e: XmppStringprepException) {
+                        LogManager.exception(javaClass.simpleName, e)
                         Toast.makeText(
-                            activity,
-                            R.string.otr_select_toast_error,
-                            Toast.LENGTH_SHORT
+                            activity, R.string.otr_select_toast_error, Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (e: XmppStringprepException) {
-                    LogManager.exception(javaClass.simpleName, e)
-                    Toast.makeText(activity, R.string.otr_select_toast_error, Toast.LENGTH_SHORT)
-                        .show()
                 }
-            }
-            builder.setSingleChoiceItems(adapter, checkedResource, null).show()
+                setSingleChoiceItems(adapter, checkedResource, null)
+            }.show()
         } else {
             Toast.makeText(
                 activity,
@@ -1545,7 +1530,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     fun clearHistory(account: AccountJid, user: ContactJid) {
         if (account.bareJid.toString().contains(user.bareJid.toString())) {
-            AlertDialog.Builder(context!!)
+            AlertDialog.Builder(requireContext())
                 .setTitle(resources.getString(R.string.dialog_delete_saved_messages__header))
                 .setMessage(resources.getString(R.string.dialog_delete_saved_messages__confirm))
                 .setPositiveButton(R.string.delete) { _: DialogInterface?, _: Int ->
@@ -1574,11 +1559,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     override fun onMessageClick(caller: View, position: Int) {
-        val itemViewType = chatMessageAdapter!!.getItemViewType(position)
+        val itemViewType = chatMessageAdapter.getItemViewType(position)
         if (itemViewType != MessagesAdapter.VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
             && itemViewType != MessagesAdapter.VIEW_TYPE_ACTION_MESSAGE
         ) {
-            val clickedMessageRealmObject = chatMessageAdapter!!.getMessageItem(position)
+            val clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position)
             if (clickedMessageRealmObject == null) {
                 LogManager.w(
                     ChatFragment::class.java.simpleName,
@@ -1591,16 +1576,14 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     override fun onMessageAvatarClick(position: Int) {
-        val messageClicked = chatMessageAdapter!!.getMessageItem(position)
+        val messageClicked = chatMessageAdapter.getMessageItem(position)
+
         if (chat is GroupChat) {
-            val memberId = messageClicked!!.groupchatUserId
-            startActivity(
-                createIntentForGroupchatAndMemberId(
-                    activity!!,
-                    memberId,
-                    (chat as GroupChat?)!!
+            messageClicked?.groupchatUserId?.let {
+                startActivity(
+                    createIntentForGroupchatAndMemberId(requireActivity(), it, chat as GroupChat)
                 )
-            )
+            }
         } else if (accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
             && messageClicked!!.account.bareJid.toString()
                 .contains(messageClicked.user.bareJid.toString())
@@ -1617,10 +1600,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 if (innerMessage.groupchatUserId != null) {
                     startActivity(
                         createIntentForGroupchatAndMemberId(
-                            activity!!,
+                            requireActivity(),
                             innerMessage.groupchatUserId,
-                            (ChatManager.getInstance()
-                                .getChat(accountJid, contactJid) as GroupChat?)!!
+                            (ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat)
                         )
                     )
                 } else {
@@ -1640,27 +1622,33 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     override fun onChangeCheckedItems(checkedItems: Int) {
-        val isEditable = (checkedItems == 1 && isSupported(accountJid)
-                && !chatMessageAdapter!!.checkedMessageRealmObjects[0]!!.isIncoming
-                && !chatMessageAdapter!!.checkedMessageRealmObjects[0]!!.haveAttachments()
-                && (chatMessageAdapter!!.checkedMessageRealmObjects[0]!!
-            .messageStatus == MessageStatus.DELIVERED || chatMessageAdapter!!.checkedMessageRealmObjects[0]!!
-            .messageStatus == MessageStatus.RECEIVED || chatMessageAdapter!!.checkedMessageRealmObjects[0]!!
-            .messageStatus == MessageStatus.DISPLAYED))
-        val isPinnable = checkedItems == 1 && chat is GroupChat
+        val clickedMessage = chatMessageAdapter.checkedMessageRealmObjects.first() ?: return
+
+        val isRightMessageStatusForEditing = clickedMessage.messageStatus == MessageStatus.DELIVERED
+                || clickedMessage.messageStatus == MessageStatus.RECEIVED
+                || clickedMessage.messageStatus == MessageStatus.DISPLAYED
+
+        val isMessageAbleForEditing = !clickedMessage.isIncoming
+                && !clickedMessage.haveAttachments()
+                && isRightMessageStatusForEditing
+
+        val isSingleCheckedItem = checkedItems == 1
+
+        val isEditable = isSingleCheckedItem && isSupported(accountJid) && isMessageAbleForEditing
+
+        val isPinnable = isSingleCheckedItem && chat is GroupChat
+
         if (checkedItems > 0) {
-            interactionView!!.visibility = View.VISIBLE
-            (activity as ChatActivity?)!!.showToolbarInteractionsPanel(
-                true, isEditable,
-                isPinnable, checkedItems
+            interactionView.visibility = View.VISIBLE
+            (activity as? ChatActivity)?.showToolbarInteractionsPanel(
+                true, isEditable, isPinnable, checkedItems
             )
-            replySwipe!!.setSwipeEnabled(false)
+            replySwipeCallback.setSwipeEnabled(false)
         } else {
-            interactionView!!.visibility = View.GONE
-            replySwipe!!.setSwipeEnabled(true)
-            (activity as ChatActivity?)!!.showToolbarInteractionsPanel(
-                isVisible = false, isEditable = false,
-                isPinnable = false, messagesCount = checkedItems
+            interactionView.visibility = View.GONE
+            replySwipeCallback.setSwipeEnabled(true)
+            (activity as? ChatActivity)?.showToolbarInteractionsPanel(
+                false, isEditable = false, isPinnable = false, messagesCount = checkedItems
             )
         }
     }
@@ -1745,10 +1733,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                             deleteMessage(arrayList)
                         }
                         "action_message_show_original_otr" -> {
-                            chatMessageAdapter!!.addOrRemoveItemNeedOriginalText(
+                            chatMessageAdapter.addOrRemoveItemNeedOriginalText(
                                 clickedMessageRealmObject.primaryKey
                             )
-                            chatMessageAdapter!!.notifyDataSetChanged()
+                            chatMessageAdapter.notifyDataSetChanged()
                         }
                         CustomMessageMenuAdapter.KEY_ID_STATUS -> if (clickedMessageRealmObject.messageStatus == MessageStatus.ERROR) {
                             showError(clickedMessageRealmObject.errorDescription)
@@ -1781,7 +1769,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     override fun onAccountsChanged(accounts: Collection<AccountJid>) {
-        Application.getInstance().runOnUiThread { chatMessageAdapter!!.notifyDataSetChanged() }
+        Application.getInstance().runOnUiThread { chatMessageAdapter.notifyDataSetChanged() }
     }
 
     private fun playMessageSound() {
@@ -1819,9 +1807,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     private fun showHideNotifyIfNeed() {
         (chat as? RegularChat)?.let {
-            notifyIntent = it.intent
+            val notifyIntent = it.intent
             if (notifyIntent != null) {
-                setupNotifyLayout(notifyIntent!!)
+                setupNotifyLayout(notifyIntent)
             } else {
                 notifyLayout?.visibility = View.GONE
             }
@@ -1830,89 +1818,79 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     private fun setupNotifyLayout(notifyIntent: Intent) {
         if (tvNotifyTitle == null || tvNotifyAction == null) {
-            inflateNotifyLayout()
+            val view = stubNotify.inflate()
+            tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle)
+            tvNotifyAction = view.findViewById(R.id.tvNotifyAction)
+            notifyLayout = view.findViewById(R.id.notifyLayout)
+            notifyLayout?.setOnClickListener {
+                startActivity(notifyIntent)
+                it.visibility = View.GONE
+            }
         }
         if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
-            tvNotifyTitle!!.setText(R.string.otr_verification_progress_title)
-            tvNotifyAction!!.setText(R.string.otr_verification_notify_button_cancel)
+            tvNotifyTitle?.setText(R.string.otr_verification_progress_title)
+            tvNotifyAction?.setText(R.string.otr_verification_notify_button_cancel)
         } else {
-            tvNotifyTitle!!.setText(R.string.otr_verification_notify_title)
-            tvNotifyAction!!.setText(R.string.otr_verification_notify_button)
+            tvNotifyTitle?.setText(R.string.otr_verification_notify_title)
+            tvNotifyAction?.setText(R.string.otr_verification_notify_button)
         }
         notifyLayout?.visibility = View.VISIBLE
     }
 
-    private fun inflateNotifyLayout() {
-        val view = stubNotify!!.inflate()
-        tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle)
-        tvNotifyAction = view.findViewById(R.id.tvNotifyAction)
-        notifyLayout = view.findViewById(R.id.notifyLayout)
-        notifyLayout?.setOnClickListener {
-            if (notifyIntent != null) {
-                startActivity(notifyIntent)
-            }
-            it.visibility = View.GONE
-        }
-    }
-
     private fun inflateIncomingInviteFakeMessage(
-        senderAvatar: Drawable,
-        senderName: String,
-        reasonText: String,
-        balloonColor: Int
+        senderAvatar: Drawable, senderName: String, reasonText: String,
     ) {
-        val view = stubInviteFakeMessage!!.inflate()
-        (view.findViewById<View>(R.id.avatar) as ImageView).setImageDrawable(senderAvatar)
-        (view.findViewById<View>(R.id.message_text) as TextView).text = reasonText
-        (view.findViewById<View>(R.id.message_header) as TextView).text = senderName
-        view.findViewById<View>(R.id.message_status_icon).visibility =
-            View.GONE
+        val view = stubInviteFakeMessage.inflate()
+        view.findViewById<ImageView>(R.id.avatar)?.setImageDrawable(senderAvatar)
+        view.findViewById<TextView>(R.id.message_text)?.text = reasonText
+        view.findViewById<TextView>(R.id.message_header)?.text = senderName
+        view.findViewById<View>(R.id.message_status_icon).visibility = View.GONE
         view.findViewById<View>(R.id.message_encrypted_icon).visibility = View.GONE
-        val messageBalloon = view.findViewById<View>(R.id.message_balloon)
-        val messageShadow = view.findViewById<View>(R.id.message_shadow)
-        val balloonDrawable = context?.resources?.let {
-            ResourcesCompat.getDrawable(it, R.drawable.msg_in, null)
-        }
-        val shadowDrawable = context?.resources?.let {
-            ResourcesCompat.getDrawable(it, R.drawable.msg_in_shadow, null)
-        }
-        context?.resources?.let {
-            shadowDrawable?.setColorFilter(
-                it.getColor(R.color.black),
-                PorterDuff.Mode.MULTIPLY
-            )
-        }
-        messageBalloon.background = balloonDrawable
-        messageShadow.background = shadowDrawable
 
-        // setup BALLOON margins
-        val layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        layoutParams.setMargins(
-            Utils.dipToPx(3f, context),
-            Utils.dipToPx(0f, context),
-            Utils.dipToPx(0f, context),
-            Utils.dipToPx(3f, context)
-        )
-        messageShadow.layoutParams = layoutParams
-
-        // setup MESSAGE padding
-        messageBalloon.setPadding(
-            Utils.dipToPx(20f, context),
-            Utils.dipToPx(8f, context),
-            Utils.dipToPx(12f, context),
-            Utils.dipToPx(8f, context)
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            messageBalloon.background.setTintList(
-                ColorManager.getInstance().getChatIncomingBalloonColorsStateList(accountJid)
+        view.findViewById<View>(R.id.message_balloon).apply {
+            val balloonDrawable = context?.resources?.let {
+                ResourcesCompat.getDrawable(it, R.drawable.msg_in, null)
+            }
+            background = balloonDrawable
+            setPadding(
+                Utils.dipToPx(20f, context),
+                Utils.dipToPx(8f, context),
+                Utils.dipToPx(12f, context),
+                Utils.dipToPx(8f, context)
             )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                background.setTintList(
+                    ColorManager.getInstance().getChatIncomingBalloonColorsStateList(accountJid)
+                )
+            }
+        }
+
+        view.findViewById<View>(R.id.message_shadow).apply {
+            val shadowDrawable = context?.resources?.let {
+                ResourcesCompat.getDrawable(it, R.drawable.msg_in_shadow, null)
+            }
+            context?.resources?.let {
+                shadowDrawable?.setColorFilter(
+                    it.getColor(R.color.black), PorterDuff.Mode.MULTIPLY)
+            }
+            background = shadowDrawable
+
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                ).apply {
+                    setMargins(
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(3f, context)
+                    )
+                }
         }
     }
 
     private fun deflateIncomingInvite() {
-        Application.getInstance().runOnUiThread { stubInviteFakeMessage!!.visibility = View.GONE }
+        Application.getInstance().runOnUiThread { stubInviteFakeMessage.visibility = View.GONE }
     }
 
     private fun updateBlockedState() {
@@ -1922,15 +1900,15 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             showBlockedBar()
         } else {
             if (blockedView != null) {
-                blockedView!!.visibility = View.GONE
+                blockedView?.visibility = View.GONE
             }
             inputLayout.visibility = View.VISIBLE
         }
     }
 
     private fun showBlockedBar() {
-        for (i in 0 until inputPanel!!.childCount) {
-            val view = inputPanel!!.getChildAt(i)
+        for (i in 0 until inputPanel.childCount) {
+            val view = inputPanel.getChildAt(i)
             if (view != null && view.visibility == View.VISIBLE) {
                 view.visibility = View.GONE
             }
@@ -1942,38 +1920,36 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 resources.getDimensionPixelOffset(R.dimen.input_view_height)
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                blockedView!!.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button)
+                blockedView?.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button)
             } else {
-                blockedView!!.setTextAppearance(
-                    context,
-                    R.style.TextAppearance_AppCompat_Widget_Button
-                )
+                blockedView?.setTextAppearance(
+                    context, R.style.TextAppearance_AppCompat_Widget_Button)
             }
-            blockedView!!.setTextColor(accountColor)
-            blockedView!!.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            blockedView!!.setText(R.string.blocked_contact_message)
-            blockedView!!.setBackgroundColor(
+            blockedView?.setTextColor(accountColor)
+            blockedView?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            blockedView?.setText(R.string.blocked_contact_message)
+            blockedView?.setBackgroundColor(
                 Utils.getAttrColor(
                     context,
                     R.attr.chat_input_background
                 )
             )
-            blockedView!!.layoutParams = layoutParams
-            blockedView!!.gravity = Gravity.CENTER
-            blockedView!!.setOnClickListener {
+            blockedView?.layoutParams = layoutParams
+            blockedView?.gravity = Gravity.CENTER
+            blockedView?.setOnClickListener {
                 startActivity(
                     ContactViewerActivity.createIntent(
                         context, accountJid, contactJid
                     )
                 )
             }
-            inputPanel!!.addView(blockedView)
+            inputPanel.addView(blockedView)
         } else {
-            blockedView!!.visibility = View.VISIBLE
+            blockedView?.visibility = View.VISIBLE
         }
     }
 
-    private fun showTopPaneltIfNeed() {
+    private fun showTopPanelIfNeed() {
 
         fun removePanel() {
             topPanel?.let { panel ->
@@ -1998,18 +1974,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         var show = false
         when (subscriptionState.subscriptionType) {
             RosterManager.SubscriptionState.FROM, RosterManager.SubscriptionState.NONE -> {
-                //check both FROM and NONE types for the absence of pending subscriptions,
-                //and whether or not user already closed this "suggestion" dialog
                 if (subscriptionState.pendingSubscription == RosterManager.SubscriptionState.PENDING_NONE) {
                     if (!chat.isAddContactSuggested) {
                         show = true
                     }
                 }
-                //check all states for incoming + incoming & outgoinig types of pending subscriptions.
-                //
-                // NONE can be valid with both IN and IN_OUT
-                // TO can be valid only with IN.(TO && any type of OUT request are incompatible).
-                // FROM can not be valid with these checks. (FROM && any type of IN request are incompatible).
                 if (subscriptionState.hasIncomingSubscription()) {
                     show = true
                 }
@@ -2048,7 +2017,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun showScrollDownButtonIfNeed() {
-        if (layoutManager.findLastVisibleItemPosition() >= chatMessageAdapter!!.itemCount - 1
+        if (layoutManager.findLastVisibleItemPosition() >= chatMessageAdapter.itemCount - 1
             || currentVoiceRecordingState == VoiceRecordState.TouchRecording
             || currentVoiceRecordingState == VoiceRecordState.NoTouchRecording
         ) {
@@ -2059,21 +2028,19 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun updateNewReceivedMessageCounter(count: Int) {
-        tvNewReceivedCount!!.text = count.toString()
-        if (count > 0) {
-            tvNewReceivedCount!!.visibility = View.VISIBLE
-        } else {
-            tvNewReceivedCount!!.visibility = View.GONE
+        tvNewReceivedCount.apply {
+            text = count.toString()
+            visibility = if (count > 0) View.VISIBLE else View.GONE
         }
     }
 
     private fun setFirstUnreadMessageId(id: String?) {
-        chatMessageAdapter!!.setFirstUnreadMessageId(id)
-        chatMessageAdapter!!.notifyDataSetChanged()
+        chatMessageAdapter.setFirstUnreadMessageId(id)
+        chatMessageAdapter.notifyDataSetChanged()
     }
 
     private fun closeInteractionPanel() {
-        chatMessageAdapter!!.resetCheckedItems()
+        chatMessageAdapter.resetCheckedItems()
         setUpInputViewButtons()
     }
 
@@ -2129,7 +2096,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             TimeUnit.SECONDS.toSeconds(time)
         )
         subscribeForRecordedAudioProgress()
-        recordingPresenterLayout!!.visibility = View.VISIBLE
+        recordingPresenterLayout?.visibility = View.VISIBLE
 
         //recordingPresenter.updateVisualizerFromFile();
         VoiceMessagePresenterManager.getInstance()
@@ -2158,15 +2125,15 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 return super.onTouch(view, motionEvent)
             }
         })
-        recordingPlayButton!!.setImageResource(R.drawable.ic_play)
-        recordingPlayButton!!.setOnClickListener {
+        recordingPlayButton?.setImageResource(R.drawable.ic_play)
+        recordingPlayButton?.setOnClickListener {
             VoiceManager.getInstance().voiceClicked(recordingPath)
         }
-        recordingDeleteButton!!.setOnClickListener {
+        recordingDeleteButton?.setOnClickListener {
             releaseRecordedVoicePlayback(recordingPath)
             finishVoiceRecordLayout()
             recordingPath = null
-            audioProgressSubscription!!.unsubscribe()
+            audioProgressSubscription?.unsubscribe()
         }
         recordingPresenterSendButton.setOnClickListener {
             if (bottomMessagesPanel != null
@@ -2181,7 +2148,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             setFirstUnreadMessageId(null)
             finishVoiceRecordLayout()
             recordingPath = null
-            audioProgressSubscription!!.unsubscribe()
+            audioProgressSubscription?.unsubscribe()
         }
     }
 
@@ -2207,13 +2174,13 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             if (info.resultCode == VoiceManager.COMPLETED_AUDIO_PROGRESS
                 || info.resultCode == VoiceManager.PAUSED_AUDIO_PROGRESS
             ) {
-                recordingPlayButton!!.setImageResource(R.drawable.ic_play)
-            } else recordingPlayButton!!.setImageResource(R.drawable.ic_pause)
+                recordingPlayButton?.setImageResource(R.drawable.ic_play)
+            } else recordingPlayButton?.setImageResource(R.drawable.ic_pause)
         }
     }
 
     fun finishVoiceRecordLayout() {
-        recordingPresenterLayout!!.visibility = View.GONE
+        recordingPresenterLayout?.visibility = View.GONE
         recordingPresenter.updateVisualizer(null)
         currentVoiceRecordingState = VoiceRecordState.NotRecording
         closeVoiceRecordPanel()
@@ -2223,7 +2190,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private fun closeVoiceRecordPanel() {
         recordLockView.visibility = View.GONE
         voiceMessageRecorderLayout.visibility = View.GONE
-        cancelRecordingLayout!!.visibility = View.GONE
+        cancelRecordingLayout?.visibility = View.GONE
         handler.removeCallbacks(postAnimation)
         showScrollDownButtonIfNeed()
     }
@@ -2271,15 +2238,17 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         if (start) {
             ChatStateManager.getInstance()
                 .onComposing(accountJid, contactJid, null, ChatStateSubtype.voice)
-            stopTypingTimer!!.cancel()
+            stopTypingTimer?.cancel()
             ignoreReceiver = false
-            slideToCancelLayout!!.animate().x(0f).setDuration(0).start()
-            recordLockChevronImage!!.alpha = 1f
-            recordLockImage!!.setImageResource(R.drawable.ic_security_plain_24dp)
-            recordLockImage!!.setPadding(0, Utils.dipToPx(4f, activity), 0, 0)
+            slideToCancelLayout?.animate()?.x(0f)?.setDuration(0)?.start()
+            recordLockChevronImage?.alpha = 1f
+            recordLockImage?.setImageResource(R.drawable.ic_security_plain_24dp)
+            recordLockImage?.setPadding(0, Utils.dipToPx(4f, activity), 0, 0)
+
             val layoutParams = recordLockChevronImage!!.layoutParams as LinearLayout.LayoutParams
             layoutParams.topMargin = 0
-            recordLockChevronImage!!.layoutParams = layoutParams
+            recordLockChevronImage?.layoutParams = layoutParams
+
             recordTimer.base = SystemClock.elapsedRealtime()
             recordTimer.start()
             currentVoiceRecordingState = VoiceRecordState.TouchRecording
@@ -2295,9 +2264,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private fun manageScreenSleep(keepScreenOn: Boolean) {
         if (activity != null) {
             if (keepScreenOn) {
-                activity!!.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             } else {
-                activity!!.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
         }
     }
@@ -2320,7 +2289,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     fun hideBottomMessagePanel() {
         setUpInputViewButtons()
         if (bottomMessagesPanel?.purpose == Purposes.EDITING) {
-            inputView.setText("")
+            inputEditText.setText("")
         }
         if (activity != null && activity?.isFinishing != true) {
             bottomMessagesPanel?.let { panel ->
@@ -2354,9 +2323,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     rightSavedMessagesIds.add(messageId)
                 }
             }
-            (activity as ChatActivity?)!!.forwardMessages(rightSavedMessagesIds)
+            (activity as ChatActivity?)?.forwardMessages(rightSavedMessagesIds)
         } else {
-            (activity as ChatActivity?)!!.forwardMessages(forwardIds)
+            (activity as ChatActivity?)?.forwardMessages(forwardIds)
         }
     }
 
