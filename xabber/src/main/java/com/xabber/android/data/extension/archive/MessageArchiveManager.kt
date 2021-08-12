@@ -381,6 +381,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     private fun getFirstChatMessageInRealmStanzaId(chat: AbstractChat): String? {
+        val pinnedIdOrEmpty: String = (chat as? GroupChat)?.pinnedMessageId ?: ""
         var result: String? = ""
         var realm: Realm? = null
         try {
@@ -389,7 +390,10 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
                 .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .beginGroup()
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                .notEqualTo(MessageRealmObject.Fields.STANZA_ID, pinnedIdOrEmpty)
+                .endGroup()
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
                 .firstOrNull()
@@ -397,7 +401,9 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         } catch (e: Exception) {
             LogManager.exception(this, e)
         } finally {
-            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) {
+                realm.close()
+            }
         }
         return result
     }

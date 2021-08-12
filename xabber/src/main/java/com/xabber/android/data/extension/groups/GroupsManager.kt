@@ -80,7 +80,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     }
 
     private fun startPresenceResendingRunnable() {
-        Application.getInstance().runOnUiThreadDelay(presenceResendingRunnable, PRESENCE_RESEND_CYCLE_MILLIS)
+        Application.getInstance()
+            .runOnUiThreadDelay(presenceResendingRunnable, PRESENCE_RESEND_CYCLE_MILLIS)
     }
 
     override fun onLoad() {
@@ -106,7 +107,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                         })
                 }
             }
-        } catch (ignore: NetworkException) {}
+        } catch (ignore: NetworkException) {
+        }
     }
 
     fun enableSendingPresenceToGroup(group: GroupChat, isPresent: Boolean = true) {
@@ -136,7 +138,10 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     availableGroupServers[accountJid]?.add(srvJid)
                 }
             }
-            AccountRepository.saveOrUpdateGroupServers(accountJid, availableGroupServers[accountJid])
+            AccountRepository.saveOrUpdateGroupServers(
+                accountJid,
+                availableGroupServers[accountJid]
+            )
             LogManager.d(this::class.java.simpleName, "Got a group server list")
         } catch (e: Exception) {
             LogManager.exception(this::class.java.simpleName, e)
@@ -145,7 +150,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
 
     private fun processPresence(packet: Presence) {
         try {
-            val presence = packet.getExtension(GroupPresenceExtensionElement.NAMESPACE) as GroupPresenceExtensionElement
+            val presence =
+                packet.getExtension(GroupPresenceExtensionElement.NAMESPACE) as GroupPresenceExtensionElement
             val accountJid = AccountJid.from(packet.to.toString())
             val contactJid = ContactJid.from(packet.from).bareUserJid
             if (ChatManager.getInstance().getChat(accountJid, contactJid) == null) {
@@ -164,7 +170,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                 && presence.pinnedMessageId.isNotEmpty()
                 && presence.pinnedMessageId != "0"
             ) {
-                val pinnedMessage = MessageRepository.getMessageFromRealmByStanzaId(presence.pinnedMessageId)
+                val pinnedMessage =
+                    MessageRepository.getMessageFromRealmByStanzaId(presence.pinnedMessageId)
                 if (pinnedMessage == null || pinnedMessage.timestamp == null) {
                     MessageArchiveManager.loadMessageByStanzaId(chat, presence.pinnedMessageId)
                 }
@@ -174,7 +181,13 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             chat.numberOfOnlineMembers = presence.presentMembers
 
             Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java)
-                .forEachOnUi { listener -> listener.onGroupPresenceUpdated(accountJid, contactJid, packet) }
+                .forEachOnUi { listener ->
+                    listener.onGroupPresenceUpdated(
+                        accountJid,
+                        contactJid,
+                        packet
+                    )
+                }
 
             ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
         } catch (e: Exception) {
@@ -184,7 +197,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
 
     fun processVcard(accountJid: AccountJid?, groupJid: ContactJid?, vcard: VCard) {
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(
-            (ChatManager.getInstance().getChat(accountJid, groupJid) as? GroupChat ?: return).apply {
+            (ChatManager.getInstance().getChat(accountJid, groupJid) as? GroupChat
+                ?: return).apply {
                 description = vcard.description
                 privacyType = vcard.privacyType
                 indexType = vcard.indexType
@@ -201,9 +215,10 @@ object GroupsManager : OnPacketListener, OnLoadListener {
      * @param contactJid of group that sent unsubscribed presence
      */
     fun onUnsubscribePresence(accountJid: AccountJid, contactJid: ContactJid, presence: Presence) {
-        Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java).forEachOnUi {
-            it.onGroupPresenceUpdated(accountJid, contactJid, presence)
-        }
+        Application.getInstance().getUIListeners(OnGroupPresenceUpdatedListener::class.java)
+            .forEachOnUi {
+                it.onGroupPresenceUpdated(accountJid, contactJid, presence)
+            }
         MessageManager.getInstance().clearHistory(accountJid, contactJid)
         if (RetractManager.isSupported(accountJid)) {
             RetractManager.sendRetractAllMessagesRequest(accountJid, contactJid)
@@ -236,52 +251,58 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     ) {
         try {
             listener?.onSend()
-            AccountManager.getInstance().getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                CreateGroupchatIQ(
-                    accountJid.fullJid,
-                    server,
-                    groupName,
-                    localpart,
-                    groupDescription,
-                    groupMembershipType,
-                    groupPrivacyType,
-                    groupIndexType
-                ),
-                { packet: Stanza ->
-                    if (packet is ResultIq && packet.type == IQ.Type.result) {
-                        LogManager.d(this::class.java.simpleName, "Groupchat successfully created")
-                        try {
-                            val contactJid = ContactJid.from(packet.jid)
-                            val account = AccountJid.from(packet.getTo().toString())
-                            addAutoAcceptGroupSubscription(account, contactJid)
-                            requestSubscription(account, contactJid, false)
-                            val chat = ChatManager.getInstance().createGroupChat(account, contactJid)
+            AccountManager.getInstance().getAccount(accountJid)?.connection
+                ?.sendIqWithResponseCallback(
+                    CreateGroupchatIQ(
+                        accountJid.fullJid,
+                        server,
+                        groupName,
+                        localpart,
+                        groupDescription,
+                        groupMembershipType,
+                        groupPrivacyType,
+                        groupIndexType
+                    ),
+                    { packet: Stanza ->
+                        if (packet is ResultIq && packet.type == IQ.Type.result) {
+                            LogManager.d(
+                                this::class.java.simpleName,
+                                "Groupchat successfully created"
+                            )
+                            try {
+                                val contactJid = ContactJid.from(packet.jid)
+                                val account = AccountJid.from(packet.getTo().toString())
+                                addAutoAcceptGroupSubscription(account, contactJid)
+                                requestSubscription(account, contactJid, false)
+                                val chat =
+                                    ChatManager.getInstance().createGroupChat(account, contactJid)
 
-                            chat.apply {
-                                name = groupName
-                                description = groupDescription
-                                indexType = groupIndexType
-                                membershipType = groupMembershipType
-                                privacyType = groupPrivacyType
+                                chat.apply {
+                                    name = groupName
+                                    description = groupDescription
+                                    indexType = groupIndexType
+                                    membershipType = groupMembershipType
+                                    privacyType = groupPrivacyType
+                                }
+
+                                ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
+                                listener?.onResult()
+                            } catch (e: Exception) {
+                                LogManager.exception(this::class.java.simpleName, e)
+                                listener?.onOtherError(e)
                             }
-
-                            ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
-                            listener?.onResult()
-                        } catch (e: Exception) {
-                            LogManager.exception(this::class.java.simpleName, e)
-                            listener?.onOtherError(e)
                         }
-                    }
-                },
-                listener
-            )
+                    },
+                    listener
+                )
         } catch (e: Exception) {
             LogManager.exception(this::class.java.simpleName, e)
             listener?.onOtherError(e)
         }
     }
 
-    fun getAvailableGroupchatServersForAccountJid(accountJid: AccountJid) = availableGroupServers[accountJid]
+    fun getAvailableGroupchatServersForAccountJid(accountJid: AccountJid) =
+        availableGroupServers[accountJid]
 
     fun getCustomGroupServers(accountJid: AccountJid) = customGroupServers[accountJid]
 
@@ -299,24 +320,27 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupStatusForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
-                    GroupStatusFormRequestIQ(groupchat),
-                    { packet: Stanza? ->
-                        if (packet is GroupStatusDataFormIQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
-                                .forEachOnUi { listener ->
-                                    listener.onStatusDataFormReceived(
-                                        groupchat,
-                                        packet.dataForm ?: return@forEachOnUi
-                                    )
-                                }
+                AccountManager.getInstance()
+                    .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
+                        GroupStatusFormRequestIQ(groupchat),
+                        { packet: Stanza? ->
+                            if (packet is GroupStatusDataFormIQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupStatusResultListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        listener.onStatusDataFormReceived(
+                                            groupchat,
+                                            packet.dataForm ?: return@forEachOnUi
+                                        )
+                                    }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupStatusResultListener::class.java)
+                                .forEachOnUi { listener -> listener.onError(groupchat) }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
-                            .forEachOnUi { listener -> listener.onError(groupchat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
                 Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
@@ -328,19 +352,26 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun sendSetGroupchatStatusRequest(groupChat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    GroupSetStatusRequestIQ(groupChat, dataForm),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
-                                .forEachOnUi { listener -> listener.onStatusSuccessfullyChanged(groupChat) }
+                AccountManager.getInstance()
+                    .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
+                        GroupSetStatusRequestIQ(groupChat, dataForm),
+                        { packet: Stanza? ->
+                            if (packet is IQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupStatusResultListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        listener.onStatusSuccessfullyChanged(
+                                            groupChat
+                                        )
+                                    }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupStatusResultListener::class.java)
+                                .forEachOnUi { listener -> listener.onError(groupChat) }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
-                            .forEachOnUi { listener -> listener.onError(groupChat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
                 Application.getInstance().getUIListeners(OnGroupStatusResultListener::class.java)
@@ -352,24 +383,31 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupDefaultRestrictionsDataForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
-                    RequestGroupDefaultRestrictionsDataFormIQ(groupchat),
-                    { packet: Stanza? ->
-                        if (packet is GroupDefaultRestrictionsDataFormResultIQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
-                                .forEachOnUi { listener ->
-                                    listener.onDataFormReceived(groupchat, packet.dataForm ?: return@forEachOnUi)
-                                }
+                AccountManager.getInstance()
+                    .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
+                        RequestGroupDefaultRestrictionsDataFormIQ(groupchat),
+                        { packet: Stanza? ->
+                            if (packet is GroupDefaultRestrictionsDataFormResultIQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        listener.onDataFormReceived(
+                                            groupchat,
+                                            packet.dataForm ?: return@forEachOnUi
+                                        )
+                                    }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                                .forEachOnUi { listener -> listener.onError(groupchat) }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
-                            .forEachOnUi { listener -> listener.onError(groupchat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
-                Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                Application.getInstance()
+                    .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
                     .forEachOnUi { listener -> listener.onError(groupchat) }
             }
         }
@@ -378,22 +416,26 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestSetGroupDefaultRestrictions(groupChat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    RequestToChangeGroupDefaultRestrictionsIQ(groupChat, dataForm),
-                    { packet: Stanza? ->
-                        if (packet is GroupDefaultRestrictionsDataFormResultIQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
-                                .forEachOnUi { listener -> listener.onSuccessful(groupChat) }
+                AccountManager.getInstance()
+                    .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
+                        RequestToChangeGroupDefaultRestrictionsIQ(groupChat, dataForm),
+                        { packet: Stanza? ->
+                            if (packet is GroupDefaultRestrictionsDataFormResultIQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                                    .forEachOnUi { listener -> listener.onSuccessful(groupChat) }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                                .forEachOnUi { listener -> listener.onError(groupChat) }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
-                            .forEachOnUi { listener -> listener.onError(groupChat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
-                Application.getInstance().getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
+                Application.getInstance()
+                    .getUIListeners(OnGroupDefaultRestrictionsListener::class.java)
                     .forEachOnUi { listener -> listener.onError(groupChat) }
             }
         }
@@ -402,24 +444,31 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupSettingsForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
-                    GroupSettingsRequestFormQueryIQ(groupchat),
-                    { packet: Stanza? ->
-                        if (packet is GroupSettingsDataFormResultIQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
+                AccountManager.getInstance()
+                    .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
+                        GroupSettingsRequestFormQueryIQ(groupchat),
+                        { packet: Stanza? ->
+                            if (packet is GroupSettingsDataFormResultIQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupSettingsResultsListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        listener.onDataFormReceived(
+                                            groupchat,
+                                            packet.dataFrom ?: return@forEachOnUi
+                                        )
+                                    }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupSettingsResultsListener::class.java)
                                 .forEachOnUi { listener ->
-                                    listener.onDataFormReceived(
-                                        groupchat,
-                                        packet.dataFrom ?: return@forEachOnUi
+                                    listener.onErrorAtDataFormRequesting(
+                                        groupchat
                                     )
                                 }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
-                            .forEachOnUi { listener -> listener.onErrorAtDataFormRequesting(groupchat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
                 Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
@@ -431,19 +480,30 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun sendSetGroupSettingsRequest(groupchat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
-                    SetGroupSettingsRequestIQ(groupchat, dataForm),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
-                                .forEachOnUi { listener -> listener.onGroupSettingsSuccessfullyChanged(groupchat) }
+                AccountManager.getInstance()
+                    .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
+                        SetGroupSettingsRequestIQ(groupchat, dataForm),
+                        { packet: Stanza? ->
+                            if (packet is IQ && packet.type == IQ.Type.result) {
+                                Application.getInstance()
+                                    .getUIListeners(OnGroupSettingsResultsListener::class.java)
+                                    .forEachOnUi { listener ->
+                                        listener.onGroupSettingsSuccessfullyChanged(
+                                            groupchat
+                                        )
+                                    }
+                            }
+                        },
+                        {
+                            Application.getInstance()
+                                .getUIListeners(OnGroupSettingsResultsListener::class.java)
+                                .forEachOnUi { listener ->
+                                    listener.onErrorAtSettingsSetting(
+                                        groupchat
+                                    )
+                                }
                         }
-                    },
-                    {
-                        Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
-                            .forEachOnUi { listener -> listener.onErrorAtSettingsSetting(groupchat) }
-                    }
-                )
+                    )
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
                 Application.getInstance().getUIListeners(OnGroupSettingsResultsListener::class.java)
@@ -457,7 +517,12 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             try {
                 val item = PayloadItem(null, MetadataExtension(null))
                 val publishItem = PublishItem(UserAvatarManager.METADATA_NAMESPACE, item)
-                val packet = PubSub.createPubsubPacket(groupChat.contactJid.bareJid, IQ.Type.set, publishItem, null)
+                val packet = PubSub.createPubsubPacket(
+                    groupChat.contactJid.bareJid,
+                    IQ.Type.set,
+                    publishItem,
+                    null
+                )
                 AccountManager.getInstance().getAccount(groupChat.account)?.connection
                     ?.createStanzaCollectorAndSend(packet)?.nextResultOrThrow<Stanza>(45000)
             } catch (e: Exception) {
@@ -476,7 +541,8 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                val connectionItem = AccountManager.getInstance().getAccount(groupChat.account)?.connection
+                val connectionItem =
+                    AccountManager.getInstance().getAccount(groupChat.account)?.connection
                 val avatarHash = AvatarManager.getAvatarHash(data)
                 val dataPacket = PubSub.createPubsubPacket(
                     groupChat.contactJid.bareJid,
@@ -487,21 +553,35 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     ),
                     null
                 )
-                connectionItem?.createStanzaCollectorAndSend(dataPacket)?.nextResultOrThrow<Stanza>(60000)
+                connectionItem?.createStanzaCollectorAndSend(dataPacket)
+                    ?.nextResultOrThrow<Stanza>(60000)
                 val metadataItem = PayloadItem(
                     avatarHash,
                     MetadataExtension(
-                        listOf(MetadataInfo(avatarHash, null, data.size.toLong(), type.value, height, width)),
+                        listOf(
+                            MetadataInfo(
+                                avatarHash,
+                                null,
+                                data.size.toLong(),
+                                type.value,
+                                height,
+                                width
+                            )
+                        ),
                         null
                     )
                 )
                 val metadataPacket = PubSub.createPubsubPacket(
                     groupChat.contactJid.bareJid,
                     IQ.Type.set,
-                    PublishItem(UserAvatarManager.METADATA_NAMESPACE + "#" + memberId, metadataItem),
+                    PublishItem(
+                        UserAvatarManager.METADATA_NAMESPACE + "#" + memberId,
+                        metadataItem
+                    ),
                     null
                 )
-                connectionItem?.createStanzaCollectorAndSend(metadataPacket)?.nextResultOrThrow<Stanza>(45000)
+                connectionItem?.createStanzaCollectorAndSend(metadataPacket)
+                    ?.nextResultOrThrow<Stanza>(45000)
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
             }
@@ -512,23 +592,30 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         //todo add privilege checking
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
-                    GroupPinMessageIQ(groupChat.fullJidIfPossible ?: groupChat.contactJid.jid, ""),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            LogManager.d(this::class.java.simpleName, "Message successfully unpinned")
+                AccountManager.getInstance()
+                    .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
+                        GroupPinMessageIQ(
+                            groupChat.fullJidIfPossible ?: groupChat.contactJid.jid,
+                            ""
+                        ),
+                        { packet: Stanza? ->
+                            if (packet is IQ && packet.type == IQ.Type.result) {
+                                LogManager.d(
+                                    this::class.java.simpleName,
+                                    "Message successfully unpinned"
+                                )
+                            }
+                        }) { exception: Exception? ->
+                        LogManager.exception(this::class.java.simpleName, exception)
+                        val context = Application.getInstance().applicationContext
+                        Application.getInstance().runOnUiThread {
+                            Toast.makeText(
+                                context,
+                                context.getText(R.string.groupchat_failed_to_unpin_message),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    }) { exception: Exception? ->
-                    LogManager.exception(this::class.java.simpleName, exception)
-                    val context = Application.getInstance().applicationContext
-                    Application.getInstance().runOnUiThread {
-                        Toast.makeText(
-                            context,
-                            context.getText(R.string.groupchat_failed_to_unpin_message),
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
-                }
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
             }
@@ -544,23 +631,27 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             try {
                 val groupChat = ChatManager.getInstance().getChat(account, contact) as GroupChat?
                     ?: return@runInBackgroundNetworkUserRequest
-                AccountManager.getInstance().getAccount(account)?.connection?.sendIqWithResponseCallback(
-                    GroupPinMessageIQ(groupChat, messageId),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            LogManager.d(this::class.java.simpleName, "Message successfully pinned")
+                AccountManager.getInstance()
+                    .getAccount(account)?.connection?.sendIqWithResponseCallback(
+                        GroupPinMessageIQ(groupChat, messageId),
+                        { packet: Stanza? ->
+                            if (packet is IQ && packet.type == IQ.Type.result) {
+                                LogManager.d(
+                                    this::class.java.simpleName,
+                                    "Message successfully pinned"
+                                )
+                            }
+                        }) {
+                        LogManager.e(this::class.java.simpleName, "Failed to pin message")
+                        val context = Application.getInstance().applicationContext
+                        Application.getInstance().runOnUiThread {
+                            Toast.makeText(
+                                context,
+                                context.getText(R.string.groupchat_failed_to_pin_message),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    }) {
-                    LogManager.e(this::class.java.simpleName, "Failed to pin message")
-                    val context = Application.getInstance().applicationContext
-                    Application.getInstance().runOnUiThread {
-                        Toast.makeText(
-                            context,
-                            context.getText(R.string.groupchat_failed_to_pin_message),
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
-                }
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
             }
