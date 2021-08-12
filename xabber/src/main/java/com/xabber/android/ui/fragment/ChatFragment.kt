@@ -1550,9 +1550,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 return
             }
 
-            buildAndShowMessageContextMenu(
-                activity = requireActivity(),
-                anchorView = caller,
+            MessageContextMenu(
+                context = requireContext(),
+                anchor = caller,
                 message = clickedMessageRealmObject,
                 chat = chat,
                 onMessageRepeatClick = {
@@ -1585,8 +1585,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 onMessageRemoveClick = { deleteMessage(arrayListOf(clickedMessageRealmObject)) },
                 onMentionUserClick = { mentionUser(clickedMessageRealmObject.resource.toString()) },
                 onMessageQuoteClick = { setQuote(clickedMessageRealmObject) },
-            )
+            ).show()
+
         }
+
     }
 
     override fun onMessageAvatarClick(position: Int) {
