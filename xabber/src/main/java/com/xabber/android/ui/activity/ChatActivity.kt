@@ -183,10 +183,8 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         LogManager.i(ChatActivity::class.java.simpleName, "onNewIntent")
         setIntent(intent)
 
-        accountJid = BaseAccountIntentBuilder.getAccount(intent)
-            ?: throw IllegalArgumentException("ChatActivity intent must contains an accountJid")
-        contactJid = EntityIntentBuilder.getContactJid(intent)
-            ?: throw IllegalArgumentException("ChatActivity intent must contains an contactJid")
+        BaseAccountIntentBuilder.getAccount(intent)?.let { accountJid = it }
+        EntityIntentBuilder.getContactJid(intent)?.let { contactJid = it }
 
         initChats()
     }
