@@ -214,7 +214,7 @@ class MessageContextMenu(
             MessageContextMenuItem(context.getString(R.string.message_copy))
 
         class Quote(context: Context) :
-            MessageContextMenuItem(context.getString(R.string.message_copy))
+            MessageContextMenuItem(context.getString(R.string.message_quote))
 
         class Remove(context: Context) :
             MessageContextMenuItem(context.getString(R.string.message_remove))
