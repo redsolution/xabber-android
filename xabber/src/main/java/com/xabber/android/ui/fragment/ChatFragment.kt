@@ -78,7 +78,6 @@ import com.xabber.android.ui.activity.ContactViewerActivity
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.activity.MessagesActivity
 import com.xabber.android.ui.activity.QuestionActivity
-import com.xabber.android.ui.adapter.CustomMessageMenuAdapter
 import com.xabber.android.ui.adapter.ResourceAdapter
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.BindListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClickListener
@@ -96,7 +95,6 @@ import com.xabber.android.utils.Utils
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
-import org.jivesoftware.smack.XMPPException.XMPPErrorException
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
 import org.jxmpp.jid.parts.Resourcepart
@@ -106,11 +104,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageClickListener,
-    MessagesAdapter.Listener, PopupWindow.OnDismissListener, OnAccountChangedListener,
-    BindListener, OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
-    OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
-    OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener,
-    BaseIqResultUiListener {
+    MessagesAdapter.Listener, OnAccountChangedListener, BindListener, OnMessageAvatarClickListener,
+    OnNewIncomingMessageListener, OnNewMessageListener, OnGroupPresenceUpdatedListener,
+    OnMessageUpdatedListener, OnLastHistoryLoadStartedListener, OnLastHistoryLoadFinishedListener,
+    OnAuthAskListener, OnLastHistoryLoadErrorListener, BaseIqResultUiListener {
 
     private var bottomMessagesPanel: BottomMessagesPanel? = null
     private var topPinnedMessagePanel: PinnedMessagePanel? = null
@@ -147,6 +144,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     private lateinit var tvNewReceivedCount: TextView
     private lateinit var btnScrollDown: RelativeLayout
 
+    private val chat: AbstractChat
+        get() {
+            return ChatManager.getInstance().getChat(accountJid, contactJid)
+                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
+        }
     private var accountColor = 0
     private var userIsBlocked = false
     private var historyIsLoading = false //todo refactor this
@@ -194,8 +196,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording)
     }
 
-    private var menuItems: List<HashMap<String, String>>? = null
-
     /* Fragment lifecycle methods */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,9 +207,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -241,12 +239,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         recordButton.setOnTouchListener { _: View?, motionEvent: MotionEvent ->
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(
-                        activity,
-                        PERMISSIONS_REQUEST_RECORD_AUDIO
+                        activity, PERMISSIONS_REQUEST_RECORD_AUDIO
                     )
                 ) if (PermissionsRequester.requestFileWritePermissionIfNeeded(
-                        activity,
-                        PERMISSIONS_REQUEST_RECORD_AUDIO
+                        activity, PERMISSIONS_REQUEST_RECORD_AUDIO
                     )
                 ) {
                     if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
@@ -270,7 +266,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     Utils.lockScreenRotation(activity, false)
                 }
                 MotionEvent.ACTION_MOVE -> {
-
                     //FAB movement
                     val lockParams =
                         recordLockChevronImage?.layoutParams as LinearLayout.LayoutParams
@@ -364,8 +359,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
         slideToCancelLayout = view.findViewById(R.id.slide_layout)
         cancelRecordingLayout = view.findViewById(R.id.cancel_record_layout)
-        val cancelRecordingTextView = view.findViewById<TextView>(R.id.tv_cancel_recording)
-        cancelRecordingTextView.setOnClickListener {
+        view.findViewById<TextView>(R.id.tv_cancel_recording).setOnClickListener {
             if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
                 clearVoiceMessage()
             }
@@ -492,7 +486,8 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                     fabMicViewMarginBottom =
                         (recordButtonExpanded.layoutParams as RelativeLayout.LayoutParams).bottomMargin
                 }
-            })
+            }
+        )
 
         setupPinnedMessageView()
         return view
@@ -502,9 +497,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         super.onResume()
 
         ChatStateManager.getInstance().onChatOpening(accountJid, contactJid)
-        (chat as? GroupChat)?.let {
-            enableSendingPresenceToGroup(it, true)
-        }
+        (chat as? GroupChat)?.let { enableSendingPresenceToGroup(it, true) }
 
         restoreState()
 
@@ -542,33 +535,25 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         (chat as? GroupChat)?.let { enableSendingPresenceToGroup(it, false) }
 
         saveState()
+
         if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording
             || currentVoiceRecordingState == VoiceRecordState.TouchRecording
-        ) stopRecording()
+        ) {
+            stopRecording()
+        }
+
         ChatManager.getInstance().removeVisibleChat()
-        Application.getInstance().removeUIListener(
-            OnAccountChangedListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnNewIncomingMessageListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnNewMessageListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnGroupPresenceUpdatedListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnMessageUpdatedListener::class.java, this
-        )
+        Application.getInstance().removeUIListener(OnAccountChangedListener::class.java, this)
+        Application.getInstance().removeUIListener(OnNewIncomingMessageListener::class.java, this)
+        Application.getInstance().removeUIListener(OnNewMessageListener::class.java, this)
+        Application.getInstance().removeUIListener(OnGroupPresenceUpdatedListener::class.java, this)
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener::class.java, this)
+        Application.getInstance().removeUIListener(OnAuthAskListener::class.java, this)
         Application.getInstance().removeUIListener(
             OnLastHistoryLoadStartedListener::class.java, this
         )
         Application.getInstance().removeUIListener(
             OnLastHistoryLoadFinishedListener::class.java, this
-        )
-        Application.getInstance().removeUIListener(
-            OnAuthAskListener::class.java, this
         )
     }
 
@@ -621,15 +606,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         )
 
         // Save messages position
-        // todo rewrite it
-        var position = layoutManager.findLastCompletelyVisibleItemPosition()
-        if (position == -1) {
-            return
-        }
-        if (position == chatMessageAdapter.itemCount - 1) {
-            position = 0
-        }
-        chat.saveLastPosition(position)
+        layoutManager.findLastCompletelyVisibleItemPosition()
+            .takeIf { it != -1 }
+            ?.let {
+                chat.saveLastPosition(if (it == chatMessageAdapter.itemCount - 1) 0 else it)
+            }
     }
 
     private fun restoreState() { //todo rewrite it
@@ -648,7 +629,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         // Restore scroll position
         val position = chat.lastPosition
         val unread = chat.unreadMessageCount
-        if ((position == 0 || (activity as ChatActivity?)!!.needScrollToUnread()) && unread > 0) { //todo rewrite it also
+        if ((position == 0 || (activity as ChatActivity).needScrollToUnread()) && unread > 0) {
             scrollToFirstUnread(unread)
         } else if (position > 0) {
             layoutManager.scrollToPosition(position)
@@ -869,14 +850,17 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
         ChatStateManager.getInstance().onComposing(accountJid, contactJid, text)
         stopTypingTimer = Timer()
-        stopTypingTimer?.schedule(object : TimerTask() {
-            override fun run() {
-                Application.getInstance()
-                    .runOnUiThread {
-                        ChatStateManager.getInstance().onPaused(accountJid, contactJid)
-                    }
-            }
-        }, STOP_TYPING_DELAY)
+        stopTypingTimer?.schedule(
+            object : TimerTask() {
+                override fun run() {
+                    Application.getInstance()
+                        .runOnUiThread {
+                            ChatStateManager.getInstance().onPaused(accountJid, contactJid)
+                        }
+                }
+            },
+            STOP_TYPING_DELAY
+        )
     }
 
     private fun setUpIme() {
@@ -980,12 +964,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
         }
     }
-
-    private val chat: AbstractChat
-        get() {
-            return ChatManager.getInstance().getChat(accountJid, contactJid)
-                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
-        }
 
     override fun onLastHistoryLoadStarted(accountJid: AccountJid, contactJid: ContactJid) {
         Application.getInstance().runOnUiThread {
@@ -1571,7 +1549,43 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 )
                 return
             }
-            showCustomMenu(caller, clickedMessageRealmObject)
+
+            buildAndShowMessageContextMenu(
+                activity = requireActivity(),
+                anchorView = caller,
+                message = clickedMessageRealmObject,
+                chat = chat,
+                onMessageRepeatClick = {
+                    if (clickedMessageRealmObject.haveAttachments()) {
+                        HttpFileUploadManager.getInstance().retrySendFileMessage(
+                            clickedMessageRealmObject, activity
+                        )
+                    } else {
+                        sendMessage(clickedMessageRealmObject.text)
+                    }
+                },
+                onMessageCopyClick = {
+                    ClipManager.copyMessagesToClipboard(
+                        mutableListOf(clickedMessageRealmObject.primaryKey)
+                    )
+                },
+                onShowOriginalOtrClick = {
+                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(
+                        clickedMessageRealmObject.primaryKey
+                    )
+                    chatMessageAdapter.notifyDataSetChanged()
+                },
+                onMessageStatusClick = {
+                    if (clickedMessageRealmObject.messageStatus == MessageStatus.ERROR) {
+                        showError(clickedMessageRealmObject.errorDescription)
+                    }
+                },
+                onPinClick = { sendPinMessageRequest(clickedMessageRealmObject) },
+                onMessageEditClick = { getReadyForMessageEditing(clickedMessageRealmObject) },
+                onMessageRemoveClick = { deleteMessage(arrayListOf(clickedMessageRealmObject)) },
+                onMentionUserClick = { mentionUser(clickedMessageRealmObject.resource.toString()) },
+                onMessageQuoteClick = { setQuote(clickedMessageRealmObject) },
+            )
         }
     }
 
@@ -1622,23 +1636,26 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     override fun onChangeCheckedItems(checkedItems: Int) {
-        val clickedMessage = chatMessageAdapter.checkedMessageRealmObjects.first() ?: return
-
-        val isRightMessageStatusForEditing = clickedMessage.messageStatus == MessageStatus.DELIVERED
-                || clickedMessage.messageStatus == MessageStatus.RECEIVED
-                || clickedMessage.messageStatus == MessageStatus.DISPLAYED
-
-        val isMessageAbleForEditing = !clickedMessage.isIncoming
-                && !clickedMessage.haveAttachments()
-                && isRightMessageStatusForEditing
-
-        val isSingleCheckedItem = checkedItems == 1
-
-        val isEditable = isSingleCheckedItem && isSupported(accountJid) && isMessageAbleForEditing
-
-        val isPinnable = isSingleCheckedItem && chat is GroupChat
-
         if (checkedItems > 0) {
+            val clickedMessage =
+                chatMessageAdapter.checkedMessageRealmObjects.firstOrNull() ?: return
+
+            val isRightMessageStatusForEditing =
+                clickedMessage.messageStatus == MessageStatus.DELIVERED
+                        || clickedMessage.messageStatus == MessageStatus.RECEIVED
+                        || clickedMessage.messageStatus == MessageStatus.DISPLAYED
+
+            val isMessageAbleForEditing = !clickedMessage.isIncoming
+                    && !clickedMessage.haveAttachments()
+                    && isRightMessageStatusForEditing
+
+            val isSingleCheckedItem = checkedItems == 1
+
+            val isEditable =
+                isSingleCheckedItem && isSupported(accountJid) && isMessageAbleForEditing
+
+            val isPinnable = isSingleCheckedItem && chat is GroupChat
+
             interactionView.visibility = View.VISIBLE
             (activity as? ChatActivity)?.showToolbarInteractionsPanel(
                 true, isEditable, isPinnable, checkedItems
@@ -1651,108 +1668,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 false, isEditable = false, isPinnable = false, messagesCount = checkedItems
             )
         }
-    }
-
-    private fun showCustomMenu(anchor: View?, clickedMessageRealmObject: MessageRealmObject) {
-        menuItems = ArrayList()
-        if (clickedMessageRealmObject.messageStatus == MessageStatus.ERROR) {
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_repeat",
-                getString(R.string.message_repeat)
-            )
-        }
-        if (clickedMessageRealmObject.messageStatus != MessageStatus.UPLOADING) {
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_quote",
-                getString(R.string.message_quote)
-            )
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_copy",
-                getString(R.string.message_copy)
-            )
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_remove",
-                getString(R.string.message_remove)
-            )
-        }
-        if (!clickedMessageRealmObject.isIncoming && !clickedMessageRealmObject.haveAttachments()
-            && (clickedMessageRealmObject.messageStatus == MessageStatus.DELIVERED
-                    || clickedMessageRealmObject.messageStatus == MessageStatus.DISPLAYED
-                    || clickedMessageRealmObject.messageStatus == MessageStatus.RECEIVED)
-        ) {
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_edit",
-                getString(R.string.message_edit)
-            )
-        }
-        if (OTRManager.getInstance().isEncrypted(clickedMessageRealmObject.text)) {
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_show_original_otr",
-                getString(R.string.message_otr_show_original)
-            )
-        }
-        if (chat is GroupChat) {
-            CustomMessageMenu.addMenuItem(
-                menuItems,
-                "action_message_pin",
-                getString(R.string.message_pin)
-            )
-        }
-        if (accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
-            && clickedMessageRealmObject.isIncoming && clickedMessageRealmObject.hasForwardedMessages()
-        ) {
-            val innerMessage = MessageRepository.getForwardedMessages(clickedMessageRealmObject)[0]
-            CustomMessageMenu.addTimestamp(menuItems, innerMessage.timestamp)
-        }
-        CustomMessageMenu.addStatus(menuItems, clickedMessageRealmObject.messageStatus)
-        val listener =
-            AdapterView.OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                if (menuItems != null && menuItems?.size ?: 0 > position) {
-                    val menuItem = menuItems?.get(position)
-                    when (menuItem?.get(CustomMessageMenuAdapter.KEY_ID)) {
-                        "action_message_repeat" -> if (clickedMessageRealmObject.haveAttachments()) {
-                            HttpFileUploadManager.getInstance()
-                                .retrySendFileMessage(clickedMessageRealmObject, activity)
-                        } else sendMessage(clickedMessageRealmObject.text)
-                        "action_message_copy" -> {
-                            ClipManager.copyMessagesToClipboard(
-                                mutableListOf(clickedMessageRealmObject.primaryKey)
-                            )
-                        }
-                        "action_message_appeal" -> mentionUser(clickedMessageRealmObject.resource.toString())
-                        "action_message_quote" -> setQuote(clickedMessageRealmObject)
-                        "action_message_remove" -> {
-                            val arrayList = ArrayList<MessageRealmObject?>()
-                            arrayList.add(clickedMessageRealmObject)
-                            deleteMessage(arrayList)
-                        }
-                        "action_message_show_original_otr" -> {
-                            chatMessageAdapter.addOrRemoveItemNeedOriginalText(
-                                clickedMessageRealmObject.primaryKey
-                            )
-                            chatMessageAdapter.notifyDataSetChanged()
-                        }
-                        CustomMessageMenuAdapter.KEY_ID_STATUS -> if (clickedMessageRealmObject.messageStatus == MessageStatus.ERROR) {
-                            showError(clickedMessageRealmObject.errorDescription)
-                        }
-                        "action_message_edit" -> getReadyForMessageEditing(clickedMessageRealmObject)
-                        "action_message_pin" -> sendPinMessageRequest(clickedMessageRealmObject)
-                        else -> {
-                        }
-                    }
-                }
-            }
-        CustomMessageMenu.showMenu(activity, anchor, menuItems, listener, this)
-    }
-
-    override fun onDismiss() {
-        menuItems = null
     }
 
     private fun mentionUser(username: String) {
@@ -1871,7 +1786,8 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
             context?.resources?.let {
                 shadowDrawable?.setColorFilter(
-                    it.getColor(R.color.black), PorterDuff.Mode.MULTIPLY)
+                    it.getColor(R.color.black), PorterDuff.Mode.MULTIPLY
+                )
             }
             background = shadowDrawable
 
@@ -1923,7 +1839,8 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 blockedView?.setTextAppearance(R.style.TextAppearance_AppCompat_Widget_Button)
             } else {
                 blockedView?.setTextAppearance(
-                    context, R.style.TextAppearance_AppCompat_Widget_Button)
+                    context, R.style.TextAppearance_AppCompat_Widget_Button
+                )
             }
             blockedView?.setTextColor(accountColor)
             blockedView?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
@@ -2236,8 +2153,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             voiceMessageRecorderLayout.visibility = View.VISIBLE
         }
         if (start) {
-            ChatStateManager.getInstance()
-                .onComposing(accountJid, contactJid, null, ChatStateSubtype.voice)
+            ChatStateManager.getInstance().onComposing(
+                accountJid, contactJid, null, ChatStateSubtype.voice
+            )
             stopTypingTimer?.cancel()
             ignoreReceiver = false
             slideToCancelLayout?.animate()?.x(0f)?.setDuration(0)?.start()
@@ -2245,9 +2163,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             recordLockImage?.setImageResource(R.drawable.ic_security_plain_24dp)
             recordLockImage?.setPadding(0, Utils.dipToPx(4f, activity), 0, 0)
 
-            val layoutParams = recordLockChevronImage!!.layoutParams as LinearLayout.LayoutParams
-            layoutParams.topMargin = 0
-            recordLockChevronImage?.layoutParams = layoutParams
+            val layoutParams = recordLockChevronImage?.layoutParams as? LinearLayout.LayoutParams
+            layoutParams?.topMargin = 0
+            layoutParams?.let { recordLockChevronImage?.layoutParams = it }
 
             recordTimer.base = SystemClock.elapsedRealtime()
             recordTimer.start()
@@ -2262,12 +2180,10 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     }
 
     private fun manageScreenSleep(keepScreenOn: Boolean) {
-        if (activity != null) {
-            if (keepScreenOn) {
-                activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            } else {
-                activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }
+        if (keepScreenOn) {
+            activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
@@ -2329,28 +2245,15 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    override fun onSend() {}
-    override fun onResult() {}
-    override fun onOtherError(exception: Exception?) {}
-    override fun processException(exception: Exception?) {
+    override fun onIqError(error: XMPPError) {
         Application.getInstance().runOnUiThread {
-            Toast.makeText(
-                requireContext(),
-                (exception as? XMPPErrorException?)?.xmppError?.stanza?.toXML().toString(),
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(requireContext(), error.conditionText, Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onIqError(error: XMPPError) {
-        Application.getInstance().runOnUiThread {
-            Toast.makeText(
-                requireContext(),
-                error.conditionText,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+    override fun onSend() {}
+    override fun onResult() {}
+    override fun onOtherError(exception: Exception?) {}
 
     private enum class VoiceRecordState {
         NotRecording, InitiatedRecording, TouchRecording, NoTouchRecording, StoppedRecording
