@@ -45,6 +45,11 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
      */
     private val groupsQueryToRequestArchive = mutableSetOf<GroupChat>()
 
+    /**
+     * List of blocks that needs to reduce requests spam, chat list hopping and etc.
+     */
+    private val activeRequests = mutableSetOf<AbstractChat>()
+
     var isArchiveFetching: Boolean = false
         private set(value) {
             field = value
@@ -66,68 +71,72 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     override fun onStanza(connection: ConnectionItem, packet: Stanza) {
         val accountJid = connection.account
-        if (packet is Message && packet.hasExtension(
-                MamResultExtensionElement.ELEMENT,
-                NAMESPACE
-            )
+        if (packet !is Message
+            && !packet.hasExtension(MamResultExtensionElement.ELEMENT, NAMESPACE)
         ) {
-            packet.extensions.filterIsInstance<MamResultExtensionElement>()
-                .forEach { mamResultElement ->
-                    val forwardedElement = mamResultElement.forwarded.forwardedStanza
-                    val contactJid =
-                        if (forwardedElement.from.asBareJid() == accountJid.fullJid.asBareJid()) {
-                            ContactJid.from(forwardedElement.to.asBareJid().toString())
-                        } else ContactJid.from(forwardedElement.from.asBareJid().toString())
-                    val delayInformation = mamResultElement.forwarded.delayInformation
-
-                    if (ChatManager.getInstance().getChat(accountJid, contactJid) is GroupChat
-                        && packet.from.asBareJid().toString() == accountJid.bareJid.toString()
-                    ) {
-                        // If we received group message from local archive
-                        // Don't save this message and request it from remote archive
-                        groupsQueryToRequestArchive.add(
-                            ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
-                        )
-                    } else if (forwardedElement != null && forwardedElement is Message) {
-                        MessageHandler.parseMessage(
-                            accountJid,
-                            contactJid,
-                            forwardedElement,
-                            delayInformation
-                        )
-                    }
-                }
+            return
         }
+
+        packet.extensions.filterIsInstance<MamResultExtensionElement>()
+            .forEach { mamResultElement ->
+                val forwardedElement = mamResultElement.forwarded.forwardedStanza
+                val contactJid =
+                    if (forwardedElement.from.asBareJid() == accountJid.fullJid.asBareJid()) {
+                        ContactJid.from(forwardedElement.to.asBareJid().toString())
+                    } else {
+                        ContactJid.from(forwardedElement.from.asBareJid().toString())
+                    }
+                val delayInformation = mamResultElement.forwarded.delayInformation
+
+                if (ChatManager.getInstance().getChat(accountJid, contactJid) is GroupChat
+                    && packet.from.asBareJid().toString() == accountJid.bareJid.toString()
+                ) {
+                    // If we received group message from local archive
+                    // Don't save this message and request it from remote archive
+                    groupsQueryToRequestArchive.add(
+                        ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
+                    )
+                } else if (forwardedElement != null && forwardedElement is Message) {
+                    MessageHandler.parseMessage(
+                        accountJid, contactJid, forwardedElement, delayInformation
+                    )
+                }
+            }
+
     }
 
     fun reInitMessagesForChat(accountJid: AccountJid, contactJid: ContactJid) {
-
+        //todo
     }
 
     fun isSupported(accountItem: AccountItem) = try {
-        ServiceDiscoveryManager.getInstanceFor(accountItem.connection)
-            .supportsFeature(accountItem.connection.user.asBareJid(), NAMESPACE)
+        ServiceDiscoveryManager.getInstanceFor(accountItem.connection).supportsFeature(
+            accountItem.connection.user.asBareJid(), NAMESPACE
+        )
     } catch (e: Exception) {
         LogManager.exception(this, e)
         false
     }
 
     fun isSupported(connection: XMPPConnection) = try {
-        ServiceDiscoveryManager.getInstanceFor(connection)
-            .supportsFeature(connection.user.asBareJid(), NAMESPACE)
+        ServiceDiscoveryManager.getInstanceFor(connection).supportsFeature(
+            connection.user.asBareJid(), NAMESPACE
+        )
     } catch (e: Exception) {
         LogManager.exception(this, e)
         false
     }
 
     fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String) {
-        Application.getInstance().runInBackgroundNetwork {
+
+        Application.getInstance().runInBackgroundNetworkUserRequest {
             LogManager.i(
                 this,
                 "Start fetching single message with stanza id $stanzaId"
             )
-            AccountManager.getInstance()
-                .getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+
+            AccountManager.getInstance().getAccount(chat.account)?.connection
+                ?.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqMessageWithStanzaId(chat, stanzaId),
                     { packet ->
                         if (packet is IQ && packet.type == IQ.Type.result) {
@@ -137,19 +146,21 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             )
                         }
                     },
-                    { exception -> LogManager.exception(this, exception) }
+                    { exception ->
+                        LogManager.exception(this, exception)
+                    }
                 )
         }
     }
 
     fun loadAllMessagesInChat(chat: AbstractChat) {
-        Application.getInstance().runInBackgroundNetwork {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
             LogManager.i(
                 this,
                 "Start fetching all messages in chat ${chat.account} with ${chat.contactJid}"
             )
-            AccountManager.getInstance()
-                .getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+            AccountManager.getInstance().getAccount(chat.account)?.connection
+                ?.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
                     { packet ->
                         if (packet is IQ && packet.type == IQ.Type.result) {
@@ -159,7 +170,9 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             )
                         }
                     },
-                    { exception -> LogManager.exception(this, exception) }
+                    { exception ->
+                        LogManager.exception(this, exception)
+                    }
                 )
         }
     }
@@ -197,7 +210,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     private fun loadLastMessagesInAllChats(accountItem: AccountItem) {
-        Application.getInstance().runInBackgroundNetwork {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
             val contacts = RosterManager.getInstance().getAccountRosterContacts(accountItem.account)
             contacts.mapIndexed { index, rosterContact ->
                 val chat = ChatManager.getInstance()
@@ -209,8 +222,8 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     this,
                     "Start loading last message in chat ${chat.account} with ${chat.contactJid}"
                 )
-                AccountManager.getInstance()
-                    .getAccount(chat.account)?.connection?.sendIqWithResponseCallback(
+                AccountManager.getInstance().getAccount(chat.account)?.connection
+                    ?.sendIqWithResponseCallback(
                         MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
                         {
                             LogManager.d(
@@ -239,12 +252,12 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     fun loadLastMessageInChat(accountJid: AccountJid, contactJid: ContactJid) {
-        Application.getInstance().runInBackgroundNetwork {
+        val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
+            ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
+        Application.getInstance().runInBackgroundNetworkUserRequest {
             LogManager.d(this, "Start loading last message in chat $accountJid with $contactJid")
-            val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
-                ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
-            AccountManager.getInstance()
-                .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+            AccountManager.getInstance().getAccount(accountJid)?.connection
+                ?.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
                     {
                         LogManager.d(
@@ -264,42 +277,37 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
     }
 
     fun loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem: AccountItem) {
-        Application.getInstance().runInBackgroundNetwork {
-
+        Application.getInstance().runInBackgroundNetworkUserRequest {
             LogManager.i(
                 this,
                 "Start fetching whole missed messages for account ${accountItem.account}"
             )
-
             isArchiveFetching = true
 
             accountItem.connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
-                    timestamp =
-                    getLastAccountMessageInRealmTimestamp(accountItem.account)?.let { Date(it + 1) }
-                        ?: Date()
+                    timestamp = getLastAccountMessageInRealmTimestamp(accountItem.account)
+                        ?.let { Date(it + 1) } ?: Date()
                 ),
                 { packet ->
-                    if (packet is MamFinIQ && packet.isComplete != false) {
+                    if (packet is MamFinIQ && packet.isComplete ?: true) {
                         LogManager.i(
                             this,
                             "Finish fetching whole missed messages for account ${accountItem.account}"
                         )
                         if (groupsQueryToRequestArchive.size == 0) {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                                .forEach { listener ->
-                                    listener.onHistoryLoaded(accountItem)
-                                }
+                                .forEach { it.onHistoryLoaded(accountItem) }
                             isArchiveFetching = false
                         } else {
                             groupsQueryToRequestArchive.map {
-                                loadAllMissedMessagesSinceLastDisconnectForCurrentChat(
-                                    it
-                                )
+                                loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it)
                             }
                             groupsQueryToRequestArchive.clear()
                         }
                     } else {
+                        //todo better make invalidation (or else)
+                        Thread.sleep(5000)
                         loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(
                             accountItem
                         )
@@ -309,15 +317,11 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     LogManager.exception(this, exception)
                     if (groupsQueryToRequestArchive.size == 0) {
                         Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                            .forEach { listener ->
-                                listener.onHistoryLoaded(accountItem)
-                            }
+                            .forEach { it.onHistoryLoaded(accountItem) }
                         isArchiveFetching = false
                     } else {
                         groupsQueryToRequestArchive.map {
-                            loadAllMissedMessagesSinceLastDisconnectForCurrentChat(
-                                it
-                            )
+                            loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it)
                         }
                         groupsQueryToRequestArchive.clear()
                     }
@@ -328,7 +332,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     fun loadAllMissedMessagesSinceLastDisconnectForCurrentChat(chat: AbstractChat) {
 
-        Application.getInstance().runInBackgroundNetwork {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
 
             val accountJid = chat.account
             val contactJid = chat.contactJid
@@ -446,12 +450,22 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
         } catch (e: Exception) {
             LogManager.exception(this, e)
         } finally {
-            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) realm.close()
+            if (Looper.getMainLooper() != Looper.myLooper() && realm != null) {
+                realm.close()
+            }
         }
         return result
     }
 
     fun loadNextMessagesPortionInChat(chat: AbstractChat) {
+        if (chat in activeRequests) {
+            LogManager.i(this, "already fetching, aborting")
+            return
+        }
+
+        activeRequests += chat
+        LogManager.i(this, "added to fetched, size ${activeRequests.size}")
+
         Application.getInstance().runInBackgroundNetworkUserRequest {
 
             LogManager.i(
@@ -488,6 +502,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             "Finish fetching next portion of messages in chat ${chat.account} with ${chat.contactJid}"
                         )
                     }
+                    activeRequests -= chat
                 },
                 { exception: Exception? ->
                     Application.getInstance()
@@ -500,6 +515,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             } else listener.onLastHistoryLoadingError(chat.account, chat.contactJid)
                         }
                     LogManager.exception(this, exception)
+                    activeRequests -= chat
                 },
                 60000
             )

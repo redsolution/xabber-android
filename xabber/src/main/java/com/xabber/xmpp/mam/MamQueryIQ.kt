@@ -101,7 +101,7 @@ class MamQueryIQ private constructor(
         fun createMamRequestIqAllMessagesSince(
             chat: AbstractChat? = null,
             timestamp: Date = Date(),
-            max: Int = 50,
+            max: Int = 250,
         ) = when (chat) {
             is GroupChat -> {
                 MamQueryIQ(

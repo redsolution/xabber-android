@@ -68,17 +68,21 @@ object MessageHandler {
                     var realm: Realm? = null
                     try {
                         realm = DatabaseManager.getInstance().defaultRealmInstance
-                        realm.executeTransaction { realm1 -> realm1.copyToRealmOrUpdate(messagesList) }
+                        realm.executeTransaction { realm1 ->
+                            realm1.copyToRealmOrUpdate(messagesList.reversed())
+                        }
                         messagesList
                             .groupBy { ChatManager.getInstance().getChat(it.account, it.user) }
-                            .filter { it.key != null }
+                            .filterKeys { it != null }
                             .map { repairArchiveMessagesStatuses(it.key!!) }
                         checkForAttachmentsAndDownload(messagesList)
                         notifySamUiListeners(OnNewMessageListener::class.java)
                     } catch (e: Exception) {
                         LogManager.exception(this, e)
                     } finally {
-                        if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close()
+                        if (realm != null && Looper.myLooper() != Looper.getMainLooper()) {
+                            realm.close()
+                        }
                     }
                 }
             }

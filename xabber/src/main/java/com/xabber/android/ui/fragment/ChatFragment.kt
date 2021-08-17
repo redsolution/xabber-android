@@ -149,11 +149,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             return ChatManager.getInstance().getChat(accountJid, contactJid)
                 ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
         }
+
     private var accountColor = 0
     private var userIsBlocked = false
-    private var historyIsLoading = false //todo refactor this
 
-    //Voice message recorder variables!!!!
+    // OMG Voice message recorder variables!!!!
     private val handler = Handler()
     private var currentVoiceRecordingState = VoiceRecordState.NotRecording
     private var recordSaveAllowed = false
@@ -435,7 +435,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         realmRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy < 0) loadHistoryIfNeed()
+                if (dy < 0) requestToLoadHistoryIfNeed()
                 showScrollDownButtonIfNeed()
             }
         })
@@ -515,7 +515,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         Application.getInstance().addUIListener(OnLastHistoryLoadFinishedListener::class.java, this)
         Application.getInstance().addUIListener(OnAuthAskListener::class.java, this)
 
-        loadHistoryIfNeed()
+        requestToLoadHistoryIfNeed()
 
         (chat as? GroupChat)?.let {
             val retractVersion = it.retractVersion
@@ -953,15 +953,14 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    private fun loadHistoryIfNeed() {
-        if (!historyIsLoading) {
-            val messagesCount = chatMessageAdapter.itemCount
-            val topVisible = layoutManager.findFirstVisibleItemPosition()
-            if (topVisible <= 15 && topVisible != -1 && messagesCount != 0
-                || topVisible == -1 && messagesCount <= 30
-            ) {
-                loadNextMessagesPortionInChat(chat)
-            }
+    private fun requestToLoadHistoryIfNeed() {
+
+        val messagesCount = chatMessageAdapter.itemCount
+        val topVisible = layoutManager.findFirstVisibleItemPosition()
+        if (topVisible <= 15 && topVisible != -1 && messagesCount != 0
+            || topVisible == -1 && messagesCount <= 30
+        ) {
+            loadNextMessagesPortionInChat(chat)
         }
     }
 
@@ -969,7 +968,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         Application.getInstance().runOnUiThread {
             if (accountJid == accountJid && contactJid == contactJid) {
                 lastHistoryProgressBar.visibility = View.VISIBLE
-                historyIsLoading = true
             }
         }
     }
@@ -978,7 +976,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         Application.getInstance().runOnUiThread {
             if (accountJid == accountJid && contactJid == contactJid) {
                 lastHistoryProgressBar.visibility = View.GONE
-                historyIsLoading = false
             }
         }
     }
@@ -1321,8 +1318,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
 
     private fun showExportChatDialog() {
         fragmentManager?.let {
-            ChatExportDialogFragment.newInstance(accountJid, contactJid)
-                .show(it, "CHAT_EXPORT") //todo make const
+            ChatExportDialogFragment.newInstance(accountJid, contactJid).show(
+                it, "CHAT_EXPORT"
+            ) //todo make const
         }
     }
 
@@ -1497,7 +1495,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     override fun onClick(v: View) {
         if (v.id == R.id.avatar) {
             showContactInfo()
-        } else if (v.id == R.id.btnScrollDown) onScrollDownClick()
+        } else if (v.id == R.id.btnScrollDown) {
+            onScrollDownClick()
+        }
     }
 
     fun showContactInfo() {
@@ -1711,15 +1711,12 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    override val lastVisiblePosition: Int
-        get() = layoutManager.findLastVisibleItemPosition()
-
     override fun scrollTo(position: Int) {
         layoutManager.scrollToPosition(position)
     }
 
     override fun onMessagesUpdated() {
-        loadHistoryIfNeed()
+        requestToLoadHistoryIfNeed()
     }
 
     private fun showHideNotifyIfNeed() {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -39,18 +40,19 @@ class MessagesAdapter(
     private val listener: Listener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
-) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(context, messageRealmObjects, true),
-    MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
+) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(
+    context, messageRealmObjects, true
+), MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
 
-    // message font style
-    private val appearanceStyle = SettingsManager.chatsAppearanceStyle()
     private var prevItemCount: Int = itemCount
-    private var prevFirstItemId: String? = firstMessageId
+
     private var firstUnreadMessageID: String? = null
     private var isCheckMode = false
-    private val isSavedMessagesMode: Boolean = chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()
+    private val isSavedMessagesMode: Boolean =
+        chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()
     private var recyclerView: RecyclerView? = null
     private val itemsNeedOriginalText: MutableList<String> = ArrayList()
+
     val checkedItemIds: MutableList<String> = ArrayList()
     val checkedMessageRealmObjects: MutableList<MessageRealmObject?> = ArrayList()
 
@@ -58,8 +60,6 @@ class MessagesAdapter(
         fun onMessagesUpdated()
         fun onChangeCheckedItems(checkedItems: Int)
         fun scrollTo(position: Int)
-
-        val lastVisiblePosition: Int
     }
 
     override fun getItemCount(): Int =
@@ -68,11 +68,6 @@ class MessagesAdapter(
         } else {
             0
         }
-
-    private val firstMessageId: String?
-        get() = if (realmResults.isValid && realmResults.isLoaded && realmResults.size > 0) {
-            realmResults.first()?.primaryKey
-        } else null
 
     override fun getItemViewType(position: Int): Int {
         val messageRealmObject = getMessageItem(position) ?: return 0
@@ -86,24 +81,26 @@ class MessagesAdapter(
         }
 
         val isMeInGroup =
-            (messageRealmObject.groupchatUserId != null
+            messageRealmObject.groupchatUserId != null
                     && chat is GroupChat
                     && getMe(chat) != null
                     && getMe(chat)!!.memberId != null
                     && (getMe(chat)!!.memberId == messageRealmObject.groupchatUserId)
-                    )
 
         val isNeedUnpackSingleMessageForSavedMessages = (isSavedMessagesMode
                 && messageRealmObject.hasForwardedMessages()
                 && MessageRepository.getForwardedMessages(messageRealmObject).size == 1)
 
         return if (isNeedUnpackSingleMessageForSavedMessages) {
-            val innerSingleSavedMessage = MessageRepository.getForwardedMessages(messageRealmObject)[0]
+            val innerSingleSavedMessage =
+                MessageRepository.getForwardedMessages(messageRealmObject)[0]
             val isUploadMessage = innerSingleSavedMessage.text == FileMessageVH.UPLOAD_TAG
-            val noFlex = innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments()
+            val noFlex =
+                innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments()
             val isImage = innerSingleSavedMessage.hasImage()
-            val notJustImage = (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
-                    || !innerSingleSavedMessage.isAttachmentImageOnly)
+            val notJustImage =
+                (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
+                        || !innerSingleSavedMessage.isAttachmentImageOnly)
             val contact =
                 if (innerSingleSavedMessage.originalFrom != null) innerSingleSavedMessage.originalFrom else innerSingleSavedMessage.user.toString()
             if (!contact.contains(chat.account.bareJid.toString())) {
@@ -117,10 +114,12 @@ class MessagesAdapter(
 
             // if noFlex is true, should use special layout without flexbox-style text
             val isUploadMessage = messageRealmObject.text == FileMessageVH.UPLOAD_TAG
-            val noFlex = messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments()
+            val noFlex =
+                messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments()
             val isImage = messageRealmObject.hasImage()
-            val notJustImage = (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
-                    || !messageRealmObject.isAttachmentImageOnly)
+            val notJustImage =
+                (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
+                        || !messageRealmObject.isAttachmentImageOnly)
             if (messageRealmObject.isIncoming && !isSavedMessagesMode && !isMeInGroup) {
                 if (isImage) {
                     if (notJustImage) VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT else VIEW_TYPE_INCOMING_MESSAGE_IMAGE
@@ -150,89 +149,89 @@ class MessagesAdapter(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_NOFLEX -> NoFlexIncomingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_noflex, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> NoFlexIncomingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_image, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> NoFlexIncomingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_image_text, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_noflex, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_image, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_incoming_image_text, parent, false),
                 this, this, this, bindListener,
-                this, appearanceStyle
+                this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX -> NoFlexOutgoingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_noflex, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> NoFlexOutgoingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_image, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> NoFlexOutgoingMsgVH(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_image_text, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_noflex, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_image, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_outgoing_image_text, parent, false),
-                this, this, this, appearanceStyle
+                this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             else -> throw IllegalStateException("Unsupported view type!")
         }
@@ -244,7 +243,8 @@ class MessagesAdapter(
 
         if (messageRealmObject == null) {
             LogManager.w(
-                MessagesAdapter::class.java.simpleName, "onBindViewHolder Null message item. Position: $position"
+                MessagesAdapter::class.java.simpleName,
+                "onBindViewHolder Null message item. Position: $position"
             )
             return
         }
@@ -254,10 +254,13 @@ class MessagesAdapter(
             holder.messageId = messageRealmObject.primaryKey
         }
 
-        // groupchat user
         val groupMember =
-            if (messageRealmObject.groupchatUserId != null && messageRealmObject.groupchatUserId.isNotEmpty()) {
-                getGroupMemberById(chat.account, chat.contactJid, messageRealmObject.groupchatUserId)
+            if (messageRealmObject.groupchatUserId != null
+                && messageRealmObject.groupchatUserId.isNotEmpty()
+            ) {
+                getGroupMemberById(
+                    chat.account, chat.contactJid, messageRealmObject.groupchatUserId
+                )
             } else {
                 null
             }
@@ -278,18 +281,22 @@ class MessagesAdapter(
                     }
 
                 val actualNextMessage: MessageRealmObject =
-                    if (nextMessage.account.bareJid.toString().contains(nextMessage.user.bareJid.toString())
+                    if (nextMessage.account.bareJid.toString()
+                            .contains(nextMessage.user.bareJid.toString())
                         && nextMessage.hasForwardedMessages()
                     ) MessageRepository.getForwardedMessages(nextMessage)[0] else nextMessage
 
                 if (actualNextMessage.groupchatUserId != null && actualCurrentMessage.groupchatUserId != null) {
-                    needTail = actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
+                    needTail =
+                        actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
                 } else if (actualNextMessage.groupchatUserId == null && actualCurrentMessage.groupchatUserId == null) {
                     try {
-                        val currentMessageSender = ContactJid.from(actualCurrentMessage.originalFrom)
+                        val currentMessageSender =
+                            ContactJid.from(actualCurrentMessage.originalFrom)
                         val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
                         needTail =
-                            !currentMessageSender.bareJid.toString().contains(previousMessageSender.bareJid.toString())
+                            !currentMessageSender.bareJid.toString()
+                                .contains(previousMessageSender.bareJid.toString())
                     } catch (e: Exception) {
                         LogManager.exception(this, e)
                     }
@@ -301,12 +308,17 @@ class MessagesAdapter(
                         if (nextMessage.groupchatUserId == null) {
                             null
                         } else {
-                            getGroupMemberById(chat.account, chat.contactJid, nextMessage.groupchatUserId)
+                            getGroupMemberById(
+                                chat.account,
+                                chat.contactJid,
+                                nextMessage.groupchatUserId
+                            )
                         }
                     needTail = if (user2 != null) groupMember.memberId != user2.memberId else true
 
                 } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
-                    needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1))
+                    needTail =
+                        getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1))
                 }
             }
         }
@@ -321,32 +333,46 @@ class MessagesAdapter(
                     if (messageRealmObject.account.bareJid.toString()
                             .contains(messageRealmObject.user.bareJid.toString())
                         && messageRealmObject.hasForwardedMessages()
-                    )
-                        MessageRepository.getForwardedMessages(messageRealmObject)[0] else messageRealmObject
+                    ) {
+                        MessageRepository.getForwardedMessages(messageRealmObject)[0]
+                    } else {
+                        messageRealmObject
+                    }
                 val actualPrevious: MessageRealmObject =
-                    if (previousMessage.account.bareJid.toString().contains(previousMessage.user.bareJid.toString())
+                    if (previousMessage.account.bareJid.toString()
+                            .contains(previousMessage.user.bareJid.toString())
                         && previousMessage.hasForwardedMessages()
-                    ) MessageRepository.getForwardedMessages(previousMessage)[0] else previousMessage
+                    ) {
+                        MessageRepository.getForwardedMessages(previousMessage)[0]
+                    } else {
+                        previousMessage
+                    }
                 if (actualPrevious.groupchatUserId != null && currentMessage.groupchatUserId != null) {
                     needName = currentMessage.groupchatUserId != actualPrevious.groupchatUserId
                 } else if (actualPrevious.groupchatUserId == null && currentMessage.groupchatUserId == null) {
                     try {
                         val currentMessageSender = ContactJid.from(currentMessage.originalFrom)
                         val previousMessageSender = ContactJid.from(actualPrevious.originalFrom)
-                        needName =
-                            !currentMessageSender.bareJid.toString().contains(previousMessageSender.bareJid.toString())
+                        needName = !currentMessageSender.bareJid.toString().contains(
+                            previousMessageSender.bareJid.toString()
+                        )
                     } catch (e: Exception) {
                         LogManager.exception(this, e)
                     }
                 } else needName = true
             } else {
-                needDate = !Utils.isSameDay(getMessageItem(position)!!.timestamp, previousMessage.timestamp)
+                needDate = !Utils.isSameDay(
+                    getMessageItem(position)!!.timestamp,
+                    previousMessage.timestamp
+                )
                 needName =
                     if (messageRealmObject.groupchatUserId != null && messageRealmObject.groupchatUserId.isNotEmpty()
                         && previousMessage.groupchatUserId != null && previousMessage.groupchatUserId.isNotEmpty()
                     ) {
                         messageRealmObject.groupchatUserId != previousMessage.groupchatUserId
-                    } else true
+                    } else {
+                        true
+                    }
             }
         } else {
             needDate = true
@@ -433,16 +459,15 @@ class MessagesAdapter(
     }
 
     override fun onChange() {
+        val lastVisible =
+            (recyclerView?.layoutManager as? LinearLayoutManager)?.findLastCompletelyVisibleItemPosition() ?: 0
+
         notifyDataSetChanged()
+
         listener?.onMessagesUpdated()
         if (prevItemCount != itemCount) {
-            if (firstMessageId != null && firstMessageId != prevFirstItemId) {
-                listener?.scrollTo(listener.lastVisiblePosition + (itemCount - prevItemCount))
-            } else if (listener?.lastVisiblePosition == prevItemCount - 1) {
-                listener.scrollTo(itemCount - 1)
-            }
+            listener?.scrollTo(itemCount - prevItemCount + lastVisible)
             prevItemCount = itemCount
-            prevFirstItemId = firstMessageId
         }
     }
 
@@ -509,7 +534,13 @@ class MessagesAdapter(
         if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition)
         } else {
-            fileListener?.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, timestamp)
+            fileListener?.onVoiceClick(
+                messagePosition,
+                attachmentPosition,
+                attachmentId,
+                messageUID,
+                timestamp
+            )
         }
     }
 
