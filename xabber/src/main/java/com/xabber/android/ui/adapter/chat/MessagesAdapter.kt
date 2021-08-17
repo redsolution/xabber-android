@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -459,16 +458,8 @@ class MessagesAdapter(
     }
 
     override fun onChange() {
-        val lastVisible =
-            (recyclerView?.layoutManager as? LinearLayoutManager)?.findLastCompletelyVisibleItemPosition() ?: 0
-
-        notifyDataSetChanged()
-
-        listener?.onMessagesUpdated()
-        if (prevItemCount != itemCount) {
-            listener?.scrollTo(itemCount - prevItemCount + lastVisible)
-            prevItemCount = itemCount
-        }
+        notifyItemRangeInserted(0, itemCount - prevItemCount)
+        prevItemCount = itemCount
     }
 
     fun getMessageItem(position: Int): MessageRealmObject? =

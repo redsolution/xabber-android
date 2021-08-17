@@ -459,12 +459,10 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
     fun loadNextMessagesPortionInChat(chat: AbstractChat) {
         if (chat in activeRequests) {
-            LogManager.i(this, "already fetching, aborting")
             return
         }
 
         activeRequests += chat
-        LogManager.i(this, "added to fetched, size ${activeRequests.size}")
 
         Application.getInstance().runInBackgroundNetworkUserRequest {
 
