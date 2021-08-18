@@ -69,8 +69,8 @@ import kotlin.collections.HashSet
  *
  * @author alexander.ivanov
  */
-object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketListener, OnHistoryLoaded,
-    OnDisconnectListener, OnAuthenticatedListener {
+object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketListener,
+    OnHistoryLoaded, OnDisconnectListener, OnAuthenticatedListener {
 
     private val subscriptionRequestProvider: EntityNotificationProvider<SubscriptionRequest?> =
         EntityNotificationProvider(R.drawable.ic_stat_add_circle)
@@ -80,14 +80,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      * subscription request.
      */
     private val requestedSubscriptions: HashMap<AccountJid, MutableSet<ContactJid>> = HashMap()
-    private val createdGroupAutoSubscriptions: HashMap<AccountJid, MutableSet<ContactJid>?> = HashMap()
-    private val accountsPresenceMap: MutableMap<BareJid, MutableMap<Resourcepart, Presence>> = ConcurrentHashMap()
+    private val createdGroupAutoSubscriptions: HashMap<AccountJid, MutableSet<ContactJid>?> =
+        HashMap()
+    private val accountsPresenceMap: MutableMap<BareJid, MutableMap<Resourcepart, Presence>> =
+        ConcurrentHashMap()
     private val presenceMap: MutableMap<BareJid, MutableMap<BareJid, MutableMap<Resourcepart, Presence>>> =
         ConcurrentHashMap()
 
     override fun onLoad() {
         Application.getInstance().runOnUiThread {
-            NotificationManager.getInstance().registerNotificationProvider(subscriptionRequestProvider)
+            NotificationManager.getInstance()
+                .registerNotificationProvider(subscriptionRequestProvider)
         }
     }
 
@@ -112,7 +115,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         }
     }
 
-    override fun onDisconnect(connection: ConnectionItem) = clearPresencesTiedToThisAccount(connection.account)
+    override fun onDisconnect(connection: ConnectionItem) =
+        clearPresencesTiedToThisAccount(connection.account)
 
     /**
      * Requests subscription to the contact.
@@ -121,11 +125,14 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @JvmOverloads
     @Throws(NetworkException::class)
     fun requestSubscription(account: AccountJid, user: ContactJid, createChat: Boolean = true) {
-        val packet = Presence(Presence.Type.subscribe)
-        packet.to = user.jid
-        StanzaSender.sendStanza(account, packet)
+        StanzaSender.sendStanza(
+            account,
+            Presence(Presence.Type.subscribe).apply { to = user.jid }
+        )
         addRequestedSubscription(account, user)
-        if (createChat) createChatForNewContact(account, user)
+        if (createChat) {
+            createChatForNewContact(account, user)
+        }
     }
 
     private fun removeRequestedSubscription(account: AccountJid, user: ContactJid) {
@@ -133,7 +140,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     private fun addRequestedSubscription(account: AccountJid, user: ContactJid) {
-        if (requestedSubscriptions[account] == null) requestedSubscriptions[account] = HashSet()
+        if (requestedSubscriptions[account] == null) {
+            requestedSubscriptions[account] = HashSet()
+        }
         requestedSubscriptions[account]?.add(user)
     }
 
@@ -147,10 +156,13 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @JvmOverloads
     @Throws(NetworkException::class)
     fun acceptSubscription(account: AccountJid, user: ContactJid, notify: Boolean = true) {
-        if (notify) createChatForAcceptingIncomingRequest(account, user)
-        val packet = Presence(Presence.Type.subscribed)
-        packet.to = user.jid
-        StanzaSender.sendStanza(account, packet)
+        if (notify) {
+            createChatForAcceptingIncomingRequest(account, user)
+        }
+        StanzaSender.sendStanza(
+            account,
+            Presence(Presence.Type.subscribed).apply { to = user.jid }
+        )
         subscriptionRequestProvider.remove(account, user)
         removeRequestedSubscription(account, user)
     }
@@ -190,7 +202,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     fun discardSubscription(account: AccountJid, user: ContactJid) {
         StanzaSender.sendStanza(
             account,
-            Presence(Presence.Type.unsubscribed).also { presence -> presence.to = user.jid }
+            Presence(Presence.Type.unsubscribed).apply { to = user.jid }
         )
         subscriptionRequestProvider.remove(account, user)
         removeRequestedSubscription(account, user)
@@ -203,7 +215,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     fun subscribeForPresence(account: AccountJid?, user: ContactJid) {
         StanzaSender.sendStanza(
             account,
-            Presence(Presence.Type.subscribe).also { presence -> presence.to = user.jid }
+            Presence(Presence.Type.subscribe).apply { to = user.jid }
         )
     }
 
@@ -214,12 +226,14 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     fun unsubscribeFromPresence(account: AccountJid?, user: ContactJid) {
         StanzaSender.sendStanza(
             account,
-            Presence(Presence.Type.unsubscribe).also { presence -> presence.to = user.jid }
+            Presence(Presence.Type.unsubscribe).apply { to = user.jid }
         )
     }
 
     fun addAutoAcceptGroupSubscription(account: AccountJid, groupJid: ContactJid) {
-        if (createdGroupAutoSubscriptions[account] == null) createdGroupAutoSubscriptions[account] = HashSet()
+        if (createdGroupAutoSubscriptions[account] == null) {
+            createdGroupAutoSubscriptions[account] = HashSet()
+        }
         createdGroupAutoSubscriptions[account]?.add(groupJid)
     }
 
@@ -260,8 +274,12 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 && groupchatPresenceExtensionElement.status.isNotEmpty()
             ) {
                 StatusMode.fromString(groupchatPresenceExtensionElement.status)
-            } else StatusMode.createStatusMode(presence)
-        } else StatusMode.createStatusMode(presence)
+            } else {
+                StatusMode.createStatusMode(presence)
+            }
+        } else {
+            StatusMode.createStatusMode(presence)
+        }
     }
 
     /**
@@ -272,12 +290,13 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         return if (presence.hasGroupExtensionElement()) {
             StringUtils.getDisplayStatusForGroupchat(
                 presence.getExtension(
-                    GroupExtensionElement.ELEMENT,
-                    GroupExtensionElement.NAMESPACE
+                    GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE
                 ),
                 Application.getInstance()
             )
-        } else presence.status
+        } else {
+            presence.status
+        }
     }
 
     fun onPresenceChanged(account: AccountJid?, presence: Presence) {
@@ -287,23 +306,30 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             LogManager.exception(this, e)
             return
         }
-        if (presence.isAvailable) CapabilitiesManager.getInstance().onPresence(account, presence)
+        if (presence.isAvailable) {
+            CapabilitiesManager.getInstance().onPresence(account, presence)
+        }
         if (presence.type == Presence.Type.unavailable) {
             LastActivityInteractor.getInstance().setLastActivityTimeNow(account, from.bareUserJid)
         }
 
-        Application.getInstance().getUIListeners(OnStatusChangeListener::class.java).forEachOnUi { listener ->
-            listener.onStatusChanged(account, from, StatusMode.createStatusMode(presence), presence.status)
-        }
+        Application.getInstance().getUIListeners(OnStatusChangeListener::class.java)
+            .forEachOnUi { listener ->
+                listener.onStatusChanged(
+                    account,
+                    from,
+                    StatusMode.createStatusMode(presence),
+                    presence.status
+                )
+            }
 
-        val rosterContact = RosterManager.getInstance().getRosterContact(account, from.bareJid)
-        if (rosterContact != null) {
-            val rosterContacts = ArrayList<RosterContact>().also { it.add(rosterContact) }
-
+        RosterManager.getInstance().getRosterContact(account, from.bareJid)?.let { contact ->
             Application.getInstance().getManagers(OnRosterChangedListener::class.java)
-                .map { listener -> listener.onPresenceChanged(rosterContacts) }
-
+                .forEach { listener ->
+                    listener.onPresenceChanged(listOf(contact))
+                }
         }
+
         RosterManager.onContactChanged(account, from)
     }
 
@@ -334,75 +360,112 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         AccountManager.getInstance().getAccount(account)?.presence
 
     override fun onStanza(connection: ConnectionItem, stanza: Stanza) {
-        if (connection !is AccountItem || stanza !is Presence) return
-
-        val from: ContactJid
-        val fromResource: Resourcepart
-        try {
-            from = ContactJid.from(stanza.getFrom())
-            fromResource = stanza.getFrom().resourceOrEmpty
-        } catch (e: ContactJidCreateException) {
-            LogManager.exception(this, e)
+        if (connection !is AccountItem || stanza !is Presence) {
             return
         }
+
+        val from =
+            try {
+                ContactJid.from(stanza.getFrom())
+            } catch (e: ContactJidCreateException) {
+                LogManager.exception(this, e)
+                return
+            }
+
+        val fromResource =
+            try {
+                stanza.getFrom().resourceOrEmpty
+            } catch (e: ContactJidCreateException) {
+                LogManager.exception(this, e)
+                return
+            }
+
         val isAccountPresence = isAccountPresence(connection.getAccount(), from.bareJid)
-        val userPresences: MutableMap<Resourcepart, Presence>
 
         when (stanza.type) {
             Presence.Type.available -> {
-                userPresences =
-                    if (isAccountPresence) getSingleAccountPresences(from.bareJid)
-                    else getSingleContactPresences(connection.getAccount().fullJid.asBareJid(), from.bareJid)
+                val userPresences =
+                    if (isAccountPresence) {
+                        getSingleAccountPresences(from.bareJid)
+                    } else {
+                        getSingleContactPresences(
+                            connection.getAccount().fullJid.asBareJid(),
+                            from.bareJid
+                        )
+                    }
                 userPresences.remove(Resourcepart.EMPTY)
                 userPresences[fromResource] = stanza
                 if (isAccountPresence) {
                     AccountManager.getInstance().onAccountChanged(connection.getAccount())
-                } else RosterManager.onContactChanged(connection.getAccount(), from)
+                } else {
+                    RosterManager.onContactChanged(connection.getAccount(), from)
+                }
 
                 //checkEntityRightness(connection.account, from, stanza)
             }
+
             Presence.Type.unavailable -> {
                 // If no resource, this is likely an offline presence as part of
                 // a roster presence flood. In that case, we store it.
-                userPresences =
+                val userPresences =
                     if (isAccountPresence) getSingleAccountPresences(from.bareJid) else getSingleContactPresences(
                         connection.getAccount().fullJid.asBareJid(),
                         from.bareJid
                     )
-                userPresences[if (fromResource == Resourcepart.EMPTY) Resourcepart.EMPTY else fromResource] = stanza
+                val key =
+                    if (fromResource == Resourcepart.EMPTY) {
+                        Resourcepart.EMPTY
+                    } else {
+                        fromResource
+                    }
+                userPresences[key] = stanza
                 if (isAccountPresence) {
                     AccountManager.getInstance().onAccountChanged(connection.getAccount())
-                } else RosterManager.onContactChanged(connection.getAccount(), from)
+                } else {
+                    RosterManager.onContactChanged(connection.getAccount(), from)
+                }
             }
+
             Presence.Type.unsubscribe, Presence.Type.unsubscribed ->
                 if (ChatManager.getInstance().getChat(connection.getAccount(), from) is GroupChat) {
                     GroupsManager.onUnsubscribePresence(connection.getAccount(), from, stanza)
-                    LogManager.d(PresenceManager::class.java.simpleName, "Got unsubscribed from group chat")
+                    LogManager.d(
+                        PresenceManager::class.java.simpleName,
+                        "Got unsubscribed from group chat"
+                    )
                 }
+
             Presence.Type.error -> {
                 // No need to act on error presences send without from, i.e.
                 // directly send from the users XMPP service, or where the from
                 // address is not a bare JID
                 if (fromResource == Resourcepart.EMPTY) {
-                    userPresences =
-                        if (isAccountPresence) getSingleAccountPresences(from.bareJid) else getSingleContactPresences(
-                            connection.getAccount().fullJid.asBareJid(),
-                            from.bareJid
-                        )
+                    val userPresences =
+                        if (isAccountPresence) {
+                            getSingleAccountPresences(from.bareJid)
+                        } else {
+                            getSingleContactPresences(
+                                connection.getAccount().fullJid.asBareJid(),
+                                from.bareJid
+                            )
+                        }
                     userPresences.clear()
                     userPresences[Resourcepart.EMPTY] = stanza
                     if (isAccountPresence) {
                         AccountManager.getInstance().onAccountChanged(connection.getAccount())
-                    } else RosterManager.onContactChanged(connection.getAccount(), from)
+                    } else {
+                        RosterManager.onContactChanged(connection.getAccount(), from)
+                    }
                 }
             }
+
             Presence.Type.subscribe -> {
                 val account = connection.getAccount()
-                if (createdGroupAutoSubscriptions[account] != null
-                    && createdGroupAutoSubscriptions[account]!!.contains(from.bareUserJid)
-                ) {
-                    autoAcceptCreatedGroupSubscribeRequest(account, from)
-                    return
+                createdGroupAutoSubscriptions[account]?.let {
+                    if (it.contains(from.bareUserJid)) {
+                        autoAcceptCreatedGroupSubscribeRequest(account, from)
+                        return
+                    }
                 }
 
                 // check spam-filter settings
@@ -443,12 +506,14 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                         // skip subscription, waiting for captcha in messageManager
                     } else {
                         // generate captcha
-                        val captchaQuestion = CaptchaManager.getInstance().generateAndSaveCaptcha(account, from)
+                        val captchaQuestion =
+                            CaptchaManager.getInstance().generateAndSaveCaptcha(account, from)
 
                         // send captcha message to sender
                         MessageManager.getInstance().sendMessageWithoutChat(
                             from.jid,
-                            org.jivesoftware.smack.util.StringUtils.randomString(12), account,
+                            org.jivesoftware.smack.util.StringUtils.randomString(12),
+                            account,
                             Application.getInstance().resources.getString(R.string.spam_filter_limit_subscription) + " " + captchaQuestion
                         )
 
@@ -462,13 +527,19 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     handleSubscriptionRequest(account, from)
                 }
             }
+
             Presence.Type.subscribed -> handleSubscriptionAccept(connection.getAccount(), from)
+
             else -> {
             }
         }
     }
 
-    private fun checkEntityRightness(account: AccountJid, contactJid: ContactJid, presence: Presence) {
+    private fun checkEntityRightness(
+        account: AccountJid,
+        contactJid: ContactJid,
+        presence: Presence
+    ) {
         val chat = ChatManager.getInstance().getChat(account, contactJid)
 
         fun clearHistory() {
@@ -495,7 +566,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
 
         clearHistory()
         MessageArchiveManager.loadLastMessageInChat(account, contactJid)
-
     }
 
     private fun autoAcceptCreatedGroupSubscribeRequest(account: AccountJid, groupJid: ContactJid) {
@@ -519,7 +589,6 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         } else if (!RosterManager.getInstance().contactIsSubscribedTo(account, from)) {
             subscriptionRequestProvider.add(SubscriptionRequest(account, from), null)
             createChatForIncomingRequest(account, from)
-
         }
     }
 
@@ -546,12 +615,19 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         }
     }
 
-    private fun getPresencesTiedToAccount(account: BareJid): MutableMap<BareJid, MutableMap<Resourcepart, Presence>> {
-        if (presenceMap[account] == null) presenceMap[account] = ConcurrentHashMap()
+    private fun getPresencesTiedToAccount(
+        account: BareJid
+    ): MutableMap<BareJid, MutableMap<Resourcepart, Presence>> {
+        if (presenceMap[account] == null) {
+            presenceMap[account] = ConcurrentHashMap()
+        }
         return presenceMap[account]!!
     }
 
-    private fun getSingleContactPresences(account: BareJid, contact: BareJid): MutableMap<Resourcepart, Presence> {
+    private fun getSingleContactPresences(
+        account: BareJid,
+        contact: BareJid
+    ): MutableMap<Resourcepart, Presence> {
         if (getPresencesTiedToAccount(account)[contact] == null) {
             getPresencesTiedToAccount(account)[contact] = ConcurrentHashMap()
         }
@@ -559,7 +635,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     private fun getSingleAccountPresences(bareJid: BareJid): MutableMap<Resourcepart, Presence> {
-        if (accountsPresenceMap[bareJid] == null) accountsPresenceMap[bareJid] = ConcurrentHashMap()
+        if (accountsPresenceMap[bareJid] == null) {
+            accountsPresenceMap[bareJid] = ConcurrentHashMap()
+        }
         return accountsPresenceMap[bareJid]!!
     }
 
@@ -570,11 +648,15 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         val userPresences: Map<Resourcepart, Presence> =
             if (isAccountPresence(account, contact)) {
                 getSingleAccountPresences(contact)
-            } else getSingleContactPresences(account.fullJid.asBareJid(), contact)
+            } else {
+                getSingleContactPresences(account.fullJid.asBareJid(), contact)
+            }
 
         return if (userPresences.isEmpty()) {
             mutableListOf(Presence(Presence.Type.unavailable).apply { from = contact })
-        } else userPresences.values.map(Presence::clone)
+        } else {
+            userPresences.values.map(Presence::clone)
+        }
     }
 
     fun getAvailablePresences(account: AccountJid, contact: BareJid) =
@@ -582,8 +664,11 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
 
     fun getPresence(account: AccountJid, user: ContactJid): Presence {
         val userPresences: Map<Resourcepart, Presence> =
-            if (isAccountPresence(account, user.bareJid)) getSingleAccountPresences(user.bareJid)
-            else getSingleContactPresences(account.fullJid.asBareJid(), user.bareJid)
+            if (isAccountPresence(account, user.bareJid)) {
+                getSingleAccountPresences(user.bareJid)
+            } else {
+                getSingleContactPresences(account.fullJid.asBareJid(), user.bareJid)
+            }
 
         return if (userPresences.isEmpty()) {
             Presence(Presence.Type.unavailable).apply { from = user.bareJid }
@@ -597,7 +682,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      * clear internal presences of this account
      * @param account account
      */
-    fun clearAccountPresences(account: AccountJid) = getSingleAccountPresences(account.fullJid.asBareJid()).clear()
+    fun clearAccountPresences(account: AccountJid) =
+        getSingleAccountPresences(account.fullJid.asBareJid()).clear()
 
     /**
      * clear the presences of this contact
@@ -611,16 +697,19 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      * clear all contact presences tied to this account
      * @param account account
      */
-    fun clearAllContactPresences(account: AccountJid) = getPresencesTiedToAccount(account.fullJid.asBareJid()).clear()
+    fun clearAllContactPresences(account: AccountJid) =
+        getPresencesTiedToAccount(account.fullJid.asBareJid()).clear()
 
     fun clearPresencesTiedToThisAccount(account: AccountJid) {
         clearAccountPresences(account)
         clearAllContactPresences(account)
     }
 
-    fun sortPresencesByPriority(allPresences: List<Presence>) = allPresences.sortedBy(Presence::getPriority)
+    fun sortPresencesByPriority(allPresences: List<Presence>) =
+        allPresences.sortedBy(Presence::getPriority)
 
     fun isAccountPresence(account: AccountJid, from: BareJid) =
-        AccountManager.getInstance().isAccountExist(from.toString()) && account.fullJid.asBareJid().equals(from)
+        AccountManager.getInstance().isAccountExist(from.toString())
+                && account.fullJid.asBareJid().equals(from)
 
 }
