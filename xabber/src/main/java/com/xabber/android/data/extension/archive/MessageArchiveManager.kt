@@ -476,6 +476,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                 || accountItem.loadHistorySettings == LoadHistorySettings.none
                 || !isSupported(accountItem)
             ) {
+                LogManager.w(this, "Aborted next portion of messages fetching!")
                 return@runInBackgroundNetworkUserRequest
             }
 
