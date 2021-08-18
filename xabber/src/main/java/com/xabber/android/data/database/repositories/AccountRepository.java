@@ -90,7 +90,6 @@ public class AccountRepository {
                     accountRealmObject.setSyncable(accountItem.isSyncable());
                     accountRealmObject.setStorePassword(accountItem.isStorePassword());
                     accountRealmObject.setKeyPair(accountItem.getKeyPair());
-                    accountRealmObject.setLastSync(accountItem.getLastSync());
                     accountRealmObject.setArchiveMode(accountItem.getArchiveMode());
                     accountRealmObject.setClearHistoryOnExit(accountItem.isClearHistoryOnExit());
                     accountRealmObject.setMamDefaultBehavior(accountItem.getMamDefaultBehaviour());

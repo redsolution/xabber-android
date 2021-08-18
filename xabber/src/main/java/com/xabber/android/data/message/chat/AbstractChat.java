@@ -114,7 +114,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private RealmResults<MessageRealmObject> unreadMessages;
     private String lastMessageId = null;
     private boolean addContactSuggested = false;
-    private boolean historyRequestedAtStart = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
         super(account, user);
@@ -801,17 +800,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public String getLastMessageId() { return lastMessageId; }
 
     public void setLastMessageId(String lastMessageId) { this.lastMessageId = lastMessageId; }
-
-    public boolean isHistoryRequestedAtStart() { return historyRequestedAtStart; }
-
-    public void setHistoryRequestedAtStart() {
-        this.historyRequestedAtStart = true;
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
-    }
-
-    public void setHistoryRequestedWithoutRealm(boolean isHistoryRequested) {
-        this.historyRequestedAtStart = isHistoryRequested;
-    }
 
     public Resourcepart getResource() { return resource; }
 

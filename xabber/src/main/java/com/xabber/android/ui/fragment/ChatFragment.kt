@@ -1179,6 +1179,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         ) {
             Utils.hideKeyboard(activity)
         }
+        scrollDown()
     }
 
     private fun sendMessage(
@@ -1188,6 +1189,7 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
     ) {
         MessageManager.getInstance().sendMessage(accountJid, contactJid, text, markupText)
         if (needToPullDown) {
+            scrollDown()
             setFirstUnreadMessageId(null)
         }
     }

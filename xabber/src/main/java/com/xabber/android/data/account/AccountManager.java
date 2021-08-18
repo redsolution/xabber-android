@@ -245,7 +245,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealmObject.getProxyPassword(),
                     accountRealmObject.isSyncable(),
                     accountRealmObject.getKeyPair(),
-                    accountRealmObject.getLastSync(),
                     accountRealmObject.getArchiveMode(),
                     accountRealmObject.isXabberAutoLoginEnabled(),
                     accountRealmObject.getRetractVersion());
@@ -364,12 +363,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                                    StatusMode statusMode, String statusText, boolean enabled, boolean saslEnabled,
                                    TLSMode tlsMode, boolean compression, ProxyType proxyType, String proxyHost,
                                    int proxyPort, String proxyUser, String proxyPassword, boolean syncable,
-                                   KeyPair keyPair, Date lastSync, ArchiveMode archiveMode, boolean registerNewAccount){
+                                   KeyPair keyPair, ArchiveMode archiveMode, boolean registerNewAccount){
 
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName, resource, storePassword,
                 password, token, null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText,
                 enabled, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword,
-                syncable, keyPair, lastSync, archiveMode, true, null);
+                syncable, keyPair, archiveMode, true, null);
 
         AccountRepository.saveAccountToRealm(accountItem);
         addAccount(accountItem);
@@ -441,7 +440,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 XabberAccountManager.getInstance().getCurrentTime(), 67, StatusMode.available,
                 SettingsManager.statusText(), enabled, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
-                "", "", syncable, null, null, archiveMode, registerNewAccount);
+                "", "", syncable, null, archiveMode, registerNewAccount);
         if (accountItem == null) {
             throw new NetworkException(R.string.account_add__alert_registration_failed);
         }
@@ -677,13 +676,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             StatusMode statusMode = accountItem.getRawStatusMode();
             String statusText = accountItem.getStatusText();
             KeyPair keyPair = accountItem.getKeyPair();
-            Date lastSync = accountItem.getLastSync();
             removeAccountWithoutCallback(account);
             result = addAccount(custom, host, port, serverName, userName, storePassword,
                     password, token, resource, colorIndex, accountItem.getOrder(), accountItem.isSyncNotAllowed(),
                     accountItem.getTimestamp(), priority, statusMode, statusText, enabled,
                     saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
-                    proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
+                    proxyPassword, syncable, keyPair, archiveMode, false);
         }
         onAccountChanged(result.getAccount());
 

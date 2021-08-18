@@ -89,11 +89,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      */
     private KeyPair keyPair;
 
-    /**
-     * Last history synchronization.
-     */
-    private final Date lastSync;
-
     private ArchiveMode archiveMode;
 
     /**
@@ -129,15 +124,19 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private String retractVersion;
 
-    public AccountItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
-                       Resourcepart resource, boolean storePassword, String password, String token, XToken xToken,
-                       int colorIndex, int order, boolean syncNotAllowed, int timestamp, int priority,
-                       StatusMode statusMode, String statusText, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
-                       boolean compression, ProxyType proxyType, String proxyHost, int proxyPort, String proxyUser,
-                       String proxyPassword, boolean syncable, KeyPair keyPair, Date lastSync, ArchiveMode archiveMode,
-                       boolean xabberAutoLoginEnabled, String retractVersion) {
-        super(custom, host, port, serverName, userName, resource, storePassword, password, token, xToken, saslEnabled,
-                tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
+    public AccountItem(boolean custom, String host, int port, DomainBareJid serverName,
+                       Localpart userName, Resourcepart resource, boolean storePassword,
+                       String password, String token, XToken xToken, int colorIndex, int order,
+                       boolean syncNotAllowed, int timestamp, int priority, StatusMode statusMode,
+                       String statusText, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
+                       boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
+                       String proxyUser, String proxyPassword, boolean syncable, KeyPair keyPair,
+                       ArchiveMode archiveMode, boolean xabberAutoLoginEnabled,
+                       String retractVersion) {
+        super(custom, host, port, serverName, userName, resource, storePassword, password, token,
+                xToken, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort,
+                proxyUser, proxyPassword);
+
         this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;
         this.order = order;
@@ -152,7 +151,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.syncable = syncable;
         this.storePassword = storePassword;
         this.keyPair = keyPair;
-        this.lastSync = lastSync;
         this.archiveMode = archiveMode;
         this.clearHistoryOnExit = false;
         this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
@@ -253,10 +251,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     void setKeyPair(KeyPair keyPair) {
         this.keyPair = keyPair;
-    }
-
-    public Date getLastSync() {
-        return lastSync;
     }
 
     public ArchiveMode getArchiveMode() {

@@ -44,6 +44,7 @@ class MessagesAdapter(
 ), MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
 
     private var prevItemCount: Int = itemCount
+    private var prevLastMessageId: String? = null
 
     private var firstUnreadMessageID: String? = null
     private var isCheckMode = false
@@ -458,7 +459,17 @@ class MessagesAdapter(
     }
 
     override fun onChange() {
-        notifyItemRangeInserted(0, itemCount - prevItemCount)
+        if (realmResults.last()?.primaryKey == prevLastMessageId) {
+            if (prevItemCount == itemCount) {
+                notifyDataSetChanged()
+            } else {
+                notifyItemRangeInserted(0, itemCount - prevItemCount)
+            }
+        } else {
+            prevLastMessageId = realmResults.last()?.primaryKey
+            notifyDataSetChanged()
+            listener?.scrollTo(itemCount - 1)
+        }
         prevItemCount = itemCount
     }
 

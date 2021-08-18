@@ -23,7 +23,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmList;
@@ -60,7 +59,7 @@ public class AccountRealmObject extends RealmObject {
     private String serverName;
     private String uploadServer;
     private RealmList<String> groupServers;
-    private RealmList<String> customGroupServers = new RealmList<String>();
+    private RealmList<String> customGroupServers = new RealmList<>();
     private String userName;
     private String resource;
 
@@ -97,7 +96,6 @@ public class AccountRealmObject extends RealmObject {
     private byte[] publicKeyBytes;
     private byte[] privateKeyBytes;
 
-    private long lastSync;
     private String archiveMode;
 
     private boolean clearHistoryOnExit;
@@ -374,16 +372,6 @@ public class AccountRealmObject extends RealmObject {
             this.publicKeyBytes = x509EncodedKeySpec.getEncoded();
             this.privateKeyBytes = pkcs8EncodedKeySpec.getEncoded();
         }
-    }
-
-    public Date getLastSync() {
-        return new Date(this.lastSync);
-    }
-
-    public void setLastSync(Date lastSync) {
-        if (lastSync == null) {
-            this.lastSync = 0;
-        } else this.lastSync = lastSync.getTime();
     }
 
     public ArchiveMode getArchiveMode() {

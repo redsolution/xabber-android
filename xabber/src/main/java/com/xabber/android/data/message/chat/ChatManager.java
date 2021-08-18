@@ -175,7 +175,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
 
         if (chat instanceof RegularChat){
             RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getContactJid(), null,
-                    chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(), 0,
+                    chat.getLastPosition(), false, chat.isArchived(), 0,
                     chat.getNotificationState());
         } else if (chat instanceof GroupChat) GroupchatRepository.saveOrUpdateGroupchatRealmObject((GroupChat) chat);
     }

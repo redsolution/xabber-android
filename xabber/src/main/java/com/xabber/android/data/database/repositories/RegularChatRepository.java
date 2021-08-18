@@ -45,8 +45,8 @@ public class RegularChatRepository {
     public static void saveOrUpdateRegularChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                           @Nullable MessageRealmObject lastMessage,
                                                           int lastPosition, boolean isBlocked,
-                                                          boolean isArchived, boolean isHistoryRequestAtStart,
-                                                          int unreadCount, NotificationState notificationState) {
+                                                          boolean isArchived, int unreadCount,
+                                                          NotificationState notificationState) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -80,9 +80,12 @@ public class RegularChatRepository {
 
                     if (regularChatRealmObject == null) {
 
-                        RegularChatRealmObject newRegularChatRealmObject = new RegularChatRealmObject(accountJid, contactJid,
-                                lastMessage == null ? messageRealmObject : lastMessage, isArchived,
-                                isBlocked, isHistoryRequestAtStart, unreadCount, lastPosition, notificationState);
+                        RegularChatRealmObject newRegularChatRealmObject =
+                                new RegularChatRealmObject(accountJid, contactJid,
+                                        lastMessage == null ? messageRealmObject : lastMessage,
+                                        isArchived, isBlocked, unreadCount, lastPosition,
+                                        notificationState
+                                );
 
                         if (contactRealmObject != null && contactRealmObject.getChats() != null
                                 && !contactRealmObject.getChats().contains(newRegularChatRealmObject)){
@@ -90,14 +93,12 @@ public class RegularChatRepository {
                         }
 
                         realm1.insertOrUpdate(newRegularChatRealmObject);
-                        if (contactRealmObject != null) realm1.insertOrUpdate(contactRealmObject);
                     } else {
 
                         regularChatRealmObject.setLastMessage(lastMessage == null ? messageRealmObject : lastMessage);
                         regularChatRealmObject.setLastPosition(lastPosition);
                         regularChatRealmObject.setBlocked(isBlocked);
                         regularChatRealmObject.setArchived(isArchived);
-                        regularChatRealmObject.setHistoryRequestAtStart(isHistoryRequestAtStart);
                         regularChatRealmObject.setUnreadMessagesCount(unreadCount);
                         regularChatRealmObject.setNotificationState(notificationState);
 
@@ -107,8 +108,8 @@ public class RegularChatRepository {
                         }
 
                         realm1.insertOrUpdate(regularChatRealmObject);
-                        if (contactRealmObject != null) realm1.insertOrUpdate(contactRealmObject);
                     }
+                    if (contactRealmObject != null) realm1.insertOrUpdate(contactRealmObject);
 
                 });
 
@@ -132,7 +133,6 @@ public class RegularChatRepository {
             RegularChat regularChat = new RegularChat(regularChatRealmObject.getAccountJid(), regularChatRealmObject.getContactJid());
             regularChat.setArchivedWithoutRealm(regularChatRealmObject.isArchived());
             regularChat.setLastPosition(regularChatRealmObject.getLastPosition());
-            regularChat.setHistoryRequestedWithoutRealm(regularChatRealmObject.isHistoryRequestAtStart());
             regularChat.setLastActionTimestamp(regularChatRealmObject.getLastMessageTimestamp());
             regularChat.setNotificationState(regularChatRealmObject.getNotificationState(), false);
             result.add(regularChat);
