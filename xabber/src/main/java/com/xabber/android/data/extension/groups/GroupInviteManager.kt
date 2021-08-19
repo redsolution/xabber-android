@@ -130,29 +130,32 @@ object GroupInviteManager : OnLoadListener {
             try {
                 val groupChat =
                     ChatManager.getInstance().getChat(accountJid, groupJid) as GroupChat?
+
+                fun removeGroup() {
+                    invitesList
+                        .filter { it.accountJid == accountJid && it.groupJid == groupJid }
+                        .forEach {
+                            it.isDeclined = true
+                            GroupInviteRepository.saveOrUpdateInviteToRealm(it)
+                        }
+                    ChatManager.getInstance().removeChat(groupChat)
+                    BlockingManager.getInstance().blockContact(accountJid, groupJid,
+                        object : BlockContactListener {
+                            override fun onSuccessBlock() {}
+                            override fun onErrorBlock() {}
+                        }
+                    )
+                }
+
                 val connection = AccountManager.getInstance().getAccount(accountJid)!!.connection
                 connection.sendIqWithResponseCallback(DeclineGroupInviteIQ(groupChat!!),
-                    { packet: Stanza? ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            invitesList
-                                .filter { it.accountJid == accountJid && it.groupJid == groupJid }
-                                .forEach {
-                                    it.isDeclined = true
-                                    GroupInviteRepository.saveOrUpdateInviteToRealm(it)
-                                }
-                            ChatManager.getInstance().removeChat(groupChat)
-                            BlockingManager.getInstance().blockContact(accountJid, groupJid,
-                                object : BlockContactListener {
-                                    override fun onSuccessBlock() {}
-                                    override fun onErrorBlock() {}
-                                })
-                        }
-                    },
+                    { removeGroup() },
                     { exception: java.lang.Exception ->
                         LogManager.e(
                             LOG_TAG, "Error to decline the invite from group $groupJid " +
                                     "to account $accountJid!${exception.message}"
                         )
+                        removeGroup()
                     }
                 )
             } catch (e: java.lang.Exception) {

@@ -473,6 +473,10 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     override fun update() {
+        if (ChatManager.getInstance().getChat(accountJid, contactJid) == null) {
+            return
+        }
+
         updateToolbar()
         chatFragment?.updateContact()
         updateStatusBar()

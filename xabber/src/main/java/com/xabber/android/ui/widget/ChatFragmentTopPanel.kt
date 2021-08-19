@@ -169,9 +169,8 @@ class ChatFragmentTopPanel : Fragment() {
             try {
                 if (GroupInviteManager.hasActiveIncomingInvites(accountJid, contactJid)) {
                     GroupInviteManager.declineInvitation(accountJid, contactJid)
+                    activity?.finish()
                 }
-                PresenceManager.discardSubscription(accountJid, contactJid)
-                PresenceManager.unsubscribeFromPresence(accountJid, contactJid)
             } catch (e: NetworkException) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED)
             }
