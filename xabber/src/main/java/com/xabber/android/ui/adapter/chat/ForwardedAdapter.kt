@@ -16,9 +16,9 @@ import io.realm.RealmRecyclerViewAdapter
 import io.realm.RealmResults
 
 class ForwardedAdapter(
-    realmResults: RealmResults<MessageRealmObject?>,
+    private val realmResults: RealmResults<MessageRealmObject?>,
     private val extraData: MessageExtraData
-) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(extraData.context, realmResults, true),
+) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(realmResults, true, true),
     MessageClickListener,
     MessageLongClickListener {
 

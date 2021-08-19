@@ -567,11 +567,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        chatMessageAdapter.release()
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
 

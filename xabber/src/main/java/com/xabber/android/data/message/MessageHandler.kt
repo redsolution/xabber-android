@@ -69,7 +69,7 @@ object MessageHandler {
                     try {
                         realm = DatabaseManager.getInstance().defaultRealmInstance
                         realm.executeTransaction { realm1 ->
-                            realm1.copyToRealmOrUpdate(messagesList.reversed())
+                            realm1.copyToRealmOrUpdate(messagesList)
                         }
                         messagesList
                             .groupBy { ChatManager.getInstance().getChat(it.account, it.user) }

@@ -30,8 +30,8 @@ import io.realm.RealmResults
 import java.util.*
 
 class MessagesAdapter(
-    context: Context,
-    messageRealmObjects: RealmResults<MessageRealmObject?>,
+    private val context: Context,
+    private val messageRealmObjects: RealmResults<MessageRealmObject?>,
     private val chat: AbstractChat,
     private val messageListener: MessageClickListener? = null,
     private val fileListener: FileListener? = null,
@@ -39,12 +39,16 @@ class MessagesAdapter(
     private val listener: Listener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
-) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(
-    context, messageRealmObjects, true
-), MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
+) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(messageRealmObjects, true, true),
+    MessageClickListener,
+    MessageLongClickListener,
+    FileListener,
+    OnMessageAvatarClickListener {
 
     private var prevItemCount: Int = itemCount
-    private var prevLastMessageId: String? = null
+
+    private var prevBottomMessagePrimaryKey: String? = messageRealmObjects.lastOrNull()?.primaryKey
+    private var prevTopMessagePrimaryKey: String? = messageRealmObjects.firstOrNull()?.primaryKey
 
     private var firstUnreadMessageID: String? = null
     private var isCheckMode = false
@@ -63,8 +67,8 @@ class MessagesAdapter(
     }
 
     override fun getItemCount(): Int =
-        if (realmResults.isValid && realmResults.isLoaded) {
-            realmResults.size
+        if (messageRealmObjects.isValid && messageRealmObjects.isLoaded) {
+            messageRealmObjects.size
         } else {
             0
         }
@@ -458,25 +462,10 @@ class MessagesAdapter(
         }
     }
 
-    override fun onChange() {
-        if (realmResults.last()?.primaryKey == prevLastMessageId) {
-            if (prevItemCount == itemCount) {
-                notifyDataSetChanged()
-            } else {
-                notifyItemRangeInserted(0, itemCount - prevItemCount)
-            }
-        } else {
-            prevLastMessageId = realmResults.last()?.primaryKey
-            notifyDataSetChanged()
-            listener?.scrollTo(itemCount - 1)
-        }
-        prevItemCount = itemCount
-    }
-
     fun getMessageItem(position: Int): MessageRealmObject? =
         when {
             position == RecyclerView.NO_POSITION -> null
-            position < realmResults.size -> realmResults[position]
+            position < messageRealmObjects.size -> messageRealmObjects[position]
             else -> null
         }
 
