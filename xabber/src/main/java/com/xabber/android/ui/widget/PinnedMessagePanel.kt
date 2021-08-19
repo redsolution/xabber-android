@@ -22,74 +22,78 @@ import com.xabber.android.utils.Utils
 
 class PinnedMessagePanel : Fragment() {
 
-    private lateinit var message: MessageRealmObject
+    private var message: MessageRealmObject? = null
 
     private var onCLoseListener: OnCloseClickListener? = null
     private var onClickListener: OnClickListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.pinned_message_layout, container, false)
 
-        val groupMember = GroupMemberManager.getGroupMemberById(
-            message.account, message.user, message.groupchatUserId
-        ) ?: throw NullPointerException("Tried to pin message without group member!")
-
-        onClickListener?.let { listener ->
-            view.setOnClickListener { listener.onClick() }
+        if (message == null) {
+            return view.apply { visibility = View.GONE }
         }
 
-        view.findViewById<TextView>(R.id.pinned_message_text).apply {
-            setupMessageText(this)
-        }
+        message?.let { message ->
+            val groupMember = GroupMemberManager.getGroupMemberById(
+                message.account, message.user, message.groupchatUserId
+            ) ?: throw NullPointerException("Tried to pin message without group member!")
 
-        view.findViewById<ImageView>(R.id.pinned_message_close_iv).apply {
-            onCLoseListener?.let { listener ->
-                setOnClickListener { listener.onCloseClick() }
+            onClickListener?.let { listener ->
+                view.setOnClickListener { listener.onClick() }
             }
-        }
 
-        view.findViewById<TextView>(R.id.pinned_message_jid_tv).apply {
-            text = groupMember.bestName
-            setTextColor(
-                ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                    message.account, 600
-                )
-            )
-        }
-
-        view.findViewById<TextView>(R.id.pinned_message_badge_tv).apply {
-            if (groupMember.badge.isNullOrEmpty()) {
-                visibility = View.GONE
-            } else {
-                visibility = View.VISIBLE
-                text = groupMember.badge
+            view.findViewById<TextView>(R.id.pinned_message_text).apply {
+                setupMessageText(this, message)
             }
-        }
 
-        view.findViewById<TextView>(R.id.pinned_message_role_tv).apply {
-            if (groupMember.role != null) {
-                visibility = View.VISIBLE
-                text = groupMember.role.toString()
-                setBackgroundColor(
+            view.findViewById<ImageView>(R.id.pinned_message_close_iv).apply {
+                onCLoseListener?.let { listener ->
+                    setOnClickListener { listener.onCloseClick() }
+                }
+            }
+
+            view.findViewById<TextView>(R.id.pinned_message_jid_tv).apply {
+                text = groupMember.bestName
+                setTextColor(
                     ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                        message.account, 50
+                        message.account, 600
                     )
                 )
-            } else {
-                visibility = View.GONE
             }
-        }
 
-        view.findViewById<ImageView>(R.id.pinned_message_icon).apply {
-            setColorFilter(
-                ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                    message.account, 600
+            view.findViewById<TextView>(R.id.pinned_message_badge_tv).apply {
+                if (groupMember.badge.isNullOrEmpty()) {
+                    visibility = View.GONE
+                } else {
+                    visibility = View.VISIBLE
+                    text = groupMember.badge
+                }
+            }
+
+            view.findViewById<TextView>(R.id.pinned_message_role_tv).apply {
+                if (groupMember.role != null) {
+                    visibility = View.VISIBLE
+                    text = groupMember.role.toString()
+                    setBackgroundColor(
+                        ColorManager.getInstance().accountPainter.getAccountColorWithTint(
+                            message.account, 50
+                        )
+                    )
+                } else {
+                    visibility = View.GONE
+                }
+            }
+
+            view.findViewById<ImageView>(R.id.pinned_message_icon).apply {
+                setColorFilter(
+                    ColorManager.getInstance().accountPainter.getAccountColorWithTint(
+                        message.account, 600
+                    )
                 )
-            )
+            }
         }
 
         return view
@@ -101,7 +105,7 @@ class PinnedMessagePanel : Fragment() {
         super.onDestroy()
     }
 
-    private fun setupMessageText(textView: TextView) {
+    private fun setupMessageText(textView: TextView, message: MessageRealmObject) {
         val text = message.text
         val forwardedCount = message.forwardedIds.size
         if (text == null || text.isEmpty()) {
@@ -160,7 +164,7 @@ class PinnedMessagePanel : Fragment() {
 
     companion object {
 
-        // it's incorrect instancing, I know
+        // This is incorrect instancing
         fun newInstance(
             message: MessageRealmObject,
             onClickListener: OnClickListener? = null,
