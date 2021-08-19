@@ -5,8 +5,9 @@ import com.xabber.xmpp.groups.GroupExtensionElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class InviteMessageExtensionElement(private val groupJid: ContactJid, private val reason: String?)
-    : ExtensionElement {
+class InviteMessageExtensionElement(
+    private val groupJid: ContactJid, private val reason: String?
+) : ExtensionElement {
 
     override fun getNamespace() = NAMESPACE
 
@@ -15,13 +16,16 @@ class InviteMessageExtensionElement(private val groupJid: ContactJid, private va
     override fun toXML() = XmlStringBuilder(this).apply {
         attribute(ATTRIBUTE_JID, groupJid.bareJid.toString())
         rightAngleBracket()
-        if (!reason.isNullOrEmpty()) optElement(ELEMENT_REASON, reason)
+        if (!reason.isNullOrEmpty()) {
+            optElement(ELEMENT_REASON, reason)
+        }
         closeElement(ELEMENT)
     }
 
-    companion object{
+    companion object {
         const val ELEMENT = "invite"
-        const val NAMESPACE = GroupExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE
+        const val NAMESPACE =
+            GroupExtensionElement.NAMESPACE + GroupchatInviteListQueryIQ.HASH_INVITE
         const val ATTRIBUTE_JID = "jid"
         const val ELEMENT_REASON = "reason"
     }
