@@ -95,15 +95,20 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     override fun onAuthenticated(connectionItem: ConnectionItem) {
-        val accountItem = AccountManager.getInstance().getAccount(connectionItem.account)
-        if (isSupported(connectionItem.connection)
-            && accountItem != null && accountItem.startHistoryTimestamp == null
-        ) {
+        val accountItem = AccountManager.getInstance().getAccount(connectionItem.account) ?: return
+        val accountJid = accountItem.account
+
+        if (isSupported(connectionItem.connection) && accountItem.startHistoryTimestamp == null) {
             try {
-                sendAccountPresence(accountItem.account)
+                sendAccountPresence(accountJid)
             } catch (e: NetworkException) {
                 LogManager.exception(this, e)
             }
+        } else {
+            Application.getInstance().runOnUiThreadDelay(
+                { sendAccountPresence(accountJid) },
+                5000
+            )
         }
     }
 

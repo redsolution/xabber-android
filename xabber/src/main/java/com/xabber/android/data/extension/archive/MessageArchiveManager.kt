@@ -290,6 +290,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                         ?.let { Date(it + 1) } ?: Date()
                 ),
                 { packet ->
+                    isArchiveFetching = false
                     if (packet is MamFinIQ && packet.isComplete ?: true) {
                         LogManager.i(
                             this,
@@ -298,7 +299,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                         if (groupsQueryToRequestArchive.size == 0) {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                                 .forEach { it.onHistoryLoaded(accountItem) }
-                            isArchiveFetching = false
+
                         } else {
                             groupsQueryToRequestArchive.map {
                                 loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it)
@@ -314,11 +315,11 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     }
                 },
                 { exception ->
+                    isArchiveFetching = false
                     LogManager.exception(this, exception)
                     if (groupsQueryToRequestArchive.size == 0) {
                         Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                             .forEach { it.onHistoryLoaded(accountItem) }
-                        isArchiveFetching = false
                     } else {
                         groupsQueryToRequestArchive.map {
                             loadAllMissedMessagesSinceLastDisconnectForCurrentChat(it)
@@ -347,6 +348,8 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
 
             val accountItem = AccountManager.getInstance().getAccount(accountJid)
 
+            isArchiveFetching = true
+
             accountItem?.connection?.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
                     chat = chat,
@@ -354,6 +357,7 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                         ?: Date(),
                 ),
                 {
+                    isArchiveFetching = false
                     Application.getInstance()
                         .getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
@@ -362,7 +366,6 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                             .forEach { listener ->
                                 listener.onHistoryLoaded(accountItem)
                             }
-                        isArchiveFetching = false
                     }
                     LogManager.i(
                         this,
@@ -370,13 +373,13 @@ object MessageArchiveManager : OnRosterReceivedListener, OnPacketListener {
                     )
                 },
                 { exception ->
+                    isArchiveFetching = false
                     Application.getInstance()
                         .getUIListeners(OnLastHistoryLoadErrorListener::class.java)
                         .forEachOnUi { it.onLastHistoryLoadingError(accountJid, contactJid) }
                     if (groupsQueryToRequestArchive.size == 0) {
                         Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                             .forEach { listener -> listener.onHistoryLoaded(accountItem) }
-                        isArchiveFetching = false
                     }
                     LogManager.exception(this, exception)
                 }
