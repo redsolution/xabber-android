@@ -45,11 +45,6 @@ class MessagesAdapter(
     FileListener,
     OnMessageAvatarClickListener {
 
-    private var prevItemCount: Int = itemCount
-
-    private var prevBottomMessagePrimaryKey: String? = messageRealmObjects.lastOrNull()?.primaryKey
-    private var prevTopMessagePrimaryKey: String? = messageRealmObjects.firstOrNull()?.primaryKey
-
     private var firstUnreadMessageID: String? = null
     private var isCheckMode = false
     private val isSavedMessagesMode: Boolean =
@@ -98,39 +93,65 @@ class MessagesAdapter(
         return if (isNeedUnpackSingleMessageForSavedMessages) {
             val innerSingleSavedMessage =
                 MessageRepository.getForwardedMessages(messageRealmObject)[0]
+
             val isUploadMessage = innerSingleSavedMessage.text == FileMessageVH.UPLOAD_TAG
-            val noFlex =
-                innerSingleSavedMessage.hasForwardedMessages() || messageRealmObject.haveAttachments()
+
+            val noFlex = innerSingleSavedMessage.hasForwardedMessages()
+                    || messageRealmObject.haveAttachments()
+
             val isImage = innerSingleSavedMessage.hasImage()
             val notJustImage =
                 (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
                         || !innerSingleSavedMessage.isAttachmentImageOnly)
+
             val contact =
-                if (innerSingleSavedMessage.originalFrom != null) innerSingleSavedMessage.originalFrom else innerSingleSavedMessage.user.toString()
-            if (!contact.contains(chat.account.bareJid.toString())) {
-                if (isImage) {
-                    if (notJustImage) VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT else VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE
-                } else if (noFlex) VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX else VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE
-            } else if (isImage) {
-                if (notJustImage) VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT else VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE
-            } else if (noFlex) VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX else VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE
+                if (innerSingleSavedMessage.originalFrom != null) {
+                    innerSingleSavedMessage.originalFrom
+                } else {
+                    innerSingleSavedMessage.user.toString()
+                }
+
+            when {
+                !contact.contains(chat.account.bareJid.toString()) -> {
+                    when {
+                        isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT
+                        isImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE
+                        noFlex -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX
+                        else -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE
+                    }
+                }
+                isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT
+                isImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE
+                noFlex -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX
+                else -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE
+            }
         } else {
 
             // if noFlex is true, should use special layout without flexbox-style text
             val isUploadMessage = messageRealmObject.text == FileMessageVH.UPLOAD_TAG
             val noFlex =
                 messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments()
+
             val isImage = messageRealmObject.hasImage()
+
             val notJustImage =
                 (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
                         || !messageRealmObject.isAttachmentImageOnly)
-            if (messageRealmObject.isIncoming && !isSavedMessagesMode && !isMeInGroup) {
-                if (isImage) {
-                    if (notJustImage) VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT else VIEW_TYPE_INCOMING_MESSAGE_IMAGE
-                } else if (noFlex) VIEW_TYPE_INCOMING_MESSAGE_NOFLEX else VIEW_TYPE_INCOMING_MESSAGE
-            } else if (isImage) {
-                if (notJustImage) VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT else VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
-            } else if (noFlex) VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX else VIEW_TYPE_OUTGOING_MESSAGE
+
+            when {
+                messageRealmObject.isIncoming && !isSavedMessagesMode && !isMeInGroup -> {
+                    when {
+                        isImage && notJustImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT
+                        isImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE
+                        noFlex -> VIEW_TYPE_INCOMING_MESSAGE_NOFLEX
+                        else -> VIEW_TYPE_INCOMING_MESSAGE
+                    }
+                }
+                isImage && notJustImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT
+                isImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
+                noFlex -> VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX
+                else -> VIEW_TYPE_OUTGOING_MESSAGE
+            }
         }
     }
 
