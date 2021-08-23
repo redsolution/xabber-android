@@ -53,10 +53,10 @@ import com.xabber.android.data.extension.otr.SecurityLevel
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager.PublishAudioProgress.AudioInfo
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager
+import com.xabber.android.data.extension.retract.RetractManager
 import com.xabber.android.data.extension.retract.RetractManager.isSupported
 import com.xabber.android.data.extension.retract.RetractManager.sendMissedChangesInRemoteArchiveForChatRequest
 import com.xabber.android.data.extension.retract.RetractManager.sendRemoteArchiveRetractVersionRequest
-import com.xabber.android.data.extension.retract.RetractManager.sendReplaceMessageTextRequest
 import com.xabber.android.data.extension.retract.RetractManager.sendRetractAllMessagesRequest
 import com.xabber.android.data.extension.retract.RetractManager.sendRetractMessagesRequest
 import com.xabber.android.data.extension.vcard.VCardManager
@@ -1152,16 +1152,22 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         if (bottomMessagesPanel != null) {
             if (bottomMessagesPanel?.purpose == Purposes.FORWARDING) {
                 bottomMessagesPanel?.messagesIds?.let { ids ->
-                    sendForwardMessage(ids, text, markupText)
+                    ForwardManager.forwardMessage(ids, accountJid, contactJid, text, markupText)
+                    hideBottomMessagePanel()
+                    setFirstUnreadMessageId(null)
                 }
             } else if (bottomMessagesPanel?.purpose == Purposes.EDITING) {
                 bottomMessagesPanel?.messagesIds?.first()?.let { id ->
-                    sendReplaceMessageTextRequest(accountJid, contactJid, id, text, this)
+                    RetractManager.sendReplaceMessageTextRequest(
+                        accountJid, contactJid, id, text, this
+                    )
                     hideBottomMessagePanel()
                 }
             }
         } else if (text.isNotEmpty()) {
-            sendMessage(text, markupText, false)
+            MessageManager.getInstance().sendMessage(accountJid, contactJid, text, markupText)
+            scrollDown()
+            setFirstUnreadMessageId(null)
         } else {
             return
         }
@@ -1175,18 +1181,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             Utils.hideKeyboard(activity)
         }
         scrollDown()
-    }
-
-    private fun sendMessage(
-        text: String,
-        markupText: String? = null,
-        needToPullDown: Boolean = true
-    ) {
-        MessageManager.getInstance().sendMessage(accountJid, contactJid, text, markupText)
-        if (needToPullDown) {
-            scrollDown()
-            setFirstUnreadMessageId(null)
-        }
     }
 
     fun updateContact() {
@@ -1558,7 +1552,11 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                             clickedMessageRealmObject, activity
                         )
                     } else {
-                        sendMessage(clickedMessageRealmObject.text)
+                        MessageManager.getInstance().sendMessage(
+                            accountJid, contactJid,
+                            clickedMessageRealmObject.text,
+                            clickedMessageRealmObject.markupText
+                        )
                     }
                 },
                 onMessageCopyClick = {
@@ -2212,12 +2210,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
             }
         }
         bottomMessagesPanel = null
-    }
-
-    private fun sendForwardMessage(messages: List<String>, text: String, markup: String?) {
-        ForwardManager.forwardMessage(messages, accountJid, contactJid, text, markup)
-        hideBottomMessagePanel()
-        setFirstUnreadMessageId(null)
     }
 
     private fun openChooserForForward(forwardIds: List<String>) {
