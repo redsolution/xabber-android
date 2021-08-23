@@ -104,7 +104,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageClickListener,
-    MessagesAdapter.Listener, OnAccountChangedListener, BindListener, OnMessageAvatarClickListener,
+    MessagesAdapter.AdapterListener, OnAccountChangedListener, BindListener, OnMessageAvatarClickListener,
     OnNewIncomingMessageListener, OnNewMessageListener, OnGroupPresenceUpdatedListener,
     OnMessageUpdatedListener, OnLastHistoryLoadStartedListener, OnLastHistoryLoadFinishedListener,
     OnAuthAskListener, OnLastHistoryLoadErrorListener, BaseIqResultUiListener {

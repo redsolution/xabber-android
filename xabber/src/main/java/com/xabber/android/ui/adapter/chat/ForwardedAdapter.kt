@@ -51,7 +51,8 @@ class ForwardedAdapter(
         }
     }
 
-    override fun getItemCount() = if (realmResults.isValid && realmResults.isLoaded) realmResults.size else 0
+    override fun getItemCount() =
+        if (realmResults.isValid && realmResults.isLoaded) realmResults.size else 0
 
     fun getMessageItem(position: Int): MessageRealmObject? =
         when {
@@ -63,15 +64,18 @@ class ForwardedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
             VIEW_TYPE_IMAGE -> NoFlexForwardedVH(
-                LayoutInflater.from(parent.context).inflate(R.layout.item_message_forwarded_image, parent, false),
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_forwarded_image, parent, false),
                 this, this, listener, appearanceStyle
             )
             VIEW_TYPE_MESSAGE_NOFLEX -> NoFlexForwardedVH(
-                LayoutInflater.from(parent.context).inflate(R.layout.item_message_forwarded_noflex, parent, false),
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_forwarded_noflex, parent, false),
                 this, this, listener, appearanceStyle
             )
             else -> ForwardedVH(
-                LayoutInflater.from(parent.context).inflate(R.layout.item_message_forwarded, parent, false),
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_forwarded, parent, false),
                 this, this, listener, appearanceStyle
             )
         }
@@ -111,12 +115,16 @@ class ForwardedAdapter(
         when (getItemViewType(position)) {
             VIEW_TYPE_IMAGE, VIEW_TYPE_MESSAGE_NOFLEX -> {
                 (holder as NoFlexForwardedVH).bind(
-                    messageRealmObject, extraData, messageRealmObject.account.fullJid.asBareJid().toString()
+                    messageRealmObject,
+                    extraData,
+                    messageRealmObject.account.fullJid.asBareJid().toString()
                 )
             }
             else -> {
                 (holder as ForwardedVH).bind(
-                    messageRealmObject, extraData, messageRealmObject.account.fullJid.asBareJid().toString()
+                    messageRealmObject,
+                    extraData,
+                    messageRealmObject.account.fullJid.asBareJid().toString()
                 )
             }
         }

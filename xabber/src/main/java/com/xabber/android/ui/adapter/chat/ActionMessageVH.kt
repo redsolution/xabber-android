@@ -10,10 +10,19 @@ import com.xabber.android.utils.Utils
 
 class ActionMessageVH(itemView: View?) : BasicMessageVH(itemView) {
 
-    fun bind(messageRealmObject: MessageRealmObject, context: Context?, account: AccountJid?, needDate: Boolean) {
+    fun bind(
+        messageRealmObject: MessageRealmObject,
+        context: Context?,
+        account: AccountJid?,
+        needDate: Boolean
+    ) {
         val name = RosterManager.getInstance().getBestContact(account, messageRealmObject.user).name
 
-        messageText.text = messageRealmObject.chatAction.getText(context, name, messageRealmObject.spannable.toString())
+        messageText.text = messageRealmObject.chatAction.getText(
+            context,
+            name,
+            messageRealmObject.spannable.toString()
+        )
 
         this.needDate = needDate
         date = StringUtils.getDateStringForMessage(messageRealmObject.timestamp)

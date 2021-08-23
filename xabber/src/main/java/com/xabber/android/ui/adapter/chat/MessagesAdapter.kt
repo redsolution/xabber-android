@@ -25,8 +25,7 @@ import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageLongClickListener
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.Utils
-import io.realm.RealmRecyclerViewAdapter
-import io.realm.RealmResults
+import io.realm.*
 import java.util.*
 
 class MessagesAdapter(
@@ -36,14 +35,31 @@ class MessagesAdapter(
     private val messageListener: MessageClickListener? = null,
     private val fileListener: FileListener? = null,
     private val fwdListener: ForwardListener? = null,
-    private val listener: Listener? = null,
+    private val adapterListener: AdapterListener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
-) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(messageRealmObjects, true, true),
-    MessageClickListener,
-    MessageLongClickListener,
-    FileListener,
-    OnMessageAvatarClickListener {
+) : RecyclerView.Adapter<BasicMessageVH>(), MessageClickListener,
+    MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
+
+    private val realmListener: OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> =
+        OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> { _, changeSet ->
+            if (changeSet.state == OrderedCollectionChangeSet.State.INITIAL) {
+                notifyDataSetChanged()
+                return@OrderedRealmCollectionChangeListener
+            }
+
+            changeSet.deletionRanges.reversed().map { range ->
+                notifyItemRangeRemoved(range.startIndex, range.length)
+            }
+
+            changeSet.insertionRanges?.map { range ->
+                notifyItemRangeInserted(range.startIndex, range.length)
+            }
+
+            changeSet.changeRanges?.map { range ->
+                notifyItemRangeChanged(range.startIndex, range.length)
+            }
+        }
 
     private var firstUnreadMessageID: String? = null
     private var isCheckMode = false
@@ -55,10 +71,17 @@ class MessagesAdapter(
     val checkedItemIds: MutableList<String> = ArrayList()
     val checkedMessageRealmObjects: MutableList<MessageRealmObject?> = ArrayList()
 
-    interface Listener {
-        fun onMessagesUpdated()
-        fun onChangeCheckedItems(checkedItems: Int)
-        fun scrollTo(position: Int)
+    init {
+        messageRealmObjects.addChangeListener(realmListener)
+    }
+
+    private fun getItem(index: Int): MessageRealmObject? {
+        require(index >= 0) { "Only indexes >= 0 are allowed. Input was: $index" }
+        return when {
+            index >= messageRealmObjects.size -> null
+            messageRealmObjects.isValid && messageRealmObjects.isLoaded -> messageRealmObjects[index]
+            else -> null
+        }
     }
 
     override fun getItemCount(): Int =
@@ -262,147 +285,182 @@ class MessagesAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: BasicMessageVH, position: Int) {
+    private fun isMessageNeedTail(position: Int): Boolean {
         val viewType = getItemViewType(position)
-        val messageRealmObject = getMessageItem(position)
+        val message = getMessageItem(position) ?: return true
+        val nextMessage = getMessageItem(position + 1) ?: return true
 
-        if (messageRealmObject == null) {
-            LogManager.w(
-                MessagesAdapter::class.java.simpleName,
-                "onBindViewHolder Null message item. Position: $position"
-            )
-            return
-        }
-
-        // setup message uniqueId
-        if (holder is MessageVH) {
-            holder.messageId = messageRealmObject.primaryKey
-        }
-
-        val groupMember =
-            if (messageRealmObject.groupchatUserId != null
-                && messageRealmObject.groupchatUserId.isNotEmpty()
-            ) {
-                getGroupMemberById(
-                    chat.account, chat.contactJid, messageRealmObject.groupchatUserId
-                )
-            } else {
-                null
-            }
-
-        // need tail
-        var needTail = true
-        val nextMessage = getMessageItem(position + 1)
-        if (nextMessage != null) {
-            if (isSavedMessagesMode) {
-                val actualCurrentMessage: MessageRealmObject =
-                    if (messageRealmObject.account.bareJid.toString()
-                            .contains(messageRealmObject.user.bareJid.toString())
-                        && messageRealmObject.hasForwardedMessages()
-                    ) {
-                        MessageRepository.getForwardedMessages(messageRealmObject)[0]
-                    } else {
-                        messageRealmObject
-                    }
-
-                val actualNextMessage: MessageRealmObject =
-                    if (nextMessage.account.bareJid.toString()
-                            .contains(nextMessage.user.bareJid.toString())
-                        && nextMessage.hasForwardedMessages()
-                    ) MessageRepository.getForwardedMessages(nextMessage)[0] else nextMessage
-
-                if (actualNextMessage.groupchatUserId != null && actualCurrentMessage.groupchatUserId != null) {
-                    needTail =
-                        actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
-                } else if (actualNextMessage.groupchatUserId == null && actualCurrentMessage.groupchatUserId == null) {
-                    try {
-                        val currentMessageSender =
-                            ContactJid.from(actualCurrentMessage.originalFrom)
-                        val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
-                        needTail =
-                            !currentMessageSender.bareJid.toString()
-                                .contains(previousMessageSender.bareJid.toString())
-                    } catch (e: Exception) {
-                        LogManager.exception(this, e)
-                    }
+        if (isSavedMessagesMode) {
+            val actualCurrentMessage: MessageRealmObject =
+                if (message.account.bareJid.toString().contains(message.user.bareJid.toString())
+                    && message.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(message)[0]
+                } else {
+                    message
                 }
 
-            } else {
-                if (groupMember != null) {
+            val actualNextMessage: MessageRealmObject =
+                if (nextMessage.account.bareJid.toString()
+                        .contains(nextMessage.user.bareJid.toString())
+                    && nextMessage.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(nextMessage)[0]
+                } else {
+                    nextMessage
+                }
+
+            when {
+                actualNextMessage.groupchatUserId != null && actualCurrentMessage.groupchatUserId != null -> {
+                    return actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
+                }
+                actualNextMessage.groupchatUserId == null && actualCurrentMessage.groupchatUserId == null -> {
+                    val currentMessageSender = ContactJid.from(actualCurrentMessage.originalFrom)
+                    val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
+
+                    return !currentMessageSender.bareJid.toString()
+                        .contains(previousMessageSender.bareJid.toString())
+                }
+                else -> {
+                    return true
+                }
+            }
+
+        } else {
+            val groupMember =
+                if (message.groupchatUserId != null && message.groupchatUserId.isNotEmpty()) {
+                    getGroupMemberById(chat.account, chat.contactJid, message.groupchatUserId)
+                } else {
+                    null
+                }
+
+            when {
+                groupMember != null -> {
                     val user2 =
                         if (nextMessage.groupchatUserId == null) {
                             null
                         } else {
                             getGroupMemberById(
-                                chat.account,
-                                chat.contactJid,
-                                nextMessage.groupchatUserId
+                                chat.account, chat.contactJid, nextMessage.groupchatUserId
                             )
                         }
-                    needTail = if (user2 != null) groupMember.memberId != user2.memberId else true
-
-                } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
-                    needTail =
-                        getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1))
+                    return if (user2 != null) groupMember.memberId != user2.memberId else true
+                }
+                viewType != VIEW_TYPE_ACTION_MESSAGE -> {
+                    return getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1))
+                }
+                else -> {
+                    return true
                 }
             }
         }
+    }
 
-        // need date, need name
-        var needDate = false
-        var needName = false
-        val previousMessage = getMessageItem(position - 1)
-        if (previousMessage != null) {
-            if (isSavedMessagesMode) {
-                val currentMessage: MessageRealmObject =
-                    if (messageRealmObject.account.bareJid.toString()
-                            .contains(messageRealmObject.user.bareJid.toString())
-                        && messageRealmObject.hasForwardedMessages()
-                    ) {
-                        MessageRepository.getForwardedMessages(messageRealmObject)[0]
-                    } else {
-                        messageRealmObject
-                    }
-                val actualPrevious: MessageRealmObject =
-                    if (previousMessage.account.bareJid.toString()
-                            .contains(previousMessage.user.bareJid.toString())
-                        && previousMessage.hasForwardedMessages()
-                    ) {
-                        MessageRepository.getForwardedMessages(previousMessage)[0]
-                    } else {
-                        previousMessage
-                    }
-                if (actualPrevious.groupchatUserId != null && currentMessage.groupchatUserId != null) {
-                    needName = currentMessage.groupchatUserId != actualPrevious.groupchatUserId
-                } else if (actualPrevious.groupchatUserId == null && currentMessage.groupchatUserId == null) {
-                    try {
-                        val currentMessageSender = ContactJid.from(currentMessage.originalFrom)
-                        val previousMessageSender = ContactJid.from(actualPrevious.originalFrom)
-                        needName = !currentMessageSender.bareJid.toString().contains(
-                            previousMessageSender.bareJid.toString()
-                        )
-                    } catch (e: Exception) {
-                        LogManager.exception(this, e)
-                    }
-                } else needName = true
+    private fun isMessageNeedDate(position: Int): Boolean {
+        val message = getMessageItem(position) ?: return true
+
+        val previousMessage = getMessageItem(position - 1) ?: return true
+
+        if (isSavedMessagesMode) {
+            val currentMessage: MessageRealmObject =
+                if (message.account.bareJid.toString()
+                        .contains(message.user.bareJid.toString())
+                    && message.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(message)[0]
+                } else {
+                    message
+                }
+
+            val actualPrevious: MessageRealmObject =
+                if (previousMessage.account.bareJid.toString()
+                        .contains(previousMessage.user.bareJid.toString())
+                    && previousMessage.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(previousMessage)[0]
+                } else {
+                    previousMessage
+                }
+
+            return !Utils.isSameDay(currentMessage.timestamp, actualPrevious.timestamp)
+        } else {
+            return !Utils.isSameDay(message.timestamp, previousMessage.timestamp)
+        }
+    }
+
+    private fun isMessageNeedName(position: Int): Boolean {
+        val message = getMessageItem(position) ?: return true
+        val previousMessage = getMessageItem(position - 1) ?: return true
+
+        if (isSavedMessagesMode) {
+            val currentMessage: MessageRealmObject =
+                if (message.account.bareJid.toString()
+                        .contains(message.user.bareJid.toString())
+                    && message.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(message)[0]
+                } else {
+                    message
+                }
+            val actualPrevious: MessageRealmObject =
+                if (previousMessage.account.bareJid.toString()
+                        .contains(previousMessage.user.bareJid.toString())
+                    && previousMessage.hasForwardedMessages()
+                ) {
+                    MessageRepository.getForwardedMessages(previousMessage)[0]
+                } else {
+                    previousMessage
+                }
+
+            if (actualPrevious.groupchatUserId != null && currentMessage.groupchatUserId != null) {
+                return currentMessage.groupchatUserId != actualPrevious.groupchatUserId
+            } else if (actualPrevious.groupchatUserId == null && currentMessage.groupchatUserId == null) {
+                try {
+                    val currentMessageSender = ContactJid.from(currentMessage.originalFrom)
+                    val previousMessageSender = ContactJid.from(actualPrevious.originalFrom)
+                    return !currentMessageSender.bareJid.toString().contains(
+                        previousMessageSender.bareJid.toString()
+                    )
+                } catch (e: Exception) {
+                    LogManager.exception(this, e)
+                    return true
+                }
             } else {
-                needDate = !Utils.isSameDay(
-                    getMessageItem(position)!!.timestamp,
-                    previousMessage.timestamp
-                )
-                needName =
-                    if (messageRealmObject.groupchatUserId != null && messageRealmObject.groupchatUserId.isNotEmpty()
-                        && previousMessage.groupchatUserId != null && previousMessage.groupchatUserId.isNotEmpty()
-                    ) {
-                        messageRealmObject.groupchatUserId != previousMessage.groupchatUserId
-                    } else {
-                        true
-                    }
+                return true
             }
         } else {
-            needDate = true
-            needName = true
+            if (message.groupchatUserId != null
+                && message.groupchatUserId.isNotEmpty()
+                && previousMessage.groupchatUserId != null
+                && previousMessage.groupchatUserId.isNotEmpty()
+            ) {
+                return message.groupchatUserId != previousMessage.groupchatUserId
+            } else {
+                return true
+            }
         }
+    }
+
+    override fun onBindViewHolder(holder: BasicMessageVH, position: Int) {
+        val viewType = getItemViewType(position)
+        val message = getMessageItem(position)
+
+        if (message == null) {
+            LogManager.w(this, "onBindViewHolder Null message item. Position: $position")
+            return
+        }
+
+        // setup message uniqueId
+        (holder as? MessageVH)?.messageId = message.primaryKey
+
+        val groupMember =
+            if (message.groupchatUserId != null && message.groupchatUserId.isNotEmpty()) {
+                getGroupMemberById(chat.account, chat.contactJid, message.groupchatUserId)
+            } else {
+                null
+            }
+
+        val isNeedDate = isMessageNeedDate(position)
 
         val extraData = MessageExtraData(
             fileListener,
@@ -413,73 +471,61 @@ class MessagesAdapter(
             groupMember,
             ColorManager.getInstance().accountPainter.getAccountMainColor(chat.account),
             ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(chat.account),
-            messageRealmObject.timestamp,
-            itemsNeedOriginalText.contains(messageRealmObject.primaryKey),
-            messageRealmObject.primaryKey == firstUnreadMessageID,
-            checkedItemIds.contains(messageRealmObject.primaryKey),
-            needTail,
-            needDate,
-            needName
+            message.timestamp,
+            itemsNeedOriginalText.contains(message.primaryKey),
+            message.primaryKey == firstUnreadMessageID,
+            checkedItemIds.contains(message.primaryKey),
+            isMessageNeedTail(position),
+            isNeedDate,
+            isMessageNeedName(position)
         )
 
         when (viewType) {
             VIEW_TYPE_ACTION_MESSAGE -> {
-                if (holder is ActionMessageVH) {
-                    holder.bind(messageRealmObject, context, chat.account, needDate)
-                }
+                (holder as? ActionMessageVH)?.bind(message, context, chat.account, isNeedDate)
             }
 
-            VIEW_TYPE_INCOMING_MESSAGE -> if (holder is IncomingMessageVH) {
-                holder.bind(messageRealmObject, extraData)
+            VIEW_TYPE_INCOMING_MESSAGE -> {
+                (holder as? IncomingMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT, VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
             VIEW_TYPE_INCOMING_MESSAGE_NOFLEX -> {
-                if (holder is NoFlexIncomingMsgVH) {
-                    holder.bind(messageRealmObject, extraData)
-                }
+                (holder as? NoFlexIncomingMsgVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_OUTGOING_MESSAGE -> if (holder is OutgoingMessageVH) {
-                holder.bind(messageRealmObject, extraData)
+            VIEW_TYPE_OUTGOING_MESSAGE -> {
+                (holder as? OutgoingMessageVH)?.bind(message, extraData)
             }
 
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT, VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
             VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX -> {
-                if (holder is NoFlexOutgoingMsgVH) {
-                    holder.bind(messageRealmObject, extraData)
-                }
+                (holder as? NoFlexOutgoingMsgVH)?.bind(message, extraData)
             }
 
             VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE -> {
-                if (holder is GroupchatSystemMessageVH) {
-                    holder.bind(messageRealmObject)
-                }
-                if (holder is SavedOwnMessageVh) {
-                    holder.bind(messageRealmObject, extraData)
-                }
-                if (holder is SavedCompanionMessageVH) {
-                    holder.bind(messageRealmObject, extraData)
+                when (holder) {
+                    is GroupchatSystemMessageVH -> holder.bind(message)
+                    is SavedOwnMessageVh -> holder.bind(message, extraData)
+                    is SavedCompanionMessageVH -> holder.bind(message, extraData)
                 }
             }
 
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE, VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE, VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> {
-                if (holder is SavedOwnMessageVh) {
-                    holder.bind(messageRealmObject, extraData)
-                }
-                if (holder is SavedCompanionMessageVH) {
-                    holder.bind(messageRealmObject, extraData)
-                }
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> {
+                (holder as? SavedOwnMessageVh)?.bind(message, extraData)
+                (holder as? SavedCompanionMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> {
-                if (holder is SavedCompanionMessageVH) {
-                    holder.bind(messageRealmObject, extraData)
-                }
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> {
+                (holder as? SavedCompanionMessageVH)?.bind(message, extraData)
             }
-
         }
     }
 
@@ -547,11 +593,7 @@ class MessagesAdapter(
             addOrRemoveCheckedItem(messagePosition)
         } else {
             fileListener?.onVoiceClick(
-                messagePosition,
-                attachmentPosition,
-                attachmentId,
-                messageUID,
-                timestamp
+                messagePosition, attachmentPosition, attachmentId, messageUID, timestamp
             )
         }
     }
@@ -594,7 +636,7 @@ class MessagesAdapter(
         } else {
             notifyItemChanged(position)
         }
-        listener?.onChangeCheckedItems(checkedItemIds.size)
+        adapterListener?.onChangeCheckedItems(checkedItemIds.size)
     }
 
     fun resetCheckedItems() {
@@ -603,27 +645,34 @@ class MessagesAdapter(
             checkedMessageRealmObjects.clear()
             isCheckMode = false
             notifyDataSetChanged()
-            listener?.onChangeCheckedItems(checkedItemIds.size)
+            adapterListener?.onChangeCheckedItems(checkedItemIds.size)
         }
     }
 
     private fun getSimpleType(type: Int): Int {
         return when (type) {
 
-            VIEW_TYPE_INCOMING_MESSAGE, VIEW_TYPE_INCOMING_MESSAGE_NOFLEX, VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_INCOMING_MESSAGE, VIEW_TYPE_INCOMING_MESSAGE_NOFLEX,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE, VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT,
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX -> 1
 
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE, VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT, VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX,
-            VIEW_TYPE_OUTGOING_MESSAGE, VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX, VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX, VIEW_TYPE_OUTGOING_MESSAGE,
+            VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX, VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> 2
 
             VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE, VIEW_TYPE_ACTION_MESSAGE -> 3
 
             else -> 0
         }
+    }
+
+    fun release() {
+        messageRealmObjects.removeChangeListener(realmListener)
     }
 
     companion object {
@@ -645,6 +694,12 @@ class MessagesAdapter(
         const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT = 16
         const val VIEW_TYPE_ACTION_MESSAGE = 17
         const val VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 18
+    }
+
+    interface AdapterListener {
+        fun onMessagesUpdated()
+        fun onChangeCheckedItems(checkedItems: Int)
+        fun scrollTo(position: Int)
     }
 
 }
