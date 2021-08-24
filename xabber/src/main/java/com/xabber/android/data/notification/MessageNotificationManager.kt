@@ -224,6 +224,19 @@ object MessageNotificationManager : OnLoadListener {
         }
     }
 
+//    fun replaceNotificationTextForMessage(
+//        accountJid: AccountJid, stanzaId: String, newText: String
+//    ) {
+//        chats.find { chat ->
+//            chat.accountJid == accountJid
+//                    && chat.messages.any { message -> message.id == stanzaId }
+//        }?.let { chat ->
+//            notificationManager.cancel(chat.notificationId)
+//            chat.messages.find { it.id == stanzaId }.messageText = newText
+//            rebuildAllNotifications()
+//        }
+//    }
+
     fun removeNotificationsForAccount(account: AccountJid) {
         val chatsToRemove: MutableList<Chat> = ArrayList()
         val it = chats.iterator()

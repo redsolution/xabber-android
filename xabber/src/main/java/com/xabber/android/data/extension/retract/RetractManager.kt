@@ -353,7 +353,14 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                 // hack because inner replaced message has not any from
                 newMessage.from = if (isIncoming) contactJid.jid else accountJid.fullJid
 
-                MessageHandler.parseMessage(accountJid, contactJid, newMessage)
+                MessageHandler.parseMessage(accountJid, contactJid, newMessage)?.also {
+                    Application.getInstance().runOnUiThread {
+                        MessageNotificationManager.removeNotificationForMessage(
+                            accountJid, messageStanzaId
+                        )
+                        MessageNotificationManager.onNewMessage(it)
+                    }
+                }
             }
         }
         version?.let { updateRetractVersion(accountJid, contactJid, it) }
