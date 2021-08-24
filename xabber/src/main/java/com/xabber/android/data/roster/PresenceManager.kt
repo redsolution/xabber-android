@@ -356,7 +356,11 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         LogManager.i(this, "sendVCardUpdatePresence: $account")
         getAccountPresence(account)?.let { accountPresence ->
             VCardManager.getInstance().addVCardUpdateToPresence(accountPresence, hash)
-            StanzaSender.sendStanza(account, accountPresence)
+            try {
+                StanzaSender.sendStanza(account, accountPresence)
+            } catch (ex: Exception) {
+                LogManager.exception(this, ex)
+            }
         }
     }
 
