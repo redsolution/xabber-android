@@ -34,19 +34,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
-import com.xabber.android.data.ActivityManager
-import com.xabber.android.data.Application
-import com.xabber.android.data.NetworkException
-import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.*
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
+import com.xabber.android.data.extension.retract.RetractManager
 import com.xabber.android.data.intent.BaseAccountIntentBuilder
 import com.xabber.android.data.intent.EntityIntentBuilder
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.NotificationState.NotificationMode
 import com.xabber.android.data.message.chat.ChatManager
@@ -68,6 +67,7 @@ import com.xabber.android.ui.helper.UpdateBackpressure.UpdatableObject
 import com.xabber.android.ui.preferences.CustomNotifySettings
 import com.xabber.android.ui.widget.BottomMessagesPanel
 import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smack.packet.XMPPError
 import org.jxmpp.stringprep.XmppStringprepException
 import java.util.*
 
@@ -275,17 +275,8 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             interactionsRoot.visibility = View.VISIBLE
             contactTitleView.visibility = View.GONE
 
-            if (isEditable) {
-                ivEdit.visibility = View.VISIBLE
-            } else {
-                ivEdit.visibility = View.GONE
-            }
-
-            if (isPinnable) {
-                ivPin.visibility = View.VISIBLE
-            } else {
-                ivPin.visibility = View.GONE
-            }
+            ivEdit.visibility = if (isEditable) View.VISIBLE else View.GONE
+            ivPin.visibility = if (isPinnable) View.VISIBLE else View.GONE
 
             tvCount.text = messagesCount.toString()
         } else {
@@ -700,7 +691,9 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 true
             }
             R.id.action_view_contact -> {
-                chatFragment?.showContactInfo()
+                startActivity(
+                    ContactViewerActivity.createIntent(this, accountJid, contactJid)
+                )
                 true
             }
             R.id.action_configure_notifications -> {
@@ -710,7 +703,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 true
             }
             R.id.action_clear_history -> {
-                chatFragment?.clearHistory(accountJid, contactJid)
+                clearHistory()
                 true
             }
             R.id.action_export_chat -> {
@@ -718,7 +711,11 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 true
             }
             R.id.action_call_attention -> {
-                chatFragment?.callAttention()
+                try {
+                    AttentionManager.getInstance().sendAttention(accountJid, contactJid)
+                } catch (e: NetworkException) {
+                    Application.getInstance().onError(e)
+                }
                 true
             }
             R.id.action_block_contact -> {
@@ -779,6 +776,43 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
     }
 
+    fun clearHistory() {
+        if (accountJid.bareJid.toString().contains(contactJid.bareJid.toString())) {
+            AlertDialog.Builder(this)
+                .setTitle(resources.getString(R.string.dialog_delete_saved_messages__header))
+                .setMessage(resources.getString(R.string.dialog_delete_saved_messages__confirm))
+                .setPositiveButton(R.string.delete) { _: DialogInterface?, _: Int ->
+                    if (RetractManager.isSupported(accountJid)) {
+                        RetractManager.sendRetractAllMessagesRequest(
+                            accountJid,
+                            contactJid,
+                            object : BaseIqResultUiListener {
+                                override fun onSend() {}
+                                override fun onResult() {}
+                                override fun onOtherError(exception: Exception?) {}
+
+                                override fun onIqError(error: XMPPError) {
+                                    Application.getInstance().runOnUiThread {
+                                        Toast.makeText(
+                                            baseContext, error.conditionText, Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        )
+                    } else {
+                        MessageManager.getInstance().clearHistory(accountJid, contactJid)
+                    }
+                }
+                .setNegativeButton(R.string.cancel_action) { _: DialogInterface?, _: Int -> }
+                .show()
+        } else {
+            ChatHistoryClearDialog.newInstance(accountJid, contactJid).show(
+                supportFragmentManager, ChatHistoryClearDialog::class.java.simpleName
+            )
+        }
+    }
+
     private fun sendContact() {
         val text =
             RosterManager.getInstance().getRosterContact(accountJid, contactJid)
@@ -830,7 +864,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
         const val KEY_USER = "KEY_USER"
         const val KEY_QUESTION = "KEY_QUESTION"
-        const val KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED"
+        private const val KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED"
         const val KEY_MESSAGES_ID = "KEY_MESSAGES_ID"
         private const val SAVE_SELECTED_ACCOUNT =
             "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT"

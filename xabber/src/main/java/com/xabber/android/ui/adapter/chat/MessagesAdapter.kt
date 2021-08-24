@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -53,7 +54,20 @@ class MessagesAdapter(
             }
 
             changeSet.insertionRanges?.map { range ->
-                notifyItemRangeInserted(range.startIndex, range.length)
+                val llm = recyclerView?.layoutManager as? LinearLayoutManager
+                    ?: throw ClassCastException("Messages recyclerView's layoutManager must implement linearLayoutManager!")
+
+                val lastVisiblePosition = llm.findLastCompletelyVisibleItemPosition()
+                val isInBottomPosition = lastVisiblePosition == llm.itemCount - 1 - range.length
+                val isAddedToBottom = range.startIndex - range.length == lastVisiblePosition
+                val isOutgoing = !(messageRealmObjects.last()?.isIncoming ?: true)
+
+                if (isAddedToBottom && (isInBottomPosition || isOutgoing)) {
+                    LogManager.d("MessagesAdapter", "need to scroll")
+                    llm.scrollToPosition(llm.itemCount - 1)
+                } else {
+                    notifyItemRangeInserted(range.startIndex, range.length)
+                }
             }
 
             changeSet.changeRanges?.map { range ->
@@ -181,6 +195,12 @@ class MessagesAdapter(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
+//        this.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                super.onScrollStateChanged(recyclerView, newState)
+//
+//            }
+//        })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {

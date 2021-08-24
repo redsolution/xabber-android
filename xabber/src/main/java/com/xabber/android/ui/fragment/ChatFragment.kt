@@ -37,7 +37,6 @@ import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
-import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.capability.CapabilitiesManager
 import com.xabber.android.data.extension.capability.ClientInfo
@@ -57,7 +56,6 @@ import com.xabber.android.data.extension.retract.RetractManager
 import com.xabber.android.data.extension.retract.RetractManager.isSupported
 import com.xabber.android.data.extension.retract.RetractManager.sendMissedChangesInRemoteArchiveForChatRequest
 import com.xabber.android.data.extension.retract.RetractManager.sendRemoteArchiveRetractVersionRequest
-import com.xabber.android.data.extension.retract.RetractManager.sendRetractAllMessagesRequest
 import com.xabber.android.data.extension.retract.RetractManager.sendRetractMessagesRequest
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
@@ -85,7 +83,6 @@ import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessagesAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.dialog.ChatExportDialogFragment
-import com.xabber.android.ui.dialog.ChatHistoryClearDialog
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.text.CustomQuoteSpan
 import com.xabber.android.ui.widget.*
@@ -103,11 +100,12 @@ import rx.Subscription
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageClickListener,
-    MessagesAdapter.AdapterListener, OnAccountChangedListener, BindListener, OnMessageAvatarClickListener,
-    OnNewIncomingMessageListener, OnNewMessageListener, OnGroupPresenceUpdatedListener,
-    OnMessageUpdatedListener, OnLastHistoryLoadStartedListener, OnLastHistoryLoadFinishedListener,
-    OnAuthAskListener, OnLastHistoryLoadErrorListener, BaseIqResultUiListener {
+class ChatFragment : FileInteractionFragment(), MessageClickListener,
+    MessagesAdapter.AdapterListener, OnAccountChangedListener, BindListener,
+    OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
+    OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
+    OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener,
+    BaseIqResultUiListener {
 
     private var bottomMessagesPanel: BottomMessagesPanel? = null
     private var topPinnedMessagePanel: PinnedMessagePanel? = null
@@ -215,7 +213,18 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount)
 
         btnScrollDown = view.findViewById(R.id.btnScrollDown)
-        btnScrollDown.setOnClickListener(this)
+        btnScrollDown.setOnClickListener {
+            val unread = chat.unreadMessageCount
+            val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+            if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter.itemCount - unread) {
+                // scroll down
+                scrollDown()
+
+                // scroll to unread
+            } else {
+                scrollToFirstUnread(unread)
+            }
+        }
 
         rootView = view.findViewById(R.id.root_view)
         rootView.addOnLayoutChangeListener { view1: View, _: Int, _: Int, _: Int, _: Int, _: Int, topOld: Int, _: Int, bottomOld: Int ->
@@ -1190,17 +1199,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
         showTopPanelIfNeed()
     }
 
-    private fun onScrollDownClick() {
-        val unread = chat.unreadMessageCount
-        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-        if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter.itemCount - unread) {
-            // scroll down
-            scrollDown()
-
-            // scroll to unread
-        } else scrollToFirstUnread(unread)
-    }
-
     private fun scrollDown() {
         realmRecyclerView.scrollToPosition(chatMessageAdapter.itemCount - 1)
     }
@@ -1480,50 +1478,6 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 R.string.otr_select_toast_resources_not_found,
                 Toast.LENGTH_SHORT
             ).show()
-        }
-    }
-
-    override fun onClick(v: View) {
-        if (v.id == R.id.avatar) {
-            showContactInfo()
-        } else if (v.id == R.id.btnScrollDown) {
-            onScrollDownClick()
-        }
-    }
-
-    fun showContactInfo() {
-        startActivity(
-            ContactViewerActivity.createIntent(activity, accountJid, contactJid)
-        )
-    }
-
-    fun clearHistory(account: AccountJid, user: ContactJid) {
-        if (account.bareJid.toString().contains(user.bareJid.toString())) {
-            AlertDialog.Builder(requireContext())
-                .setTitle(resources.getString(R.string.dialog_delete_saved_messages__header))
-                .setMessage(resources.getString(R.string.dialog_delete_saved_messages__confirm))
-                .setPositiveButton(R.string.delete) { _: DialogInterface?, _: Int ->
-                    if (isSupported(account)) {
-                        sendRetractAllMessagesRequest(account, user, this)
-                    } else {
-                        MessageManager.getInstance().clearHistory(account, user)
-                    }
-                }
-                .setNegativeButton(R.string.cancel_action) { _: DialogInterface?, _: Int -> }
-                .show()
-        } else {
-            ChatHistoryClearDialog.newInstance(account, user).show(
-                requireFragmentManager(),
-                ChatHistoryClearDialog::class.java.simpleName
-            )
-        }
-    }
-
-    fun callAttention() {
-        try {
-            AttentionManager.getInstance().sendAttention(accountJid, contactJid)
-        } catch (e: NetworkException) {
-            Application.getInstance().onError(e)
         }
     }
 
@@ -2220,9 +2174,9 @@ class ChatFragment : FileInteractionFragment(), View.OnClickListener, MessageCli
                 if (message.account.bareJid.toString().contains(message.user.bareJid.toString())
                     && message.hasForwardedMessages()
                 ) {
-                    for (innerMessageId in message.forwardedIds) {
-                        rightSavedMessagesIds.add(innerMessageId.forwardMessageId)
-                    }
+                    rightSavedMessagesIds.addAll(
+                        message.forwardedIds.map { it.forwardMessageId }
+                    )
                 } else {
                     rightSavedMessagesIds.add(messageId)
                 }
