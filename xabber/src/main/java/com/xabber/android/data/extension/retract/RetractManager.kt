@@ -18,6 +18,7 @@ import com.xabber.android.data.message.MessageHandler
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
+import com.xabber.android.data.notification.MessageNotificationManager
 import com.xabber.android.data.roster.OnRosterReceivedListener
 import com.xabber.android.ui.OnMessageUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
@@ -307,6 +308,8 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
     private fun handleRetractMessage(
         accountJid: AccountJid, contactJid: ContactJid, version: String?, messageStanzaId: String
     ) {
+        MessageNotificationManager.removeNotificationForMessage(accountJid, messageStanzaId)
+
         Application.getInstance().runInBackground {
             if (!isMessageExistsInDatabase(accountJid, contactJid, messageStanzaId)) {
                 return@runInBackground

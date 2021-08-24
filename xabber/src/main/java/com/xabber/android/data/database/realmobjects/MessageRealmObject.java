@@ -208,7 +208,7 @@ public class MessageRealmObject extends RealmObject {
         return messageRealmObject;
     }
 
-    private static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String id){
+    public static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String id){
         return accountJid.toString() + "#" + contactJid.toString() + "#" + id;
     }
 

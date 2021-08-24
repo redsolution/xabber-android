@@ -49,7 +49,6 @@ object MessageNotificationManager : OnLoadListener {
         get() = System.currentTimeMillis().toInt()
 
     private val chats: MutableList<Chat> = ArrayList()
-    private var lastMessage: Message? = null
     private val delayedActions = HashMap<Int, Action>()
     private var lastNotificationTime: Long = 0
     var isShowBanners = false
@@ -124,7 +123,6 @@ object MessageNotificationManager : OnLoadListener {
             delayedActions.clear()
 
             chats.lastOrNull()?.messages?.lastOrNull()?.also {
-                lastMessage = it
                 rebuildAllNotifications()
             }
         }
@@ -173,7 +171,10 @@ object MessageNotificationManager : OnLoadListener {
                 RosterManager.getInstance().getBestContact(accountJid, contactJid).name
             }
 
-        addMessage(chat, sender, getNotificationText(messageRealmObject), true, groupMember)
+        addMessage(
+            chat, sender, getNotificationText(messageRealmObject),
+            true, groupMember, messageRealmObject.stanzaId
+        )
         saveOrUpdateToRealm(chat)
     }
 
@@ -210,6 +211,19 @@ object MessageNotificationManager : OnLoadListener {
             }
     }
 
+    fun removeNotificationForMessage(
+        accountJid: AccountJid, stanzaId: String
+    ) {
+        chats.find { chat ->
+            chat.accountJid == accountJid
+                    && chat.messages.any { message -> message.id == stanzaId }
+        }?.let { chat ->
+            notificationManager.cancel(chat.notificationId)
+            chat.messages.removeAll { it.id == stanzaId }
+            rebuildAllNotifications()
+        }
+    }
+
     fun removeNotificationsForAccount(account: AccountJid) {
         val chatsToRemove: MutableList<Chat> = ArrayList()
         val it = chats.iterator()
@@ -237,6 +251,7 @@ object MessageNotificationManager : OnLoadListener {
     }
 
     fun rebuildAllNotifications() {
+        chats.removeAll { it.messages.isEmpty() }
         notificationManager.cancelAll()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             for (chat in chats) {
@@ -305,14 +320,12 @@ object MessageNotificationManager : OnLoadListener {
 
     private fun addMessage(
         chat: Chat, author: CharSequence, messageText: CharSequence,
-        alert: Boolean, groupMember: GroupMemberRealmObject?
+        alert: Boolean, groupMember: GroupMemberRealmObject?,
+        messagePrimaryKey: String = UUID.randomUUID().toString()
     ) {
-        lastMessage = Message(
-            author = author,
-            _messageText = messageText,
-            timestamp = System.currentTimeMillis(),
-            groupMember = groupMember
-        ).also { chat.addMessage(it) }
+        chat.addMessage(
+            Message(messagePrimaryKey, author, System.currentTimeMillis(), groupMember, messageText)
+        )
         chat.stopRemoveTimer()
         addNotification(chat, alert)
     }
