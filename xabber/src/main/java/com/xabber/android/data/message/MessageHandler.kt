@@ -136,6 +136,10 @@ object MessageHandler {
             return null
         }
 
+        if (messageStanza.body == null) {
+            return null
+        }
+
         if (messageStanza.getOptimalTextBody().isNullOrEmpty()) {
             if (messageStanza.hasExtension(ChatStateExtension.NAMESPACE)
                 || messageStanza.hasExtension(DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE)
@@ -172,7 +176,6 @@ object MessageHandler {
         ) {
             return null
         }
-
 
         val groupMember = (ReferencesManager.getGroupchatUserFromReferences(messageStanza))?.let {
             GroupMemberManager.saveOrUpdateMemberFromMessage(it, accountJid, contactJid)
