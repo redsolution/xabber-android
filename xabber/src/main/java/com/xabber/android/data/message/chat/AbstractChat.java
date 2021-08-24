@@ -338,15 +338,19 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-    private Message createFileAndForwardMessagePacket(String stanzaId,
-                                                      RealmList<AttachmentRealmObject> attachmentRealmObjects,
-                                                      String[] forwardIds, String text) {
+    private Message createFileAndForwardMessagePacket(
+            String stanzaId,
+            RealmList<AttachmentRealmObject> attachmentRealmObjects,
+            String[] forwardIds, String text
+    ) {
 
         Message message = new Message();
         message.setTo(getTo().asBareJid());
         message.setType(getType());
         message.setThread(threadId);
-        if (stanzaId != null) message.setStanzaId(stanzaId);
+        if (stanzaId != null) {
+            message.setStanzaId(stanzaId);
+        }
 
         StringBuilder builder = new StringBuilder();
         createForwardMessageReferences(message, forwardIds, builder);
@@ -443,11 +447,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 int begin = getSizeOfEncodedChars(builder.toString());
                 builder.append(forward);
                 ReferenceElement reference = ReferencesManager.createForwardReference(
-                        item, begin, getSizeOfEncodedChars(builder.toString()));
+                        item, begin, getSizeOfEncodedChars(builder.toString())
+                );
                 message.addExtension(reference);
             }
         }
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
     }
 
     // TODO make a proper html-markup parsing(or implement Html.fromHtml() and
@@ -515,8 +522,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                             .findAll();
 
                     for (final MessageRealmObject messageRealmObject : messagesToSend) {
-                        if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) continue;
-                        if (!sendMessage(messageRealmObject)) break;
+                        if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) {
+                            continue;
+                        }
+                        if (!sendMessage(messageRealmObject)) {
+                            break;
+                        }
                     }
                 });
             } catch (Exception e) {
@@ -539,7 +550,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Date currentTime = new Date(System.currentTimeMillis());
         Date delayTimestamp = null;
 
-        if (timestamp != null && currentTime.getTime() - timestamp > 60000) delayTimestamp = currentTime;
+        if (timestamp != null && currentTime.getTime() - timestamp > 60000) {
+            delayTimestamp = currentTime;
+        }
 
         Message message = null;
 

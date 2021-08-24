@@ -8,6 +8,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -45,8 +46,10 @@ public class ClipManager {
 
     private static String messagesToText(Realm realm, String[] messagesIDs, int level) {
 
-        RealmResults<MessageRealmObject> items =
-                realm.where(MessageRealmObject.class).in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIDs).findAll();
+        RealmResults<MessageRealmObject> items = realm
+                .where(MessageRealmObject.class)
+                .in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIDs)
+                .findAll();
 
         StringBuilder stringBuilder = new StringBuilder();
         long previousTimestamp = 1;
@@ -66,7 +69,10 @@ public class ClipManager {
         String space = getSpace(level);
         StringBuilder stringBuilder = new StringBuilder();
 
-        final String name = RosterManager.getDisplayAuthorName(message);
+        final String name = (message.getGroupchatUserId() != null)
+                ? GroupMemberManager.INSTANCE.getGroupMemberById(
+                        message.getAccount(), message.getUser(), message.getGroupchatUserId()
+        ).getNickname() : RosterManager.getDisplayAuthorName(message);
 
         final String date = getDateStringForClipboard(message.getTimestamp());
         if (!Utils.isSameDay(message.getTimestamp(), previousMessageTimestamp)) {
