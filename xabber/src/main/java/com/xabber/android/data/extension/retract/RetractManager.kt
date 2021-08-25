@@ -354,12 +354,14 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                 newMessage.from = if (isIncoming) contactJid.jid else accountJid.fullJid
 
                 MessageHandler.parseMessage(accountJid, contactJid, newMessage)?.also {
-                    Application.getInstance().runOnUiThread {
-                        MessageNotificationManager.removeNotificationForMessage(
-                            accountJid, messageStanzaId
-                        )
-                        MessageNotificationManager.onNewMessage(it)
-                    }
+//                    if (it.isIncoming) {
+//                        Application.getInstance().runOnUiThread {
+//                            MessageNotificationManager.removeNotificationForMessage(
+//                                accountJid, messageStanzaId
+//                            )
+//                            MessageNotificationManager.onNewMessage(it)
+//                        }
+//                    }
                 }
             }
         }

@@ -121,8 +121,12 @@ object MessageHandler {
     ): MessageRealmObject? {
 
         val timestamp = when {
-            messageStanza.hasTimeElement() -> XmppDateTime.parseDate(messageStanza.getTimeElement().timeStamp).time
-            delayInformation != null -> delayInformation.stamp.time
+            messageStanza.hasTimeElement() -> {
+                XmppDateTime.parseDate(messageStanza.getTimeElement().timeStamp).time
+            }
+            delayInformation != null -> {
+                delayInformation.stamp.time
+            }
             else -> Date().time
         }
 
@@ -150,8 +154,7 @@ object MessageHandler {
 
         if (messageStanza.hasExtension(ChatMarkersElements.NAMESPACE) &&
             !messageStanza.hasExtension(
-                ChatMarkersElements.MarkableExtension.ELEMENT,
-                ChatMarkersElements.NAMESPACE
+                ChatMarkersElements.MarkableExtension.ELEMENT, ChatMarkersElements.NAMESPACE
             )
         ) {
             return null
