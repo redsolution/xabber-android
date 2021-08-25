@@ -66,9 +66,8 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickListener, OnGroupchatRequestListener {
-
-    private val LOG_TAG = this.javaClass.simpleName
+class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickListener,
+    OnGroupchatRequestListener {
 
     private lateinit var accountJid: AccountJid
     private lateinit var groupchatJid: ContactJid
@@ -93,19 +92,21 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
     companion object {
 
-        const val GROUPCHAT_MEMBER_ID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
-        const val GROUPCHAT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
-        const val ACCOUNT_JID = "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
+        private const val GROUPCHAT_MEMBER_ID =
+            "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
+
+        private const val GROUPCHAT_JID =
+            "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
+
+        private const val ACCOUNT_JID =
+            "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
 
         fun createIntentForGroupchatAndMemberId(
-            context: Context, groupchatMemberId: String,
-            groupchat: GroupChat
-        ): Intent {
-            val intent = Intent(context, GroupchatMemberActivity::class.java)
-            intent.putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
-            intent.putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
-            intent.putExtra(ACCOUNT_JID, groupchat.account.toString())
-            return intent
+            context: Context, groupchatMemberId: String, groupchat: GroupChat
+        ) = Intent(context, GroupchatMemberActivity::class.java).apply {
+            putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
+            putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
+            putExtra(ACCOUNT_JID, groupchat.account.toString())
         }
 
     }
@@ -159,7 +160,8 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         intent.getStringExtra(GROUPCHAT_JID)?.let { groupchatJid = ContactJid.from(it) }
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
         intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
-            groupMember = GroupMemberManager.getGroupMemberById(accountJid, groupchatJid, it) ?: return
+            groupMember =
+                GroupMemberManager.getGroupMemberById(accountJid, groupchatJid, it) ?: return
         }
 
         updateBlockedStatus()
@@ -232,36 +234,45 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         setupNameBlock()
         setupAvatar()
 
-        supportFragmentManager.beginTransaction()
-            .add(
-                R.id.scrollable_container,
-                GroupMemberRightsFragment(groupMember, groupchat),
-                GroupMemberRightsFragment.TAG
-            )
-            .commit()
+        supportFragmentManager.beginTransaction().add(
+            R.id.scrollable_container,
+            GroupMemberRightsFragment(groupMember, groupchat),
+            GroupMemberRightsFragment.TAG
+        ).commit()
 
     }
 
     private fun setupNameBlock() {
-        val nameTv = findViewById<TextView>(R.id.name)
-        nameTv.text = (groupMember.bestName + " " + groupMember.badge)
-        nameTv.setOnClickListener {
-            val adb = AlertDialog.Builder(this)
-            adb.setTitle(getString(R.string.groupchat_member_nickname))
+        fun createAndShowEditNameDialog() {
+            AlertDialog.Builder(this).apply {
+                setTitle(getString(R.string.groupchat_member_nickname))
 
-            val et = AppCompatEditText(this)
-            et.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            et.hint = groupMember.nickname
-            adb.setView(et, 56, 0, 56, 0)
+                val et = AppCompatEditText(this@GroupchatMemberActivity).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    hint = groupMember.nickname
+                }
 
-            adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
-                GroupMemberManager.sendSetMemberNicknameIqRequest(groupchat, groupMember.memberId, et.text.toString())
+                setView(et, 56, 0, 56, 0)
+
+                setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+                setPositiveButton(R.string.groupchat_set_member_nickname) { _, _ ->
+                    GroupMemberManager.sendSetMemberNicknameIqRequest(
+                        groupchat,
+                        groupMember.memberId,
+                        et.text.toString()
+                    )
+                }
+            }.show()
+        }
+
+        findViewById<TextView>(R.id.name).apply {
+            text = (groupMember.bestName + " " + groupMember.badge)
+            setOnClickListener {
+                createAndShowEditNameDialog()
             }
-            adb.show()
         }
 
         findViewById<TextView>(R.id.address_text).apply {
@@ -274,13 +285,16 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         }
 
         if (groupMember.isMe) {
-            findViewById<TextView>(R.id.groupchat_member_this_is_you_label).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.groupchat_member_this_is_you_label).visibility =
+                View.VISIBLE
         }
 
         findViewById<TextView>(R.id.groupchat_member_title).text = when {
             blocked -> getString(R.string.settings_group_member__placeholder_blocked)
 
-            groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> getString(R.string.settings_group_member__placeholder_not_a_member)
+            groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> getString(
+                R.string.settings_group_member__placeholder_not_a_member
+            )
 
             else -> getString(
                 R.string.groupchat_member_of_group_name,
@@ -299,13 +313,18 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         Glide.with(this)
             .load(backgroundSource)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .transform(MultiTransformation(CenterCrop(), BlurTransformation(25, 8,  /*this,*/accountMainColor)))
+            .transform(
+                MultiTransformation(
+                    CenterCrop(),
+                    BlurTransformation(25, 8,  /*this,*/accountMainColor)
+                )
+            )
             .into(findViewById(R.id.backgroundView))
 
-        val avatarIv = findViewById<ImageView>(R.id.ivAvatar)
-        avatarIv.setImageDrawable(backgroundSource)
-        avatarIv.setOnClickListener { changeAvatar(it as ImageView) }
-
+        findViewById<ImageView>(R.id.ivAvatar).apply {
+            setImageDrawable(backgroundSource)
+            setOnClickListener { changeAvatar(it as ImageView) }
+        }
     }
 
     override fun onResume() {
@@ -347,18 +366,26 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun onChooseFromGalleryClick() {
-        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, REQUEST_PERMISSION_GALLERY)) {
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(
+                this, REQUEST_PERMISSION_GALLERY
+            )
+        ) {
             chooseFromGallery()
         }
     }
 
     private fun onTakePhotoClick() {
-        if (PermissionsRequester.requestCameraPermissionIfNeeded(this, REQUEST_PERMISSION_CAMERA)) {
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(
+                this, REQUEST_PERMISSION_CAMERA
+            )
+        ) {
             takePhoto()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         val isPermissionsGranted = PermissionsRequester.isPermissionGranted(grantResults)
@@ -384,16 +411,23 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     private fun saveAvatar(newAvatarImageUri: Uri?) {
         showProgressBar(true)
         val userAvatarManager =
-            UserAvatarManager.getInstanceFor(AccountManager.getInstance().getAccount(accountJid)?.connection)
+            UserAvatarManager.getInstanceFor(
+                AccountManager.getInstance().getAccount(accountJid)?.connection
+            )
         if (newAvatarImageUri == null) {
             try {
                 if (userAvatarManager.isSupportedByServer) {
                     //saving empty avatar
                     AvatarManager.getInstance()
-                        .onAvatarReceived(accountJid.fullJid.asBareJid(), "", null, "xep") //todo this
+                        .onAvatarReceived(
+                            accountJid.fullJid.asBareJid(),
+                            "",
+                            null,
+                            "xep"
+                        ) //todo this
                 }
             } catch (e: Exception) {
-                LogManager.exception(LOG_TAG, e)
+                LogManager.exception(this, e)
                 showProgressBar(false)
             }
         } else {
@@ -405,7 +439,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 //                    AvatarManager.getInstance().onAvatarReceived(accountJid?.fullJid?.asBareJid(), sh1, avatarData, "xep") //todo this
                 }
             } catch (e: Exception) {
-                LogManager.exception(LOG_TAG, e)
+                LogManager.exception(this, e)
                 showProgressBar(false)
             }
         }
@@ -417,7 +451,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
                     onAvatarSettingEnded(false)
-                    LogManager.exception(LOG_TAG, e)
+                    LogManager.exception(this, e)
                 }
             } else if (avatarData != null) {
                 try {
@@ -432,7 +466,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                     onAvatarSettingEnded(true)
                 } catch (e: Exception) {
                     onAvatarSettingEnded(false)
-                    LogManager.exception(LOG_TAG, e)
+                    LogManager.exception(this, e)
                 }
 
             }
@@ -447,7 +481,11 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                     getString(R.string.avatar_successfully_published),
                     Toast.LENGTH_LONG
                 ).show()
-            } else Toast.makeText(baseContext, getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show()
+            } else Toast.makeText(
+                baseContext,
+                getString(R.string.avatar_publishing_failed),
+                Toast.LENGTH_LONG
+            ).show()
             setupAvatar()
             showProgressBar(false)
         }
@@ -466,7 +504,10 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                 FileManager.createTempImageFile(AccountActivity.TEMP_FILE_NAME)?.let {
                     filePhotoUri = FileManager.getFileUri(it)
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, filePhotoUri)
-                    startActivityForResult(takePictureIntent, AccountInfoEditFragment.REQUEST_TAKE_PHOTO)
+                    startActivityForResult(
+                        takePictureIntent,
+                        AccountInfoEditFragment.REQUEST_TAKE_PHOTO
+                    )
                 }
             } catch (e: IOException) {
                 LogManager.exception(this, e)
@@ -496,12 +537,11 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun handleCrop(resultCode: Int) {
-        when (resultCode) {
-            RESULT_OK -> checkAvatarSizeAndPublish()
-            else -> {
-                Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show()
-                newAvatarImageUri = null
-            }
+        if (resultCode == RESULT_OK) {
+            checkAvatarSizeAndPublish()
+        } else {
+            Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show()
+            newAvatarImageUri = null
         }
     }
 
@@ -521,9 +561,13 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun preprocessAndStartCrop(source: Uri) {
-        Glide.with(this).asBitmap().load(source).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+        Glide.with(this).asBitmap().load(source).diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .into(object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
                     Application.getInstance().runInBackgroundUserRequest {
                         val cR = Application.getInstance().applicationContext.contentResolver
                         val imageType = cR.getType(source)
@@ -552,7 +596,11 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
                 override fun onLoadFailed(errorDrawable: Drawable?) {
                     super.onLoadFailed(errorDrawable)
-                    Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext,
+                        R.string.error_during_image_processing,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {}
@@ -591,7 +639,9 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
     private fun checkAvatarSizeAndPublish() {
         if (newAvatarImageUri != null) {
-            if (File(newAvatarImageUri?.path ?: return).length() / AccountActivity.KB_SIZE_IN_BYTES > 35) {
+            if (File(newAvatarImageUri?.path ?: return).length()
+                / AccountActivity.KB_SIZE_IN_BYTES > 35
+            ) {
                 resize(newAvatarImageUri as Uri)
                 return
             }
@@ -606,7 +656,10 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
             .override(AccountActivity.MAX_IMAGE_RESIZE, AccountActivity.MAX_IMAGE_RESIZE)
             .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
             .into(object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
                     Application.getInstance().runInBackgroundUserRequest {
                         val stream = ByteArrayOutputStream()
                         if (imageFileType != null) {
@@ -619,7 +672,11 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                             AccountActivity.MAX_IMAGE_RESIZE =
                                 AccountActivity.MAX_IMAGE_RESIZE - AccountActivity.MAX_IMAGE_RESIZE / 8
                             if (AccountActivity.MAX_IMAGE_RESIZE == 0) {
-                                Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    baseContext,
+                                    R.string.error_during_image_processing,
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
                                 return@runInBackgroundUserRequest
                             }
@@ -632,12 +689,20 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                         } catch (e: IOException) {
                             LogManager.exception(javaClass.simpleName, e)
                         }
-                        val rotatedImage: Uri? = if (imageFileType == UserAvatarManager.ImageType.PNG) {
-                            FileManager.savePNGImage(data, "resize")
-                        } else FileManager.saveImage(data, "resize")
+                        val rotatedImage: Uri? =
+                            if (imageFileType == UserAvatarManager.ImageType.PNG) {
+                                FileManager.savePNGImage(data, "resize")
+                            } else {
+                                FileManager.saveImage(data, "resize")
+                            }
                         if (rotatedImage == null) return@runInBackgroundUserRequest
                         try {
-                            newAvatarImageUri?.path?.let { FileUtils.writeByteArrayToFile(File(it), data) }
+                            newAvatarImageUri?.path?.let {
+                                FileUtils.writeByteArrayToFile(
+                                    File(it),
+                                    data
+                                )
+                            }
                         } catch (e: IOException) {
                             LogManager.exception(javaClass.simpleName, e)
                         }
@@ -647,7 +712,11 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
                 override fun onLoadFailed(errorDrawable: Drawable?) {
                     super.onLoadFailed(errorDrawable)
-                    Toast.makeText(baseContext, R.string.error_during_image_processing, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext,
+                        R.string.error_during_image_processing,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {}
@@ -661,7 +730,9 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 avatar.visibility = View.GONE
                 avatarQR.visibility = View.GONE
-            } else avatarQR.visibility = View.VISIBLE
+            } else {
+                avatarQR.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -694,8 +765,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         toolbar?.title = ""
         toolbar?.setBackgroundColor(Color.TRANSPARENT)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val win = window
-            win.statusBarColor = accountMainColor
+            window.statusBarColor = accountMainColor
         }
         toolbar?.overflowIcon?.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP)
         nameHolderView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
@@ -703,7 +773,12 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     nameHolderView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 } else nameHolderView.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                findViewById<LinearLayout>(R.id.scroll_v_card_child).setPadding(0, nameHolderView.height, 0, 0)
+                findViewById<LinearLayout>(R.id.scroll_v_card_child).setPadding(
+                    0,
+                    nameHolderView.height,
+                    0,
+                    0
+                )
             }
         })
     }
@@ -713,81 +788,95 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         val textView = findViewById<TextView>(R.id.first_button_text)
 
         imageButton.setOnClickListener {
-            if (groupchat.privacyType != GroupPrivacyType.INCOGNITO && !groupMember.jid.isNullOrEmpty()
+            if (groupchat.privacyType != GroupPrivacyType.INCOGNITO
+                && !groupMember.jid.isNullOrEmpty()
             ) {
                 startActivityForResult(
-                    ChatActivity.createSpecificChatIntent(this, groupchat.account, ContactJid.from(groupMember.jid)),
+                    ChatActivity.createSpecificChatIntent(
+                        this, groupchat.account, ContactJid.from(groupMember.jid)
+                    ),
                     MainActivity.CODE_OPEN_CHAT
                 )
-            } else GroupMemberManager.createChatWithIncognitoMember(groupchat, groupMember.memberId)
+            } else {
+                GroupMemberManager.createChatWithIncognitoMember(groupchat, groupMember.memberId)
+            }
         }
 
         imageButton.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             textView.visibility = View.GONE
-        } else textView.visibility = View.VISIBLE
+        } else {
+            textView.visibility = View.VISIBLE
+        }
     }
 
     private fun setupMessagesButtonLayout(color: Int, orientation: Int) {
-        val imageButton = findViewById<ImageButton>(R.id.second_button)
-        val textView = findViewById<TextView>(R.id.second_button_text)
-
-        imageButton.isEnabled = !blocked
-
-        imageButton.setColorFilter(color)
-
-        imageButton.setOnClickListener {
-            Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show()
+        findViewById<ImageButton>(R.id.second_button).apply {
+            this.isEnabled = !blocked
+            setColorFilter(color)
+            setOnClickListener {
+                Toast.makeText(
+                    this@GroupchatMemberActivity,
+                    "Not implemented yet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            textView.visibility = View.GONE
-        } else textView.visibility = View.VISIBLE
+        findViewById<TextView>(R.id.second_button_text).visibility =
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
     }
 
     private fun setupSetBadgeLayout(color: Int, orientation: Int) {
-        val imageButton = findViewById<ImageButton>(R.id.third_button)
-        val textView = findViewById<TextView>(R.id.third_button_text)
+        findViewById<ImageButton>(R.id.third_button).apply {
+            setOnClickListener {
+                val adb = AlertDialog.Builder(this@GroupchatMemberActivity)
+                adb.setTitle(
+                    groupMember.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize(
+                        Locale.getDefault()
+                    )
+                )
 
-        imageButton?.setOnClickListener {
-            val adb = AlertDialog.Builder(this)
-            adb.setTitle(groupMember.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize(Locale.getDefault()))
+                val et = AppCompatEditText(this@GroupchatMemberActivity)
+                et.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                et.isSingleLine = true
+                et.hint = groupMember.badge
+                adb.setView(et, 64, 0, 64, 0)
 
-            val et = AppCompatEditText(this)
-            et.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            et.isSingleLine = true
-            et.hint = groupMember.badge
-            adb.setView(et, 64, 0, 64, 0)
-
-            adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
-                GroupMemberManager.sendSetMemberBadgeIqRequest(groupchat, groupMember.memberId, et.text.toString())
+                adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+                adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
+                    GroupMemberManager.sendSetMemberBadgeIqRequest(
+                        groupchat,
+                        groupMember.memberId,
+                        et.text.toString()
+                    )
+                }
+                adb.show()
             }
-            adb.show()
+
+            setColorFilter(
+                if (blocked) resources.getColor(R.color.grey_500) else color
+            )
         }
 
-        imageButton!!.setColorFilter(if (blocked) resources.getColor(R.color.grey_500) else color)
-
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            textView!!.visibility = View.GONE
-        else textView!!.visibility = View.VISIBLE
+        findViewById<TextView>(R.id.third_button_text).visibility =
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
     }
 
     private fun unblock() {
-        val memberId = groupMember.memberId
         GroupMemberManager.unblockGroupMember(
             accountJid,
             groupchatJid,
-            memberId,
+            groupMember.memberId,
             object : BaseIqResultUiListener {
                 override fun onSend() {}
 
                 override fun onResult() {
-                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, memberId)
+                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
                     GroupMemberManager.requestGroupchatBlocklistList(
                         accountJid,
                         groupchatJid,
@@ -830,9 +919,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun block() {
-        val memberId = groupMember.memberId
-
-        GroupMemberManager.kickAndBlockMember(memberId, groupchat,
+        GroupMemberManager.kickAndBlockMember(groupMember.memberId, groupchat,
             object : BaseIqResultUiListener {
                 override fun onSend() {}
 
@@ -865,7 +952,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
                 }
 
                 override fun onResult() {
-                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, memberId)
+                    GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
                     GroupMemberManager.requestGroupchatBlocklistList(
                         accountJid,
                         groupchatJid,
@@ -883,37 +970,38 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun setupKickBlockButtonLayout(orientation: Int) {
-        val imageButton = findViewById<ImageButton>(R.id.fourth_button)
-        val textView = findViewById<TextView>(R.id.fourth_button_text)
-
-        imageButton?.setOnClickListener {
-            when {
-                blocked -> unblock()
-                groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> block()
-                else -> showKickBlockDialog()
-            }
-        }
-
-        textView?.setTextColor(
-            ResourcesCompat.getColor(
-                resources,
+        findViewById<ImageButton>(R.id.fourth_button).apply {
+            setOnClickListener {
                 when {
-                    blocked || coloredBlockText -> R.color.red_900
-                    SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light -> R.color.grey_600
-                    else -> R.color.grey_400
-                },
-                theme
-            )
-        )
+                    blocked -> unblock()
+                    groupMember.subscriptionState == GroupMemberRealmObject.SubscriptionState.none -> block()
+                    else -> showKickBlockDialog()
+                }
+            }
 
-        imageButton.setColorFilter(resources.getColor(R.color.red_900))
-
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            textView.visibility = View.GONE
-        } else {
-            textView.visibility = View.VISIBLE
+            setColorFilter(resources.getColor(R.color.red_900))
         }
 
+        findViewById<TextView>(R.id.fourth_button_text).apply {
+            setTextColor(
+                ResourcesCompat.getColor(
+                    resources,
+                    when {
+                        blocked || coloredBlockText -> R.color.red_900
+                        SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light -> R.color.grey_600
+                        else -> R.color.grey_400
+                    },
+                    theme
+                )
+            )
+
+            visibility =
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+        }
     }
 
     private fun showKickBlockDialog() {
@@ -965,7 +1053,10 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
                         override fun onResult() {
                             Application.getInstance().runOnUiThread {
-                                GroupMemberManager.requestGroupchatMemberInfo(groupchat, groupMember.memberId)
+                                GroupMemberManager.requestGroupchatMemberInfo(
+                                    groupchat,
+                                    groupMember.memberId
+                                )
                             }
                         }
                     })
