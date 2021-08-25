@@ -158,15 +158,16 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         View view = inflater.inflate(R.layout.fragment_contact_vcard, container, false);
 
-        xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
-        contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
+        xmppItems = view.findViewById(R.id.xmpp_items);
+        contactInfoItems = view.findViewById(R.id.contact_info_items);
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
 
-        editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
+        editButton = view.findViewById(R.id.contact_info_edit_button);
         editButton.setOnClickListener(v -> {
             if (vCard != null) {
-                Intent intent = AccountInfoEditActivity.createIntent(getActivity(), account,
-                        vCard.getChildElementXML().toString());
+                Intent intent = AccountInfoEditActivity.createIntent(
+                        getActivity(), account, vCard.getChildElementXML().toString()
+                );
 
                 startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
             }
@@ -341,7 +342,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
-        final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
+        final List<Presence> allPresences =
+                RosterManager.getInstance().getPresences(account, bareAddress);
 
         boolean isAccount = account.getFullJid().asBareJid().equals(user.getBareJid());
         Resourcepart accountResource = null;

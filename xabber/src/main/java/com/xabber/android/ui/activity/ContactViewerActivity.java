@@ -42,7 +42,8 @@ import org.jivesoftware.smack.XMPPException;
 
 import java.util.ArrayList;
 
-public class ContactViewerActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
+public class ContactViewerActivity extends ContactActivity
+        implements Toolbar.OnMenuItemClickListener {
 
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
 

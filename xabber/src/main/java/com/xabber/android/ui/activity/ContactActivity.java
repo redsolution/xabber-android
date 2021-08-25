@@ -85,8 +85,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class ContactActivity extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener,
-        View.OnLongClickListener, SnoozeDialog.OnSnoozeListener, BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener,
+        View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener,
+        BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     public int orientation;
