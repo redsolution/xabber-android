@@ -30,7 +30,6 @@ import com.xabber.android.data.notification.Action.ActionType
 import com.xabber.android.data.notification.MessageNotificationCreator.MESSAGE_BUNDLE_NOTIFICATION_ID
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.OnContactChangedListener
-import com.xabber.android.ui.adapter.chat.FileMessageVH
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.utils.StringUtils
 import com.xabber.android.utils.Utils
@@ -440,7 +439,7 @@ object MessageNotificationManager : OnLoadListener {
                 }
 
             attachmentsCount > 0 ->
-                if (message.text.isNullOrEmpty() || message.text != FileMessageVH.UPLOAD_TAG) {
+                if (message.text.isNullOrEmpty()) {
                     StringUtils.getColoredAttachmentDisplayName(
                         context, message.attachmentRealmObjects, -1
                     )

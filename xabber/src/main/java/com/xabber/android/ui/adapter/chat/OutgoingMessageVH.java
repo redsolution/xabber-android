@@ -134,7 +134,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         statusIcon.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
-        if (messageRealmObject.getText().equals(UPLOAD_TAG)) {
+        if (messageRealmObject.getMessageStatus() == MessageStatus.UPLOADING) {
             messageText.setText("");
             statusIcon.setVisibility(View.GONE);
         } else MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(messageRealmObject, statusIcon);

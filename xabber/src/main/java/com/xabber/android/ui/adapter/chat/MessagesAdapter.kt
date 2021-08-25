@@ -15,6 +15,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
 import com.xabber.android.data.extension.groups.GroupMemberManager.getMe
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
@@ -131,14 +132,13 @@ class MessagesAdapter(
             val innerSingleSavedMessage =
                 MessageRepository.getForwardedMessages(messageRealmObject)[0]
 
-            val isUploadMessage = innerSingleSavedMessage.text == FileMessageVH.UPLOAD_TAG
-
             val noFlex = innerSingleSavedMessage.hasForwardedMessages()
                     || messageRealmObject.haveAttachments()
 
             val isImage = innerSingleSavedMessage.hasImage()
             val notJustImage =
-                (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
+                (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty()
+                        && innerSingleSavedMessage.messageStatus != MessageStatus.UPLOADING
                         || !innerSingleSavedMessage.isAttachmentImageOnly)
 
             val contact =
@@ -165,14 +165,15 @@ class MessagesAdapter(
         } else {
 
             // if noFlex is true, should use special layout without flexbox-style text
-            val isUploadMessage = messageRealmObject.text == FileMessageVH.UPLOAD_TAG
+
             val noFlex =
                 messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments()
 
             val isImage = messageRealmObject.hasImage()
 
             val notJustImage =
-                (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty() && !isUploadMessage
+                (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty()
+                        && messageRealmObject.messageStatus != MessageStatus.UPLOADING
                         || !messageRealmObject.isAttachmentImageOnly)
 
             when {

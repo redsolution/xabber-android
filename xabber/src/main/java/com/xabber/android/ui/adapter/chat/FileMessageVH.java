@@ -48,16 +48,9 @@ import rx.subscriptions.CompositeSubscription;
 public class FileMessageVH extends MessageVH implements FilesAdapter.FileListListener, View.OnClickListener {
 
     private static final String LOG_TAG = FileMessageVH.class.getSimpleName();
-    //public static final int IMAGE_ROUNDED_CORNERS = 8;
     public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
     public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
-    //public static final int IMAGE_ROUNDED_BORDER_WIDTH = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_width);
     public static final int IMAGE_ROUNDED_BORDER_WIDTH = 0;
-
-    public static final String UPLOAD_TAG = "TAG: com.xabber.android.data.message.abstractChat$newFileMessage";
-
-    //public static final int IMAGE_ROUNDED_BORDER_CORNERS = 5;
-    //public static final int IMAGE_ROUNDED_BORDER_WIDTH = 2;
 
     private final CompositeSubscription subscriptions = new CompositeSubscription();
     private final FileListener listener;
@@ -100,8 +93,12 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
         progressBar = itemView.findViewById(R.id.message_progress_bar);
         messageFileInfo = itemView.findViewById(R.id.message_file_info);
 
-        if (ivCancelUpload != null) ivCancelUpload.setOnClickListener(this);
-        if (messageImage != null) messageImage.setOnClickListener(this);
+        if (ivCancelUpload != null) {
+            ivCancelUpload.setOnClickListener(this);
+        }
+        if (messageImage != null) {
+            messageImage.setOnClickListener(this);
+        }
     }
 
     public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {

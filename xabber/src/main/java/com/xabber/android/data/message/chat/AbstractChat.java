@@ -225,7 +225,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
 
             messageRealmObject.setOriginalFrom(account.toString());
-            messageRealmObject.setText(FileMessageVH.UPLOAD_TAG);
             messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
