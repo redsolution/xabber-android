@@ -829,39 +829,39 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     }
 
     private fun setupSetBadgeLayout(color: Int, orientation: Int) {
-        findViewById<ImageButton>(R.id.third_button).apply {
-            setOnClickListener {
-                val adb = AlertDialog.Builder(this@GroupchatMemberActivity)
-                adb.setTitle(
-                    groupMember.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize(
-                        Locale.getDefault()
-                    )
+        val imageButt = findViewById<ImageButton>(R.id.third_button)
+
+        imageButt.setOnClickListener {
+            val adb = AlertDialog.Builder(this@GroupchatMemberActivity)
+            adb.setTitle(
+                groupMember.nickname + " " + getString(R.string.groupchat_member_badge).decapitalize(
+                    Locale.getDefault()
                 )
-
-                val et = AppCompatEditText(this@GroupchatMemberActivity)
-                et.layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                et.isSingleLine = true
-                et.hint = groupMember.badge
-                adb.setView(et, 64, 0, 64, 0)
-
-                adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
-                adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
-                    GroupMemberManager.sendSetMemberBadgeIqRequest(
-                        groupchat,
-                        groupMember.memberId,
-                        et.text.toString()
-                    )
-                }
-                adb.show()
-            }
-
-            setColorFilter(
-                if (blocked) resources.getColor(R.color.grey_500) else color
             )
+
+            val et = AppCompatEditText(this@GroupchatMemberActivity)
+            et.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            et.isSingleLine = true
+            et.hint = groupMember.badge
+            adb.setView(et, 64, 0, 64, 0)
+
+            adb.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+            adb.setPositiveButton(R.string.groupchat_set_member_badge) { _, _ ->
+                GroupMemberManager.sendSetMemberBadgeIqRequest(
+                    groupchat,
+                    groupMember.memberId,
+                    et.text.toString()
+                )
+            }
+            adb.show()
         }
+
+        imageButt.setColorFilter(
+            if (blocked) resources.getColor(R.color.grey_500) else color
+        )
 
         findViewById<TextView>(R.id.third_button_text).visibility =
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) View.GONE else View.VISIBLE
