@@ -49,10 +49,10 @@ public class BottomMessagesPanel extends Fragment {
     public List<String> getMessagesIds() { return messagesIds; }
 
     public static BottomMessagesPanel newInstance(
-            List<String> messagesIds, Purposes purpose, OnCloseListener listener
+            List<String> messagesPrimaryKeys, Purposes purpose, OnCloseListener listener
     ) {
         BottomMessagesPanel panel = new BottomMessagesPanel();
-        panel.messagesIds = messagesIds;
+        panel.messagesIds = messagesPrimaryKeys;
         panel.purpose = purpose;
         panel.listener = listener;
         return panel;
@@ -82,7 +82,7 @@ public class BottomMessagesPanel extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        if (messagesIds != null && messagesIds.size() > 0) {
+        if (messagesIds != null && !messagesIds.isEmpty()) {
             RealmResults<MessageRealmObject> messages = realm
                     .where(MessageRealmObject.class)
                     .in(MessageRealmObject.Fields.PRIMARY_KEY, messagesIds.toArray(new String[0]))
@@ -97,13 +97,15 @@ public class BottomMessagesPanel extends Fragment {
                     tvText.setText(context.getResources().getQuantityString(
                             R.plurals.forwarded_messages_count, messages.size(), messages.size()));
                 }
-            } else tvText.setText(text);
+            } else {
+                tvText.setText(text);
+            }
         }
 
-        ivCloseBottomMessagePanel.setOnClickListener(v ->  {
-                listener.onClose();
-        });
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        ivCloseBottomMessagePanel.setOnClickListener(v -> listener.onClose());
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
     }
 
     private String getNames(RealmResults<MessageRealmObject> messages) {

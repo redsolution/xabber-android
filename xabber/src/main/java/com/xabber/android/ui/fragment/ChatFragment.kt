@@ -420,11 +420,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         // interaction view
         interactionView = view.findViewById(R.id.interactionView)
         view.findViewById<View>(R.id.reply_tv).setOnClickListener {
-            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds, Purposes.FORWARDING)
+            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds.toList(), Purposes.FORWARDING)
             closeInteractionPanel()
         }
         view.findViewById<View>(R.id.reply_iv).setOnClickListener {
-            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds, Purposes.FORWARDING)
+            showBottomMessagesPanel(chatMessageAdapter.checkedItemIds.toList(), Purposes.FORWARDING)
             closeInteractionPanel()
         }
         view.findViewById<View>(R.id.forward_iv).setOnClickListener {

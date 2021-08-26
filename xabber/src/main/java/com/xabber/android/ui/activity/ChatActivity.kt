@@ -543,7 +543,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             return
         }
         chatFragment?.showBottomMessagesPanel(
-            forwardsIds,
+            forwardsIds.toList(),
             BottomMessagesPanel.Purposes.FORWARDING
         )
         if (accountJid.bareJid.toString() == contactJid.bareJid.toString()) {
