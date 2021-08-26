@@ -677,25 +677,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public int getUnreadMessageCount() {
         int unread = getAllUnreadMessages().size() - waitToMarkAsRead.size();
-        if (unread < 0) unread = 0;
+        if (unread < 0) {
+            unread = 0;
+        }
         MessageRealmObject lastMessage = getLastMessage();
-        if (lastMessage != null && lastMessage.isValid() && !lastMessage.isIncoming()) unread = 0;
+        if (lastMessage != null && lastMessage.isValid() && !lastMessage.isIncoming()) {
+            unread = 0;
+        }
+        if (account.getBareJid().toString().equals(contactJid.getBareJid().toString())) {
+            unread = 0;
+        }
         return unread;
-    }
-
-    private void addUnreadListener() {
-        unreadMessages.addChangeListener(messageRealmObjects -> {
-            for (Iterator<String> iterator = waitToMarkAsRead.iterator(); iterator.hasNext(); ) {
-                String id = iterator.next();
-                if (unreadMessages.where().equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id).findFirst() == null) {
-                    iterator.remove();
-                }
-            }
-            for (OnMessageUpdatedListener listener :
-                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
-                listener.onAction();
-            }
-        });
     }
 
     private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
@@ -752,7 +744,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         .equalTo(MessageRealmObject.Fields.READ, false)
                         .findAll();
             }
-            addUnreadListener();
+            unreadMessages.addChangeListener(messageRealmObjects -> {
+                for (Iterator<String> iterator = waitToMarkAsRead.iterator(); iterator.hasNext(); ) {
+                    String id = iterator.next();
+                    if (unreadMessages.where().equalTo(MessageRealmObject.Fields.PRIMARY_KEY, id).findFirst() == null) {
+                        iterator.remove();
+                    }
+                }
+                for (OnMessageUpdatedListener listener :
+                        Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                    listener.onAction();
+                }
+            });
         }
         return unreadMessages;
     }
