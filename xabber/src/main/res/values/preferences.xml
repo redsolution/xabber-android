@@ -492,28 +492,6 @@
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
 
-    <string name="security_otr_mode_key">security_otr_mode</string>
-    <string name="security_otr_mode_disabled_value">disabled</string>
-    <string name="security_otr_mode_manual_value">manual</string>
-    <string name="security_otr_mode_auto_value">auto</string>
-    <string name="security_otr_mode_required_value">required</string>
-    <string-array name="security_otr_mode_entries">
-        <item>@string/disabled</item>
-        <item>@string/manual</item>
-        <item>@string/auto</item>
-        <item>@string/required</item>
-    </string-array>
-    <string-array name="security_otr_mode_entryvalues">
-        <item>@string/security_otr_mode_disabled_value</item>
-        <item>@string/security_otr_mode_manual_value</item>
-        <item>@string/security_otr_mode_auto_value</item>
-        <item>@string/security_otr_mode_required_value</item>
-    </string-array>
-    <string name="security_otr_mode_default">@string/security_otr_mode_manual_value</string>
-
-    <string name="security_otr_history_key">security_otr_history</string>
-    <bool name="security_otr_history_default">true</bool>
-
 <!-- preference_phrase -->
     <string name="phrase_text_key">phrase_text</string>
     <string name="phrase_user_key">phrase_user</string>

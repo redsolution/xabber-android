@@ -99,7 +99,6 @@
     <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <string name="preference_security">Security\nSecurity settings</string>
     <string name="security_check_certificate">Check server certificate\nNotify for certificate problems on encrypted connections</string>
-    <string name="security_otr_mode">OTR mode</string>
     <string name="chats_attention">Attention</string>
     <string name="chats_attention_summary">React for incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound</string>

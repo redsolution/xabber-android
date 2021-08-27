@@ -18,20 +18,12 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.log.LogManager;
-
-import net.java.otr4j.OtrException;
 
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.jid.parts.Resourcepart;
 
 /**
  * Represents normal chat.
@@ -40,9 +32,7 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public class RegularChat extends AbstractChat {
 
-    private Resourcepart OTRresource;
     private Intent intent;
-
 
     public RegularChat(AccountJid account, ContactJid user) {
         super(account, user);
@@ -57,55 +47,19 @@ public class RegularChat extends AbstractChat {
         this.intent = intent;
     }
 
-    public Resourcepart getOTRresource() {
-        return OTRresource;
-    }
-
-    public void setOTRresource(Resourcepart OTRresource) {
-        this.OTRresource = OTRresource;
-    }
-
     @NonNull
     @Override
     public Jid getTo() {
-        if (OTRresource != null) {
-            return JidCreate.fullFrom(contactJid.getJid().asEntityBareJidIfPossible(), OTRresource);
+        if (resource == null) {
+            return contactJid.getJid();
         } else {
-            if (resource == null) {
-                return contactJid.getJid();
-            } else return JidCreate.fullFrom(contactJid.getJid().asEntityBareJidIfPossible(), resource);
+            return JidCreate.fullFrom(contactJid.getJid().asEntityBareJidIfPossible(), resource);
         }
     }
 
     @Override
     public Type getType() {
         return Type.chat;
-    }
-
-    @Override
-    public boolean canSendMessage() {
-        if (super.canSendMessage()) {
-            if (SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.required) return true;
-
-            SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, contactJid);
-
-            if (securityLevel != SecurityLevel.plain) return true;
-            try {
-                OTRManager.getInstance().startSession(account, contactJid);
-            } catch (NetworkException ignored) { }
-        }
-        return false;
-    }
-
-    @Override
-    protected String prepareText(String text) {
-        text = super.prepareText(text);
-        try {
-            return OTRManager.getInstance().transformSending(account, contactJid, text);
-        } catch (OtrException e) {
-            LogManager.exception(this, e);
-            return null;
-        }
     }
 
     @Override

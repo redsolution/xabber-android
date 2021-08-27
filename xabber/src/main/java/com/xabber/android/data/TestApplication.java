@@ -38,7 +38,6 @@ import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.http.PatreonManager;
@@ -315,7 +314,6 @@ public class TestApplication extends android.app.Application {
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(AvatarStorage.getInstance());
-        addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());

@@ -36,16 +36,6 @@
         android:scrollbars="vertical" />
 
     <ImageButton
-        android:id="@+id/button_security"
-        android:layout_width="48dp"
-        android:layout_height="@dimen/input_view_height"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/otr_encryption"
-        android:padding="12dp"
-        android:src="@drawable/ic_security_grey_24dp"
-        android:tint="?attr/chat_input_button_color" />
-
-    <ImageButton
         android:id="@+id/button_attach"
         android:layout_width="48dp"
         android:layout_height="@dimen/input_view_height"

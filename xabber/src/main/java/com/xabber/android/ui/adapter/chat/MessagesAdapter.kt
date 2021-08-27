@@ -81,7 +81,6 @@ class MessagesAdapter(
     private val isSavedMessagesMode: Boolean =
         chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()
     private var recyclerView: RecyclerView? = null
-    private val itemsNeedOriginalText: MutableList<String> = ArrayList()
 
     val checkedItemIds: MutableList<String> = ArrayList()
     val checkedMessageRealmObjects: MutableList<MessageRealmObject?> = ArrayList()
@@ -331,19 +330,19 @@ class MessagesAdapter(
                     nextMessage
                 }
 
-            when {
+            return when {
                 actualNextMessage.groupchatUserId != null && actualCurrentMessage.groupchatUserId != null -> {
-                    return actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
+                    actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
                 }
                 actualNextMessage.groupchatUserId == null && actualCurrentMessage.groupchatUserId == null -> {
                     val currentMessageSender = ContactJid.from(actualCurrentMessage.originalFrom)
                     val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
 
-                    return !currentMessageSender.bareJid.toString()
+                    !currentMessageSender.bareJid.toString()
                         .contains(previousMessageSender.bareJid.toString())
                 }
                 else -> {
-                    return true
+                    true
                 }
             }
 
@@ -436,28 +435,28 @@ class MessagesAdapter(
             if (actualPrevious.groupchatUserId != null && currentMessage.groupchatUserId != null) {
                 return currentMessage.groupchatUserId != actualPrevious.groupchatUserId
             } else if (actualPrevious.groupchatUserId == null && currentMessage.groupchatUserId == null) {
-                try {
+                return try {
                     val currentMessageSender = ContactJid.from(currentMessage.originalFrom)
                     val previousMessageSender = ContactJid.from(actualPrevious.originalFrom)
-                    return !currentMessageSender.bareJid.toString().contains(
+                    !currentMessageSender.bareJid.toString().contains(
                         previousMessageSender.bareJid.toString()
                     )
                 } catch (e: Exception) {
                     LogManager.exception(this, e)
-                    return true
+                    true
                 }
             } else {
                 return true
             }
         } else {
-            if (message.groupchatUserId != null
+            return if (message.groupchatUserId != null
                 && message.groupchatUserId.isNotEmpty()
                 && previousMessage.groupchatUserId != null
                 && previousMessage.groupchatUserId.isNotEmpty()
             ) {
-                return message.groupchatUserId != previousMessage.groupchatUserId
+                message.groupchatUserId != previousMessage.groupchatUserId
             } else {
-                return true
+                true
             }
         }
     }
@@ -493,7 +492,6 @@ class MessagesAdapter(
             ColorManager.getInstance().accountPainter.getAccountMainColor(chat.account),
             ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(chat.account),
             message.timestamp,
-            itemsNeedOriginalText.contains(message.primaryKey),
             message.primaryKey == firstUnreadMessageID,
             checkedItemIds.contains(message.primaryKey),
             isMessageNeedTail(position),
@@ -579,14 +577,6 @@ class MessagesAdapter(
 
     fun setFirstUnreadMessageId(id: String?) {
         firstUnreadMessageID = id
-    }
-
-    fun addOrRemoveItemNeedOriginalText(messageId: String) {
-        if (itemsNeedOriginalText.contains(messageId)) {
-            itemsNeedOriginalText.remove(messageId)
-        } else {
-            itemsNeedOriginalText.add(messageId)
-        }
     }
 
     /** File listener  */

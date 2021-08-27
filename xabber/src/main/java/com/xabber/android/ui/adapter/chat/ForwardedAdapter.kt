@@ -105,7 +105,6 @@ class ForwardedAdapter(
             accountMainColor = extraData.accountMainColor,
             mentionColor = extraData.mentionColor,
             mainMessageTimestamp = extraData.mainMessageTimestamp,
-            isShowOriginalOTR = false,
             isUnread = false,
             isChecked = false,
             isNeedTail = false,

@@ -16,7 +16,6 @@ import com.xabber.android.data.extension.delivery.hasTimeElement
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
-import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.extension.references.ReferencesManager
 import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
@@ -39,9 +38,6 @@ import com.xabber.xmpp.retract.incoming.elements.ReplacedExtensionElement.Compan
 import com.xabber.xmpp.sid.UniqueIdsHelper
 import io.realm.Realm
 import io.realm.RealmList
-import net.java.otr4j.io.SerializationUtils
-import net.java.otr4j.io.messages.AbstractMessage
-import net.java.otr4j.io.messages.PlainTextMessage
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.delay.packet.DelayInformation
@@ -50,7 +46,6 @@ import org.jxmpp.jid.parts.Resourcepart
 import org.jxmpp.util.XmppDateTime
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
-import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -204,31 +199,6 @@ object MessageHandler {
         }
 
         var body = messageStanza.getOptimalTextBody()
-        val otrMessage: AbstractMessage? = try {
-            SerializationUtils.toMessage(body)
-        } catch (e: IOException) {
-            LogManager.exception(this, e)
-            return null
-        }
-        var encrypted = false
-        if (otrMessage != null) {
-            if (otrMessage.messageType != AbstractMessage.MESSAGE_PLAINTEXT) {
-                encrypted = true
-                try {
-                    // this transforming just decrypt message if have keys. No action as injectMessage or something else
-                    body = OTRManager.getInstance()
-                        .transformReceivingIfSessionExist(accountJid, contactJid, body)
-                    if (OTRManager.getInstance().isEncrypted(body)) {
-                        return null
-                    }
-                } catch (e: Exception) {
-                    LogManager.exception(this, e)
-                    return null
-                }
-            } else {
-                body = (otrMessage as PlainTextMessage).cleanText
-            }
-        }
 
         // forward comment (to support previous forwarded xep)
         val forwardComment = ForwardManager.parseForwardComment(messageStanza)
@@ -297,7 +267,6 @@ object MessageHandler {
             this.text = body ?: ""
             this.isRead = !isIncoming || isGroupSystem
                     || delayInformation != null && (timestamp <= accountStartHistoryTimestamp ?: 0)
-            this.isEncrypted = encrypted
             this.isOffline =
                 MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
@@ -487,7 +456,6 @@ object MessageHandler {
             this.timestamp = timestamp?.time ?: Date().time
             this.isIncoming = true
             this.isRead = true
-            this.isEncrypted = OTRManager.getInstance().isEncrypted(text)
             this.isOffline = false
             this.stanzaId = stanzaId
             this.originId = originId

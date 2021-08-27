@@ -109,8 +109,6 @@ public class MessageRealmObject extends RealmObject {
 
     private boolean incoming;
 
-    private boolean encrypted;
-
     /**
      * Message was received from server side offline storage.
      */
@@ -298,10 +296,6 @@ public class MessageRealmObject extends RealmObject {
     public ChatAction getChatAction() { return ChatAction.valueOf(getAction()); }
 
     public Spannable getSpannable() { return new SpannableString(getText()); }
-
-    public boolean isEncrypted() { return encrypted; }
-
-    public void setEncrypted(boolean encrypted) { this.encrypted = encrypted; }
 
     public MessageStatus getMessageStatus() { return MessageStatus.valueOf(messageStatus); }
 

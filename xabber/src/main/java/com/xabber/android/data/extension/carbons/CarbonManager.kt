@@ -2,13 +2,10 @@ package com.xabber.android.data.extension.carbons
 
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
-import com.xabber.android.data.SettingsManager.SecurityOtrMode
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
 import com.xabber.android.data.entity.AccountJid
-import com.xabber.android.data.extension.otr.OTRManager
-import com.xabber.android.data.extension.otr.SecurityLevel
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import org.jivesoftware.smack.SmackException.NoResponseException
@@ -109,7 +106,9 @@ object CarbonManager : OnAuthenticatedListener {
         account: AccountJid,
     ) {
         val carbonCopyListener = carbonCopyListeners.remove(account)
-        if (carbonCopyListener != null) carbonManager.removeCarbonCopyReceivedListener(carbonCopyListener)
+        if (carbonCopyListener != null) {
+            carbonManager.removeCarbonCopyReceivedListener(carbonCopyListener)
+        }
     }
 
     fun isCarbonsEnabledForConnection(connection: ConnectionItem): Boolean {
@@ -145,12 +144,6 @@ object CarbonManager : OnAuthenticatedListener {
         message: Message?,
     ) {
         if (!SettingsManager.connectionUseCarbons()) return
-
-        if (SettingsManager.securityOtrMode() == SecurityOtrMode.disabled) return
-
-        val securityLevel = OTRManager.getInstance().getSecurityLevel(abstractChat.account, abstractChat.contactJid)
-
-        if (securityLevel == SecurityLevel.plain || securityLevel == SecurityLevel.finished) return
 
         CarbonExtension.Private.addTo(message)
     }

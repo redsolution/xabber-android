@@ -23,7 +23,6 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -51,11 +50,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
     TextView messageTime;
     TextView messageHeader;
-    TextView messageNotDecrypted;
     View messageBalloon;
     View messageShadow;
     ImageView statusIcon;
-    ImageView ivEncrypted;
     String messageId;
     Long timestamp;
     View messageInfo;
@@ -80,11 +77,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
-        messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
         messageBalloon = itemView.findViewById(R.id.message_balloon);
         messageShadow = itemView.findViewById(R.id.message_shadow);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
-        ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
         forwardLayout = itemView.findViewById(R.id.forwardLayout);
         forwardLeftBorder = itemView.findViewById(R.id.forwardLeftBorder);
 
@@ -121,11 +116,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
             else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
 
-        if (messageRealmObject.isEncrypted()) {
-            ivEncrypted.setVisibility(View.VISIBLE);
-        } else ivEncrypted.setVisibility(View.GONE);
-
-
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
@@ -152,15 +142,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         }
 
-        if (OTRManager.getInstance().isEncrypted(messageRealmObject.getText())) {
-            if (extraData.isShowOriginalOTR()) {
-                messageText.setVisibility(View.VISIBLE);
-            } else messageText.setVisibility(View.GONE);
-            messageNotDecrypted.setVisibility(View.VISIBLE);
-        } else {
-            messageText.setVisibility(View.VISIBLE);
-            messageNotDecrypted.setVisibility(View.GONE);
-        }
         messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
 
         // set unread status

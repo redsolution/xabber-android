@@ -107,66 +107,6 @@ public enum ChatAction {
     subject,
 
     /**
-     * Chat becomes encrypted with verified contact.
-     */
-    otr_verified,
-
-    /**
-     * Chat becomes encrypted.
-     */
-    otr_encryption,
-
-    /**
-     * Chat becomes not encrypted.
-     */
-    otr_plain,
-
-    /**
-     * Chat was finished by another entity.
-     */
-    otr_finish,
-
-    /**
-     * OTR error.
-     */
-    otr_error,
-
-    /**
-     * Unreadable OTR message received.
-     */
-    otr_unreadable,
-
-    /**
-     * Request to send message to the finished session was blocked.
-     */
-    otr_finished_session,
-
-    /**
-     * Cheat occurred while SMP.
-     */
-    otr_smp_cheated,
-
-    /**
-     * Error occurred while SMP.
-     */
-    otr_smp_failed,
-
-    /**
-     * SMP verification for the shared secret or your question has been passed.
-     */
-    otr_smp_verified,
-
-    /**
-     * OTR verification for your response has been passed.
-     */
-    otr_smp_not_approved,
-
-    /**
-     * OTR session don't passes verification.
-     */
-    otr_smp_unverified,
-
-    /**
      * Call attention.
      */
     attention_called,
@@ -282,30 +222,6 @@ public enum ChatAction {
             return context.getString(R.string.action_invite_error, text);
         else if (this == ChatAction.subject)
             return context.getString(R.string.action_subject, name, text);
-        else if (this == ChatAction.otr_verified)
-            return context.getString(R.string.action_otr_verified);
-        else if (this == ChatAction.otr_encryption)
-            return context.getString(R.string.action_otr_encryption);
-        else if (this == ChatAction.otr_plain)
-            return context.getString(R.string.action_otr_plain);
-        else if (this == ChatAction.otr_finish)
-            return context.getString(R.string.action_otr_finish);
-        else if (this == ChatAction.otr_error)
-            return context.getString(R.string.action_otr_error, text);
-        else if (this == ChatAction.otr_unreadable)
-            return context.getString(R.string.action_otr_unreadable);
-        else if (this == ChatAction.otr_finished_session)
-            return context.getString(R.string.action_otr_finished_session);
-        else if (this == ChatAction.otr_smp_cheated)
-            return context.getString(R.string.action_otr_smp_cheated);
-        else if (this == ChatAction.otr_smp_failed)
-            return context.getString(R.string.action_otr_smp_failed);
-        else if (this == ChatAction.otr_smp_not_approved)
-            return context.getString(R.string.action_otr_smp_not_approved);
-        else if (this == ChatAction.otr_smp_verified)
-            return context.getString(R.string.action_otr_smp_verified);
-        else if (this == ChatAction.otr_smp_unverified)
-            return context.getString(R.string.action_otr_smp_unverified);
         else if (this == ChatAction.attention_called)
             return context.getString(R.string.action_attention_called);
         else if (this == ChatAction.attention_requested)

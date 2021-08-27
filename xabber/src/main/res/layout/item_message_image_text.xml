@@ -148,15 +148,6 @@
         </com.xabber.android.ui.widget.CustomFlexboxLayout>
 -->
 
-
-        <TextView
-            android:id="@+id/message_not_decrypted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/otr_not_decrypted_message"
-            android:textStyle="italic"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/tvForwardedCount"
             android:layout_width="wrap_content"

@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 1034
-        versionName '3.0.1(1034)'
+        versionCode 1035
+        versionName '3.0.1(1035)'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -143,9 +143,6 @@ dependencies {
     storeImplementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     storeImplementation 'com.google.firebase:firebase-analytics:18.0.3'
     storeImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.4.1'
-
-    // otr
-    implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
 
     // Opus codec
     implementation 'top.oply.opuslib:opuslib:1.0.2'

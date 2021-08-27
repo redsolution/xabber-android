@@ -14,7 +14,6 @@ import android.view.View;
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
@@ -100,25 +99,19 @@ public class ExtContactVO extends ContactVO {
         } else {
             viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             viewHolder.tvMessageText.setVisibility(View.VISIBLE);
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                viewHolder.tvMessageText.setText(R.string.otr_not_decrypted_message);
-                viewHolder.tvMessageText.
-                        setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
-            } else {
-                try{
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
-                        try {
-                            viewHolder.tvMessageText.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
-                        } catch (Exception e){
-                            viewHolder.tvMessageText.setText(Html.fromHtml(text));
-                        }
-                    } else viewHolder.tvMessageText.setText(text);
-                } catch (Exception e) {
-                    LogManager.exception(this, e);
-                    viewHolder.tvMessageText.setText(text);
-                }
-                viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
+            try{
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
+                    try {
+                        viewHolder.tvMessageText.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
+                    } catch (Exception e){
+                        viewHolder.tvMessageText.setText(Html.fromHtml(text));
+                    }
+                } else viewHolder.tvMessageText.setText(text);
+            } catch (Exception e) {
+                LogManager.exception(this, e);
+                viewHolder.tvMessageText.setText(text);
             }
+            viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
         }
 
         /** set up MESSAGE STATUS */

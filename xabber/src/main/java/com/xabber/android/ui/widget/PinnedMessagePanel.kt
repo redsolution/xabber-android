@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.xabber.android.R
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.groups.GroupMemberManager
-import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.ChatFragment
@@ -130,25 +129,20 @@ class PinnedMessagePanel : Fragment() {
         } else {
             textView.typeface = Typeface.DEFAULT
             textView.visibility = View.VISIBLE
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                textView.text = getText(R.string.otr_not_decrypted_message)
-                textView.setTypeface(textView.typeface, Typeface.ITALIC)
-            } else {
-                try {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        try {
-                            textView.text =
-                                Html.fromHtml(Utils.getDecodedSpannable(text).toString())
-                        } catch (e: Exception) {
-                            textView.text = Html.fromHtml(text)
-                        }
-                    } else textView.text = text
-                } catch (e: Exception) {
-                    LogManager.exception(ChatFragment::class.java.simpleName, e)
-                    textView.text = text
-                } finally {
-                    textView.alpha = 1f
-                }
+            try {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    try {
+                        textView.text =
+                            Html.fromHtml(Utils.getDecodedSpannable(text).toString())
+                    } catch (e: Exception) {
+                        textView.text = Html.fromHtml(text)
+                    }
+                } else textView.text = text
+            } catch (e: Exception) {
+                LogManager.exception(ChatFragment::class.java.simpleName, e)
+                textView.text = text
+            } finally {
+                textView.alpha = 1f
             }
             textView.typeface = Typeface.DEFAULT
         }

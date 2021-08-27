@@ -10,7 +10,6 @@ import android.widget.*
 import com.xabber.android.R
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
-import com.xabber.android.data.extension.otr.OTRManager
 import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
@@ -26,7 +25,6 @@ class MessageContextMenu(
     private val onMessageCopyClick: () -> Unit,
     private val onMessageQuoteClick: () -> Unit,
     private val onMessageRemoveClick: () -> Unit,
-    private val onShowOriginalOtrClick: () -> Unit,
     private val onMessageStatusClick: () -> Unit,
     private val onMessageEditClick: () -> Unit,
     private val onPinClick: () -> Unit,
@@ -41,7 +39,6 @@ class MessageContextMenu(
                     is MessageContextMenuItem.Copy -> onMessageCopyClick()
                     is MessageContextMenuItem.Quote -> onMessageQuoteClick()
                     is MessageContextMenuItem.Remove -> onMessageRemoveClick()
-                    is MessageContextMenuItem.Otr -> onShowOriginalOtrClick()
                     is MessageContextMenuItem.Status -> onMessageStatusClick()
                     is MessageContextMenuItem.Edit -> onMessageEditClick()
                     is MessageContextMenuItem.Pin -> onPinClick()
@@ -69,10 +66,6 @@ class MessageContextMenu(
                     || message.messageStatus == MessageStatus.RECEIVED)
         ) {
             menuItems += MessageContextMenuItem.Edit(context)
-        }
-
-        if (OTRManager.getInstance().isEncrypted(message.text)) {
-            menuItems += MessageContextMenuItem.Otr(context)
         }
 
         if (chat is GroupChat) {
@@ -218,9 +211,6 @@ class MessageContextMenu(
 
         class Remove(context: Context) :
             MessageContextMenuItem(context.getString(R.string.message_remove))
-
-        class Otr(context: Context) :
-            MessageContextMenuItem(context.getString(R.string.message_otr_show_original))
 
         class Edit(context: Context) :
             MessageContextMenuItem(context.getString(R.string.message_edit))

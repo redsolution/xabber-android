@@ -33,7 +33,6 @@ import com.xabber.android.data.connection.WakeLockManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -689,28 +688,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
                 R.bool.security_check_certificate_default);
     }
 
-    public static SecurityOtrMode securityOtrMode() {
-        String value = getString(R.string.security_otr_mode_key,
-                R.string.security_otr_mode_default);
-        if (Application.getInstance()
-                .getString(R.string.security_otr_mode_disabled_value)
-                .equals(value))
-            return SecurityOtrMode.disabled;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_manual_value)
-                .equals(value))
-            return SecurityOtrMode.manual;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_auto_value).equals(value))
-            return SecurityOtrMode.auto;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_required_value)
-                .equals(value))
-            return SecurityOtrMode.required;
-        else
-            throw new IllegalStateException();
-    }
-
     public static SpamFilterMode spamFilterMode() {
         String value = getString(R.string.spam_filter_key, R.string.spam_filter_default);
 
@@ -727,11 +704,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
             return SpamFilterMode.noAuth;
 
         else throw new IllegalStateException();
-    }
-
-    public static boolean securityOtrHistory() {
-        return getBoolean(R.string.security_otr_history_key,
-                R.bool.security_otr_history_default);
     }
 
     public static int getBootCount() {
@@ -924,9 +896,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
                 R.string.chats_attention_key))) {
             AttentionManager.getInstance().onSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
-                R.string.security_otr_mode_key))) {
-            OTRManager.getInstance().onSettingsChanged();
-        } else if (key.equals(Application.getInstance().getString(
                 R.string.interface_theme_key))) {
             ColorManager.getInstance().onSettingsChanged();
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
@@ -1044,30 +1013,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
          * Never hide keyboard.
          */
         never,
-    }
-
-    public enum SecurityOtrMode {
-
-        /**
-         * OTR is disabled.
-         */
-        disabled,
-
-        /**
-         * Manually send request and confirm requests.
-         */
-        manual,
-
-        /**
-         * Automatically try to use OTR.
-         */
-        auto,
-
-        /**
-         * Require to use OTR.
-         */
-        required
-
     }
 
     public enum SpamFilterMode {

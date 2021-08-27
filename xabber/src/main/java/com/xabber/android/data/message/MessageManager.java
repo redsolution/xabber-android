@@ -111,7 +111,6 @@ public class MessageManager implements OnPacketListener {
             message.setText(text.replaceAll("\0", ""));
             message.setIncoming(false);
             message.setOffline(false);
-            message.setEncrypted(false);
             message.setForwarded(false);
             message.setGroupchatSystem(false);
             message.setTimestamp(new Date().getTime());
@@ -120,7 +119,7 @@ public class MessageManager implements OnPacketListener {
 
             realm1.copyToRealm(message);
 
-            if (chat.canSendMessage()) chat.sendMessages();
+            chat.sendMessages();
         });
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();

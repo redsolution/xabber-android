@@ -41,7 +41,6 @@ import com.xabber.android.data.extension.delivery.RetryReceiptRequestElement;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.references.decoration.Markup;
@@ -51,7 +50,6 @@ import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
 
@@ -497,15 +495,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
-    /**
-     * Prepare text to be send.
-     *
-     * @return <code>null</code> if text shouldn't be send.
-     */
-    protected String prepareText(String text) {
-        return text;
-    }
-
     public void sendMessages() {
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
             Realm realm = null;
@@ -537,13 +526,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
     }
 
-    public boolean canSendMessage() {
-        return true;
-    }
-
     public boolean sendMessage(MessageRealmObject messageRealmObject) {
-        String text = prepareText(messageRealmObject.getText());
-        messageRealmObject.setEncrypted(OTRManager.getInstance().isEncrypted(text));
+        String text = messageRealmObject.getText();
         Long timestamp = messageRealmObject.getTimestamp();
 
         Date currentTime = new Date(System.currentTimeMillis());
@@ -581,8 +565,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         if (message != null) {
-            ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-            CarbonManager.INSTANCE.updateOutgoingMessage(AbstractChat.this, message);
+            ChatStateManager.getInstance().updateOutgoingMessage(this, message);
+            CarbonManager.INSTANCE.updateOutgoingMessage(this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             message.setStanzaId(messageRealmObject.getOriginId());

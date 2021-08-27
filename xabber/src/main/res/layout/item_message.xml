@@ -48,14 +48,6 @@
             android:visibility="gone" />
 
         <TextView
-            android:id="@+id/message_not_decrypted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/otr_not_decrypted_message"
-            android:textStyle="italic"
-            android:visibility="gone" />
-
-        <TextView
             android:id="@+id/tvForwardedCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -132,14 +124,6 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_message_synced_14dp" />
-
-                <ImageView
-                    android:id="@+id/message_encrypted_icon"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:src="@drawable/ic_lock" />
 
             </LinearLayout>
 

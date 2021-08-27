@@ -290,28 +290,6 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.FingerprintActivity"
-            android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName=".ui.activity.ChatActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ChatActivity" />
-        </activity>
-
-        <activity
-            android:name=".ui.activity.QuestionActivity"
-            android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName=".ui.activity.ChatActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ChatActivity" />
-        </activity>
-
-        <activity
             android:name=".ui.preferences.PhraseList"
             android:parentActivityName=".ui.preferences.NotificationsSettings">
 

@@ -37,7 +37,6 @@ import com.xabber.android.R
 import com.xabber.android.data.*
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
@@ -49,7 +48,6 @@ import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.NotificationState.NotificationMode
 import com.xabber.android.data.message.chat.ChatManager
-import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.android.data.roster.PresenceManager.requestSubscription
 import com.xabber.android.data.roster.RosterContact
 import com.xabber.android.data.roster.RosterManager
@@ -68,7 +66,6 @@ import com.xabber.android.ui.preferences.CustomNotifySettings
 import com.xabber.android.ui.widget.BottomMessagesPanel
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
-import org.jxmpp.stringprep.XmppStringprepException
 import java.util.*
 
 /**
@@ -246,12 +243,6 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
 
         needScrollToUnread = intent.getBooleanExtra(EXTRA_NEED_SCROLL_TO_UNREAD, false)
 
-        if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false)
-            || intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)
-        ) {
-            handleOtrIntent(intent)
-        }
-
         // forward
         if (ACTION_FORWARD == intent.action) {
             intent.getStringArrayListExtra(KEY_MESSAGES_ID)?.let {
@@ -338,41 +329,6 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 }
             }
         }
-    }
-
-    private fun handleOtrIntent(intent: Intent) {
-        val account = intent.getStringExtra(KEY_ACCOUNT)
-        val user = intent.getStringExtra(KEY_USER)
-        val question = intent.getStringExtra(KEY_QUESTION)
-        if (account != null && user != null) {
-            try {
-                val accountJid = AccountJid.from(account)
-                val contactJid = ContactJid.from(user)
-                val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
-                if (chat is RegularChat) {
-                    if (intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
-                        chat.intent = QuestionActivity.createCancelIntent(
-                            Application.getInstance(), accountJid, contactJid
-                        )
-                    } else {
-                        chat.intent = QuestionActivity.createIntent(
-                            Application.getInstance(),
-                            accountJid,
-                            contactJid,
-                            question != null,
-                            true,
-                            question
-                        )
-                    }
-                }
-            } catch (e: ContactJidCreateException) {
-                LogManager.exception(javaClass.simpleName, e)
-            } catch (e: XmppStringprepException) {
-                LogManager.exception(javaClass.simpleName, e)
-            }
-        }
-        getIntent().removeExtra(EXTRA_OTR_REQUEST)
-        getIntent().removeExtra(EXTRA_OTR_PROGRESS)
     }
 
     private fun showUploadNotSupportedDialog() {
@@ -640,40 +596,6 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     override fun onMenuItemClick(item: MenuItem): Boolean {
         val abstractChat = ChatManager.getInstance().getChat(accountJid, contactJid)
         return when (item.itemId) {
-            R.id.action_start_encryption -> {
-                chatFragment?.showResourceChoiceAlert(accountJid, contactJid, false)
-                true
-            }
-            R.id.action_restart_encryption -> {
-                chatFragment?.showResourceChoiceAlert(accountJid, contactJid, true)
-                true
-            }
-            R.id.action_stop_encryption -> {
-                chatFragment?.stopEncryption(accountJid, contactJid)
-                true
-            }
-            R.id.action_verify_with_fingerprint -> {
-                startActivity(
-                    FingerprintActivity.createIntent(this, accountJid, contactJid)
-                )
-                true
-            }
-            R.id.action_verify_with_question -> {
-                startActivity(
-                    QuestionActivity.createIntent(
-                        this, accountJid, contactJid, true, false, null
-                    )
-                )
-                true
-            }
-            R.id.action_verify_with_shared_secret -> {
-                startActivity(
-                    QuestionActivity.createIntent(
-                        this, accountJid, contactJid, false, false, null
-                    )
-                )
-                true
-            }
             R.id.action_send_contact -> {
                 sendContact()
                 true
@@ -858,12 +780,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         private const val ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD"
         const val EXTRA_NEED_SCROLL_TO_UNREAD =
             "com.xabber.android.data.EXTRA_NEED_SCROLL_TO_UNREAD"
-        const val EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST"
-        const val EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS"
         private const val PERMISSIONS_REQUEST_ATTACH_FILE = 24
-        const val KEY_ACCOUNT = "KEY_ACCOUNT"
-        const val KEY_USER = "KEY_USER"
-        const val KEY_QUESTION = "KEY_QUESTION"
         private const val KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED"
         const val KEY_MESSAGES_ID = "KEY_MESSAGES_ID"
         private const val SAVE_SELECTED_ACCOUNT =

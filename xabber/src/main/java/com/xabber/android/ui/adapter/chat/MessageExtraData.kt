@@ -14,7 +14,6 @@ data class MessageExtraData(
     val accountMainColor: Int,
     val mentionColor: Int,
     val mainMessageTimestamp: Long?,
-    val isShowOriginalOTR: Boolean,
     val isUnread: Boolean,
     val isChecked: Boolean,
     val isNeedTail: Boolean,

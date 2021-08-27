@@ -54,7 +54,6 @@ import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.sync.SyncManager;
@@ -371,7 +370,6 @@ public class Application extends android.app.Application {
         addManager(AvatarManager.getInstance());
         addManager(PresenceManager.INSTANCE);
         addManager(RosterManager.getInstance());
-        addManager(OTRManager.getInstance());
         addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());
         addManager(NotificationManager.getInstance());

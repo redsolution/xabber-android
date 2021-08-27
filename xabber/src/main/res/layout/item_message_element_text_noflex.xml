@@ -87,14 +87,6 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/message_encrypted_icon"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                app:srcCompat="@drawable/ic_lock" />
-
         </LinearLayout>
 
     </LinearLayout>

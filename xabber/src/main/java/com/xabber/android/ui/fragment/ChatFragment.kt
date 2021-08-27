@@ -30,7 +30,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.BaseIqResultUiListener
-import com.xabber.android.data.NetworkException
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
@@ -38,8 +37,6 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
 import com.xabber.android.data.extension.blocking.BlockingManager
-import com.xabber.android.data.extension.capability.CapabilitiesManager
-import com.xabber.android.data.extension.capability.ClientInfo
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
@@ -47,8 +44,6 @@ import com.xabber.android.data.extension.groups.GroupsManager.enableSendingPrese
 import com.xabber.android.data.extension.groups.GroupsManager.sendPinMessageRequest
 import com.xabber.android.data.extension.groups.GroupsManager.sendUnPinMessageRequest
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
-import com.xabber.android.data.extension.otr.OTRManager
-import com.xabber.android.data.extension.otr.SecurityLevel
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager.PublishAudioProgress.AudioInfo
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePresenterManager
@@ -75,8 +70,6 @@ import com.xabber.android.ui.activity.ChatActivity
 import com.xabber.android.ui.activity.ContactViewerActivity
 import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIntentForGroupchatAndMemberId
 import com.xabber.android.ui.activity.MessagesActivity
-import com.xabber.android.ui.activity.QuestionActivity
-import com.xabber.android.ui.adapter.ResourceAdapter
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.BindListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
@@ -94,8 +87,6 @@ import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
-import org.jxmpp.jid.parts.Resourcepart
-import org.jxmpp.stringprep.XmppStringprepException
 import rx.Subscription
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -119,7 +110,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     private lateinit var inputLayout: LinearLayout
     private lateinit var inputEditText: EditText
     private lateinit var sendButton: ImageButton
-    private lateinit var securityButton: ImageButton
     private lateinit var attachButton: ImageButton
     private lateinit var recordButton: ImageButton
 
@@ -217,10 +207,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             val unread = chat.unreadMessageCount
             val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
             if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter.itemCount - unread) {
-                // scroll down
                 scrollDown()
-
-                // scroll to unread
             } else {
                 scrollToFirstUnread(unread)
             }
@@ -409,9 +396,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         recordLockChevronImage = view.findViewById(R.id.iv_record_chevron_lock)
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar)
-
-        securityButton = view.findViewById(R.id.button_security)
-        securityButton.setOnClickListener { showSecurityMenu() }
 
         // to avoid strange bug on some 4.x androids
         inputLayout = view.findViewById(R.id.input_layout)
@@ -642,7 +626,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         updateNewReceivedMessageCounter(unread)
     }
 
-
     override fun onLastHistoryLoadingError(
         accountJid: AccountJid, contactJid: ContactJid,
         errorText: String?
@@ -724,7 +707,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         this.accountJid = accountJid
         this.contactJid = contactJid
 
-        showSecurityButton(chat is RegularChat)
         if (!accountJid.bareJid.toString().contains(contactJid.bareJid.toString())) {
             IntroViewDecoration.decorateRecyclerViewWithChatIntroView(
                 realmRecyclerView,
@@ -1059,27 +1041,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         iconToBeChanged.setImageResource(drawableResourceId)
     }
 
-    private fun showSecurityMenu() {
-        val popup = PopupMenu(activity, securityButton)
-        popup.inflate(R.menu.security)
-        popup.setOnMenuItemClickListener(activity as PopupMenu.OnMenuItemClickListener?)
-        val menu = popup.menu
-        val securityLevel = OTRManager.getInstance().getSecurityLevel(accountJid, contactJid)
-        if (securityLevel == SecurityLevel.plain) {
-            menu.findItem(R.id.action_start_encryption)
-                .setVisible(true).isEnabled =
-                SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled
-        } else {
-            menu.findItem(R.id.action_restart_encryption).isVisible = true
-        }
-        val isEncrypted = securityLevel != SecurityLevel.plain
-        menu.findItem(R.id.action_stop_encryption).isEnabled = isEncrypted
-        menu.findItem(R.id.action_verify_with_fingerprint).isEnabled = isEncrypted
-        menu.findItem(R.id.action_verify_with_question).isEnabled = isEncrypted
-        menu.findItem(R.id.action_verify_with_shared_secret).isEnabled = isEncrypted
-        popup.show()
-    }
-
     private fun setUpInputViewButtons() {
         var empty = inputEditText.text.toString().trim { it <= ' ' }.isEmpty()
         if (empty) {
@@ -1092,14 +1053,12 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             sendButton.visibility = View.GONE
             sendButton.setColorFilter(ColorManager.getInstance().accountPainter.greyMain)
             sendButton.isEnabled = false
-            showSecurityButton(chat is RegularChat)
             recordButton.visibility = View.VISIBLE
             attachButton.visibility = View.VISIBLE
         } else {
             sendButton.visibility = View.VISIBLE
             sendButton.isEnabled = true
             sendButton.setColorFilter(accountColor)
-            showSecurityButton(false)
             recordButton.visibility = View.GONE
             attachButton.visibility = View.GONE
         }
@@ -1193,8 +1152,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     fun updateContact() {
-        updateSecurityButton()
-        updateSendButtonSecurityLevel()
         updateBlockedState()
         showTopPanelIfNeed()
     }
@@ -1207,23 +1164,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         layoutManager.scrollToPositionWithOffset(
             chatMessageAdapter.itemCount - unreadCount,
             200
-        )
-    }
-
-    private fun updateSecurityButton() {
-        securityButton.setImageLevel(
-            OTRManager.getInstance().getSecurityLevel(accountJid, contactJid).imageLevel
-        )
-    }
-
-    private fun showSecurityButton(show: Boolean) {
-        val isSavedMessages = accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
-        securityButton.visibility = if (show && !isSavedMessages) View.VISIBLE else View.GONE
-    }
-
-    private fun updateSendButtonSecurityLevel() {
-        sendButton.setImageLevel(
-            OTRManager.getInstance().getSecurityLevel(accountJid, contactJid).imageLevel
         )
     }
 
@@ -1313,30 +1253,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         }
     }
 
-    fun stopEncryption(account: AccountJid?, user: ContactJid?) {
-        try {
-            OTRManager.getInstance().endSession(account, user)
-        } catch (e: NetworkException) {
-            Application.getInstance().onError(e)
-        }
-    }
-
-    private fun restartEncryption(account: AccountJid, user: ContactJid) {
-        try {
-            OTRManager.getInstance().refreshSession(account, user)
-        } catch (e: NetworkException) {
-            Application.getInstance().onError(e)
-        }
-    }
-
-    private fun startEncryption(account: AccountJid, user: ContactJid) {
-        try {
-            OTRManager.getInstance().startSession(account, user)
-        } catch (e: NetworkException) {
-            Application.getInstance().onError(e)
-        }
-    }
-
     private fun deleteMessage(messages: ArrayList<MessageRealmObject?>) {
         val ids = messages.filterNotNull().map { it.primaryKey }.toMutableList()
         val isSavedMessages = accountJid.bareJid.toString().contains(contactJid.bareJid.toString())
@@ -1401,86 +1317,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         }
     }
 
-    fun showResourceChoiceAlert(account: AccountJid, user: ContactJid, restartSession: Boolean) {
-        val allPresences = RosterManager.getInstance().getPresences(account, user.jid)
-        val items: MutableList<Map<String, String>> = ArrayList()
-        for (presence in allPresences) {
-            val fromJid = presence.from
-            val clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(fromJid)
-            var client = ""
-            if (clientInfo == null) {
-                CapabilitiesManager.getInstance().requestClientInfoByUser(account, fromJid)
-            } else if (clientInfo === ClientInfo.INVALID_CLIENT_INFO) {
-                client = getString(R.string.unknown)
-            } else {
-                val name = clientInfo.name
-                if (name != null) {
-                    client = name
-                }
-                val type = clientInfo.type
-                if (type != null) {
-                    client = if (client.isEmpty()) {
-                        type
-                    } else {
-                        "$client/$type"
-                    }
-                }
-            }
-            val map: MutableMap<String, String> = HashMap()
-            if (client.isNotEmpty()) {
-                map[ResourceAdapter.KEY_CLIENT] = client
-            }
-            val resourceOrNull = fromJid.resourceOrNull
-            if (resourceOrNull != null) {
-                map[ResourceAdapter.KEY_RESOURCE] = resourceOrNull.toString()
-                items.add(map)
-            }
-        }
-        val adapter = ResourceAdapter(activity, items)
-        adapter.checkedItem = checkedResource
-        if (items.size > 0) {
-            AlertDialog.Builder(requireActivity()).apply {
-                setTitle(R.string.otr_select_resource)
-                setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    checkedResource = adapter.checkedItem
-                }
-                setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    checkedResource = adapter.checkedItem
-                    try {
-                        val chat = chat
-                        if (chat is RegularChat) {
-                            chat.otRresource =
-                                Resourcepart.from(items[checkedResource][ResourceAdapter.KEY_RESOURCE])
-                            if (restartSession) {
-                                restartEncryption(account, user)
-                            } else {
-                                startEncryption(account, user)
-                            }
-                        } else {
-                            Toast.makeText(
-                                activity, R.string.otr_select_toast_error, Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } catch (e: XmppStringprepException) {
-                        LogManager.exception(javaClass.simpleName, e)
-                        Toast.makeText(
-                            activity, R.string.otr_select_toast_error, Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                setSingleChoiceItems(adapter, checkedResource, null)
-            }.show()
-        } else {
-            Toast.makeText(
-                activity,
-                R.string.otr_select_toast_resources_not_found,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
     override fun onMessageClick(caller: View, position: Int) {
         val itemViewType = chatMessageAdapter.getItemViewType(position)
         if (itemViewType != MessagesAdapter.VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
@@ -1517,12 +1353,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                     ClipManager.copyMessagesToClipboard(
                         mutableListOf(clickedMessageRealmObject.primaryKey)
                     )
-                },
-                onShowOriginalOtrClick = {
-                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(
-                        clickedMessageRealmObject.primaryKey
-                    )
-                    chatMessageAdapter.notifyDataSetChanged()
                 },
                 onMessageStatusClick = {
                     if (clickedMessageRealmObject.messageStatus == MessageStatus.ERROR) {
@@ -1680,24 +1510,17 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     private fun setupNotifyLayout(notifyIntent: Intent) {
-        if (tvNotifyTitle == null || tvNotifyAction == null) {
-            val view = stubNotify.inflate()
-            tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle)
-            tvNotifyAction = view.findViewById(R.id.tvNotifyAction)
-            notifyLayout = view.findViewById(R.id.notifyLayout)
-            notifyLayout?.setOnClickListener {
-                startActivity(notifyIntent)
-                it.visibility = View.GONE
-            }
-        }
-        if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
-            tvNotifyTitle?.setText(R.string.otr_verification_progress_title)
-            tvNotifyAction?.setText(R.string.otr_verification_notify_button_cancel)
-        } else {
-            tvNotifyTitle?.setText(R.string.otr_verification_notify_title)
-            tvNotifyAction?.setText(R.string.otr_verification_notify_button)
-        }
-        notifyLayout?.visibility = View.VISIBLE
+//        if (tvNotifyTitle == null || tvNotifyAction == null) {
+//            val view = stubNotify.inflate()
+//            tvNotifyTitle = view.findViewById(R.id.tvNotifyTitle)
+//            tvNotifyAction = view.findViewById(R.id.tvNotifyAction)
+//            notifyLayout = view.findViewById(R.id.notifyLayout)
+//            notifyLayout?.setOnClickListener {
+//                startActivity(notifyIntent)
+//                it.visibility = View.GONE
+//            }
+//        }
+//        notifyLayout?.visibility = View.VISIBLE
     }
 
     private fun inflateIncomingInviteFakeMessage(
@@ -1708,7 +1531,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         view.findViewById<TextView>(R.id.message_text)?.text = reasonText
         view.findViewById<TextView>(R.id.message_header)?.text = senderName
         view.findViewById<View>(R.id.message_status_icon).visibility = View.GONE
-        view.findViewById<View>(R.id.message_encrypted_icon).visibility = View.GONE
 
         view.findViewById<View>(R.id.message_balloon).apply {
             val balloonDrawable = context?.resources?.let {
@@ -2093,7 +1915,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         rootView.findViewById<View>(R.id.button_emoticon).isEnabled =
             state
         attachButton.isEnabled = state
-        securityButton.isEnabled = state
     }
 
     private fun beginTimer(start: Boolean) {
