@@ -125,27 +125,14 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            LogManager.i(
-                this,
-                "Start fetching single message with stanza id $stanzaId"
-            )
             AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
 
                 val listener = createNewRegularMamResultListener(chat.account)
 
                 connection.addAsyncStanzaListener(listener, stanzaFilter)
-
                 connection.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqMessageWithStanzaId(chat, stanzaId),
-                    { packet ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            LogManager.i(
-                                this,
-                                "Finish fetching single message with stanza id $stanzaId"
-                            )
-                        }
-                        connection.removeAsyncStanzaListener(listener)
-                    },
+                    { connection.removeAsyncStanzaListener(listener) },
                     { exception ->
                         LogManager.exception(this, exception)
                         connection.removeAsyncStanzaListener(listener)
@@ -157,24 +144,12 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun loadAllMessagesInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            LogManager.i(
-                this,
-                "Start fetching all messages in chat ${chat.account} with ${chat.contactJid}"
-            )
             AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
                 val listener = createNewRegularMamResultListener(chat.account)
                 connection.addAsyncStanzaListener(listener, stanzaFilter)
                 connection.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
-                    { packet ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            LogManager.i(
-                                this,
-                                "Finish fetching all messages in chat ${chat.account} with ${chat.contactJid}"
-                            )
-                        }
-                        connection.removeAsyncStanzaListener(listener)
-                    },
+                    { connection.removeAsyncStanzaListener(listener) },
                     { exception ->
                         LogManager.exception(this, exception)
                         connection.removeAsyncStanzaListener(listener)
@@ -194,17 +169,12 @@ object MessageArchiveManager : OnRosterReceivedListener {
             connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastSavedMessage(accountJid),
                 {
-                    LogManager.d(
-                        this, "Finish loading last saved message of account $accountJid"
-                    )
-                    Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                        .map { it.onHistoryLoaded(accountItem) }
+                    Application.getInstance().getManagers(OnHistoryLoaded::class.java).map {
+                        it.onHistoryLoaded(accountItem)
+                    }
                     connection.removeAsyncStanzaListener(listener)
                 },
                 {
-                    LogManager.d(
-                        this, "Error loading last saved message of account $accountJid"
-                    )
                     Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                         .map { it.onHistoryLoaded(accountItem) }
                     connection.removeAsyncStanzaListener(listener)
@@ -225,16 +195,9 @@ object MessageArchiveManager : OnRosterReceivedListener {
                 val contactJid = rosterContact.contactJid
                 val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
                     ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
-
-                LogManager.d(
-                    this, "Start loading last message in chat $accountJid with $contactJid"
-                )
                 connection.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
                     {
-                        LogManager.d(
-                            this, "Finish loading last message in chat $accountJid with $contactJid"
-                        )
                         if (index == contacts.size - 1) {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java).map {
                                 it.onHistoryLoaded(accountItem)
@@ -243,10 +206,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
                         }
                     },
                     { exception ->
-                        LogManager.d(
-                            this,
-                            "Error while loading last message in chat $accountJid with $contactJid"
-                        )
                         LogManager.exception(this, exception)
                         if (index == contacts.size - 1) {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java).map {
@@ -268,20 +227,11 @@ object MessageArchiveManager : OnRosterReceivedListener {
                 ?: return@runInBackgroundNetworkUserRequest
             val listener = createNewRegularMamResultListener(accountJid)
 
-            LogManager.d(this, "Start loading last message in chat $accountJid with $contactJid")
             connection.addAsyncStanzaListener(listener, stanzaFilter)
             connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
-                {
-                    LogManager.d(
-                        this, "Finish loading last message in chat $accountJid with $contactJid"
-                    )
-                    connection.removeAsyncStanzaListener(listener)
-                },
+                { connection.removeAsyncStanzaListener(listener) },
                 { exception ->
-                    LogManager.d(
-                        this, "Error loading last message in chat $accountJid with $contactJid"
-                    )
                     connection.removeAsyncStanzaListener(listener)
                     LogManager.exception(this, exception)
                 }
@@ -291,10 +241,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun loadAllMissedMessagedSinceLastReconnectFromOwnArchiveForWholeAccount(accountItem: AccountItem) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            LogManager.i(
-                this,
-                "Start fetching whole missed messages for account ${accountItem.account}"
-            )
             isArchiveFetching = true
 
             val connection = accountItem.connection
@@ -308,10 +254,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
                 { packet ->
                     isArchiveFetching = false
                     if (packet is MamFinIQ && packet.isComplete ?: true) {
-                        LogManager.i(
-                            this,
-                            "Finish fetching whole missed messages for account ${accountItem.account}"
-                        )
                         if (groupsQueryToRequestArchive.size == 0) {
                             Application.getInstance().getManagers(OnHistoryLoaded::class.java)
                                 .forEach { it.onHistoryLoaded(accountItem) }
@@ -334,8 +276,9 @@ object MessageArchiveManager : OnRosterReceivedListener {
                     isArchiveFetching = false
                     LogManager.exception(this, exception)
                     if (groupsQueryToRequestArchive.size == 0) {
-                        Application.getInstance().getManagers(OnHistoryLoaded::class.java)
-                            .forEach { it.onHistoryLoaded(accountItem) }
+                        Application.getInstance().getManagers(OnHistoryLoaded::class.java).forEach {
+                            it.onHistoryLoaded(accountItem)
+                        }
                         connection.removeAsyncStanzaListener(listener)
                     } else {
                         groupsQueryToRequestArchive.map {
@@ -353,10 +296,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
             val accountJid = chat.account
             val contactJid = chat.contactJid
-
-            LogManager.i(
-                this, "Start fetching missed messages in chat $accountJid with $contactJid"
-            )
 
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
                 .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
@@ -384,10 +323,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
                             it.onHistoryLoaded(accountItem)
                         }
                     }
-                    LogManager.i(
-                        this,
-                        "Finish fetching missed messages in chat $accountJid with $contactJid"
-                    )
                     connection.removeAsyncStanzaListener(listener)
                 },
                 { exception ->
@@ -570,10 +505,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
         Application.getInstance().runInBackgroundNetworkUserRequest {
 
-            LogManager.i(
-                this, "Start fetching next portion of messages in chat $accountJid with $contactJid"
-            )
-
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
                 .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
 
@@ -586,10 +517,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
                         Application.getInstance()
                             .getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
                             .forEachOnUi { it.onLastHistoryLoadFinished(accountJid, contactJid) }
-                        LogManager.i(
-                            this,
-                            "Finish fetching next portion of messages in chat $accountJid with $contactJid"
-                        )
                     }
                     connection.removeAsyncStanzaListener(listener)
                     activeRequests -= chat
