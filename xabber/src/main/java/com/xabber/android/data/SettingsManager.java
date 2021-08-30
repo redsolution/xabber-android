@@ -32,7 +32,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.WakeLockManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
-import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -558,11 +557,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
                 R.bool.connection_load_images_default);
     }
 
-    public static boolean connectionUseCarbons() {
-        return getBoolean(R.string.connection_use_carbons_key,
-                R.bool.connection_use_carbons_default);
-    }
-
     public static boolean connectionCompressImage() {
         return getBoolean(R.string.connection_compress_image_on_upload_key,
                 R.bool.connection_compress_image_on_upload_default);
@@ -885,10 +879,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wifi_lock_key))) {
             WakeLockManager.onWifiLockSettingsChanged();
-        } else if (key.equals(Application.getInstance().getString(
-                R.string.connection_use_carbons_key))) {
-            LogManager.d(SettingsManager.class.toString(), "Client preference \"Use carbons\" was changed!");
-            CarbonManager.INSTANCE.onUseCarbonsSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.events_show_text_key))) {
             NotificationManager.getInstance().onMessageNotification();

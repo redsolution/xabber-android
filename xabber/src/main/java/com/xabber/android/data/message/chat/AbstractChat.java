@@ -566,8 +566,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         if (message != null) {
             ChatStateManager.getInstance().updateOutgoingMessage(this, message);
-            CarbonManager.INSTANCE.updateOutgoingMessage(this, message);
-            LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageRealmObject.getOriginId()));
             message.setStanzaId(messageRealmObject.getOriginId());
             MessageStatus currentMessageStatus = messageRealmObject.getMessageStatus();

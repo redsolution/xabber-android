@@ -351,11 +351,6 @@
     <string name="connection_load_images_key">connection_load_images</string>
     <bool name="connection_load_images_default">true</bool>
 
-    <!-- "connection_use_carbons" was used up to 1.0.169, default value earlier was false -->
-    <!-- so we add new key and set it to true (old users key will not be used) -->
-    <string name="connection_use_carbons_key">connection_use_carbons_new</string>
-    <bool name="connection_use_carbons_default">true</bool>
-
     <string name="connection_compress_image_on_upload_key">connection_compress_image_on_upload</string>
     <bool name="connection_compress_image_on_upload_default">true</bool>
 
