@@ -154,7 +154,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
     // rx java
     implementation 'io.reactivex:rxandroid:1.1.0'
@@ -169,9 +170,6 @@ dependencies {
     storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
         exclude module: 'httpclient'
     }
-
-    // okhttp
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
     // event bus
     implementation 'org.greenrobot:eventbus:3.0.0'
