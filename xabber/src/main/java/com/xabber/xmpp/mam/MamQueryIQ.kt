@@ -6,8 +6,12 @@ import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
+import com.xabber.xmpp.SimpleNamedElement
 import com.xabber.xmpp.mam.MamQueryIQ.Companion
+import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.IQ
+import org.jivesoftware.smack.packet.NamedElement
+import org.jivesoftware.smack.packet.StandardExtensionElement
 import org.jivesoftware.smackx.rsm.packet.RSMSet
 import org.jxmpp.jid.Jid
 import java.util.*
@@ -22,6 +26,7 @@ class MamQueryIQ private constructor(
     dataFormExtension: MamDataFormExtension? = null,
     rsmSet: RSMSet? = null,
     archiveAddress: Jid? = null,
+    private val flipPage: Boolean = false,
 ) : IQ(ELEMENT, NAMESPACE) {
 
     init {
@@ -30,8 +35,8 @@ class MamQueryIQ private constructor(
             to = ContactJid.from(archiveAddress).bareJid
         }
 
-        dataFormExtension?.let { this.addExtension(it) }
-        rsmSet?.let { this.addExtension(it) }
+        dataFormExtension?.let { addExtension(it) }
+        rsmSet?.let { addExtension(it) }
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
@@ -42,6 +47,11 @@ class MamQueryIQ private constructor(
             optAttribute(NODE_ATTRIBUTE, node)
         }
         rightAngleBracket()
+        if (flipPage) {
+            append(
+                SimpleNamedElement(FLIP_PAGE_ELEMENT).toXML()
+            )
+        }
     }
 
     companion object {
@@ -49,6 +59,7 @@ class MamQueryIQ private constructor(
         private const val NAMESPACE = MessageArchiveManager.NAMESPACE
         private const val QUERY_ID_ATTRIBUTE = "queryid"
         private const val NODE_ATTRIBUTE = "node"
+        private const val FLIP_PAGE_ELEMENT = "flip-page"
 
         fun createMamRequestIqAllMessagesInChat(
             chat: AbstractChat,
@@ -96,6 +107,7 @@ class MamQueryIQ private constructor(
                 null
             },
             rsmSet = RSMSet(null, messageStanzaId, -1, -1, null, max, null, -1),
+            flipPage = true,
         )
 
         fun createMamRequestIqAllMessagesSince(
