@@ -11,7 +11,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.utils.UtilsKt;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -75,7 +75,7 @@ public class ClipManager {
         ).getNickname() : RosterManager.getDisplayAuthorName(message);
 
         final String date = getDateStringForClipboard(message.getTimestamp());
-        if (!Utils.isSameDay(message.getTimestamp(), previousMessageTimestamp)) {
+        if (!UtilsKt.isSameDayWith(message.getTimestamp(), previousMessageTimestamp)) {
             stringBuilder.append("\n");
             stringBuilder.append(space);
             stringBuilder.append(date);

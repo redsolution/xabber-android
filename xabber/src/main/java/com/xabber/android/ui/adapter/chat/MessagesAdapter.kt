@@ -26,7 +26,7 @@ import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClick
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageLongClickListener
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.utils.Utils
+import com.xabber.android.utils.isSameDayWith
 import io.realm.*
 import java.util.*
 
@@ -402,9 +402,9 @@ class MessagesAdapter(
                     previousMessage
                 }
 
-            return !Utils.isSameDay(currentMessage.timestamp, actualPrevious.timestamp)
+            return !(currentMessage.timestamp isSameDayWith actualPrevious.timestamp)
         } else {
-            return !Utils.isSameDay(message.timestamp, previousMessage.timestamp)
+            return !(message.timestamp isSameDayWith previousMessage.timestamp)
         }
     }
 

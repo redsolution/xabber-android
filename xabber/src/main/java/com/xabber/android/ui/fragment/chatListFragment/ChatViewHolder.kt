@@ -13,7 +13,7 @@ import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
-import com.xabber.android.utils.Utils
+import com.xabber.android.utils.getAttrColor
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(
@@ -74,11 +74,13 @@ class ChatViewHolder(
         contactNameTV.text = chatListItemData.nickname
         if (chatListItemData.isBlocked || (!chatListItemData.isRosterContact && chatListItemData.contactStatusLevel < 8)) {
             contactNameTV.setTextColor(
-                Utils.getAttrColor(contactNameTV.context, R.attr.contact_list_contact_second_line_text_color)
+                R.attr.contact_list_contact_second_line_text_color.getAttrColor(
+                    contactNameTV.context
+                )
             )
         } else {
             contactNameTV.setTextColor(
-                Utils.getAttrColor(contactNameTV.context, R.attr.contact_list_contact_name_text_color)
+                R.attr.contact_list_contact_name_text_color.getAttrColor(contactNameTV.context)
             )
         }
     }

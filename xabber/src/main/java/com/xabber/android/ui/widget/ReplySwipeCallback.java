@@ -1,5 +1,7 @@
 package com.xabber.android.ui.widget;
 
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
+
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -20,8 +22,6 @@ import com.xabber.android.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-
-import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
 public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View.OnTouchListener {
 
@@ -262,7 +262,10 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
                         if (currentReplyArrowState == ReplyArrowState.GONE) {
                             currentReplyArrowState = ReplyArrowState.ANIMATING_IN;
                             currentAnimationStep = 0;
-                            Utils.performHapticFeedback(recyclerView, HapticFeedbackConstants.KEYBOARD_TAP);
+                            recyclerView.performHapticFeedback(
+                                    HapticFeedbackConstants.KEYBOARD_TAP,
+                                    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+                            );
                             setItemsClickable(recyclerView, false);
                             //if (drawThread == null) {
                             //    Thread drawThread = new Thread(new DrawThread(), "drawThread");

@@ -4,7 +4,6 @@ package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
  * Created by valery.miller on 02.02.18.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -49,7 +48,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.utils.UtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -353,16 +352,20 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         } else viewHolder.ivAvatar.setAlpha(0.5f);
                     }
                     viewHolder.tvContactName.setTextColor(
-                            Utils.getAttrColor(
-                                    viewHolder.tvContactName.getContext(),
-                                    R.attr.contact_list_contact_second_line_text_color));
+                            UtilsKt.getAttrColor(
+                                    R.attr.contact_list_contact_second_line_text_color,
+                                    viewHolder.tvContactName.getContext()
+                            )
+                    );
                     break;
             }
             if (displayedStatus != 11) {
                 viewHolder.tvContactName.setTextColor(
-                        Utils.getAttrColor(
-                                viewHolder.tvContactName.getContext(),
-                                R.attr.contact_list_contact_name_text_color));
+                        UtilsKt.getAttrColor(
+                                R.attr.contact_list_contact_name_text_color,
+                                viewHolder.tvContactName.getContext()
+                        )
+                );
                 if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         viewHolder.ivAvatar.setImageAlpha(128);

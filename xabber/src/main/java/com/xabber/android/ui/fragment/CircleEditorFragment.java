@@ -1,10 +1,7 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +17,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.UtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -68,17 +66,6 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    private static void hideKeyboard(Activity activity) {
-        // Check if no view has focus:
-        if (activity != null) {
-            View view = activity.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            }
-        }
     }
 
     @Override
@@ -215,7 +202,9 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
 
     @Override
     public void onCircleAdded() {
-        hideKeyboard(getActivity());
+        if (getActivity() != null) {
+            UtilsKt.tryToHideKeyboardIfNeed(getActivity());
+        }
     }
 
     @Override

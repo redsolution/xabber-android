@@ -1,11 +1,6 @@
 package com.xabber.android.utils;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.Build;
 import android.text.Editable;
 import android.text.Spannable;
@@ -16,13 +11,7 @@ import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Display;
-import android.view.HapticFeedbackConstants;
-import android.view.Surface;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.log.LogManager;
@@ -33,8 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class Utils {
 
@@ -42,10 +29,6 @@ public class Utils {
 
     public static float dipToPxFloat(float dip, Context context) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
-    }
-
-    public static int spToPx(float sp, Context context) {
-        return (int) spToPxFloat(sp, context);
     }
 
     public static float spToPxFloat(float sp, Context context) {
@@ -60,23 +43,12 @@ public class Utils {
         } else return (int) number;
     }
 
-    public static boolean isSameDay(Long date1, Long date2) {
-        Calendar cal1 = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal1.setTime(new Date(date1));
-        cal2.setTime(new Date(date2));
-        return cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
-                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
-    }
-
     public static void startXabberServiceCompat(Context context) {
-        startXabberServiceCompat(context, XabberService.createIntent(context));
-    }
-
-    private static void startXabberServiceCompat(Context context, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else context.startService(intent);
+            context.startForegroundService(XabberService.createIntent(context));
+        } else {
+            context.startService(XabberService.createIntent(context));
+        }
     }
 
     public static String xmlEncode(String s) {
@@ -207,92 +179,6 @@ public class Utils {
                     }
                 }
             }
-        }
-    }
-
-    public static void lockScreenRotation(Activity activity, boolean lockOrientation) {
-        int lock = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-        if (lockOrientation) {
-            Display display = activity.getWindowManager().getDefaultDisplay();
-            int rotation = display.getRotation();
-
-            Point size = new Point();
-            display.getSize(size);
-
-            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
-                if (size.x > size.y) {
-                    //rotation is 0 or 180 deg, and the size of x is greater than y,
-                    //so we have a tablet
-                    if (rotation == Surface.ROTATION_0) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    }
-                } else {
-                    //rotation is 0 or 180 deg, and the size of y is greater than x,
-                    //so we have a phone
-                    if (rotation == Surface.ROTATION_0) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    }
-                }
-            } else {
-                if (size.x > size.y) {
-                    //rotation is 90 or 270, and the size of x is greater than y,
-                    //so we have a phone
-                    if (rotation == Surface.ROTATION_90) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    }
-                } else {
-                    //rotation is 90 or 270, and the size of y is greater than x,
-                    //so we have a tablet
-                    if (rotation == Surface.ROTATION_90) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    }
-                }
-            }
-        }
-        activity.setRequestedOrientation(lock);
-    }
-
-    /**
-     * Haptic feedback helper methods.
-     *
-     * */
-    public static void performHapticFeedback(View view) {
-        performHapticFeedback(view, HapticFeedbackConstants.VIRTUAL_KEY);
-    }
-
-    public static void performHapticFeedback(View view, int feedbackType) {
-        performHapticFeedback(view, feedbackType, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-    }
-
-    public static void performHapticFeedback(View view, int feedbackType, int flag) {
-        if (view != null) view.performHapticFeedback(feedbackType, flag);
-    }
-
-    @ColorInt
-    public static int getAttrColor(Context context, int attrId) {
-        if (context == null) return 0;
-
-        TypedValue value = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(attrId, value, true);
-        return value.data;
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        if (activity.getSystemService(Context.INPUT_METHOD_SERVICE) instanceof InputMethodManager){
-            ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(
-                            activity.getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS
-                    );
         }
     }
 

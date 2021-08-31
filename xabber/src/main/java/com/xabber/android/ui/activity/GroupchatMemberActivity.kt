@@ -57,6 +57,7 @@ import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_CAME
 import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
 import com.xabber.android.utils.Utils
+import com.xabber.android.utils.lockScreenRotation
 import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement
 import org.apache.commons.io.FileUtils
@@ -492,7 +493,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
     private fun showProgressBar(show: Boolean) {
         findViewById<ImageView>(R.id.ivAvatar).visibility = if (show) View.VISIBLE else View.GONE
-        Utils.lockScreenRotation(this, show)
+        lockScreenRotation(show)
     }
 
     private fun chooseFromGallery() = Crop.pickImage(this)

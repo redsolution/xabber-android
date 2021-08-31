@@ -78,7 +78,7 @@ import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.utils.UtilsKt;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.VCard;
 
@@ -967,7 +967,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     public void showProgressBar(boolean show) {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        Utils.lockScreenRotation(this, show);
+        UtilsKt.lockScreenRotation(this, show);
     }
 
 }

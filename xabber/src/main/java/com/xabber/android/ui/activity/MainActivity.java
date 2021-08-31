@@ -27,7 +27,6 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -68,6 +67,7 @@ import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.fragment.contactListFragment.ContactListFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
+import com.xabber.android.utils.UtilsKt;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import org.jetbrains.annotations.Nullable;
@@ -396,16 +396,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     protected void onPause() {
         super.onPause();
-        hideKeyboard();
+        UtilsKt.tryToHideKeyboardIfNeed(this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
-    }
-
-    private void hideKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
     }
 
     @Override

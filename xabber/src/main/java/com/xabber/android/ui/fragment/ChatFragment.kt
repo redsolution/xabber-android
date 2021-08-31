@@ -82,6 +82,9 @@ import com.xabber.android.ui.widget.*
 import com.xabber.android.ui.widget.BottomMessagesPanel.Purposes
 import com.xabber.android.ui.widget.PlayerVisualizerView.onProgressTouch
 import com.xabber.android.utils.Utils
+import com.xabber.android.utils.getAttrColor
+import com.xabber.android.utils.lockScreenRotation
+import com.xabber.android.utils.tryToHideKeyboardIfNeed
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
@@ -174,7 +177,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     private val timer = Runnable {
         changeStateOfInputViewButtonsTo(false)
         recordLockView.visibility = View.VISIBLE
-        Utils.performHapticFeedback(rootView)
+        shortVibrate()
         recordButtonExpanded.show()
         recordLockView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in_200))
         recordLockView.animate()
@@ -182,6 +185,13 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             .setDuration(300)
             .start()
         beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording)
+    }
+
+    private fun shortVibrate() {
+        rootView.performHapticFeedback(
+            HapticFeedbackConstants.VIRTUAL_KEY,
+            HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+        )
     }
 
     /* Fragment lifecycle methods */
@@ -249,17 +259,17 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                         handler.postDelayed(record, 500)
                         handler.postDelayed(timer, 500)
                         currentVoiceRecordingState = VoiceRecordState.InitiatedRecording
-                        Utils.lockScreenRotation(activity, true)
+                        activity?.lockScreenRotation(true)
                     }
                 }
                 MotionEvent.ACTION_UP -> if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
                     sendVoiceMessage()
-                    Utils.lockScreenRotation(activity, false)
+                    activity?.lockScreenRotation(false)
                 } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
                     handler.removeCallbacks(record)
                     handler.removeCallbacks(timer)
                     currentVoiceRecordingState = VoiceRecordState.NotRecording
-                    Utils.lockScreenRotation(activity, false)
+                    activity?.lockScreenRotation(false)
                 }
                 MotionEvent.ACTION_MOVE -> {
                     //FAB movement
@@ -321,14 +331,14 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                                 recordLockImage?.setPadding(0, 0, 0, 0)
                                 recordLockImage?.setOnClickListener {
                                     if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
-                                        Utils.performHapticFeedback(rootView)
+                                        shortVibrate()
                                         stopRecording()
                                     }
                                 }
                                 lockParams.topMargin = -recordLockChevronImage!!.height
                                 recordLockChevronImage?.layoutParams = lockParams
                                 recordLockChevronImage?.alpha = 0f
-                                Utils.performHapticFeedback(rootView)
+                                shortVibrate()
                             }
                         }
                     }
@@ -1146,7 +1156,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             || (activity?.resources?.getBoolean(R.bool.landscape) == true
                     && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)
         ) {
-            Utils.hideKeyboard(activity)
+            activity?.tryToHideKeyboardIfNeed()
         }
         scrollDown()
     }
@@ -1616,18 +1626,13 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             blockedView?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             blockedView?.setText(R.string.blocked_contact_message)
             blockedView?.setBackgroundColor(
-                Utils.getAttrColor(
-                    context,
-                    R.attr.chat_input_background
-                )
+                R.attr.chat_input_background.getAttrColor(context)
             )
             blockedView?.layoutParams = layoutParams
             blockedView?.gravity = Gravity.CENTER
             blockedView?.setOnClickListener {
                 startActivity(
-                    ContactViewerActivity.createIntent(
-                        context, accountJid, contactJid
-                    )
+                    ContactViewerActivity.createIntent(context, accountJid, contactJid)
                 )
             }
             inputPanel.addView(blockedView)
@@ -1753,7 +1758,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     private fun stopRecording() {
-        Utils.lockScreenRotation(activity, false)
+        activity?.lockScreenRotation(false)
         if (recordSaveAllowed) {
             sendImmediately = false
             //ignore = false;
@@ -1907,8 +1912,8 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         )
         handler.postDelayed(postAnimation, 295)
         beginTimer(false)
-        Utils.performHapticFeedback(rootView)
-        Utils.lockScreenRotation(activity, false)
+        shortVibrate()
+        activity?.lockScreenRotation(false)
     }
 
     private fun changeStateOfInputViewButtonsTo(state: Boolean) {
