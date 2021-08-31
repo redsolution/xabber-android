@@ -108,11 +108,12 @@ object MessageHandler {
         }
     }
 
-    fun parseMessage(
+    fun handleMessageStanza(
         accountJid: AccountJid,
         contactJid: ContactJid,
         messageStanza: Message,
         delayInformation: DelayInformation? = null,
+        isNeedToSaveToRealm: Boolean = true,
     ): MessageRealmObject? {
 
         val timestamp = when {
@@ -249,8 +250,9 @@ object MessageHandler {
                 )
             }
 
-        val forwardIdRealmObjects =
-            parseForwardedMessage(messageStanza, messageRealmObject.primaryKey, chat!!)
+        val forwardIdRealmObjects = parseForwardedMessage(
+            messageStanza, messageRealmObject.primaryKey, chat!!, isNeedToSaveToRealm
+        )
 
         val editedTime = messageStanza.getReplacedElement()?.timestamp
 
@@ -287,7 +289,9 @@ object MessageHandler {
             editedTime?.let { this.editedTimestamp = XmppDateTime.parseDate(it).time }
         }
 
-        saverBuffer.onNext(messageRealmObject ?: return null)
+        if (isNeedToSaveToRealm) {
+            saverBuffer.onNext(messageRealmObject ?: return null)
+        } else return messageRealmObject
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!isIncoming) {
@@ -360,6 +364,7 @@ object MessageHandler {
         packet: Stanza,
         parentMessageId: String,
         chat: AbstractChat,
+        isNeedToSaveToRealm: Boolean = true,
     ): RealmList<ForwardIdRealmObject>? {
         val forwarded =
             when {
@@ -377,11 +382,12 @@ object MessageHandler {
                     .filter { it.forwardedStanza is Message }
                     .map {
                         ForwardIdRealmObject(
-                            parseInnerMessage(
+                            handleInnerMessageStanza(
                                 it.forwardedStanza as Message,
                                 it.delayInformation.stamp,
                                 parentMessageId,
-                                chat
+                                chat,
+                                isNeedToSaveToRealm
                             )
                         )
                     }
@@ -389,11 +395,12 @@ object MessageHandler {
         }
     }
 
-    private fun parseInnerMessage(
+    private fun handleInnerMessageStanza(
         message: Message,
         timestamp: Date?,
         parentMessageId: String?,
         chat: AbstractChat,
+        isNeedToSaveToRealm: Boolean = true,
     ): String? {
 
         if (message.type == Message.Type.error) {
@@ -449,7 +456,7 @@ object MessageHandler {
             }
 
         val forwardIdRealmObjects =
-            parseForwardedMessage(message, messageRealmObject.primaryKey, chat)
+            parseForwardedMessage(message, messageRealmObject.primaryKey, chat, isNeedToSaveToRealm)
 
         messageRealmObject.apply {
             this.text = text ?: ""
@@ -474,7 +481,7 @@ object MessageHandler {
             this.forwardedIds = forwardIdRealmObjects
         }
 
-        if (messageRealmObject != null) {
+        if (messageRealmObject != null && isNeedToSaveToRealm) {
             saverBuffer.onNext(messageRealmObject)
         }
 

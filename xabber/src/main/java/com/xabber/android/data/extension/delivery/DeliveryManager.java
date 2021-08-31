@@ -165,11 +165,12 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
                     }
                 } else if (stanza.hasExtension(GroupExtensionElement.ELEMENT, NAMESPACE)) {
                     StandardExtensionElement echoElement = (StandardExtensionElement) stanza.getExtensions().get(0);
-                    MessageHandler.INSTANCE.parseMessage(
+                    MessageHandler.INSTANCE.handleMessageStanza(
                             connection.getAccount(),
                             ContactJid.from(stanza.getFrom()),
                             PacketParserUtils.parseStanza(echoElement.getElements().get(0).toXML().toString()),
-                            null
+                            null,
+                            true
                     );
                 }
             } catch (Exception e) {

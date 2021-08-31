@@ -433,7 +433,9 @@ public class MessageManager implements OnPacketListener {
                 return;
             }
             if (account.getBareJid().toString().contains(contactJid.getBareJid().toString())) return;
-            MessageHandler.INSTANCE.parseMessage(account, contactJid, (Message) stanza, null);
+            MessageHandler.INSTANCE.handleMessageStanza(
+                    account, contactJid, (Message) stanza, null, true
+            );
         }
     }
 
@@ -482,7 +484,9 @@ public class MessageManager implements OnPacketListener {
                 return;
             }
         }
-        if (companion != null) MessageHandler.INSTANCE.parseMessage(account, companion, message, null);
+        if (companion != null) {
+            MessageHandler.INSTANCE.handleMessageStanza(account, companion, message, null, true);
+        }
     }
 
     /**

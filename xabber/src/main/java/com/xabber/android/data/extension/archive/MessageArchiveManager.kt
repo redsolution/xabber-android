@@ -22,16 +22,11 @@ import com.xabber.android.ui.OnLastHistoryLoadStartedListener
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.xmpp.mam.MamFinIQ
 import com.xabber.xmpp.mam.MamQueryIQ
-import com.xabber.xmpp.mam.MamResultExtensionElement
-import com.xabber.xmpp.mam.hasMamResultExtensionElement
 import io.realm.Realm
 import io.realm.Sort
-import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
-import org.jivesoftware.smack.filter.StanzaFilter
 import org.jivesoftware.smack.packet.IQ
-import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager
 import java.util.*
@@ -57,40 +52,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
             Application.getInstance().getManagers(OnMessageArchiveFetchingListener::class.java)
                 .map(OnMessageArchiveFetchingListener::onMessageArchiveFetching)
         }
-
-    private val stanzaFilter: StanzaFilter by lazy {
-        StanzaFilter { stanza -> stanza is Message && stanza.hasMamResultExtensionElement() }
-    }
-
-    private fun createNewRegularMamResultListener(accountJid: AccountJid): StanzaListener {
-        return StanzaListener { packet ->
-            packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { element ->
-                val forwardedElement = element.forwarded.forwardedStanza
-                val contactJid =
-                    if (forwardedElement.from.asBareJid() == accountJid.fullJid.asBareJid()) {
-                        ContactJid.from(forwardedElement.to.asBareJid().toString())
-                    } else {
-                        ContactJid.from(forwardedElement.from.asBareJid().toString())
-                    }
-
-                val delayInformation = element.forwarded.delayInformation
-
-                if (ChatManager.getInstance().getChat(accountJid, contactJid) is GroupChat
-                    && packet.from.asBareJid().toString() == accountJid.bareJid.toString()
-                ) {
-                    // If we received group message from local archive
-                    // Don't save this message and request it from remote archive
-                    groupsQueryToRequestArchive.add(
-                        ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
-                    )
-                } else if (forwardedElement != null && forwardedElement is Message) {
-                    MessageHandler.parseMessage(
-                        accountJid, contactJid, forwardedElement, delayInformation
-                    )
-                }
-            }
-        }
-    }
 
     override fun onRosterReceived(accountItem: AccountItem) {
         //If it first (cold) start, try to retrieve most last message to get account accountStartHistoryTimestamp
@@ -127,9 +88,14 @@ object MessageArchiveManager : OnRosterReceivedListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
 
-                val listener = createNewRegularMamResultListener(chat.account)
+                val listener = RegularMamResultsHandler(
+                    chat.account,
+                    ChatManager.getInstance(),
+                    MessageHandler,
+                    groupsQueryToRequestArchive
+                )
 
-                connection.addAsyncStanzaListener(listener, stanzaFilter)
+                connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
                 connection.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqMessageWithStanzaId(chat, stanzaId),
                     { connection.removeAsyncStanzaListener(listener) },
@@ -145,8 +111,13 @@ object MessageArchiveManager : OnRosterReceivedListener {
     fun loadAllMessagesInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
-                val listener = createNewRegularMamResultListener(chat.account)
-                connection.addAsyncStanzaListener(listener, stanzaFilter)
+                val listener = RegularMamResultsHandler(
+                    chat.account,
+                    ChatManager.getInstance(),
+                    MessageHandler,
+                    groupsQueryToRequestArchive
+                )
+                connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
                 connection.sendIqWithResponseCallback(
                     MamQueryIQ.createMamRequestIqAllMessagesInChat(chat),
                     { connection.removeAsyncStanzaListener(listener) },
@@ -163,9 +134,14 @@ object MessageArchiveManager : OnRosterReceivedListener {
         Application.getInstance().runInBackground {
             val connection = accountItem.connection
             val accountJid = accountItem.account
-            val listener = createNewRegularMamResultListener(accountJid)
+            val listener = RegularMamResultsHandler(
+                accountJid,
+                ChatManager.getInstance(),
+                MessageHandler,
+                groupsQueryToRequestArchive
+            )
 
-            connection.addAsyncStanzaListener(listener, stanzaFilter)
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
             connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastSavedMessage(accountJid),
                 {
@@ -187,9 +163,14 @@ object MessageArchiveManager : OnRosterReceivedListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             val accountJid = accountItem.account
             val connection = accountItem.connection
-            val listener = createNewRegularMamResultListener(accountJid)
+            val listener = RegularMamResultsHandler(
+                accountJid,
+                ChatManager.getInstance(),
+                MessageHandler,
+                groupsQueryToRequestArchive
+            )
             val contacts = RosterManager.getInstance().getAccountRosterContacts(accountJid)
-            connection.addAsyncStanzaListener(listener, stanzaFilter)
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
 
             contacts.mapIndexed { index, rosterContact ->
                 val contactJid = rosterContact.contactJid
@@ -225,9 +206,14 @@ object MessageArchiveManager : OnRosterReceivedListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             val connection = AccountManager.getInstance().getAccount(accountJid)?.connection
                 ?: return@runInBackgroundNetworkUserRequest
-            val listener = createNewRegularMamResultListener(accountJid)
+            val listener = RegularMamResultsHandler(
+                accountJid,
+                ChatManager.getInstance(),
+                MessageHandler,
+                groupsQueryToRequestArchive
+            )
 
-            connection.addAsyncStanzaListener(listener, stanzaFilter)
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
             connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqLastMessageInChat(chat),
                 { connection.removeAsyncStanzaListener(listener) },
@@ -244,8 +230,13 @@ object MessageArchiveManager : OnRosterReceivedListener {
             isArchiveFetching = true
 
             val connection = accountItem.connection
-            val listener = createNewRegularMamResultListener(accountItem.account)
-            connection.addAsyncStanzaListener(listener, stanzaFilter)
+            val listener = RegularMamResultsHandler(
+                accountItem.account,
+                ChatManager.getInstance(),
+                MessageHandler,
+                groupsQueryToRequestArchive
+            )
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
             connection.sendIqWithResponseCallback(
                 MamQueryIQ.createMamRequestIqAllMessagesSince(
                     timestamp = getLastAccountMessageInRealmTimestamp(accountItem.account)
@@ -302,8 +293,13 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
             val accountItem = AccountManager.getInstance().getAccount(accountJid)
             val connection = accountItem?.connection ?: return@runInBackgroundNetworkUserRequest
-            val listener = createNewRegularMamResultListener(accountJid)
-            connection.addAsyncStanzaListener(listener, stanzaFilter)
+            val listener = RegularMamResultsHandler(
+                accountJid,
+                ChatManager.getInstance(),
+                MessageHandler,
+                groupsQueryToRequestArchive
+            )
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
 
             isArchiveFetching = true
 
@@ -415,73 +411,52 @@ object MessageArchiveManager : OnRosterReceivedListener {
         return result
     }
 
-//    suspend fun tryToLoadPortionOfMemberMessagesInGroup(
-//        chat: GroupChat,
-//        memberId: String,
-//        lastMessageStanzaId: String? = null,
-//        messagesCount: Int = 50,
-//    ): List<MessageRealmObject>? {
-//        if (chat in activeRequests) {
-//            return null
-//        }
-//
-//        val accountItem = AccountManager.getInstance().getAccount(chat.account)
-//
-//        if (accountItem == null
-//            || accountItem.loadHistorySettings == LoadHistorySettings.none
-//            || !isSupported(accountItem)
-//        ) {
-//            LogManager.w(this, "Aborted next portion of member messages fetching!")
-//            return null
-//        }
-//
-//        activeRequests += chat
-//
-//        LogManager.i(
-//            this,
-//            "Start fetching portion of messages in group ${chat.contactJid} with member $memberId"
-//        )
-//
-//        Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
-//            .forEachOnUi { listener ->
-//                listener.onLastHistoryLoadStarted(chat.account, chat.contactJid)
-//            }
-//
-//        accountItem.connection.sendIqWithResponseCallback(
-//            MamQueryIQ.createMamRequestIqMessagesAfterInChat(
-//                chat, getFirstChatMessageInRealmStanzaId(chat) ?: ""
-//            ),
-//            { packet: Stanza? ->
-//                if (packet is IQ && packet.type == IQ.Type.result) {
-//                    Application.getInstance()
-//                        .getUIListeners(OnLastHistoryLoadFinishedListener::class.java)
-//                        .forEachOnUi { listener ->
-//                            listener.onLastHistoryLoadFinished(chat.account, chat.contactJid)
-//                        }
-//                    LogManager.i(
-//                        this,
-//                        "Finish fetching next portion of messages in chat ${chat.account} with ${chat.contactJid}"
-//                    )
-//                }
-//                activeRequests -= chat
-//            },
-//            { exception: Exception? ->
-//                Application.getInstance()
-//                    .getUIListeners(OnLastHistoryLoadErrorListener::class.java)
-//                    .forEachOnUi { listener ->
-//                        if (exception is XMPPException.XMPPErrorException) {
-//                            listener.onLastHistoryLoadingError(
-//                                chat.account, chat.contactJid, exception.xmppError.conditionText
-//                            )
-//                        } else listener.onLastHistoryLoadingError(chat.account, chat.contactJid)
-//                    }
-//                LogManager.exception(this, exception)
-//                activeRequests -= chat
-//            },
-//            60000
-//        )
-//
-//    }
+    fun tryToLoadPortionOfMemberMessagesInGroup(
+        chat: GroupChat,
+        memberId: String,
+        onLoadingEndCallback: MessageArchiveRequestListener,
+        lastMessageStanzaId: String? = null,
+        messagesCount: Int = 50,
+    ) {
+        if (chat in activeRequests) {
+            return
+        }
+
+        val accountJid = chat.account
+        val accountItem = AccountManager.getInstance().getAccount(accountJid) ?: return
+
+        if (accountItem.loadHistorySettings == LoadHistorySettings.none || !isSupported(accountItem)
+        ) {
+            return
+        }
+
+        activeRequests += chat
+        val result = mutableListOf<MessageRealmObject>()
+        val connection = accountItem.connection
+        val listener = SpecifiedGroupMemberMessagesMamResultsListener(
+            accountJid, MessageHandler, result
+        )
+
+        connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
+
+        accountItem.connection.sendIqWithResponseCallback(
+            MamQueryIQ.createMamRequestIqMessagesAfterInChat(
+                chat, getFirstChatMessageInRealmStanzaId(chat) ?: ""
+            ),
+            {
+                activeRequests -= chat
+                connection.removeAsyncStanzaListener(listener)
+                onLoadingEndCallback.onMessagesReceived(result)
+            },
+            { exception: Exception? ->
+                LogManager.exception(this, exception)
+                activeRequests -= chat
+                connection.removeAsyncStanzaListener(listener)
+                onLoadingEndCallback.onErrorReceived(exception)
+            },
+            60000
+        )
+    }
 
     fun loadNextMessagesPortionInChat(chat: AbstractChat) {
         if (chat in activeRequests) {
@@ -492,8 +467,13 @@ object MessageArchiveManager : OnRosterReceivedListener {
         val accountJid = chat.account
         val contactJid = chat.contactJid
         val connection = accountItem.connection
-        val listener = createNewRegularMamResultListener(accountJid)
-        connection.addAsyncStanzaListener(listener, stanzaFilter)
+        val listener = RegularMamResultsHandler(
+            accountJid,
+            ChatManager.getInstance(),
+            MessageHandler,
+            groupsQueryToRequestArchive
+        )
+        connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
 
         if (accountItem.loadHistorySettings == LoadHistorySettings.none || !isSupported(accountItem)
         ) {

@@ -55,7 +55,7 @@ class SimpleMessageHandlerTest : TestCase() {
             addExtension(OriginIdElement(messageOriginId))
         }
 
-        val resultMessageRealmObject = MessageHandler.parseMessage(jidAccount, jidCompanion, sourceMessage)
+        val resultMessageRealmObject = MessageHandler.handleMessageStanza(jidAccount, jidCompanion, sourceMessage)
 
         assertEquals("Error in creating primary key",
                 "account@other_server.domain/resource#companion@server.domain/companionResource#$messageOriginId",

@@ -237,22 +237,21 @@ object GroupMemberManager {
                         jid = user.jid
                         nickname = user.nickname
                         role = GroupMemberRealmObject.Role.valueOf(user.role)
-                    }.also { gmro -> realm.insertOrUpdate(gmro) }
+                    }.also {
+                        realm.insertOrUpdate(it)
+                    }
             }
         } else {
             DatabaseManager.getInstance().defaultRealmInstance.use { realm1 ->
                 realm1.executeTransaction { realm ->
-                    result = (realm.where(GroupMemberRealmObject::class.java)
+                    val gmro = realm.where(GroupMemberRealmObject::class.java)
                         .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, user.id)
                         .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
                         .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.toString())
                         .findFirst()
                         ?: GroupMemberRealmObject.createGroupMemberRealmObject(
-                            account,
-                            groupJid,
-                            user.id
-                        ))
-                        .apply {
+                            account, groupJid, user.id
+                        ).apply {
                             user.avatarInfo?.let {
                                 avatarHash = it.id
                                 avatarUrl = it.url.toString()
@@ -271,6 +270,7 @@ object GroupMemberManager {
                         }.also {
                             realm.insertOrUpdate(it)
                         }
+                    result = realm.copyFromRealm(gmro)
                 }
             }
         }
