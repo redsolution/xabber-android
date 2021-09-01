@@ -7,13 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -36,6 +36,7 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
 import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.utils.RetrofitErrorConverter;
+import com.xabber.android.utils.UtilsKt;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
