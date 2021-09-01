@@ -1,4 +1,4 @@
-package com.xabber.android.utils
+package com.xabber.android.ui.helper
 
 import android.app.Activity
 import android.content.Context

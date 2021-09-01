@@ -1,5 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -21,7 +23,6 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.utils.Utils;
 
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -76,10 +77,10 @@ public class IncomingMessageVH  extends FileMessageVH {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             forwardedParams.setMargins(
-                    Utils.dipToPx(12f, context),
-                    Utils.dipToPx(3f, context),
-                    Utils.dipToPx(1f, context),
-                    Utils.dipToPx(0f, context));
+                    dipToPx(12f, context),
+                    dipToPx(3f, context),
+                    dipToPx(1f, context),
+                    dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);
         } else forwardLayout.setVisibility(View.GONE);
@@ -118,26 +119,26 @@ public class IncomingMessageVH  extends FileMessageVH {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         layoutParams.setMargins(
-                Utils.dipToPx(needTail ? 3f : 11f, context),
-                Utils.dipToPx(haveForwarded ? 0f : 3f, context),
-                Utils.dipToPx(0f, context),
-                Utils.dipToPx(3f, context));
+                dipToPx(needTail ? 3f : 11f, context),
+                dipToPx(haveForwarded ? 0f : 3f, context),
+                dipToPx(0f, context),
+                dipToPx(3f, context));
         messageShadow.setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
         messageBalloon.setPadding(
-                Utils.dipToPx(needTail ? 20f : 12f, context),
-                Utils.dipToPx(8f, context),
-                Utils.dipToPx(12f, context),
-                Utils.dipToPx(8f, context));
+                dipToPx(needTail ? 20f : 12f, context),
+                dipToPx(8f, context),
+                dipToPx(12f, context),
+                dipToPx(8f, context));
 
         if(imageAttached) {
             float border = 3.5f;
             messageBalloon.setPadding(
-                    Utils.dipToPx(needTail ? border + 8f : border, context),
-                    Utils.dipToPx(border, context),
-                    Utils.dipToPx(border, context),
-                    Utils.dipToPx(border, context));
+                    dipToPx(needTail ? border + 8f : border, context),
+                    dipToPx(border, context),
+                    dipToPx(border, context),
+                    dipToPx(border, context));
             if(messageText.getText().toString().trim().isEmpty() && messageRealmObject.isAttachmentImageOnly()) {
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
             }

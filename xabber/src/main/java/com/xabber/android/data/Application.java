@@ -77,7 +77,6 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.BaseUIListener;
 import com.xabber.android.ui.OnErrorListener;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.AppBlockCanaryContext;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;

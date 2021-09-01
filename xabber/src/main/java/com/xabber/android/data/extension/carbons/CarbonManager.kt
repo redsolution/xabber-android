@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.carbons
 
 import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
+import com.xabber.android.data.connection.OnAuthenticatedListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.log.LogManager
 import org.jivesoftware.smack.SmackException.NoResponseException
@@ -24,8 +24,6 @@ import org.jivesoftware.smackx.carbons.CarbonManager as SmackCarbonManager
  */
 object CarbonManager : OnAuthenticatedListener {
 
-    private val LOG_TAG = CarbonManager::class.java.simpleName
-
     private var carbonCopyListeners: MutableMap<AccountJid, CarbonCopyListener> =
         ConcurrentHashMap()
 
@@ -34,16 +32,16 @@ object CarbonManager : OnAuthenticatedListener {
         try {
             if (connectionItem.connection.user != null && carbonManager.isSupportedByServer) {
                 LogManager.d(
-                    LOG_TAG,
+                    this,
                     "Smack reports that carbons are " + if (carbonManager.carbonsEnabled) "enabled" else "disabled"
                 )
                 changeCarbonsStateAsync(carbonManager, connectionItem.account)
             }
         } catch (e: NoResponseException) {
-            LogManager.exception(LOG_TAG, e)
+            LogManager.exception(this, e)
             addListener(carbonManager, connectionItem.account)
         } catch (e: Exception) {
-            LogManager.exception(LOG_TAG, e)
+            LogManager.exception(this, e)
         }
     }
 
@@ -53,7 +51,7 @@ object CarbonManager : OnAuthenticatedListener {
     private fun changeCarbonsStateAsync(carbonManager: SmackCarbonManager, account: AccountJid) {
         carbonManager.enableCarbonsAsync(null)
         addListener(carbonManager, account)
-        LogManager.d(LOG_TAG, "Forcefully sent <enable> carbons")
+        LogManager.d(this, "Forcefully sent <enable> carbons")
     }
 
     // we need to remove old listener not to cause memory leak

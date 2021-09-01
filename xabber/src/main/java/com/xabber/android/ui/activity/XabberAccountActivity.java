@@ -31,7 +31,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountXMPPLoginFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
-import com.xabber.android.utils.RetrofitErrorConverter;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;

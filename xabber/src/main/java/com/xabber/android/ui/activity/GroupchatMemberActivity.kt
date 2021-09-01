@@ -33,7 +33,7 @@ import com.soundcloud.android.crop.Crop
 import com.theartofdev.edmodo.cropper.CropImage
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
@@ -56,8 +56,7 @@ import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_CAMERA
 import com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSION_GALLERY
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout
-import com.xabber.android.utils.Utils
-import com.xabber.android.utils.lockScreenRotation
+import com.xabber.android.ui.helper.lockScreenRotation
 import com.xabber.xmpp.avatar.UserAvatarManager
 import com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistItemElement
 import org.apache.commons.io.FileUtils

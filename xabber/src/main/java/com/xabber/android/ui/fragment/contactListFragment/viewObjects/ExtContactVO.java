@@ -17,8 +17,8 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.text.DatesUtilsKt;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import java.util.Date;
 import java.util.List;
@@ -69,8 +69,7 @@ public class ExtContactVO extends ContactVO {
         Context context = viewHolder.itemView.getContext();
 
         /** set up TIME of last message */
-        viewHolder.tvTime.setText(StringUtils
-                .getSmartTimeTextForRoster(context, getTime()));
+        viewHolder.tvTime.setText(DatesUtilsKt.getSmartTimeTextForRoster(getTime()));
         viewHolder.tvTime.setVisibility(View.VISIBLE);
 
         /** set up SENDER NAME */
@@ -102,7 +101,7 @@ public class ExtContactVO extends ContactVO {
             try{
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
                     try {
-                        viewHolder.tvMessageText.setText(Html.fromHtml(Utils.getDecodedSpannable(text).toString()));
+                        viewHolder.tvMessageText.setText(Html.fromHtml(StringUtilsKt.getDecodedSpannable(text).toString()));
                     } catch (Exception e){
                         viewHolder.tvMessageText.setText(Html.fromHtml(text));
                     }

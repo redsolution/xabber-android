@@ -18,7 +18,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.widget.NestedScrollView
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
@@ -32,7 +32,7 @@ import com.xabber.android.ui.adapter.groups.GroupServersAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.CircleEditorFragment
 import com.xabber.android.ui.widget.AccountSpinner
-import com.xabber.android.utils.StringUtils
+import net.gcardone.junidecode.Junidecode.unidecode
 import org.jivesoftware.smack.packet.XMPPError
 import java.util.*
 
@@ -200,7 +200,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     }
 
     private fun getLocalpartHintByString(string: String?): String {
-        val transliterated = StringUtils.translitirateToLatin(string)
+        val transliterated = unidecode(string)
         val result = StringBuilder()
         for (c in transliterated) {
             if (!Character.isLetterOrDigit(c)) {

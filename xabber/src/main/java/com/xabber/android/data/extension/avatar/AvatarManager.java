@@ -41,8 +41,8 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnConnectedListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
@@ -84,7 +84,8 @@ import java.util.Map;
  *
  * @author alexander.ivanov
  */
-public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener, OnConnectedListener {
+public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener,
+        OnConnectedListener {
 
     public static final String LOG_TAG = AvatarManager.class.getSimpleName();
     public static final String EMPTY_HASH = "";

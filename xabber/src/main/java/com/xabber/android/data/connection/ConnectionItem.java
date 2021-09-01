@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XToken;
 import com.xabber.android.data.log.LogManager;

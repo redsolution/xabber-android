@@ -1,4 +1,4 @@
-package com.xabber.android.utils;
+package com.xabber.android.data.http;
 
 import androidx.annotation.Nullable;
 

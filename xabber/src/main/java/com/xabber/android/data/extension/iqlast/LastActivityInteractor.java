@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.iqlast;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.vcard.VCardManager;

@@ -17,7 +17,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ContactCircleEditorAdapter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.UtilsKt;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -203,7 +203,7 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
     @Override
     public void onCircleAdded() {
         if (getActivity() != null) {
-            UtilsKt.tryToHideKeyboardIfNeed(getActivity());
+            AndroidUtilsKt.tryToHideKeyboardIfNeed(getActivity());
         }
     }
 

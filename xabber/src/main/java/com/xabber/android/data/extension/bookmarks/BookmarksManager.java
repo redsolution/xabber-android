@@ -6,7 +6,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
+import com.xabber.android.data.connection.OnAuthenticatedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 

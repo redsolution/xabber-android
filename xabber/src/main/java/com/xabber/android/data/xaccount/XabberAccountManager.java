@@ -22,7 +22,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.ExternalAPIs;
-import com.xabber.android.utils.RetrofitErrorConverter;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import org.greenrobot.eventbus.EventBus;
 

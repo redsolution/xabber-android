@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
@@ -24,7 +25,6 @@ import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatM
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
 import com.xabber.android.ui.text.ClickSpan;
-import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -198,7 +198,7 @@ public class ReferencesManager {
         if (references.isEmpty()) return new Pair<>(body, null);
 
         // encode HTML and split into chars
-        String[] chars = stringToChars(Utils.xmlEncode(body));
+        String[] chars = stringToChars(StringUtilsKt.escapeXml(body));
 
         // modify chars with references except markup and mention
         for (ReferenceElement reference : references) {

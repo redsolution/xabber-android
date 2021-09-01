@@ -47,8 +47,9 @@ import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.UtilsKt;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
+import com.xabber.android.ui.text.DatesUtilsKt;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -183,23 +184,29 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid()) != null) {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
-                messageText = StringUtils.getColoredText(chatState, accountColorIndicatorLight);
+                messageText = StringUtilsKt.wrapWithColorTag(chatState, accountColorIndicatorLight);
             } else if (lastMessage.haveAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
                 AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
                 if (attachmentRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
                     if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
-                        voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
+                        voiceText.append(
+                                String.format(
+                                        Locale.getDefault(),
+                                        ", %s",
+                                        DatesUtilsKt.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())
+                                )
+                        );
                     }
-                    messageText = StringUtils.getColoredText(voiceText.toString(), accountColorIndicator);
-                } else messageText = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
+                    messageText = StringUtilsKt.wrapWithColorTag(voiceText.toString(), accountColorIndicator);
+                } else messageText = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
             } else if (lastMessage.getAttachmentRealmObjects() != null
                     && lastMessage.getAttachmentRealmObjects().size() !=0
                     && lastMessage.getAttachmentRealmObjects().get(0).getFilePath() != null) {
                 messageText = new File(lastMessage.getAttachmentRealmObjects().get(0).getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
-                messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
+                messageText = StringUtilsKt.wrapWithColorTag(lastMessage.getText().trim(), accountColorIndicator);
             } else {
                 messageText = lastMessage.getText().trim();
             }
@@ -352,7 +359,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         } else viewHolder.ivAvatar.setAlpha(0.5f);
                     }
                     viewHolder.tvContactName.setTextColor(
-                            UtilsKt.getAttrColor(
+                            AndroidUtilsKt.getAttrColor(
                                     R.attr.contact_list_contact_second_line_text_color,
                                     viewHolder.tvContactName.getContext()
                             )
@@ -361,7 +368,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             }
             if (displayedStatus != 11) {
                 viewHolder.tvContactName.setTextColor(
-                        UtilsKt.getAttrColor(
+                        AndroidUtilsKt.getAttrColor(
                                 R.attr.contact_list_contact_name_text_color,
                                 viewHolder.tvContactName.getContext()
                         )

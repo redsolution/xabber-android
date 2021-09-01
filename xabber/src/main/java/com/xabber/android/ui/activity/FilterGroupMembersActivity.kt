@@ -27,7 +27,7 @@ import com.xabber.android.ui.activity.GroupchatMemberActivity.Companion.createIn
 import com.xabber.android.ui.adapter.GroupchatMembersAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
-import com.xabber.android.utils.StringUtils
+import net.gcardone.junidecode.Junidecode.unidecode
 
 class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener,
     GroupchatMembersAdapter.OnMemberClickListener {
@@ -113,13 +113,9 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
             val newList = ArrayList<GroupMemberRealmObject>()
             for (groupchatMember in GroupMemberManager.getCurrentGroupMembers(groupchat))
                 if (groupchatMember?.nickname?.toLowerCase()?.contains(filterString) == true
-                    || groupchatMember?.nickname?.toLowerCase()
-                        ?.contains(StringUtils.translitirateToLatin(filterString)) == true
-                    || (groupchatMember?.jid != null
-                            && groupchatMember.jid?.toLowerCase()?.contains(filterString) == true)
-                    || (groupchatMember?.jid != null
-                            && groupchatMember.jid?.toLowerCase()
-                        ?.contains(StringUtils.translitirateToLatin(filterString)) == true)
+                    || groupchatMember?.nickname?.toLowerCase()?.contains(unidecode(filterString)) == true
+                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()?.contains(filterString) == true)
+                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()?.contains(unidecode(filterString)) == true)
                 ) {
                     newList.add(groupchatMember)
                 }

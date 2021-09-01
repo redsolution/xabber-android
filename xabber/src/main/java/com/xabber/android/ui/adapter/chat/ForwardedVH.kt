@@ -16,7 +16,7 @@ import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.utils.Utils
+import com.xabber.android.ui.helper.dipToPx
 
 open class ForwardedVH(
     itemView: View,
@@ -106,10 +106,10 @@ open class ForwardedVH(
         if (messageRealmObject.haveAttachments()) {
             if (messageRealmObject.isAttachmentImageOnly) {
                 messageBalloon.setPadding(
-                    Utils.dipToPx(border, context),
-                    Utils.dipToPx(border, context),
-                    Utils.dipToPx(border, context),
-                    Utils.dipToPx(border, context)
+                    dipToPx(border, context),
+                    dipToPx(border, context),
+                    dipToPx(border, context),
+                    dipToPx(border, context)
                 )
             }
         }

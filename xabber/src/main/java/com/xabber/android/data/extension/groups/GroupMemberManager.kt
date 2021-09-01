@@ -4,7 +4,7 @@ import android.os.Looper
 import android.widget.Toast
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject

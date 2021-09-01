@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.utils;
+package com.xabber.android.ui.text;
 
 import java.util.HashMap;
 import java.util.Map;

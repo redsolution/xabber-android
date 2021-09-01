@@ -1,5 +1,7 @@
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +37,6 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -222,9 +223,9 @@ public class ContactViewerActivity extends ContactActivity
                 .setActionView(progressBar)
                 .setVisible(true);
         getToolbar().getMenu().findItem(R.id.action_add_contact).setVisible(false);
-        progressBar.getLayoutParams().height = Utils.dipToPx(24f, this);
-        progressBar.getLayoutParams().width = Utils.dipToPx(48f, this);
-        progressBar.setPadding(0,0,Utils.dipToPx(24f, this), 0);
+        progressBar.getLayoutParams().height = dipToPx(24f, this);
+        progressBar.getLayoutParams().width = dipToPx(48f, this);
+        progressBar.setPadding(0,0, dipToPx(24f, this), 0);
         progressBar.requestLayout();
 
         Application.getInstance().runInBackgroundNetworkUserRequest(() -> {

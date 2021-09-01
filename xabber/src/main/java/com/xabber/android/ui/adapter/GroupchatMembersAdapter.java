@@ -1,5 +1,10 @@
 package com.xabber.android.ui.adapter;
 
+import static com.xabber.android.ui.text.DatesUtilsKt.isCurrentYear;
+import static com.xabber.android.ui.text.DatesUtilsKt.isToday;
+import static com.xabber.android.ui.text.DatesUtilsKt.isYesterday;
+
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +18,18 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.DatesUtilsKt;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembersAdapter.GroupchatMemberViewHolder>
         implements View.OnClickListener {
@@ -99,7 +111,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
                     ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(chat.getAccount(), 500)
             );
         } else {
-            String memberStatus = StringUtils.getLastPresentString(bindMember.getLastSeen());
+            String memberStatus = getLastPresentString(bindMember.getLastSeen());
             holder.memberStatus.setText(memberStatus);
             if (memberStatus.equals(Application.getInstance().getString(R.string.account_state_connected))) {
                 holder.memberStatus.setTextColor(Application.getInstance().getResources().getColor(R.color.green_800));
@@ -138,6 +150,79 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
 
     public interface OnMemberClickListener{
         void onMemberClick(GroupMemberRealmObject groupMember);
+    }
+
+    @SuppressLint("StringFormatMatches")
+    @NonNull
+    private String getLastPresentString(String lastPresent) {
+        final SimpleDateFormat groupchatMemberPresenceTimeFormat;
+        groupchatMemberPresenceTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT);
+        groupchatMemberPresenceTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        if (lastPresent != null && !lastPresent.isEmpty()) {
+            try {
+                Date lastPresentDate = groupchatMemberPresenceTimeFormat.parse(lastPresent);
+                if (lastPresentDate == null) {
+                    return Application.getInstance().getString(R.string.unavailable);
+                }
+
+                if (lastPresentDate.getTime() > 0) {
+                    long timeAgo = (System.currentTimeMillis() - lastPresentDate.getTime()) / 1000;
+                    Locale locale = Application.getInstance().getResources().getConfiguration().locale;
+
+                    if (timeAgo < 60) {
+                        return Application.getInstance().getString(R.string.last_seen_now);
+
+                    } else if (timeAgo < 3600) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_minutes,
+                                String.valueOf(
+                                        TimeUnit.SECONDS.toMinutes(timeAgo)
+                                )
+                        );
+
+                    } else if (timeAgo < 7200) {
+                        return Application.getInstance().getString(R.string.last_seen_hours);
+
+                    } else if (isToday(lastPresentDate)) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_today,
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
+
+                    } else if (isYesterday(lastPresentDate)) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_yesterday,
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
+
+                    } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_on_week,
+                                DatesUtilsKt.getDayOfWeek(lastPresentDate, locale),
+                                new SimpleDateFormat("HH:mm", locale).format(lastPresentDate)
+                        );
+
+                    } else if (isCurrentYear(lastPresentDate)) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_date,
+                                new SimpleDateFormat("d MMMM", locale).format(lastPresentDate)
+                        );
+
+                    } else if (!isCurrentYear(lastPresentDate)) {
+                        return Application.getInstance().getString(
+                                R.string.last_seen_date,
+                                new SimpleDateFormat("d MMMM yyyy", locale).format(lastPresentDate)
+                        );
+                    }
+                }
+            } catch (ParseException e) {
+                LogManager.exception("StringUtils", e);
+            }
+            return Application.getInstance().getString(R.string.unavailable);
+        } else {
+            return Application.getInstance().getString(R.string.account_state_connected); // Online
+        }
     }
 
 }

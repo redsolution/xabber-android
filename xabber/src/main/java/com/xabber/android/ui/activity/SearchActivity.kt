@@ -26,7 +26,7 @@ import com.xabber.android.ui.helper.ContextMenuHelper
 import com.xabber.android.ui.widget.DividerItemDecoration
 import com.xabber.android.ui.widget.SearchToolbar
 import com.xabber.android.ui.widget.ShortcutBuilder
-import com.xabber.android.utils.StringUtils
+import net.gcardone.junidecode.Junidecode.unidecode
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -200,7 +200,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
     }
 
     private fun <T : BaseEntity> Collection<T>.filteredByString(filterString: String): List<T> {
-        val transliteratedFilterString = StringUtils.translitirateToLatin(filterString)
+        val transliteratedFilterString = unidecode(filterString)
         return this.filter {
             val contactName = RosterManager.getInstance()
                 .getBestContact(it.account, it.contactJid)

@@ -17,11 +17,11 @@ package com.xabber.android.data.extension.ssn;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
@@ -35,8 +35,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 

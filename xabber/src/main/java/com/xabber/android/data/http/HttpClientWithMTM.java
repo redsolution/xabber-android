@@ -1,4 +1,4 @@
-package com.xabber.android.utils;
+package com.xabber.android.data.http;
 
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.entity.AccountJid;

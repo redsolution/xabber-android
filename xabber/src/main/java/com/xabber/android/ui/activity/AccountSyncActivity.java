@@ -33,7 +33,7 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
-import com.xabber.android.utils.RetrofitErrorConverter;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import org.greenrobot.eventbus.EventBus;
 

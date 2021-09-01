@@ -23,8 +23,7 @@ import com.xabber.android.data.notification.custom_notification.Key
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.utils.StringUtils
-import com.xabber.android.utils.Utils
+import com.xabber.android.ui.text.*
 import java.util.*
 
 data class ChatListItemData(
@@ -56,56 +55,51 @@ data class ChatListItemData(
             val lastMessage = chat.lastMessage
             val forwardedCount = lastMessage?.forwardedIds?.size ?: 0
             val attachmentsCount = lastMessage?.attachmentRealmObjects?.size ?: 0
-            val coloredMemberNameOrNull =
-                when {
-                    lastMessage?.groupchatUserId == null || !lastMessage.isIncoming ->
-                        StringUtils.getColoredText(
-                            (chat as? GroupChat)?.let {
-                                GroupMemberManager.getMe(it)?.nickname
-                            } + ":",
-                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                                account, 700
-                            )
-                        )
-                    else ->
-                        StringUtils.getColoredText(
-                            GroupMemberManager.getGroupMemberById(
-                                lastMessage.account, lastMessage.user, lastMessage.groupchatUserId
-                            )?.bestName + ":",
-                            ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                                account, 700
-                            )
-                        )
-                }
+
+            val color700 =
+                ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
+
             val color500 =
                 ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 500)
+
+            val coloredMemberNameOrNull =
+                when {
+                    lastMessage?.groupchatUserId == null || !lastMessage.isIncoming -> {
+                        ((chat as? GroupChat)?.let { GroupMemberManager.getMe(it)?.nickname } + ":")
+                    }
+                    else -> {
+                        GroupMemberManager.getGroupMemberById(
+                            lastMessage.account, lastMessage.user, lastMessage.groupchatUserId
+                        )?.bestName + ":"
+                    }
+                }.wrapWithColorTag(color700)
+
             val noMessagesText =
-                StringUtils.getItalicTypeface(context.resources.getString(R.string.no_messages))
+                context.resources.getString(R.string.no_messages).wrapWithItalicTag()
 
             fun String.tryToDecode() =
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                     try {
-                        Html.fromHtml(Utils.getDecodedSpannable(this).toString())
+                        Html.fromHtml(getDecodedSpannable(this).toString())
                     } catch (e: Exception) {
                         Html.fromHtml(this)
                     }
                 } else this
 
             return when {
-                GroupInviteManager.hasActiveIncomingInvites(
-                    account,
-                    contact
-                ) && chat is GroupChat -> {
-                    StringUtils.getItalicTypeface(
-                        StringUtils.getColoredText(
-                            context.getString(
-                                R.string.groupchat_invitation_to_group_chat,
-                                chat.privacyType.getLocalizedString()
-                                    .decapitalize(ConfigurationCompat.getLocales(context.resources.configuration)[0])
-                            ),
-                            color500
-                        )
+                GroupInviteManager.hasActiveIncomingInvites(account, contact)
+                        && chat is GroupChat -> {
+                    context.getString(
+                        R.string.groupchat_invitation_to_group_chat,
+                        chat.privacyType.getLocalizedString()
+                            .replaceFirstChar {
+                                it.lowercase(
+                                    ConfigurationCompat.getLocales(context.resources.configuration)[0]
+                                )
+                            }
                     )
+                        .wrapWithColorTag(color500)
+                        .wrapWithItalicTag()
                 }
 
                 lastMessage == null -> noMessagesText
@@ -115,18 +109,16 @@ data class ChatListItemData(
                 }
 
                 chat is GroupChat -> when {
-                    lastMessage.isGroupchatSystem -> StringUtils.getItalicTypeface(lastMessage.text)
+                    lastMessage.isGroupchatSystem -> lastMessage.text.wrapWithItalicTag()
 
                     forwardedCount > 0 -> when {
                         lastMessage.text.isNullOrEmpty() -> {
-                            coloredMemberNameOrNull + StringUtils.getColoredText(
-                                String.format(
-                                    context.resources.getQuantityString(
-                                        R.plurals.forwarded_messages_count,
-                                        forwardedCount
-                                    ), forwardedCount
-                                ), color500
-                            )
+                            coloredMemberNameOrNull + String.format(
+                                context.resources.getQuantityString(
+                                    R.plurals.forwarded_messages_count,
+                                    forwardedCount
+                                ), forwardedCount
+                            ).wrapWithColorTag(color500)
                         }
                         else -> {
                             coloredMemberNameOrNull + lastMessage.text.tryToDecode().toString()
@@ -135,7 +127,7 @@ data class ChatListItemData(
 
                     attachmentsCount > 0 -> when {
                         lastMessage.text.isNullOrEmpty() -> {
-                            coloredMemberNameOrNull + StringUtils.getColoredAttachmentDisplayName(
+                            coloredMemberNameOrNull + getColoredAttachmentDisplayName(
                                 context, lastMessage.attachmentRealmObjects, color500
                             )
                         }
@@ -152,31 +144,22 @@ data class ChatListItemData(
                 chat is RegularChat -> when {
                     ChatStateManager.getInstance()
                         .getFullChatStateString(account, contact) != null -> {
-                        StringUtils.getColoredText(
-                            ChatStateManager.getInstance().getFullChatStateString(account, contact),
-                            color500
-                        )
+                        ChatStateManager.getInstance().getFullChatStateString(account, contact)
+                            .wrapWithColorTag(color500)
                     }
 
                     lastMessage.action != null -> {
-                        StringUtils.getItalicTypeface(
-                            StringUtils.getColoredText(
-                                lastMessage.action,
-                                color500
-                            )
-                        )
+                        lastMessage.action.wrapWithColorTag(color500).wrapWithItalicTag()
                     }
 
                     forwardedCount > 0 -> when {
                         lastMessage.text.isNullOrEmpty() -> {
-                            StringUtils.getColoredText(
-                                String.format(
-                                    context.resources.getQuantityString(
-                                        R.plurals.forwarded_messages_count,
-                                        forwardedCount
-                                    ), forwardedCount
-                                ), color500
-                            )
+                            String.format(
+                                context.resources.getQuantityString(
+                                    R.plurals.forwarded_messages_count,
+                                    forwardedCount
+                                ), forwardedCount
+                            ).wrapWithColorTag(color500)
                         }
                         else -> lastMessage.text ?: noMessagesText
                     }
@@ -184,9 +167,9 @@ data class ChatListItemData(
                     attachmentsCount > 0 ->
                         when {
                             lastMessage.text.isNullOrEmpty() -> {
-                                StringUtils.getColoredAttachmentDisplayName(
+                                getColoredAttachmentDisplayName(
                                     context, lastMessage.attachmentRealmObjects, color500
-                                )
+                                ) ?: ""
                             }
                             else -> lastMessage.text.tryToDecode().toString()
                         }
@@ -229,21 +212,15 @@ data class ChatListItemData(
                     abstractChat.account,
                     abstractChat.contactJid
                 ) -> {
-                    StringUtils.getSmartTimeTextForRoster(
-                        context,
-                        Date(
-                            GroupInviteManager.getLastInvite(
-                                abstractChat.account,
-                                abstractChat.contactJid
-                            )!!.date
-                        )
-                    )
+                    Date(
+                        GroupInviteManager.getLastInvite(
+                            abstractChat.account,
+                            abstractChat.contactJid
+                        )!!.date
+                    ).getSmartTimeTextForRoster()
                 }
                 abstractChat.lastMessage != null && abstractChat.lastMessage?.isValid ?: false -> {
-                    StringUtils.getSmartTimeTextForRoster(
-                        context,
-                        Date(abstractChat.lastMessage!!.timestamp)
-                    )
+                    Date(abstractChat.lastMessage!!.timestamp).getSmartTimeTextForRoster()
                 }
                 else -> ""
             }

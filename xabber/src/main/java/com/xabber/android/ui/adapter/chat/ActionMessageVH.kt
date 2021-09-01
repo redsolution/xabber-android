@@ -5,8 +5,8 @@ import android.view.View
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.utils.StringUtils
-import com.xabber.android.utils.Utils
+import com.xabber.android.ui.helper.dipToPx
+import com.xabber.android.ui.text.getDateStringForMessage
 
 class ActionMessageVH(itemView: View?) : BasicMessageVH(itemView) {
 
@@ -25,13 +25,13 @@ class ActionMessageVH(itemView: View?) : BasicMessageVH(itemView) {
         )
 
         this.needDate = needDate
-        date = StringUtils.getDateStringForMessage(messageRealmObject.timestamp)
+        date = getDateStringForMessage(messageRealmObject.timestamp)
 
         itemView.setPadding(
             itemView.paddingLeft,
-            Utils.dipToPx(4f, itemView.context),
+            dipToPx(4f, itemView.context),
             itemView.paddingRight,
-            Utils.dipToPx(4f, itemView.context)
+            dipToPx(4f, itemView.context)
         )
     }
 

@@ -18,9 +18,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
+import com.xabber.android.data.connection.OnAuthenticatedListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
@@ -63,7 +63,8 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.subjects.PublishSubject;
 
-public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedListener, OnAuthenticatedListener {
+public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedListener,
+        OnAuthenticatedListener {
 
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 

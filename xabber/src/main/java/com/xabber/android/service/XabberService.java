@@ -17,6 +17,7 @@ package com.xabber.android.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import com.xabber.android.data.Application;
@@ -92,6 +93,14 @@ public class XabberService extends Service {
             }
         }
         return false;
+    }
+
+    public static void startXabberServiceCompat(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(XabberService.createIntent(context));
+        } else {
+            context.startService(XabberService.createIntent(context));
+        }
     }
 
 }

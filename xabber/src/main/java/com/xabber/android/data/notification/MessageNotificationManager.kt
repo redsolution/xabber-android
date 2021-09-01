@@ -31,8 +31,8 @@ import com.xabber.android.data.notification.MessageNotificationCreator.MESSAGE_B
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.OnContactChangedListener
 import com.xabber.android.ui.forEachOnUi
-import com.xabber.android.utils.StringUtils
-import com.xabber.android.utils.Utils
+import com.xabber.android.ui.text.getColoredAttachmentDisplayName
+import com.xabber.android.ui.text.getDecodedSpannable
 import java.util.*
 
 object MessageNotificationManager : OnLoadListener {
@@ -417,7 +417,7 @@ object MessageNotificationManager : OnLoadListener {
         fun String.tryToDecode() =
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 try {
-                    Html.fromHtml(Utils.getDecodedSpannable(this).toString())
+                    Html.fromHtml(getDecodedSpannable(this).toString())
                 } catch (e: Exception) {
                     Html.fromHtml(this)
                 }
@@ -440,9 +440,9 @@ object MessageNotificationManager : OnLoadListener {
 
             attachmentsCount > 0 ->
                 if (message.text.isNullOrEmpty()) {
-                    StringUtils.getColoredAttachmentDisplayName(
+                    getColoredAttachmentDisplayName(
                         context, message.attachmentRealmObjects, -1
-                    )
+                    ) ?: ""
                 } else {
                     message.text.tryToDecode().toString()
                 }
@@ -507,7 +507,7 @@ object MessageNotificationManager : OnLoadListener {
             get() {
                 return try {
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        Utils.getDecodedSpannable(_messageText.toString())
+                        getDecodedSpannable(_messageText.toString())
                     } else {
                         _messageText.toString()
                     }

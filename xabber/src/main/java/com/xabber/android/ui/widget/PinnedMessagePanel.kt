@@ -16,8 +16,8 @@ import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.fragment.ChatFragment
-import com.xabber.android.utils.StringUtils
-import com.xabber.android.utils.Utils
+import com.xabber.android.ui.text.getColoredAttachmentDisplayName
+import com.xabber.android.ui.text.getDecodedSpannable
 
 class PinnedMessagePanel : Fragment() {
 
@@ -116,9 +116,8 @@ class PinnedMessagePanel : Fragment() {
                     )
                 }
                 message.haveAttachments() -> {
-                    textView.text = StringUtils.getAttachmentDisplayName(
-                        context,
-                        message.attachmentRealmObjects
+                    textView.text = getColoredAttachmentDisplayName(
+                        requireContext(), message.attachmentRealmObjects, -1
                     )
                     textView.typeface = Typeface.DEFAULT
                     return
@@ -133,7 +132,7 @@ class PinnedMessagePanel : Fragment() {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                     try {
                         textView.text =
-                            Html.fromHtml(Utils.getDecodedSpannable(text).toString())
+                            Html.fromHtml(getDecodedSpannable(text).toString())
                     } catch (e: Exception) {
                         textView.text = Html.fromHtml(text)
                     }

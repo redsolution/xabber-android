@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.sync
 
 import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.listeners.OnPacketListener
+import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.xmpp.sync.ConversationExtensionElement
@@ -18,7 +18,10 @@ object SyncManager : OnPacketListener {
             && packet.extensionElement is ConversationExtensionElement
             && packet.extensionElement.childElement is DeletedElement
         ) {
-            GroupInviteManager.onConversationDeleted(AccountJid.from(packet.to.toString()), packet.extensionElement.jid)
+            GroupInviteManager.onConversationDeleted(
+                AccountJid.from(packet.to.toString()),
+                packet.extensionElement.jid
+            )
         }
     }
 

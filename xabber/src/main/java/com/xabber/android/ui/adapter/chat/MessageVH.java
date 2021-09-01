@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Looper;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.QuoteSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
@@ -29,9 +32,9 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.text.ClickTagHandler;
+import com.xabber.android.ui.text.CustomQuoteSpan;
+import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -132,11 +135,11 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 color = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(messageRealmObject.getAccount());
             }
 
-            Utils.modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
+            modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
             messageText.setText(spannable, TextView.BufferType.SPANNABLE);
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                messageText.setText(Utils.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
+                messageText.setText(StringUtilsKt.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
                         TextView.BufferType.SPANNABLE);
             } else messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
 
@@ -149,7 +152,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // set date
         needDate = extraData.isNeedDate();
-        date = StringUtils.getDateStringForMessage(messageRealmObject.getTimestamp());
+        date = StringUtilsKt.getDateStringForMessage(messageRealmObject.getTimestamp());
 
         needName = extraData.isNeedName();
         if (!needName) messageHeader.setVisibility(View.GONE);
@@ -171,16 +174,19 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         //TODO:should probably swap timestamp to the UID of the message, since it's more versatile
         timestamp = extraData.getMainMessageTimestamp();
 
-        String time = StringUtils.getTimeText(new Date(messageRealmObject.getTimestamp()));
+        String time = getTimeText(new Date(messageRealmObject.getTimestamp()));
         Long delayTimestamp = messageRealmObject.getDelayTimestamp();
         if (delayTimestamp != null) {
             String delay = extraData.getContext().getString(messageRealmObject.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
-                    StringUtils.getTimeText(new Date(delayTimestamp)));
+                    getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
         }
         Long editedTimestamp = messageRealmObject.getEditedTimestamp();
         if (editedTimestamp != null) {
-            time += extraData.getContext().getString(R.string.edited, StringUtils.getTimeText(new Date (editedTimestamp)));
+            time += extraData.getContext().getString(
+                    R.string.edited,
+                    getTimeText(new Date (editedTimestamp))
+            );
         }
 
         messageTime.setText(time);
@@ -253,12 +259,83 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             int pR = view.getPaddingRight();
             int pB = view.getPaddingBottom();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                view.setBackground(wrapDrawable);
-            else view.setBackground(wrapDrawable);
+            view.setBackground(wrapDrawable);
 
             view.setPadding(pL, pT, pR, pB);
         }
+    }
+
+    private void modifySpannableWithCustomQuotes(
+            SpannableStringBuilder spannable, DisplayMetrics displayMetrics, int color
+    ) {
+        QuoteSpan[] quoteSpans =
+                spannable.getSpans(0, spannable.length(), QuoteSpan.class);
+
+        if (quoteSpans.length > 0) {
+            for (int i = quoteSpans.length - 1; i >= 0; i--) {
+                QuoteSpan span = quoteSpans[i];
+                int spanEnd = spannable.getSpanEnd(span);
+                int spanStart = spannable.getSpanStart(span);
+                spannable.removeSpan(span);
+                if (spanEnd < 0 || spanStart < 0) break;
+
+                int newlineCount = 0;
+                if ('\n' == spannable.charAt(spanEnd)) {
+                    newlineCount++;
+                    if (spanEnd + 1 < spannable.length() && '\n' == spannable.charAt(spanEnd + 1)) {
+                        newlineCount++;
+                    }
+                    if ('\n' == spannable.charAt(spanEnd - 1)) {
+                        newlineCount++;
+                    }
+                }
+                switch (newlineCount) {
+                    case 3:
+                        spannable.delete(spanEnd - 1, spanEnd + 1);
+                        spanEnd = spanEnd - 2;
+                        break;
+                    case 2:
+                        spannable.delete(spanEnd, spanEnd + 1);
+                        spanEnd--;
+                }
+
+                if (spanStart > 1 && '\n' == spannable.charAt(spanStart - 1)) {
+                    if ('\n' == spannable.charAt(spanStart - 2)) {
+                        spannable.delete(spanStart - 2, spanStart - 1);
+                        spanStart--;
+                    }
+                }
+
+                spannable.setSpan(
+                        new CustomQuoteSpan(color, displayMetrics),
+                        spanStart,
+                        spanEnd,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+
+                char current;
+                boolean waitForNewLine = false;
+                for (int j = spanStart; j < spanEnd; j++) {
+                    if (j >= spannable.length()) break;
+                    current = spannable.charAt(j);
+
+                    if (waitForNewLine && current != '\n') continue;
+                    else waitForNewLine = false;
+
+                    if (current == '>') {
+                        spannable.delete(j, j + 1);
+                        j--;
+                        waitForNewLine = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private String getTimeText(Date timeStamp) {
+        return android.text.format.DateFormat
+                .getTimeFormat(Application.getInstance())
+                .format(timeStamp);
     }
 
 }

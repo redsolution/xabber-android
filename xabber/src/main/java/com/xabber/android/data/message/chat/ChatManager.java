@@ -16,16 +16,17 @@ package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
 import android.os.Environment;
+import android.text.Html;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountDisabledListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.GroupchatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -39,7 +40,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.OnChatUpdatedListener;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.DatesUtilsKt;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -59,8 +60,8 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener, OnAccountDisabledListener,
-        OnDisconnectListener {
+public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener,
+        OnAccountDisabledListener, OnDisconnectListener {
 
     public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
@@ -326,7 +327,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
             final String titleName = RosterManager.getInstance().getName(account, user) + " (" + user + ")";
             out.write("<html><head><title>");
-            out.write(StringUtils.escapeHtml(titleName));
+            out.write(Html.escapeHtml(titleName));
             out.write("</title></head><body>");
             final AbstractChat abstractChat = getChat(account, user);
             if (abstractChat != null) {
@@ -344,11 +345,11 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
                     } else name = accountName;
 
                     out.write("<b>");
-                    out.write(StringUtils.escapeHtml(name));
+                    out.write(Html.escapeHtml(name));
                     out.write("</b>&nbsp;(");
-                    out.write(StringUtils.getDateTimeText(new Date(messageRealmObject.getTimestamp())));
+                    out.write(DatesUtilsKt.getDateTimeText(new Date(messageRealmObject.getTimestamp())));
                     out.write(")<br />\n<p>");
-                    out.write(StringUtils.escapeHtml(messageRealmObject.getText()));
+                    out.write(Html.escapeHtml(messageRealmObject.getText()));
                     out.write("</p><hr />\n");
                 }
 

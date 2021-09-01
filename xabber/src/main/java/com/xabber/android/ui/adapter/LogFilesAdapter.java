@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,15 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         final File file = files[position];
 
-        fileHolder.fileName.setText(file.getName().concat(" ").concat(StringUtils.getHumanReadableFileSize(file.length())));
+        fileHolder.fileName.setText(
+                file.getName()
+                        .concat(" ")
+                        .concat(
+                                StringUtilsKt.getHumanReadableFileSize(
+                                        file.length()
+                                )
+                        )
+        );
 
         TypedValue typedValue = new TypedValue();
         holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);

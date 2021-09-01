@@ -1,7 +1,6 @@
 package com.xabber.android.data.log;
 
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.debugger.AbstractDebugger;
@@ -61,7 +60,7 @@ public class SmackDebugger extends AbstractDebugger {
             return xmlData.substring(0, xmlMarkupStartsAtIndex) + "\n" + result.substring(0, result.length()-1);
         } catch (Exception e) {
             if (!((e instanceof TransformerException) || (e instanceof StringIndexOutOfBoundsException))) {
-                LogManager.exception(StringUtils.class.getSimpleName(), e);
+                LogManager.exception(this, e);
             }
             return xmlData;
         }

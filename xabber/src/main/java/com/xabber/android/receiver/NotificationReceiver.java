@@ -13,7 +13,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.Action;
 import com.xabber.android.data.notification.MessageNotificationManager;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.service.XabberService;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -32,7 +32,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (Application.getInstance().isServiceNotStarted()) {
             MessageNotificationManager.INSTANCE.onDelayedNotificationAction(createAction(intent));
             if (accountJid != null) {
-                Utils.startXabberServiceCompat(context);
+                XabberService.startXabberServiceCompat(context);
             }
 
         } else {

@@ -1,5 +1,7 @@
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +29,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.Utils;
 
 import org.jetbrains.annotations.Nullable;
 import org.jivesoftware.smack.packet.Presence;
@@ -181,7 +182,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
             thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
             thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
             resourceView.setPadding(resourceView.getPaddingLeft(),
-                    Utils.dipToPx(8f, this),
+                    dipToPx(8f, this),
                     resourceView.getPaddingRight(),
                     resourceView.getPaddingBottom());
         }

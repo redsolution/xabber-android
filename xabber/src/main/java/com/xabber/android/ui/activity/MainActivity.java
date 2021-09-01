@@ -65,9 +65,9 @@ import com.xabber.android.ui.fragment.DiscoverFragment;
 import com.xabber.android.ui.fragment.MainActivitySettingsFragment;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.fragment.contactListFragment.ContactListFragment;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
-import com.xabber.android.utils.UtilsKt;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import org.jetbrains.annotations.Nullable;
@@ -396,7 +396,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     protected void onPause() {
         super.onPause();
-        UtilsKt.tryToHideKeyboardIfNeed(this);
+        AndroidUtilsKt.tryToHideKeyboardIfNeed(this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
     }

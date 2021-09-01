@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid

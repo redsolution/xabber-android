@@ -3,9 +3,6 @@ package com.xabber.android.data.connection;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.SmackException;

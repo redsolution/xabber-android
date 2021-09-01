@@ -12,12 +12,10 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
-import com.xabber.android.utils.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -258,7 +256,7 @@ public final class VoiceMessagePresenterManager {
         if (sampleRate != 0) {
             for (int i = 0; i < waveData.size(); i++) {
                 if (i % sampleRate == 0) {
-                    optimisedDataForReturn.add(Utils.longToInt(num));
+                    optimisedDataForReturn.add(longToInt(num));
                     num = 0;
                 }
                 if (waveData.get(i) < 0)
@@ -266,17 +264,26 @@ public final class VoiceMessagePresenterManager {
                 else
                     num += waveData.get(i);
             }
-            optimisedDataForReturn.add(Utils.longToInt(num));
+            optimisedDataForReturn.add(longToInt(num));
         } else {
             for (int i = 0; i < waveData.size(); i++) {
                 if (waveData.get(i) < 0) {
                     num -= waveData.get(i);
                 } else
                     num += waveData.get(i);
-                optimisedDataForReturn.add(Utils.longToInt(num));
+                optimisedDataForReturn.add(longToInt(num));
                 num = 0;
             }
         }
     }
+
+    private static int longToInt(long number) {
+        if (number > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        } else if (number < Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        } else return (int) number;
+    }
+
 }
 

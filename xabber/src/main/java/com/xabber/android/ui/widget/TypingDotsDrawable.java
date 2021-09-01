@@ -1,5 +1,8 @@
 package com.xabber.android.ui.widget;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPxFloat;
+
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
@@ -12,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.utils.Utils;
 
 public class TypingDotsDrawable extends Drawable {
 
@@ -90,19 +92,19 @@ public class TypingDotsDrawable extends Drawable {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        canvas.drawCircle(Utils.dipToPxFloat(3, Application.getInstance()),
-                Utils.dipToPxFloat(10, Application.getInstance()),
-                Utils.dipToPxFloat(scale[0], Application.getInstance()),
+        canvas.drawCircle(dipToPxFloat(3, Application.getInstance()),
+                dipToPxFloat(10, Application.getInstance()),
+                dipToPxFloat(scale[0], Application.getInstance()),
                 dotPaint);
 
-        canvas.drawCircle(Utils.dipToPxFloat(9, Application.getInstance()),
-                Utils.dipToPxFloat(10, Application.getInstance()),
-                Utils.dipToPxFloat(scale[1], Application.getInstance()),
+        canvas.drawCircle(dipToPxFloat(9, Application.getInstance()),
+                dipToPxFloat(10, Application.getInstance()),
+                dipToPxFloat(scale[1], Application.getInstance()),
                 dotPaint);
 
-        canvas.drawCircle(Utils.dipToPxFloat(15, Application.getInstance()),
-                Utils.dipToPxFloat(10, Application.getInstance()),
-                Utils.dipToPxFloat(scale[2], Application.getInstance()),
+        canvas.drawCircle(dipToPxFloat(15, Application.getInstance()),
+                dipToPxFloat(10, Application.getInstance()),
+                dipToPxFloat(scale[2], Application.getInstance()),
                 dotPaint);
 
         if (started) {
@@ -127,11 +129,11 @@ public class TypingDotsDrawable extends Drawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return Utils.dipToPx(18, Application.getInstance());
+        return dipToPx(18, Application.getInstance());
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return Utils.dipToPx(18, Application.getInstance());
+        return dipToPx(18, Application.getInstance());
     }
 }

@@ -27,9 +27,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnDisconnectListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -64,8 +64,7 @@ import java.util.Map;
  *
  * @author alexander.ivanov
  */
-public class ChatStateManager implements OnDisconnectListener,
-        OnPacketListener, OnCloseListener {
+public class ChatStateManager implements OnDisconnectListener, OnPacketListener, OnCloseListener {
 
     private static ChatStateManager instance;
 

@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
@@ -76,15 +76,12 @@ import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessagesAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.dialog.ChatExportDialogFragment
-import com.xabber.android.ui.helper.PermissionsRequester
+import com.xabber.android.ui.helper.*
 import com.xabber.android.ui.text.CustomQuoteSpan
 import com.xabber.android.ui.widget.*
 import com.xabber.android.ui.widget.BottomMessagesPanel.Purposes
 import com.xabber.android.ui.widget.PlayerVisualizerView.onProgressTouch
-import com.xabber.android.utils.Utils
-import com.xabber.android.utils.getAttrColor
-import com.xabber.android.utils.lockScreenRotation
-import com.xabber.android.utils.tryToHideKeyboardIfNeed
+import com.xabber.android.utils.*
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
@@ -1548,10 +1545,10 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             }
             background = balloonDrawable
             setPadding(
-                Utils.dipToPx(20f, context),
-                Utils.dipToPx(8f, context),
-                Utils.dipToPx(12f, context),
-                Utils.dipToPx(8f, context)
+                dipToPx(20f, context),
+                dipToPx(8f, context),
+                dipToPx(12f, context),
+                dipToPx(8f, context)
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 background.setTintList(
@@ -1576,10 +1573,10 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
                 ).apply {
                     setMargins(
-                        Utils.dipToPx(3f, context),
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(3f, context)
+                        dipToPx(3f, context),
+                        dipToPx(0f, context),
+                        dipToPx(0f, context),
+                        dipToPx(3f, context)
                     )
                 }
         }
@@ -1935,7 +1932,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             slideToCancelLayout?.animate()?.x(0f)?.setDuration(0)?.start()
             recordLockChevronImage?.alpha = 1f
             recordLockImage?.setImageResource(R.drawable.ic_security_plain_24dp)
-            recordLockImage?.setPadding(0, Utils.dipToPx(4f, activity), 0, 0)
+            recordLockImage?.setPadding(0, dipToPx(4f, requireContext()), 0, 0)
 
             val layoutParams = recordLockChevronImage?.layoutParams as? LinearLayout.LayoutParams
             layoutParams?.topMargin = 0

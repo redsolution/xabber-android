@@ -2,11 +2,11 @@ package com.xabber.android.data.extension.retract
 
 import android.os.Looper
 import com.xabber.android.data.Application
-import com.xabber.android.data.BaseIqResultUiListener
 import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.listeners.OnPacketListener
+import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
@@ -58,8 +58,8 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         }
     }
 
-    override fun onStanza(connection: ConnectionItem, packet: Stanza) {
-        if (packet is Message && packet.type == Message.Type.headline) {
+    override fun onStanza(connection: ConnectionItem?, packet: Stanza?) {
+        if (packet is Message && packet.type == Message.Type.headline && connection != null) {
             when {
                 packet.hasIncomingInvalidateExtensionElement() ->
                     handleInvalidateMessage(

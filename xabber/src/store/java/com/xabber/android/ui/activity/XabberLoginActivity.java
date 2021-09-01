@@ -36,7 +36,7 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
 import com.xabber.android.ui.helper.SignUpRepo;
 import com.xabber.android.utils.RetrofitErrorConverter;
-import com.xabber.android.utils.UtilsKt;
+import com.xabber.android.utils.AndroidUtilsKt;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;

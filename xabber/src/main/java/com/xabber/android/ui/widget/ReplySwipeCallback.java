@@ -1,6 +1,7 @@
 package com.xabber.android.ui.widget;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
@@ -17,7 +18,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.ui.adapter.chat.ActionMessageVH;
 import com.xabber.android.ui.adapter.chat.GroupchatSystemMessageVH;
-import com.xabber.android.utils.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,8 +29,8 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private ReplyArrowState currentReplyArrowState = ReplyArrowState.GONE;
 
     private static final Drawable replyIcon = Application.getInstance().getResources().getDrawable(R.drawable.ic_reply);
-    private static final int fullSize = Utils.dipToPx(24f, Application.getInstance());
-    private static final int paddingRight = Utils.dipToPx(12f, Application.getInstance());
+    private static final int fullSize = dipToPx(24f, Application.getInstance());
+    private static final int paddingRight = dipToPx(12f, Application.getInstance());
     private static final float MAX_SWIPE_DISTANCE_RATIO = 0.18f;
     private static final float ACTIVE_SWIPE_DISTANCE_RATIO = 0.13f;
 

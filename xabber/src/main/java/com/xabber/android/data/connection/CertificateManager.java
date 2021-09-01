@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.AccountJid;
 
 import java.util.Map;

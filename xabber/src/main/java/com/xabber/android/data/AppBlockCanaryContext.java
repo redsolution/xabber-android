@@ -1,4 +1,4 @@
-package com.xabber.android.utils;
+package com.xabber.android.data;
 
 import com.github.moduth.blockcanary.BlockCanaryContext;
 import com.xabber.android.BuildConfig;

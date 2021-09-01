@@ -19,12 +19,12 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnConnectedListener;
+import com.xabber.android.data.connection.OnDisconnectListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.VCardRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.database.repositories.VCardRepository;
@@ -73,8 +73,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * @author alexander.ivanov
  */
-public class VCardManager implements OnPacketListener, OnRosterReceivedListener, OnAccountRemovedListener,
-        OnDisconnectListener, OnConnectedListener {
+public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
+        OnAccountRemovedListener, OnDisconnectListener, OnConnectedListener {
 
     private static final String LOG_TAG = VCardManager.class.getSimpleName();
 

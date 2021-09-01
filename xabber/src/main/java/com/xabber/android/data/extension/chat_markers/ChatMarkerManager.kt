@@ -4,8 +4,8 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.connection.StanzaSender
-import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
@@ -33,11 +33,11 @@ import java.util.*
 
 object ChatMarkerManager : OnPacketListener {
 
-    override fun onStanza(connection: ConnectionItem, packet: Stanza) {
+    override fun onStanza(connection: ConnectionItem?, packet: Stanza?) {
         (packet as? Message)?.let {
             when {
                 ChatMarkersElements.MarkableExtension.from(packet) != null ->
-                    sendReceived(packet, connection.account) // markable
+                    connection?.account?.let { sendReceived(packet, it) } // markable
                 ChatMarkersElements.ReceivedExtension.from(packet) != null ->
                     markAsReceived(ChatMarkersElements.ReceivedExtension.from(packet)) // received
                 ChatMarkersElements.DisplayedExtension.from(packet) != null ->
@@ -47,6 +47,9 @@ object ChatMarkerManager : OnPacketListener {
                         ChatMarkerManager::class.java.simpleName,
                         "Got \"Acknowledged\" stanza, but no actions performed!"
                     )
+                else -> {
+
+                }
             }
         }
     }

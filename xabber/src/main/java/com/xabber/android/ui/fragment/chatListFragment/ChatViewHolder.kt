@@ -13,7 +13,7 @@ import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.roster.StatusBadgeSetupHelper
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
-import com.xabber.android.utils.getAttrColor
+import com.xabber.android.ui.helper.getAttrColor
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(

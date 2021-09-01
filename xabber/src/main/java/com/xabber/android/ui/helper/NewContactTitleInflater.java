@@ -18,6 +18,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
+import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
@@ -37,9 +38,10 @@ import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.TypingDotsDrawable;
-import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.Presence;
+
+import java.util.Locale;
 
 /**
  * Created by valery.miller on 26.10.17.
@@ -174,8 +176,10 @@ public class NewContactTitleInflater {
                             if (isGroupchat){
                                 GroupPrivacyType privacyType = ((GroupChat) chat).getPrivacyType();
                                 if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractContact.getAccount(), abstractContact.getContactJid())){
-                                    statusText = context.getString(R.string.groupchat_invitation_to_group_chat,
-                                            StringUtils.decapitalize(privacyType.getLocalizedString()));
+                                    statusText = context.getString(
+                                            R.string.groupchat_invitation_to_group_chat,
+                                            privacyType.getLocalizedString().toLowerCase(Locale.ROOT)
+                                    );
                                 } else {
                                     if (privacyType == GroupPrivacyType.INCOGNITO){
                                         statusText = context.getString(R.string.groupchat_public_group);
@@ -270,7 +274,7 @@ public class NewContactTitleInflater {
     private static String getGroupchatStatus(AbstractContact contact, Context context) {
         Presence groupchatPresence = PresenceManager.INSTANCE.getPresence(contact.getAccount(), contact.getContactJid());
         if (groupchatPresence != null && groupchatPresence.hasExtension(GroupExtensionElement.NAMESPACE)) {
-            return StringUtils.getDisplayStatusForGroupchat(
+            return StringUtilsKt.getDisplayStatusForGroupchat(
                     groupchatPresence.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE),
                     context);
         }

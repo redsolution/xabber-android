@@ -12,11 +12,6 @@ package com.xabber.android.data.connection;
 
 import com.xabber.android.data.log.LogManager;
 
-import de.measite.minidns.dnsserverlookup.AbstractDNSServerLookupMechanism;
-import de.measite.minidns.dnsserverlookup.AndroidUsingReflection;
-import de.measite.minidns.dnsserverlookup.DNSServerLookupMechanism;
-import de.measite.minidns.util.PlatformDetection;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +19,11 @@ import java.io.LineNumberReader;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.logging.Level;
+
+import de.measite.minidns.dnsserverlookup.AbstractDNSServerLookupMechanism;
+import de.measite.minidns.dnsserverlookup.AndroidUsingReflection;
+import de.measite.minidns.dnsserverlookup.DNSServerLookupMechanism;
+import de.measite.minidns.util.PlatformDetection;
 
 /**
  * Try to retrieve the list of DNS server by executing getprop.

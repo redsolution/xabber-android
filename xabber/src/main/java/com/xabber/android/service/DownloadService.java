@@ -15,7 +15,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.utils.HttpClientWithMTM;
+import com.xabber.android.data.http.HttpClientWithMTM;
 
 import java.io.File;
 import java.io.FileOutputStream;

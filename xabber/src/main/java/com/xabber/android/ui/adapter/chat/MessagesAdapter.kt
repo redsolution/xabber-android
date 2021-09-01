@@ -26,7 +26,7 @@ import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClick
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageLongClickListener
 import com.xabber.android.ui.color.ColorManager
-import com.xabber.android.utils.isSameDayWith
+import com.xabber.android.ui.text.isSameDayWith
 import io.realm.*
 import java.util.*
 

@@ -34,7 +34,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;

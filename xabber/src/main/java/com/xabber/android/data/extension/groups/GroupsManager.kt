@@ -4,9 +4,10 @@ import android.widget.Toast
 import com.xabber.android.R
 import com.xabber.android.data.*
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.connection.StanzaSender
-import com.xabber.android.data.connection.listeners.OnPacketListener
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.database.repositories.MessageRepository
@@ -121,10 +122,16 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         }
     }
 
-    override fun onStanza(connection: ConnectionItem, packet: Stanza) {
+    override fun onStanza(connection: ConnectionItem?, packet: Stanza?) {
         if (packet is Presence && packet.hasExtension(GroupPresenceExtensionElement.NAMESPACE)) {
             processPresence(packet)
-        } else (packet as? DiscoverItems)?.let { processDiscoInfoIq(connection, it) }
+        } else {
+            (packet as? DiscoverItems)?.let { pack ->
+                connection?.let { connection ->
+                    processDiscoInfoIq(connection, pack)
+                }
+            }
+        }
     }
 
     private fun processDiscoInfoIq(connectionItem: ConnectionItem, packet: Stanza) {

@@ -33,7 +33,6 @@ import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.delivery.DeliveryManager;
@@ -50,7 +49,7 @@ import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.xmpp.sid.OriginIdElement;
 
 import org.jetbrains.annotations.NotNull;
@@ -124,7 +123,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private static int getSizeOfEncodedChars(String str) {
-        return Utils.xmlEncode(str).toCharArray().length;
+        return StringUtilsKt.escapeXml(str).toCharArray().length;
     }
 
     public boolean isActive() {

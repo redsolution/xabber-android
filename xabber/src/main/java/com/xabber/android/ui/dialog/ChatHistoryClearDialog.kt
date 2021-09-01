@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.xabber.android.R
-import com.xabber.android.data.BaseIqResultUiListener
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.retract.RetractManager.isSupported

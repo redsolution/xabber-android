@@ -26,7 +26,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -385,13 +385,15 @@ public class MessageRealmObject extends RealmObject {
                         if (color == -1) {
                             stringBuilder.append(author);
                             stringBuilder.append(":");
-                        } else stringBuilder.append(StringUtils.getColoredText(author + ":", color));
+                        } else {
+                            stringBuilder.append(StringUtilsKt.wrapWithColorTag(author, color));
+                        }
                     }
                     stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
                     if (message.haveAttachments() && message.getAttachmentRealmObjects().size() > 0) {
                         AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(0);
-                        attachmentName = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), color);
+                        attachmentName = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), color);
                         stringBuilder.append(attachmentName);
                     }
                     if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))

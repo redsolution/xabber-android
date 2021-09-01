@@ -8,21 +8,17 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
 import com.xabber.android.ui.fragment.XAccountLinksFragment;
 import com.xabber.android.ui.helper.OnSocialBindListener;
-import com.xabber.android.utils.RetrofitErrorConverter;
-
-import java.util.List;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 

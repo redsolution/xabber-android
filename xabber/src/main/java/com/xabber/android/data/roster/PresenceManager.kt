@@ -21,13 +21,9 @@ import com.xabber.android.data.OnLoadListener
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.account.OnAccountDisabledListener
 import com.xabber.android.data.account.StatusMode
-import com.xabber.android.data.account.listeners.OnAccountDisabledListener
-import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.StanzaSender
-import com.xabber.android.data.connection.listeners.OnAuthenticatedListener
-import com.xabber.android.data.connection.listeners.OnDisconnectListener
-import com.xabber.android.data.connection.listeners.OnPacketListener
+import com.xabber.android.data.connection.*
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
@@ -51,7 +47,7 @@ import com.xabber.android.data.notification.EntityNotificationProvider
 import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.ui.OnStatusChangeListener
 import com.xabber.android.ui.forEachOnUi
-import com.xabber.android.utils.StringUtils
+import com.xabber.android.ui.text.getDisplayStatusForGroupchat
 import com.xabber.xmpp.groups.GroupExtensionElement
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
 import com.xabber.xmpp.groups.hasGroupExtensionElement
@@ -120,8 +116,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         }
     }
 
-    override fun onDisconnect(connection: ConnectionItem) =
-        clearPresencesTiedToThisAccount(connection.account)
+    override fun onDisconnect(connection: ConnectionItem?) {
+        connection?.let { clearPresencesTiedToThisAccount(it.account) }
+    }
 
     /**
      * Requests subscription to the contact.
@@ -292,16 +289,12 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      */
     fun getStatusText(account: AccountJid, bareAddress: ContactJid): String? {
         val presence = getPresence(account, bareAddress)
-        return if (presence.hasGroupExtensionElement()) {
-            StringUtils.getDisplayStatusForGroupchat(
-                presence.getExtension(
-                    GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE
-                ),
-                Application.getInstance()
-            )
-        } else {
-            presence.status
-        }
+        val groupElement = presence.getExtension(
+            GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE
+        ) as? GroupPresenceExtensionElement
+
+        return groupElement?.getDisplayStatusForGroupchat(Application.getInstance())
+            ?: presence.status
     }
 
     fun onPresenceChanged(account: AccountJid?, presence: Presence) {
@@ -338,8 +331,8 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         RosterManager.onContactChanged(account, from)
     }
 
-    override fun onAccountDisabled(accountItem: AccountItem) {
-        requestedSubscriptions.remove(accountItem.account)
+    override fun onAccountDisabled(accountItem: AccountItem?) {
+        requestedSubscriptions.remove(accountItem?.account)
     }
 
     /**
@@ -368,7 +361,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     fun getAccountPresence(account: AccountJid): Presence? =
         AccountManager.getInstance().getAccount(account)?.presence
 
-    override fun onStanza(connection: ConnectionItem, stanza: Stanza) {
+    override fun onStanza(connection: ConnectionItem?, stanza: Stanza?) {
         if (connection !is AccountItem || stanza !is Presence) {
             return
         }

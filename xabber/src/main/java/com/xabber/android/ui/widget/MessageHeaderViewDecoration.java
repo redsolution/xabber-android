@@ -1,5 +1,7 @@
 package com.xabber.android.ui.widget;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -17,7 +19,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.adapter.chat.BasicMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,9 +49,9 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     private RecyclerView parent;
 
     private int headerViewXMargin;
-    private static final int backgroundDrawableHeight = Utils.dipToPx(24f, Application.getInstance());
-    private static final int backgroundDrawableXPadding = Utils.dipToPx(8f, Application.getInstance());
-    private static final int backgroundDrawableYMargin = Utils.dipToPx(3.64f, Application.getInstance());
+    private static final int backgroundDrawableHeight = dipToPx(24f, Application.getInstance());
+    private static final int backgroundDrawableXPadding = dipToPx(8f, Application.getInstance());
+    private static final int backgroundDrawableYMargin = dipToPx(3.64f, Application.getInstance());
     private static final int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
     private static final int alphaThreshold = dateLayoutHeight * 6 / 10;
     private static final int dateTextBaseline = backgroundDrawableHeight * 3 / 11;
@@ -75,7 +77,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
 
         paintFont = new Paint();
         paintFont.setColor(Application.getInstance().getResources().getColor(R.color.white));
-        paintFont.setTextSize(Utils.spToPxFloat(14f, Application.getInstance()) + 1f);
+        paintFont.setTextSize(AndroidUtilsKt.spToPxFloat(14f, Application.getInstance()) + 1f);
         paintFont.setTypeface(Typeface.DEFAULT_BOLD);
         paintFont.setAntiAlias(true);
 

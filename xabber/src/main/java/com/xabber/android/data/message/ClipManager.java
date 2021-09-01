@@ -10,12 +10,12 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.UtilsKt;
+import com.xabber.android.ui.text.DatesUtilsKt;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -75,7 +75,7 @@ public class ClipManager {
         ).getNickname() : RosterManager.getDisplayAuthorName(message);
 
         final String date = getDateStringForClipboard(message.getTimestamp());
-        if (!UtilsKt.isSameDayWith(message.getTimestamp(), previousMessageTimestamp)) {
+        if (!DatesUtilsKt.isSameDayWith(message.getTimestamp(), previousMessageTimestamp)) {
             stringBuilder.append("\n");
             stringBuilder.append(space);
             stringBuilder.append(date);
@@ -84,7 +84,8 @@ public class ClipManager {
         stringBuilder.append("\n");
         stringBuilder.append(space);
         stringBuilder.append('[');
-        stringBuilder.append(StringUtils.getTimeTextWithSeconds(new Date(message.getTimestamp())));
+
+        stringBuilder.append(new SimpleDateFormat("HH:mm:ss", Locale.ROOT).format(message.getTimestamp()));
         stringBuilder.append("] ");
         stringBuilder.append(name);
         stringBuilder.append(":\n");

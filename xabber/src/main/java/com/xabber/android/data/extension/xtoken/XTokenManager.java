@@ -7,11 +7,11 @@ import androidx.core.util.Pair;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.DatesUtilsKt;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;
 
@@ -128,8 +128,7 @@ public class XTokenManager implements OnPacketListener {
                         session.getDevice(),
                         session.getUid(),
                         session.getIp(),
-                        StringUtils.getSmartTimeTextForRoster(Application.getInstance(),
-                                new Date(session.getLastAuth()))
+                        DatesUtilsKt.getSmartTimeTextForRoster(new Date(session.getLastAuth()))
                 ));
             }
         }

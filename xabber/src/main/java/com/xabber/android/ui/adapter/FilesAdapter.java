@@ -1,5 +1,7 @@
 package com.xabber.android.ui.adapter;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,9 +26,8 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePr
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.text.DatesUtilsKt;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
 
 import org.apache.commons.io.FileUtils;
 
@@ -77,16 +78,21 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             StringBuilder voiceText = new StringBuilder();
             voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
             if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
-                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
+                voiceText.append(
+                        String.format(
+                                Locale.getDefault(),
+                                ", %s",
+                                DatesUtilsKt.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())
+                        )
+                );
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
-                int width = Utils.dipToPx(140, holder.fileInfoLayout.getContext());
+                int width = dipToPx(140, holder.fileInfoLayout.getContext());
                 if (attachmentRealmObject.getDuration() < 10) {
-                    lp.width = width + Utils.dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
-                    holder.fileInfoLayout.setLayoutParams(lp);
+                    lp.width = width + dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
                 } else {
-                    lp.width = width + Utils.dipToPx(60, holder.fileInfoLayout.getContext());
-                    holder.fileInfoLayout.setLayoutParams(lp);
+                    lp.width = width + dipToPx(60, holder.fileInfoLayout.getContext());
                 }
+                holder.fileInfoLayout.setLayoutParams(lp);
             }
             holder.tvFileName.setText(voiceText);
 
@@ -94,9 +100,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
             if (attachmentRealmObject.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
-                holder.tvFileSize.setText((attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
-                        StringUtils.getDurationStringForVoiceMessage(0L, attachmentRealmObject.getDuration())
-                        : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                holder.tvFileSize.setText(
+                        (attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
+                                DatesUtilsKt.getDurationStringForVoiceMessage(
+                                        0L, attachmentRealmObject.getDuration()
+                                ) : FileUtils.byteCountToDisplaySize(size != null ? size : 0)
+                );
                 VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachmentRealmObject.getFilePath(), holder.audioVisualizer);
                 holder.audioVisualizer.setVisibility(View.VISIBLE);
                 holder.audioVisualizer.setOnTouchListener(new PlayerVisualizerView.onProgressTouch() {
@@ -292,21 +301,30 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                         if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            0L,
+                                    info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         } else if (info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            (long) info.getCurrentPosition() / 1000,
+                                            info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         } else {
                             ivFileIcon.setImageResource(R.drawable.ic_pause);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            (long) info.getCurrentPosition() / 1000,
+                                            info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         }
                     }
                 }

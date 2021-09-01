@@ -21,7 +21,7 @@ import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.utils.HttpClientWithMTM;
+import com.xabber.android.data.http.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
 import com.xabber.xmpp.chat_state.ChatStateSubtype;
 

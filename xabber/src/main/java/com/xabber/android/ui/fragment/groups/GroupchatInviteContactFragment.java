@@ -1,5 +1,7 @@
 package com.xabber.android.ui.fragment.groups;
 
+import static net.gcardone.junidecode.Junidecode.unidecode;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -38,7 +40,6 @@ import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.ExtContactVO;
 import com.xabber.android.ui.fragment.contactListFragment.viewObjects.GroupVO;
 import com.xabber.android.ui.helper.UpdateBackpressure;
-import com.xabber.android.utils.StringUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -299,7 +300,7 @@ public class GroupchatInviteContactFragment extends Fragment implements Flexible
 
                     if (filterEt.getText() != null && !filterEt.getText().toString().isEmpty()) {
                         String filter = filterEt.getText().toString().toLowerCase(Locale.ROOT);
-                        String transliteratedFilterString = StringUtils.translitirateToLatin(filter);
+                        String transliteratedFilterString = unidecode(filter);
 
                         String contactName = RosterManager.getInstance()
                                 .getBestContact(contact.getAccount(), contact.getContactJid())

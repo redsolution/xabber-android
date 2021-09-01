@@ -2,7 +2,8 @@ package com.xabber.android.data.notification;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.OnConnectedListener;
+
 import java.util.ArrayList;
 import java.util.List;
 

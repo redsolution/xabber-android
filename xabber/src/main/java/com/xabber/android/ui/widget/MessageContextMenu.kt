@@ -13,7 +13,7 @@ import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.utils.StringUtils
+import com.xabber.android.ui.text.getDateTimeText
 import java.util.*
 
 class MessageContextMenu(
@@ -222,7 +222,7 @@ class MessageContextMenu(
             MessageContextMenuItem(messageStatus.toString())
 
         class Timestamp(date: Date) :
-            MessageContextMenuItem(StringUtils.getDateTimeText(date))
+            MessageContextMenuItem(date.getDateTimeText())
     }
 
 }
