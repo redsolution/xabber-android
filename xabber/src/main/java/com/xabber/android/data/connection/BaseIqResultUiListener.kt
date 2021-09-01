@@ -1,4 +1,4 @@
-package com.xabber.android.data
+package com.xabber.android.data.connection
 
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener

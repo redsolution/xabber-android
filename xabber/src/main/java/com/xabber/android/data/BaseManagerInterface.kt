@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -12,21 +12,11 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data;
+package com.xabber.android.data
 
 /**
- * Listener for request to wipe all sensitive application data.
+ * Base interface common for the registered manager.
  *
  * @author alexander.ivanov
  */
-public interface OnWipeListener extends BaseManagerInterface {
-
-    /**
-     * Wipe all sensitive application data.
-     * <p/>
-     * WILL BE CALLED FROM BACKGROUND THREAD. DON'T CHANGE OR ACCESS
-     * APPLICATION'S DATA HERE!
-     */
-    void onWipe();
-
-}
+interface BaseManagerInterface 

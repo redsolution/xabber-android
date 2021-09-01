@@ -9,7 +9,6 @@ import android.view.Display
 import android.view.Surface
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
-import java.util.*
 
 fun Activity.tryToHideKeyboardIfNeed() {
     this.currentFocus?.let { focusedView ->
@@ -19,13 +18,6 @@ fun Activity.tryToHideKeyboardIfNeed() {
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
     }
-}
-
-infix fun Long.isSameDayWith(timestamp: Long): Boolean {
-    val cal1 = Calendar.getInstance().apply { time = Date(this@isSameDayWith) }
-    val cal2 = Calendar.getInstance().apply { time = Date(timestamp) }
-    return cal1[Calendar.DAY_OF_YEAR] == cal2[Calendar.DAY_OF_YEAR] &&
-            cal1[Calendar.YEAR] == cal2[Calendar.YEAR]
 }
 
 @ColorInt
@@ -83,4 +75,24 @@ fun Activity.lockScreenRotation(isLock: Boolean) {
         } else {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
+}
+
+fun spToPxFloat(sp: Float, context: Context): Float {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        sp,
+        context.resources.displayMetrics
+    )
+}
+
+fun dipToPx(dip: Float, context: Context): Int {
+    return dipToPxFloat(dip, context).toInt()
+}
+
+fun dipToPxFloat(dip: Float, context: Context): Float {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dip,
+        context.resources.displayMetrics
+    )
 }
