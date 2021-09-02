@@ -22,6 +22,7 @@ import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
@@ -34,9 +35,8 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.helper.SignUpRepo;
-import com.xabber.android.utils.RetrofitErrorConverter;
-import com.xabber.android.utils.AndroidUtilsKt;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -190,7 +190,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         currentFragment = FRAGMENT_SIGNUP_STEP3;
 
         setupToolbar(false);
-        UtilsKt.tryToHideKeyboardIfNeed(this);
+        AndroidUtilsKt.tryToHideKeyboardIfNeed(this);
     }
 
     public void showSignUpStep4Fragment() {

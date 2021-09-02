@@ -29,13 +29,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
+import com.xabber.android.data.extension.archive.MessageArchiveRequestListener
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
@@ -85,6 +87,7 @@ import com.xabber.android.utils.*
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
+import io.realm.RealmResults
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
 import rx.Subscription
@@ -120,9 +123,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     private var blockedView: TextView? = null
     private lateinit var stubNotify: ViewStub
     private var notifyLayout: RelativeLayout? = null
-    private var tvNotifyTitle: TextView? = null
-    private var tvNotifyAction: TextView? = null
-    private var checkedResource = 0
 
     private lateinit var realmRecyclerView: RecyclerView
     private lateinit var chatMessageAdapter: MessagesAdapter
@@ -137,6 +137,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             return ChatManager.getInstance().getChat(accountJid, contactJid)
                 ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
         }
+
+    /**
+     * Used to show messages of only one specified member of group
+     */
+    private var memberId: String? = null
 
     private var accountColor = 0
     private var userIsBlocked = false
@@ -198,6 +203,10 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             ?: throw IllegalArgumentException("ChatFragment arguments must contains an accountJid")
         contactJid = arguments?.getParcelable(ARGUMENT_USER)
             ?: throw IllegalArgumentException("ChatFragment arguments must contains an contactJid")
+
+        arguments?.getString(ARGUMENT_MEMBER_ID)?.let {
+            memberId = it
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -399,7 +408,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
         recordLockView = view.findViewById(R.id.record_lock_view)
         recordLockImage = view.findViewById(R.id.iv_record_lock)
-
         recordLockChevronImage = view.findViewById(R.id.iv_record_chevron_lock)
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar)
@@ -748,8 +756,29 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 inflateIncomingInviteFakeMessage(senderAvatar, senderName, invite.reason)
             }
         }
+
+        if (memberId != null) {
+            MessageArchiveManager.tryToLoadPortionOfMemberMessagesInGroup(
+                chat as GroupChat,
+                memberId!!,
+                object : MessageArchiveRequestListener {
+                    override fun onMessagesReceived(messagesList: List<MessageRealmObject>) {
+                        TODO("Not implemented yet, initMessageslistneed")
+                    }
+
+                    override fun onErrorReceived(exception: Exception?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+            )
+        } else {
+            initMessagesList(chat.messages)
+        }
+    }
+
+    private fun initMessagesList(messageRealmObjects: RealmResults<MessageRealmObject?>) {
         chatMessageAdapter = MessagesAdapter(
-            requireActivity(), chat.messages, chat,
+            requireActivity(), messageRealmObjects, chat,
             this, this, this, this, this, this
         )
         realmRecyclerView.adapter = chatMessageAdapter
@@ -2034,6 +2063,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
         private const val ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT"
         private const val ARGUMENT_USER = "ARGUMENT_USER"
+        private const val ARGUMENT_MEMBER_ID = "MEMBER_ID"
 
         private const val VOICE_MESSAGE = "VOICE_MESSAGE"
         private const val VOICE_MESSAGE_RECEIVER_IGNORE = "VOICE_MESSAGE_RECEIVER_IGNORE"
@@ -2043,12 +2073,24 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         private const val PERMISSIONS_REQUEST_EXPORT_CHAT = 22
         private const val STOP_TYPING_DELAY: Long = 2500 // in ms
 
-        fun newInstance(accountJid: AccountJid, contactJid: ContactJid) = ChatFragment().apply {
+        fun newInstance(accountJid: AccountJid, contactJid: ContactJid) =
+            ChatFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARGUMENT_ACCOUNT, accountJid)
+                    putParcelable(ARGUMENT_USER, contactJid)
+                }
+            }
+
+        fun newInstanceForGroupMemberMessages(
+            accountJid: AccountJid, contactJid: ContactJid, memberId: String
+        ) = ChatFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(ARGUMENT_ACCOUNT, accountJid)
                 putParcelable(ARGUMENT_USER, contactJid)
+                putString(ARGUMENT_MEMBER_ID, memberId)
             }
         }
+
 
     }
 

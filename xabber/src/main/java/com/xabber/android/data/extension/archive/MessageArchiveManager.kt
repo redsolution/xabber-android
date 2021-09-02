@@ -440,8 +440,11 @@ object MessageArchiveManager : OnRosterReceivedListener {
         connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
 
         accountItem.connection.sendIqWithResponseCallback(
-            MamQueryIQ.createMamRequestIqMessagesAfterInChat(
-                chat, getFirstChatMessageInRealmStanzaId(chat) ?: ""
+            MamQueryIQ.createMamRequestGroupMembersMessages(
+                group = chat,
+                memberId = memberId,
+                afterStanzaId = lastMessageStanzaId,
+                max = messagesCount
             ),
             {
                 activeRequests -= chat

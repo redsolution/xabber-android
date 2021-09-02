@@ -40,8 +40,8 @@ class MessagesAdapter(
     private val adapterListener: AdapterListener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
-) : RecyclerView.Adapter<BasicMessageVH>(), MessageClickListener,
-    MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
+) : RecyclerView.Adapter<BasicMessageVH>(),
+    MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
 
     private val realmListener: OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> =
         OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> { _, changeSet ->

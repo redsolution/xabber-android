@@ -8,10 +8,7 @@ import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.message.chat.RegularChat
 import com.xabber.xmpp.SimpleNamedElement
 import com.xabber.xmpp.mam.MamQueryIQ.Companion
-import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.IQ
-import org.jivesoftware.smack.packet.NamedElement
-import org.jivesoftware.smack.packet.StandardExtensionElement
 import org.jivesoftware.smackx.rsm.packet.RSMSet
 import org.jxmpp.jid.Jid
 import java.util.*
@@ -135,6 +132,19 @@ class MamQueryIQ private constructor(
                 rsmSet = RSMSet(null, null, -1, -1, null, max, null, -1)
             )
         }
+
+        fun createMamRequestGroupMembersMessages(
+            group: GroupChat,
+            memberId: String,
+            afterStanzaId: String? = null,
+            max: Int = 50,
+        ) = MamQueryIQ(
+            archiveAddress = group.contactJid.bareJid,
+            rsmSet = RSMSet(null, afterStanzaId, -1, -1, null, max, null, -1),
+            dataFormExtension = MamDataFormExtension(
+                with = memberId,
+            )
+        )
 
     }
 

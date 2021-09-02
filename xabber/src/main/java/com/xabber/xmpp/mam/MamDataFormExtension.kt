@@ -12,13 +12,18 @@ import java.util.*
  * Possible fields are limited by XEP-0313
  */
 class MamDataFormExtension(
-    private val with: Jid? = null,
-    private val start: Date? = null,
-    private val end: Date? = null,
-    private val afterId: String? = null,
-    private val beforeId: String? = null,
-    private val id: String? = null,
+    with: String? = null,
+    start: Date? = null,
+    end: Date? = null,
+    afterId: String? = null,
+    beforeId: String? = null,
+    id: String? = null,
 ) : DataForm(Type.submit) {
+
+    constructor(
+        with: Jid? = null,
+        start: Date? = null,
+    ) : this(with?.asBareJid().toString(), start)
 
     init {
         addField(
@@ -28,21 +33,33 @@ class MamDataFormExtension(
             }
         )
 
-        if (with != null) addField(FormField(WITH_FIELD).apply { addValue(with.asBareJid().toString()) })
-        if (start != null) addField(FormField(START_FIELD).apply { addValue(XmppDateTime.formatXEP0082Date(start)) })
-        if (end != null) addField(FormField(END_FIELD).apply { addValue(XmppDateTime.formatXEP0082Date(end)) })
-        if (afterId != null) addField(FormField(AFTER_FIELD).apply { addValue(afterId) })
-        if (beforeId != null) addField(FormField(BEFORE_FIELD).apply { addValue(beforeId) })
-        if (!id.isNullOrEmpty()) addField(FormField(IDS_FIELD).apply { addValue(id) })
+        fun addFieldsIfNeed(vararg varToValPair: Pair<String, String?>) {
+            varToValPair.forEach { varToVal ->
+                varToVal.second?.let {
+                    addField(
+                        FormField(varToVal.first).apply { addValue(it) }
+                    )
+                }
+            }
+        }
+
+        addFieldsIfNeed(
+            WITH_FIELD to with,
+            AFTER_FIELD to afterId,
+            BEFORE_FIELD to beforeId,
+            IDS_FIELD to id,
+            START_FIELD to start?.let { XmppDateTime.formatXEP0082Date(it) },
+            END_FIELD to end?.let { XmppDateTime.formatXEP0082Date(it) }
+        )
     }
 
-    companion object {
-        private const val WITH_FIELD = "with"
-        private const val START_FIELD = "start"
-        private const val END_FIELD = "end"
-        private const val BEFORE_FIELD = "before-id"
-        private const val AFTER_FIELD = "after-id"
-        private const val IDS_FIELD = "{urn:xmpp:sid:0}stanza-id"
+    private companion object {
+        const val WITH_FIELD = "with"
+        const val START_FIELD = "start"
+        const val END_FIELD = "end"
+        const val BEFORE_FIELD = "before-id"
+        const val AFTER_FIELD = "after-id"
+        const val IDS_FIELD = "{urn:xmpp:sid:0}stanza-id"
     }
 
 }

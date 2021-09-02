@@ -19,12 +19,9 @@ public class BlurTransformation extends BitmapTransformation {
     private static final String ID =
             "com.xabber.android.ui.helper.BlurTransformation.";
 
-    private static int MAX_RADIUS = 25;
-    private static int DEFAULT_DOWN_SAMPLING = 1;
-
-    private int radius;
-    private int sampling;
-    private int color;
+    private final int radius;
+    private final int sampling;
+    private final int color;
 
     public BlurTransformation(int radius, int sampling, int color) {
         this.radius = radius;
@@ -60,16 +57,6 @@ public class BlurTransformation extends BitmapTransformation {
 
         canvas.drawBitmap(toTransform, 0, 0, paint);
         canvas.drawRect(new Rect(0,0, toTransform.getWidth(), toTransform.getHeight()), veil);
-        //paint = new Paint();
-        /*ColorMatrix cm = new ColorMatrix();
-        cm.setSaturation(0);
-        ColorMatrixColorFilter cmf = new ColorMatrixColorFilter(cm);
-        paint.setColorFilter(cmf);
-        canvas.drawBitmap(toTransform, 0,0,paint);*/
-        //paint = new Paint();
-        /*paint.setColor(Color.BLUE);
-        paint.setAlpha(64);
-        canvas.drawBitmap(toTransform,0,0,paint);*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             try {

@@ -49,6 +49,7 @@ import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState
 import com.xabber.android.data.message.NotificationState.NotificationMode
 import com.xabber.android.data.message.chat.ChatManager
+import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.PresenceManager.requestSubscription
 import com.xabber.android.data.roster.RosterContact
 import com.xabber.android.data.roster.RosterManager
@@ -83,6 +84,11 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
 
     private lateinit var accountJid: AccountJid
     private lateinit var contactJid: ContactJid
+
+    /**
+     * Used to show messages of only one specified member of group
+     */
+    private var memberId: String? = null
 
     private val updateBackpressure: UpdateBackpressure = UpdateBackpressure(this)
 
@@ -169,6 +175,10 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         contactJid = EntityIntentBuilder.getContactJid(intent)
             ?: throw IllegalArgumentException("ChatActivity intent must contains an contactJid")
 
+        intent.getStringExtra(KEY_MEMBER_ID)?.let {
+            memberId = it
+        }
+
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState)
         } else {
@@ -238,6 +248,14 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 if (uris != null) {
                     intent.removeExtra(Intent.EXTRA_STREAM)
                     handleShareFileUris(uris)
+                }
+            }
+
+            ACTION_SHOW_GROUP_MEMBER_MESSAGES -> {
+                intent.getStringExtra(KEY_MEMBER_ID)?.let {
+                    memberId = it
+
+                    Toast.makeText(this, "memberId: $it", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -351,9 +369,12 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     private fun initChats() {
-        val fragment: Fragment
         val oldFragment = supportFragmentManager.findFragmentByTag(CHAT_FRAGMENT_TAG)
-        fragment = ChatFragment.newInstance(accountJid, contactJid)
+
+        val fragment: Fragment = memberId?.let {
+            ChatFragment.newInstanceForGroupMemberMessages(accountJid, contactJid, it)
+        } ?: ChatFragment.newInstance(accountJid, contactJid)
+
         if (oldFragment != null) {
             val fragmentTransactionOld = supportFragmentManager.beginTransaction()
             fragmentTransactionOld.remove(oldFragment)
@@ -370,6 +391,10 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         contactJid = savedInstanceState.getParcelable(SAVE_SELECTED_USER)
             ?: throw IllegalArgumentException("Error while state restoring, saved instance bundle must contains an contactJid")
 
+        savedInstanceState.getString(SAVE_SELECTED_MEMBER)?.let {
+            memberId = it
+        }
+
         exitOnSend = savedInstanceState.getBoolean(SAVE_EXIT_ON_SEND)
     }
 
@@ -379,6 +404,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             putParcelable(SAVE_SELECTED_ACCOUNT, accountJid)
             putParcelable(SAVE_SELECTED_USER, contactJid)
             putBoolean(SAVE_EXIT_ON_SEND, exitOnSend)
+            memberId?.let { putString(SAVE_SELECTED_MEMBER, it) }
         }
     }
 
@@ -777,12 +803,15 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     companion object {
         private const val CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG"
         private const val ACTION_ATTENTION = "com.xabber.android.data.ATTENTION"
+        private const val ACTION_SHOW_GROUP_MEMBER_MESSAGES =
+            "com.xabber.android.data.ACTION_SHOW_GROUP_MEMBER_MESSAGES"
         private const val ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT"
         private const val ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD"
         const val EXTRA_NEED_SCROLL_TO_UNREAD =
             "com.xabber.android.data.EXTRA_NEED_SCROLL_TO_UNREAD"
         private const val PERMISSIONS_REQUEST_ATTACH_FILE = 24
         private const val KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED"
+        private const val KEY_MEMBER_ID = "KEY_MEMBER_ID"
         const val KEY_MESSAGES_ID = "KEY_MESSAGES_ID"
         private const val SAVE_SELECTED_ACCOUNT =
             "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT"
@@ -790,6 +819,8 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_USER"
         private const val SAVE_EXIT_ON_SEND =
             "com.xabber.android.ui.activity.ChatActivity.SAVE_EXIT_ON_SEND"
+        private const val SAVE_SELECTED_MEMBER =
+            "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_MEMBER"
 
         fun createSpecificChatIntent(
             context: Context?,
@@ -874,6 +905,15 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             user: ContactJid?
         ) = createClearTopIntent(context, account, user).apply {
             action = ACTION_ATTENTION
+        }
+
+        fun createShowGroupMemberMessages(
+            context: Context?,
+            groupChat: GroupChat,
+            memberId: String,
+        ) = createSpecificChatIntent(context, groupChat.account, groupChat.contactJid).apply {
+            action = ACTION_SHOW_GROUP_MEMBER_MESSAGES
+            putExtra(KEY_MEMBER_ID, memberId)
         }
 
     }
