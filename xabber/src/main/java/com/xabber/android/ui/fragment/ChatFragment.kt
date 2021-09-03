@@ -981,13 +981,13 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         Application.getInstance().runOnUiThread {
             if (accountJid == accountJid && contactJid == contactJid) {
                 lastHistoryProgressBar.visibility = View.GONE
+                requestToLoadHistoryIfNeed()
             }
         }
     }
 
     override fun onGroupPresenceUpdated(
-        accountJid: AccountJid, groupJid: ContactJid,
-        presence: Presence
+        accountJid: AccountJid, groupJid: ContactJid, presence: Presence
     ) {
         Application.getInstance().runOnUiThread {
             if (this.accountJid === accountJid && this.contactJid === groupJid) {
