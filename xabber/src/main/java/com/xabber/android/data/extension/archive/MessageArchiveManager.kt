@@ -347,6 +347,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
             result = realm.where(MessageRealmObject::class.java)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
                 .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                .equalTo(MessageRealmObject.Fields.IS_REGULAR_RECEIVED, true)
                 .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
                 .beginGroup()
                 .isNotNull(MessageRealmObject.Fields.STANZA_ID)
@@ -414,7 +415,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
     fun tryToLoadPortionOfMemberMessagesInGroup(
         chat: GroupChat,
         memberId: String,
-        onLoadingEndCallback: MessageArchiveRequestListener,
         lastMessageStanzaId: String? = null,
         messagesCount: Int = 50,
     ) {
@@ -433,8 +433,8 @@ object MessageArchiveManager : OnRosterReceivedListener {
         activeRequests += chat
         val result = mutableListOf<MessageRealmObject>()
         val connection = accountItem.connection
-        val listener = SpecifiedGroupMemberMessagesMamResultsListener(
-            accountJid, MessageHandler, result
+        val listener = RegularMamResultsHandler(
+            accountJid, ChatManager.getInstance(), MessageHandler, isRegularReceivedMessage = false
         )
 
         connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
@@ -449,13 +449,11 @@ object MessageArchiveManager : OnRosterReceivedListener {
             {
                 activeRequests -= chat
                 connection.removeAsyncStanzaListener(listener)
-                onLoadingEndCallback.onMessagesReceived(result)
             },
             { exception: Exception? ->
                 LogManager.exception(this, exception)
                 activeRequests -= chat
                 connection.removeAsyncStanzaListener(listener)
-                onLoadingEndCallback.onErrorReceived(exception)
             },
             60000
         )

@@ -98,11 +98,15 @@ object MessageHandler {
                         messages.dropLastWhile { it.isIncoming }
                             .forEach { it.apply { isRead = true } }
                         realmTransaction.copyToRealmOrUpdate(messages)
-                    } else realmTransaction.copyToRealmOrUpdate(messages.map {
-                        it.apply {
-                            isRead = true
-                        }
-                    })
+                    } else {
+                        realmTransaction.copyToRealmOrUpdate(
+                            messages.map {
+                                it.apply {
+                                    isRead = true
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -113,7 +117,7 @@ object MessageHandler {
         contactJid: ContactJid,
         messageStanza: Message,
         delayInformation: DelayInformation? = null,
-        isNeedToSaveToRealm: Boolean = true,
+        isRegularMessage: Boolean = true,
     ): MessageRealmObject? {
 
         val timestamp = when {
@@ -251,7 +255,7 @@ object MessageHandler {
             }
 
         val forwardIdRealmObjects = parseForwardedMessage(
-            messageStanza, messageRealmObject.primaryKey, chat!!, isNeedToSaveToRealm
+            messageStanza, messageRealmObject.primaryKey, chat!!, isRegularMessage
         )
 
         val editedTime = messageStanza.getReplacedElement()?.timestamp
@@ -287,11 +291,10 @@ object MessageHandler {
             this.groupchatUserId = groupMember?.memberId
             attachmentRealmObjects?.let { this.attachmentRealmObjects = it }
             editedTime?.let { this.editedTimestamp = XmppDateTime.parseDate(it).time }
+            this.isRegularReceived = isRegularMessage
         }
 
-        if (isNeedToSaveToRealm) {
-            saverBuffer.onNext(messageRealmObject ?: return null)
-        } else return messageRealmObject
+        saverBuffer.onNext(messageRealmObject ?: return null)
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!isIncoming) {
@@ -364,7 +367,7 @@ object MessageHandler {
         packet: Stanza,
         parentMessageId: String,
         chat: AbstractChat,
-        isNeedToSaveToRealm: Boolean = true,
+        isRegularMessage: Boolean = true,
     ): RealmList<ForwardIdRealmObject>? {
         val forwarded =
             when {
@@ -387,7 +390,7 @@ object MessageHandler {
                                 it.delayInformation.stamp,
                                 parentMessageId,
                                 chat,
-                                isNeedToSaveToRealm
+                                isRegularMessage
                             )
                         )
                     }
@@ -400,7 +403,7 @@ object MessageHandler {
         timestamp: Date?,
         parentMessageId: String?,
         chat: AbstractChat,
-        isNeedToSaveToRealm: Boolean = true,
+        isRegularMessage: Boolean = true,
     ): String? {
 
         if (message.type == Message.Type.error) {
@@ -456,7 +459,7 @@ object MessageHandler {
             }
 
         val forwardIdRealmObjects =
-            parseForwardedMessage(message, messageRealmObject.primaryKey, chat, isNeedToSaveToRealm)
+            parseForwardedMessage(message, messageRealmObject.primaryKey, chat, isRegularMessage)
 
         messageRealmObject.apply {
             this.text = text ?: ""
@@ -479,9 +482,10 @@ object MessageHandler {
             this.attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message) ?: null
             this.groupchatUserId = groupchatUserId
             this.forwardedIds = forwardIdRealmObjects
+            this.isRegularReceived = isRegularMessage
         }
 
-        if (messageRealmObject != null && isNeedToSaveToRealm) {
+        if (messageRealmObject != null) {
             saverBuffer.onNext(messageRealmObject)
         }
 

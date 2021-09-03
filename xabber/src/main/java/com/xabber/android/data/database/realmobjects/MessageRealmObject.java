@@ -75,6 +75,7 @@ public class MessageRealmObject extends RealmObject {
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
         public static final String IS_GROUPCHAT_SYSTEM = "isGroupchatSystem";
+        public static final String IS_REGULAR_RECEIVED = "isRegularReceived";
     }
 
     /**
@@ -175,6 +176,7 @@ public class MessageRealmObject extends RealmObject {
     private String parentMessageId;
     private String groupchatUserId;
     private boolean isGroupchatSystem = false;
+    private boolean isRegularReceived = true;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
@@ -427,11 +429,8 @@ public class MessageRealmObject extends RealmObject {
         return false;
     }
 
-    public boolean isUiEqual(MessageRealmObject comparableMessageRealmObject){
-        return this.getText().equals(comparableMessageRealmObject.getText())
-                && this.isIncoming() == comparableMessageRealmObject.isIncoming()
-                && this.getTimestamp().equals(comparableMessageRealmObject.getTimestamp())
-                && this.getMessageStatus() == comparableMessageRealmObject.getMessageStatus();
-    }
+    public boolean isRegularReceived() { return isRegularReceived; }
+
+    public void setRegularReceived(boolean regularReceived) { isRegularReceived = regularReceived; }
 
 }

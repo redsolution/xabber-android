@@ -35,9 +35,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.extension.archive.MessageArchiveManager
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
-import com.xabber.android.data.extension.archive.MessageArchiveRequestListener
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
@@ -87,7 +85,6 @@ import com.xabber.android.utils.*
 import com.xabber.xmpp.chat_state.ChatStateSubtype
 import github.ankushsachdeva.emojicon.EmojiconsPopup
 import github.ankushsachdeva.emojicon.emoji.Emojicon
-import io.realm.RealmResults
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.XMPPError
 import rx.Subscription
@@ -637,12 +634,12 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         } else if (position > 0) {
             layoutManager.scrollToPosition(position)
         }
-        setFirstUnreadMessageId(chat.firstUnreadMessageId)
         updateNewReceivedMessageCounter(unread)
     }
 
     override fun onLastHistoryLoadingError(
-        accountJid: AccountJid, contactJid: ContactJid,
+        accountJid: AccountJid,
+        contactJid: ContactJid,
         errorText: String?
     ) {
         val text =
@@ -757,28 +754,15 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             }
         }
 
-        if (memberId != null) {
-            MessageArchiveManager.tryToLoadPortionOfMemberMessagesInGroup(
-                chat as GroupChat,
-                memberId!!,
-                object : MessageArchiveRequestListener {
-                    override fun onMessagesReceived(messagesList: List<MessageRealmObject>) {
-                        TODO("Not implemented yet, initMessageslistneed")
-                    }
+        memberId?.let {
 
-                    override fun onErrorReceived(exception: Exception?) {
-                        TODO("Not yet implemented")
-                    }
-                }
-            )
-        } else {
-            initMessagesList(chat.messages)
         }
-    }
-
-    private fun initMessagesList(messageRealmObjects: RealmResults<MessageRealmObject?>) {
         chatMessageAdapter = MessagesAdapter(
-            requireActivity(), messageRealmObjects, chat,
+            requireActivity(),
+            memberId?.let {
+                MessageRepository.getGroupMemberMessages(accountJid, contactJid, memberId)
+            } ?: chat.messages,
+            chat,
             this, this, this, this, this, this
         )
         realmRecyclerView.adapter = chatMessageAdapter
@@ -796,8 +780,8 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 }
             }
         }
-        val itemTouchHelper = ItemTouchHelper(replySwipeCallback)
-        itemTouchHelper.attachToRecyclerView(realmRecyclerView)
+        ItemTouchHelper(replySwipeCallback).attachToRecyclerView(realmRecyclerView)
+
         realmRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 replySwipeCallback.onDraw(c)
@@ -976,7 +960,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     private fun requestToLoadHistoryIfNeed() {
-
         val messagesCount = chatMessageAdapter.itemCount
         val topVisible = layoutManager.findFirstVisibleItemPosition()
         if (topVisible <= 15 && topVisible != -1 && messagesCount != 0

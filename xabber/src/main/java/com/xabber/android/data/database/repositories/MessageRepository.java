@@ -35,6 +35,23 @@ public class MessageRepository {
         return results;
     }
 
+    public static RealmResults<MessageRealmObject> getGroupMemberMessages(
+            AccountJid accountJid, ContactJid contactJid, String groupMemberId
+    ) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new IllegalThreadStateException("Method must be invoked from UI thread or rewrited to return copies from background thread");
+        }
+        return DatabaseManager.getInstance().getDefaultRealmInstance()
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
+                .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
+                .equalTo(MessageRealmObject.Fields.GROUPCHAT_USER_ID, groupMemberId)
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.TEXT)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
+    }
+
     public static RealmResults<MessageRealmObject> getGroupChatMessages(AccountJid accountJid, ContactJid contactJid) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         RealmResults<MessageRealmObject> results = realm

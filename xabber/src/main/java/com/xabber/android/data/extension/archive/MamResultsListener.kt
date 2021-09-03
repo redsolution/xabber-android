@@ -1,6 +1,5 @@
 package com.xabber.android.data.extension.archive
 
-import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.message.MessageHandler
@@ -16,6 +15,7 @@ class RegularMamResultsHandler(
     private val chatManager: ChatManager,
     private val messagesHandler: MessageHandler,
     private val listOfIgnoredGroups: MutableSet<GroupChat>? = null,
+    private val isRegularReceivedMessage: Boolean = true,
 ) : StanzaListener {
     override fun processStanza(packet: Stanza) {
         packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { element ->
@@ -38,38 +38,13 @@ class RegularMamResultsHandler(
                 listOfIgnoredGroups?.add(chat)
             } else if (forwardedElement != null && forwardedElement is Message) {
                 messagesHandler.handleMessageStanza(
-                    accountJid, contactJid, forwardedElement, delayInformation
+                    accountJid,
+                    contactJid,
+                    forwardedElement,
+                    delayInformation,
+                    isRegularReceivedMessage
                 )
             }
         }
     }
-}
-
-class SpecifiedGroupMemberMessagesMamResultsListener(
-    private val accountJid: AccountJid,
-    private val messagesHandler: MessageHandler,
-    private val listOfMessages: MutableList<MessageRealmObject>,
-) : StanzaListener {
-
-    override fun processStanza(packet: Stanza) {
-        packet.extensions.filterIsInstance<MamResultExtensionElement>().forEach { element ->
-            val forwardedElement = element.forwarded.forwardedStanza
-            val contactJid =
-                if (forwardedElement.from.asBareJid() == accountJid.fullJid.asBareJid()) {
-                    ContactJid.from(forwardedElement.to.asBareJid().toString())
-                } else {
-                    ContactJid.from(forwardedElement.from.asBareJid().toString())
-                }
-
-            if (forwardedElement != null && forwardedElement is Message) {
-                messagesHandler.handleMessageStanza(
-                    accountJid, contactJid,
-                    forwardedElement,
-                    delayInformation = element.forwarded.delayInformation,
-                    isNeedToSaveToRealm = false
-                )?.let { listOfMessages.add(it) }
-            }
-        }
-    }
-
 }
