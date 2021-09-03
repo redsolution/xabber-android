@@ -4,8 +4,8 @@ import android.os.Looper
 import android.widget.Toast
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.entity.AccountJid
@@ -244,33 +244,27 @@ object GroupMemberManager {
         } else {
             DatabaseManager.getInstance().defaultRealmInstance.use { realm1 ->
                 realm1.executeTransaction { realm ->
-                    val gmro = realm.where(GroupMemberRealmObject::class.java)
-                        .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, user.id)
-                        .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, account.toString())
-                        .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, groupJid.toString())
-                        .findFirst()
-                        ?: GroupMemberRealmObject.createGroupMemberRealmObject(
-                            account, groupJid, user.id
-                        ).apply {
-                            user.avatarInfo?.let {
-                                avatarHash = it.id
-                                avatarUrl = it.url.toString()
-                            }
-
-                            user.subscription?.let {
-                                subscriptionState =
-                                    GroupMemberRealmObject.SubscriptionState.valueOf(it)
-                            }
-
-                            lastSeen = user.lastPresent
-                            badge = user.badge
-                            jid = user.jid
-                            nickname = user.nickname
-                            role = GroupMemberRealmObject.Role.valueOf(user.role)
-                        }.also {
-                            realm.insertOrUpdate(it)
+                    result = GroupMemberRealmObject.createGroupMemberRealmObject(
+                        account, groupJid, user.id
+                    ).apply {
+                        user.avatarInfo?.let {
+                            avatarHash = it.id
+                            avatarUrl = it.url.toString()
                         }
-                    result = realm.copyFromRealm(gmro)
+
+                        user.subscription?.let {
+                            subscriptionState =
+                                GroupMemberRealmObject.SubscriptionState.valueOf(it)
+                        }
+
+                        lastSeen = user.lastPresent
+                        badge = user.badge
+                        jid = user.jid
+                        nickname = user.nickname
+                        role = GroupMemberRealmObject.Role.valueOf(user.role)
+                    }.also {
+                        realm.insertOrUpdate(it)
+                    }
                 }
             }
         }

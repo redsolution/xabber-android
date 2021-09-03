@@ -42,9 +42,11 @@ public class GroupMemberRealmObject extends RealmObject {
     }
     public GroupMemberRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
 
-    public static GroupMemberRealmObject createGroupMemberRealmObject(AccountJid accountJid, ContactJid groupJid,
+    public static GroupMemberRealmObject createGroupMemberRealmObject(AccountJid accountJid,
+                                                                      ContactJid groupJid,
                                                                       String memberId){
-        GroupMemberRealmObject gmro = new GroupMemberRealmObject(createPrimaryKey(accountJid, groupJid, memberId));
+        GroupMemberRealmObject gmro =
+                new GroupMemberRealmObject(createPrimaryKey(accountJid, groupJid, memberId));
 
         gmro.accountJid = accountJid.toString();
         gmro.groupJid = groupJid.toString();
