@@ -17,7 +17,7 @@ class MamDataFormExtension(
     end: Date? = null,
     afterId: String? = null,
     beforeId: String? = null,
-    id: String? = null,
+    ids: List<String>? = null,
 ) : DataForm(Type.submit) {
 
     constructor(
@@ -33,24 +33,41 @@ class MamDataFormExtension(
             }
         )
 
-        fun addFieldsIfNeed(vararg varToValPair: Pair<String, String?>) {
-            varToValPair.forEach { varToVal ->
-                varToVal.second?.let {
+        fun addFieldIfNeed(variable: String, value: String?) {
+            value?.let {
+                addField(
+                    FormField(variable).apply {
+                        addValue(it)
+                    }
+                )
+            }
+        }
+
+        fun addFieldIfNeed(variable: String, values: List<String>?) {
+            values
+                ?.takeIf { it.isNotEmpty() }
+                ?.let {
                     addField(
-                        FormField(varToVal.first).apply { addValue(it) }
+                        FormField(variable).apply {
+                            addValues(it)
+                        }
                     )
                 }
-            }
+        }
+
+        fun addFieldsIfNeed(vararg varToValPair: Pair<String, String?>) {
+            varToValPair.forEach { (variable, value) -> addFieldIfNeed(variable, value) }
         }
 
         addFieldsIfNeed(
             WITH_FIELD to with,
             AFTER_FIELD to afterId,
             BEFORE_FIELD to beforeId,
-            IDS_FIELD to id,
             START_FIELD to start?.let { XmppDateTime.formatXEP0082Date(it) },
             END_FIELD to end?.let { XmppDateTime.formatXEP0082Date(it) }
         )
+
+        addFieldIfNeed(IDS_FIELD, ids)
     }
 
     private companion object {
@@ -59,7 +76,7 @@ class MamDataFormExtension(
         const val END_FIELD = "end"
         const val BEFORE_FIELD = "before-id"
         const val AFTER_FIELD = "after-id"
-        const val IDS_FIELD = "{urn:xmpp:sid:0}stanza-id"
+        const val IDS_FIELD = "ids"
     }
 
 }

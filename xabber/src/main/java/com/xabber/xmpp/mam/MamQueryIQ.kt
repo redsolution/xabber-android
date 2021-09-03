@@ -88,7 +88,7 @@ class MamQueryIQ private constructor(
             stanzaId: String,
         ) = MamQueryIQ(
             archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
-            dataFormExtension = MamDataFormExtension(id = stanzaId),
+            dataFormExtension = MamDataFormExtension(ids = listOf(stanzaId)),
         )
 
         fun createMamRequestIqMessagesAfterInChat(
