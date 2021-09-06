@@ -5,11 +5,14 @@ import com.xabber.xmpp.retract.incoming.elements.IncomingRetractAllExtensionElem
 import org.jivesoftware.smack.provider.ExtensionElementProvider
 import org.xmlpull.v1.XmlPullParser
 
-class IncomingRetractAllExtensionElementProvider : ExtensionElementProvider<IncomingRetractAllExtensionElement>() {
+class IncomingRetractAllExtensionElementProvider :
+    ExtensionElementProvider<IncomingRetractAllExtensionElement>() {
 
-    override fun parse(parser: XmlPullParser, initialDepth: Int): IncomingRetractAllExtensionElement {
+    override fun parse(
+        parser: XmlPullParser, initialDepth: Int
+    ): IncomingRetractAllExtensionElement {
 
-        lateinit var contactJid: ContactJid
+        var contactJid: ContactJid? = null
         var version: String? = null
 
         outerloop@ while (true) {
@@ -18,9 +21,13 @@ class IncomingRetractAllExtensionElementProvider : ExtensionElementProvider<Inco
 
                 XmlPullParser.START_TAG -> {
                     if (name == IncomingRetractAllExtensionElement.ELEMENT_NAME) {
-                        parser.getAttributeValue("", IncomingRetractAllExtensionElement.CONVERSATION_ATTRIBUTE)
+                        parser.getAttributeValue(
+                            "", IncomingRetractAllExtensionElement.CONVERSATION_ATTRIBUTE
+                        )
                             ?.let { contactJid = ContactJid.from(it) }
-                        version = parser.getAttributeValue("", IncomingRetractAllExtensionElement.VERSION_ATTRIBUTE)
+                        version = parser.getAttributeValue(
+                            "", IncomingRetractAllExtensionElement.VERSION_ATTRIBUTE
+                        )
                     }
                     parser.next()
                 }
@@ -35,7 +42,7 @@ class IncomingRetractAllExtensionElementProvider : ExtensionElementProvider<Inco
             }
         }
 
-        return IncomingRetractAllExtensionElement(contactJid, version)
+        return IncomingRetractAllExtensionElement(contactJid!!, version)
     }
 
 }

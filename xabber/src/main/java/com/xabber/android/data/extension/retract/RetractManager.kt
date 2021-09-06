@@ -33,10 +33,7 @@ import com.xabber.xmpp.retract.incoming.elements.IncomingRetractExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractUserExtensionElement.Companion.getIncomingRetractUserExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.IncomingRetractUserExtensionElement.Companion.hasIncomingRetractUserExtensionElement
 import com.xabber.xmpp.retract.incoming.elements.RetractsResultIq
-import com.xabber.xmpp.retract.outgoing.ReplaceMessageIq
-import com.xabber.xmpp.retract.outgoing.RequestRetractsIq
-import com.xabber.xmpp.retract.outgoing.RetractAllIq
-import com.xabber.xmpp.retract.outgoing.RetractMessageIq
+import com.xabber.xmpp.retract.outgoing.*
 import com.xabber.xmpp.sid.OriginIdElement
 import com.xabber.xmpp.sid.StanzaIdElement
 import com.xabber.xmpp.smack.XMPPTCPConnection
@@ -117,6 +114,22 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         return isSupported(
             AccountManager.getInstance().getAccount(accountJid)?.connection ?: return false
         )
+    }
+
+    fun sendRetractUserRequest(
+        accountJid: AccountJid,
+        archiveJid: ContactJid,
+        memberId: String,
+        baseIqResultUiListener: BaseIqResultUiListener? = null
+    ) {
+        Application.getInstance().runInBackgroundNetworkUserRequest {
+            AccountManager.getInstance().getAccount(accountJid)?.connection
+                ?.sendIqWithResponseCallback(
+                    RetractUserIq(archiveJid, memberId),
+                    baseIqResultUiListener,
+                    baseIqResultUiListener
+                )
+        }
     }
 
     fun sendRetractMessagesRequest(
