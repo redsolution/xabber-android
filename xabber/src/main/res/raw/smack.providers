@@ -246,6 +246,13 @@
         <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractAllExtensionElementProvider</className>
     </extensionProvider>
 
+    <!--            Retract user element            -->
+    <extensionProvider>
+        <elementName>retract-user</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractUserExtensionElementProvider</className>
+    </extensionProvider>
+
     <!--            Replace message element            -->
     <extensionProvider>
         <elementName>replace</elementName>
