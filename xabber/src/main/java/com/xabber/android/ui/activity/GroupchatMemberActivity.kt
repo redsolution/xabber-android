@@ -32,8 +32,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.soundcloud.android.crop.Crop
 import com.theartofdev.edmodo.cropper.CropImage
 import com.xabber.android.R
-import com.xabber.android.data.Application
-import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.*
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
@@ -95,18 +94,12 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
         private const val GROUPCHAT_MEMBER_ID =
             "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_MEMBER_ID"
 
-        private const val GROUPCHAT_JID =
-            "com.xabber.android.ui.activity.GroupchatMemberActivity.GROUPCHAT_JID"
-
-        private const val ACCOUNT_JID =
-            "com.xabber.android.ui.activity.GroupchatMemberActivity.ACCOUNT_JID"
-
         fun createIntentForGroupchatAndMemberId(
             context: Context, groupchatMemberId: String, groupchat: GroupChat
-        ) = Intent(context, GroupchatMemberActivity::class.java).apply {
+        ) = createContactIntent(
+            context, GroupchatMemberActivity::class.java, groupchat.account, groupchat.contactJid
+        ).apply {
             putExtra(GROUPCHAT_MEMBER_ID, groupchatMemberId)
-            putExtra(GROUPCHAT_JID, groupchat.contactJid.toString())
-            putExtra(ACCOUNT_JID, groupchat.account.toString())
         }
 
     }
@@ -156,8 +149,8 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.getStringExtra(ACCOUNT_JID)?.let { accountJid = AccountJid.from(it) }
-        intent.getStringExtra(GROUPCHAT_JID)?.let { groupchatJid = ContactJid.from(it) }
+        intent.getAccountJid()?.let { accountJid = it }
+        intent.getContactJid()?.let { groupchatJid = it }
         groupchat = ChatManager.getInstance().getChat(accountJid, groupchatJid) as GroupChat
         intent.getStringExtra(GROUPCHAT_MEMBER_ID)?.let {
             groupMember =

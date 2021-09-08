@@ -168,8 +168,12 @@ public class ContactViewerActivity extends ContactActivity
                 return true;
 
             case R.id.action_group_settings:
-                startActivity(GroupchatUpdateSettingsActivity.Companion
-                        .createOpenGroupchatSettingsIntentForGroupchat(getAccount(), getUser()));
+                startActivity(
+                        GroupchatUpdateSettingsActivity.Companion
+                                .createOpenGroupchatSettingsIntentForGroupchat(
+                                this, getAccount(), getUser()
+                                )
+                );
                 return true;
 
             case R.id.action_group_default_restrictions:

@@ -58,7 +58,7 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
             inflateMenu(R.menu.toolbar_add_contact)
 
             setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentById(R.id.fragment_container) as ContactAdder?)!!.addContact()
+                (supportFragmentManager.findFragmentById(R.id.fragment_container) as ContactAdder?)?.addContact()
                 return@setOnMenuItemClickListener true
             }
         }
@@ -100,9 +100,8 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
 
     fun toolbarSetEnabled(active: Boolean) {
         toolbar.menu.findItem(R.id.action_add_contact).isEnabled = active
-        val view = findViewById<View>(R.id.action_add_contact)
-        if (view is TextView) {
-            view.setTextColor(view.textColors.withAlpha(if (active) 255 else 127))
+        (findViewById<View>(R.id.action_add_contact) as? TextView)?.apply {
+            setTextColor(this.textColors.withAlpha(if (active) 255 else 127))
         }
     }
 

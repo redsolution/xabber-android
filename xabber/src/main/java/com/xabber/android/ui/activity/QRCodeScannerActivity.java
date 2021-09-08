@@ -29,67 +29,41 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
 
     private CaptureManager capture;
     private DecoratedBarcodeView qrScannerView;
-    private String accountName;
-    private String accountAddress;
     private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         setContentView(R.layout.activity_custom_qr_code_scanner);
 
-        qrScannerView = (DecoratedBarcodeView)findViewById(R.id.custom_qr_scanner);
+        qrScannerView = findViewById(R.id.custom_qr_scanner);
         qrScannerView.setTorchListener(this);
 
-        toolbar = (Toolbar) findViewById(R.id.scanner_toolbar);
+        toolbar = findViewById(R.id.scanner_toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
         toolbar.setTitle("Scan QR Code");
         toolbar.setTitleTextColor(Color.WHITE);
-        //toolbar.setBackgroundColor(Color.GRAY);
         toolbar.inflateMenu(R.menu.toolbar_qrscanner);
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setOnMenuItemClickListener(this);
-        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_left_white_24dp);
 
 
         Button testButton = findViewById(R.id.button2);
         TextView msg = findViewById(R.id.addMessage);
-        /*testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(QRCodeScannerActivity.this, QRCodeActivity.class);
-                intent.putExtra("account_name", accountName);
-                intent.putExtra("account_address", accountAddress);
-                startActivity(intent);
-            }
-        });
-
-        Intent intent = getIntent();
-        if(intent.hasExtra("account_name")&&intent.hasExtra("account_address")) {
-            testButton.setVisibility(View.VISIBLE);
-            Bundle bundle = intent.getExtras();
-            accountName = bundle.get("account_name").toString();
-            accountAddress = bundle.get("account_address").toString();
-        }else {
-            testButton.setVisibility(View.GONE);
-        }*/
         testButton.setVisibility(View.GONE);
         Intent intent = getIntent();
         if(intent.hasExtra("caller")){
             Bundle bundle = intent.getExtras();
-            if(bundle.get("caller").toString().equals("AccountAddFragment"))
+            if(bundle.get("caller").toString().equals("AccountAddFragment")) {
                 msg.setText("Place the Account QR code in the center of the highlighted area.");
-            else
+            } else {
                 msg.setText("Place the Contact QR code in the center of the highlighted area.");
+            }
         }
 
         if(Camera.getNumberOfCameras() == 1){
@@ -133,7 +107,11 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String permissions[],
+            @NonNull int[] grantResults
+    ) {
         capture.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -143,8 +121,9 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
     }
 
     private boolean hasFlash() {
-        return getApplicationContext().getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+        return getApplicationContext().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA_FLASH
+        );
     }
 
     public void switchFlashlight(MenuItem item) {
@@ -160,22 +139,16 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
     }
 
     @Override
-    public void onTorchOn() {
-
-    }
+    public void onTorchOn() { }
 
     @Override
-    public void onTorchOff() {
-    }
-
+    public void onTorchOff() { }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
         inflater.inflate(R.menu.toolbar_qrscanner, menu);
         toolbar.getMenu().findItem(R.id.switch_flashlight).setCheckable(true);
-        if(!hasFlash()) return true;
-            //toolbar.getMenu().findItem(R.id.switch_flashlight).setVisible(false);
         return true;
     }
 

@@ -8,9 +8,9 @@ import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.createContactIntent
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.createContactIntent
 import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.getContactJid
 import com.xabber.android.data.message.chat.ChatManager
@@ -32,9 +32,11 @@ class GroupDefaultRestrictionsActivity : ManagedActivity() {
         toolbar = findViewById(R.id.toolbar_default)
 
         toolbar = findViewById(R.id.toolbar_default)
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+        }
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.title = getString(R.string.groupchat_default_restrictions)
 
@@ -56,24 +58,30 @@ class GroupDefaultRestrictionsActivity : ManagedActivity() {
     }
 
     fun showToolbarMenu(isVisible: Boolean) {
-        toolbar.menu?.clear()
-        if (isVisible) {
-            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp)
+        toolbar.apply {
+            menu?.clear()
+            if (isVisible) {
+                setNavigationIcon(R.drawable.ic_clear_grey_24dp)
 
-            toolbar.inflateMenu(R.menu.update_groupchat_member)
-            toolbar.setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentByTag(GroupDefaultRestrictionsFragment.TAG)
-                        as GroupDefaultRestrictionsFragment).sendSaveRequest()
-                true
+                inflateMenu(R.menu.update_groupchat_member)
+                setOnMenuItemClickListener {
+                    (supportFragmentManager.findFragmentByTag(GroupDefaultRestrictionsFragment.TAG)
+                            as GroupDefaultRestrictionsFragment).sendSaveRequest()
+                    true
+                }
+            } else {
+                setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
+                setNavigationOnClickListener { finish() }
             }
-        } else {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
-            toolbar.setNavigationOnClickListener { finish() }
         }
     }
 
-    fun showProgressBar(isVisible: Boolean) = if (isVisible) progressbar.visibility = View.VISIBLE
-    else progressbar.visibility = View.GONE
+    fun showProgressBar(isVisible: Boolean) =
+        if (isVisible) {
+            progressbar.visibility = View.VISIBLE
+        } else {
+            progressbar.visibility = View.GONE
+        }
 
     companion object {
         fun createIntent(context: Context, account: AccountJid, groupchatJid: ContactJid): Intent =

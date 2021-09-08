@@ -27,7 +27,9 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
 
         setContentView(R.layout.activity_with_toolbar_progress_and_container)
 
-        isIncognito = intent != null && intent.action != null && intent.action == CREATE_INCOGNITO_GROUPCHAT_INTENT
+        isIncognito = intent != null
+                && intent.action != null
+                && intent.action == CREATE_INCOGNITO_GROUPCHAT_INTENT
 
         progressBar = findViewById(R.id.toolbarProgress)
 
@@ -42,10 +44,18 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
 
             setNavigationOnClickListener { finish() }
 
-            inflateMenu(if (isIncognito) R.menu.toolbar_create_incognito_groupchat else R.menu.toolbar_create_groupchat)
+            inflateMenu(
+                if (isIncognito) {
+                    R.menu.toolbar_create_incognito_groupchat
+                } else {
+                    R.menu.toolbar_create_groupchat
+                }
+            )
 
             setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as CreateGroupFragment).createGroupchat()
+                (supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as CreateGroupFragment)
+                    .createGroupchat()
+
                 return@setOnMenuItemClickListener true
             }
         }
@@ -68,7 +78,11 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_container, CreateGroupFragment.newInstance(isIncognito), FRAGMENT_TAG)
+                .add(
+                    R.id.fragment_container,
+                    CreateGroupFragment.newInstance(isIncognito),
+                    FRAGMENT_TAG
+                )
                 .commit()
         }
     }
@@ -89,24 +103,35 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
         val view = findViewById<View>(R.id.action_create_groupchat)
             ?: findViewById(R.id.action_create_incognito_groupchat)
 
-        if (view is TextView) view.setTextColor(view.textColors.withAlpha(if (enabled) 255 else 127))
+        if (view is TextView) {
+            view.setTextColor(
+                view.textColors.withAlpha(if (enabled) 255 else 127)
+            )
+        }
     }
 
     companion object {
 
-        private const val FRAGMENT_TAG = "com.xabber.android.ui.fragment.groups.CreateGroupchatFragment"
+        private const val FRAGMENT_TAG =
+            "com.xabber.android.ui.fragment.groups.CreateGroupchatFragment"
         private const val CREATE_INCOGNITO_GROUPCHAT_INTENT =
             "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_INCOGNITO_GROUPCHAT_INTENT"
         private const val CREATE_PUBLIC_GROUPCHAT_INTENT =
             "com.xabber.android.ui.activity.CreateGroupchatActivity.CREATE_PUBLIC_GROUPCHAT_INTENT"
 
         fun createCreateIncognitoGroupchatIntent() =
-            Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
+            Intent(
+                Application.getInstance().applicationContext,
+                CreateGroupActivity::class.java
+            ).apply {
                 action = CREATE_INCOGNITO_GROUPCHAT_INTENT
             }
 
         fun createCreatePublicGroupchatIntent() =
-            Intent(Application.getInstance().applicationContext, CreateGroupActivity::class.java).apply {
+            Intent(
+                Application.getInstance().applicationContext,
+                CreateGroupActivity::class.java
+            ).apply {
                 action = CREATE_PUBLIC_GROUPCHAT_INTENT
             }
 

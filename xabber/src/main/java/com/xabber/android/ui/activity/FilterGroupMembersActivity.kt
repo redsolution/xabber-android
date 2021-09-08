@@ -1,7 +1,6 @@
 package com.xabber.android.ui.activity
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,13 +12,11 @@ import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.Application
-import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.*
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupchatRequestListener
@@ -46,14 +43,9 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
         super.onCreate(savedInstanceState)
         setContentView(R.layout.filter_group_members_activity)
 
-        try {
-            val accountJid = AccountJid.from(intent.getStringExtra(ACCOUNT_TAG)!!)
-            val contactJid = ContactJid.from(intent.getStringExtra(CONTACT_TAG))
-            groupchat = ChatManager.getInstance().getChat(accountJid, contactJid) as GroupChat
-        } catch (e: Exception) {
-            LogManager.exception(this.javaClass, e)
-            finish()
-        }
+        groupchat = ChatManager.getInstance().getChat(
+            intent.getAccountJid(), intent.getContactJid()
+        ) as GroupChat
 
         setupToolbar()
         setupRecyclerView()
@@ -113,9 +105,12 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
             val newList = ArrayList<GroupMemberRealmObject>()
             for (groupchatMember in GroupMemberManager.getCurrentGroupMembers(groupchat))
                 if (groupchatMember?.nickname?.toLowerCase()?.contains(filterString) == true
-                    || groupchatMember?.nickname?.toLowerCase()?.contains(unidecode(filterString)) == true
-                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()?.contains(filterString) == true)
-                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()?.contains(unidecode(filterString)) == true)
+                    || groupchatMember?.nickname?.toLowerCase()
+                        ?.contains(unidecode(filterString)) == true
+                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()
+                        ?.contains(filterString) == true)
+                    || (groupchatMember?.jid != null && groupchatMember.jid?.toLowerCase()
+                        ?.contains(unidecode(filterString)) == true)
                 ) {
                     newList.add(groupchatMember)
                 }
@@ -147,8 +142,14 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     }
 
 
-    override fun onGroupchatMemberUpdated(accountJid: AccountJid, groupchatJid: ContactJid, groupchatMemberId: String) {
-        if (isThisChat(accountJid, groupchatJid)) Application.getInstance().runOnUiThread(::updateRecyclerView)
+    override fun onGroupchatMemberUpdated(
+        accountJid: AccountJid,
+        groupchatJid: ContactJid,
+        groupchatMemberId: String
+    ) {
+        if (isThisChat(accountJid, groupchatJid)) {
+            Application.getInstance().runOnUiThread(::updateRecyclerView)
+        }
     }
 
     override fun onGroupchatMembersReceived(account: AccountJid, groupchatJid: ContactJid) {
@@ -156,7 +157,9 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     }
 
     override fun onMeReceived(accountJid: AccountJid, groupchatJid: ContactJid) {
-        if (isThisChat(accountJid, groupchatJid)) Application.getInstance().runOnUiThread(::updateRecyclerView)
+        if (isThisChat(accountJid, groupchatJid)) {
+            Application.getInstance().runOnUiThread(::updateRecyclerView)
+        }
     }
 
     override fun onMemberClick(groupMember: GroupMemberRealmObject) = startActivity(
@@ -166,19 +169,11 @@ class FilterGroupMembersActivity : ManagedActivity(), OnGroupchatRequestListener
     private fun isThisChat(account: AccountJid, contactJid: ContactJid) =
         groupchat.account == account && groupchat.contactJid == contactJid
 
-    private fun isThisChat(groupchat: GroupChat) = this.groupchat == groupchat
-
     companion object {
-        private const val ACCOUNT_TAG = "com.xabber.android.ui.activity.FilterGroupMembersActivity.ACCOUNT_TAG"
-        private const val CONTACT_TAG = "com.xabber.android.ui.activity.FilterGroupMembersActivity.CONTACT_TAG"
-
-        fun createIntent(context: Context, account: AccountJid, contactJid: ContactJid): Intent {
-            return Intent(context, FilterGroupMembersActivity::class.java).apply {
-
-                putExtra(ACCOUNT_TAG, account.fullJid.toString())
-                putExtra(CONTACT_TAG, contactJid.bareJid.toString())
-            }
-        }
+        fun createIntent(context: Context, account: AccountJid, contactJid: ContactJid) =
+            createContactIntent(
+                context, FilterGroupMembersActivity::class.java, account, contactJid
+            )
     }
 
 }
