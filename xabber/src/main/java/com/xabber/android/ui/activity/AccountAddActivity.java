@@ -27,9 +27,9 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountAddFragment;
 
@@ -42,7 +42,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     }
 
     public static Intent createAuthenticatorResult(AccountJid account) {
-        return new AccountIntentBuilder(null, null).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(null, null, account);
     }
 
     @Override

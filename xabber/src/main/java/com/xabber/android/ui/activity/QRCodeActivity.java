@@ -14,10 +14,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.xabber.android.R;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.QRCodeFragment;
 
@@ -29,7 +28,7 @@ public class QRCodeActivity extends ManagedActivity {
     private Toolbar toolbar;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new EntityIntentBuilder(context, QRCodeActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, QRCodeActivity.class, account);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class QRCodeActivity extends ManagedActivity {
 
         Intent intent = getIntent();
 
-        AccountJid account = getAccount(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
@@ -128,10 +127,6 @@ public class QRCodeActivity extends ManagedActivity {
                 findViewById(R.id.fragment_container).setBackgroundColor(Color.BLACK);
             }
         }
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
     }
 
 }

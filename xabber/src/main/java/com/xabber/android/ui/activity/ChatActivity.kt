@@ -42,8 +42,7 @@ import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.retract.RetractManager
-import com.xabber.android.data.intent.BaseAccountIntentBuilder
-import com.xabber.android.data.intent.EntityIntentBuilder
+import com.xabber.android.data.intent.*
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState
@@ -170,9 +169,9 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        accountJid = BaseAccountIntentBuilder.getAccount(intent)
+        accountJid = intent.getAccountJid()
             ?: throw IllegalArgumentException("ChatActivity intent must contains an accountJid")
-        contactJid = EntityIntentBuilder.getContactJid(intent)
+        contactJid = intent.getContactJid()
             ?: throw IllegalArgumentException("ChatActivity intent must contains an contactJid")
 
         intent.getStringExtra(KEY_MEMBER_ID)?.let {
@@ -191,8 +190,8 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         LogManager.i(ChatActivity::class.java.simpleName, "onNewIntent")
         setIntent(intent)
 
-        BaseAccountIntentBuilder.getAccount(intent)?.let { accountJid = it }
-        EntityIntentBuilder.getContactJid(intent)?.let { contactJid = it }
+        intent.getAccountJid()?.let { accountJid = it }
+        intent.getContactJid()?.let { contactJid = it }
 
         initChats()
     }
@@ -822,41 +821,25 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         private const val SAVE_SELECTED_MEMBER =
             "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_MEMBER"
 
-        fun createSpecificChatIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?
-        ): Intent = EntityIntentBuilder(context, ChatActivity::class.java)
-            .setAccount(account)
-            .setUser(user)
-            .build()
-            .apply {
+        fun createSpecificChatIntent(context: Context, account: AccountJid, user: ContactJid) =
+            createContactIntent(context, ChatActivity::class.java, account, user).apply {
                 action = ACTION_SPECIFIC_CHAT
                 ChatManager.getInstance().getChat(account, user).let { chat ->
                     putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived)
                 }
             }
 
-        fun createClearTopIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?
-        ) = createSpecificChatIntent(context, account, user).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
+        fun createClearTopIntent(context: Context, account: AccountJid, user: ContactJid) =
+            createSpecificChatIntent(context, account, user).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
 
         fun createForwardIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?,
-            messagesIds: ArrayList<String>
-        ): Intent = EntityIntentBuilder(context, ChatActivity::class.java)
-            .setAccount(account)
-            .setUser(user).build()
-            .apply {
-                action = ACTION_FORWARD
-                putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds)
-            }
+            context: Context, account: AccountJid, user: ContactJid, messagesIds: ArrayList<String>
+        ) = createSpecificChatIntent(context, account, user).apply {
+            action = ACTION_FORWARD
+            putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds)
+        }
 
         /**
          * Create intent to send message.
@@ -867,10 +850,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
          * of messages. Else only one message can be send.
          */
         fun createSendIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?,
-            text: String?
+            context: Context, account: AccountJid, user: ContactJid, text: String?
         ) = createSpecificChatIntent(context, account, user).apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, text)
@@ -880,37 +860,26 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
 
         fun createSendUriIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?,
-            uri: Uri?
+            context: Context, account: AccountJid, user: ContactJid, uri: Uri
         ) = createSpecificChatIntent(context, account, user).apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, uri)
         }
 
         fun createSendUrisIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?,
-            uris: ArrayList<Uri?>?
+            context: Context, account: AccountJid, user: ContactJid, uris: ArrayList<Uri?>
         ) = createSpecificChatIntent(context, account, user).apply {
             action = Intent.ACTION_SEND_MULTIPLE
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
         }
 
-        fun createAttentionRequestIntent(
-            context: Context?,
-            account: AccountJid?,
-            user: ContactJid?
-        ) = createClearTopIntent(context, account, user).apply {
-            action = ACTION_ATTENTION
-        }
+        fun createAttentionRequestIntent(context: Context, account: AccountJid, user: ContactJid) =
+            createClearTopIntent(context, account, user).apply {
+                action = ACTION_ATTENTION
+            }
 
         fun createShowGroupMemberMessages(
-            context: Context?,
-            groupChat: GroupChat,
-            memberId: String,
+            context: Context, groupChat: GroupChat, memberId: String
         ) = createSpecificChatIntent(context, groupChat.account, groupChat.contactJid).apply {
             action = ACTION_SHOW_GROUP_MEMBER_MESSAGES
             putExtra(KEY_MEMBER_ID, memberId)

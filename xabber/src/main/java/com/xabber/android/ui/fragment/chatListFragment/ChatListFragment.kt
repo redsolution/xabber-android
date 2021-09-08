@@ -630,7 +630,11 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
                 showPlaceholder(
                     getString(R.string.application_state_no_contacts),
                     getString(R.string.application_action_no_contacts)
-                ) { startActivity(ContactAddActivity.createIntent(context)) }
+                ) {
+                    context?.let {
+                        startActivity(ContactAddActivity.createIntent(it))
+                    }
+                }
             }
 
             isChatsListEmpty ->

@@ -263,16 +263,12 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState, type));
-        //try {
         StanzaSender.sendStanzaAsync(account, message);
         if (chatState == ChatState.composing) {
             setComposingSender(chat, chatState, type);
         } else {
             cancelComposingSender();
         }
-        //} catch (NetworkException e) {
-        //    sent.remove(chat.getAccount().toString(), chat.getUser().toString());
-        //}
     }
 
     private void setComposingSender(final AbstractChat chat, final ChatState chatState, final ChatStateSubtype type) {
@@ -283,11 +279,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                 message.setType(chat.getType());
                 message.setTo(chat.getTo());
                 message.addExtension(new ChatStateExtension(chatState, type));
-                //try {
                 StanzaSender.sendStanzaAsync(chat.getAccount(), message);
-                //} catch (NetworkException e) {
-                //    // Just ignore it.
-                //}
                 stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
             }
         };
@@ -338,7 +330,9 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         onComposing(account, user, text, null);
     }
 
-    public void onComposing(AccountJid account, ContactJid user, CharSequence text, ChatStateSubtype type) {
+    public void onComposing(
+            AccountJid account, ContactJid user, CharSequence text, ChatStateSubtype type
+    ) {
         cancelPauseIntent(account, user);
         if (text != null && text.length() == 0 && type == null) {
             updateChatState(account, user, ChatState.active);
@@ -361,7 +355,9 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
     }
 
     public void onPaused(AccountJid account, ContactJid user) {
-        if (account == null || user == null) return;
+        if (account == null || user == null) {
+            return;
+        }
         if (checkIfLastChatStateIs(ChatState.composing, account, user)) {
             updateChatState(account, user, ChatState.paused);
             pauseIntents.remove(account.toString(), user.toString());

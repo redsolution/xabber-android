@@ -37,13 +37,13 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -62,16 +62,8 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
     private StatusEditorAdapter adapter;
     private View savedStatusesTextView;
 
-    public static Intent createIntent(Context context) {
-        return StatusEditActivity.createIntent(context, null);
-    }
-
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, StatusEditActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(context, StatusEditActivity.class, account);
     }
 
     @Override
@@ -98,8 +90,8 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(Color.WHITE);
-        Intent intent = getIntent();
-        account = StatusEditActivity.getAccount(intent);
+
+        account = IntentHelpersKt.getAccountJid(getIntent());
 
         BarPainter barPainter = new BarPainter(this, toolbar);
 

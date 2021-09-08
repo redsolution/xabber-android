@@ -14,10 +14,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountInfoEditFragment;
 
@@ -32,17 +32,15 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     private Toolbar toolbar;
 
     public static Intent createIntent(Context context, AccountJid account, String vCard) {
-        Intent intent = new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
+        Intent intent = createIntent(context, account);
         intent.putExtra(ARG_VCARD, vCard);
         return intent;
     }
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(
+                context, AccountInfoEditActivity.class, account
+        );
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +48,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Intent intent = getIntent();
-        AccountJid account = getAccount(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
 
         if (AccountManager.getInstance().getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);

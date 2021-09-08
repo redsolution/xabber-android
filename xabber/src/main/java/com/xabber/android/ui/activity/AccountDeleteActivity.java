@@ -13,11 +13,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
@@ -33,14 +33,9 @@ public class AccountDeleteActivity extends ManagedActivity implements
     private static final String LOG_TAG = AccountDeleteActivity.class.getSimpleName();
     private AccountJid account;
 
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountDeleteActivity.class)
-                .setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, AccountDeleteActivity.class, account);
     }
 
     @Override
@@ -48,7 +43,7 @@ public class AccountDeleteActivity extends ManagedActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        account = getAccount(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
         AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);

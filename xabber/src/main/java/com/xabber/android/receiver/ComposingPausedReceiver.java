@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -18,10 +18,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 
 /**
  * Receiver for scheduled pause of composing.
@@ -32,20 +32,16 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ChatStateManager.getInstance().onPaused(getAccount(intent), getUser(intent));
+        ChatStateManager.getInstance().onPaused(
+                IntentHelpersKt.getAccountJid(intent),
+                IntentHelpersKt.getContactJid(intent)
+        );
     }
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ComposingPausedReceiver.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getContactJid(intent);
+        return IntentHelpersKt.createContactIntent(
+                context, ComposingPausedReceiver.class, account, user
+        );
     }
 
 }

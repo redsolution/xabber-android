@@ -10,14 +10,15 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.intent.AccountIntentBuilder
-import com.xabber.android.data.intent.EntityIntentBuilder
+import com.xabber.android.data.createContactIntent
+import com.xabber.android.data.getAccountJid
+import com.xabber.android.data.getContactJid
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.GroupDefaultRestrictionsFragment
 
-class GroupDefaultRestrictionsActivity: ManagedActivity() {
+class GroupDefaultRestrictionsActivity : ManagedActivity() {
 
     lateinit var progressbar: ProgressBar
     lateinit var toolbar: Toolbar
@@ -40,14 +41,16 @@ class GroupDefaultRestrictionsActivity: ManagedActivity() {
         BarPainter(this, toolbar).setDefaultColor()
 
         if (intent != null) {
-            val group = ChatManager.getInstance()
-                    .getChat(getAccount(intent), getGroupchatContact(intent))
+            val group = ChatManager.getInstance().getChat(
+                intent.getAccountJid(), intent.getContactJid()
+            )
             if (group != null && group is GroupChat)
                 supportFragmentManager.beginTransaction()
-                        .add(R.id.fragment_container,
-                                GroupDefaultRestrictionsFragment(group),
-                                GroupDefaultRestrictionsFragment.TAG)
-                        .commit()
+                    .add(
+                        R.id.fragment_container,
+                        GroupDefaultRestrictionsFragment(group),
+                        GroupDefaultRestrictionsFragment.TAG
+                    ).commit()
         } else finish()
 
     }
@@ -74,15 +77,9 @@ class GroupDefaultRestrictionsActivity: ManagedActivity() {
 
     companion object {
         fun createIntent(context: Context, account: AccountJid, groupchatJid: ContactJid): Intent =
-                EntityIntentBuilder(context, GroupDefaultRestrictionsActivity::class.java)
-                        .setAccount(account)
-                        .setUser(groupchatJid)
-                        .build()
-
-        private fun getAccount(intent: Intent) = AccountIntentBuilder.getAccount(intent)
-
-        private fun getGroupchatContact(intent: Intent) = EntityIntentBuilder.getContactJid(intent)
-
+            createContactIntent(
+                context, GroupDefaultRestrictionsActivity::class.java, account, groupchatJid
+            )
     }
 
 }

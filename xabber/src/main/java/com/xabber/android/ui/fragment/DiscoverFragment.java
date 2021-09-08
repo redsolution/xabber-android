@@ -102,9 +102,6 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ivAvatar:
-                startActivity(StatusEditActivity.createIntent(getActivity()));
-                break;
             case R.id.discover_toolbar_tune_image_view:
                 Toast.makeText(getContext(), "Under construction", Toast.LENGTH_SHORT).show();
                 break;

@@ -9,11 +9,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
 
 import com.xabber.android.R;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
@@ -29,15 +29,17 @@ public class CustomNotifySettings extends ManagedActivity {
     private Long phraseID;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, CustomNotifySettings.class, account);
     }
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).setUser(user).build();
+        return IntentHelpersKt.createContactIntent(
+                context, CustomNotifySettings.class, account, user
+        );
     }
 
     public static Intent createIntent(Context context, AccountJid account, String group) {
-        Intent intent = new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
+        Intent intent = createIntent(context, account);
         intent.putExtra(GROUP_KEY, group);
         return intent;
     }
@@ -53,8 +55,8 @@ public class CustomNotifySettings extends ManagedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        account = EntityIntentBuilder.getAccount(getIntent());
-        user = EntityIntentBuilder.getContactJid(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        user = IntentHelpersKt.getContactJid(getIntent());
         group = getIntent().getStringExtra(GROUP_KEY);
         phraseID = getIntent().getLongExtra(PHRASE_ID_KEY, -1);
 

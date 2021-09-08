@@ -25,12 +25,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.OnContactChangedListener;
@@ -52,18 +52,11 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
     private BarPainter barPainter;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        Intent intent = new EntityIntentBuilder(context, ContactEditActivity.class)
-                .setAccount(account).setUser(user).build();
+        Intent intent = IntentHelpersKt.createContactIntent(
+                context, ContactEditActivity.class, account, user
+        );
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getContactJid(intent);
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +84,8 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
 
         barPainter = new BarPainter(this, toolbar);
 
-        Intent intent = getIntent();
-        account = ContactEditActivity.getAccount(intent);
-        user = ContactEditActivity.getUser(intent);
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        user = IntentHelpersKt.getContactJid(getIntent());
 
         update();
 

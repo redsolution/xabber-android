@@ -64,7 +64,7 @@ public class ContactSubscriptionDialog extends BaseContactDialog {
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
-        startActivity(ContactAddActivity.createIntent(getActivity(), getAccount(), getContact()));
+        startActivity(ContactAddActivity.Companion.createIntent(getActivity(), getAccount(), getContact()));
     }
 
     public void onDecline() {

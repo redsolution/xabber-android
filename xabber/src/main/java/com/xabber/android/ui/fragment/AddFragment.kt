@@ -24,7 +24,7 @@ class AddFragment : Fragment(), OnAccountChangedListener {
         val view = inflater.inflate(R.layout.add_fragment, container, false)
 
         view.findViewById<LinearLayoutCompat>(R.id.add_contact_btn).setOnClickListener {
-            startActivity(ContactAddActivity.createIntent(activity))
+            context?.let { startActivity(ContactAddActivity.createIntent(it)) }
         }
 
         view.findViewById<LinearLayoutCompat>(R.id.create_groupchat_btn).setOnClickListener {
@@ -36,7 +36,9 @@ class AddFragment : Fragment(), OnAccountChangedListener {
                 startActivity(CreateGroupActivity.createCreateIncognitoGroupchatIntent())
             }
 
-        if (AccountManager.getInstance().enabledAccounts.isEmpty()) showPlaceholder(true)
+        if (AccountManager.getInstance().enabledAccounts.isEmpty()) {
+            showPlaceholder(true)
+        }
 
         return view
     }

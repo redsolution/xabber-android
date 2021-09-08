@@ -1,7 +1,6 @@
 package com.xabber.android.ui.activity
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
@@ -12,20 +11,21 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupInviteManager
-import com.xabber.android.data.intent.AccountIntentBuilder
-import com.xabber.android.data.intent.EntityIntentBuilder
+import com.xabber.android.data.createContactIntent
+import com.xabber.android.data.getAccountJid
+import com.xabber.android.data.getContactJid
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment
 import com.xabber.android.ui.fragment.groups.GroupchatInviteContactFragment.OnNumberOfSelectedInvitesChanged
 import org.jivesoftware.smack.packet.XMPPError
 
 class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickListener,
-        OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener {
+    OnNumberOfSelectedInvitesChanged, BaseIqResultUiListener {
 
     private var account: AccountJid? = null
     private var groupContactJid: ContactJid? = null
@@ -37,25 +37,31 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val intent = intent
-        account = getAccount(intent)
-        groupContactJid = getGroupchatContact(intent)
+
+        account = intent.getAccountJid()
+        groupContactJid = intent.getContactJid()
         setContentView(R.layout.activity_with_toolbar_progress_and_container)
         val lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
         toolbar = findViewById(R.id.toolbar_default)
-        toolbar?.setNavigationIcon(if (lightTheme) R.drawable.ic_arrow_left_grey_24dp else
-            R.drawable.ic_arrow_left_white_24dp)
+        toolbar?.setNavigationIcon(
+            if (lightTheme) R.drawable.ic_arrow_left_grey_24dp else
+                R.drawable.ic_arrow_left_white_24dp
+        )
         if (toolbar?.overflowIcon != null) {
-            toolbar?.overflowIcon?.setColorFilter(if (lightTheme) resources.getColor(R.color.grey_900) else
-                resources.getColor(R.color.white), PorterDuff.Mode.SRC_IN)
+            toolbar?.overflowIcon?.setColorFilter(
+                if (lightTheme) resources.getColor(R.color.grey_900) else
+                    resources.getColor(R.color.white), PorterDuff.Mode.SRC_IN
+            )
         }
         toolbar?.inflateMenu(R.menu.toolbar_groupchat_list_selector)
         toolbar?.setOnMenuItemClickListener(this)
         barPainter = BarPainter(this, toolbar)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().add(R.id.fragment_container,
-                    GroupchatInviteContactFragment.newInstance(account, groupContactJid),
-                    GroupchatInviteContactFragment.LOG_TAG).commit()
+            supportFragmentManager.beginTransaction().add(
+                R.id.fragment_container,
+                GroupchatInviteContactFragment.newInstance(account, groupContactJid),
+                GroupchatInviteContactFragment.LOG_TAG
+            ).commit()
         }
 
         progressBar = findViewById(R.id.progressBar)
@@ -82,7 +88,8 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.action_perform_on_selected).setVisible(selectionCounter > 0).title = getString(R.string.groupchat_invite)
+        menu.findItem(R.id.action_perform_on_selected).setVisible(selectionCounter > 0).title =
+            getString(R.string.groupchat_invite)
         return true
     }
 
@@ -120,18 +127,25 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
 
     private val inviteFragment: GroupchatInviteContactFragment?
         get() {
-            val fragment = supportFragmentManager.findFragmentByTag(GroupchatInviteContactFragment.LOG_TAG)
+            val fragment =
+                supportFragmentManager.findFragmentByTag(GroupchatInviteContactFragment.LOG_TAG)
             return if (fragment is GroupchatInviteContactFragment) {
                 fragment
             } else null
         }
 
-    private fun onInviteClick(){
+    private fun onInviteClick() {
         val fragment = inviteFragment
         if (fragment != null) {
             jidsToInvite = fragment.selectedContacts
-            if (account != null && groupContactJid != null && jidsToInvite != null){
-                GroupInviteManager.sendGroupInvitations(account!!, groupContactJid!!, jidsToInvite!!, null, this)
+            if (account != null && groupContactJid != null && jidsToInvite != null) {
+                GroupInviteManager.sendGroupInvitations(
+                    account!!,
+                    groupContactJid!!,
+                    jidsToInvite!!,
+                    null,
+                    this
+                )
             }
         }
     }
@@ -140,10 +154,14 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
         Application.getInstance().runOnUiThread {
             progressBar?.visibility = View.INVISIBLE
             Toast.makeText(
-                    this,
-                    resources.getQuantityString(R.plurals.groupchat__toast__invitations_sent, selectionCounter),
-                    Toast.LENGTH_SHORT)
-                    .show()
+                this,
+                resources.getQuantityString(
+                    R.plurals.groupchat__toast__invitations_sent,
+                    selectionCounter
+                ),
+                Toast.LENGTH_SHORT
+            )
+                .show()
             finish()
         }
     }
@@ -154,8 +172,11 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
 
     override fun onIqError(error: XMPPError) {
         progressBar?.visibility = View.INVISIBLE
-        val text = resources.getQuantityText(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter)
-                .toString() + " " + error.descriptiveText
+        val text = resources.getQuantityText(
+            R.plurals.groupchat__toast_failed_to_sent_invitations,
+            selectionCounter
+        )
+            .toString() + " " + error.descriptiveText
         Application.getInstance().runOnUiThread {
             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         }
@@ -164,8 +185,13 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
     override fun onIqErrors(errors: List<XMPPError>) {
         progressBar?.visibility = View.INVISIBLE
         val text = StringBuilder()
-                .append(resources.getQuantityText(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter))
-                .append(" ")
+            .append(
+                resources.getQuantityText(
+                    R.plurals.groupchat__toast_failed_to_sent_invitations,
+                    selectionCounter
+                )
+            )
+            .append(" ")
         errors.forEach { xmppError ->
             run {
                 text.append(xmppError.descriptiveText ?: return)
@@ -173,7 +199,8 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
             }
         }
 
-        Application.getInstance().runOnUiThread { Toast.makeText(this, text, Toast.LENGTH_SHORT).show() }
+        Application.getInstance()
+            .runOnUiThread { Toast.makeText(this, text, Toast.LENGTH_SHORT).show() }
     }
 
     override fun onOtherErrors(exceptions: List<java.lang.Exception>) = onOtherError(exceptions[0])
@@ -182,29 +209,22 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
         progressBar?.visibility = View.INVISIBLE
         Application.getInstance().runOnUiThread {
             Toast.makeText(
-                    this,
-                    resources.getQuantityString(R.plurals.groupchat__toast_failed_to_sent_invitations, selectionCounter),
-                    Toast.LENGTH_SHORT)
-                    .show()
+                this,
+                resources.getQuantityString(
+                    R.plurals.groupchat__toast_failed_to_sent_invitations,
+                    selectionCounter
+                ),
+                Toast.LENGTH_SHORT
+            )
+                .show()
         }
     }
 
     companion object {
-        @JvmStatic
-        fun createIntent(context: Context?, account: AccountJid?, groupchatJid: ContactJid?): Intent {
-            return EntityIntentBuilder(context, GroupInviteContactActivity::class.java)
-                    .setAccount(account)
-                    .setUser(groupchatJid)
-                    .build()
-        }
-
-        private fun getAccount(intent: Intent): AccountJid? {
-            return AccountIntentBuilder.getAccount(intent)
-        }
-
-        private fun getGroupchatContact(intent: Intent): ContactJid? {
-            return EntityIntentBuilder.getContactJid(intent)
-        }
+        fun createIntent(context: Context, account: AccountJid, groupchatJid: ContactJid) =
+            createContactIntent(
+                context, GroupInviteContactActivity::class.java, account, groupchatJid
+            )
     }
 
 }

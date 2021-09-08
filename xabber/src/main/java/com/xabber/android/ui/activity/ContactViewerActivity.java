@@ -22,11 +22,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -49,8 +49,9 @@ public class ContactViewerActivity extends ContactActivity
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ContactViewerActivity.class)
-                .setAccount(account).setUser(user).build();
+        return IntentHelpersKt.createContactIntent(
+                context, ContactViewerActivity.class, account, user
+        );
     }
 
     @Override

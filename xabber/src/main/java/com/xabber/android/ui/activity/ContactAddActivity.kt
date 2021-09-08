@@ -22,10 +22,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.xabber.android.R
-import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.*
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.intent.EntityIntentBuilder
+import com.xabber.android.data.intent.*
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.ContactAddFragment
 import com.xabber.android.ui.fragment.ContactAddFragment.Companion.newInstance
@@ -80,7 +80,10 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_container, newInstance(getAccount(intent), getUser(intent)))
+                .add(
+                    R.id.fragment_container,
+                    newInstance(intent.getAccountJid(), intent.getContactJid())
+                )
                 .commit()
         }
 
@@ -104,26 +107,13 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
     }
 
     companion object {
+        fun createIntent(context: Context) = Intent(context, ContactAddActivity::class.java)
 
-        @JvmStatic
-        @JvmOverloads
-        fun createIntent(
-            context: Context?,
-            account: AccountJid? = null,
-            user: ContactJid? = null
-        ): Intent = EntityIntentBuilder(context, ContactAddActivity::class.java)
-            .setAccount(account)
-            .setUser(user)
-            .build()
+        fun createIntent(context: Context, account: AccountJid) =
+            createAccountIntent(context, ContactAddActivity::class.java, account)
 
-        private fun getAccount(intent: Intent): AccountJid? {
-            return EntityIntentBuilder.getAccount(intent)
-        }
-
-        private fun getUser(intent: Intent): ContactJid? {
-            return EntityIntentBuilder.getContactJid(intent)
-        }
-
+        fun createIntent(context: Context, account: AccountJid, contactJid: ContactJid) =
+            createContactIntent(context, ContactAddActivity::class.java, account, contactJid)
     }
 
 }

@@ -14,11 +14,10 @@ import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.OnGroupSelectorListToolbarActionResultListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.groups.GroupBlockListFragment;
@@ -46,21 +45,17 @@ public class GroupSettingsActivity extends ManagedActivity implements
 
     private int selectionCounter = 0;
 
-    public static Intent createIntent(Context context, AccountJid account, ContactJid groupchatJid, GroupchatSettingsType type) {
-        Intent intent = new EntityIntentBuilder(context, GroupSettingsActivity.class)
-                .setAccount(account)
-                .setUser(groupchatJid)
-                .build();
+    public static Intent createIntent(
+            Context context,
+            AccountJid account,
+            ContactJid groupchatJid,
+            GroupchatSettingsType type
+    ) {
+        Intent intent = IntentHelpersKt.createContactIntent(
+                context, GroupSettingsActivity.class, account, groupchatJid
+        );
         intent.putExtra(GROUPCHAT_SETTINGS_TYPE, type);
         return intent;
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getGroupchatContact(Intent intent) {
-        return EntityIntentBuilder.getContactJid(intent);
     }
 
     private static GroupchatSettingsType getSettingsType(Intent intent) {
@@ -80,8 +75,8 @@ public class GroupSettingsActivity extends ManagedActivity implements
 
         Intent intent = getIntent();
 
-        account = getAccount(intent);
-        groupchatContact = getGroupchatContact(intent);
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        groupchatContact = IntentHelpersKt.getContactJid(getIntent());
         settingsType = getSettingsType(intent);
 
         if (settingsType == GroupchatSettingsType.None) {

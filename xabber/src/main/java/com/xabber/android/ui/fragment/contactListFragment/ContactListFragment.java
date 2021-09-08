@@ -334,7 +334,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void onButtonItemClick(ButtonVO buttonVO) {
         if (buttonVO.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
-            getActivity().startActivity(ContactAddActivity.createIntent(getActivity()));
+            startActivity(ContactAddActivity.Companion.createIntent(getContext()));
         }
     }
 

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
@@ -23,7 +24,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.SessionVO;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -52,11 +52,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private AccountItem accountItem;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, ActiveSessionsActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(context, ActiveSessionsActivity.class, account);
     }
 
     @Override
@@ -64,8 +60,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_sessions);
 
-        final Intent intent = getIntent();
-        AccountJid account = getAccount(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;

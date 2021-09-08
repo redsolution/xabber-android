@@ -282,7 +282,7 @@ public class ContextMenuHelper {
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(
-                    ContactAddActivity.createIntent(activity, account)
+                    ContactAddActivity.Companion.createIntent(activity, account)
             );
         }
 

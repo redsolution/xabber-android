@@ -1,7 +1,6 @@
 package com.xabber.android.ui.activity
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -10,8 +9,9 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.intent.AccountIntentBuilder
-import com.xabber.android.data.intent.EntityIntentBuilder
+import com.xabber.android.data.createContactIntent
+import com.xabber.android.data.getAccountJid
+import com.xabber.android.data.getContactJid
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.color.BarPainter
@@ -31,9 +31,11 @@ class GroupStatusActivity : ManagedActivity() {
         toolbar = findViewById(R.id.toolbar_default)
 
         toolbar = findViewById(R.id.toolbar_default)
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp)
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+        }
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.title = getString(R.string.groupchat_status)
 
@@ -41,29 +43,25 @@ class GroupStatusActivity : ManagedActivity() {
 
         if (intent != null) {
             val group = ChatManager.getInstance()
-                    .getChat(getAccount(intent), getGroupchatContact(intent))
+                .getChat(intent.getAccountJid(), intent.getContactJid())
             if (group != null && group is GroupChat)
                 supportFragmentManager.beginTransaction()
-                        .add(R.id.fragment_container, GroupStatusFragment(group))
-                        .commit()
+                    .add(R.id.fragment_container, GroupStatusFragment(group))
+                    .commit()
         } else finish()
 
     }
 
-    fun showProgressBar(isVisible: Boolean) = if (isVisible) progressbar.visibility = View.VISIBLE
-    else progressbar.visibility = View.GONE
+    fun showProgressBar(isVisible: Boolean) =
+        if (isVisible) {
+            progressbar.visibility = View.VISIBLE
+        } else {
+            progressbar.visibility = View.GONE
+        }
 
     companion object {
-        fun createIntent(context: Context, account: AccountJid, groupchatJid: ContactJid): Intent =
-                EntityIntentBuilder(context, GroupStatusActivity::class.java)
-                        .setAccount(account)
-                        .setUser(groupchatJid)
-                        .build()
-
-        private fun getAccount(intent: Intent) = AccountIntentBuilder.getAccount(intent)
-
-        private fun getGroupchatContact(intent: Intent) = EntityIntentBuilder.getContactJid(intent)
-
+        fun createIntent(context: Context, account: AccountJid, groupchatJid: ContactJid) =
+            createContactIntent(context, GroupStatusActivity::class.java, account, groupchatJid)
     }
 
 }

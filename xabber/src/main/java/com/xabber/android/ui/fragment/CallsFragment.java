@@ -33,7 +33,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -113,9 +112,6 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ivAvatar:
-                startActivity(StatusEditActivity.createIntent(getActivity()));
-                break;
             case R.id.tvTitle:
                 break;
         }
@@ -127,7 +123,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_add_contact) {
-            startActivity(ContactAddActivity.createIntent(getActivity()));
+            startActivity(ContactAddActivity.Companion.createIntent(getContext()));
             return true;
         }
         return false;

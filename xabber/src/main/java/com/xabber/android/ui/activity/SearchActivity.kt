@@ -2,6 +2,7 @@ package com.xabber.android.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.ContextMenu
@@ -246,53 +247,48 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 } else {
                     startActivity(
                         ContactViewerActivity.createIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid
+                            this, contact.account, contact.contactJid
                         )
                     )
                 }
 
             Intent.ACTION_SEND ->
                 if (intent.type?.contains("text/plain") != true && intent.extras != null) {
-                    startActivity(
-                        ChatActivity.createSendUriIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                    intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)?.let { uri ->
+                        startActivity(
+                            ChatActivity.createSendUriIntent(
+                                this, contact.account, contact.contactJid, uri
+                            )
                         )
-                    )
+                    }
                 } else {
                     startActivity(
                         ChatActivity.createSendIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            sendText
+                            this, contact.account, contact.contactJid, sendText
                         )
                     )
                 }
 
             Intent.ACTION_SEND_MULTIPLE ->
                 if (intent.extras != null) {
-                    startActivity(
-                        ChatActivity.createSendUrisIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                    intent.getParcelableArrayListExtra<Uri?>(Intent.EXTRA_STREAM)?.let { uri ->
+                        startActivity(
+                            ChatActivity.createSendUrisIntent(
+                                this, contact.account, contact.contactJid, uri
+                            )
                         )
-                    )
+                    }
                 }
 
             Intent.ACTION_CREATE_SHORTCUT -> {
-                val intent = ShortcutBuilder.createPinnedShortcut(
+                ShortcutBuilder.createPinnedShortcut(
                     this,
-                    RosterManager.getInstance()
-                        .getAbstractContact(contact.account, contact.contactJid)
-                )
-                if (intent != null) setResult(RESULT_OK, intent)
+                    RosterManager.getInstance().getAbstractContact(
+                        contact.account, contact.contactJid
+                    )
+                )?.let { intent ->
+                    setResult(RESULT_OK, intent)
+                }
             }
 
             ACTION_FORWARD ->
@@ -320,45 +316,39 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 )
 
             Intent.ACTION_SEND ->
-                if (intent.type?.contains("text/plain") != true && intent.extras != null) {
-                    startActivity(
-                        ChatActivity.createSendUriIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                if (intent.type?.contains("text/plain") != true) {
+                    intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)?.let { uri ->
+                        startActivity(
+                            ChatActivity.createSendUriIntent(
+                                this, contact.account, contact.contactJid, uri
+                            )
                         )
-                    )
+                    }
                 } else {
                     startActivity(
                         ChatActivity.createSendIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            sendText
+                            this, contact.account, contact.contactJid, sendText
                         )
                     )
                 }
 
             Intent.ACTION_SEND_MULTIPLE ->
-                if (intent.extras != null) {
+                intent.getParcelableArrayListExtra<Uri?>(Intent.EXTRA_STREAM)?.let { uris ->
                     startActivity(
                         ChatActivity.createSendUrisIntent(
-                            this,
-                            contact.account,
-                            contact.contactJid,
-                            intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                            this, contact.account, contact.contactJid, uris
                         )
                     )
                 }
 
             Intent.ACTION_CREATE_SHORTCUT -> {
-                val intent = ShortcutBuilder.createPinnedShortcut(
+                ShortcutBuilder.createPinnedShortcut(
                     this,
                     RosterManager.getInstance()
                         .getAbstractContact(contact.account, contact.contactJid)
-                )
-                if (intent != null) setResult(RESULT_OK, intent)
+                )?.let { intent ->
+                    setResult(RESULT_OK, intent)
+                }
             }
 
             ACTION_FORWARD ->

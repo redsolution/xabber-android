@@ -52,6 +52,7 @@ import com.soundcloud.android.crop.Crop;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
@@ -61,7 +62,6 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
@@ -132,21 +132,16 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private int accountMainColor;
     private int orientation;
 
-    public AccountActivity() {
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
+    public AccountActivity() { }
 
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, AccountActivity.class, account);
     }
 
     @NonNull
     public static Intent createConnectionSettingsIntent(Context context, AccountJid account) {
-        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
+        Intent intent = IntentHelpersKt.createAccountIntent(context, AccountActivity.class, account);
         intent.setAction(ACTION_CONNECTION_SETTINGS);
         return intent;
     }
@@ -157,7 +152,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         final Intent intent = getIntent();
 
-        account = getAccount(intent);
+        account = IntentHelpersKt.getAccountJid(intent);
         if (account == null) {
             LogManager.i(LOG_TAG, "Account is null, finishing!");
             finish();

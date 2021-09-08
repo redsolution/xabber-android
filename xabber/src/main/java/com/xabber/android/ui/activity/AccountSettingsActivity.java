@@ -10,11 +10,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
@@ -35,13 +35,9 @@ public class AccountSettingsActivity extends ManagedActivity
     private AccountJid account;
     private AccountItem accountItem;
 
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountSettingsActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, AccountSettingsActivity.class, account);
     }
 
     @Override
@@ -50,7 +46,7 @@ public class AccountSettingsActivity extends ManagedActivity
         setContentView(R.layout.activity_account_settings);
 
 
-        account = getAccount(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
         accountItem = AccountManager.getInstance().getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);

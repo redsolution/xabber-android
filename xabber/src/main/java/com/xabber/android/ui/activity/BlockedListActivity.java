@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
@@ -57,18 +57,14 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     private int previousState;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(context, BlockedListActivity.class, account);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getAccount(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;

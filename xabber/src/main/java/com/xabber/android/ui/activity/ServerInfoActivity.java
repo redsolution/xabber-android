@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -22,7 +23,6 @@ import com.xabber.android.data.extension.delivery.DeliveryManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.retract.RetractManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -50,22 +50,15 @@ public class ServerInfoActivity extends ManagedActivity {
     View progressBar;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, ServerInfoActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, ServerInfoActivity.class, account);
     }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_info);
 
-        final Intent intent = getIntent();
-
-        AccountJid account = getAccount(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;

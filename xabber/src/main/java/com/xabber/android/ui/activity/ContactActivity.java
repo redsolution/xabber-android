@@ -47,6 +47,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -54,8 +55,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -113,16 +112,7 @@ public class ContactActivity extends ManagedActivity implements
     protected boolean isGroupchat;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ContactActivity.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getContactJid(intent);
+        return IntentHelpersKt.createContactIntent(context, ContactActivity.class, account, user);
     }
 
     protected Toolbar getToolbar() {
@@ -133,8 +123,8 @@ public class ContactActivity extends ManagedActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getAccount(getIntent());
-        user = getUser(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        user = IntentHelpersKt.getContactJid(getIntent());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
         if (accountItem == null) {
@@ -473,7 +463,11 @@ public class ContactActivity extends ManagedActivity implements
                 break;
             case R.id.second_button:
                 if (isGroupchat) {
-                    startActivity(GroupInviteContactActivity.createIntent(ContactActivity.this, account, user));
+                    startActivity(
+                            GroupInviteContactActivity.Companion.createIntent(
+                                    ContactActivity.this, account, user
+                            )
+                    );
                 } else {
                     Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
                 }

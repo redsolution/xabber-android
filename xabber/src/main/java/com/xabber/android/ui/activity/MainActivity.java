@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -41,7 +42,6 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -141,14 +141,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_CLEAR_STACK);
         return intent;
-    }
-
-    private static AccountJid getRoomInviteAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getContactJid(intent);
     }
 
     @Override
@@ -743,8 +735,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        ContactJid user = getRoomInviteUser(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(intent);
+        ContactJid user = IntentHelpersKt.getContactJid(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(),
                     ContactSubscriptionDialog.class.getName());

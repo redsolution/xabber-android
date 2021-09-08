@@ -39,7 +39,8 @@ import org.jxmpp.jid.impl.JidCreate
 import org.jxmpp.stringprep.XmppStringprepException
 import java.util.*
 
-class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickListener, AccountSpinner.Listener {
+class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickListener,
+    AccountSpinner.Listener {
 
     private var listenerActivity: Listener? = null
     private var accountSpinner: AccountSpinner? = null
@@ -66,7 +67,11 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         listenerActivity = context as Listener
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_contact_add, container, false)
         var name: String?
         if (savedInstanceState != null) {
@@ -196,7 +201,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             llm.topMargin = 0
             exceptSpinnerLinearLayout.requestLayout()
         } else {
-            val jids = AccountManager.getInstance().enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
+            val jids = AccountManager.getInstance().enabledAccounts.toList()
+                .sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()
             for (jid in jids) {
@@ -206,7 +212,8 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             val nicknames = mutableListOf<String?>()
             for (jid in jids) {
                 val name =
-                    RosterManager.getInstance().getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
+                    RosterManager.getInstance()
+                        .getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
                 if (!name.isNullOrEmpty()) {
                     nicknames.add(name)
                 } else {
@@ -276,7 +283,9 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             listenerActivity?.onAccountSelected(accountJid)
         }
 
-        if (userViewEt != null && userViewEt!!.text != null && userViewEt!!.text.toString().isNotEmpty())
+        if (userViewEt != null && userViewEt!!.text != null && userViewEt!!.text.toString()
+                .isNotEmpty()
+        )
             (activity as ContactAddActivity?)!!.toolbarSetEnabled(true)
 
         isAccountSelected = true
@@ -438,7 +447,12 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             }
             //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
             if (localName.contains(":")) {
-                setError(String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), ":"))
+                setError(
+                    String.format(
+                        getString(R.string.account_add__alert_localpart_invalid_symbols),
+                        ":"
+                    )
+                )
                 return true
             }
 
@@ -458,12 +472,14 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
     private fun stopAddContactProcess(success: Boolean) {
         Application.getInstance().runOnUiThread {
-            if (listenerActivity != null) listenerActivity!!.showProgress(false)
+            listenerActivity?.showProgress(false)
             if (success) {
-                startActivityForResult(
-                    ChatActivity.createSpecificChatIntent(context, account, contactJid),
-                    MainActivity.CODE_OPEN_CHAT
-                )
+                context?.let {
+                    startActivityForResult(
+                        ChatActivity.createSpecificChatIntent(it, account, contactJid),
+                        MainActivity.CODE_OPEN_CHAT
+                    )
+                }
             }
         }
     }
@@ -477,10 +493,14 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
         private const val LOG_TAG = "ContactAddFragment"
 
-        private const val SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME"
-        private const val SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT"
-        private const val SAVED_CONTACT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER"
-        private const val SAVED_ERROR = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ERROR"
+        private const val SAVED_NAME =
+            "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME"
+        private const val SAVED_ACCOUNT =
+            "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT"
+        private const val SAVED_CONTACT =
+            "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER"
+        private const val SAVED_ERROR =
+            "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ERROR"
 
         @JvmStatic
         fun newInstance(account: AccountJid?, user: ContactJid?): ContactAddFragment {
