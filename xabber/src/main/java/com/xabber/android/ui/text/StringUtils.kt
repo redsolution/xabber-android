@@ -21,20 +21,29 @@ import java.text.SimpleDateFormat
 import java.text.StringCharacterIterator
 import java.util.*
 
+
 fun String.wrapWithItalicTag() = "<i>$this</i>"
 
 fun String.wrapWithColorTag(color: Int) =
     "<font color='${String.format("#%06X", 0xFFFFFF and color)}'>$this</font>"
 
-fun String.escapeXml() = this
-    //$NON-NLS-1$
-    .replace("<", "&lt;")
-    .replace(">", "&gt;")
-    .replace("&", "&amp;")
-    .replace("\"", "&quot;")
-    // In this implementation we use &apos; instead of &#39; because we encode XML, not HTML.
-    .replace("\\", "&apos;")
-
+fun String.escapeXml(): String {
+    val sb = java.lang.StringBuilder()
+    var c: Char
+    for (i in this.indices) {
+        c = this[i]
+        when (c) {
+            '<' -> sb.append("&lt;") //$NON-NLS-1$
+            '>' -> sb.append("&gt;") //$NON-NLS-1$
+            '&' -> sb.append("&amp;") //$NON-NLS-1$
+            '\'' ->                     // In this implementation we use &apos; instead of &#39; because we encode XML, not HTML.
+                sb.append("&apos;") //$NON-NLS-1$
+            '"' -> sb.append("&quot;") //$NON-NLS-1$
+            else -> sb.append(c)
+        }
+    }
+    return sb.toString()
+}
 /**
  * Returns the text to be displayed in the status area of the groupchat
  * with the amount of members and online members.
