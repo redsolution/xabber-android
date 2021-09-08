@@ -71,9 +71,6 @@ import java.util.*
 
 /**
  * Chat activity.
- *
- *
- *
  * @author alexander.ivanov
  */
 class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdatedListener,
@@ -368,20 +365,19 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     private fun initChats() {
-        val oldFragment = supportFragmentManager.findFragmentByTag(CHAT_FRAGMENT_TAG)
-
         val fragment: Fragment = memberId?.let {
             ChatFragment.newInstanceForGroupMemberMessages(accountJid, contactJid, it)
         } ?: ChatFragment.newInstance(accountJid, contactJid)
 
-        if (oldFragment != null) {
-            val fragmentTransactionOld = supportFragmentManager.beginTransaction()
-            fragmentTransactionOld.remove(oldFragment)
-            fragmentTransactionOld.commit()
+        supportFragmentManager.findFragmentByTag(CHAT_FRAGMENT_TAG)?.let {
+            supportFragmentManager.beginTransaction()
+                .remove(it)
+                .commit()
         }
-        val fragmentTransactionNew = supportFragmentManager.beginTransaction()
-        fragmentTransactionNew.add(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG)
-        fragmentTransactionNew.commit()
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG)
+            .commit()
     }
 
     private fun restoreInstanceState(savedInstanceState: Bundle) {
@@ -408,8 +404,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     override fun onGroupPresenceUpdated(
-        accountJid: AccountJid, groupJid: ContactJid,
-        presence: Presence
+        accountJid: AccountJid, groupJid: ContactJid, presence: Presence
     ) {
         update()
     }

@@ -36,6 +36,7 @@ import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
+import com.xabber.android.data.extension.archive.MessageArchiveManager.tryToLoadPortionOfMemberMessagesInGroup
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
@@ -440,7 +441,9 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         realmRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy < 0) requestToLoadHistoryIfNeed()
+                if (dy < 0) {
+                    requestToLoadHistoryIfNeed()
+                }
                 showScrollDownButtonIfNeed()
             }
         })
@@ -965,7 +968,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         if (topVisible <= 15 && topVisible != -1 && messagesCount != 0
             || topVisible == -1 && messagesCount <= 30
         ) {
-            loadNextMessagesPortionInChat(chat)
+            if (memberId != null) {
+                //tryToLoadPortionOfMemberMessagesInGroup(chat, memberId, )
+            } else {
+                loadNextMessagesPortionInChat(chat)
+            }
         }
     }
 
