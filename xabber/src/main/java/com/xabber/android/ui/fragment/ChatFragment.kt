@@ -968,11 +968,12 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         if (topVisible <= 15 && topVisible != -1 && messagesCount != 0
             || topVisible == -1 && messagesCount <= 30
         ) {
-            if (memberId != null) {
-                //tryToLoadPortionOfMemberMessagesInGroup(chat, memberId, )
-            } else {
-                loadNextMessagesPortionInChat(chat)
-            }
+//            if (memberId != null) {
+//                tryToLoadPortionOfMemberMessagesInGroup(chat as GroupChat, memberId!!)
+//            } else {
+//
+//            }
+            loadNextMessagesPortionInChat(chat)
         }
     }
 
@@ -1045,9 +1046,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_EXPORT_CHAT) {

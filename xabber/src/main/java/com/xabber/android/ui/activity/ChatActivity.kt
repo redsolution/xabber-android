@@ -102,6 +102,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         private set
 
     private lateinit var contactTitleView: View
+    private lateinit var memberMessagesTitleView: View
 
     //toolbar interaction panel variables
     private lateinit var interactionsRoot: View
@@ -115,14 +116,19 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         setContentView(R.layout.activity_chat)
         window.setBackgroundDrawable(null)
 
+        memberMessagesTitleView = findViewById(R.id.member_messages_title)
         contactTitleView = findViewById(R.id.contact_title)
-        contactTitleView.setOnClickListener {
-            if (accountJid.bareJid.toString() == contactJid.bareJid.toString()) {
-                startActivity(AccountActivity.createIntent(this, accountJid))
-            } else {
-                startActivity(
-                    ContactViewerActivity.createIntent(this@ChatActivity, accountJid, contactJid)
-                )
+        if (memberId == null) {
+            contactTitleView.setOnClickListener {
+                if (accountJid.bareJid.toString() == contactJid.bareJid.toString()) {
+                    startActivity(AccountActivity.createIntent(this, accountJid))
+                } else {
+                    startActivity(
+                        ContactViewerActivity.createIntent(
+                            this@ChatActivity, accountJid, contactJid
+                        )
+                    )
+                }
             }
         }
 
@@ -880,6 +886,12 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             putExtra(KEY_MEMBER_ID, memberId)
         }
 
+    }
+
+    enum class ToolbarState {
+        MEMBER_MESSAGES_HINT,
+        CHAT_TITLE,
+        INTERACTION_PANEL,
     }
 
 }

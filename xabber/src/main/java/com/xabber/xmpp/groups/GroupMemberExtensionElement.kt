@@ -5,7 +5,9 @@ import com.xabber.xmpp.avatar.MetadataInfo
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class GroupMemberExtensionElement(val id: String, val nickname: String, val role: String) : ExtensionElement {
+class GroupMemberExtensionElement(
+    val id: String, val nickname: String, val role: String
+) : ExtensionElement {
     var jid: String? = null
     var badge = ""
     var lastPresent: String? = null

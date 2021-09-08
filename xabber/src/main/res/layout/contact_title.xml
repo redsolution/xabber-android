@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/actionBarSize"
@@ -15,7 +17,7 @@
         android:paddingLeft="16dp"
         android:paddingEnd="16dp"
         android:paddingRight="16dp"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical" />
 
     <include layout="@layout/avatar_view_in_chat_screen" />
 
@@ -26,6 +28,7 @@
         android:orientation="vertical"
         android:layout_weight="1"
         android:gravity="center_vertical">
+
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
@@ -33,7 +36,7 @@
             android:singleLine="true"
             android:fontFamily="sans-serif-medium"
             android:textColor="?attr/contact_list_contact_name_text_color"
-            android:text="Lorem Ipsum"
+            tools:text="Lorem Ipsum"
             android:drawablePadding="4dp"
             android:layout_marginStart="6dp"
             android:layout_marginLeft="6dp"
@@ -45,7 +48,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textColor="?attr/contact_list_contact_name_text_color"
-            android:text="Lorem ipsum dolor sit amet"
+            tools:text="Lorem ipsum dolor sit amet"
             android:layout_marginStart="6dp"
             android:layout_marginLeft="6dp"
             android:alpha="0.7" />

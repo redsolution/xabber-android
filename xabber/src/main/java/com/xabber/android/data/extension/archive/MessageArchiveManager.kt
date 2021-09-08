@@ -367,6 +367,24 @@ object MessageArchiveManager : OnRosterReceivedListener {
         return result
     }
 
+    private fun getLastGroupMemberMessageStanzaId(chat: GroupChat, memberId: String): String? {
+        require(Looper.myLooper() != Looper.getMainLooper()) {
+            "This method has no implementation to be used in UI thread!"
+        }
+        return DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+            realm.where(MessageRealmObject::class.java)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, chat.account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, chat.contactJid.toString())
+                .equalTo(MessageRealmObject.Fields.GROUPCHAT_USER_ID, memberId)
+                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageRealmObject.Fields.STANZA_ID)
+                .findAll()
+                .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.DESCENDING)
+                .firstOrNull()
+                ?.stanzaId
+        }
+    }
+
     private fun getLastChatMessageInRealmTimestamp(chat: AbstractChat): Long? {
         var result: Long? = 0
         var realm: Realm? = null
@@ -413,50 +431,54 @@ object MessageArchiveManager : OnRosterReceivedListener {
     }
 
     fun tryToLoadPortionOfMemberMessagesInGroup(
-        chat: GroupChat,
-        memberId: String,
-        lastMessageStanzaId: String? = null,
-        messagesCount: Int = 50,
+        chat: GroupChat, memberId: String, messagesCount: Int = 50,
     ) {
-        if (chat in activeRequests) {
-            return
+        Application.getInstance().runInBackground {
+            if (chat in activeRequests) {
+                return@runInBackground
+            }
+
+            val accountJid = chat.account
+            val accountItem = AccountManager.getInstance().getAccount(accountJid)
+                ?: return@runInBackground
+
+            if (accountItem.loadHistorySettings == LoadHistorySettings.none || !isSupported(
+                    accountItem
+                )
+            ) {
+                return@runInBackground
+            }
+
+            activeRequests += chat
+            val connection = accountItem.connection
+            val listener = RegularMamResultsHandler(
+                accountJid,
+                ChatManager.getInstance(),
+                MessageHandler,
+                isRegularReceivedMessage = false
+            )
+
+            connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
+
+            accountItem.connection.sendIqWithResponseCallback(
+                MamQueryIQ.createMamRequestGroupMembersMessages(
+                    group = chat,
+                    memberId = memberId,
+                    afterStanzaId = getLastGroupMemberMessageStanzaId(chat, memberId),
+                    max = messagesCount
+                ),
+                {
+                    activeRequests -= chat
+                    connection.removeAsyncStanzaListener(listener)
+                },
+                { exception: Exception? ->
+                    LogManager.exception(this, exception)
+                    activeRequests -= chat
+                    connection.removeAsyncStanzaListener(listener)
+                },
+                60000
+            )
         }
-
-        val accountJid = chat.account
-        val accountItem = AccountManager.getInstance().getAccount(accountJid) ?: return
-
-        if (accountItem.loadHistorySettings == LoadHistorySettings.none || !isSupported(accountItem)
-        ) {
-            return
-        }
-
-        activeRequests += chat
-        val result = mutableListOf<MessageRealmObject>()
-        val connection = accountItem.connection
-        val listener = RegularMamResultsHandler(
-            accountJid, ChatManager.getInstance(), MessageHandler, isRegularReceivedMessage = false
-        )
-
-        connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
-
-        accountItem.connection.sendIqWithResponseCallback(
-            MamQueryIQ.createMamRequestGroupMembersMessages(
-                group = chat,
-                memberId = memberId,
-                afterStanzaId = lastMessageStanzaId,
-                max = messagesCount
-            ),
-            {
-                activeRequests -= chat
-                connection.removeAsyncStanzaListener(listener)
-            },
-            { exception: Exception? ->
-                LogManager.exception(this, exception)
-                activeRequests -= chat
-                connection.removeAsyncStanzaListener(listener)
-            },
-            60000
-        )
     }
 
     fun loadNextMessagesPortionInChat(chat: AbstractChat) {

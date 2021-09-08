@@ -143,9 +143,9 @@ class MamQueryIQ private constructor(
             rsmSet = RSMSet(null, afterStanzaId, -1, -1, null, max, null, -1),
             dataFormExtension = MamDataFormExtension(
                 with = memberId,
-            )
+            ),
+            flipPage = true
         )
-
     }
 
 }
