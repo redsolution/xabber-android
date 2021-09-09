@@ -27,7 +27,7 @@ public class MessageRepository {
                 .where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString())
                 .equalTo(MessageRealmObject.Fields.USER, contactJid.toString())
-                .isNull(MessageRealmObject.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageRealmObject.Fields.FORWARDED, false)
                 .isNotNull(MessageRealmObject.Fields.TEXT)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);

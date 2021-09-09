@@ -45,7 +45,6 @@ public class ForwardManager {
 
         parentMessage.setText(text);
         parentMessage.setIncoming(false);
-        parentMessage.setOffline(false);
         parentMessage.setForwarded(false);
         parentMessage.setGroupchatSystem(false);
         parentMessage.setTimestamp(new Date().getTime());

@@ -273,8 +273,6 @@ object MessageHandler {
             this.text = body ?: ""
             this.isRead = !isIncoming || isGroupSystem
                     || delayInformation != null && (timestamp <= accountStartHistoryTimestamp ?: 0)
-            this.isOffline =
-                MessageManager.isOfflineMessage(accountJid.fullJid.domain, messageStanza)
             this.timestamp = timestamp
             this.isIncoming = isIncoming && !isMe
             this.stanzaId = stanzaId
@@ -445,13 +443,13 @@ object MessageHandler {
 
         val messageRealmObject =
             if (originId != null) {
-                MessageRealmObject.createMessageRealmObjectWithOriginId(
+                MessageRealmObject.createForwardedMessageRealmObjectWithOriginId(
                     chat.account,
                     chat.contactJid,
                     originId
                 )
             } else {
-                MessageRealmObject.createMessageRealmObjectWithStanzaId(
+                MessageRealmObject.createForwardedMessageRealmObjectWithStanzaId(
                     chat.account,
                     chat.contactJid,
                     stanzaId
@@ -464,9 +462,6 @@ object MessageHandler {
         messageRealmObject.apply {
             this.text = text ?: ""
             this.timestamp = timestamp?.time ?: Date().time
-            this.isIncoming = true
-            this.isRead = true
-            this.isOffline = false
             this.stanzaId = stanzaId
             this.originId = originId
             this.originalStanza = message.toXML().toString()
@@ -475,8 +470,6 @@ object MessageHandler {
             this.isForwarded = true
             this.isGroupchatSystem = isGroupchatSystem
             this.resource = message.from?.resourceOrNull ?: Resourcepart.EMPTY
-            this.messageStatus = MessageStatus.NONE
-            this.action = null
             this.markupText = bodies.second
             this.delayTimestamp = DelayInformation.from(message)?.stamp?.time
             this.attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message) ?: null

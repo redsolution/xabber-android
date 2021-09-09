@@ -110,7 +110,6 @@ public class MessageManager implements OnPacketListener {
             );
             message.setText(text.replaceAll("\0", ""));
             message.setIncoming(false);
-            message.setOffline(false);
             message.setForwarded(false);
             message.setGroupchatSystem(false);
             message.setTimestamp(new Date().getTime());

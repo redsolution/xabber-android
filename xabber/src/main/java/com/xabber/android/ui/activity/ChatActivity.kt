@@ -42,7 +42,6 @@ import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.retract.RetractManager
-import com.xabber.android.data.intent.*
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.message.NotificationState

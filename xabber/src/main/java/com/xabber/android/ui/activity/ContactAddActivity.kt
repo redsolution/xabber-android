@@ -25,7 +25,6 @@ import com.xabber.android.R
 import com.xabber.android.data.*
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.intent.*
 import com.xabber.android.ui.color.BarPainter
 import com.xabber.android.ui.fragment.ContactAddFragment
 import com.xabber.android.ui.fragment.ContactAddFragment.Companion.newInstance

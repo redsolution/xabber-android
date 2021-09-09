@@ -59,7 +59,6 @@ public class MessageRealmObject extends RealmObject {
         public static final String ACTION = "action";
         public static final String INCOMING = "incoming";
         public static final String ENCRYPTED = "encrypted";
-        public static final String OFFLINE = "offline";
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
         public static final String EDITED_TIMESTAMP = "editedTimestamp";
@@ -111,11 +110,6 @@ public class MessageRealmObject extends RealmObject {
     private boolean incoming;
 
     /**
-     * Message was received from server side offline storage.
-     */
-    private boolean offline;
-
-    /**
      * Time when message was received or sent by Xabber.
      * Realm truncated Date type to seconds, using long for accuracy
      */
@@ -137,7 +131,7 @@ public class MessageRealmObject extends RealmObject {
     /**
      * Message state represented by MessageStatus
      */
-    private String messageStatus = MessageStatus.NONE.toString();
+    private String messageStatus;
 
     /**
      * Message was shown to the us.
@@ -195,6 +189,21 @@ public class MessageRealmObject extends RealmObject {
         return messageRealmObject;
     }
 
+    public static MessageRealmObject createForwardedMessageRealmObjectWithStanzaId(
+            AccountJid accountJid, ContactJid contactJid, String stanzaId
+    ){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createForwardedPrimaryKey(accountJid, contactJid, stanzaId));
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.stanzaId = stanzaId;
+        messageRealmObject.setForwarded(true);
+
+        return messageRealmObject;
+    }
+
+
     public static MessageRealmObject createMessageRealmObjectWithOriginId(AccountJid accountJid,
                                                                          ContactJid contactJid,
                                                                          String originId){
@@ -208,8 +217,29 @@ public class MessageRealmObject extends RealmObject {
         return messageRealmObject;
     }
 
+    public static MessageRealmObject createForwardedMessageRealmObjectWithOriginId(
+            AccountJid accountJid, ContactJid contactJid, String originId
+    ){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createForwardedPrimaryKey(accountJid, contactJid, originId));
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.originId = originId;
+        messageRealmObject.setForwarded(true);
+
+        return messageRealmObject;
+    }
+
+
     public static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String id){
         return accountJid.toString() + "#" + contactJid.toString() + "#" + id;
+    }
+
+    public static String createForwardedPrimaryKey(
+            AccountJid accountJid, ContactJid contactJid, String id
+    ) {
+        return accountJid.toString() + "#" + contactJid.toString() + "#" + id + "forwarded";
     }
 
     public MessageRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
@@ -267,10 +297,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setIncoming(boolean incoming) { this.incoming = incoming; }
 
-    public boolean isOffline() { return offline; }
-
-    public void setOffline(boolean offline) { this.offline = offline; }
-
     public Long getTimestamp() { return timestamp; }
 
     public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
@@ -299,7 +325,13 @@ public class MessageRealmObject extends RealmObject {
 
     public Spannable getSpannable() { return new SpannableString(getText()); }
 
-    public MessageStatus getMessageStatus() { return MessageStatus.valueOf(messageStatus); }
+    public MessageStatus getMessageStatus() {
+        try {
+            return MessageStatus.valueOf(messageStatus);
+        } catch (Exception e) {
+            return MessageStatus.NONE;
+        }
+    }
 
     public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus.toString(); }
 
