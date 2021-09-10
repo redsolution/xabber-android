@@ -104,7 +104,8 @@ data class ChatListItemData(
 
                 lastMessage == null -> noMessagesText
 
-                chat.account.bareJid.toString() == chat.contactJid.bareJid.toString() && isSavedMessagesSpecialText -> {
+                chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()
+                        && isSavedMessagesSpecialText -> {
                     context.getString(R.string.saved_messages__hint_forward_here)
                 }
 

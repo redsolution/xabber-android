@@ -438,7 +438,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
             DiffUtil.calculateDiff(ChatItemDiffUtil(items, newItems, adapter), false)
         items.clear()
         items.addAll(newItems)
-        adapter.addItems(newItems.toMutableList())
+        adapter.setItems(newItems.toMutableList())
         diffResult.dispatchUpdatesTo(adapter)
         if (tempIsOnTop) {
             scrollToTop()

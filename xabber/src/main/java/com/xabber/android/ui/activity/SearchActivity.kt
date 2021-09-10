@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
+import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.BaseEntity
+import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
@@ -137,17 +139,26 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             layoutManager = LinearLayoutManager(this@SearchActivity).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            adapter =
-                ChatListAdapter(buildChatsListWithFilter(null), this@SearchActivity, false).apply {
-                    if (action != ACTION_SEARCH) isSavedMessagesSpecialText = true
+
+            adapter = ChatListAdapter(
+                buildChatsListWithFilter(null),
+                this@SearchActivity,
+                swipable = false,
+            ).apply {
+                if (action != ACTION_SEARCH) {
+                    isSavedMessagesSpecialText = true
                 }
+            }
+
             itemAnimator = null
             addItemDecoration(
                 DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
                     setChatListOffsetMode(
                         if (SettingsManager.contactsShowAvatars()) {
                             ChatListFragment.ChatListAvatarState.SHOW_AVATARS
-                        } else ChatListFragment.ChatListAvatarState.DO_NOT_SHOW_AVATARS
+                        } else {
+                            ChatListFragment.ChatListAvatarState.DO_NOT_SHOW_AVATARS
+                        }
                     )
                 }
             )
@@ -158,21 +169,24 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
 
     private fun showEmptyStatePlaceholder(visibility: Boolean = true) {
         recyclerView.visibility = if (visibility) View.GONE else View.VISIBLE
+
         findViewById<TextView>(R.id.search_empty_state_placeholder).visibility =
             if (visibility) View.VISIBLE else View.GONE
     }
 
     private fun updateContactsList(filter: String = "") {
-        val adapter = recyclerView.adapter as ChatListAdapter
-        val newContactsList = buildChatsListWithFilter(filter)
-        //val diffResult = DiffUtil.calculateDiff(ChatItemDiffUtil(adapter.list, newContactsList, adapter), false)
-        adapter.clear()
-        adapter.addItems(newContactsList)
-        adapter.notifyDataSetChanged()
-        showEmptyStatePlaceholder(newContactsList.isEmpty())
+        (recyclerView.adapter as? ChatListAdapter)?.apply {
+            clear()
+            buildChatsListWithFilter(filter).also {
+                setItems(it)
+                showEmptyStatePlaceholder(it.isEmpty())
+            }
+        }?.also {
+            it.notifyDataSetChanged()
+        }
     }
 
-    fun buildChatsListWithFilter(filterString: String?): MutableList<AbstractChat> {
+    private fun buildChatsListWithFilter(filterString: String?): MutableList<AbstractChat> {
         if (filterString != null && filterString.isNotEmpty()) {
             return ChatManager.getInstance().chatsOfEnabledAccounts
                 .filter { it.lastMessage != null && it.lastTime != null }
@@ -184,8 +198,16 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                         .map { RegularChat(it.account, it.contactJid) }
                 )
         } else {
+            val savedMessagesChats = AccountManager.getInstance().enabledAccounts.map {
+                val contactJid = ContactJid.from(it.bareJid.toString())
+                ChatManager.getInstance().getChat(it, contactJid)
+                    ?: ChatManager.getInstance().createRegularChat(it, contactJid)
+            }
+
             return ChatManager.getInstance().chatsOfEnabledAccounts.toMutableList()
-                .filter { it.lastTime != null }
+                .filter {
+                    it.lastTime != null && it.account.bareJid.toString() != it.contactJid.bareJid.toString()
+                }
                 .sortedWith { chat1, chat2 ->
                     when {
                         chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
@@ -196,34 +218,53 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                                 || chat2.lastTime > chat1.lastTime -> 1
                         else -> 0
                     }
-                }.toMutableList()
+                }
+                .toMutableList()
+                .apply {
+                    addAll(0, savedMessagesChats)
+                }
         }
     }
 
     private fun <T : BaseEntity> Collection<T>.filteredByString(filterString: String): List<T> {
         val transliteratedFilterString = unidecode(filterString)
-        return this.filter {
+        return this.filter { chat ->
+            val savedMessagesOrEmpty =
+                if (chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()) {
+                    resources.getString(R.string.saved_messages__header)
+                        .lowercase(Locale.getDefault())
+                } else {
+                    ""
+                }
+
             val contactName = RosterManager.getInstance()
-                .getBestContact(it.account, it.contactJid)
+                .getBestContact(chat.account, chat.contactJid)
                 .name
                 .toLowerCase(Locale.getDefault())
 
-            it.contactJid.toString().contains(filterString)
-                    || it.contactJid.toString().contains(transliteratedFilterString)
+            chat.contactJid.toString().contains(filterString)
+                    || chat.contactJid.toString().contains(transliteratedFilterString)
                     || contactName.contains(filterString)
                     || contactName.contains(transliteratedFilterString)
+                    || savedMessagesOrEmpty.contains(filterString)
         }
     }
 
-    private infix fun List<AbstractChat>.unionWith(contactsEmptyChats: List<AbstractChat>): MutableList<AbstractChat> {
+    private infix fun List<AbstractChat>.unionWith(
+        contactsEmptyChats: List<AbstractChat>
+    ): MutableList<AbstractChat> {
         val result = this.toMutableList()
         for (abstractChat in contactsEmptyChats) {
             var isDuplicating = false
-            for (abstractChat1 in this) if (abstractChat.contactJid === abstractChat1.contactJid) {
-                isDuplicating = true
-                break
+            for (abstractChat1 in this) {
+                if (abstractChat.contactJid === abstractChat1.contactJid) {
+                    isDuplicating = true
+                    break
+                }
             }
-            if (!isDuplicating) result.add(abstractChat)
+            if (!isDuplicating) {
+                result.add(abstractChat)
+            }
         }
         return result
     }
