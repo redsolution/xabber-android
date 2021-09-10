@@ -31,7 +31,7 @@ public class GroupMemberRealmObject extends RealmObject {
     private String avatarUrl;
     private String lastSeen;
 
-    private String subscriptionState;
+    private String subscriptionState = SubscriptionState.both.toString();
 
     private boolean isMe = false;
     private boolean isBlocked = false;
