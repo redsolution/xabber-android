@@ -139,7 +139,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         TextView name;
         TextView status;
         SwitchCompat enabledSwitch;
-        TextView tvAccountPushStatus;
 
 
         AccountViewHolder(View itemView) {
@@ -149,7 +148,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             name = itemView.findViewById(R.id.item_account_name);
             status = itemView.findViewById(R.id.item_account_status);
             enabledSwitch = itemView.findViewById(R.id.item_account_switch);
-            tvAccountPushStatus = itemView.findViewById(R.id.tvAccountPushStatus);
 
             // I used on click listener instead of on checked change listener to avoid callback in onBindViewHolder
             enabledSwitch.setOnClickListener(this);
