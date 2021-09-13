@@ -2,7 +2,6 @@ package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -134,11 +135,13 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     }
 
     private void refreshData(){
-        XTokenManager.getInstance().requestSessions(
+        XTokenManager.INSTANCE.requestSessions(
                 accountItem.getConnectionSettings().getXToken().getUid(),
                 accountItem.getConnection(), new XTokenManager.SessionsListener() {
                     @Override
-                    public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
+                    public void onResult(
+                            @Nullable SessionVO currentSession, @NonNull List<SessionVO> sessions
+                    ) {
                         setCurrentSession(currentSession);
                         adapter.setItems(sessions);
                         adapter.notifyDataSetChanged();
@@ -162,26 +165,28 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private void getSessionsData() {
         progressBar.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.GONE);
-        XTokenManager.getInstance().requestSessions(
-            accountItem.getConnectionSettings().getXToken().getUid(),
-            accountItem.getConnection(), new XTokenManager.SessionsListener() {
-                @Override
-                public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
-                    progressBar.setVisibility(View.GONE);
-                    contentView.setVisibility(View.VISIBLE);
-                    setCurrentSession(currentSession);
-                    adapter.setItems(sessions);
-                    terminateAll.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
-                    tvActiveSessions.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
-                }
+        XTokenManager.INSTANCE.requestSessions(
+                accountItem.getConnectionSettings().getXToken().getUid(),
+                accountItem.getConnection(),
+                new XTokenManager.SessionsListener() {
+                    @Override
+                    public void onResult(@Nullable SessionVO currentSession, @NonNull List<SessionVO> sessions) {
+                        progressBar.setVisibility(View.GONE);
+                        contentView.setVisibility(View.VISIBLE);
+                        setCurrentSession(currentSession);
+                        adapter.setItems(sessions);
+                        terminateAll.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                        tvActiveSessions.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                    }
 
-                @Override
-                public void onError() {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(ActiveSessionsActivity.this,
-                            R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(ActiveSessionsActivity.this,
+                                R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
+                    }
                 }
-            });
+            );
     }
 
     private void setCurrentSession(SessionVO session) {
@@ -199,40 +204,24 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private void showTerminateAllSessionsDialog() {
         new AlertDialog.Builder(ActiveSessionsActivity.this)
             .setMessage(R.string.terminate_all_sessions_title)
-            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    XTokenManager.getInstance().sendRevokeXTokenRequest(
-                            accountItem.getConnection(), adapter.getItemsIDs());
-                    getSessionsData();
-                }
+            .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
+                XTokenManager.INSTANCE.sendRevokeXTokenRequest(
+                        accountItem.getConnection(), adapter.getItemsIDs()
+                );
+                getSessionsData();
             })
-            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            })
+            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
             .create().show();
     }
 
     private void showTerminateSessionDialog(final String uid) {
         new AlertDialog.Builder(ActiveSessionsActivity.this)
             .setMessage(R.string.terminate_session_title)
-            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    XTokenManager.getInstance().sendRevokeXTokenRequest(
-                            accountItem.getConnection(), uid);
-                    getSessionsData();
-                }
+            .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
+                XTokenManager.INSTANCE.sendRevokeXTokenRequest(accountItem.getConnection(), uid);
+                getSessionsData();
             })
-            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            })
+            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
             .create().show();
     }
 

@@ -45,7 +45,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.archive.LoadHistorySettings;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XToken;
-import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -219,7 +218,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealmObject.getPassword(),
                     accountRealmObject.getToken(),
                     accountRealmObject.getXToken() != null
-                            ? XTokenManager.xTokenRealmToXToken(accountRealmObject.getXToken()) : null,
+                            ? accountRealmObject.getXToken().toXToken() : null,
                     accountRealmObject.getColorIndex(),
                     order,
                     accountRealmObject.isSyncNotAllowed(),

@@ -7,8 +7,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
+import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.jid.Jid;
@@ -66,8 +66,11 @@ public class AccountRepository {
                     }
                     accountRealmObject.setPassword(password);
 
-                    if (connectionSettings.getXToken() != null)
-                        accountRealmObject.setXToken(XTokenManager.tokenToXTokenRealm(connectionSettings.getXToken()));
+                    if (connectionSettings.getXToken() != null){
+                        accountRealmObject.setXToken(
+                                XTokenRealmObject.createFromXToken(connectionSettings.getXToken())
+                        );
+                    }
                     accountRealmObject.setToken(connectionSettings.getToken());
                     accountRealmObject.setOrder(accountItem.getOrder());
                     accountRealmObject.setSyncNotAllowed(accountItem.isSyncNotAllowed());

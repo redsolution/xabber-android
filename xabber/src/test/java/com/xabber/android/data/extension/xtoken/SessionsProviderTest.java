@@ -1,6 +1,8 @@
 package com.xabber.android.data.extension.xtoken;
 
 import com.xabber.android.data.TestApplication;
+import com.xabber.xmpp.xtoken.ResultSessionsIQ;
+import com.xabber.xmpp.xtoken.SessionsProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +54,7 @@ public class SessionsProviderTest {
 
     @Test
     public void parse() {
-        SessionsIQ element = parseString(stanza);
+        ResultSessionsIQ element = parseString(stanza);
         assertNotNull(element);
         assertEquals(2, element.getSessions().size());
 
@@ -76,8 +78,8 @@ public class SessionsProviderTest {
 
     }
 
-    private SessionsIQ parseString(String source) {
-        SessionsIQ result = null;
+    private ResultSessionsIQ parseString(String source) {
+        ResultSessionsIQ result = null;
         try {
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(new StringReader(source));

@@ -390,7 +390,7 @@ public class Application extends android.app.Application {
         addManager(XMPPAuthManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
-        addManager(XTokenManager.getInstance());
+        addManager(XTokenManager.INSTANCE);
         addManager(GroupsManager.INSTANCE);
         addManager(GroupMemberManager.INSTANCE);
         addManager(RetractManager.INSTANCE);

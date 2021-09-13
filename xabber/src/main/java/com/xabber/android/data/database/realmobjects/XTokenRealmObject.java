@@ -1,5 +1,7 @@
 package com.xabber.android.data.database.realmobjects;
 
+import com.xabber.android.data.extension.xtoken.XToken;
+
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -49,4 +51,13 @@ public class XTokenRealmObject extends RealmObject {
     public void setExpire(long expire) {
         this.expire = expire;
     }
+
+    static public XTokenRealmObject createFromXToken(XToken xToken) {
+        return new XTokenRealmObject(xToken.getUid(), xToken.getToken(), xToken.getExpire());
+    }
+
+    public XToken toXToken() {
+        return new XToken(id, token, expire);
+    }
+
 }

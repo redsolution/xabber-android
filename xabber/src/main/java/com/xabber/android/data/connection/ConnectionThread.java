@@ -28,10 +28,10 @@ import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
-import com.xabber.android.data.extension.xtoken.SessionsIQ;
-import com.xabber.android.data.extension.xtoken.SessionsProvider;
-import com.xabber.android.data.extension.xtoken.XTokenIQ;
-import com.xabber.android.data.extension.xtoken.XTokenProvider;
+import com.xabber.xmpp.xtoken.ResultSessionsIQ;
+import com.xabber.xmpp.xtoken.SessionsProvider;
+import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
+import com.xabber.xmpp.xtoken.XTokenProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
@@ -147,11 +147,11 @@ class ConnectionThread {
         ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
                 ReferenceElement.NAMESPACE, new ReferencesProvider());
 
-        ProviderManager.addIQProvider(XTokenIQ.ELEMENT,
-                XTokenIQ.NAMESPACE, new XTokenProvider());
+        ProviderManager.addIQProvider(IncomingNewXTokenIQ.ELEMENT,
+                IncomingNewXTokenIQ.NAMESPACE, new XTokenProvider());
 
-        ProviderManager.addIQProvider(SessionsIQ.ELEMENT,
-                SessionsIQ.NAMESPACE, new SessionsProvider());
+        ProviderManager.addIQProvider(ResultSessionsIQ.ELEMENT,
+                ResultSessionsIQ.NAMESPACE, new SessionsProvider());
 
         ProviderManager.addIQProvider(GroupchatMemberRightsReplyIQ.ELEMENT, GroupchatMemberRightsReplyIQ.NAMESPACE + GroupchatMemberRightsReplyIQ.HASH_BLOCK,
                 new GroupchatMemberRightsReplyIqProvider());

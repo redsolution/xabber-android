@@ -1,6 +1,8 @@
 package com.xabber.android.data.extension.xtoken;
 
 import com.xabber.android.data.TestApplication;
+import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
+import com.xabber.xmpp.xtoken.XTokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,15 +41,15 @@ public class XTokenProviderTest {
 
     @Test
     public void parse() {
-        XTokenIQ element = parseString(stringToken);
+        IncomingNewXTokenIQ element = parseString(stringToken);
         assertNotNull(element);
         assertEquals("VkpTYqfpPcLpwciTRtgHaV7BC9O9kY", element.getToken());
         assertEquals("49975a48609793c5c93f5e9264f6706f04164", element.getUid());
         assertEquals(1536322632000L, element.getExpire());
     }
 
-    private XTokenIQ parseString(String source) {
-        XTokenIQ result = null;
+    private IncomingNewXTokenIQ parseString(String source) {
+        IncomingNewXTokenIQ result = null;
         try {
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(new StringReader(source));
