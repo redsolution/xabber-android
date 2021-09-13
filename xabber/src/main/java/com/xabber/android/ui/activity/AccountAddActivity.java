@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,7 +43,9 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     }
 
     public static Intent createAuthenticatorResult(AccountJid account) {
-        return IntentHelpersKt.createAccountIntent(null, null, account);
+        Intent intent = new Intent();
+        intent.putExtra("com.xabber.android.data.INTENT_ACCOUNT_JID_KEY", (Parcelable) account);
+        return intent;
     }
 
     @Override
