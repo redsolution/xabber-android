@@ -4,10 +4,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+
+import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -48,8 +49,13 @@ public class AccountDeleteDialog extends DialogFragment implements DialogInterfa
             chbDeleteSettings.setVisibility(View.GONE);
 
         return new AlertDialog.Builder(getActivity())
-                .setMessage(getString(R.string.account_delete_confirm,
-                        AccountManager.getInstance().getVerboseName(account)))
+                .setMessage(
+                        getString(
+                                R.string.account_delete_confirm,
+                                AccountManager.getInstance().getVerboseName(account),
+                                getString(R.string.application_title_full)
+                        )
+                )
                 .setView(view)
                 .setPositiveButton(R.string.account_delete, this)
                 .setNegativeButton(android.R.string.cancel, this)
