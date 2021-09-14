@@ -1,8 +1,11 @@
-package com.xabber.android.data.extension.xtoken;
+package com.xabber.xmpp.xtoken;
+
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.xmpp.xtoken.ResultSessionsIQ;
-import com.xabber.xmpp.xtoken.SessionsProvider;
+import com.xabber.xmpp.xtoken.providers.SessionsProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,10 +16,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28, application = TestApplication.class)
@@ -58,7 +57,7 @@ public class SessionsProviderTest {
         assertNotNull(element);
         assertEquals(2, element.getSessions().size());
 
-        Session session1 = element.getSessions().get(0);
+        ResultSessionsIQ.Session session1 = element.getSessions().get(0);
         assertNotNull(session1);
         assertEquals("xabber-web 2.3", session1.getClient());
         assertEquals("iMac Pro MacOS 10.14", session1.getDevice());
@@ -67,7 +66,7 @@ public class SessionsProviderTest {
         assertEquals(1636322632000L, session1.getExpire());
         assertEquals(1536322632000L, session1.getLastAuth());
 
-        Session session2 = element.getSessions().get(1);
+        ResultSessionsIQ.Session session2 = element.getSessions().get(1);
         assertNotNull(session2);
         assertEquals("xabber-android 2.363", session2.getClient());
         assertEquals("Nokia  Android 8.0", session2.getDevice());

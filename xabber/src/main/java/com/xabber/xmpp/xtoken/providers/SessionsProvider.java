@@ -1,4 +1,6 @@
-package com.xabber.xmpp.xtoken;
+package com.xabber.xmpp.xtoken.providers;
+
+import com.xabber.xmpp.xtoken.ResultSessionsIQ;
 
 import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;

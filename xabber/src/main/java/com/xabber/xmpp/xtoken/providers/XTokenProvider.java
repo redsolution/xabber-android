@@ -1,4 +1,4 @@
-package com.xabber.xmpp.xtoken;
+package com.xabber.xmpp.xtoken.providers;
 
 import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
 

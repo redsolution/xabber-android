@@ -1,8 +1,7 @@
-package com.xabber.android.data.extension.xtoken;
+package com.xabber.xmpp.xtoken;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
-import com.xabber.xmpp.xtoken.XTokenProvider;
+import com.xabber.xmpp.xtoken.providers.XTokenProvider;
 
 import org.junit.Before;
 import org.junit.Test;

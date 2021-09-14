@@ -2,12 +2,19 @@
 <!-- Providers file for default Smack extensions -->
 <smackProviders> 
 
-
     <!-- vCardUpdate -->
     <extensionProvider>
         <elementName>x</elementName>
         <namespace>vcard-temp:x:update</namespace>
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
+    </extensionProvider>
+
+
+    <!-- XEP-TOKEN Token Management -->
+    <extensionProvider>
+        <elementName>revoke</elementName>
+        <namespace>https://xabber.com/protocol/auth-tokens</namespace>
+        <className>com.xabber.xmpp.xtoken.providers.XTokenRevokeExtensionElementProvider</className>
     </extensionProvider>
 
 
@@ -80,12 +87,14 @@
         <className>com.xabber.xmpp.ssn.FeatureProvider</className>
     </extensionProvider>
 
+
     <!-- HTTP File Upload -->
     <iqProvider>
         <elementName>slot</elementName>
         <namespace>urn:xmpp:http:upload</namespace>
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
+
 
     <!-- Avatar Data -->
     <extensionProvider>
@@ -101,12 +110,14 @@
         <className>com.xabber.xmpp.avatar.MetadataProvider</className>
     </extensionProvider>
 
+
     <!-- Custom vCard Provider -->
     <iqProvider>
         <elementName>vCard</elementName>
         <namespace>vcard-temp</namespace>
         <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
     </iqProvider>
+
 
     <!-- XEP-SYNC(0CCC) -->
     <iqProvider>

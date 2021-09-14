@@ -10,6 +10,7 @@ import com.xabber.android.ui.OnXTokenSessionsUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.xmpp.smack.XMPPTCPConnection
 import com.xabber.xmpp.xtoken.*
+import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.hasXTokenRevokeExtensionElement
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import java.lang.ref.WeakReference
@@ -25,6 +26,9 @@ object XTokenManager : OnPacketListener {
             )
         } else if (packet is Message && packet.hasExtension(NAMESPACE)) {
             notifySamUiListeners(OnXTokenSessionsUpdatedListener::class.java)
+            if (packet.hasXTokenRevokeExtensionElement()) {
+                LogManager.d(this, "Got revoke XTOKEN!")
+            }
         }
     }
 
