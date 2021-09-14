@@ -5,7 +5,6 @@ import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnPacketListener
-import com.xabber.android.data.connection.StanzaSender
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
@@ -81,19 +80,21 @@ object ChatMarkerManager : OnPacketListener {
         }
 
         try {
-            StanzaSender.sendStanza(
-                messageRealmObject.account,
-                Message(messageRealmObject.user.jid).apply {
-                    addExtension(
-                        ChatMarkersElements.DisplayedExtension(originalMessage.stanzaId).apply {
-                            setStanzaIdExtensions(stanzaIds)
-                        }
-                    )
-                    type = Message.Type.chat
-                }
-            )
+            AccountManager.getInstance()
+                .getAccount(messageRealmObject.account)
+                ?.connection
+                ?.sendStanza(
+                    Message(messageRealmObject.user.jid).apply {
+                        addExtension(
+                            ChatMarkersElements.DisplayedExtension(originalMessage.stanzaId).apply {
+                                setStanzaIdExtensions(stanzaIds)
+                            }
+                        )
+                        type = Message.Type.chat
+                    }
+                )
         } catch (e: NetworkException) {
-            LogManager.exception(ChatMarkerManager::class.java.simpleName, e)
+            LogManager.exception(this, e)
         }
     }
 
@@ -142,14 +143,16 @@ object ChatMarkerManager : OnPacketListener {
         if (message.stanzaId == null || message.stanzaId.isEmpty()) return
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                StanzaSender.sendStanza(
-                    account,
-                    Message(message.from).apply {
-                        addExtension(ChatMarkersElements.ReceivedExtension(message.stanzaId))
-                        thread = message.thread
-                        type = Message.Type.chat
-                    }
-                )
+                AccountManager.getInstance()
+                    .getAccount(account)
+                    ?.connection
+                    ?.sendStanza(
+                        Message(message.from).apply {
+                            addExtension(ChatMarkersElements.ReceivedExtension(message.stanzaId))
+                            thread = message.thread
+                            type = Message.Type.chat
+                        }
+                    )
             } catch (e: NetworkException) {
                 LogManager.exception(ChatMarkerManager::class.java.simpleName, e)
             }

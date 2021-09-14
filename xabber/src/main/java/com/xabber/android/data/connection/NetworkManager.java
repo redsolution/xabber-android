@@ -38,8 +38,6 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
 
     private final ConnectivityManager connectivityManager;
 
-
-
     private static NetworkManager instance;
 
     public static NetworkManager getInstance() {

@@ -26,7 +26,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -195,7 +194,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setTo(to);
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
-        StanzaSender.sendStanza(account, message);
+        try {
+            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+        }
         // todo chat.newAction(null,Application.getInstance().getApplicationContext().getString(R.string.action_attention_called), ChatAction.attention_called);
     }
 

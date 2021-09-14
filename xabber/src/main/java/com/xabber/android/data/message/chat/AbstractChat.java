@@ -22,9 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
@@ -51,10 +50,13 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.xmpp.sid.OriginIdElement;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
+import org.jivesoftware.smack.sm.StreamManagementException;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
@@ -582,21 +584,31 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
             final String messageId = messageRealmObject.getPrimaryKey();
             try {
-                StanzaSender.sendStanza(account, message, packet -> {
-                    Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                    realm.executeTransaction(realm1 -> {
-                        MessageRealmObject acknowledgedMessage = realm1
-                                .where(MessageRealmObject.class)
-                                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
-                                .findFirst();
+                XMPPTCPConnection connection =
+                        AccountManager.getInstance().getAccount(account).getConnection();
 
-                        if (acknowledgedMessage != null && !DeliveryManager.getInstance().isSupported(account)) {
-                            acknowledgedMessage.setMessageStatus(MessageStatus.DELIVERED);
-                        }
-                    });
-                    if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-                });
-            } catch (NetworkException e) {
+                if (connection.isSmEnabled()) {
+                    connection.addStanzaIdAcknowledgedListener(
+                            message.getStanzaId(),
+                            packet -> {
+                                Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                                realm.executeTransaction(realm1 -> {
+                                    MessageRealmObject acknowledgedMessage = realm1
+                                            .where(MessageRealmObject.class)
+                                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
+                                            .findFirst();
+
+                                    if (acknowledgedMessage != null && !DeliveryManager.getInstance().isSupported(account)) {
+                                        acknowledgedMessage.setMessageStatus(MessageStatus.DELIVERED);
+                                    }
+                                });
+                                if (Looper.myLooper() != Looper.getMainLooper()) {
+                                    realm.close();
+                                }
+                            });
+                }
+                connection.sendStanza(message);
+            } catch (SmackException.NotConnectedException | InterruptedException | StreamManagementException e) {
                 return false;
             }
         }

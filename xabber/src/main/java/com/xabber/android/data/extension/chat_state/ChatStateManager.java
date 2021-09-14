@@ -29,11 +29,11 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedNestedMaps;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -263,7 +263,11 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState, type));
-        StanzaSender.sendStanzaAsync(account, message);
+        try {
+            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+        }
         if (chatState == ChatState.composing) {
             setComposingSender(chat, chatState, type);
         } else {
@@ -279,7 +283,14 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                 message.setType(chat.getType());
                 message.setTo(chat.getTo());
                 message.addExtension(new ChatStateExtension(chatState, type));
-                StanzaSender.sendStanzaAsync(chat.getAccount(), message);
+                try {
+                    AccountManager.getInstance()
+                            .getAccount(chat.getAccount())
+                            .getConnection()
+                            .sendStanza(message);
+                } catch (Exception e) {
+                    LogManager.exception(this, e);
+                }
                 stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
             }
         };
@@ -319,8 +330,11 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(ChatState.active));
-
-        StanzaSender.sendStanzaAsync(account, message);
+        try {
+            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+        }
         sent.put(chat.getAccount().toString(), chat.getContactJid().toString(), ChatState.active);
     }
     /**

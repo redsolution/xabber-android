@@ -2,10 +2,9 @@ package com.xabber.android.data.extension.groups
 
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.OnLoadListener
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.connection.StanzaSender
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.database.realmobjects.GroupInviteRealmObject
 import com.xabber.android.data.database.repositories.GroupInviteRepository
 import com.xabber.android.data.entity.AccountJid
@@ -30,7 +29,6 @@ import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
-import org.jivesoftware.smack.packet.XMPPError
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -58,7 +56,8 @@ object GroupInviteManager : OnLoadListener {
             }
             val inviteReason = inviteExtensionElement.getReason()
             if (invitesList.none {
-                    it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender }
+                    it.accountJid == account && it.groupJid == groupContactJid && it.senderJid == sender
+                }
             ) {
                 val giro = GroupInviteRealmObject(account, groupContactJid, sender).apply {
                     isIncoming = true
@@ -196,9 +195,10 @@ object GroupInviteManager : OnLoadListener {
                     contactsToInvite.forEach { contact ->
                         accountItem.connection.sendIqWithResponseCallback(
                             GroupInviteRequestIQ(chat as GroupChat?, contact, false),
-                            { sendMessageWithInvite(account, groupJid, contact, reason, listener) })
-                        { exception: java.lang.Exception? ->
-                            run {
+                            {
+                                sendMessageWithInvite(account, groupJid, contact, reason, listener)
+                            },
+                            { exception: java.lang.Exception? ->
                                 LogManager.exception(LOG_TAG, exception)
                                 if (exception is XMPPException.XMPPErrorException) {
                                     listener.onIqError(exception.xmppError)
@@ -206,7 +206,7 @@ object GroupInviteManager : OnLoadListener {
                                     listener.onOtherError(exception)
                                 }
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -224,44 +224,26 @@ object GroupInviteManager : OnLoadListener {
         account: AccountJid, groupJid: ContactJid, contactToInviteJid: ContactJid,
         reason: String?, listener: BaseIqResultUiListener
     ) {
-        val errors = mutableListOf<XMPPError>()
-        var exception: java.lang.Exception? = null
-
         try {
-            StanzaSender.sendStanza(
-                account,
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
                 Message().apply {
                     addBody(
-                        null, Application.getInstance().applicationContext
-                            .getString(
-                                R.string.groupchat_legacy_invitation_body,
-                                groupJid.toString()
-                            )
+                        null,
+                        Application.getInstance().applicationContext.getString(
+                            R.string.groupchat_legacy_invitation_body,
+                            groupJid.toString()
+                        )
                     )
                     to = contactToInviteJid.jid
                     type = Message.Type.chat
                     addExtension(InviteMessageExtensionElement(groupJid, reason))
                 }
             )
-            { packet1: Stanza ->
-                run {
-                    if (packet1.error != null) {
-                        errors.add(packet1.error)
-                    }
-                }
-            }
         } catch (e: java.lang.Exception) {
-            LogManager.exception(LOG_TAG, e)
-            exception = e
+            listener.onOtherError()
         }
 
-        when {
-            errors.size == 1 -> listener.onIqError(errors[0])
-            errors.size > 1 -> listener.onIqErrors(errors)
-            exception != null -> listener.onOtherError(exception)
-            else -> listener.onResult()
-        }
-
+        listener.onResult()
     }
 
     fun requestGroupInvitationsList(

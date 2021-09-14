@@ -28,7 +28,6 @@ import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.realmobjects.CircleRealmObject;
 import com.xabber.android.data.database.realmobjects.ContactRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -488,8 +487,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             item.addGroupName(group);
         }
         packet.addRosterItem(item);
-
-        StanzaSender.sendStanza(account, packet);
+        try {
+            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(packet);
+        } catch (InterruptedException | SmackException.NotConnectedException e) {
+            LogManager.exception(getClass().getSimpleName(), e);
+        }
     }
 
     public void setName(AccountJid account, ContactJid user, final String name) {

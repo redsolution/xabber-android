@@ -7,7 +7,6 @@ import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnPacketListener
-import com.xabber.android.data.connection.StanzaSender
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.database.repositories.MessageRepository
@@ -100,12 +99,12 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     VCardManager.getInstance().addVCardUpdateToPresence(
                         accountPresence, AvatarManager.getInstance().getHash(group.account.bareJid)
                     )
-                    StanzaSender.sendStanza(
-                        group.account,
+                    AccountManager.getInstance().getAccount(group.account)?.connection?.sendStanza(
                         accountPresence.apply {
                             addExtension(GroupPresenceNotificationExtensionElement(isPresent))
                             to = group.to
-                        })
+                        }
+                    )
                 }
             }
         } catch (ignore: NetworkException) {

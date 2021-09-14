@@ -25,7 +25,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -47,6 +46,7 @@ import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.OnNewMessageListener;
 import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
@@ -450,8 +450,8 @@ public class MessageManager implements OnPacketListener {
         CarbonManager.INSTANCE.setMessageToIgnoreCarbons(message);
         LogManager.d(LOG_TAG, "Message sent without chat. Invoke CarbonManager setMessageToIgnoreCarbons");
         try {
-            StanzaSender.sendStanza(account, message);
-        } catch (NetworkException e) {
+            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+        } catch (InterruptedException | SmackException.NotConnectedException e) {
             LogManager.exception(getClass().getSimpleName(), e);
         }
     }

@@ -23,7 +23,10 @@ import com.xabber.android.data.account.AccountItem
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.account.OnAccountDisabledListener
 import com.xabber.android.data.account.StatusMode
-import com.xabber.android.data.connection.*
+import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.OnAuthenticatedListener
+import com.xabber.android.data.connection.OnDisconnectListener
+import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.AccountJid
@@ -51,6 +54,7 @@ import com.xabber.android.ui.text.getDisplayStatusForGroupchat
 import com.xabber.xmpp.groups.GroupExtensionElement
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
 import com.xabber.xmpp.groups.hasGroupExtensionElement
+import org.jivesoftware.smack.SmackException.NotConnectedException
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Stanza
 import org.jxmpp.jid.BareJid
@@ -59,6 +63,7 @@ import org.jxmpp.jid.parts.Resourcepart
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashSet
+
 
 /**
  * Process contact's presence information.
@@ -127,10 +132,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @JvmOverloads
     @Throws(NetworkException::class)
     fun requestSubscription(account: AccountJid, user: ContactJid, createChat: Boolean = true) {
-        StanzaSender.sendStanza(
-            account,
-            Presence(Presence.Type.subscribe).apply { to = user.jid }
-        )
+        try {
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+                Presence(Presence.Type.subscribe).apply {
+                    to = user.jid
+                }
+            )
+        } catch (e: InterruptedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        } catch (e: NotConnectedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
         addRequestedSubscription(account, user)
         if (createChat) {
             createChatForNewContact(account, user)
@@ -161,10 +173,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         if (notify) {
             createChatForAcceptingIncomingRequest(account, user)
         }
-        StanzaSender.sendStanza(
-            account,
-            Presence(Presence.Type.subscribed).apply { to = user.jid }
-        )
+        try {
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+                Presence(Presence.Type.subscribed).apply {
+                    to = user.jid
+                }
+            )
+        } catch (e: InterruptedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        } catch (e: NotConnectedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
         subscriptionRequestProvider.remove(account, user)
         removeRequestedSubscription(account, user)
     }
@@ -202,10 +221,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      */
     @Throws(NetworkException::class)
     fun discardSubscription(account: AccountJid, user: ContactJid) {
-        StanzaSender.sendStanza(
-            account,
-            Presence(Presence.Type.unsubscribed).apply { to = user.jid }
-        )
+        try {
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+                Presence(Presence.Type.unsubscribed).apply {
+                    to = user.jid
+                }
+            )
+        } catch (e: InterruptedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        } catch (e: NotConnectedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
         subscriptionRequestProvider.remove(account, user)
         removeRequestedSubscription(account, user)
     }
@@ -215,10 +241,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      */
     @Throws(NetworkException::class)
     fun subscribeForPresence(account: AccountJid?, user: ContactJid) {
-        StanzaSender.sendStanza(
-            account,
-            Presence(Presence.Type.subscribe).apply { to = user.jid }
-        )
+        try {
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+                Presence(Presence.Type.subscribe).apply {
+                    to = user.jid
+                }
+            )
+        } catch (e: InterruptedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        } catch (e: NotConnectedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
     }
 
     /**
@@ -226,10 +259,17 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
      */
     @Throws(NetworkException::class)
     fun unsubscribeFromPresence(account: AccountJid?, user: ContactJid) {
-        StanzaSender.sendStanza(
-            account,
-            Presence(Presence.Type.unsubscribe).apply { to = user.jid }
-        )
+        try {
+            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+                Presence(Presence.Type.unsubscribe).apply {
+                    to = user.jid
+                }
+            )
+        } catch (e: InterruptedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        } catch (e: NotConnectedException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
     }
 
     fun addAutoAcceptGroupSubscription(account: AccountJid, groupJid: ContactJid) {
@@ -350,7 +390,10 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         getAccountPresence(account)?.let { accountPresence ->
             VCardManager.getInstance().addVCardUpdateToPresence(accountPresence, hash)
             try {
-                StanzaSender.sendStanza(account, accountPresence)
+                AccountManager.getInstance()
+                    .getAccount(account)
+                    ?.connection
+                    ?.sendStanza(accountPresence)
             } catch (ex: Exception) {
                 LogManager.exception(this, ex)
             }

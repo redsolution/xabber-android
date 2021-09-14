@@ -17,11 +17,10 @@ package com.xabber.android.data.message;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
@@ -31,6 +30,7 @@ import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.xmpp.groups.GroupExtensionElement;
 import com.xabber.xmpp.sid.UniqueIdsHelper;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -103,8 +103,11 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     receipt.setThread(message.getThread());
                     receipt.setType(Message.Type.chat);
                     try {
-                        StanzaSender.sendStanza(account, receipt);
-                    } catch (NetworkException e) {
+                        AccountManager.getInstance()
+                                .getAccount(account)
+                                .getConnection()
+                                .sendStanza(receipt);
+                    } catch (InterruptedException | SmackException.NotConnectedException e) {
                         LogManager.exception(this, e);
                     }
                 }
