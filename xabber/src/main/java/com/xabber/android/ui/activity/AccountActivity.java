@@ -5,6 +5,7 @@ import static com.xabber.android.ui.helper.PermissionsRequester.REQUEST_PERMISSI
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -74,6 +75,7 @@ import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountColorDialog;
+import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.helper.BlurTransformation;
@@ -454,7 +456,14 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(BookmarksActivity.createIntent(this, account));
                 break;
             case DELETE_ACCOUNT:
-                startActivity(AccountDeleteActivity.createIntent(this, account));
+                AccountDeleteDialog deleteDialog =
+                        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount());
+                deleteDialog.setListener((dialog1, which) -> {
+                    if (which == Dialog.BUTTON_POSITIVE) {
+                        finish();
+                    }
+                });
+                deleteDialog.show(getSupportFragmentManager(), AccountDeleteDialog.class.getName());
                 break;
             case SYNCHRONIZATION:
                 if (XabberAccountManager.getInstance().getAccount() != null) {

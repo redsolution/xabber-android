@@ -172,8 +172,10 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getSupportFragmentManager(),
-                AccountDeleteDialog.class.getName());
+        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount()).show(
+                getSupportFragmentManager(),
+                AccountDeleteDialog.class.getName()
+        );
     }
 
     @Override

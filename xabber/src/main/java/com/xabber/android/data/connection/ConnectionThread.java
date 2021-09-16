@@ -20,24 +20,24 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
-import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ;
-import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
-import com.xabber.xmpp.xtoken.ResultSessionsIQ;
-import com.xabber.xmpp.xtoken.providers.SessionsProvider;
-import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
-import com.xabber.xmpp.xtoken.providers.XTokenProvider;
+import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ;
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
+import com.xabber.xmpp.xtoken.ResultSessionsIQ;
+import com.xabber.xmpp.xtoken.providers.SessionsProvider;
+import com.xabber.xmpp.xtoken.providers.XTokenProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -179,8 +179,7 @@ class ConnectionThread {
             LogManager.exception(this, e);
 
             if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
-                LogManager.d(this, "Authorization error with x-token: " + e.toString());
-                AccountManager.getInstance().removeXToken(connectionItem.getAccount());
+                XTokenManager.INSTANCE.onAccountXTokenRevoked(connectionItem.getAccount());
             }
 
             AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),

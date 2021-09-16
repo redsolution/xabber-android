@@ -290,10 +290,6 @@ public class XabberAccountManager implements OnLoadListener {
         compositeSubscription.add(getAccountSubscription);
     }
 
-    public void updateAccountInfo() {
-        getAccountFromNet(account.getToken(), false);
-    }
-
     /**
      * Send local Xabber account settings updates to the server.
      */
@@ -419,8 +415,7 @@ public class XabberAccountManager implements OnLoadListener {
         for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
             if (entry.getValue())
                 try {
-                    AccountJid accountJid = AccountJid.from(entry.getKey());
-                    AccountManager.getInstance().removeAccount(accountJid);
+                    AccountManager.getInstance().removeAccount(AccountJid.from(entry.getKey()));
                 } catch (Exception e) {
                     LogManager.exception(LOG_TAG, e);
                 }
@@ -536,7 +531,8 @@ public class XabberAccountManager implements OnLoadListener {
 
     @Nullable
     public Single<List<XMPPAccountSettings>> updateLocalAccounts(
-            @Nullable List<XMPPAccountSettings> accounts) {
+            @Nullable List<XMPPAccountSettings> accounts
+    ) {
         if (accounts != null) {
             for (XMPPAccountSettings account : accounts) {
                 updateLocalAccount(account);
@@ -556,8 +552,10 @@ public class XabberAccountManager implements OnLoadListener {
                     AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(),
                             "", account.getToken(), false, true,
                             true, false, false, true, false);
-                    AccountManager.getInstance().setColor(jid,
-                            ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                    AccountManager.getInstance().setColor(
+                            jid,
+                            ColorManager.getInstance().convertColorNameToIndex(account.getColor())
+                    );
                     AccountManager.getInstance().setOrder(jid, account.getOrder());
                     AccountManager.getInstance().setTimestamp(jid, account.getTimestamp());
                     AccountManager.getInstance().onAccountChanged(jid);
@@ -582,28 +580,12 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
-    public void createLocalAccountIfNotExist() {
-        Collections.sort(xmppAccountsForCreate, Collections.reverseOrder());
-        Application.getInstance().runInBackground(() -> {
-            if (xmppAccountsForCreate != null) {
-                for (XMPPAccountSettings account : xmppAccountsForCreate) {
-                    updateLocalAccount(account);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        LogManager.exception(getClass().getSimpleName(), e);
-                    }
-                }
-            }
-            xmppAccountsForCreate.clear();
-        });
-    }
-
     public void deleteUnSyncedLocalAccounts() {
         for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
             AccountJid accountJid = getExistingAccount(entry.getKey());
-            if (accountJid != null && !entry.getValue())
+            if (accountJid != null && !entry.getValue()){
                 AccountManager.getInstance().removeAccount(accountJid);
+            }
         }
     }
 
@@ -619,14 +601,6 @@ public class XabberAccountManager implements OnLoadListener {
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
             String accountJidString = accountJid.getFullJid().asBareJid().toString();
             if (jid.equals(accountJidString)) return accountJid;
-        }
-        return null;
-    }
-
-    @Nullable
-    public XMPPAccountSettings getAccountSettingsForSync(String jid) {
-        for (XMPPAccountSettings account : xmppAccountsForSync) {
-            if (account.getJid().equals(jid)) return account;
         }
         return null;
     }
@@ -881,5 +855,6 @@ public class XabberAccountManager implements OnLoadListener {
 
     public static class XabberAccountDeletedEvent {
     }
+
 }
 

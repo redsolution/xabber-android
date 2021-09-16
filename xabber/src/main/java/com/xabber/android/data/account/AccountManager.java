@@ -538,13 +538,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         } else LogManager.d(LOG_TAG, "tried to update account with new xtoken, but account was null");
     }
 
-    public void removeXToken(AccountJid account) {
-        AccountItem accountItem = getAccount(account);
-        if (accountItem != null) {
-            accountItem.setXToken(null);
-        }
-    }
-
     /**
      * Update user`s account.
      * It will reconnect to the server with new generated Resourcepart

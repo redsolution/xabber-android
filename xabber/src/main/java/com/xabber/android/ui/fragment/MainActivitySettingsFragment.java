@@ -300,8 +300,10 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
-                AccountDeleteDialog.class.getName());
+        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount()).show(
+                getFragmentManager(),
+                AccountDeleteDialog.class.getName()
+        );
     }
 
     private void changeTheme() {

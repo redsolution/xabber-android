@@ -5,6 +5,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnPacketListener
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.OnXTokenSessionsUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
@@ -27,9 +28,13 @@ object XTokenManager : OnPacketListener {
         } else if (packet is Message && packet.hasExtension(NAMESPACE)) {
             notifySamUiListeners(OnXTokenSessionsUpdatedListener::class.java)
             if (packet.hasXTokenRevokeExtensionElement()) {
-                LogManager.d(this, "Got revoke XTOKEN!")
+                connection?.account?.let { onAccountXTokenRevoked(it) }
             }
         }
+    }
+
+    fun onAccountXTokenRevoked(accountJid: AccountJid) {
+        TODO("IMPLEMENT THIS")
     }
 
     fun sendXTokenRequest(connection: XMPPTCPConnection) {

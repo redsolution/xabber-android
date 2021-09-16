@@ -572,8 +572,6 @@
                 android:value="com.xabber.android.ui.activity.AccountActivity"/>
         </activity>
 
-        <activity android:name=".ui.activity.AccountDeleteActivity" />
-
         <activity android:name=".ui.activity.ConnectedDevicesActivity" />
 
         <activity android:name=".ui.activity.GroupStatusActivity" >

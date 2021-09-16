@@ -33,7 +33,6 @@ import com.xabber.android.ui.OnAddAccountClickListener;
 import com.xabber.android.ui.OnReorderClickListener;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.AccountListActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
@@ -154,7 +153,9 @@ public class PreferenceEditor extends ManagedActivity implements OnAddAccountCli
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getSupportFragmentManager(),
-                AccountDeleteDialog.class.getName());
+        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount()).show(
+                getSupportFragmentManager(),
+                AccountDeleteDialog.class.getName()
+        );
     }
 }
