@@ -77,18 +77,10 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         LogManager.i(LOG_TAG, "Active network info: " + networkInfo);
 
-        if (networkInfo != null) {
-            switch (networkInfo.getState()) {
-                case CONNECTED:
-                    shutdownConnection();
-                    onAvailable();
-                    break;
-                case DISCONNECTING:
-                case DISCONNECTED:
-                case SUSPENDED:
-                    shutdownConnection();
-                    break;
-            }
+        //todo fix this to use on background thread
+        if (networkInfo != null && networkInfo.getState().equals(State.CONNECTED)) {
+            shutdownConnection();
+            onAvailable();
         } else {
             shutdownConnection();
         }
