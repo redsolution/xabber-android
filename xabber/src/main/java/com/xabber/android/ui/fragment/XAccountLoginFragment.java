@@ -225,7 +225,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         }
 
         try {
-            AccountManager.getInstance().addAccount(
+            AccountManager.INSTANCE.addAccount(
                     edtUsername.getText().toString().trim(),
                     edtPassword.getText().toString(),
                     "",

@@ -82,7 +82,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             return;
         }
 
-        accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -181,7 +181,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         if (!deleteAccount) {
             for (XMPPAccountSettings set : settings) {
                 if (set.getJid().equals(jid))
-                    AccountManager.getInstance().setTimestamp(accountItem.getAccount(), set.getTimestamp() + 1);
+                    AccountManager.INSTANCE.setTimestamp(accountItem.getAccount(), set.getTimestamp() + 1);
             }
         }
 
@@ -225,7 +225,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     }
 
     private void checkAccount() {
-        if (AccountManager.getInstance().getAccount(accountItem.getAccount()) == null) {
+        if (AccountManager.INSTANCE.getAccount(accountItem.getAccount()) == null) {
             // in case if account was removed
             finish();
         }

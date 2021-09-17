@@ -176,7 +176,7 @@ public class UploadService extends IntentService {
                            CharSequence uploadServerUrl, String existMessageId, String messageAttachmentType) {
 
         // get account item
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             publishError(null, "Account not found");
             return;

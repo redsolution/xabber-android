@@ -585,7 +585,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             final String messageId = messageRealmObject.getPrimaryKey();
             try {
                 XMPPTCPConnection connection =
-                        AccountManager.getInstance().getAccount(account).getConnection();
+                        AccountManager.INSTANCE.getAccount(account).getConnection();
 
                 if (connection.isSmEnabled()) {
                     connection.addStanzaIdAcknowledgedListener(

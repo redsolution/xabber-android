@@ -206,7 +206,7 @@ public class MessageNotificationCreator {
     private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
         if (!MessageNotificationManager.INSTANCE.isTimeToNewFullNotification()) return true;
         if (chat == null) return false;
-        AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(chat.getAccountJid());
         if (accountItem != null) return accountItem.inGracePeriod();
         else return false;
     }

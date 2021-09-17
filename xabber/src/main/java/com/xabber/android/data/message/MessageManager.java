@@ -94,7 +94,7 @@ public class MessageManager implements OnPacketListener {
         sendMessage(text, markupText, ChatManager.getInstance().getChat(account, user));
 
         // stop grace period
-        AccountManager.getInstance().stopGracePeriod(account);
+        AccountManager.INSTANCE.stopGracePeriod(account);
 
         for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
             listener.onAction();
@@ -450,7 +450,7 @@ public class MessageManager implements OnPacketListener {
         CarbonManager.INSTANCE.setMessageToIgnoreCarbons(message);
         LogManager.d(LOG_TAG, "Message sent without chat. Invoke CarbonManager setMessageToIgnoreCarbons");
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
         } catch (InterruptedException | SmackException.NotConnectedException e) {
             LogManager.exception(getClass().getSimpleName(), e);
         }
@@ -472,7 +472,7 @@ public class MessageManager implements OnPacketListener {
                 // just ignore carbons from not-authorized user
                 return;
             }
-            AccountManager.getInstance().startGracePeriod(account);
+            AccountManager.INSTANCE.startGracePeriod(account);
 
         } else if (direction == CarbonExtension.Direction.received) {
 

@@ -136,12 +136,12 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
         setupToolbarLayout();
         /* Update avatar and status ImageViews via current settings and main user */
         if (SettingsManager.contactsShowAvatars()
-                && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
+                && AccountManager.INSTANCE.getEnabledAccounts().size() != 0) {
 
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
-            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            AccountJid mainAccountJid = AccountManager.INSTANCE.getFirstAccount();
+            AccountItem mainAccountItem = AccountManager.INSTANCE.getAccount(mainAccountJid);
             Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
             toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
@@ -153,9 +153,9 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
 
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountManager.getInstance().getFirstAccount() != null)
+                AccountManager.INSTANCE.getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+                    getAccountRippleColor(AccountManager.INSTANCE.getFirstAccount()));
         else {
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
@@ -165,7 +165,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
 
         /* Update left color indicator via current main user */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+                && AccountManager.INSTANCE.getEnabledAccounts().size() > 1) {
             toolbarAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             toolbarAccountColorIndicatorBack.setBackgroundColor(

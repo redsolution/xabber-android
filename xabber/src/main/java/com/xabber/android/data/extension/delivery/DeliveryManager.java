@@ -58,7 +58,7 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
     public boolean isSupported(AccountItem accountItem) { return isSupported(accountItem.getConnection()); }
 
     public boolean isSupported(AccountJid accountJid) {
-        return isSupported(AccountManager.getInstance().getAccount(accountJid));
+        return isSupported(AccountManager.INSTANCE.getAccount(accountJid));
     }
 
     public void resendMessagesWithoutReceipt() {
@@ -67,8 +67,8 @@ public class DeliveryManager implements OnPacketListener, OnConnectedListener {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
-                        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                    for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()){
+                        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
                         if (accountItem != null
                                 && accountItem.isSuccessfulConnectionHappened()
                                 && isSupported(accountItem)){

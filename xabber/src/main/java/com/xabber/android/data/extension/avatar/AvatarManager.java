@@ -400,11 +400,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * </ul>
      */
     public Drawable getMainAccountAvatar() {
-        if (AccountManager.getInstance().getFirstAccount() == null || (bitmaps.isEmpty()
-                || !hashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid())
-                || !XEPHashes.containsKey(AccountManager.getInstance().getFirstAccount().getBareJid().asBareJid()))) {
+        if (AccountManager.INSTANCE.getFirstAccount() == null || (bitmaps.isEmpty()
+                || !hashes.containsKey(AccountManager.INSTANCE.getFirstAccount().getBareJid().asBareJid())
+                || !XEPHashes.containsKey(AccountManager.INSTANCE.getFirstAccount().getBareJid().asBareJid()))) {
             if (SettingsManager.getMainAvatarHash().equals("0")) {
-                AccountJid account = AccountManager.getInstance().getFirstAccount();
+                AccountJid account = AccountManager.INSTANCE.getFirstAccount();
                 if (account == null) return null;
                 return getDefaultAccountAvatar(account);
             }
@@ -413,7 +413,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 return new BitmapDrawable(application.getResources(), value);
             }
         } else {
-            AccountJid account = AccountManager.getInstance().getFirstAccount();
+            AccountJid account = AccountManager.INSTANCE.getFirstAccount();
             if (account == null) return null;
             Bitmap value = getBitmap(account.getFullJid().asBareJid());
             if (value != null) {
@@ -452,14 +452,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @NonNull
     public Drawable getDefaultAccountAvatar(AccountJid account) {
-        String name = AccountManager.getInstance().getVerboseName(account);
+        String name = AccountManager.INSTANCE.getVerboseName(account);
         int color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         return generateDefaultAvatar(name, color);
     }
 
     @NonNull
     public Drawable getDefaultAccountAvatarForSync(AccountJid account, int color) {
-        String name = AccountManager.getInstance().getVerboseName(account);
+        String name = AccountManager.INSTANCE.getVerboseName(account);
         return generateDefaultAvatar(name, color);
     }
 
@@ -526,7 +526,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                     groupchatMemberDefaultDrawables.remove(member.getBestName());
                 } else {
                     if (account != null) {
-                        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+                        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
                         checkIfMemberAvatarIsSavedLocallyAndLoad(member, accountItem);
                     }
                     drawable = getDefaultMemberAvatar(member);
@@ -699,7 +699,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 setValue(hash, value, type);
                 setXEPHash(jid, hash);
             }
-            AccountJid account = AccountManager.getInstance().getFirstAccount();
+            AccountJid account = AccountManager.INSTANCE.getFirstAccount();
             if (account != null && account.getBareJid().toString().equals(jid.toString()))
                 SettingsManager.setMainAvatarHash(hash);
         }

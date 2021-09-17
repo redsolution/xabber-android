@@ -141,7 +141,7 @@ public class ColorManager {
     }
 
     public static int getAccountColorLevel(AccountJid account) {
-        return AccountManager.getInstance().getColorLevel(account);
+        return AccountManager.INSTANCE.getColorLevel(account);
     }
 
 

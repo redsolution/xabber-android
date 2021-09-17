@@ -62,11 +62,11 @@ public class AccountPainter {
     }
 
     public static int getAccountColorLevel(AccountJid account) {
-        return AccountManager.getInstance().getColorLevel(account);
+        return AccountManager.INSTANCE.getColorLevel(account);
     }
 
     public static int getDefaultAccountColorLevel() {
-        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
+        AccountJid firstAccount = AccountManager.INSTANCE.getFirstAccount();
         if (firstAccount == null) {
             return 5;
         } else {
@@ -123,7 +123,7 @@ public class AccountPainter {
     }
 
     public int getDefaultMainColor() {
-        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
+        AccountJid firstAccount = AccountManager.INSTANCE.getFirstAccount();
         if (firstAccount == null) {
             return accountMainColors[SettingsManager.getMainAccountColorLevel()];
         } else {
@@ -132,7 +132,7 @@ public class AccountPainter {
     }
 
     public int getDefaultRippleColor() {
-        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
+        AccountJid firstAccount = AccountManager.INSTANCE.getFirstAccount();
         if (firstAccount == null) {
             return accountRippleColors[SettingsManager.getMainAccountColorLevel()];
         } else {
@@ -141,7 +141,7 @@ public class AccountPainter {
     }
 
     public int getDefaultIndicatorBackColor() {
-        AccountJid firstAccount = AccountManager.getInstance().getFirstAccount();
+        AccountJid firstAccount = AccountManager.INSTANCE.getFirstAccount();
         if (firstAccount == null) {
             return themeMainColor;
         } else {

@@ -1,5 +1,7 @@
 package com.xabber.android.ui.dialog;
 
+import static com.xabber.android.data.account.AccountErrorEvent.Type.AUTHORIZATION;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -20,8 +22,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountSettingsActivity;
-
-import static com.xabber.android.data.account.AccountErrorEvent.Type.AUTHORIZATION;
 
 /**
  * Created by valery.miller on 04.08.17.
@@ -49,7 +49,7 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
         accountErrorEvent = (AccountErrorEvent) args.getSerializable(ARGUMENT_ERROR_EVENT);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setTitle(AccountManager.getInstance().getVerboseName(accountErrorEvent.getAccount()))
+                .setTitle(AccountManager.INSTANCE.getVerboseName(accountErrorEvent.getAccount()))
                 .setView(setUpDialogView())
                 .setPositiveButton(R.string.login, this)
                 .setNegativeButton(R.string.skip, this);
@@ -120,7 +120,7 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
             LogManager.d("AccountEnterPassDialog", "pressed positive button");
             if (edtPass != null) {
                 String password = edtPass.getText().toString();
-                AccountManager.getInstance().updateAccountPassword(accountErrorEvent.getAccount(), password);
+                AccountManager.INSTANCE.updateAccountPassword(accountErrorEvent.getAccount(), password);
             }
         }
         if (which == Dialog.BUTTON_NEGATIVE) {
@@ -136,7 +136,7 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
             }
 
             if (activity instanceof AccountSettingsActivity) {
-                AccountManager.getInstance().removeAccountError(accountErrorEvent.getAccount());
+                AccountManager.INSTANCE.removeAccountError(accountErrorEvent.getAccount());
             } else {
                 startActivity(AccountActivity.createConnectionSettingsIntent(activity, accountErrorEvent.getAccount()));
             }

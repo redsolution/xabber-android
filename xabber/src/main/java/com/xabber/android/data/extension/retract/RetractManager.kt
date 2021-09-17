@@ -111,9 +111,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
     }
 
     fun isSupported(accountJid: AccountJid): Boolean {
-        return isSupported(
-            AccountManager.getInstance().getAccount(accountJid)?.connection ?: return false
-        )
+        return isSupported(AccountManager.getAccount(accountJid)?.connection ?: return false)
     }
 
     fun sendRetractUserRequest(
@@ -123,7 +121,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         baseIqResultUiListener: BaseIqResultUiListener? = null
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(accountJid)?.connection
+            AccountManager.getAccount(accountJid)?.connection
                 ?.sendIqWithResponseCallback(
                     RetractUserIq(archiveJid, memberId),
                     baseIqResultUiListener,
@@ -160,8 +158,8 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                     .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messagePrimaryKey)
                     .findFirst()
                     ?.let { message ->
-                        AccountManager.getInstance()
-                            .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                        AccountManager.getAccount(accountJid)?.connection
+                            ?.sendIqWithResponseCallback(
                                 RetractMessageIq(
                                     message.stanzaId,
                                     accountJid,
@@ -207,31 +205,30 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                     addExtension(oldMessageStanza.getExtension(OriginIdElement.ELEMENT))
                     addExtension(oldMessageStanza.getExtension(StanzaIdElement.ELEMENT))
                 }
-                AccountManager.getInstance()
-                    .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                        ReplaceMessageIq(
-                            messageRealmObject.stanzaId,
-                            accountJid,
-                            messageStanza,
-                            contactJid.takeIf { isGroup }
-                        ),
-                        {
-                            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-                                realm.executeTransaction { transaction ->
-                                    transaction.where(MessageRealmObject::class.java)
-                                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
-                                        .findFirst()
-                                        ?.apply {
-                                            text = newMessageText
-                                        }
-                                        ?.also {
-                                            transaction.copyToRealmOrUpdate(it)
-                                        }
-                                }
+                AccountManager.getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                    ReplaceMessageIq(
+                        messageRealmObject.stanzaId,
+                        accountJid,
+                        messageStanza,
+                        contactJid.takeIf { isGroup }
+                    ),
+                    {
+                        DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                            realm.executeTransaction { transaction ->
+                                transaction.where(MessageRealmObject::class.java)
+                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, primaryKey)
+                                    .findFirst()
+                                    ?.apply {
+                                        text = newMessageText
+                                    }
+                                    ?.also {
+                                        transaction.copyToRealmOrUpdate(it)
+                                    }
                             }
-                        },
-                        baseIqResultUiListener
-                    )
+                        }
+                    },
+                    baseIqResultUiListener
+                )
             }
         }
     }
@@ -246,22 +243,21 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
 
             listener?.onSend()
 
-            AccountManager.getInstance()
-                .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                    RetractAllIq(
-                        contactJid,
-                        false,
-                        if (isGroup) contactJid else null
-                    ),
-                    { packet ->
-                        if (packet is IQ && packet.type == IQ.Type.result) {
-                            MessageManager.getInstance().clearHistory(accountJid, contactJid)
-                            listener?.onResult()
-                            notifySamUiListeners(OnMessageUpdatedListener::class.java)
-                        }
-                    },
-                    listener
-                )
+            AccountManager.getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                RetractAllIq(
+                    contactJid,
+                    false,
+                    if (isGroup) contactJid else null
+                ),
+                { packet ->
+                    if (packet is IQ && packet.type == IQ.Type.result) {
+                        MessageManager.getInstance().clearHistory(accountJid, contactJid)
+                        listener?.onResult()
+                        notifySamUiListeners(OnMessageUpdatedListener::class.java)
+                    }
+                },
+                listener
+            )
 
         }
     }
@@ -307,7 +303,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
                         ?.deleteAllFromRealm()
                 }
             }
-            AccountManager.getInstance().getAccount(accountJid)
+            AccountManager.getAccount(accountJid)
                 ?.apply {
                     startHistoryTimestamp = null
                     retractVersion = version
@@ -427,7 +423,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
 
     private fun sendMissedChangesInLocalArchiveRequest(accountJid: AccountJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+            AccountManager.getAccount(accountJid)?.let { account ->
                 if (!account.retractVersion.isNullOrEmpty()) {
                     account.connection.sendIqWithResponseCallback(
                         RequestRetractsIq(version = account.retractVersion),
@@ -446,7 +442,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         contactJid: ContactJid
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+            AccountManager.getAccount(accountJid)?.let { account ->
                 (ChatManager.getInstance()
                     .getChat(accountJid, contactJid) as? GroupChat)?.let { chat ->
                     if (!account.retractVersion.isNullOrEmpty()) {
@@ -472,7 +468,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
      */
     private fun sendLocalArchiveRetractVersionRequest(accountJid: AccountJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+            AccountManager.getAccount(accountJid)?.let { account ->
                 account.connection.sendIqWithResponseCallback(
                     RequestRetractsIq(lessThan = null),
                     { stanza ->
@@ -494,7 +490,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
      */
     fun sendRemoteArchiveRetractVersionRequest(accountJid: AccountJid, contactJid: ContactJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(accountJid)?.let { account ->
+            AccountManager.getAccount(accountJid)?.let { account ->
                 account.connection.sendIqWithResponseCallback(
                     RequestRetractsIq(archiveAddress = contactJid, lessThan = null),
                     { stanza ->
@@ -531,7 +527,7 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
      * Save local archive retract version to account
      */
     private fun updateAccountLocalArchiveRetractVersion(accountJid: AccountJid, version: String) {
-        AccountManager.getInstance().getAccount(accountJid)
+        AccountManager.getAccount(accountJid)
             ?.apply { retractVersion = version }
             .also { AccountRepository.saveAccountToRealm(it) }
     }

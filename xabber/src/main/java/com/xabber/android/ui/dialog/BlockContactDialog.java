@@ -67,7 +67,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
         String contactName = RosterManager.getInstance().getBestContact(account, user).getName();
-        String accountName = AccountManager.getInstance().getVerboseName(account);
+        String accountName = AccountManager.INSTANCE.getVerboseName(account);
         int colorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account);
         int buttonColor = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?

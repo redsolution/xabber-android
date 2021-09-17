@@ -43,7 +43,7 @@ class ChatViewHolder(
     }
 
     private fun setupAccountColorIndicator(itemData: ChatListItemData) {
-        if (AccountManager.getInstance().enabledAccounts.size > 1) {
+        if (AccountManager.enabledAccounts.size > 1) {
             accountColorIndicatorView.setBackgroundColor(itemData.accountColorIndicator)
             accountColorIndicatorBackView.setBackgroundColor(itemData.accountColorIndicator)
             accountColorIndicatorView.visibility = View.VISIBLE

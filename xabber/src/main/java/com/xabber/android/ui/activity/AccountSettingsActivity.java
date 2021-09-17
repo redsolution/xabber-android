@@ -47,7 +47,7 @@ public class AccountSettingsActivity extends ManagedActivity
 
 
         account = IntentHelpersKt.getAccountJid(getIntent());
-        accountItem = AccountManager.getInstance().getAccount(this.account);
+        accountItem = AccountManager.INSTANCE.getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);
             finish();
@@ -123,7 +123,7 @@ public class AccountSettingsActivity extends ManagedActivity
     public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
         Application.getInstance().runOnUiThread(() -> {
             if (accounts.contains(account)) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+                AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
                 if (accountItem == null) {
                     // in case if account was removed
                     finish();

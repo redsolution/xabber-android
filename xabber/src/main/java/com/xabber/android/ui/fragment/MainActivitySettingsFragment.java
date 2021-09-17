@@ -274,7 +274,7 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     private void setupAccountList() {
         List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
+        for (AccountItem accountItem : AccountManager.INSTANCE.getAllAccountItems()) {
             accountItems.add(accountItem);
         }
         accountListAdapter.setAccountItems(accountItems);

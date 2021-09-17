@@ -80,7 +80,7 @@ object ChatMarkerManager : OnPacketListener {
         }
 
         try {
-            AccountManager.getInstance()
+            AccountManager
                 .getAccount(messageRealmObject.account)
                 ?.connection
                 ?.sendStanza(
@@ -117,7 +117,7 @@ object ChatMarkerManager : OnPacketListener {
                     MessageNotificationManager.removeChatWithTimer(account, companion)
 
                     // start grace period
-                    AccountManager.getInstance().startGracePeriod(account)
+                    AccountManager.startGracePeriod(account)
                 }
             }
         } else if (direction == CarbonExtension.Direction.received) {
@@ -143,7 +143,7 @@ object ChatMarkerManager : OnPacketListener {
         if (message.stanzaId == null || message.stanzaId.isEmpty()) return
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(account)
                     ?.connection
                     ?.sendStanza(

@@ -67,7 +67,7 @@ public class LastActivityInteractor implements OnPacketListener {
     }
 
     public void requestLastActivityAsync(AccountJid account, ContactJid user) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem != null) {
             LastActivity activity = new LastActivity(user.getJid());
             try {

@@ -315,7 +315,7 @@ public class TestApplication extends android.app.Application {
         addManager(LogManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(AccountManager.getInstance());
+        addManager(AccountManager.INSTANCE);
         addManager(XabberAccountManager.getInstance());
         addManager(PatreonManager.getInstance());
         addManager(MessageManager.getInstance());

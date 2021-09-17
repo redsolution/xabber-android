@@ -246,27 +246,6 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
                 R.bool.contacts_enable_show_accounts_default);
     }
 
-    /**
-     * DON`T USE THIS METHOD DIRECTLY.
-     * <p/>
-     * Use {@link AccountManager#getSelectedAccount()} instead.
-     *
-     * @return
-     */
-    public static String contactsSelectedAccount() {
-        return getString(R.string.contacts_selected_account_key, "");
-    }
-
-    public static void setContactsSelectedAccount(AccountJid account) {
-        String value;
-        if (account == null) {
-            value = "";
-        } else {
-            value = account.toString();
-        }
-        setString(R.string.contacts_selected_account_key, value);
-    }
-
     public static void enableContactsShowAccount() {
         setBoolean(R.string.contacts_enable_show_accounts_key, false);
         setBoolean(R.string.contacts_show_accounts_key, true);
@@ -813,7 +792,7 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
     }
 
     public static boolean isSyncAllAccounts() {
-        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) return false;
+        if (AccountManager.INSTANCE.haveNotAllowedSyncAccounts()) return false;
         return getBoolean(R.string.sync_all_key, true);
     }
 

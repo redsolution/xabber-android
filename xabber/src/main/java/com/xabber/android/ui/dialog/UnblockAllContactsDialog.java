@@ -52,7 +52,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.unblock_all_contacts_confirm),
-                        AccountManager.getInstance().getVerboseName(account)))
+                        AccountManager.INSTANCE.getVerboseName(account)))
                 .setPositiveButton(R.string.unblock_all, this)
                 .setNegativeButton(android.R.string.cancel, this).create();
     }

@@ -66,7 +66,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             return;
         }
 
-        accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -238,7 +238,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 AlertDialog dialog = builder
                         .setMessage(String.format(getString(R.string.remove_all_bookmarks_confirm),
-                                AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
+                                AccountManager.INSTANCE.getVerboseName(accountItem.getAccount())))
                         .setPositiveButton(R.string.remove_all_bookmarks, (dialog1, which) -> {
                             BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
                                     bookmarksAdapter.getAllWithoutXabberUrl());
@@ -254,7 +254,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
                 AlertDialog dialog2 = builder2
                         .setMessage(String.format(getString(R.string.remove_selected_bookmarks_confirm),
-                                AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
+                                AccountManager.INSTANCE.getVerboseName(accountItem.getAccount())))
                         .setPositiveButton(R.string.remove_selected_bookmarks, (dialog12, which) -> {
                             BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
                                     bookmarksAdapter.getCheckedItems());

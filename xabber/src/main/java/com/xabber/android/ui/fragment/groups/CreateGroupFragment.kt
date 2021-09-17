@@ -34,6 +34,7 @@ import com.xabber.android.ui.fragment.CircleEditorFragment
 import com.xabber.android.ui.widget.AccountSpinner
 import net.gcardone.junidecode.Junidecode.unidecode
 import org.jivesoftware.smack.packet.XMPPError
+import java.lang.NullPointerException
 import java.util.*
 
 @SuppressLint("SetTextI18n")
@@ -44,7 +45,7 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
     private var isIncognito: Boolean = false
 
-    private var isAccountSelected = AccountManager.getInstance().enabledAccounts.size == 1
+    private var isAccountSelected = AccountManager.enabledAccounts.size == 1
 
     private lateinit var accountSpinner: AccountSpinner
     private lateinit var exceptSpinnerLayout: NestedScrollView
@@ -87,8 +88,8 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     }
 
     override fun onResume() {
-        if (AccountManager.getInstance().enabledAccounts.size == 1) {
-            setAccount(AccountManager.getInstance().firstAccount)
+        if (AccountManager.enabledAccounts.size == 1) {
+            setAccount(AccountManager.firstAccount)
             circlesLayout.visibility = View.VISIBLE
             setAccountCircles()
             updateCircles()
@@ -96,7 +97,11 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
         super.onResume()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         val view = inflater.inflate(R.layout.create_groupchat_fragment, container, false)
 
@@ -104,9 +109,9 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
         initializeViewsVars(view)
 
-        colorizeEverything(AccountManager.getInstance().firstAccount)
+        colorizeEverything(AccountManager.firstAccount)
 
-        if (!isInitialized && AccountManager.getInstance().enabledAccounts.isNotEmpty()) initRecyclerView(view)
+        if (!isInitialized && AccountManager.enabledAccounts.isNotEmpty()) initRecyclerView(view)
         setupAccountSpinner()
         setupGroupNameEt()
         setupGroupJidEt()
@@ -147,13 +152,14 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     }
 
     private fun setupAccountSpinner() {
-        if (AccountManager.getInstance().enabledAccounts.size <= 1) {
+        if (AccountManager.enabledAccounts.size <= 1) {
             accountSpinner.visibility = View.GONE
             (exceptSpinnerLayout.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
             exceptSpinnerLayout.requestLayout()
 
         } else {
-            val jids = AccountManager.getInstance().enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
+            val jids =
+                AccountManager.enabledAccounts.toList().sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()
             for (jid in jids) {
@@ -163,7 +169,8 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
             val nicknames = mutableListOf<String?>()
             for (jid in jids) {
                 val name =
-                    RosterManager.getInstance().getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
+                    RosterManager.getInstance()
+                        .getBestContact(jid, ContactJid.from(jid.fullJid.asBareJid())).name
                 if (!name.isNullOrEmpty()) {
                     nicknames.add(name)
                 } else {
@@ -184,7 +191,11 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
             override fun afterTextChanged(s: Editable?) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!isEnteredManually) groupJidEt.setText(getLocalpartHintByString(s?.trim().toString()))
+                if (!isEnteredManually) groupJidEt.setText(
+                    getLocalpartHintByString(
+                        s?.trim().toString()
+                    )
+                )
                 if (!s.isNullOrEmpty() && !groupJidEt.text.isNullOrEmpty() && getAccount() != null) {
                     listenerActivity?.toolbarSetEnabled(true)
                 } else listenerActivity?.toolbarSetEnabled(false)
@@ -290,13 +301,14 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
             textView.setTextColor(color)
             for (iterator in 0 until radioGroup.childCount) {
                 if (radioGroup.getChildAt(iterator) is RadioButton && Build.VERSION.SDK_INT >= 21) {
-                    (radioGroup.getChildAt(iterator) as RadioButton).buttonTintList = ColorStateList(
-                        arrayOf(
-                            intArrayOf(-android.R.attr.state_checked),
-                            intArrayOf(android.R.attr.state_checked)
-                        ),
-                        intArrayOf(Color.GRAY, color)
-                    )
+                    (radioGroup.getChildAt(iterator) as RadioButton).buttonTintList =
+                        ColorStateList(
+                            arrayOf(
+                                intArrayOf(-android.R.attr.state_checked),
+                                intArrayOf(android.R.attr.state_checked)
+                            ),
+                            intArrayOf(Color.GRAY, color)
+                        )
                 }
             }
         }
@@ -335,14 +347,16 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     private fun createListOfServers(): MutableList<Pair<String, GroupServerType>> {
         val list = mutableListOf<Pair<String, GroupServerType>>()
         val selected = accountSpinner.selected
+        val firstAccount = AccountManager.firstAccount
+            ?: throw NullPointerException("there are no any accounts!")
 
-        if (AccountManager.getInstance().enabledAccounts.size <= 1) {
+        if (AccountManager.enabledAccounts.size <= 1) {
 
-            GroupsManager.getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
+            GroupsManager.getAvailableGroupchatServersForAccountJid(firstAccount)
                 .takeIf { !it.isNullOrEmpty() }
                 ?.map { list.add(Pair(it.toString(), GroupServerType.providedByOwnServer)) }
 
-            GroupsManager.getCustomGroupServers(AccountManager.getInstance().firstAccount)
+            GroupsManager.getCustomGroupServers(firstAccount)
                 .takeIf { !it.isNullOrEmpty() }
                 ?.map { list.add(Pair(it, GroupServerType.providedByOwnServer)) }
 
@@ -367,7 +381,12 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
 
     private fun openServerDialog() {
         serversDialog = AlertDialog.Builder(requireContext()).apply {
-            setAdapter(GroupServersAdapter(createListOfServers(), this@CreateGroupFragment)) { _, _ -> }
+            setAdapter(
+                GroupServersAdapter(
+                    createListOfServers(),
+                    this@CreateGroupFragment
+                )
+            ) { _, _ -> }
         }.create()
         serversDialog?.show()
     }
@@ -389,7 +408,10 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
             setView(linearLayout)
             setPositiveButton(getString(R.string.add)) { _, _ ->
                 serverTv.text = "\u200A@\u200A${editText.text}"
-                GroupsManager.saveCustomGroupServer(accountSpinner.selected ?: account, editText.text.toString())
+                GroupsManager.saveCustomGroupServer(
+                    accountSpinner.selected ?: account,
+                    editText.text.toString()
+                )
             }
             setNegativeButton(R.string.cancel) { _, _ -> }
         }
@@ -399,17 +421,17 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
     private fun setupServerTv() {
         serverTv.apply {
             setOnClickListener { openServerDialog() }
-            if (AccountManager.getInstance().enabledAccounts.size == 1) {
+            if (AccountManager.enabledAccounts.size == 1) {
+                val firstAccount = AccountManager.firstAccount ?: return
                 val servers =
-                    GroupsManager.getAvailableGroupchatServersForAccountJid(AccountManager.getInstance().firstAccount)
+                    GroupsManager.getAvailableGroupchatServersForAccountJid(firstAccount)
 
                 if (servers != null && servers.size != 0) {
                     text = "\u200A@\u200A${servers.first()}"
                     return@apply
                 }
-                val customServers = GroupsManager.getCustomGroupServers(
-                    AccountManager.getInstance().firstAccount
-                )
+
+                val customServers = GroupsManager.getCustomGroupServers(firstAccount)
                 if (customServers != null && customServers.size != 0) {
                     text = "\u200A@\u200A${customServers.first()}"
                 }
@@ -483,7 +505,8 @@ class CreateGroupFragment : CircleEditorFragment(), BaseIqResultUiListener, Acco
         Application.getInstance().runOnUiThread {
             Toast.makeText(
                 context,
-                error.descriptiveText ?: getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
+                error.descriptiveText
+                    ?: getString(R.string.groupchat_failed_to_create_groupchat_with_unknown_reason),
                 Toast.LENGTH_LONG
             ).show()
             listenerActivity?.showProgress(false)

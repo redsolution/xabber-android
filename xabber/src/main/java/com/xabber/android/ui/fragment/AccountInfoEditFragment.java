@@ -900,7 +900,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     private void saveAvatar(){
         enableProgressMode(getString(R.string.saving));
-        AccountItem item = AccountManager.getInstance().getAccount(account);
+        AccountItem item = AccountManager.INSTANCE.getAccount(account);
         final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
 
         if (removeAvatarFlag) {

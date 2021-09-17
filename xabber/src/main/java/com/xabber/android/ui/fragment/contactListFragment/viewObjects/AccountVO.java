@@ -107,7 +107,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
-        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+        if (AccountManager.INSTANCE.getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
         } else {
@@ -192,11 +192,11 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
 
         jid = CircleManager.getInstance().getGroupName(account, configuration.getGroup());
-        name = AccountManager.getInstance().getNickName(account);
+        name = AccountManager.INSTANCE.getNickName(account);
 
         contactCount = configuration.getOnline() + "/" + configuration.getTotal();
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
 
         status = accountItem.getStatusText().trim();
 

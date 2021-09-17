@@ -94,7 +94,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
         if (xabberAccount == null || !xabberAccount.getFullUsername()
-                .equals(AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
+                .equals(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount())))
             accountHolder.avatarBorder
                     .setBorderColor(activity.getResources().getColor(R.color.transparent));
 
@@ -105,7 +105,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             accountHolder.avatar.setColorFilter(filter);
         } else accountHolder.avatar.clearColorFilter();
 
-        accountHolder.name.setText(AccountManager.getInstance()
+        accountHolder.name.setText(AccountManager.INSTANCE
                 .getVerboseName(accountItem.getAccount()));
         accountHolder.name.setTextColor(accountItem.isEnabled()
                 ? ColorManager.getInstance().getAccountPainter()
@@ -168,8 +168,9 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
             switch (v.getId()) {
                 case R.id.item_account_switch:
-                    AccountManager.getInstance()
-                            .setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
+                    AccountManager.INSTANCE.setEnabled(
+                            accountItem.getAccount(), enabledSwitch.isChecked()
+                    );
                     break;
                 default:
                     if (listener != null) {
@@ -192,8 +193,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.item_account, menu);
 
-            menu.setHeaderTitle(AccountManager.getInstance()
-                    .getVerboseName(accountItem.getAccount()));
+            menu.setHeaderTitle(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount()));
             menu.findItem(R.id.action_account_edit_status).setVisible(accountItem.isEnabled());
 
             menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);

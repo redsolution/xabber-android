@@ -96,7 +96,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     }
 
     override fun onAuthenticated(connectionItem: ConnectionItem) {
-        val accountItem = AccountManager.getInstance().getAccount(connectionItem.account) ?: return
+        val accountItem = AccountManager.getAccount(connectionItem.account) ?: return
         val accountJid = accountItem.account
 
         if (isSupported(connectionItem.connection) && accountItem.startHistoryTimestamp == null) {
@@ -133,7 +133,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @Throws(NetworkException::class)
     fun requestSubscription(account: AccountJid, user: ContactJid, createChat: Boolean = true) {
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Presence(Presence.Type.subscribe).apply {
                     to = user.jid
                 }
@@ -174,7 +174,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             createChatForAcceptingIncomingRequest(account, user)
         }
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Presence(Presence.Type.subscribed).apply {
                     to = user.jid
                 }
@@ -222,7 +222,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @Throws(NetworkException::class)
     fun discardSubscription(account: AccountJid, user: ContactJid) {
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Presence(Presence.Type.unsubscribed).apply {
                     to = user.jid
                 }
@@ -242,7 +242,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @Throws(NetworkException::class)
     fun subscribeForPresence(account: AccountJid?, user: ContactJid) {
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Presence(Presence.Type.subscribe).apply {
                     to = user.jid
                 }
@@ -260,7 +260,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
     @Throws(NetworkException::class)
     fun unsubscribeFromPresence(account: AccountJid?, user: ContactJid) {
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Presence(Presence.Type.unsubscribe).apply {
                     to = user.jid
                 }
@@ -390,10 +390,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         getAccountPresence(account)?.let { accountPresence ->
             VCardManager.getInstance().addVCardUpdateToPresence(accountPresence, hash)
             try {
-                AccountManager.getInstance()
-                    .getAccount(account)
-                    ?.connection
-                    ?.sendStanza(accountPresence)
+                AccountManager.getAccount(account)?.connection?.sendStanza(accountPresence)
             } catch (ex: Exception) {
                 LogManager.exception(this, ex)
             }
@@ -402,7 +399,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
 
     @Throws(NetworkException::class)
     fun getAccountPresence(account: AccountJid): Presence? =
-        AccountManager.getInstance().getAccount(account)?.presence
+        AccountManager.getAccount(account)?.presence
 
     override fun onStanza(connection: ConnectionItem?, stanza: Stanza?) {
         if (connection !is AccountItem || stanza !is Presence) {
@@ -441,7 +438,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 userPresences.remove(Resourcepart.EMPTY)
                 userPresences[fromResource] = stanza
                 if (isAccountPresence) {
-                    AccountManager.getInstance().onAccountChanged(connection.getAccount())
+                    AccountManager.onAccountChanged(connection.getAccount())
                 } else {
                     RosterManager.onContactChanged(connection.getAccount(), from)
                 }
@@ -465,7 +462,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     }
                 userPresences[key] = stanza
                 if (isAccountPresence) {
-                    AccountManager.getInstance().onAccountChanged(connection.getAccount())
+                    AccountManager.onAccountChanged(connection.getAccount())
                 } else {
                     RosterManager.onContactChanged(connection.getAccount(), from)
                 }
@@ -497,7 +494,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     userPresences.clear()
                     userPresences[Resourcepart.EMPTY] = stanza
                     if (isAccountPresence) {
-                        AccountManager.getInstance().onAccountChanged(connection.getAccount())
+                        AccountManager.onAccountChanged(connection.getAccount())
                     } else {
                         RosterManager.onContactChanged(connection.getAccount(), from)
                     }
@@ -754,7 +751,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         allPresences.sortedBy(Presence::getPriority)
 
     fun isAccountPresence(account: AccountJid, from: BareJid) =
-        AccountManager.getInstance().isAccountExist(from.toString())
+        AccountManager.isAccountExist(from.toString())
                 && account.fullJid.asBareJid().equals(from)
 
 }

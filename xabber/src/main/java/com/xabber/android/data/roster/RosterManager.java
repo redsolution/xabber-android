@@ -118,7 +118,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @Nullable
     private Roster getRoster(AccountJid account) {
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
 
         if (accountItem == null) {
             return null;
@@ -141,7 +141,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         try{
             if (!messageRealmObject.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
                 author = RosterManager.getInstance().getNameOrBareJid(messageRealmObject.getAccount(), jid);
-            else author = AccountManager.getInstance().getNickName(messageRealmObject.getAccount());
+            else author = AccountManager.INSTANCE.getNickName(messageRealmObject.getAccount());
         } catch (Exception e){
             LogManager.e(LOG_TAG, "Can't get normal author name!");
             LogManager.exception(LOG_TAG, e);
@@ -234,7 +234,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     public Collection<AbstractContact> getAllContactsForEnabledAccounts(){
         List<RosterContact> result = new ArrayList<>();
         for (RosterContact rosterContact : getAllContacts())
-            if (AccountManager.getInstance().getEnabledAccounts().contains(rosterContact.getAccount()))
+            if (AccountManager.INSTANCE.getEnabledAccounts().contains(rosterContact.getAccount()))
                 result.add(rosterContact);
         return Collections.unmodifiableCollection(result);
     }
@@ -488,7 +488,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
         packet.addRosterItem(item);
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(packet);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(packet);
         } catch (InterruptedException | SmackException.NotConnectedException e) {
             LogManager.exception(getClass().getSimpleName(), e);
         }
@@ -557,7 +557,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      *
      */
     public void removeGroup(String group) {
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+        for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
             removeGroup(account, group);
         }
     }
@@ -630,7 +630,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @param oldGroup can be <code>null</code> for "no group".
      */
     public void renameGroup(String oldGroup, String newGroup) {
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+        for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
             renameGroup(account, oldGroup, newGroup);
         }
     }

@@ -56,7 +56,7 @@ public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.
                 adapter.setAllChecked(b);
             saveSyncSettings();
         });
-        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
+        if (AccountManager.INSTANCE.haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
 
         setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 

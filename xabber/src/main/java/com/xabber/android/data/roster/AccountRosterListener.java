@@ -64,14 +64,14 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     @Override
     public void onRosterLoaded(Roster roster) {
         LogManager.i(getLogTag(), "onRosterLoaded");
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(AccountRosterListener.this.account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(AccountRosterListener.this.account);
 
         if (accountItem != null) {
             for (OnRosterReceivedListener listener : Application.getInstance().getManagers(OnRosterReceivedListener.class)) {
                 listener.onRosterReceived(accountItem);
             }
         }
-        AccountManager.getInstance().onAccountChanged(AccountRosterListener.this.account);
+        AccountManager.INSTANCE.onAccountChanged(AccountRosterListener.this.account);
     }
 
     @Override

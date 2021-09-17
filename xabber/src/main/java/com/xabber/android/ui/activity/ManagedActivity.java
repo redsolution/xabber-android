@@ -14,9 +14,10 @@
  */
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.data.account.AccountErrorEvent.Type.CONNECTION;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -34,8 +35,6 @@ import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import static com.xabber.android.data.account.AccountErrorEvent.Type.CONNECTION;
 
 /**
  * Base class for all Activities.
@@ -101,7 +100,7 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
-            if (AccountManager.getInstance().getAccount(accountErrorEvent.getAccount())
+            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount())
                     .getConnectionSettings().getXToken() != null
                     && !accountErrorEvent.getMessage().contains("SASLError using X-TOKEN: not-authorized"))
                 ConnectionManager.getInstance().connectAll();

@@ -137,7 +137,7 @@ public class CapabilitiesManager {
             return;
         }
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             return;
         }

@@ -84,7 +84,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
         AccountJid accountJid = connection.getAccount();
         if (xabberAccount == null) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
                 try {
                     Thread.sleep(1000);
@@ -96,7 +96,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             }
 
         } else if (xabberAccount.getFullUsername()
-                .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
+                .equals(AccountManager.INSTANCE.getVerboseName(accountJid))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -135,7 +135,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                     LogManager.d(LOG_TAG, "xabber account authorized successfully");
                     //updateRemoteSettings();
                     updateLocalSettings();
-                    AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
+                    AccountManager.INSTANCE.setAllAccountAutoLoginToXabber(true);
                 }
             }, new Action1<Throwable>() {
                 @Override

@@ -59,7 +59,7 @@ object GroupMemberManager {
     fun removeMemberAvatar(group: GroupChat, memberId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(group.account)?.connection?.createStanzaCollectorAndSend(
                         PubSub.createPubsubPacket(
                             group.contactJid.bareJid,
@@ -89,7 +89,7 @@ object GroupMemberManager {
             try {
                 val avatarHash = AvatarManager.getAvatarHash(data)
 
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(group.account)?.connection?.createStanzaCollectorAndSend(
                         PubSub.createPubsubPacket(
                             group.contactJid.bareJid, IQ.Type.set,
@@ -103,7 +103,7 @@ object GroupMemberManager {
 
                 val metadataInfo =
                     MetadataInfo(avatarHash, null, data.size.toLong(), type.value, height, width)
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(group.account)?.connection?.createStanzaCollectorAndSend(
                         PubSub.createPubsubPacket(
                             group.contactJid.bareJid,
@@ -275,7 +275,7 @@ object GroupMemberManager {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 groupChat.fullJidIfPossible?.let { fullJid ->
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                             KickGroupMemberIQ(groupMemberId, fullJid),
                             listener,
@@ -297,7 +297,7 @@ object GroupMemberManager {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 groupChat.fullJidIfPossible?.let { fullJid ->
-                    AccountManager.getInstance().getAccount(groupChat.account)?.connection
+                    AccountManager.getAccount(groupChat.account)?.connection
                         ?.sendIqWithResponseCallback(
                             BlockGroupMemberIQ(fullJid, memberId),
                             listener,
@@ -320,7 +320,7 @@ object GroupMemberManager {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             (ChatManager.getInstance().getChat(account, groupchatJid) as? GroupChat)?.let { chat ->
                 try {
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(account)?.connection?.sendIqWithResponseCallback(
                             GroupchatBlocklistQueryIQ(chat as GroupChat?),
                             { packet: Stanza ->
@@ -358,7 +358,7 @@ object GroupMemberManager {
                             GroupchatBlocklistItemElement.ItemType.id,
                             memberId
                         )
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(account)?.connection?.sendIqWithResponseCallback(
                             GroupchatBlocklistUnblockIQ(groupChat, unblockElement),
                             { packet: Stanza? ->
@@ -393,7 +393,7 @@ object GroupMemberManager {
             try {
                 (ChatManager.getInstance()
                     .getChat(account, groupchatJid) as? GroupChat)?.let { groupChat ->
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(account)?.connection?.sendIqWithResponseCallback(
                             GroupchatBlocklistUnblockIQ(groupChat, blockedElement),
                             { packet: Stanza? ->
@@ -462,7 +462,7 @@ object GroupMemberManager {
                 } ?: ChatManager.getInstance().createGroupChat(account, groupchatJid)
             for (blockedElement in blockedElements) {
                 try {
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(account)?.connection?.sendIqWithResponseCallback(
                             GroupchatBlocklistUnblockIQ(groupChat, blockedElement),
                             { packet: Stanza? ->
@@ -543,7 +543,7 @@ object GroupMemberManager {
     fun createChatWithIncognitoMember(groupChat: GroupChat, groupMemberId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                         CreatePtpGroupIQ(groupChat, groupMemberId),
                         { packet: Stanza ->
@@ -583,7 +583,7 @@ object GroupMemberManager {
         val groupJid = groupChat.contactJid
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
                         ChangeGroupchatMemberPreferencesIQ(groupChat, groupMemberId, badge, null),
                         { packet: Stanza? ->
@@ -650,7 +650,7 @@ object GroupMemberManager {
         val groupJid = groupChat.contactJid
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
                         ChangeGroupchatMemberPreferencesIQ(
                             groupChat,
@@ -717,7 +717,7 @@ object GroupMemberManager {
             (ChatManager.getInstance()
                 .getChat(accountJid, groupchatJid) as? GroupChat)?.let { chat ->
                 try {
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
                             GroupchatMembersQueryIQ(chat).apply { queryId = "" }
                         ) { packet ->
@@ -787,7 +787,7 @@ object GroupMemberManager {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             (ChatManager.getInstance().getChat(account, groupchatJid) as? GroupChat)?.let { chat ->
                 try {
-                    AccountManager.getInstance()
+                    AccountManager
                         .getAccount(account)?.connection?.sendIqWithResponseCallback(
                             GroupchatMembersQueryIQ(chat).apply {
                                 val version = chat.membersListVersion
@@ -809,7 +809,7 @@ object GroupMemberManager {
         val groupchatJid = groupChat.contactJid
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance().getAccount(accountJid)?.connection
+                AccountManager.getAccount(accountJid)?.connection
                     ?.sendIqWithResponseCallback(
                         GroupchatMembersQueryIQ(groupChat).apply { queryId = memberId },
                         GroupchatMembersResultListener(accountJid, groupchatJid)
@@ -823,7 +823,7 @@ object GroupMemberManager {
     fun requestGroupchatMemberRightsChange(groupChat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                         GroupRequestMemberRightsChangeIQ(groupChat, dataForm),
                         {
@@ -847,7 +847,7 @@ object GroupMemberManager {
     fun requestGroupchatMemberRightsForm(group: GroupChat, groupMemberId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(group.account)?.connection?.sendIqWithResponseCallback(
                         GroupchatMemberRightsQueryIQ(group, groupMemberId)
                     ) { packet ->

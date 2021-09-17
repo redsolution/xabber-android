@@ -51,11 +51,15 @@ public class BarPainter {
 
     public void setDefaultColor() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            if (AccountManager.getInstance().getFirstAccount() == null)
+            if (AccountManager.INSTANCE.getFirstAccount() == null)
             {
                 toolbar.setBackgroundColor(standardColor);
             } else {
-                toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+                toolbar.setBackgroundColor(
+                        accountPainter.getAccountRippleColor(
+                                AccountManager.INSTANCE.getFirstAccount()
+                        )
+                );
             }
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithDefaultColor();

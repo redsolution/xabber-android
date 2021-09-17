@@ -23,6 +23,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.EmailDTO;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
@@ -31,7 +32,6 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountXMPPLoginFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
-import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
@@ -88,8 +88,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (dialog != null)
+        if (dialog != null) {
             dialog.dismiss();
+        }
     }
 
     @Override
@@ -102,8 +103,6 @@ public class XabberAccountActivity extends BaseLoginActivity
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_set_pass:
-                onResetPassClick();
-                return true;
             case R.id.action_reset_pass:
                 onResetPassClick();
                 return true;
@@ -126,14 +125,16 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     @Override
     protected void showProgress(String title) {
-        if (fragmentInfo != null)
+        if (fragmentInfo != null) {
             ((XabberAccountInfoFragment) fragmentInfo).showProgressInAccount(true);
+        }
     }
 
     @Override
     protected void hideProgress() {
-        if (fragmentInfo != null)
+        if (fragmentInfo != null) {
             ((XabberAccountInfoFragment) fragmentInfo).showProgressInAccount(false);
+        }
     }
 
     public void showProgressInAccount(boolean show) {
@@ -141,8 +142,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     private boolean checkInternetOrShowError() {
-        if (NetworkManager.isNetworkAvailable()) return true;
-        else {
+        if (NetworkManager.isNetworkAvailable()) {
+            return true;
+        } else {
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
             return false;
         }
@@ -153,8 +155,11 @@ public class XabberAccountActivity extends BaseLoginActivity
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(account -> {
-                    if (account != null) showInfoFragment();
-                    else showLoginFragment();
+                    if (account != null) {
+                        showInfoFragment();
+                    } else {
+                        showLoginFragment();
+                    }
                 }).subscribe());
     }
 
@@ -162,8 +167,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void onSynchronized() {
         XabberAccountInfoFragment fragment =
                 (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
-        if (fragment != null && fragment.isVisible())
+        if (fragment != null && fragment.isVisible()) {
             ((XabberAccountInfoFragment) fragmentInfo).getSettings();
+        }
     }
 
     /**
@@ -185,50 +191,48 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     public void loginXabberAccountViaXMPP(String accountJid) {
-        if (checkInternetOrShowError()) requestXMPPCode(accountJid);
+        if (checkInternetOrShowError()) {
+            requestXMPPCode(accountJid);
+        }
     }
 
     private void requestXMPPCode(final String jid) {
-
         // ! show progress !
-
         Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(code -> handleSuccessRequestXMPPCode(code, jid),
-                        throwable -> handleErrorRequestXMPPCode(throwable));
+                .subscribe(
+                        code -> handleSuccessRequestXMPPCode(code, jid),
+                        throwable -> handleErrorRequestXMPPCode(throwable)
+                );
         compositeSubscription.add(requestXMPPCodeSubscription);
     }
 
     private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
-
         // ! hide progress !
-
         XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
     }
 
     private void handleErrorRequestXMPPCode(Throwable throwable) {
         // ! hide progress !
         // TODO: 07.09.18 сделать корректную обработку ошибок
-        Toast.makeText(this, "Error while xmpp-auth: " + throwable.toString(),
-                Toast.LENGTH_LONG).show();
-    }
-
-    /**
-     * Xabber Account Info
-     */
-
-    public void onLogoutClick(boolean deleteAccounts) {
-        if (checkInternetOrShowError()) logout(deleteAccounts);
+        Toast.makeText(
+                this,
+                "Error while xmpp-auth: " + throwable.toString(),
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     public void onSyncClick(boolean needGoToMainActivity) {
-        if (checkInternetOrShowError()) synchronize(needGoToMainActivity);
+        if (checkInternetOrShowError()) {
+            synchronize(needGoToMainActivity);
+        }
     }
 
     private void showInfoFragment() {
-        if (fragmentInfo == null)
+        if (fragmentInfo == null) {
             fragmentInfo = XabberAccountInfoFragment.newInstance();
+        }
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
@@ -240,8 +244,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     private void showLoginFragment() {
-        if (fragmentLogin == null)
+        if (fragmentLogin == null) {
             fragmentLogin = XAccountXMPPLoginFragment.newInstance();
+        }
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
@@ -258,9 +263,9 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
-            if (account.hasPassword())
+            if (account.hasPassword()) {
                 menu.findItem(R.id.action_set_pass).setVisible(false);
-            else {
+            } else {
                 menu.findItem(R.id.action_change_pass).setVisible(false);
                 menu.findItem(R.id.action_reset_pass).setVisible(false);
             }
@@ -273,8 +278,9 @@ public class XabberAccountActivity extends BaseLoginActivity
         if (account != null) {
             XabberAccountInfoFragment fragment =
                     (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
-            if (fragment != null && fragment.isVisible())
+            if (fragment != null && fragment.isVisible()) {
                 ((XabberAccountInfoFragment) fragmentInfo).updateData(account);
+            }
         }
     }
 
@@ -282,8 +288,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void updateLastSyncTime() {
         XabberAccountInfoFragment fragment =
                 (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
-        if (fragment != null && fragment.isVisible())
+        if (fragment != null && fragment.isVisible()) {
             ((XabberAccountInfoFragment) fragmentInfo).updateLastSyncTime();
+        }
     }
 
     /**
@@ -299,9 +306,12 @@ public class XabberAccountActivity extends BaseLoginActivity
         builder.setTitle(R.string.progress_title_quit)
                 .setMessage(R.string.logout_summary)
                 .setView(view)
-                .setPositiveButton(R.string.button_quit, (dialog, which) ->
-                        onLogoutClick(chbDeleteAccounts.isChecked()))
+                .setPositiveButton(
+                        R.string.button_quit,
+                        (dialog, which) -> logout(chbDeleteAccounts.isChecked())
+                )
                 .setNegativeButton(R.string.cancel, null);
+
         dialog = builder.create();
         dialog.show();
         dialogShowed = false;
@@ -312,22 +322,21 @@ public class XabberAccountActivity extends BaseLoginActivity
         Subscription logoutSubscription = AuthManager.logout()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> handleSuccessLogout(s, deleteAccounts),
-                        throwable -> handleErrorLogout(throwable));
+                .subscribe(s -> handleSuccessLogout(s, deleteAccounts), this::handleErrorLogout);
         compositeSubscription.add(logoutSubscription);
     }
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
-        if (deleteAccounts) XabberAccountManager.getInstance().deleteUnSyncedLocalAccounts();
-        else AccountManager.getInstance().setAllAccountAutoLoginToXabber(false);
+        if (deleteAccounts) {
+            XabberAccountManager.getInstance().deleteUnSyncedLocalAccounts();
+        } else {
+            AccountManager.INSTANCE.setAllAccountAutoLoginToXabber(false);
+        }
 
         XabberAccountManager.getInstance().removeAccount();
+
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
-
-        if (deleteAccounts) {
-            Application.getInstance().resetApplication();
-        }
 
         Intent intent = MainActivity.createIntent(XabberAccountActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -359,7 +368,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void onResetPassClick() {
         String email = null;
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account == null) return;
+        if (account == null) {
+            return;
+        }
 
         for (EmailDTO emailDTO : account.getEmails()) {
             if (emailDTO.isVerified()) {
@@ -368,10 +379,13 @@ public class XabberAccountActivity extends BaseLoginActivity
             }
         }
 
-        if (email == null || email.isEmpty())
-            Toast.makeText(this, R.string.password_reset_need_email,
-                    Toast.LENGTH_SHORT).show();
-        else if (checkInternetOrShowError()) requestResetPass(email);
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(
+                    this,
+                    R.string.password_reset_need_email,
+                    Toast.LENGTH_SHORT
+            ).show();
+        } else if (checkInternetOrShowError()) requestResetPass(email);
     }
 
     private void requestResetPass(final String email) {
@@ -383,8 +397,11 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     private void handleSuccessResetPass(String email) {
-        Toast.makeText(this, getString(R.string.password_reset_success, email),
-                Toast.LENGTH_LONG).show();
+        Toast.makeText(
+                this,
+                getString(R.string.password_reset_success, email),
+                Toast.LENGTH_LONG
+        ).show();
         hideProgress();
     }
 
@@ -392,4 +409,5 @@ public class XabberAccountActivity extends BaseLoginActivity
         Toast.makeText(this, R.string.password_reset_fail, Toast.LENGTH_SHORT).show();
         hideProgress();
     }
+
 }

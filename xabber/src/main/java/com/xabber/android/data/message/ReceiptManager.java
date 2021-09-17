@@ -103,7 +103,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     receipt.setThread(message.getThread());
                     receipt.setType(Message.Type.chat);
                     try {
-                        AccountManager.getInstance()
+                        AccountManager.INSTANCE
                                 .getAccount(account)
                                 .getConnection()
                                 .sendStanza(receipt);

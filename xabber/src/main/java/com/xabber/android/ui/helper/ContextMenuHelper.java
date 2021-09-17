@@ -246,14 +246,14 @@ public class ContextMenuHelper {
                                                 final AccountJid account,
                                                 ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
-        menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
+        menu.setHeaderTitle(AccountManager.INSTANCE.getVerboseName(account));
 
         setUpAccountMenu(activity, presenter, account, menu);
     }
 
     public static void setUpAccountMenu(final Activity activity, final ListPresenter presenter,
                                         final AccountJid account, Menu menu) {
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             return;
         }
@@ -265,7 +265,7 @@ public class ContextMenuHelper {
                     .setOnMenuItemClickListener(
                             item -> {
                                 accountItem.disconnect();
-                                AccountManager.getInstance().onAccountChanged(account);
+                                AccountManager.INSTANCE.onAccountChanged(account);
                                 return true;
                             });
         }

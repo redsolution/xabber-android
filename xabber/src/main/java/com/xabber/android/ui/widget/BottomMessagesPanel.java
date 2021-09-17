@@ -127,7 +127,7 @@ public class BottomMessagesPanel extends Fragment {
             } else if (message.isIncoming()) {
                 name = RosterManager.getDisplayAuthorName(message);
             } else {
-                name = AccountManager.getInstance().getNickName(message.getAccount());
+                name = AccountManager.INSTANCE.getNickName(message.getAccount());
             }
             if (name == null) name = "null";
             int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);

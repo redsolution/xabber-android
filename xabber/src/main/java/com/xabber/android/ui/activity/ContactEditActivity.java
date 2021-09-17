@@ -89,7 +89,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
 
         update();
 
-        if (AccountManager.getInstance().getAccount(account) == null || user == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
         }

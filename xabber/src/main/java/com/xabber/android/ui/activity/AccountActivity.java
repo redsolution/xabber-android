@@ -161,7 +161,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             return;
         }
 
-        accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -189,7 +189,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         MenuItem item = toolbar.getMenu().findItem(R.id.action_account_switch);
         switchCompat = item.getActionView().findViewById(R.id.account_switch_view);
         switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->
-                AccountManager.getInstance().setEnabled(accountItem.getAccount(), isChecked));
+                AccountManager.INSTANCE.setEnabled(accountItem.getAccount(), isChecked));
 
         try {
             fakeAccountUser = ContactJid.from(account.getFullJid().asBareJid());
@@ -291,7 +291,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     @Override
     protected void onResume() {
         super.onResume();
-        if (AccountManager.getInstance().getAccount(account) == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null) {
             // in case if account was removed
             finish();
             return;
@@ -894,7 +894,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     private void saveAvatar(){
         showProgressBar(true);
-        AccountItem item = AccountManager.getInstance().getAccount(account);
+        AccountItem item = AccountManager.INSTANCE.getAccount(account);
         final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
         if (removeAvatarFlag) {
             try {

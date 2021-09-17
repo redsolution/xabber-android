@@ -189,7 +189,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
     }
 
     public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
-        AccountItem account = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem account = AccountManager.INSTANCE.getAccount(accountJid);
         if (account == null) return false;
         RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(account);
         return loaded != null;
@@ -199,7 +199,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
     //  make sure this will not be called after reconnecting and getting full roster.
     //  (if the connection listener is calling this method too late)
     public void resetLoadedState(AccountJid accountJid) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             rosterOrHistoryIsLoaded.remove(accountItem);
             vCardRequests.remove(accountJid);
@@ -285,7 +285,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
         }
 
         if (vCard.getFrom() == null) { // account it self
-            AccountManager.getInstance().onAccountChanged(account);
+            AccountManager.INSTANCE.onAccountChanged(account);
         } else {
             try {
                 RosterManager.onContactChanged(account, ContactJid.from(bareAddress));
@@ -364,7 +364,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
 
     @SuppressWarnings("WeakerAccess")
     void getVCard(final AccountJid account, final Jid srcUser) {
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             onVCardFailed(account, srcUser);
             return;
@@ -412,7 +412,7 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
     }
 
     public void saveVCard(final AccountJid account, final VCard vCard) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             onVCardSaveFailed(account);
             return;

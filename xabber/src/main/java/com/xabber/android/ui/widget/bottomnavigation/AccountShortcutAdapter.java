@@ -75,8 +75,8 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
             holder.ivAvatarOverlay.setPadding(0,0,0, 6);
             holder.itemView.setPaddingRelative(0,15,0,12);
         }
-        if (AccountManager.getInstance().getAccount(account.getAccountJid()).getDisplayStatusMode() != null){
-            switch (AccountManager.getInstance().getAccount(account.getAccountJid()).getDisplayStatusMode()){
+        if (AccountManager.INSTANCE.getAccount(account.getAccountJid()).getDisplayStatusMode() != null){
+            switch (AccountManager.INSTANCE.getAccount(account.getAccountJid()).getDisplayStatusMode()){
                 case unavailable:
                     holder.ivAvatarOverlay.setVisibility(View.VISIBLE);
                     holder.ivAvatarOverlay.clearAnimation();

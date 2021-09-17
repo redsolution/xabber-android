@@ -52,7 +52,7 @@ public class XabberService extends Service {
         LogManager.i(this, "changeForeground");
         if (needForeground()
                 && Application.getInstance().isInitialized()
-                && !AccountManager.getInstance().getEnabledAccounts().isEmpty()) {
+                && !AccountManager.INSTANCE.getEnabledAccounts().isEmpty()) {
             startForeground(NotificationManager.PERSISTENT_NOTIFICATION_ID,
                     NotificationManager.getInstance().getPersistentNotification());
         } else {
@@ -86,8 +86,8 @@ public class XabberService extends Service {
     }
 
     public boolean needForeground() {
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null) {
                 return true;
             }

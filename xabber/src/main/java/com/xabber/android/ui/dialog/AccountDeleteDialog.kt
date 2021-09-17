@@ -42,12 +42,15 @@ class AccountDeleteDialog : DialogFragment(), DialogInterface.OnClickListener {
             }
 
         val dialogText = StringBuilder().apply {
-            append(
-                getString(
-                    R.string.account_delete_confirmation_question,
-                    AccountManager.getInstance().getVerboseName(account)
+            account?.let {
+                append(
+                    getString(
+                        R.string.account_delete_confirmation_question,
+                        AccountManager.getVerboseName(it)
+                    )
                 )
-            )
+            }
+
             append(getString(R.string.account_delete_confirmation_explanation))
         }
 
@@ -62,7 +65,7 @@ class AccountDeleteDialog : DialogFragment(), DialogInterface.OnClickListener {
     override fun onClick(dialog: DialogInterface, which: Int) {
         if (which != Dialog.BUTTON_POSITIVE) return
 
-        AccountManager.getInstance().removeAccount(account)
+        account?.let { AccountManager.removeAccount(it) }
 
         if (chbDeleteSettings != null && chbDeleteSettings?.isChecked == true) {
             XabberAccountManager.getInstance().deleteAccountSettings(jid)

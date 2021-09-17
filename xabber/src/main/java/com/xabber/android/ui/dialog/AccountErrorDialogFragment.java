@@ -40,7 +40,7 @@ public class AccountErrorDialogFragment extends DialogFragment implements Dialog
         accountErrorEvent = (AccountErrorEvent) args.getSerializable(ARGUMENT_ERROR_EVENT);
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(AccountManager.getInstance().getVerboseName(accountErrorEvent.getAccount()))
+                .setTitle(AccountManager.INSTANCE.getVerboseName(accountErrorEvent.getAccount()))
                 .setView(setUpDialogView())
                 .setPositiveButton(R.string.account_error_settings, this)
                 .create();
@@ -100,7 +100,7 @@ public class AccountErrorDialogFragment extends DialogFragment implements Dialog
             }
 
             if (activity instanceof  AccountSettingsActivity) {
-                AccountManager.getInstance().removeAccountError(accountErrorEvent.getAccount());
+                AccountManager.INSTANCE.removeAccountError(accountErrorEvent.getAccount());
             } else {
                 startActivity(AccountActivity.createConnectionSettingsIntent(activity, accountErrorEvent.getAccount()));
             }

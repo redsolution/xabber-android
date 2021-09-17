@@ -116,7 +116,7 @@ public class NewContactTitleInflater {
         boolean isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
         boolean isBlocked = BlockingManager.getInstance()
                 .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
-        boolean isConnected = AccountManager.getInstance().getConnectedAccounts()
+        boolean isConnected = AccountManager.INSTANCE.getConnectedAccounts()
                 .contains(abstractContact.getAccount());
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();

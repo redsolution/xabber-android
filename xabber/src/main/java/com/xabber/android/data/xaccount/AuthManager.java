@@ -103,7 +103,7 @@ public class AuthManager {
                     }
                     XabberAccountManager.getInstance().setAccountSyncState(syncState);
 
-                    if (AccountManager.getInstance().isLoaded()) {
+                    if (AccountManager.INSTANCE.isLoaded()) {
                         // update last synchronization time
                         SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
 

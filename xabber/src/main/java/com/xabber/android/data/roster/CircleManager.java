@@ -105,7 +105,7 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener, 
         } else if (CircleManager.ACTIVE_CHATS.equals(group)) {
             return Application.getInstance().getString(R.string.group_active_chat);
         } else if (CircleManager.IS_ACCOUNT.equals(group)) {
-            return AccountManager.getInstance().getVerboseName(account);
+            return AccountManager.INSTANCE.getVerboseName(account);
         }
         return group;
     }

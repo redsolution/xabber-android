@@ -47,7 +47,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final AccountItem account = AccountManager.getInstance().getAccount(items.get(position).jid);
+        final AccountItem account = AccountManager.INSTANCE.getAccount(items.get(position).jid);
         XMPPAccountVH viewHolder = (XMPPAccountVH) holder;
 
         // set color

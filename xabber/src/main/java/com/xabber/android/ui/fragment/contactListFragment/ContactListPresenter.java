@@ -162,8 +162,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
         final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
-        final CommonState commonState = AccountManager.getInstance().getCommonState();
-        final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
+        final CommonState commonState = AccountManager.INSTANCE.getCommonState();
 
         final Map<String, GroupConfiguration> groups;
 
@@ -175,7 +174,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+        for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
             accounts.put(account, null);
         }
 
@@ -221,12 +220,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             }
             hasContacts = true;
             final boolean online = rosterContact.getStatusMode().isOnline();
-            final AccountJid account = rosterContact.getAccount();
-            final Map<ContactJid, AbstractChat> users = abstractChats.get(account);
 
-            if (selectedAccount != null && !selectedAccount.equals(account)) {
-                continue;
-            }
             if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
                     contacts, showAccounts, showGroups, showOffline)) {
                 hasVisibleContacts = true;

@@ -42,7 +42,7 @@ object StatusBadgeSetupHelper {
         val accountJid = abstractChat.account
 
         val isServer = abstractChat.contactJid.jid.isDomainBareJid
-        val isAccountConnected = AccountManager.getInstance().connectedAccounts.contains(accountJid)
+        val isAccountConnected = AccountManager.connectedAccounts.contains(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
                 || abstractChat.privacyType == GroupPrivacyType.NONE)
@@ -60,7 +60,7 @@ object StatusBadgeSetupHelper {
         val isUnavailable =
             RosterManager.getInstance().getAbstractContact(accountJid, contactJid).statusMode.statusLevel ==
                     StatusMode.unavailable.ordinal
-        val isAccountConnected = AccountManager.getInstance().connectedAccounts.contains(accountJid)
+        val isAccountConnected = AccountManager.connectedAccounts.contains(accountJid)
         val isPublicGroupChat = abstractChat is GroupChat
                 && (abstractChat.privacyType == GroupPrivacyType.PUBLIC
                 || abstractChat.privacyType == GroupPrivacyType.NONE)

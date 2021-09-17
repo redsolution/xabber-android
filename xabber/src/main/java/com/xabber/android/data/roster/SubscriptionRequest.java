@@ -51,7 +51,7 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
     }
 
     public String getConfirmation() {
-        String accountName = AccountManager.getInstance().getVerboseName(account);
+        String accountName = AccountManager.INSTANCE.getVerboseName(account);
         return Application.getInstance().getString(R.string.contact_subscribe_confirm, accountName);
     }
 

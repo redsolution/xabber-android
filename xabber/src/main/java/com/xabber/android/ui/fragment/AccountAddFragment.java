@@ -232,7 +232,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
         AccountJid account;
         try {
-            account = AccountManager.getInstance().addAccount(
+            account = AccountManager.INSTANCE.addAccount(
                     userView.getText().toString().trim(),
                     passwordView.getText().toString(),
                     "",

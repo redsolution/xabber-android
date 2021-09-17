@@ -304,7 +304,7 @@ object MessageNotificationManager : OnLoadListener {
         when (action.actionType) {
             ActionType.read -> {
                 ChatManager.getInstance().getChat(accountJid, contactJid)?.let { chat ->
-                    AccountManager.getInstance().stopGracePeriod(chat.account)
+                    AccountManager.stopGracePeriod(chat.account)
                     chat.markAsReadAll(true)
                     callUiUpdate()
                 }

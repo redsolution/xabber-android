@@ -50,7 +50,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
 
-        if (AccountManager.getInstance().getAccount(account) == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             setResult(RESULT_CANCELED);
             finish();

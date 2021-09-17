@@ -85,7 +85,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                     updateAccountInfo(s);
 
                     // if exist local accounts
-                    if (AccountManager.getInstance().getAllAccountItems().size() > 0)
+                    if (AccountManager.INSTANCE.getAllAccountItems().size() > 0)
                         updateSettings(needGoToMainActivity);
                     else getSettings(needGoToMainActivity);
 

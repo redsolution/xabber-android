@@ -264,10 +264,10 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         /* Update ChatState TextView display via current chat and connection state */
         toolbarTitleTv.setText(
             when {
-                AccountManager.getInstance().commonState == CommonState.connecting -> {
+                AccountManager.commonState == CommonState.connecting -> {
                     R.string.account_state_connecting
                 }
-                AccountManager.getInstance().commonState == CommonState.waiting -> {
+                AccountManager.commonState == CommonState.waiting -> {
                     R.string.waiting_for_network
                 }
                 currentChatsState == ChatListState.UNREAD -> R.string.unread_chats
@@ -278,12 +278,12 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
 
         /* Update toolbar add iv behavior */
         when {
-            !AccountManager.getInstance().hasAccounts() -> {
+            !AccountManager.hasAccounts() -> {
                 toolbarAddIv.setOnClickListener {
                     startActivity(AccountAddActivity.createIntent(context))
                 }
             }
-            AccountManager.getInstance().enabledAccounts.isEmpty() -> {
+            AccountManager.enabledAccounts.isEmpty() -> {
                 Toast.makeText(
                     context,
                     getString(R.string.application_state_disabled),
@@ -308,11 +308,10 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
                 toolbarAvatarIv.setImageDrawable(it)
             }
 
-            if (AccountManager.getInstance().enabledAccounts.isNotEmpty()) {
+            if (AccountManager.enabledAccounts.isNotEmpty()) {
                 toolbarStatusIv.setImageLevel(
-                    AccountManager.getInstance().firstAccount?.let {
-                        AccountManager.getInstance()
-                            .getAccount(it)?.displayStatusMode?.statusLevel
+                    AccountManager.firstAccount?.let {
+                        AccountManager.getAccount(it)?.displayStatusMode?.statusLevel
                     } ?: StatusMode.unavailable.statusLevel
                 )
                 toolbarTitleTv.visibility = View.VISIBLE
@@ -343,7 +342,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         }
 
         /* Update left color indicator via current main user */
-        if (AccountManager.getInstance().enabledAccounts.size > 1) {
+        if (AccountManager.enabledAccounts.size > 1) {
             toolbarAccountColorIndicator.setBackgroundColor(
                 ColorManager.getInstance().accountPainter.defaultMainColor
             )
@@ -380,7 +379,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
     override fun onClick(v: View) {
         when (v.id) {
             R.id.ivAvatar -> startActivity(
-                AccountActivity.createIntent(activity, AccountManager.getInstance().firstAccount)
+                AccountActivity.createIntent(activity, AccountManager.firstAccount)
             )
             R.id.tvTitle -> showTitlePopup(toolbarTitleTv)
         }
@@ -610,7 +609,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         if (context == null) return
 
         when {
-            !AccountManager.getInstance().hasAccounts() -> {
+            !AccountManager.hasAccounts() -> {
                 showPlaceholder(
                     getString(R.string.application_state_empty),
                     getString(R.string.application_action_empty)
@@ -619,7 +618,7 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
                 }
             }
 
-            AccountManager.getInstance().enabledAccounts.isEmpty() -> {
+            AccountManager.enabledAccounts.isEmpty() -> {
                 showPlaceholder(
                     getString(R.string.application_state_disabled),
                     getString(R.string.application_action_disabled)

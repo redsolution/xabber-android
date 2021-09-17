@@ -71,7 +71,7 @@ object GroupInviteManager : OnLoadListener {
                 ChatManager.getInstance().createGroupChat(account, groupContactJid)
                 VCardManager.getInstance().requestByUser(account, groupContactJid.jid)
                 UserAvatarManager.getInstanceFor(
-                    AccountManager.getInstance().getAccount(account)?.connection
+                    AccountManager.getAccount(account)?.connection
                 )
                     .requestContactPubsubAvatar(groupContactJid)
             }
@@ -146,7 +146,7 @@ object GroupInviteManager : OnLoadListener {
                     )
                 }
 
-                val connection = AccountManager.getInstance().getAccount(accountJid)!!.connection
+                val connection = AccountManager.getAccount(accountJid)!!.connection
                 connection.sendIqWithResponseCallback(DeclineGroupInviteIQ(groupChat!!),
                     { removeGroup() },
                     { exception: java.lang.Exception ->
@@ -189,7 +189,7 @@ object GroupInviteManager : OnLoadListener {
         try {
             Application.getInstance().runInBackgroundNetworkUserRequest {
                 val chat = ChatManager.getInstance().getChat(account, groupJid)
-                val accountItem = AccountManager.getInstance().getAccount(account)
+                val accountItem = AccountManager.getAccount(account)
                 if (chat is GroupChat && accountItem != null) {
                     listener.onSend()
                     contactsToInvite.forEach { contact ->
@@ -225,7 +225,7 @@ object GroupInviteManager : OnLoadListener {
         reason: String?, listener: BaseIqResultUiListener
     ) {
         try {
-            AccountManager.getInstance().getAccount(account)?.connection?.sendStanza(
+            AccountManager.getAccount(account)?.connection?.sendStanza(
                 Message().apply {
                     addBody(
                         null,
@@ -252,7 +252,7 @@ object GroupInviteManager : OnLoadListener {
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             val chat = ChatManager.getInstance().getChat(account, groupchatJid)
-            val accountItem = AccountManager.getInstance().getAccount(account)
+            val accountItem = AccountManager.getAccount(account)
             if (chat is GroupChat && accountItem != null) {
                 val queryIQ = GroupchatInviteListQueryIQ(chat as GroupChat?)
                 try {
@@ -311,7 +311,7 @@ object GroupInviteManager : OnLoadListener {
                         }
                 }
 
-                AccountManager.getInstance().getAccount(account)?.connection
+                AccountManager.getAccount(account)?.connection
                     ?.sendIqWithResponseCallback(
                         GroupchatInviteListRevokeIQ(groupChat, inviteJid),
                         stanzaResultListener,
@@ -394,7 +394,7 @@ object GroupInviteManager : OnLoadListener {
                 }
 
                 try {
-                    AccountManager.getInstance().getAccount(account)?.connection
+                    AccountManager.getAccount(account)?.connection
                         ?.sendIqWithResponseCallback(
                             GroupchatInviteListRevokeIQ(groupChat, inviteJid),
                             stanzaResultListener,

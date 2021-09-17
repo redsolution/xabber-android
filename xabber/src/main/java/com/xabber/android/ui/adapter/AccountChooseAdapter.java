@@ -40,14 +40,14 @@ public class AccountChooseAdapter extends BaseAdapter {
     public AccountChooseAdapter(Activity activity) {
         super();
         this.layoutInflater = activity.getLayoutInflater();
-        accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        accounts = new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
         Collections.sort(accounts);
     }
 
     public AccountChooseAdapter(LayoutInflater layoutInflater){
         super();
         this.layoutInflater = layoutInflater;
-        accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        accounts = new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
         Collections.sort(accounts);
     }
 
@@ -69,7 +69,6 @@ public class AccountChooseAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final View view;
-        final AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
             view = layoutInflater.inflate(
                     R.layout.item_account_choose, parent, false);
@@ -78,8 +77,9 @@ public class AccountChooseAdapter extends BaseAdapter {
         }
         final AccountJid account = (AccountJid) getItem(position);
 
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager
-                .getVerboseName(account));
+        ((TextView) view.findViewById(R.id.name)).setText(
+                AccountManager.INSTANCE.getVerboseName(account)
+        );
         return view;
     }
 

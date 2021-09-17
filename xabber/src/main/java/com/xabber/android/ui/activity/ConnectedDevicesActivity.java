@@ -111,7 +111,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
         List<Presence> allAccountPresences = PresenceManager.INSTANCE.getAvailableAccountPresences(account);
 
         Resourcepart accountResource = null;
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem != null) {
             accountResource = accountItem.getConnection().getConfiguration().getResource();
         }

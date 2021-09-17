@@ -54,7 +54,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
         boolean supported = MessageArchiveManager.INSTANCE.isSupported(
-                Objects.requireNonNull(AccountManager.getInstance().getAccount(this.account)));
+                Objects.requireNonNull(AccountManager.INSTANCE.getAccount(this.account)));
 
         mamPreference.setEnabled(true);
         if (!supported) {
@@ -94,7 +94,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     protected Map<String, Object> getValues() {
         Map<String, Object> source = new HashMap<>();
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
 
         if (accountItem != null) {
             putValue(source, R.string.account_clear_history_on_exit_key, accountItem.isClearHistoryOnExit());
@@ -108,15 +108,16 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
 
     @Override
     protected boolean setValues(Map<String, Object> source, Map<String, Object> result) {
-        AccountManager.getInstance().setClearHistoryOnExit(account, getBoolean(result, R.string.account_clear_history_on_exit_key));
+        AccountManager.INSTANCE.setClearHistoryOnExit(account, getBoolean(result, R.string.account_clear_history_on_exit_key));
 
         // order of enum fields and value array is very important
         int mamBehaviorIndex = getInt(result, R.string.account_mam_default_behavior_key);
-        AccountManager.getInstance()
-                .setMamDefaultBehaviour(account, MamPrefsIQ.DefaultBehavior.values()[mamBehaviorIndex]);
+        AccountManager.INSTANCE.setMamDefaultBehaviour(
+                account, MamPrefsIQ.DefaultBehavior.values()[mamBehaviorIndex]
+        );
 
         int loadHistoryIndex = getInt(result, R.string.account_mam_sync_key);
-        AccountManager.getInstance().setLoadHistorySettings(account, LoadHistorySettings.values()[loadHistoryIndex]);
+        AccountManager.INSTANCE.setLoadHistorySettings(account, LoadHistorySettings.values()[loadHistoryIndex]);
 
         return true;
     }

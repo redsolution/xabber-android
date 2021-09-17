@@ -72,7 +72,7 @@ public class XMPPListPreference extends Preference implements View.OnClickListen
 
     private void update() {
         List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
+        for (AccountItem accountItem : AccountManager.INSTANCE.getAllAccountItems()) {
             accountItems.add(accountItem);
         }
         accountListAdapter.setAccountItems(accountItems);

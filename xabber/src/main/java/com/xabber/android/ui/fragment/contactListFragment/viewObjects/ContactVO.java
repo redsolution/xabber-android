@@ -293,7 +293,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /* set up ACCOUNT COLOR indicator */
-        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+        if (AccountManager.INSTANCE.getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
         } else {

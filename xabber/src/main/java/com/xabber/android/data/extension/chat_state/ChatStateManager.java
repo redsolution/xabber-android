@@ -264,7 +264,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState, type));
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
         } catch (Exception e) {
             LogManager.exception(this, e);
         }
@@ -284,7 +284,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                 message.setTo(chat.getTo());
                 message.addExtension(new ChatStateExtension(chatState, type));
                 try {
-                    AccountManager.getInstance()
+                    AccountManager.INSTANCE
                             .getAccount(chat.getAccount())
                             .getConnection()
                             .sendStanza(message);
@@ -331,7 +331,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(ChatState.active));
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
         } catch (Exception e) {
             LogManager.exception(this, e);
         }
@@ -511,7 +511,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                 if (extension instanceof ChatStateExtension) {
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
                     if (chatState == ChatState.active || chatState == ChatState.composing) {
-                        AccountManager.getInstance().startGracePeriod(account);
+                        AccountManager.INSTANCE.startGracePeriod(account);
                     }
                     break;
                 }

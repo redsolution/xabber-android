@@ -215,7 +215,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
         entities.clear();
 
-        Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+        Collection<AccountJid> enabledAccounts = AccountManager.INSTANCE.getEnabledAccounts();
         RosterManager rosterManager = RosterManager.getInstance();
 
         for (AccountJid accountJid : enabledAccounts) {
@@ -264,8 +264,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     protected void onResume() {
         super.onResume();
 
-        if (!(AccountManager.getInstance().hasAccountsInRealm()
-                || AccountManager.getInstance().hasAccounts())
+        if (!(AccountManager.INSTANCE.hasAccountsInRealm()
+                || AccountManager.INSTANCE.hasAccounts())
                 && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(TutorialActivity.createIntent(this));
             finish();
@@ -359,18 +359,22 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                         if (item.getToken() != null && !item.getToken().isEmpty()) {
                             // create account if exist token
                             try {
-                                AccountJid accountJid = AccountManager.getInstance()
-                                        .addAccount(item.getJid(), "", item.getToken(),
+                                AccountJid accountJid = AccountManager.INSTANCE.addAccount(
+                                        item.getJid(), "", item.getToken(),
                                                 false, true, true,
-                                                false, false, true, false);
-                                AccountManager.getInstance().setColor(accountJid,
-                                        ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+                                                false, false, true, false
+                                );
+                                AccountManager.INSTANCE.setColor(
+                                        accountJid,
+                                        ColorManager.getInstance().convertColorNameToIndex(item.getColor())
+                                );
 
-                                AccountManager.getInstance().setOrder(accountJid, item.getOrder());
-                                AccountManager.getInstance().setTimestamp(accountJid,
-                                        item.getTimestamp());
+                                AccountManager.INSTANCE.setOrder(accountJid, item.getOrder());
+                                AccountManager.INSTANCE.setTimestamp(
+                                        accountJid, item.getTimestamp()
+                                );
 
-                                AccountManager.getInstance().onAccountChanged(accountJid);
+                                AccountManager.INSTANCE.onAccountChanged(accountJid);
                             } catch (NetworkException e) {
                                 Application.getInstance().onError(e);
                             }

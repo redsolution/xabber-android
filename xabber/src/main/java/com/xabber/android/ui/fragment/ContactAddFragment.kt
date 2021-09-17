@@ -60,7 +60,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
     private var qrScan: ImageView? = null
     private var clearText: ImageView? = null
 
-    private var isAccountSelected = AccountManager.getInstance().enabledAccounts.size == 1
+    private var isAccountSelected = AccountManager.enabledAccounts.size == 1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -90,9 +90,9 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
             }
         }
         if (getAccount() == null) {
-            val accounts = AccountManager.getInstance().enabledAccounts
+            val accounts = AccountManager.enabledAccounts
             if (accounts.size == 1) {
-                setAccount(AccountManager.getInstance().firstAccount)
+                setAccount(AccountManager.firstAccount)
             }
         }
         clearText = view.findViewById(R.id.imgCross)
@@ -136,7 +136,7 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
         if (name != null) {
             nameViewEt?.setText(name)
         }
-        setColor(AccountManager.getInstance().firstAccount)
+        AccountManager.firstAccount?.let { setColor(it) }
         if (!isInitialized) initRecyclerView(view)
         setUpAccountView(view)
         return view
@@ -194,14 +194,14 @@ class ContactAddFragment : CircleEditorFragment(), ContactAdder, View.OnClickLis
 
         accountSpinner = view.findViewById(R.id.contact_account)
 
-        if (AccountManager.getInstance().enabledAccounts.size <= 1) {
+        if (AccountManager.enabledAccounts.size <= 1) {
             accountSpinner?.visibility = View.GONE
             val exceptSpinnerLinearLayout = view.findViewById<LinearLayout>(R.id.except_spinner)
             val llm = exceptSpinnerLinearLayout.layoutParams as ViewGroup.MarginLayoutParams
             llm.topMargin = 0
             exceptSpinnerLinearLayout.requestLayout()
         } else {
-            val jids = AccountManager.getInstance().enabledAccounts.toList()
+            val jids = AccountManager.enabledAccounts.toList()
                 .sortedWith { o1, o2 -> o1.compareTo(o2) }
 
             val avatars = mutableListOf<Drawable>()

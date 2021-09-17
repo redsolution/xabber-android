@@ -324,9 +324,11 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
             default:
                 int priority;
                 if (statusMode != StatusMode.dnd) {
-                    if (AccountManager.getInstance().isXa()) {
+                    if (AccountManager.INSTANCE.isXa()) {
                         statusMode = StatusMode.xa;
-                    } else if (AccountManager.getInstance().isAway()) statusMode = StatusMode.away;
+                    } else if (AccountManager.INSTANCE.isAway()) {
+                        statusMode = StatusMode.away;
+                    }
                 }
                 if (SettingsManager.connectionAdjustPriority()) {
                     switch (statusMode){
@@ -375,12 +377,12 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                                   int proxyPort, String proxyUser, String proxyPassword) {
         getConnectionSettings().update(custom, host, port, password, saslEnabled, tlsMode, compression, proxyType,
                 proxyHost, proxyPort, proxyUser, proxyPassword);
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
     }
 
     void setPassword(String password) {
         getConnectionSettings().setPassword(password);
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
     }
 
     void setXToken(XToken token) { getConnectionSettings().setXToken(token); }
@@ -390,7 +392,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      */
     void clearPassword() {
         if (storePassword) return;
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
         getConnectionSettings().setPassword(UNDEFINED_PASSWORD);
     }
 

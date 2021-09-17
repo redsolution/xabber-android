@@ -99,7 +99,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     VCardManager.getInstance().addVCardUpdateToPresence(
                         accountPresence, AvatarManager.getInstance().getHash(group.account.bareJid)
                     )
-                    AccountManager.getInstance().getAccount(group.account)?.connection?.sendStanza(
+                    AccountManager.getAccount(group.account)?.connection?.sendStanza(
                         accountPresence.apply {
                             addExtension(GroupPresenceNotificationExtensionElement(isPresent))
                             to = group.to
@@ -242,7 +242,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         }
 
     fun isSupported(accountJid: AccountJid?) =
-        isSupported(AccountManager.getInstance().getAccount(accountJid)?.connection)
+        isSupported(AccountManager.getAccount(accountJid)?.connection)
 
     fun sendCreateGroupchatRequest(
         accountJid: AccountJid,
@@ -257,7 +257,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     ) {
         try {
             listener?.onSend()
-            AccountManager.getInstance().getAccount(accountJid)?.connection
+            AccountManager.getAccount(accountJid)?.connection
                 ?.sendIqWithResponseCallback(
                     CreateGroupchatIQ(
                         accountJid.fullJid,
@@ -326,7 +326,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupStatusForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
                         GroupStatusFormRequestIQ(groupchat),
                         { packet: Stanza? ->
@@ -358,7 +358,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun sendSetGroupchatStatusRequest(groupChat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                         GroupSetStatusRequestIQ(groupChat, dataForm),
                         { packet: Stanza? ->
@@ -389,7 +389,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupDefaultRestrictionsDataForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
                         RequestGroupDefaultRestrictionsDataFormIQ(groupchat),
                         { packet: Stanza? ->
@@ -422,7 +422,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestSetGroupDefaultRestrictions(groupChat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                         RequestToChangeGroupDefaultRestrictionsIQ(groupChat, dataForm),
                         { packet: Stanza? ->
@@ -450,7 +450,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun requestGroupSettingsForm(groupchat: GroupChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
                         GroupSettingsRequestFormQueryIQ(groupchat),
                         { packet: Stanza? ->
@@ -486,7 +486,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
     fun sendSetGroupSettingsRequest(groupchat: GroupChat, dataForm: DataForm) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupchat.account)?.connection?.sendIqWithResponseCallback(
                         SetGroupSettingsRequestIQ(groupchat, dataForm),
                         { packet: Stanza? ->
@@ -529,7 +529,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
                     publishItem,
                     null
                 )
-                AccountManager.getInstance().getAccount(groupChat.account)?.connection
+                AccountManager.getAccount(groupChat.account)?.connection
                     ?.createStanzaCollectorAndSend(packet)?.nextResultOrThrow<Stanza>(45000)
             } catch (e: Exception) {
                 LogManager.exception(this::class.java.simpleName, e)
@@ -548,7 +548,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 val connectionItem =
-                    AccountManager.getInstance().getAccount(groupChat.account)?.connection
+                    AccountManager.getAccount(groupChat.account)?.connection
                 val avatarHash = AvatarManager.getAvatarHash(data)
                 val dataPacket = PubSub.createPubsubPacket(
                     groupChat.contactJid.bareJid,
@@ -598,7 +598,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
         //todo add privilege checking
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(groupChat.account)?.connection?.sendIqWithResponseCallback(
                         GroupPinMessageIQ(
                             groupChat.fullJidIfPossible ?: groupChat.contactJid.jid,
@@ -637,7 +637,7 @@ object GroupsManager : OnPacketListener, OnLoadListener {
             try {
                 val groupChat = ChatManager.getInstance().getChat(account, contact) as GroupChat?
                     ?: return@runInBackgroundNetworkUserRequest
-                AccountManager.getInstance()
+                AccountManager
                     .getAccount(account)?.connection?.sendIqWithResponseCallback(
                         GroupPinMessageIQ(groupChat, messageId),
                         { packet: Stanza? ->

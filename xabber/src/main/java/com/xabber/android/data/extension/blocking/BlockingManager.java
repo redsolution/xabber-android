@@ -267,7 +267,7 @@ public class BlockingManager implements OnAuthenticatedListener {
     @SuppressWarnings("WeakerAccess")
     @Nullable
     BlockingCommandManager getBlockingCommandManager(AccountJid account) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             return null;
         }

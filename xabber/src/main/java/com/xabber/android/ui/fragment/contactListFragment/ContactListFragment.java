@@ -182,7 +182,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
      * Setup bottom accounts list with avatars.
      */
     public void updateAccountsList() {
-        accountsJidList = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        accountsJidList = new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
         Collections.sort(accountsJidList);
         if (accountsJidList.size() > 1) {
             accountShortcutVOArrayList.clear();
@@ -196,9 +196,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     private void setDefaultToolbarColors() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountManager.getInstance().getFirstAccount() != null)
+                AccountManager.INSTANCE.getFirstAccount() != null)
             defaultToolbarLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+                    getAccountRippleColor(AccountManager.INSTANCE.getFirstAccount()));
         else {
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
@@ -394,7 +394,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
                     state = ContactListState.offline;
                     text = R.string.application_state_offline;
                     button = R.string.application_state_offline;
-                    listener = view -> AccountManager.getInstance().setStatus(
+                    listener = view -> AccountManager.INSTANCE.setStatus(
                             StatusMode.available, null);
                     break;
                 case disabled:

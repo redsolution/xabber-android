@@ -22,9 +22,7 @@ object XTokenManager : OnPacketListener {
 
     override fun onStanza(connection: ConnectionItem?, packet: Stanza?) {
         if (packet is IncomingNewXTokenIQ) {
-            AccountManager.getInstance().updateXToken(
-                connection?.account, packet.getXToken()
-            )
+            AccountManager.updateXToken(connection?.account, packet.getXToken())
         } else if (packet is Message && packet.hasExtension(NAMESPACE)) {
             notifySamUiListeners(OnXTokenSessionsUpdatedListener::class.java)
             if (packet.hasXTokenRevokeExtensionElement()) {
@@ -34,7 +32,7 @@ object XTokenManager : OnPacketListener {
     }
 
     fun onAccountXTokenRevoked(accountJid: AccountJid) {
-        TODO("IMPLEMENT THIS")
+        AccountManager.removeAccount(accountJid)
     }
 
     fun sendXTokenRequest(connection: XMPPTCPConnection) {

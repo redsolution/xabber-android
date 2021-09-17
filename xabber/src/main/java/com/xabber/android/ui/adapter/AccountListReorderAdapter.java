@@ -93,18 +93,15 @@ public class AccountListReorderAdapter extends RecyclerView.Adapter implements I
         accountHolder.avatar.setBorderColor(ColorManager.getInstance().getAccountPainter().
                 getAccountMainColor(accountItem.getAccount()));
 
-        accountHolder.name.setText(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
+        accountHolder.name.setText(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount()));
         accountHolder.status.setText(accountItem.getState().getStringId());
 
-        accountHolder.ivAnchor.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (MotionEventCompat.getActionMasked(event) ==
-                        MotionEvent.ACTION_DOWN) {
-                    listener.onStartDrag(accountHolder);
-                }
-                return false;
+        accountHolder.ivAnchor.setOnTouchListener((v, event) -> {
+            if (MotionEventCompat.getActionMasked(event) ==
+                    MotionEvent.ACTION_DOWN) {
+                listener.onStartDrag(accountHolder);
             }
+            return false;
         });
 
     }

@@ -90,12 +90,12 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
             LogManager.e(getLogTag(), e.getMessage());
             String message = e.getMessage();
             if (message != null && message.contains("conflict")) {
-                AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
+                AccountManager.INSTANCE.generateNewResourceForAccount(connectionItem.getAccount());
             } else ((AccountItem)connectionItem).setStreamError(true);
         }
 
         if (e instanceof SASLErrorException) {
-            AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
         }
 
         Application.getInstance().runOnUiThread(() -> connectionItem.checkIfConnectionIsOutdated());

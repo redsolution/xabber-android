@@ -198,7 +198,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                         .map { RegularChat(it.account, it.contactJid) }
                 )
         } else {
-            val savedMessagesChats = AccountManager.getInstance().enabledAccounts.map {
+            val savedMessagesChats = AccountManager.enabledAccounts.map {
                 val contactJid = ContactJid.from(it.bareJid.toString())
                 ChatManager.getInstance().getChat(it, contactJid)
                     ?: ChatManager.getInstance().createRegularChat(it, contactJid)

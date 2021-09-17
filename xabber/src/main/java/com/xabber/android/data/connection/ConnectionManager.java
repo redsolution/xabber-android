@@ -71,14 +71,14 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     @Override
     public void onInitialized() {
         LogManager.i(LOG_TAG, "onInitialized");
-        AccountManager.getInstance().onAccountsChanged(new ArrayList<>(AccountManager.getInstance().getAllAccounts()));
+        AccountManager.INSTANCE.onAccountsChanged(new ArrayList<>(AccountManager.INSTANCE.getAllAccounts()));
     }
 
     @Override
     public void onClose() {
         LogManager.i(LOG_TAG, "onClose");
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null) {
                 accountItem.disconnect();
             }
@@ -87,7 +87,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     public void connectAll() {
         LogManager.i(LOG_TAG, "connectAll");
-        AccountManager accountManager = AccountManager.getInstance();
+        AccountManager accountManager = AccountManager.INSTANCE;
         for (AccountJid account : accountManager.getEnabledAccounts()) {
             ReconnectionManager.getInstance().requestReconnect(account);
         }
@@ -95,7 +95,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     public void shutdownAll() {
         LogManager.i(LOG_TAG, "shutdownAll");
-        AccountManager accountManager = AccountManager.getInstance();
+        AccountManager accountManager = AccountManager.INSTANCE;
         for (AccountItem account : accountManager.getAllAccountItems()) {
             if (account.isEnabled() && account.getConnection().isConnected()) {
                 account.getConnection().instantShutdown();

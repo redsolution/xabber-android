@@ -36,7 +36,7 @@ class AddFragment : Fragment(), OnAccountChangedListener {
                 startActivity(CreateGroupActivity.createCreateIncognitoGroupchatIntent())
             }
 
-        if (AccountManager.getInstance().enabledAccounts.isEmpty()) {
+        if (AccountManager.enabledAccounts.isEmpty()) {
             showPlaceholder(true)
         }
 
@@ -54,7 +54,7 @@ class AddFragment : Fragment(), OnAccountChangedListener {
     }
 
     override fun onAccountsChanged(accounts: Collection<AccountJid>) {
-        if (AccountManager.getInstance().enabledAccounts.isEmpty()) {
+        if (AccountManager.enabledAccounts.isEmpty()) {
             Application.getInstance().runOnUiThread { showPlaceholder(true) }
         }
     }

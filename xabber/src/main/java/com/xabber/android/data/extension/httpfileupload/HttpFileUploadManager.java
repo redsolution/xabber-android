@@ -244,7 +244,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public boolean isFileUploadSupported(AccountJid account) {
-        if (AccountManager.checkIfSuccessfulConnectionHappened(account)) {
+        if (AccountManager.INSTANCE.getAccount(account).isSuccessfulConnectionHappened()) {
             try {
                 return uploadServers.containsKey(account.getFullJid().asBareJid());
             } catch (Exception e) {
@@ -255,7 +255,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public boolean isFileUploadDiscoveryInProgress(AccountJid account) {
-        if (AccountManager.checkIfSuccessfulConnectionHappened(account)) {
+        if (AccountManager.INSTANCE.getAccount(account).isSuccessfulConnectionHappened()) {
             Thread discoThread = supportDiscoveryThreads.get(account.getBareJid());
             return discoThread != null && discoThread.getState() != Thread.State.TERMINATED;
         }

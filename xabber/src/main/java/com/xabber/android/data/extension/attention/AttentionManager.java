@@ -100,8 +100,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
     public void onSettingsChanged() {
         synchronized (enabledLock) {
-            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
+                AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
                 if (accountItem == null) {
                     continue;
                 }
@@ -125,7 +125,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                     manager.removeFeature(AttentionExtension.NAMESPACE);
                 }
             }
-            AccountManager.getInstance().resendPresence();
+            AccountManager.INSTANCE.resendPresence();
         }
     }
 
@@ -195,7 +195,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
         } catch (Exception e) {
             LogManager.exception(this, e);
         }

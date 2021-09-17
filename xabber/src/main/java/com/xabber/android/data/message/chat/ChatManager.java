@@ -215,7 +215,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
     public Collection<AbstractChat> getChatsOfEnabledAccounts() {
         List<AbstractChat> chats = new ArrayList<>();
 
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -223,7 +223,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
 
     public Collection<AbstractChat> getChats() {
         List<AbstractChat> chats = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
+        for (AccountJid accountJid : AccountManager.INSTANCE.getAllAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -331,7 +331,7 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
             out.write("</title></head><body>");
             final AbstractChat abstractChat = getChat(account, user);
             if (abstractChat != null) {
-                final String accountName = AccountManager.getInstance().getNickName(account);
+                final String accountName = AccountManager.INSTANCE.getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
                 RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository.getChatMessages(account, user);

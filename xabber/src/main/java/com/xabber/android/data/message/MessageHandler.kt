@@ -226,7 +226,7 @@ object MessageHandler {
             }
 
         val accountStartHistoryTimestamp =
-            AccountManager.getInstance().getAccount(accountJid)?.startHistoryTimestamp?.time
+            AccountManager.getAccount(accountJid)?.startHistoryTimestamp?.time
 
         //FileManager.processFileMessage(messageRealmObject);
         val attachmentRealmObjects = try {

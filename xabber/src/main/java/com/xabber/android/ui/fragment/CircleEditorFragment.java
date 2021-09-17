@@ -152,13 +152,13 @@ public class CircleEditorFragment extends Fragment implements ContactCircleEdito
         if (getAccount() != null){
             titleTv.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
         } else {
-            if (!AccountManager.getInstance().getEnabledAccounts().isEmpty()) {
+            if (!AccountManager.INSTANCE.getEnabledAccounts().isEmpty()) {
                 titleTv.setTextColor(ColorManager.getInstance().getAccountPainter()
-                        .getAccountSendButtonColor(AccountManager.getInstance().getFirstAccount()));
+                        .getAccountSendButtonColor(AccountManager.INSTANCE.getFirstAccount()));
             }
         }
 
-        toggleVisibility(AccountManager.getInstance().getEnabledAccounts().size() == 1 || getAccount() != null);
+        toggleVisibility(AccountManager.INSTANCE.getEnabledAccounts().size() == 1 || getAccount() != null);
 
     }
 

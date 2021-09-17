@@ -73,7 +73,7 @@ public class CustomNotifySettings extends ManagedActivity {
         });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
-        barPainter.updateWithAccountName(AccountManager.getInstance().getFirstAccount());
+        barPainter.updateWithAccountName(AccountManager.INSTANCE.getFirstAccount());
 
         if (savedInstanceState == null) {
             Key key = Key.createKey(account, user, group, phraseID);

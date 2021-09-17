@@ -59,7 +59,7 @@ public class PrivateStorageManager {
 
     @Nullable
     private PrivateData getPrivateData(AccountJid accountJid, String namespace, String elementName) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem == null || !accountItem.isEnabled()) return null;
 
         XMPPTCPConnection connection = accountItem.getConnection();
@@ -75,7 +75,7 @@ public class PrivateStorageManager {
     }
 
     private void setPrivateData(AccountJid accountJid, PrivateData privateData) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem == null || !accountItem.isEnabled()) return;
 
         XMPPTCPConnection connection = accountItem.getConnection();

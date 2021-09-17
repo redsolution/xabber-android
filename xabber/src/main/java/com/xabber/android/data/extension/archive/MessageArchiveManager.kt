@@ -86,7 +86,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
+            AccountManager.getAccount(chat.account)?.connection?.let { connection ->
 
                 val listener = RegularMamResultsHandler(
                     chat.account,
@@ -110,7 +110,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun loadAllMessagesInChat(chat: AbstractChat) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getInstance().getAccount(chat.account)?.connection?.let { connection ->
+            AccountManager.getAccount(chat.account)?.connection?.let { connection ->
                 val listener = RegularMamResultsHandler(
                     chat.account,
                     ChatManager.getInstance(),
@@ -204,7 +204,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
         val chat = ChatManager.getInstance().getChat(accountJid, contactJid)
             ?: ChatManager.getInstance().createRegularChat(accountJid, contactJid)
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            val connection = AccountManager.getInstance().getAccount(accountJid)?.connection
+            val connection = AccountManager.getAccount(accountJid)?.connection
                 ?: return@runInBackgroundNetworkUserRequest
             val listener = RegularMamResultsHandler(
                 accountJid,
@@ -291,7 +291,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
             Application.getInstance().getUIListeners(OnLastHistoryLoadStartedListener::class.java)
                 .forEachOnUi { it.onLastHistoryLoadStarted(accountJid, contactJid) }
 
-            val accountItem = AccountManager.getInstance().getAccount(accountJid)
+            val accountItem = AccountManager.getAccount(accountJid)
             val connection = accountItem?.connection ?: return@runInBackgroundNetworkUserRequest
             val listener = RegularMamResultsHandler(
                 accountJid,
@@ -439,12 +439,11 @@ object MessageArchiveManager : OnRosterReceivedListener {
             }
 
             val accountJid = chat.account
-            val accountItem = AccountManager.getInstance().getAccount(accountJid)
+            val accountItem = AccountManager.getAccount(accountJid)
                 ?: return@runInBackground
 
-            if (accountItem.loadHistorySettings == LoadHistorySettings.none || !isSupported(
-                    accountItem
-                )
+            if (accountItem.loadHistorySettings == LoadHistorySettings.none
+                || !isSupported(accountItem)
             ) {
                 return@runInBackground
             }
@@ -486,7 +485,7 @@ object MessageArchiveManager : OnRosterReceivedListener {
             return
         }
 
-        val accountItem = AccountManager.getInstance().getAccount(chat.account) ?: return
+        val accountItem = AccountManager.getAccount(chat.account) ?: return
         val accountJid = chat.account
         val contactJid = chat.contactJid
         val connection = accountItem.connection

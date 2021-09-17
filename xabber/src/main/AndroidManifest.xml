@@ -611,10 +611,6 @@
 
         <receiver android:name=".receiver.NotificationReceiver" />
 
-        <receiver android:name=".receiver.GoAwayReceiver" />
-
-        <receiver android:name=".receiver.GoXaReceiver" />
-
         <receiver android:name=".receiver.ComposingPausedReceiver" />
 
         <receiver android:name=".receiver.NotificationCancelReceiver" />

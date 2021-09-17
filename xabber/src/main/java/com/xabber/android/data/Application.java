@@ -15,10 +15,7 @@
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -48,7 +45,6 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.delivery.DeliveryManager;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
@@ -81,7 +77,6 @@ import com.xabber.android.ui.color.ColorManager;
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -231,7 +226,7 @@ public class Application extends android.app.Application {
     }
 
     private void onApplicationStarted() {
-        AccountManager.getInstance().onLoad();
+        AccountManager.INSTANCE.onLoad();
     }
 
     private void onInitialized() {
@@ -359,7 +354,7 @@ public class Application extends android.app.Application {
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(AccountManager.getInstance());
+        addManager(AccountManager.INSTANCE);
         addManager(XabberAccountManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
@@ -623,51 +618,6 @@ public class Application extends android.app.Application {
             LogManager.exception(this, e);
         }
         return "";
-    }
-
-    public void resetApplication() {
-        try {
-            requestToWipe();
-            //Deleting all user files
-            File cacheDirectory = getCacheDir();
-            if (cacheDirectory.getParent() != null) {
-                File applicationDirectory = new File(cacheDirectory.getParent());
-                if (applicationDirectory.exists() && applicationDirectory.list() != null) {
-                    String[] fileNames = applicationDirectory.list();
-                    for (String fileName : fileNames) {
-                        if (!fileName.equals("lib")) {
-                            FileManager.getInstance()
-                                    .deleteFile(new File(applicationDirectory, fileName));
-                        }
-                    }
-                }
-            }
-
-            //Deleting all custom prefs
-            SettingsManager.resetCustomPrefs();
-
-            //Restart app
-            Context c = getApplicationContext();
-            if (c != null) {
-                PackageManager pm = c.getPackageManager();
-                if (pm != null) {
-                    Intent mStartActivity = pm.getLaunchIntentForPackage(c.getPackageName());
-                    if (mStartActivity != null) {
-                        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        int mPendingIntentId = 223344;
-                        PendingIntent mPendingIntent = PendingIntent
-                                .getActivity(c, mPendingIntentId, mStartActivity,
-                                        PendingIntent.FLAG_CANCEL_CURRENT);
-                        AlarmManager mgr = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000,
-                                mPendingIntent);
-                        System.exit(0);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            LogManager.e(LOG_TAG, "Was not able to reset application");
-        }
     }
 
 }

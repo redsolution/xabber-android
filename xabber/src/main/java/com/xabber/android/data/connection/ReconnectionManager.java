@@ -53,16 +53,16 @@ public class ReconnectionManager implements OnConnectedListener,
             tenSecondsCounter = 0;
             DeliveryManager.getInstance().resendMessagesWithoutReceipt();
         }
-        Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
+        Collection<AccountJid> allAccounts = AccountManager.INSTANCE.getAllAccounts();
 //        checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
-            checkConnection(AccountManager.getInstance().getAccount(accountJid),
+            checkConnection(AccountManager.INSTANCE.getAccount(accountJid),
                     getReconnectionInfo(accountJid));
         }
     }
 
     private void checkCarbonStatus(){
-        Collection<AccountItem> accountItems = AccountManager.getInstance().getAllAccountItems();
+        Collection<AccountItem> accountItems = AccountManager.INSTANCE.getAllAccountItems();
         for (AccountItem accountItem : accountItems){
             LogManager.d(LOG_TAG,
                     "For account " + accountItem.getAccount().toString() + " carbons status is: " + CarbonManager.INSTANCE.isCarbonsEnabledForConnection((ConnectionItem) accountItem));

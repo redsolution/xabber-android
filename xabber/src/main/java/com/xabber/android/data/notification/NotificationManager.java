@@ -301,7 +301,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             return;
         }
 
-        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
+        Collection<AccountJid> accountList = AccountManager.INSTANCE.getEnabledAccounts();
         if (accountList.isEmpty()) {
             return;
         }
@@ -313,7 +313,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         for (AccountJid account : accountList) {
 
-            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
             if (accountItem == null) {
                 continue;
             }

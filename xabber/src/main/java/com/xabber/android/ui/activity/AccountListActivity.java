@@ -91,7 +91,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void update() {
-        List<AccountItem> accountItems = new ArrayList<>(AccountManager.getInstance().getAllAccountItems());
+        List<AccountItem> accountItems = new ArrayList<>(AccountManager.INSTANCE.getAllAccountItems());
 
         accountListAdapter.setAccountItems(accountItems);
 
@@ -113,7 +113,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         if (accountListAdapter != null) {
             int order = 1;
             for (AccountItem account : accountListAdapter.getItems())
-                AccountManager.getInstance().setOrder(account.getAccount(), order++);
+                AccountManager.INSTANCE.setOrder(account.getAccount(), order++);
 
             XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
             if (XabberAccountManager.getInstance().getAccount() != null)

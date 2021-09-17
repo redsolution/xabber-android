@@ -119,7 +119,7 @@ class ConnectionThread {
                     AccountErrorEvent.Type.PASS_REQUIRED, "");
 
             //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
             EventBus.getDefault().postSticky(accountErrorEvent);
             return;
         }
@@ -186,7 +186,7 @@ class ConnectionThread {
                     AccountErrorEvent.Type.AUTHORIZATION, e.getMessage());
 
             //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
             EventBus.getDefault().postSticky(accountErrorEvent);
 
             // catching RuntimeExceptions seems to be strange, but we got a lot of error coming from
@@ -206,12 +206,12 @@ class ConnectionThread {
                             AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
                 }
 
-                com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
+                com.xabber.android.data.account.AccountManager.INSTANCE.addAccountError(accountErrorEvent);
                 if (e instanceof XMPPException.StreamErrorException) {
                     ((AccountItem)connectionItem).setStreamError(true);
                 } else {
                     if (!((AccountItem)connectionItem).getStreamError()) {
-                        com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                        com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
                     }
                 }
                 EventBus.getDefault().postSticky(accountErrorEvent);

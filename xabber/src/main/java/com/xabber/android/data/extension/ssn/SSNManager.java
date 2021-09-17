@@ -115,7 +115,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
 
         Collection<SecurityValue> securityValues = feature.getSecurityOptions();
         SecurityValue securityValue;
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem != null
                 && accountItem.getConnectionSettings().getTlsMode() == TLSMode.required) {
             securityValue = SecurityValue.c2s;
@@ -216,7 +216,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         message.setThread(session);
         message.addExtension(feature);
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendStanza(message);
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
         } catch (Exception e) {
             LogManager.exception(this, e);
         }

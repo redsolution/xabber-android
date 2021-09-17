@@ -197,7 +197,7 @@ public class ActivityManager implements OnUnloadListener {
         application.addUIListener(OnErrorListener.class, onErrorListener);
 
         CertificateManager.getInstance().registerActivity(activity);
-        AccountManager.getInstance().stopGracePeriod();
+        AccountManager.INSTANCE.stopGracePeriod();
     }
 
     /**

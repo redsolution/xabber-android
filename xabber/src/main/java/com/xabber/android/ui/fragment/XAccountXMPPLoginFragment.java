@@ -114,7 +114,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
         tvTitle.setVisibility(View.GONE);
 
         ArrayList<AccountJid> accounts =
-                new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+                new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
 
         if (accounts.size() < 1) tvError.setVisibility(View.VISIBLE);
         else if (accounts.size() > 1) loadBindings(accounts);

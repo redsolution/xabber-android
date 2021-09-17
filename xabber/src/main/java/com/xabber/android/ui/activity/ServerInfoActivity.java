@@ -64,7 +64,7 @@ public class ServerInfoActivity extends ManagedActivity {
             return;
         }
 
-        accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();

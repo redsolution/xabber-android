@@ -404,9 +404,7 @@ class GroupchatMemberActivity : ManagedActivity(), PopupMenu.OnMenuItemClickList
     private fun saveAvatar(newAvatarImageUri: Uri?) {
         showProgressBar(true)
         val userAvatarManager =
-            UserAvatarManager.getInstanceFor(
-                AccountManager.getInstance().getAccount(accountJid)?.connection
-            )
+            UserAvatarManager.getInstanceFor(AccountManager.getAccount(accountJid)?.connection)
         if (newAvatarImageUri == null) {
             try {
                 if (userAvatarManager.isSupportedByServer) {

@@ -239,7 +239,7 @@ public abstract class ConnectionItem {
 
                 Application.getInstance().runOnUiThread(() -> {
                     createNewConnection();
-                    AccountManager.getInstance().setEnabled(account, true);
+                    AccountManager.INSTANCE.setEnabled(account, true);
                 });
             }
         };
@@ -273,10 +273,10 @@ public abstract class ConnectionItem {
                 listener.onConnectionStateChanged(newState);
             }
             if (newState == ConnectionState.connected) {
-                AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
+                AccountManager.INSTANCE.setSuccessfulConnectionHappened(account, true);
             }
 
-            AccountManager.getInstance().onAccountChanged(getAccount());
+            AccountManager.INSTANCE.onAccountChanged(getAccount());
         }
     }
 

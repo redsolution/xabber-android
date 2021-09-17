@@ -80,7 +80,7 @@ public class StatusEditorAdapter extends BaseAdapter implements UpdatableAdapter
     @Override
     public void onChange() {
         statuses.clear();
-        statuses.addAll(AccountManager.getInstance().getSavedStatuses());
+        statuses.addAll(AccountManager.INSTANCE.getSavedStatuses());
         Collections.sort(statuses);
         notifyDataSetChanged();
     }

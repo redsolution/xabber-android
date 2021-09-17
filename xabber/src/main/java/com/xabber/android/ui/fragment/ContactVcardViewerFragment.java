@@ -181,7 +181,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void onResume() {
         super.onResume();
 
-        if (AccountManager.getInstance().getAccount(account) == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null) {
             // in case if account was removed
             return;
         }
@@ -279,7 +279,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             if (accounts.contains(account)) {
                 updateContact(account, user);
                 if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
-                    AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+                    AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
                     if (accountItem != null && accountItem.getFactualStatusMode().isOnline()) {
                         VCardManager.getInstance().request(this.account, this.account.getFullJid().asBareJid());
                     }
@@ -349,7 +349,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Resourcepart accountResource = null;
         if (isAccount) {
             // TODO: probably not the best way to get own resource
-            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
             if (accountItem != null) {
                 accountResource = accountItem.getConnection().getConfiguration().getResource();
             }

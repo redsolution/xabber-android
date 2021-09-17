@@ -53,7 +53,7 @@ class AccountError extends AccountRelated implements
 
     @Override
     public String getText() {
-        return AccountManager.getInstance().getVerboseName(account);
+        return AccountManager.INSTANCE.getVerboseName(account);
     }
 
 }

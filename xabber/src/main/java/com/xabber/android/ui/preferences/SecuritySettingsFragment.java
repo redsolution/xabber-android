@@ -49,9 +49,9 @@ public class SecuritySettingsFragment extends android.preference.PreferenceFragm
             LogManager.i(LOG_TAG, "Check certificate preference changed. new value " + checkCertificate);
 
             // reconnect all enabled account to apply and check changes
-            Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getAllAccounts();
+            Collection<AccountJid> enabledAccounts = AccountManager.INSTANCE.getAllAccounts();
             for (AccountJid accountJid : enabledAccounts) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
                 if (accountItem != null) {
                     accountItem.recreateConnection();
                 }

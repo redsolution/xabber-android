@@ -126,7 +126,7 @@ public class ContactActivity extends ManagedActivity implements
         account = IntentHelpersKt.getAccountJid(getIntent());
         user = IntentHelpersKt.getContactJid(getIntent());
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);
             finish();
