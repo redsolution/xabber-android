@@ -15,8 +15,6 @@
 package com.xabber.android.data.account
 
 import android.os.Looper
-import android.text.TextUtils
-import android.util.Log
 import com.xabber.android.R
 import com.xabber.android.data.*
 import com.xabber.android.data.connection.*
@@ -96,49 +94,42 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     override fun onLoad() {
-        val savedStatuses = StatusRepository.getAllSavedStatusesFromRealm()
-        val accountItems: MutableCollection<AccountItem> = ArrayList()
         val realm = DatabaseManager.getInstance().defaultRealmInstance
-        val accountRealmObjects = realm.where(AccountRealmObject::class.java).findAll()
-        LogManager.i(this, "onLoad got realmobjects accounts: " + accountRealmObjects.size)
-        for (accountRealmObject in accountRealmObjects) {
-            var serverName: DomainBareJid? = null
-            try {
-                serverName = JidCreate.domainBareFrom(accountRealmObject.serverName)
-            } catch (e: XmppStringprepException) {
-                LogManager.exception(this, e)
-            }
-            var userName: Localpart? = null
-            try {
-                userName = Localpart.from(accountRealmObject.userName)
-            } catch (e: XmppStringprepException) {
-                LogManager.exception(this, e)
-            }
-            var resource: Resourcepart? = null
-            try {
-                resource = Resourcepart.from(accountRealmObject.resource)
-            } catch (e: XmppStringprepException) {
-                LogManager.exception(this, e)
-            }
+
+        for (accountRealmObject in realm.where(AccountRealmObject::class.java).findAll()) {
+            val serverName =
+                try {
+                    JidCreate.domainBareFrom(accountRealmObject.serverName)
+                } catch (e: XmppStringprepException) {
+                    LogManager.exception(this, e)
+                    null
+                }
+
+            val userName =
+                try {
+                    Localpart.from(accountRealmObject.userName)
+                } catch (e: XmppStringprepException) {
+                    LogManager.exception(this, e)
+                    null
+                }
+
+            val resource =
+                try {
+                    Resourcepart.from(accountRealmObject.resource)
+                } catch (e: XmppStringprepException) {
+                    LogManager.exception(this, e)
+                    null
+                }
+
             if (serverName == null || userName == null || resource == null) {
                 LogManager.e(
                     this,
-                    "could not create account. username " + userName
-                            + ", server name " + serverName
-                            + ", resource " + resource
+                    "could not create account. username $userName, server name $serverName, resource $resource"
                 )
                 continue
             }
 
-            // fix for db migration
-            var order = accountRealmObject.order
-            if (order == 0) {
-                for (item in accountItems) {
-                    if (item.order > order) order = item.order
-                }
-                order++
-            }
-            val accountItem = AccountItem(
+            AccountItem(
                 accountRealmObject.isCustom,
                 accountRealmObject.host,
                 accountRealmObject.port,
@@ -150,7 +141,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
                 accountRealmObject.token,
                 if (accountRealmObject.xToken != null) accountRealmObject.xToken.toXToken() else null,
                 accountRealmObject.colorIndex,
-                order,
+                accountRealmObject.order,
                 accountRealmObject.isSyncNotAllowed,
                 accountRealmObject.timestamp,
                 accountRealmObject.priority,
@@ -170,29 +161,34 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
                 accountRealmObject.archiveMode,
                 accountRealmObject.isXabberAutoLoginEnabled,
                 accountRealmObject.retractVersion
-            )
-            accountItem.id = accountRealmObject.id
-            accountItem.isClearHistoryOnExit = accountRealmObject.isClearHistoryOnExit
-            if (accountRealmObject.startHistoryTimestamp != 0L) {
-                accountItem.startHistoryTimestamp = Date(accountRealmObject.startHistoryTimestamp)
+            ).apply {
+                id = accountRealmObject.id
+                isClearHistoryOnExit = accountRealmObject.isClearHistoryOnExit
+                if (accountRealmObject.startHistoryTimestamp != 0L) {
+                    startHistoryTimestamp = Date(accountRealmObject.startHistoryTimestamp)
+                }
+                accountRealmObject.mamDefaultBehavior?.let {
+                    mamDefaultBehaviour = it
+                }
+                accountRealmObject.loadHistorySettings?.let {
+                    loadHistorySettings = it
+                }
+                isSuccessfulConnectionHappened = accountRealmObject.isSuccessfulConnectionHappened
+            }.also {
+                addAccount(it)
             }
-            if (accountRealmObject.mamDefaultBehavior != null) {
-                accountItem.mamDefaultBehaviour = accountRealmObject.mamDefaultBehavior!!
-            }
-            if (accountRealmObject.loadHistorySettings != null) {
-                accountItem.loadHistorySettings = accountRealmObject.loadHistorySettings
-            }
-            accountItem.isSuccessfulConnectionHappened =
-                accountRealmObject.isSuccessfulConnectionHappened
-            accountItems.add(accountItem)
         }
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
-        this.savedStatuses.addAll(savedStatuses)
-        for (accountItem in accountItems) {
-            addAccount(accountItem)
+
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close()
         }
+
+        savedStatuses.addAll(StatusRepository.getAllSavedStatusesFromRealm())
+
         NotificationManager.getInstance().registerNotificationProvider(accountErrorProvider)
+
         isLoaded = true
+
         if (callAccountUpdate) {
             XabberAccountManager.getInstance().updateLocalAccountSettings()
         }
@@ -200,10 +196,8 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
 
     private fun addAccount(accountItem: AccountItem) {
         accountItems[accountItem.account] = accountItem
-        for (listener in Application.getInstance().getManagers(
-            OnAccountAddedListener::class.java
-        )) {
-            listener.onAccountAdded(accountItem)
+        Application.getInstance().getManagers(OnAccountAddedListener::class.java).forEach {
+            it.onAccountAdded(accountItem)
         }
         if (accountItem.isEnabled) {
             Application.getInstance().getManagers(OnAccountEnabledListener::class.java).forEach {
@@ -228,9 +222,8 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
                 count[accountItem.colorIndex % differentAccountColorsCount] += 1
             }
             var result = ColorManager.defaultAccountColorIndex
-            val value = count[ColorManager.defaultAccountColorIndex]
             for (index in count.indices) {
-                if (count[index] < value) {
+                if (count[index] < count[ColorManager.defaultAccountColorIndex]) {
                     result = index
                 }
             }
@@ -238,13 +231,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         }
 
     private val nextOrder: Int
-        get() {
-            var max = 0
-            for (item in accountItems.values) {
-                if (item.order > max) max = item.order
-            }
-            return max + 1
-        }
+        get() = accountItems.values.maxByOrNull(AccountItem::getOrder)?.order ?: 0 + 1
 
     /**
      * @param account full jid.
@@ -259,21 +246,8 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     fun isAccountExist(user: String): Boolean {
-        var user = user
-        val slash = user.indexOf('/')
-        if (slash != -1) {
-            LogManager.d(
-                this,
-                "Trying to find account with FullJid instead of BareJid with jid =  $user"
-            )
-            LogManager.d(this, Log.getStackTraceString(Throwable()))
-            user = user.substring(0, slash) // make sure we compare barejids
-        }
-        val accounts = allAccounts
-        for (account in accounts) {
-            if (account.fullJid.asBareJid().equals(user)) return true
-        }
-        return false
+        val username = user.substring(0, user.indexOf('/').takeIf { it != -1 } ?: user.length)
+        return allAccounts.any { it.fullJid.asBareJid().toString() == username }
     }
 
     /**
@@ -288,43 +262,17 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         proxyPort: Int, proxyUser: String, proxyPassword: String, syncable: Boolean,
         keyPair: KeyPair?, archiveMode: ArchiveMode, registerNewAccount: Boolean
     ): AccountItem {
-        val accountItem = AccountItem(
-            custom,
-            host,
-            port,
-            serverName,
-            userName,
-            resource,
-            storePassword,
-            password,
-            token,
-            null,
-            color,
-            order,
-            syncNotAllowed,
-            timestamp,
-            priority,
-            statusMode,
-            statusText,
-            enabled,
-            saslEnabled,
-            tlsMode,
-            compression,
-            proxyType,
-            proxyHost,
-            proxyPort,
-            proxyUser,
-            proxyPassword,
-            syncable,
-            keyPair,
-            archiveMode,
-            true,
-            null
-        )
-        AccountRepository.saveAccountToRealm(accountItem)
-        addAccount(accountItem)
-        ReconnectionManager.getInstance().requestReconnect(accountItem.account)
-        return accountItem
+        return AccountItem(
+            custom, host, port, serverName, userName, resource, storePassword, password, token,
+            null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText,
+            enabled, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
+            proxyPassword, syncable, keyPair, archiveMode, true, null
+        ).also {
+            AccountRepository.saveAccountToRealm(it)
+            addAccount(it)
+            ReconnectionManager.getInstance().requestReconnect(it.account)
+        }
+
     }
 
     /**
@@ -343,47 +291,37 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         if (user == null) {
             throw NetworkException(R.string.settings_account__alert_xmpp_id_not_specified)
         }
+
         if (user.contains(" ")) {
             throw NetworkException(R.string.account_add__alert_incorrect_xmpp_id)
         }
+
         val serverName: DomainBareJid = try {
             JidCreate.domainBareFrom(user)
         } catch (e: XmppStringprepException) {
             throw NetworkException(R.string.account_add__alert_incorrect_xmpp_id)
         }
+
         val userName: Localpart = try {
             Localpart.from(XmppStringUtils.parseLocalpart(user))
         } catch (e: XmppStringprepException) {
             throw NetworkException(R.string.account_add__alert_incorrect_xmpp_id)
         }
-        if (isAccountExist(user)) throw NetworkException(R.string.settings_account__alert_account_exists)
-        var resource: Resourcepart? = null
-        val resourceString = XmppStringUtils.parseResource(user).trim { it <= ' ' }
-        if (!TextUtils.isEmpty(resourceString)) {
-            try {
-                resource = Resourcepart.from(resourceString)
-            } catch (e: XmppStringprepException) {
-                LogManager.exception(this, e)
-            }
+
+        if (isAccountExist(user)) {
+            throw NetworkException(R.string.settings_account__alert_account_exists)
         }
-        val host = serverName.domain.toString()
-        val port = 5222
-        if (resource == null) {
-            resource = generateResource()
-        }
-        val accountItem: AccountItem
-        val useCustomHost =
-            Application.getInstance().resources.getBoolean(R.bool.account_use_custom_host_default)
-        val useCompression =
-            Application.getInstance().resources.getBoolean(R.bool.account_use_compression_default)
-        val archiveMode =
-            ArchiveMode.valueOf(
-                Application.getInstance().getString(R.string.account_archive_mode_default_value)
-            )
-        accountItem = addAccount(
-            useCustomHost,
-            host,
-            port,
+
+        val resource = XmppStringUtils.parseResource(user)
+            .trim { it <= ' ' }
+            .takeIf(String::isNotEmpty)
+            ?.let { Resourcepart.from(it) }
+            ?: generateResource()
+
+        val accountItem = addAccount(
+            Application.getInstance().resources.getBoolean(R.bool.account_use_custom_host_default),
+            serverName.domain.toString(),
+            5222,
             serverName,
             userName,
             storePassword,
@@ -400,7 +338,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             enabled,
             true,
             if (tlsRequired) TLSMode.required else TLSMode.enabled,
-            useCompression,
+            Application.getInstance().resources.getBoolean(R.bool.account_use_compression_default),
             if (useOrbot) ProxyType.orbot else ProxyType.none,
             "localhost",
             8080,
@@ -408,23 +346,26 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             "",
             syncable,
             null,
-            archiveMode,
+            ArchiveMode.valueOf(
+                Application.getInstance().getString(R.string.account_archive_mode_default_value)
+            ),
             registerNewAccount
         )
-        if (accountItem == null) {
-            throw NetworkException(R.string.account_add__alert_registration_failed)
-        }
+
         onAccountChanged(accountItem.account)
+
         if (accountItems.size > 1 && SettingsManager.contactsEnableShowAccounts()) {
             SettingsManager.enableContactsShowAccount()
         }
 
         // add xmpp account settings
-        if (xabberSync) XabberAccountManager.getInstance()
-            .addAccountSyncState(
-                accountItem.account.fullJid.asBareJid().toString(),
-                true
-            ) else SettingsManager.setSyncAllAccounts(false)
+        if (xabberSync) {
+            XabberAccountManager.getInstance().addAccountSyncState(
+                accountItem.account.fullJid.asBareJid().toString(), true
+            )
+        } else {
+            SettingsManager.setSyncAllAccounts(false)
+        }
         return accountItem.account
     }
 
@@ -465,10 +406,9 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         }
         AccountRepository.deleteAccountFromRealm(account.toString(), accountItem.id)
         accountItems.remove(account)
-        for (listener in Application.getInstance().getManagers(
-            OnAccountRemovedListener::class.java
-        )) {
-            listener.onAccountRemoved(accountItem)
+
+        Application.getInstance().getManagers(OnAccountRemovedListener::class.java).forEach {
+            it.onAccountRemoved(accountItem)
         }
         removeAccountError(account)
     }
@@ -479,8 +419,10 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     fun removeAccount(account: AccountJid) {
         // disable synchronization for this account in xabber account
         SettingsManager.setSyncAllAccounts(false)
-        XabberAccountManager.getInstance()
-            .setAccountSyncState(account.fullJid.asBareJid().toString(), false)
+        XabberAccountManager.getInstance().setAccountSyncState(
+            account.fullJid.asBareJid().toString(),
+            false
+        )
 
         // removing local account
         removeAccountWithoutCallback(account)
@@ -505,16 +447,13 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
 
     /** Set x-token to account and remove password  */
     fun updateXToken(account: AccountJid?, token: XToken?) {
-        val accountItem = getAccount(account)
-        if (accountItem != null) {
-            accountItem.setXToken(token)
-            accountItem.setPassword("")
-            accountItem.setConnectionIsOutdated(true)
-            //accountItem.recreateConnectionWithEnable(accountItem.getAccount());
-            AccountRepository.saveAccountToRealm(accountItem)
-        } else {
-            LogManager.d(this, "tried to update account with new xtoken, but account was null")
-        }
+        getAccount(account)?.apply {
+            setXToken(token)
+            setPassword("")
+            setConnectionIsOutdated(true)
+        }?.also {
+            AccountRepository.saveAccountToRealm(it)
+        } ?: LogManager.d(this, "tried to update account with new xtoken, but account was null")
     }
 
     /**
@@ -653,96 +592,54 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             }
             AccountRepository.saveAccountToRealm(accountItem)
         } else {
-            val statusMode = accountItem.rawStatusMode
-            val statusText = accountItem.statusText
-            val keyPair = accountItem.keyPair
             removeAccountWithoutCallback(account)
             result = addAccount(
-                custom,
-                host,
-                port,
-                serverName,
-                userName,
-                storePassword,
-                password,
-                token,
-                resource,
-                colorIndex,
-                accountItem.order,
-                accountItem.isSyncNotAllowed,
-                accountItem.timestamp,
-                priority,
-                statusMode,
-                statusText,
-                enabled,
-                saslEnabled,
-                tlsMode,
-                compression,
-                proxyType,
-                proxyHost,
-                proxyPort,
-                proxyUser,
-                proxyPassword,
-                syncable,
-                keyPair,
-                archiveMode,
-                false
+                custom, host, port, serverName, userName, storePassword, password, token, resource,
+                colorIndex, accountItem.order, accountItem.isSyncNotAllowed, accountItem.timestamp,
+                priority, accountItem.rawStatusMode, accountItem.statusText, enabled, saslEnabled,
+                tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword,
+                syncable, accountItem.keyPair, archiveMode, false
             )
         }
         onAccountChanged(result.account)
 
         // disable sync for account if it use not default settings
         val connectionSettings = result.connectionSettings
-        result.isSyncNotAllowed = (connectionSettings.isCustomHostAndPort
-                || connectionSettings.proxyType != ProxyType.none || connectionSettings.tlsMode == TLSMode.legacy)
+        result.isSyncNotAllowed = (
+                connectionSettings.isCustomHostAndPort
+                        || connectionSettings.proxyType != ProxyType.none
+                        || connectionSettings.tlsMode == TLSMode.legacy
+                )
     }
 
     fun haveNotAllowedSyncAccounts() = accountItems.values.any(AccountItem::isSyncNotAllowed)
 
     fun setKeyPair(account: AccountJid?, keyPair: KeyPair?) {
-        val accountItem = getAccount(account)
-        if (accountItem != null) {
-            accountItem.keyPair = keyPair
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
+        getAccount(account)
+            ?.apply { setKeyPair(keyPair) }
+            .also { AccountRepository.saveAccountToRealm(it) }
     }
 
     fun setEnabled(account: AccountJid?, enabled: Boolean) {
-        val accountItem = getAccount(account) ?: return
-        accountItem.isEnabled = enabled
-        AccountRepository.saveAccountToRealm(accountItem)
+        getAccount(account)?.apply {
+            isEnabled = enabled
+        }.also {
+            AccountRepository.saveAccountToRealm(it)
+        }
     }
 
     /**
      * @return List of enabled accounts.
      */
     val enabledAccounts: Collection<AccountJid>
-        get() {
-            val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
-            val enabledAccounts: MutableList<AccountJid> = ArrayList()
-            for (accountItem in accountsCopy.values) {
-                if (accountItem.isEnabled) {
-                    val accountJid = accountItem.account
-                    accountJid.setOrder(accountItem.order)
-                    enabledAccounts.add(accountJid)
-                }
-            }
-            return Collections.unmodifiableCollection(enabledAccounts)
-        }
+        get() = accountItems.values
+            .filter(AccountItem::isEnabled)
+            .map { it.account.apply { it.order } }
 
     val connectedAccounts: Collection<AccountJid>
-        get() {
-            val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
-            val connectedAccounts: MutableList<AccountJid> = ArrayList()
-            for (accountItem in accountsCopy.values) {
-                if (accountItem.connection.isConnected) {
-                    val accountJid = accountItem.account
-                    accountJid.setOrder(accountItem.order)
-                    connectedAccounts.add(accountJid)
-                }
-            }
-            return Collections.unmodifiableCollection(connectedAccounts)
-        }
+        get() = accountItems.values
+            .filter { it.connection.isConnected }
+            .map { it.account.apply { it.order } }
 
     fun hasAccounts() = accountItems.isNotEmpty()
 
@@ -750,16 +647,10 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      * @return List of all accounts including disabled.
      */
     val allAccounts: Collection<AccountJid>
-        get() {
-            val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
-            return Collections.unmodifiableCollection(accountsCopy.keys)
-        }
+        get() = accountItems.keys
 
     val allAccountItems: Collection<AccountItem>
-        get() {
-            val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
-            return Collections.unmodifiableCollection(accountsCopy.values)
-        }
+        get() = accountItems.values
 
     val commonState: CommonState
         get() {
