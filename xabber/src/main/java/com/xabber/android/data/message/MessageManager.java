@@ -94,7 +94,7 @@ public class MessageManager implements OnPacketListener {
         sendMessage(text, markupText, ChatManager.getInstance().getChat(account, user));
 
         // stop grace period
-        AccountManager.INSTANCE.stopGracePeriod(account);
+        AccountManager.INSTANCE.getAccount(account).stopGracePeriod();
 
         for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
             listener.onAction();
@@ -472,7 +472,7 @@ public class MessageManager implements OnPacketListener {
                 // just ignore carbons from not-authorized user
                 return;
             }
-            AccountManager.INSTANCE.startGracePeriod(account);
+            AccountManager.INSTANCE.getAccount(account).startGracePeriod();
 
         } else if (direction == CarbonExtension.Direction.received) {
 

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
@@ -197,7 +198,9 @@ public class ActivityManager implements OnUnloadListener {
         application.addUIListener(OnErrorListener.class, onErrorListener);
 
         CertificateManager.getInstance().registerActivity(activity);
-        AccountManager.INSTANCE.stopGracePeriod();
+        for (AccountJid accountItem: AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountManager.INSTANCE.getAccount(accountItem).stopGracePeriod();
+        }
     }
 
     /**

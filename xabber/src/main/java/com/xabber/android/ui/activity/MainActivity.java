@@ -39,6 +39,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
@@ -264,8 +265,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     protected void onResume() {
         super.onResume();
 
-        if (!(AccountManager.INSTANCE.hasAccountsInRealm()
-                || AccountManager.INSTANCE.hasAccounts())
+        if (!(AccountRepository.hasAccountsInRealm() || AccountManager.INSTANCE.hasAccounts())
                 && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(TutorialActivity.createIntent(this));
             finish();

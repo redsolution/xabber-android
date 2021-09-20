@@ -68,6 +68,7 @@ public class MessageRepository {
     }
 
     public static void removeAllAccountMessagesFromRealm(){
+        //LogManager.i("MessageRepository()", "Removing all history for account " + accountItem.account)
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try{

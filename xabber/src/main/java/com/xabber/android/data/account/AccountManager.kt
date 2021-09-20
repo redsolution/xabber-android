@@ -82,18 +82,6 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     private val accountErrorProvider: BaseAccountNotificationProvider<AccountError> =
         BaseAccountNotificationProvider(R.drawable.ic_stat_error)
 
-    /**
-     * Whether away status mode is enabled.
-     */
-    var isAway: Boolean = false
-        private set
-
-    /**
-     * Whether extended away mode is enabled.
-     */
-    var isXa: Boolean = false
-        private set
-
     var isLoaded = false
         private set
 
@@ -111,9 +99,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         val savedStatuses = StatusRepository.getAllSavedStatusesFromRealm()
         val accountItems: MutableCollection<AccountItem> = ArrayList()
         val realm = DatabaseManager.getInstance().defaultRealmInstance
-        val accountRealmObjects = realm.where(
-            AccountRealmObject::class.java
-        ).findAll()
+        val accountRealmObjects = realm.where(AccountRealmObject::class.java).findAll()
         LogManager.i(this, "onLoad got realmobjects accounts: " + accountRealmObjects.size)
         for (accountRealmObject in accountRealmObjects) {
             var serverName: DomainBareJid? = null
@@ -711,12 +697,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
                 || connectionSettings.proxyType != ProxyType.none || connectionSettings.tlsMode == TLSMode.legacy)
     }
 
-    fun haveNotAllowedSyncAccounts(): Boolean {
-        for (account in accountItems.values) {
-            if (account.isSyncNotAllowed) return true
-        }
-        return false
-    }
+    fun haveNotAllowedSyncAccounts() = accountItems.values.any(AccountItem::isSyncNotAllowed)
 
     fun setKeyPair(account: AccountJid?, keyPair: KeyPair?) {
         val accountItem = getAccount(account)
@@ -748,6 +729,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             }
             return Collections.unmodifiableCollection(enabledAccounts)
         }
+
     val connectedAccounts: Collection<AccountJid>
         get() {
             val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
@@ -764,13 +746,6 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
 
     fun hasAccounts() = accountItems.isNotEmpty()
 
-    fun hasAccountsInRealm(): Boolean {
-        val realm = DatabaseManager.getInstance().defaultRealmInstance
-        val result = !realm.where(AccountRealmObject::class.java).findAll().isEmpty()
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close()
-        return result
-    }
-
     /**
      * @return List of all accounts including disabled.
      */
@@ -779,53 +754,44 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
             return Collections.unmodifiableCollection(accountsCopy.keys)
         }
+
     val allAccountItems: Collection<AccountItem>
         get() {
             val accountsCopy: Map<AccountJid, AccountItem> = HashMap(accountItems)
             return Collections.unmodifiableCollection(accountsCopy.values)
         }
+
     val commonState: CommonState
         get() {
-            var disabled = false
-            var offline = false
-            var waiting = false
-            var connecting = false
-            var roster = false
-            var online = false
-            for (accountItem in accountItems.values) {
-                val state = accountItem.state
-                if (state == ConnectionState.connected) {
-                    online = true
+            val accounts = accountItems.values
+            return when {
+                accounts.any { it.state == ConnectionState.connected } -> {
+                    CommonState.online
                 }
-                if (RosterManager.getInstance().isRosterReceived(accountItem.account)) {
-                    roster = true
+
+                accounts.any {
+                    RosterManager.getInstance().isRosterReceived(it.account)
+                } -> {
+                    CommonState.roster
                 }
-                if (state == ConnectionState.connecting || state == ConnectionState.authentication) {
-                    connecting = true
+
+                accounts.any {
+                    it.state == ConnectionState.connecting || it.state == ConnectionState.authentication
+                } -> {
+                    CommonState.connecting
                 }
-                if (state == ConnectionState.waiting) {
-                    waiting = true
+
+                accounts.any { it.state == ConnectionState.waiting } -> {
+                    CommonState.waiting
                 }
-                if (accountItem.isEnabled) {
-                    offline = true
+
+                accounts.any { it.isEnabled } -> {
+                    CommonState.offline
                 }
-                disabled = true
-            }
-            if (online) {
-                return CommonState.online
-            } else if (roster) {
-                return CommonState.roster
-            } else if (connecting) {
-                return CommonState.connecting
-            }
-            return if (waiting) {
-                CommonState.waiting
-            } else if (offline) {
-                CommonState.offline
-            } else if (disabled) {
-                CommonState.disabled
-            } else {
-                CommonState.empty
+
+                else -> {
+                    CommonState.disabled
+                }
             }
         }
 
@@ -833,36 +799,25 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      * @return Color drawable level or default colors if account was not found.
      */
     fun getColorLevel(account: AccountJid?): Int {
-        val accountItem = getAccount(account)
         var colorIndex: Int =
-            if (accountItem == null) {
-                return ColorManager.defaultAccountColorIndex
-            } else {
-                accountItem.colorIndex % differentAccountColorsCount
-            }
+            getAccount(account)?.let { it.colorIndex % differentAccountColorsCount }
+                ?: ColorManager.defaultAccountColorIndex
+
         if (colorIndex < 0) {
             colorIndex += differentAccountColorsCount
         }
-        return colorIndex
-    }
 
-    private fun hasSameBareAddress(account: AccountJid): Boolean {
-        val bareJid = account.fullJid.asBareJid()
-        for (check in accountItems.values) {
-            if (check.account != account
-                && check.account.fullJid.asBareJid().equals(bareJid)
-            ) {
-                return true
-            }
-        }
-        return false
+        return colorIndex
     }
 
     /**
      * @return Verbose account name.
      */
     fun getVerboseName(account: AccountJid): String {
-        return if (hasSameBareAddress(account)) {
+        val hasSomeBareAddress = accountItems.values.any {
+            it.account != account && it.account.fullJid.asBareJid() == account.fullJid.asBareJid()
+        }
+        return if (hasSomeBareAddress) {
             account.toString()
         } else {
             account.fullJid.asBareJid().toString()
@@ -873,49 +828,38 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      * @return Account vCard based nick name or verbose name if nick is not
      * specified.
      */
-    fun getNickName(account: AccountJid): String {
-        val result = VCardManager.getInstance().getName(account.fullJid.asBareJid())
-        return if ("" == result) {
-            getVerboseName(account)
-        } else {
-            result
-        }
-    }
+    fun getNickName(account: AccountJid) =
+        VCardManager.getInstance().getName(account.fullJid.asBareJid())?.takeIf { it != "" }
+            ?: getVerboseName(account)
 
     /**
      * Sets status for account.
      */
     fun setStatus(account: AccountJid, statusMode: StatusMode, statusText: String?) {
-        if (statusText != null && !statusText.trim { it <= ' ' }.isEmpty()) {
+        if (statusText != null && statusText.trim { it <= ' ' }.isNotEmpty()) {
             addSavedStatus(statusMode, statusText)
         }
-        val accountItem = getAccount(account)
-        setStatus(accountItem, statusMode, statusText)
+
+        getAccount(account)?.let {
+            it.setStatus(statusMode, statusText)
+            AccountRepository.saveAccountToRealm(it)
+        }
+
         try {
             sendAccountPresence(account)
         } catch (e: NetworkException) {
             LogManager.exception(this, e)
         }
-        var found = false
-        for (check in accountItems.values) {
-            if (check.isEnabled && SettingsManager.statusMode() == check.rawStatusMode) {
-                found = true
-                break
+
+        with(accountItems.values.filterNot(AccountItem::isEnabled)) {
+            if (none { SettingsManager.statusMode() == it.rawStatusMode }) {
+                SettingsManager.setStatusMode(statusMode)
+            }
+            if (none { SettingsManager.statusText() == it.statusText }) {
+                SettingsManager.setStatusText(statusText)
             }
         }
-        if (!found) {
-            SettingsManager.setStatusMode(statusMode)
-        }
-        found = false
-        for (check in accountItems.values) {
-            if (check.isEnabled && SettingsManager.statusText() == check.statusText) {
-                found = true
-                break
-            }
-        }
-        if (!found) {
-            SettingsManager.setStatusText(statusText)
-        }
+
         onAccountChanged(account)
     }
 
@@ -923,97 +867,78 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      * Sends new presence information for all accounts.
      */
     fun resendPresence() {
-        for (accountItem in accountItems.values) {
-            if (accountItem.isEnabled) {
-                try {
-                    sendAccountPresence(accountItem.account)
-                } catch (e: NetworkException) {
-                    LogManager.exception(this, e)
-                }
+        accountItems.values.filter(AccountItem::isEnabled).forEach {
+            try {
+                sendAccountPresence(it.account)
+            } catch (e: NetworkException) {
+                LogManager.exception(this, e)
             }
         }
     }
 
     fun setColor(accountJid: AccountJid, colorIndex: Int) {
-        val accountItem = getAccount(accountJid)
-        if (accountItem != null) {
-            accountItem.colorIndex = colorIndex
-            AccountRepository.saveAccountToRealm(accountItem)
+        getAccount(accountJid)?.let {
+            it.colorIndex = colorIndex
+            AccountRepository.saveAccountToRealm(it)
         }
-        if (firstAccount == accountJid) SettingsManager.setMainAccountColorLevel(colorIndex)
+        if (firstAccount == accountJid) {
+            SettingsManager.setMainAccountColorLevel(colorIndex)
+        }
     }
 
     val firstAccount: AccountJid?
-        get() {
-            val list: List<AccountJid> = ArrayList(
-                enabledAccounts
-            )
-            Collections.sort(list)
-            return if (list.isEmpty()) {
-                null
-            } else {
-                list[0]
+        get() = enabledAccounts.minOrNull()
+
+    fun setOrder(accountJid: AccountJid, order: Int) {
+        getAccount(accountJid)?.let {
+            it.order = order
+            AccountRepository.saveAccountToRealm(it)
+        }
+    }
+
+    fun setTimestamp(accountJid: AccountJid, timestamp: Int) {
+        getAccount(accountJid)?.let {
+            it.timestamp = timestamp
+            AccountRepository.saveAccountToRealm(it)
+        }
+    }
+
+    fun setClearHistoryOnExit(accountJid: AccountJid, clearHistoryOnExit: Boolean) {
+        getAccount(accountJid)
+            ?.takeIf { it.isClearHistoryOnExit != clearHistoryOnExit }
+            ?.let {
+                it.isClearHistoryOnExit = clearHistoryOnExit
+                AccountRepository.saveAccountToRealm(it)
             }
-        }
-
-    fun setOrder(accountJid: AccountJid?, order: Int) {
-        val accountItem = getAccount(accountJid)
-        if (accountItem != null) {
-            accountItem.order = order
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
-    }
-
-    fun setTimestamp(accountJid: AccountJid?, timestamp: Int) {
-        val accountItem = getAccount(accountJid)
-        if (accountItem != null) {
-            accountItem.timestamp = timestamp
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
-    }
-
-    fun setClearHistoryOnExit(accountJid: AccountJid?, clearHistoryOnExit: Boolean) {
-        val accountItem = getAccount(accountJid)
-        if (accountItem != null) {
-            accountItem.isClearHistoryOnExit = clearHistoryOnExit
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
     }
 
     fun setMamDefaultBehaviour(
-        accountJid: AccountJid?,
-        mamDefaultBehavior: MamPrefsIQ.DefaultBehavior
+        accountJid: AccountJid, mamDefaultBehavior: MamPrefsIQ.DefaultBehavior
     ) {
-        val accountItem = getAccount(accountJid) ?: return
-        if (accountItem.mamDefaultBehaviour != mamDefaultBehavior) {
-            accountItem.mamDefaultBehaviour = mamDefaultBehavior
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
+        getAccount(accountJid)
+            ?.takeIf { it.mamDefaultBehaviour != mamDefaultBehavior }
+            ?.let {
+                it.mamDefaultBehaviour = mamDefaultBehavior
+                AccountRepository.saveAccountToRealm(it)
+            }
     }
 
-    fun setLoadHistorySettings(accountJid: AccountJid?, loadHistorySettings: LoadHistorySettings) {
-        val accountItem = getAccount(accountJid) ?: return
-        if (accountItem.loadHistorySettings != loadHistorySettings) {
-            accountItem.loadHistorySettings = loadHistorySettings
-            AccountRepository.saveAccountToRealm(accountItem)
-        }
+    fun setLoadHistorySettings(accountJid: AccountJid, loadHistorySettings: LoadHistorySettings) {
+        getAccount(accountJid)
+            ?.takeIf { it.loadHistorySettings != loadHistorySettings }
+            ?.let {
+                it.loadHistorySettings = loadHistorySettings
+                AccountRepository.saveAccountToRealm(it)
+            }
     }
 
     fun setSuccessfulConnectionHappened(
-        account: AccountJid?,
-        successfulConnectionHappened: Boolean
+        account: AccountJid, successfulConnectionHappened: Boolean
     ) {
-        val accountItem = getAccount(account) ?: return
-        accountItem.isSuccessfulConnectionHappened = successfulConnectionHappened
-        AccountRepository.saveAccountToRealm(accountItem)
-    }
-
-    /**
-     * Sets status for account.
-     */
-    private fun setStatus(accountItem: AccountItem?, statusMode: StatusMode, statusText: String?) {
-        accountItem!!.setStatus(statusMode, statusText)
-        AccountRepository.saveAccountToRealm(accountItem)
+        getAccount(account)?.let {
+            it.isSuccessfulConnectionHappened = successfulConnectionHappened
+            AccountRepository.saveAccountToRealm(it)
+        }
     }
 
     /**
@@ -1028,13 +953,12 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             SettingsManager.setStatusText(statusText)
         }
         for (accountItem in accountItems.values) {
-            setStatus(
-                accountItem, statusMode,
-                statusText ?: accountItem.statusText
-            )
+            accountItem.setStatus(statusMode, statusText)
+            AccountRepository.saveAccountToRealm(accountItem)
         }
         resendPresence()
-        onAccountsChanged(allAccounts)
+        Application.getInstance().getUIListeners(OnAccountChangedListener::class.java)
+            .forEachOnUi { it.onAccountsChanged(allAccounts) }
     }
 
     /**
@@ -1087,12 +1011,8 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     fun onAccountChanged(account: AccountJid) {
-        onAccountsChanged(listOf(account))
-    }
-
-    fun onAccountsChanged(accounts: Collection<AccountJid>) {
         Application.getInstance().getUIListeners(OnAccountChangedListener::class.java)
-            .forEachOnUi { it.onAccountsChanged(accounts) }
+            .forEachOnUi { it.onAccountsChanged(listOf(account)) }
     }
 
     override fun onWipe() {
@@ -1100,39 +1020,16 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     override fun onUnload() {
-        removeHistoryOnExit()
-    }
-
-    private fun removeHistoryOnExit() {
-        val allAccountItems = allAccountItems
-        for (accountItem in allAccountItems) {
-            if (accountItem.isClearHistoryOnExit) {
-                LogManager.i(this, "Removing all history for account " + accountItem.account)
-                MessageRepository.removeAllAccountMessagesFromRealm()
-            }
+        allAccountItems.filter(AccountItem::isClearHistoryOnExit).forEach { _ ->
+            MessageRepository.removeAllAccountMessagesFromRealm() //todo WTF WHY ALL?!
         }
     }
+
 
     fun setAllAccountAutoLoginToXabber(autoLogin: Boolean) {
         for (accountItem in allAccountItems) {
             accountItem.isXabberAutoLoginEnabled = autoLogin
             AccountRepository.saveAccountToRealm(accountItem)
-        }
-    }
-
-    fun startGracePeriod(accountJid: AccountJid?) {
-        val accountItem = getAccount(accountJid)
-        accountItem?.startGracePeriod()
-    }
-
-    fun stopGracePeriod(accountJid: AccountJid?) {
-        val accountItem = getAccount(accountJid)
-        accountItem?.stopGracePeriod()
-    }
-
-    fun stopGracePeriod() {
-        for (accountJid in enabledAccounts) {
-            stopGracePeriod(accountJid)
         }
     }
 

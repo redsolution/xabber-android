@@ -26,6 +26,16 @@ public class AccountRepository {
 
     private static final String LOG_TAG = AccountRepository.class.getSimpleName();
 
+    public static boolean hasAccountsInRealm() {
+        boolean result = false;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        result = !realm.where(AccountRealmObject.class).findAll().isEmpty();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
+        return result;
+    }
+
     public static void saveAccountToRealm(AccountItem accountItem) {
 
         Application.getInstance().runInBackground(() -> {

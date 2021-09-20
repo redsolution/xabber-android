@@ -511,7 +511,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                 if (extension instanceof ChatStateExtension) {
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
                     if (chatState == ChatState.active || chatState == ChatState.composing) {
-                        AccountManager.INSTANCE.startGracePeriod(account);
+                        AccountManager.INSTANCE.getAccount(account).startGracePeriod();
                     }
                     break;
                 }

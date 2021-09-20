@@ -323,13 +323,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
             case invisible: return new Presence(Type.unavailable);
             default:
                 int priority;
-                if (statusMode != StatusMode.dnd) {
-                    if (AccountManager.INSTANCE.isXa()) {
-                        statusMode = StatusMode.xa;
-                    } else if (AccountManager.INSTANCE.isAway()) {
-                        statusMode = StatusMode.away;
-                    }
-                }
                 if (SettingsManager.connectionAdjustPriority()) {
                     switch (statusMode){
                         case available: priority = SettingsManager.connectionPriorityAvailable(); break;

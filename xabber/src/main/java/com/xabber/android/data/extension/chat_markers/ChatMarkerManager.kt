@@ -117,7 +117,7 @@ object ChatMarkerManager : OnPacketListener {
                     MessageNotificationManager.removeChatWithTimer(account, companion)
 
                     // start grace period
-                    AccountManager.startGracePeriod(account)
+                    AccountManager.getAccount(account)?.startGracePeriod()
                 }
             }
         } else if (direction == CarbonExtension.Direction.received) {

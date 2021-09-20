@@ -14,12 +14,14 @@
  */
 package com.xabber.android.data.connection;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 
 import org.jivesoftware.smack.SmackConfiguration;
 
@@ -71,7 +73,9 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     @Override
     public void onInitialized() {
         LogManager.i(LOG_TAG, "onInitialized");
-        AccountManager.INSTANCE.onAccountsChanged(new ArrayList<>(AccountManager.INSTANCE.getAllAccounts()));
+        for (OnAccountChangedListener listener : Application.getInstance().getUIListeners(OnAccountChangedListener.class)) {
+            listener.onAccountsChanged(new ArrayList<>(AccountManager.INSTANCE.getAllAccounts()));
+        }
     }
 
     @Override
