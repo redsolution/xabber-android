@@ -281,7 +281,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      */
     private fun addAccount(
         custom: Boolean, host: String, port: Int, serverName: DomainBareJid, userName: Localpart,
-        storePassword: Boolean, password: String, token: String, resource: Resourcepart,
+        storePassword: Boolean, password: String, token: String?, resource: Resourcepart,
         color: Int, order: Int, syncNotAllowed: Boolean, timestamp: Int, priority: Int,
         statusMode: StatusMode, statusText: String, enabled: Boolean, saslEnabled: Boolean,
         tlsMode: TLSMode, compression: Boolean, proxyType: ProxyType, proxyHost: String,
@@ -336,7 +336,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
      */
     @Throws(NetworkException::class)
     fun addAccount(
-        user: String?, password: String, token: String, syncable: Boolean,
+        user: String?, password: String, token: String?, syncable: Boolean,
         storePassword: Boolean, xabberSync: Boolean, useOrbot: Boolean,
         registerNewAccount: Boolean, enabled: Boolean, tlsRequired: Boolean
     ): AccountJid {
