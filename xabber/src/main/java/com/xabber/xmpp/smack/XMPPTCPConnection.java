@@ -1762,12 +1762,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         }
         // Remove the listener after max. 12 hours
         final int removeAfterSeconds = Math.min(getMaxSmResumptionTime(), 12 * 60 * 60);
-        schedule(new Runnable() {
-            @Override
-            public void run() {
-                stanzaIdAcknowledgedListeners.remove(id);
-            }
-        }, removeAfterSeconds, TimeUnit.SECONDS);
+        schedule(() -> stanzaIdAcknowledgedListeners.remove(id), removeAfterSeconds, TimeUnit.SECONDS);
         return stanzaIdAcknowledgedListeners.put(id, listener);
     }
 

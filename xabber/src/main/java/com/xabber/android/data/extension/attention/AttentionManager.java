@@ -159,9 +159,6 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
                 ChatManager.getInstance().openChat(account, from);
-//                ChatManager.getInstance()
-//                        .getChat(account, from) todo
-//                        .newAction(null, Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested), ChatAction.attention_requested);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
@@ -186,9 +183,9 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         }
 
-        if (!CapabilitiesManager.getInstance().isFeatureSupported(to, AttentionExtension.NAMESPACE)) {
-            throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
-        }
+//        if (!CapabilitiesManager.getInstance().isFeatureSupported(to, AttentionExtension.NAMESPACE)) {
+//            throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
+//        }
 
         Message message = new Message();
         message.setTo(to);
@@ -199,11 +196,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         } catch (Exception e) {
             LogManager.exception(this, e);
         }
-        // todo chat.newAction(null,Application.getInstance().getApplicationContext().getString(R.string.action_attention_called), ChatAction.attention_called);
     }
 
     public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {
         LogManager.i(this, "removeAccountNotifications " + contactJid);
         attentionRequestProvider.remove(accountJid, contactJid.getBareUserJid());
     }
+
 }
