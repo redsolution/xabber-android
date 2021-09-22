@@ -277,24 +277,20 @@ class ChatListFragment : Fragment(), ChatListItemListener, View.OnClickListener,
         )
 
         /* Update toolbar add iv behavior */
-        when {
-            !AccountManager.hasAccounts() -> {
-                toolbarAddIv.setOnClickListener {
+        toolbarAddIv.setOnClickListener {
+            when {
+                !AccountManager.hasAccounts() -> {
                     startActivity(AccountAddActivity.createIntent(context))
                 }
-            }
-            AccountManager.enabledAccounts.isEmpty() -> {
-                Toast.makeText(
-                    context,
-                    getString(R.string.application_state_disabled),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            else -> {
-                toolbarAddIv.setOnClickListener {
-                    startActivity(
-                        Intent(activity, AddActivity::class.java)
-                    )
+                AccountManager.enabledAccounts.isEmpty() -> {
+                    Toast.makeText(
+                        context,
+                        getString(R.string.application_state_disabled),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> {
+                    startActivity(Intent(activity, AddActivity::class.java))
                 }
             }
         }
