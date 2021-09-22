@@ -130,14 +130,15 @@ public class ContactRepository {
     }
 
     public static void removeContacts(AccountJid account) {
-        final String accountJid = account.getFullJid().asBareJid().toString();
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> realm1.where(ContactRealmObject.class)
-                        .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid)
-                        .findAll().deleteAllFromRealm());
+                realm.executeTransaction(realm1 ->
+                        realm1.where(ContactRealmObject.class)
+                                .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, account.toString())
+                                .findAll()
+                                .deleteAllFromRealm());
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally {

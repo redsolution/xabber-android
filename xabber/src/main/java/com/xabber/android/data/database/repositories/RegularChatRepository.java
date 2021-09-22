@@ -42,6 +42,19 @@ public class RegularChatRepository {
         });
     }
 
+    public static void removeAllAccountRelatedRegularChatsFromRealm(AccountJid accountJid) {
+        Application.getInstance().runInBackground(() -> {
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
+                realm.executeTransaction(realm1 -> realm1.where(RegularChatRealmObject.class)
+                        .equalTo(RegularChatRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
+                        .findAll()
+                        .deleteAllFromRealm());
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
+    }
+
     public static void saveOrUpdateRegularChatRealmObject(AccountJid accountJid, ContactJid contactJid,
                                                           @Nullable MessageRealmObject lastMessage,
                                                           int lastPosition, boolean isBlocked,

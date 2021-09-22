@@ -54,27 +54,6 @@ public class GroupInviteRepository {
         });
     }
 
-    public static void saveOrUpdateInviteToRealm(AccountJid accountJid, ContactJid senderJid, ContactJid groupJid,
-                                                 String reason, long date, boolean isIncoming, boolean isRead){
-        Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try{
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    GroupInviteRealmObject giro = new GroupInviteRealmObject(accountJid, groupJid, senderJid);
-                    giro.setIncoming(isIncoming);
-                    giro.setReason(reason);
-                    giro.setDate(date);
-                    realm1.copyToRealmOrUpdate(giro);
-                });
-            } catch (Exception e){
-                LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) realm.close();
-            }
-        });
-    }
-
     public static void removeInviteFromRealm(AccountJid accountJid, ContactJid groupJid){
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
@@ -91,6 +70,27 @@ public class GroupInviteRepository {
                 LogManager.exception(LOG_TAG, e);
             } finally {
                 if (realm != null) realm.close();
+            }
+        });
+    }
+
+    public static void removeAllInvitesRelatedToAccount(AccountJid accountJid) {
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try{
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(GroupInviteRealmObject.class)
+                            .equalTo(GroupInviteRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) {
+                    realm.close();
+                }
             }
         });
     }

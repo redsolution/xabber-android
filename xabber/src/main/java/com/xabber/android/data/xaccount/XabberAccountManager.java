@@ -236,7 +236,7 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void setLastOrderChangeTimestampIsNow() {
-        this.lastOrderChangeTimestamp = getCurrentTime();
+        this.lastOrderChangeTimestamp = (int) (System.currentTimeMillis() / 1000L);
         SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
     }
 
@@ -414,27 +414,17 @@ public class XabberAccountManager implements OnLoadListener {
         return accountSubject;
     }
 
-    public void removeAccount() {
-        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
-            if (entry.getValue())
-                try {
-                    AccountManager.INSTANCE.removeAccount(AccountJid.from(entry.getKey()));
-                } catch (Exception e) {
-                    LogManager.exception(this, e);
-                }
-        }
 
-        deleteAccountFromRealm();
+    /**
+     * Remove xabber account from database and other mentions of xabber account, but
+     * DOESN'T AFFECT TO XMPP ACCOUNTS
+     * You may delete xmpp accounts with AccountManager.INSTANCE.removeAccount()
+     */
+    public void removeXabberAccount() {
+        deleteXabberAccountFromRealm();
         setAccount(null);
 
         this.accountsSyncState.clear();
-    }
-
-    private void deleteAccountFromRealm(){
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        realm.where(XabberAccountRealmObject.class)
-                .findAll()
-                .deleteAllFromRealm();
     }
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount,
@@ -507,25 +497,28 @@ public class XabberAccountManager implements OnLoadListener {
                 .where(XabberAccountRealmObject.class)
                 .findAll();
 
-        for (XabberAccountRealmObject xabberAccountRealmObject : xabberAccounts)
+        for (XabberAccountRealmObject xabberAccountRealmObject : xabberAccounts) {
             xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealmObject);
+        }
 
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
         return xabberAccount;
     }
 
-    public boolean deleteXabberAccountFromRealm() {
+    boolean deleteXabberAccountFromRealm() {
         final boolean[] success = new boolean[1];
         Realm realm = null;
         try {
             realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransaction(realm1 -> {
-                success[0] = realm1.where(XabberAccountRealmObject.class)
-                        .findAll()
-                        .deleteAllFromRealm();
-            });
+            realm.executeTransaction(realm1 ->
+                    success[0] = realm1.where(XabberAccountRealmObject.class)
+                            .findAll()
+                            .deleteAllFromRealm()
+            );
         } catch (Exception e) {
-            LogManager.exception("XabberAccountManager", e);
+            LogManager.exception(this, e);
         } finally {
             if (realm != null) realm.close();
         }
@@ -583,15 +576,6 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
-    public void deleteUnSyncedLocalAccounts() {
-        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
-            AccountJid accountJid = getExistingAccount(entry.getKey());
-            if (accountJid != null && !entry.getValue()){
-                AccountManager.INSTANCE.removeAccount(accountJid);
-            }
-        }
-    }
-
     public AccountJid getExistingAccount(String jid) {
         int slash = jid.indexOf('/');
         if (slash != -1) {
@@ -608,17 +592,22 @@ public class XabberAccountManager implements OnLoadListener {
         return null;
     }
 
-    public int getCurrentTime() {
-        return (int) (System.currentTimeMillis() / 1000L);
-    }
-
     public void onInvalidToken() {
         EventBus.getDefault().postSticky(new XabberAccountDeletedEvent());
         Application.getInstance().runInBackground(() -> {
-            deleteUnSyncedLocalAccounts();
             deleteSyncStatesFromRealm();
             deleteXabberAccountFromRealm();
-            removeAccount();
+            removeXabberAccount();
+
+            for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
+                if (entry.getValue())
+                    try {
+                        AccountManager.INSTANCE.removeAccount(AccountJid.from(entry.getKey()));
+                    } catch (Exception e) {
+                        LogManager.exception(this, e);
+                    }
+            }
+
         });
         unregisterEndpoint();
     }
@@ -693,7 +682,7 @@ public class XabberAccountManager implements OnLoadListener {
                         .deleteAllFromRealm();
             });
         } catch (Exception e) {
-            LogManager.exception("XabberAccountManager", e);
+            LogManager.exception(this, e);
         } finally {
             if (realm != null) realm.close();
         }
@@ -729,7 +718,7 @@ public class XabberAccountManager implements OnLoadListener {
                     LogManager.d(this, resultRealm.size() + " syncState items was saved to Realm");
                 });
             } catch (Exception e) {
-                LogManager.exception("XabberAccountManager", e);
+                LogManager.exception(this, e);
             } finally {
                 if (realm != null) realm.close();
             }

@@ -20,12 +20,10 @@ import com.xabber.android.data.*
 import com.xabber.android.data.connection.*
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.AccountRealmObject
-import com.xabber.android.data.database.repositories.AccountRepository
-import com.xabber.android.data.database.repositories.ContactRepository
-import com.xabber.android.data.database.repositories.MessageRepository
-import com.xabber.android.data.database.repositories.StatusRepository
+import com.xabber.android.data.database.repositories.*
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.extension.archive.LoadHistorySettings
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.extension.xtoken.XToken
 import com.xabber.android.data.log.LogManager
@@ -331,7 +329,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             nextColorIndex,
             nextOrder,
             false,
-            XabberAccountManager.getInstance().currentTime,
+            (System.currentTimeMillis() / 1000L).toInt(),
             67,
             StatusMode.available,
             SettingsManager.statusText(),
@@ -372,10 +370,9 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     private fun generateResource(): Resourcepart {
         return try {
             Resourcepart.from(
-                Application.getInstance()
-                    .getString(R.string.account_resource_default) + "-" + StringUtils.randomString(
-                    8
-                )
+                Application.getInstance().getString(R.string.account_resource_default)
+                        + "-"
+                        + StringUtils.randomString(8)
             )
         } catch (e: XmppStringprepException) {
             LogManager.exception(this, e)
@@ -389,8 +386,14 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     private fun removeAccountWithoutCallback(account: AccountJid) {
         val accountItem = getAccount(account) ?: return
 
-        // remove contacts and account from cache
+        // remove all data from database
         ContactRepository.removeContacts(account)
+        GroupInviteRepository.removeAllInvitesRelatedToAccount(account)
+        GroupMemberManager.removeAllAccountRelatedGroupMembers(account)
+        MessageRepository.removeAccountMessagesFromRealm(account)
+        GroupchatRepository.removeAccountRelatedGroupsFromRealm(account)
+        RegularChatRepository.removeAllAccountRelatedRegularChatsFromRealm(account)
+
         val wasEnabled = accountItem.isEnabled
         accountItem.isEnabled = false
         accountItem.disconnect()
@@ -414,7 +417,8 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     /**
-     * Remove user`s account.
+     * Remove XMPP Account and all related.
+     * Doesn't affect to XabberAccount!
      */
     fun removeAccount(account: AccountJid) {
         // disable synchronization for this account in xabber account

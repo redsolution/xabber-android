@@ -205,6 +205,19 @@ object GroupMemberManager {
         }
     }
 
+    fun removeAllAccountRelatedGroupMembers(accountJid: AccountJid){
+        Application.getInstance().runInBackground {
+            DatabaseManager.getInstance().defaultRealmInstance.use {
+                it.executeTransaction { realm ->
+                    realm.where(GroupMemberRealmObject::class.java)
+                        .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
+                        .findAll()
+                        ?.deleteAllFromRealm()
+                }
+            }
+        }
+    }
+
     fun saveOrUpdateMemberFromMessage(
         user: GroupMemberExtensionElement, account: AccountJid, groupJid: ContactJid
     ): GroupMemberRealmObject {

@@ -5,7 +5,6 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.realmobjects.SyncInfoRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
@@ -87,20 +86,17 @@ public class MessageRepository {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                            .findAll()
-                            .deleteAllFromRealm();
-
-                    realm1.where(SyncInfoRealmObject.class)
-                            .equalTo(SyncInfoRealmObject.Fields.FIELD_ACCOUNT, account.toString())
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
+                realm.executeTransaction(realm1 -> realm1.where(MessageRealmObject.class)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                        .findAll()
+                        .deleteAllFromRealm());
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) {
+                    realm.close();
+                }
+            }
         });
     }
 

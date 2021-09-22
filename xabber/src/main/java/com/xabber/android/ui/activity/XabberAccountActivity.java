@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.http.RetrofitErrorConverter;
@@ -328,12 +328,19 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
         if (deleteAccounts) {
-            XabberAccountManager.getInstance().deleteUnSyncedLocalAccounts();
-        } else {
-            AccountManager.INSTANCE.setAllAccountAutoLoginToXabber(false);
+            for (AccountItem xmppAccount: AccountManager.INSTANCE.getAllAccountItems()){
+                Boolean xabberAccountSyncStateForIteratedXmppAccount =
+                        XabberAccountManager.getInstance().getAccountSyncState(
+                                xmppAccount.getAccount().getBareJid().toString()
+                        );
+                if (xabberAccountSyncStateForIteratedXmppAccount != null
+                        && xabberAccountSyncStateForIteratedXmppAccount) {
+                    AccountManager.INSTANCE.removeAccount(xmppAccount.getAccount());
+                }
+            }
         }
 
-        XabberAccountManager.getInstance().removeAccount();
+        XabberAccountManager.getInstance().removeXabberAccount();
 
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
