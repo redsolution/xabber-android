@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class MessageNotificationCreator {
 
@@ -176,8 +177,9 @@ public class MessageNotificationCreator {
     }
 
     private String getChannelID(MessageNotificationManager.Chat chat) {
-        if (inGracePeriod(chat))
+        if (inGracePeriod(chat)) {
             return NotificationChannelUtils.SILENT_CHANNEL_ID;
+        }
 
         NotifyPrefs customPrefs = null;
         boolean isGroup = false;
@@ -204,11 +206,21 @@ public class MessageNotificationCreator {
 
     /** UTILS */
     private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
-        if (!MessageNotificationManager.INSTANCE.isTimeToNewFullNotification()) return true;
-        if (chat == null) return false;
+        if (!MessageNotificationManager.INSTANCE.isTimeToNewFullNotification()) {
+            return true;
+        }
+
+        if (chat == null) {
+            return false;
+        }
+
         AccountItem accountItem = AccountManager.INSTANCE.getAccount(chat.getAccountJid());
-        if (accountItem != null) return accountItem.inGracePeriod();
-        else return false;
+
+        if (accountItem != null) {
+            return accountItem.inGracePeriod();
+        }
+
+        return false;
     }
 
     private CharSequence createNewMessagesTitle(int messageCount) {

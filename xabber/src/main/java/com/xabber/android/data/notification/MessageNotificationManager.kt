@@ -53,7 +53,7 @@ object MessageNotificationManager : OnLoadListener {
     var isShowBanners = false
 
     val isTimeToNewFullNotification: Boolean
-        get() = System.currentTimeMillis() > lastNotificationTime + 1000
+        get() = System.currentTimeMillis() > lastNotificationTime + 500
 
     fun updateLastNotificationTime() {
         lastNotificationTime = System.currentTimeMillis()

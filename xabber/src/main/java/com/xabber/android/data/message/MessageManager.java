@@ -33,6 +33,7 @@ import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.chat_markers.ChatMarkersElements;
 import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
@@ -472,7 +473,12 @@ public class MessageManager implements OnPacketListener {
                 // just ignore carbons from not-authorized user
                 return;
             }
-            AccountManager.INSTANCE.getAccount(account).startGracePeriod();
+
+            if (!message.hasExtension(
+                    ChatMarkersElements.ReceivedExtension.ELEMENT, ChatMarkersElements.NAMESPACE)
+            ) {
+                AccountManager.INSTANCE.getAccount(account).startGracePeriod();
+            }
 
         } else if (direction == CarbonExtension.Direction.received) {
 
