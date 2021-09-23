@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.text.ClickSpan;
 
 public class CorrectlyTouchEventTextView extends AppCompatTextView {
     boolean clickableSpanClicked;
@@ -51,6 +52,38 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
             return instance;
         }
 
+        private boolean onLinkSpannableTouched(
+                TextView textView,
+                Spannable buffer,
+                MotionEvent event,
+                ClickableSpan span,
+                String url
+        ) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                AlertDialog alertDialog = new AlertDialog.Builder(textView.getContext()).create();
+                alertDialog.setTitle(R.string.open_this_link);
+                alertDialog.setMessage(url);
+
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, textView.getContext().getString(R.string.open),
+                        (dialog, which) -> span.onClick(textView));
+
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, textView.getContext().getString(R.string.cancel),
+                        (dialog, which) -> dialog.dismiss());
+
+                alertDialog.show();
+                removeUrlHighlightColor(textView);
+            } else {
+                Selection.setSelection(buffer, buffer.getSpanStart(span), buffer.getSpanEnd(span));
+                highlightUrl(textView, span, buffer);
+            }
+
+            if (textView instanceof CorrectlyTouchEventTextView){
+                ((CorrectlyTouchEventTextView) textView).clickableSpanClicked = true;
+            }
+
+            return true;
+        }
+
         @Override
         public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
             int action = event.getAction();
@@ -71,31 +104,14 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
 
                 final URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
 
+                final ClickSpan[] referencedLinks = buffer.getSpans(off, off, ClickSpan.class);
+
                 if (link.length != 0) {
-                    if (action == MotionEvent.ACTION_UP) {
-                        final TextView tv = widget;
-                        AlertDialog alertDialog = new AlertDialog.Builder(tv.getContext()).create();
-                        alertDialog.setTitle(R.string.open_this_link);
-                        alertDialog.setMessage(link[0].getURL());
-
-                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, tv.getContext().getString(R.string.open),
-                                (dialog, which) -> link[0].onClick(tv));
-
-                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, tv.getContext().getString(R.string.cancel),
-                                (dialog, which) -> dialog.dismiss());
-
-                        alertDialog.show();
-                        removeUrlHighlightColor(widget);
-                    } else {
-                        Selection.setSelection(buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
-                        highlightUrl(widget, link[0], buffer);
-                    }
-
-                    if (widget instanceof CorrectlyTouchEventTextView){
-                        ((CorrectlyTouchEventTextView) widget).clickableSpanClicked = true;
-                    }
-
-                    return true;
+                    return onLinkSpannableTouched(widget, buffer, event, link[0], link[0].getURL());
+                } else if (referencedLinks.length != 0) {
+                    return onLinkSpannableTouched(
+                            widget, buffer, event, referencedLinks[0], referencedLinks[0].getUrl()
+                    );
                 } else {
                     Selection.removeSelection(buffer);
                     Touch.onTouchEvent(widget, buffer, event);
