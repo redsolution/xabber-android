@@ -58,7 +58,7 @@ class MessagesAdapter(
                 val llm = recyclerView?.layoutManager as? LinearLayoutManager
                     ?: throw ClassCastException("Messages recyclerView's layoutManager must implement linearLayoutManager!")
 
-                val lastVisiblePosition = llm.findLastCompletelyVisibleItemPosition()
+                val lastVisiblePosition = llm.findLastVisibleItemPosition()
                 val isInBottomPosition = lastVisiblePosition == llm.itemCount - 1 - range.length
                 val isAddedToBottom = range.startIndex - range.length == lastVisiblePosition
                 val isOutgoing = !(messageRealmObjects.last()?.isIncoming ?: true)
