@@ -36,7 +36,6 @@ import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.archive.MessageArchiveManager.loadNextMessagesPortionInChat
-import com.xabber.android.data.extension.archive.MessageArchiveManager.tryToLoadPortionOfMemberMessagesInGroup
 import com.xabber.android.data.extension.blocking.BlockingManager
 import com.xabber.android.data.extension.chat_state.ChatStateManager
 import com.xabber.android.data.extension.groups.GroupInviteManager.getLastInvite
@@ -1178,7 +1177,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
     fun updateContact() {
         updateBlockedState()
-        showTopPanelIfNeed()
+        Application.getInstance().runOnUiThreadDelay({ showTopPanelIfNeed() }, 1000)
     }
 
     private fun scrollDown() {
@@ -1657,7 +1656,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     private fun showTopPanelIfNeed() {
-
         fun removePanel() {
             topPanel?.let { panel ->
                 with(childFragmentManager.beginTransaction()) {
@@ -1672,9 +1670,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             removePanel()
             return
         }
+
         if (!VCardManager.getInstance().isRosterOrHistoryLoaded(accountJid)) {
             return
         }
+
         val subscriptionState =
             RosterManager.getInstance().getSubscriptionState(accountJid, contactJid)
 
@@ -1696,12 +1696,15 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 }
             }
         }
+
         if (hasActiveIncomingInvites(accountJid, contactJid)) {
             show = true
         }
+
         if (chat.account.bareJid.toString() == chat.contactJid.bareJid.toString()) {
             show = false
         }
+
         if (show) {
             ChatFragmentTopPanel.newInstance(chat).also { panel ->
                 topPanel = panel
@@ -1714,6 +1717,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             removePanel()
             clearSubscriptionRequestNotification(accountJid, contactJid)
         }
+
     }
 
     override fun onBind(message: MessageRealmObject) {
