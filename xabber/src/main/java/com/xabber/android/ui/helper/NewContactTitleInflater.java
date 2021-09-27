@@ -62,7 +62,9 @@ public class NewContactTitleInflater {
         } else {
             if (chat instanceof GroupChat && !"".equals(((GroupChat) chat).getName())) {
                 nameView.setText(((GroupChat) chat).getName());
-            } else nameView.setText(abstractContact.getName());
+            } else {
+                nameView.setText(abstractContact.getName());
+            }
         }
 
         TypedValue typedValue = new TypedValue();
@@ -72,11 +74,14 @@ public class NewContactTitleInflater {
         // notification mute
         Resources resources = context.getResources();
         int resID = 0;
-        if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute_large;
-        else if (mode == NotificationState.NotificationMode.disabled)
+        if (mode == NotificationState.NotificationMode.enabled) {
+            resID = R.drawable.ic_unmute_large;
+        } else if (mode == NotificationState.NotificationMode.disabled) {
             resID = R.drawable.ic_mute_large;
-        else if (mode != NotificationState.NotificationMode.byDefault)
+        } else if (mode != NotificationState.NotificationMode.byDefault) {
             resID = R.drawable.ic_snooze_toolbar;
+        }
+
         Drawable drawable = null;
         if (resID != 0) {
             drawable = resources.getDrawable(resID);
@@ -88,12 +93,13 @@ public class NewContactTitleInflater {
                 drawable.setAlpha(128);
             }
         }
-        nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                drawable, null);
+        nameView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 
         // custom notification
-        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
-                isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getContactJid()));
+        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().isPrefsExist(
+                Key.createKey(abstractContact.getAccount(), abstractContact.getContactJid())
+        );
+
         if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
                 || mode == NotificationState.NotificationMode.byDefault)) {
             nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
@@ -102,7 +108,9 @@ public class NewContactTitleInflater {
 
         if (abstractContact.getContactJid().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getSavedMessagesAvatar(abstractContact.getAccount()));
-        } else avatarView.setImageDrawable(abstractContact.getAvatar());
+        } else {
+            avatarView.setImageDrawable(abstractContact.getAvatar());
+        }
         setStatus(context, titleView, abstractContact);
     }
 
@@ -114,10 +122,14 @@ public class NewContactTitleInflater {
 
         boolean isGroupchat = chat instanceof GroupChat;
         boolean isServer = abstractContact.getContactJid().getJid().isDomainBareJid();
-        boolean isBlocked = BlockingManager.getInstance()
-                .contactIsBlockedLocally(abstractContact.getAccount(), abstractContact.getContactJid());
-        boolean isConnected = AccountManager.INSTANCE.getConnectedAccounts()
-                .contains(abstractContact.getAccount());
+
+        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(
+                abstractContact.getAccount(), abstractContact.getContactJid()
+        );
+
+        boolean isConnected = AccountManager.INSTANCE.getConnectedAccounts().contains(
+                abstractContact.getAccount()
+        );
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
 
@@ -163,7 +175,8 @@ public class NewContactTitleInflater {
             statusText = "Server";
         } else {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
-                    abstractContact.getAccount(), abstractContact.getContactJid());
+                    abstractContact.getAccount(), abstractContact.getContactJid()
+            );
             if (statusText == null) {
                 if (abstractContact instanceof ChatContact) {
                     if (PresenceManager.INSTANCE.hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getContactJid())) {
@@ -173,7 +186,7 @@ public class NewContactTitleInflater {
                         if (VCardManager.getInstance().isRosterOrHistoryLoaded(abstractContact.getAccount())) {
                             //Contact not in our roster, and no subscription requests.
 
-                            if (isGroupchat){
+                            if (isGroupchat) {
                                 GroupPrivacyType privacyType = ((GroupChat) chat).getPrivacyType();
                                 if (GroupInviteManager.INSTANCE.hasActiveIncomingInvites(abstractContact.getAccount(), abstractContact.getContactJid())){
                                     statusText = context.getString(
@@ -183,9 +196,13 @@ public class NewContactTitleInflater {
                                 } else {
                                     if (privacyType == GroupPrivacyType.INCOGNITO){
                                         statusText = context.getString(R.string.groupchat_public_group);
-                                    } else statusText = context.getString(R.string.groupchat_incognito_group);
+                                    } else {
+                                        statusText = context.getString(R.string.groupchat_incognito_group);
+                                    }
                                 }
-                            } else statusText = context.getString(R.string.contact_state_not_in_contact_list);
+                            } else {
+                                statusText = context.getString(R.string.contact_state_not_in_contact_list);
+                            }
                         } else {
                             //Contact state is undefined since roster is not loaded yet
                             statusText = context.getString(R.string.waiting_for_network);
@@ -194,7 +211,9 @@ public class NewContactTitleInflater {
                 } else {
                     //TODO this is way too messy, should do some cleanup later.
                     if (abstractContact instanceof RosterContact) {
-                        SubscriptionState state = RosterManager.getInstance().getSubscriptionState(abstractContact.getAccount(), abstractContact.getContactJid());
+                        SubscriptionState state = RosterManager.getInstance().getSubscriptionState(
+                                abstractContact.getAccount(), abstractContact.getContactJid()
+                        );
                         switch (state.getSubscriptionType()) {
                             case SubscriptionState.PENDING_OUT:
                                 if (isGroupchat) {
@@ -238,16 +257,18 @@ public class NewContactTitleInflater {
                         }
                     }
 
-                    if (statusText == null)
+                    if (statusText == null) {
                         statusText = getNormalStatus(abstractContact);
+                    }
 
-
-                    if (statusText.toString().isEmpty())
+                    if (statusText.toString().isEmpty()) {
                         statusText = context.getString(abstractContact.getStatusMode().getStringID());
+                    }
 
-                    if (!isConnected)
+                    if (!isConnected) {
                         statusText = Application.getInstance().getResources()
                                 .getText(R.string.waiting_for_network);
+                    }
                 }
             } else {
                 isTyping = true;
@@ -264,8 +285,9 @@ public class NewContactTitleInflater {
                 typingDotsDrawable.start();
             }
         } else {
-            if (typingDotsDrawable.isStarted())
+            if (typingDotsDrawable.isStarted()) {
                 typingDotsDrawable.stop();
+            }
             statusTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         }
     }
