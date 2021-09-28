@@ -486,6 +486,9 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     private fun updateToolbar() {
+
+
+
         NewContactTitleInflater.updateTitle(
             contactTitleView,
             this,

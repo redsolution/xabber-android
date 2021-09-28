@@ -118,9 +118,7 @@ public class TypingDotsDrawable extends Drawable {
     }
 
     @Override
-    public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-    }
+    public void setColorFilter(@Nullable ColorFilter colorFilter) { }
 
     @Override
     public int getOpacity() {
@@ -136,4 +134,5 @@ public class TypingDotsDrawable extends Drawable {
     public int getIntrinsicHeight() {
         return dipToPx(18, Application.getInstance());
     }
+
 }

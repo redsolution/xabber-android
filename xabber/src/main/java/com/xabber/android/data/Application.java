@@ -205,7 +205,7 @@ public class Application extends android.app.Application {
 
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
-                Math.max(2, Runtime.getRuntime().availableProcessors() / 2),
+                64,
                 backgroundThreadFactory);
     }
 
