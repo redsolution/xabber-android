@@ -40,6 +40,7 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.attention.AttentionManager
 import com.xabber.android.data.extension.blocking.BlockingManager
+import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.retract.RetractManager
 import com.xabber.android.data.log.LogManager
@@ -245,18 +246,15 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             }
 
             Intent.ACTION_SEND_MULTIPLE -> {
-                val uris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
-                if (uris != null) {
+                intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)?.let {
                     intent.removeExtra(Intent.EXTRA_STREAM)
-                    handleShareFileUris(uris)
+                    handleShareFileUris(it)
                 }
             }
 
             ACTION_SHOW_GROUP_MEMBER_MESSAGES -> {
                 intent.getStringExtra(KEY_MEMBER_ID)?.let {
                     memberId = it
-
-                    Toast.makeText(this, "memberId: $it", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -485,20 +483,8 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateToolbar() {
-
-
-
-        NewContactTitleInflater.updateTitle(
-            contactTitleView,
-            this,
-            RosterManager.getInstance().getBestContact(accountJid, contactJid),
-            ChatManager.getInstance().getChat(accountJid, contactJid)
-                ?.notificationState
-                ?.determineModeByGlobalSettings()
-                ?: NotificationMode.byDefault
-        )
-
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setBackgroundColor(
@@ -510,6 +496,32 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
             val typedValue = TypedValue()
             this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
             toolbar.setBackgroundColor(typedValue.data)
+        }
+
+        if (memberId != null) {
+            memberMessagesTitleView.visibility = View.VISIBLE
+            contactTitleView.visibility = View.GONE
+            findViewById<TextView>(R.id.toolbar_member_messages_title_tv)?.apply {
+                text = resources.getString(R.string.chat__placeholder_participant_messages__messages_by) +
+                        " " +
+                        GroupMemberManager.getGroupMemberById(accountJid, contactJid, memberId!!)?.bestName
+            }
+            findViewById<ImageView>(R.id.toolbar_member_messages_arrow_back_iv).setOnClickListener {
+                onBackPressed()
+            }
+            findViewById<ImageView>(R.id.toolbar_member_messages_overflow_iv).setOnClickListener {
+                RetractManager.sendRetractUserRequest(accountJid, contactJid, memberId!!)
+            }
+        } else {
+            NewContactTitleInflater.updateTitle(
+                contactTitleView,
+                this,
+                RosterManager.getInstance().getBestContact(accountJid, contactJid),
+                ChatManager.getInstance().getChat(accountJid, contactJid)
+                    ?.notificationState
+                    ?.determineModeByGlobalSettings()
+                    ?: NotificationMode.byDefault
+            )
         }
     }
 

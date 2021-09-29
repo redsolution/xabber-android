@@ -121,12 +121,11 @@ object RetractManager : OnPacketListener, OnRosterReceivedListener {
         baseIqResultUiListener: BaseIqResultUiListener? = null
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            AccountManager.getAccount(accountJid)?.connection
-                ?.sendIqWithResponseCallback(
-                    RetractUserIq(archiveJid, memberId),
-                    baseIqResultUiListener,
-                    baseIqResultUiListener
-                )
+            AccountManager.getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                RetractUserIq(archiveJid, memberId),
+                baseIqResultUiListener,
+                baseIqResultUiListener
+            )
         }
     }
 
