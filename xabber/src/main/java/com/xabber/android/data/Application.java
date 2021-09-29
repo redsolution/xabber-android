@@ -441,7 +441,7 @@ public class Application extends android.app.Application {
      * Start periodically callbacks.
      */
     private void startTimer() {
-        runOnUiThreadDelay(timerRunnable, OnTimerListener.DELAY);
+        runOnUiThreadDelay(OnTimerListener.DELAY, timerRunnable);
     }
 
     /**
@@ -602,7 +602,7 @@ public class Application extends android.app.Application {
     /**
      * Submits request to be executed in UI thread.
      */
-    public void runOnUiThreadDelay(final Runnable runnable, long delayMillis) {
+    public void runOnUiThreadDelay(long delayMillis, final Runnable runnable) {
         handler.postDelayed(runnable, delayMillis);
     }
 

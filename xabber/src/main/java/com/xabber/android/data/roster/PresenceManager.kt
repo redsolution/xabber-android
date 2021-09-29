@@ -106,10 +106,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 LogManager.exception(this, e)
             }
         } else {
-            Application.getInstance().runOnUiThreadDelay(
-                { sendAccountPresence(accountJid) },
-                5000
-            )
+            Application.getInstance().runOnUiThreadDelay(5000) { sendAccountPresence(accountJid) }
         }
     }
 

@@ -20,7 +20,7 @@ public class DelayedNotificationActionManager implements OnConnectedListener {
 
     @Override
     public void onConnected(ConnectionItem connection) {
-        Application.getInstance().runOnUiThreadDelay(this::onLoaded, 3000);
+        Application.getInstance().runOnUiThreadDelay(3000, this::onLoaded);
     }
 
     private void onLoaded() {

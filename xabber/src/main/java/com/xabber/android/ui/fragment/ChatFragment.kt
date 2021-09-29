@@ -1177,7 +1177,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
     fun updateContact() {
         updateBlockedState()
-        Application.getInstance().runOnUiThreadDelay({ showTopPanelIfNeed() }, 1000)
+        Application.getInstance().runOnUiThreadDelay(1000) { showTopPanelIfNeed() }
     }
 
     private fun scrollDown() {

@@ -74,14 +74,11 @@ object GroupsManager : OnPacketListener, OnLoadListener {
      */
     private val groupsToSendPresence = mutableListOf<GroupChat>()
 
-    private val presenceResendingRunnable = Runnable {
-        groupsToSendPresence.map { sendPresenceToGroup(it) }
-        startPresenceResendingRunnable()
-    }
-
     private fun startPresenceResendingRunnable() {
-        Application.getInstance()
-            .runOnUiThreadDelay(presenceResendingRunnable, PRESENCE_RESEND_CYCLE_MILLIS)
+        Application.getInstance().runOnUiThreadDelay(PRESENCE_RESEND_CYCLE_MILLIS) {
+            groupsToSendPresence.map { sendPresenceToGroup(it) }
+            startPresenceResendingRunnable()
+        }
     }
 
     override fun onLoad() {
