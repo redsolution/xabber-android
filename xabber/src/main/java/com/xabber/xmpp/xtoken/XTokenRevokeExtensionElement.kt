@@ -26,6 +26,9 @@ class XTokenRevokeExtensionElement(val uids: List<String>) : ExtensionElement {
 
         fun Stanza.hasXTokenRevokeExtensionElement() =
             this.hasExtension(ELEMENT_NAME, XTokenManager.NAMESPACE)
+
+        fun Stanza.getXTokenRevokeExtensionElement(): XTokenRevokeExtensionElement =
+            this.getExtension(ELEMENT_NAME, XTokenManager.NAMESPACE)
     }
 
 }

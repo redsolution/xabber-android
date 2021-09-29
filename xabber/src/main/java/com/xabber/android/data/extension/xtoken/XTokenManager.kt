@@ -11,6 +11,7 @@ import com.xabber.android.ui.OnXTokenSessionsUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.xmpp.smack.XMPPTCPConnection
 import com.xabber.xmpp.xtoken.*
+import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.getXTokenRevokeExtensionElement
 import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.hasXTokenRevokeExtensionElement
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
@@ -26,7 +27,12 @@ object XTokenManager : OnPacketListener {
         } else if (packet is Message && packet.hasExtension(NAMESPACE)) {
             notifySamUiListeners(OnXTokenSessionsUpdatedListener::class.java)
             if (packet.hasXTokenRevokeExtensionElement()) {
-                connection?.account?.let { onAccountXTokenRevoked(it) }
+                connection?.account?.let {
+                    val myXtoken = AccountManager.getAccount(it)?.connectionSettings?.xToken?.uid
+                    if (packet.getXTokenRevokeExtensionElement().uids.contains(myXtoken)) {
+                        onAccountXTokenRevoked(it)
+                    }
+                }
             }
         }
     }
