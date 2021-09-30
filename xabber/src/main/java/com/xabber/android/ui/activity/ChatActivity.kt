@@ -449,7 +449,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
 
         updateToolbar()
-        chatFragment?.updateContact()
+        chatFragment?.takeIf { it.isAdded }?.updateContact()
         updateStatusBar()
     }
 
