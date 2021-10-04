@@ -50,30 +50,32 @@ class MessagesAdapter(
                 return@OrderedRealmCollectionChangeListener
             }
 
+            val llm = recyclerView?.layoutManager as? LinearLayoutManager
+                ?: throw ClassCastException("Messages recyclerView's layoutManager must implement linearLayoutManager!")
+
+            val isListAlreadyScrolledToBottom = llm.findLastVisibleItemPosition() >= llm.itemCount - 3
+            val isLastMessageIsOutgoing = !(messageRealmObjects.last()?.isIncoming ?: true)
+
             changeSet.deletionRanges.reversed().map { range ->
                 notifyItemRangeRemoved(range.startIndex, range.length)
             }
 
-            changeSet.insertionRanges?.map { range ->
-                val llm = recyclerView?.layoutManager as? LinearLayoutManager
-                    ?: throw ClassCastException("Messages recyclerView's layoutManager must implement linearLayoutManager!")
-
-                val lastVisiblePosition = llm.findLastVisibleItemPosition()
-                val isInBottomPosition = lastVisiblePosition == llm.itemCount - 1 - range.length
-                val isAddedToBottom = range.startIndex - range.length == lastVisiblePosition
-                val isOutgoing = !(messageRealmObjects.last()?.isIncoming ?: true)
-
-                if (isAddedToBottom && (isInBottomPosition || isOutgoing)) {
-                    LogManager.d("MessagesAdapter", "need to scroll")
+            changeSet.insertionRanges.map { range ->
+                val isAddedToBottom = range.startIndex + range.length == messageRealmObjects.size
+                notifyItemRangeInserted(range.startIndex, range.length)
+                if (isAddedToBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
                     llm.scrollToPosition(llm.itemCount - 1)
-                } else {
-                    notifyItemRangeInserted(range.startIndex, range.length)
                 }
             }
 
             changeSet.changeRanges?.map { range ->
+                val isChangedInBottom = range.startIndex + range.length == messageRealmObjects.size
                 notifyItemRangeChanged(range.startIndex, range.length)
+                if (isChangedInBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
+                    llm.scrollToPosition(llm.itemCount - 1)
+                }
             }
+
         }
 
     private var firstUnreadMessageID: String? = null
