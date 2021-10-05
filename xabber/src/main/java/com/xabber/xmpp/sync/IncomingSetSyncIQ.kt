@@ -7,6 +7,9 @@ import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.NamedElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
+/**
+ * Incorrect implementation! XEP-SYNC has been changed several times since this implementation was implemented.
+ */
 class IncomingSetSyncIQ(val stamp: Long,
                         val extensionElement: ExtensionElement,
 ) : IQ(QUERY_ELEMENT, SyncManager.NAMESPACE) {

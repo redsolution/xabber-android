@@ -38,6 +38,7 @@ import com.xabber.android.data.extension.archive.OnHistoryLoaded
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.capability.CapabilitiesManager
 import com.xabber.android.data.extension.captcha.CaptchaManager
+import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupsManager
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor
 import com.xabber.android.data.extension.vcard.VCardManager
@@ -447,10 +448,13 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                 // If no resource, this is likely an offline presence as part of
                 // a roster presence flood. In that case, we store it.
                 val userPresences =
-                    if (isAccountPresence) getSingleAccountPresences(from.bareJid) else getSingleContactPresences(
-                        connection.getAccount().fullJid.asBareJid(),
-                        from.bareJid
-                    )
+                    if (isAccountPresence) {
+                        getSingleAccountPresences(from.bareJid)
+                    } else {
+                        getSingleContactPresences(
+                            connection.getAccount().fullJid.asBareJid(), from.bareJid
+                        )
+                    }
                 val key =
                     if (fromResource == Resourcepart.EMPTY) {
                         Resourcepart.EMPTY
@@ -462,6 +466,9 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
                     AccountManager.onAccountChanged(connection.getAccount())
                 } else {
                     RosterManager.onContactChanged(connection.getAccount(), from)
+                    if (GroupInviteManager.hasActiveIncomingInvites(connection.account, from)) {
+                        GroupInviteManager.onConversationDeleted(connection.account, from)
+                    }
                 }
             }
 
