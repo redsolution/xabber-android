@@ -1708,9 +1708,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         if (show) {
             ChatFragmentTopPanel.newInstance(chat).also { panel ->
                 topPanel = panel
-                with(childFragmentManager.beginTransaction()) {
-                    replace(R.id.topPanelContainer, panel)
-                    commit()
+                if (isAdded){
+                    with(childFragmentManager.beginTransaction()) {
+                        replace(R.id.topPanelContainer, panel)
+                        commit()
+                    }
                 }
             }
         } else {
