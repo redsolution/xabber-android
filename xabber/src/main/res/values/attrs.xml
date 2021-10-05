@@ -93,7 +93,7 @@
 
         <attr name="discover_edittext_background_color" format="color"/>
     </declare-styleable>
-    <declare-styleable name="ImFlexboxLayout">
+    <declare-styleable name="CustomFlexboxLayout">
         <attr name="viewPartMain" format="reference"></attr>
         <attr name="viewPartSlave" format="reference"></attr>
     </declare-styleable>

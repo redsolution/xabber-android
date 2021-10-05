@@ -20,7 +20,6 @@ public class CustomFlexboxLayout extends RelativeLayout {
     private int viewPartSlaveWidth;
     private int viewPartSlaveHeight;
 
-
     public CustomFlexboxLayout(Context context) {
         super(context);
     }
@@ -28,7 +27,7 @@ public class CustomFlexboxLayout extends RelativeLayout {
     public CustomFlexboxLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        a = context.obtainStyledAttributes(attrs, R.styleable.ImFlexboxLayout, 0, 0);
+        a = context.obtainStyledAttributes(attrs, R.styleable.CustomFlexboxLayout, 0, 0);
     }
 
     @Override
@@ -36,8 +35,8 @@ public class CustomFlexboxLayout extends RelativeLayout {
         super.onAttachedToWindow();
 
         try {
-            viewPartMain = this.findViewById(a.getResourceId(R.styleable.ImFlexboxLayout_viewPartMain, -1));
-            viewPartSlave = this.findViewById(a.getResourceId(R.styleable.ImFlexboxLayout_viewPartSlave, -1));
+            viewPartMain = this.findViewById(a.getResourceId(R.styleable.CustomFlexboxLayout_viewPartMain, -1));
+            viewPartSlave = this.findViewById(a.getResourceId(R.styleable.CustomFlexboxLayout_viewPartSlave, -1));
         } catch (Exception e) {
             LogManager.exception(getClass().getSimpleName(), e);
         }
@@ -50,65 +49,84 @@ public class CustomFlexboxLayout extends RelativeLayout {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (viewPartMain == null || viewPartSlave == null || widthSize <= 0) return;
-
+        if (viewPartMain == null || viewPartSlave == null || widthSize <= 0) {
+            return;
+        }
 
         int availableWidth = widthSize - getPaddingLeft() - getPaddingRight();
-        int availableHeight = heightSize - getPaddingTop() - getPaddingBottom();
 
         LayoutParams viewPartMainLayoutParams = (LayoutParams) viewPartMain.getLayoutParams();
-        int viewPartMainWidth = viewPartMain.getMeasuredWidth() + viewPartMainLayoutParams.leftMargin
+
+        int viewPartMainWidth = viewPartMain.getMeasuredWidth()
+                + viewPartMainLayoutParams.leftMargin
                 + viewPartMainLayoutParams.rightMargin;
-        int viewPartMainHeight = viewPartMain.getMeasuredHeight() + viewPartMainLayoutParams.topMargin
+
+        int viewPartMainHeight = viewPartMain.getMeasuredHeight()
+                + viewPartMainLayoutParams.topMargin
                 + viewPartMainLayoutParams.bottomMargin;
 
         LayoutParams viewPartSlaveLayoutParams = (LayoutParams) viewPartSlave.getLayoutParams();
-        viewPartSlaveWidth = viewPartSlave.getMeasuredWidth() + viewPartSlaveLayoutParams.leftMargin
+
+        viewPartSlaveWidth = viewPartSlave.getMeasuredWidth()
+                + viewPartSlaveLayoutParams.leftMargin
                 + viewPartSlaveLayoutParams.rightMargin;
-        viewPartSlaveHeight = viewPartSlave.getMeasuredHeight() + viewPartSlaveLayoutParams.topMargin
+
+        viewPartSlaveHeight = viewPartSlave.getMeasuredHeight()
+                + viewPartSlaveLayoutParams.topMargin
                 + viewPartSlaveLayoutParams.bottomMargin;
 
         int viewPartMainLineCount = viewPartMain.getLineCount();
-        float viewPartMainLastLineWidth = viewPartMainLineCount > 0 ?
-                viewPartMain.getLayout().getLineWidth(viewPartMainLineCount - 1) + viewPartMainLayoutParams.rightMargin
-                : 0;
+        float viewPartMainLastLineWidth;
+        if (viewPartMainLineCount > 0) {
+            int lineWidth = (int) viewPartMain.getLayout().getLineWidth(viewPartMainLineCount - 1);
+            float rightMargin = viewPartMainLayoutParams.rightMargin;
+            viewPartMainLastLineWidth = lineWidth + rightMargin;
+        } else {
+            viewPartMainLastLineWidth = 0;
+        }
 
         widthSize = getPaddingLeft() + getPaddingRight();
         heightSize = getPaddingTop() + getPaddingBottom();
 
         if (viewPartMainLastLineWidth + viewPartSlaveWidth > availableWidth) {
             widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight + viewPartSlaveHeight;
+            heightSize += viewPartMainHeight + viewPartSlaveHeight;;
         } else if (viewPartMainWidth >= viewPartMainLastLineWidth + viewPartSlaveWidth) {
             widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight;
+            heightSize += viewPartMainHeight;;
         } else {
             widthSize += viewPartMainLastLineWidth + viewPartSlaveWidth;
-            heightSize += viewPartMainHeight;
+            heightSize += viewPartMainHeight;;
         }
 
         this.setMeasuredDimension(widthSize, heightSize);
-        super.onMeasure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY));
+        super.onMeasure(
+                MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY)
+        );
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (viewPartMain == null || viewPartSlave == null) return;
+        if (viewPartMain == null || viewPartSlave == null) {
+            return;
+        }
 
         viewPartMain.layout(
                 getPaddingLeft(),
                 getPaddingTop(),
                 viewPartMain.getWidth() + getPaddingLeft(),
-                viewPartMain.getHeight() + getPaddingTop());
+                viewPartMain.getHeight() + getPaddingTop()
+        );
 
         viewPartSlave.layout(
                 right - left - viewPartSlaveWidth - getPaddingRight(),
                 bottom - top - getPaddingBottom() - viewPartSlaveHeight,
                 right - left - getPaddingRight(),
-                bottom - top - getPaddingBottom());
+                bottom - top - getPaddingBottom()
+        );
     }
 
 }
