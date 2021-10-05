@@ -77,6 +77,7 @@ public enum StatusMode {
 
     public static final int PUBLIC_GROUP_OFFSET = 20;
     public static final int INCOGNITO_GROUP_OFFSET = 30;
+    public static final int TASK_OFFSET = 100;
     public static final int PRIVATE_GROUP_OFFSET = 40;
     public static final int CHANNEL_OFFSET = 50;
     public static final int BOT_OFFSET = 60;

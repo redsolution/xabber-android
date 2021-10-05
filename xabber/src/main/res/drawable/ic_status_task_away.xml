@@ -17,7 +17,7 @@
         <shape
             android:shape="oval">
             <solid
-                android:color="@color/grey_500"/>
+                android:color="@color/amber_700"/>
         </shape>
     </item>
 
@@ -26,6 +26,6 @@
         android:left="2dp"
         android:right="2dp"
         android:bottom="2dp"
-        android:drawable="@drawable/ic_mobile"/>
+        android:drawable="@drawable/ic_task"/>
 
 </layer-list>

@@ -99,9 +99,12 @@ object StatusBadgeSetupHelper {
         if (statusLevel == StatusMode.unavailable.statusLevel || statusLevel == StatusMode.connection.statusLevel)
             statusLevel = 5
 
+        val isTaskChat = contactJid.toString().contains("redmine_issue")
+
         when {
             isBlocked -> statusLevel = 11
             isServer -> statusLevel = 90
+            isTaskChat -> statusLevel += StatusMode.TASK_OFFSET
             isPublicGroupChat -> statusLevel += StatusMode.PUBLIC_GROUP_OFFSET
             isIncognitoGroupChat -> statusLevel += StatusMode.INCOGNITO_GROUP_OFFSET
         }
@@ -117,7 +120,8 @@ object StatusBadgeSetupHelper {
         )
 
     fun setupImageView(
-        statusMode: StatusMode = StatusMode.unavailable, offset: Int = 0,
+        statusMode: StatusMode = StatusMode.unavailable,
+        offset: Int = 0,
         imageView: ImageView
     ) {
         imageView.setImageDrawable(

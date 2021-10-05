@@ -72,4 +72,13 @@
 
     <item android:minLevel="11" android:maxLevel="11" android:drawable="@drawable/ic_blocked_border"/>
 
+
+    <!-- Redmine -->
+    <item android:minLevel="100" android:maxLevel="100" android:drawable="@drawable/ic_status_task_chat"/>
+    <item android:minLevel="101" android:maxLevel="101" android:drawable="@drawable/ic_status_task_online"/>
+    <item android:minLevel="102" android:maxLevel="102" android:drawable="@drawable/ic_status_task_away"/>
+    <item android:minLevel="103" android:maxLevel="103" android:drawable="@drawable/ic_status_task_xa"/>
+    <item android:minLevel="104" android:maxLevel="104" android:drawable="@drawable/ic_status_task_dnd"/>
+    <item android:minLevel="105" android:maxLevel="105" android:drawable="@drawable/ic_status_task_unavailable"/>
+
 </level-list>
