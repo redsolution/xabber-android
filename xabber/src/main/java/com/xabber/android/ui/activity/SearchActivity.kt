@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
+import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.BaseEntity
@@ -339,6 +340,9 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                             this, contact.account, contact.contactJid, it
                         )
                     )
+                    if (contact.account.bareJid.toString().contains(contact.contactJid.bareJid.toString())){
+                        Application.getInstance().runOnUiThreadDelay(200, ::finish)
+                    }
                 }
 
             else -> startActivityForResult(
@@ -399,6 +403,9 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                             this, contact.account, contact.contactJid, it
                         )
                     )
+                    if (contact.account.bareJid.toString().contains(contact.contactJid.bareJid.toString())){
+                        Application.getInstance().runOnUiThreadDelay(200, ::finish)
+                    }
                 }
 
             else -> startActivityForResult(

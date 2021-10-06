@@ -460,8 +460,8 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 voiceMessageRecorderLayout.visibility = View.VISIBLE
                 setUpVoiceMessagePresenter()
             }
-            savedInstanceState.getStringArray(FORWARD_MESSAGES)?.let { ids ->
-                (savedInstanceState.getSerializable(FORWARD_PURPOSE) as? Purposes)?.let { purpose ->
+            savedInstanceState.getStringArray(BOTTOM_MESSAGE_PANEL_MESSAGES_SAVED_STATE)?.let { ids ->
+                (savedInstanceState.getSerializable(BOTTOM_MESSAGE_PANEL_PURPOSE_SAVED_STATE) as? Purposes)?.let { purpose ->
                     showBottomMessagesPanel(listOf(*ids), purpose)
                     setUpInputViewButtons()
                 }
@@ -569,8 +569,8 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         outState.putString(VOICE_MESSAGE, recordingPath)
         outState.putBoolean(VOICE_MESSAGE_RECEIVER_IGNORE, ignoreReceiver)
         bottomMessagesPanel?.let { panel ->
-            outState.putStringArray(FORWARD_MESSAGES, panel.messagesIds.toTypedArray())
-            outState.putSerializable(FORWARD_PURPOSE, panel.purpose)
+            outState.putStringArray(BOTTOM_MESSAGE_PANEL_MESSAGES_SAVED_STATE, panel.messagesIds.toTypedArray())
+            outState.putSerializable(BOTTOM_MESSAGE_PANEL_PURPOSE_SAVED_STATE, panel.purpose)
         }
     }
 
@@ -2039,15 +2039,14 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     companion object {
-
         private const val ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT"
         private const val ARGUMENT_USER = "ARGUMENT_USER"
         private const val ARGUMENT_MEMBER_ID = "MEMBER_ID"
 
         private const val VOICE_MESSAGE = "VOICE_MESSAGE"
         private const val VOICE_MESSAGE_RECEIVER_IGNORE = "VOICE_MESSAGE_RECEIVER_IGNORE"
-        private const val FORWARD_MESSAGES = "FORWARD_MESSAGES"
-        private const val FORWARD_PURPOSE = "FORWARD_PURPOSE"
+        private const val BOTTOM_MESSAGE_PANEL_MESSAGES_SAVED_STATE = "FORWARD_MESSAGES"
+        private const val BOTTOM_MESSAGE_PANEL_PURPOSE_SAVED_STATE = "FORWARD_PURPOSE"
 
         private const val PERMISSIONS_REQUEST_EXPORT_CHAT = 22
         private const val STOP_TYPING_DELAY: Long = 2500 // in ms
@@ -2069,8 +2068,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 putString(ARGUMENT_MEMBER_ID, memberId)
             }
         }
-
-
     }
 
 }

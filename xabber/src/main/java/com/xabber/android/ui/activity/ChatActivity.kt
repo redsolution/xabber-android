@@ -794,9 +794,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     fun forwardMessages(messagesIds: List<String>) {
-        startActivity(
-            createForwardIntent(this, messagesIds)
-        )
+        startActivity(createForwardIntent(this, messagesIds))
     }
 
     fun showAttachDialog() {
