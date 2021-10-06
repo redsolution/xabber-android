@@ -70,8 +70,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         void onLongMessageClick(int position);
     }
 
-    public MessageVH(View itemView, MessageClickListener listener, MessageLongClickListener longClickListener,
-                     @StyleRes int appearance) {
+    public MessageVH(
+            View itemView, MessageClickListener listener,
+            MessageLongClickListener longClickListener, @StyleRes int appearance
+    ) {
 
         super(itemView, appearance);
         this.listener = listener;
@@ -102,50 +104,85 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 GroupMemberRealmObject user = extraData.getGroupMember();
                 messageHeader.setText(user.getNickname());
                 messageHeader.setTextColor(
-                        ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f)
+                        ColorManager.changeColor(
+                                ColorGenerator.MATERIAL.getColor(user.getNickname()),
+                                0.8f
+                        )
                 );
                 messageHeader.setVisibility(View.VISIBLE);
             } else if (chat instanceof GroupChat && ((GroupChat) chat).getPrivacyType() == GroupPrivacyType.INCOGNITO){
                 GroupMemberRealmObject user = extraData.getGroupMember();
                 messageHeader.setText(user.getNickname());
-                messageHeader.setTextColor(ColorManager.changeColor(
-                        ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));
+                messageHeader.setTextColor(
+                        ColorManager.changeColor(
+                                ColorGenerator.MATERIAL.getColor(user.getNickname()),
+                                0.8f
+                        )
+                );
                 messageHeader.setVisibility(View.VISIBLE);
             }
         }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
                 messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
-            else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
+            } else {
+                messageText.setTextColor(itemView.getContext().getColor(R.color.black));
+            }
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
         if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()){
-            SpannableStringBuilder spannable = (SpannableStringBuilder) Html.fromHtml(messageRealmObject.getMarkupText()
-                            .trim().replace("\n", "<br/>").concat("&zwj;"), null,
-                    new ClickTagHandler(extraData.getContext(), messageRealmObject.getAccount()));
+            SpannableStringBuilder spannable = (SpannableStringBuilder)
+                    Html.fromHtml(
+                            messageRealmObject.getMarkupText()
+                                    .trim()
+                                    .replace("\n", "<br/>")
+                                    .concat("&zwj;"),
+                            null,
+                            new ClickTagHandler(
+                                    extraData.getContext(), messageRealmObject.getAccount()
+                            )
+                    );
 
             int color;
             DisplayMetrics displayMetrics = itemView.getContext().getResources().getDisplayMetrics();
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(messageRealmObject.getAccount());
+                color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(
+                        messageRealmObject.getAccount()
+                );
             } else {
-                color = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(messageRealmObject.getAccount());
+                color = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(
+                        messageRealmObject.getAccount()
+                );
             }
 
             modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
             messageText.setText(spannable, TextView.BufferType.SPANNABLE);
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                messageText.setText(StringUtilsKt.getDecodedSpannable(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE))),
-                        TextView.BufferType.SPANNABLE);
-            } else messageText.setText(messageRealmObject.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+                messageText.setText(
+                        StringUtilsKt.getDecodedSpannable(
+                                messageRealmObject.getText().trim().concat(
+                                        String.valueOf(Character.MIN_VALUE)
+                                )
+                        ),
+                        TextView.BufferType.SPANNABLE
+                );
+            } else {
+                messageText.setText(
+                        messageRealmObject.getText().trim().concat(
+                                String.valueOf(Character.MIN_VALUE)
+                        )
+                );
+            }
 
         }
 
-        messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
+        messageText.setMovementMethod(
+                CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance()
+        );
 
         // set unread status
         isUnread = extraData.isUnread();
@@ -155,13 +192,20 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         date = StringUtilsKt.getDateStringForMessage(messageRealmObject.getTimestamp());
 
         needName = extraData.isNeedName();
-        if (!needName) messageHeader.setVisibility(View.GONE);
+        if (!needName) {
+            messageHeader.setVisibility(View.GONE);
+        }
 
         // setup CHECKED
         if (extraData.isChecked()){
-            itemView.setBackgroundColor(extraData.getContext().getResources()
-                    .getColor(R.color.unread_messages_background));
-        } else itemView.setBackground(null);
+            itemView.setBackgroundColor(
+                    extraData.getContext().getResources().getColor(
+                            R.color.unread_messages_background
+                    )
+            );
+        } else {
+            itemView.setBackground(null);
+        }
 
         setupTime(extraData, messageRealmObject);
     }
@@ -207,20 +251,26 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
                 recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
                 recyclerView.setAdapter(adapter);
-                forwardLayout.setBackgroundColor(ColorManager
-                        .getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+                forwardLayout.setBackgroundColor(
+                        ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f)
+                );
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                     forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
                     forwardLeftBorder.setAlpha(1);
                 }
                 else{
-                    forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
-                            .getAccountPainter().getAccountColorWithTint(messageRealmObject.getAccount(), 900));
+                    forwardLeftBorder.setBackgroundColor(
+                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(
+                                    messageRealmObject.getAccount(), 900
+                            )
+                    );
                     forwardLeftBorder.setAlpha(0.6f);
                 }
                 forwardLayout.setVisibility(View.VISIBLE);
             }
-            if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                realm.close();
+            }
         }
     }
 
@@ -268,8 +318,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private void modifySpannableWithCustomQuotes(
             SpannableStringBuilder spannable, DisplayMetrics displayMetrics, int color
     ) {
-        QuoteSpan[] quoteSpans =
-                spannable.getSpans(0, spannable.length(), QuoteSpan.class);
+        QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
 
         if (quoteSpans.length > 0) {
             for (int i = quoteSpans.length - 1; i >= 0; i--) {
@@ -316,11 +365,16 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                 char current;
                 boolean waitForNewLine = false;
                 for (int j = spanStart; j < spanEnd; j++) {
-                    if (j >= spannable.length()) break;
+                    if (j >= spannable.length()) {
+                        break;
+                    }
                     current = spannable.charAt(j);
 
-                    if (waitForNewLine && current != '\n') continue;
-                    else waitForNewLine = false;
+                    if (waitForNewLine && current != '\n') {
+                        continue;
+                    } else {
+                        waitForNewLine = false;
+                    }
 
                     if (current == '>') {
                         spannable.delete(j, j + 1);

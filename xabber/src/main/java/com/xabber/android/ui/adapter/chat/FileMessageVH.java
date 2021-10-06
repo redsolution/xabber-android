@@ -384,9 +384,12 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
     /** Upload progress subscription */
 
     protected void subscribeForUploadProgress() {
-        subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
-                .doOnNext(this::setUpProgress)
-                .subscribe());
+        subscriptions.add(
+                HttpFileUploadManager.getInstance()
+                        .subscribeForProgress()
+                        .doOnNext(this::setUpProgress)
+                        .subscribe()
+        );
     }
 
     protected void unsubscribeAll() {
@@ -424,8 +427,12 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
     }
 
     private void showProgress(boolean show) {
-        if (messageFileInfo != null) messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (messageTime != null) messageTime.setVisibility(show ? View.GONE : View.VISIBLE);
+        if (messageFileInfo != null) {
+            messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        if (messageTime != null) {
+            messageTime.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void showFileProgressModified(RecyclerView view, int startAt, int endAt) {
@@ -439,7 +446,9 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
 
     private void showFileUploadProgress(View view, boolean show) {
         ProgressBar upload = view.findViewById(R.id.uploadProgressBar);
-        if (upload != null) upload.setVisibility(show? View.VISIBLE : View.GONE);
+        if (upload != null) {
+            upload.setVisibility(show? View.VISIBLE : View.GONE);
+        }
     }
 
     private void showProgressModified(boolean show, int current, int last) {
@@ -448,23 +457,35 @@ public class FileMessageVH extends MessageVH implements FilesAdapter.FileListLis
                 ProgressBar progressBar = getProgressView(imageGridContainer, i);
                 ImageView imageShadow = getImageShadow(imageGridContainer, i);
 
-                if (progressBar!=null) progressBar.setVisibility(View.GONE);
-                if (imageShadow != null) imageShadow.setVisibility(View.GONE);
+                if (progressBar!=null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                if (imageShadow != null) {
+                    imageShadow.setVisibility(View.GONE);
+                }
             }
             for (int j = current; j < last; j++) {
                 ProgressBar progressBar = getProgressView(imageGridContainer, j);
                 ImageView imageShadow = getImageShadow(imageGridContainer, j);
 
-                if (progressBar!=null) progressBar.setVisibility(View.VISIBLE);
-                if (imageShadow != null) imageShadow.setVisibility(View.VISIBLE);
+                if (progressBar!=null) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+                if (imageShadow != null) {
+                    imageShadow.setVisibility(View.VISIBLE);
+                }
             }
         } else {
             for (int i=0;i<last;i++) {
                 ProgressBar progressBar = getProgressView(imageGridContainer, i);
                 ImageView imageShadow = getImageShadow(imageGridContainer, i);
 
-                if (progressBar!=null) progressBar.setVisibility(View.GONE);
-                if (imageShadow != null) imageShadow.setVisibility(View.GONE);
+                if (progressBar!=null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                if (imageShadow != null) {
+                    imageShadow.setVisibility(View.GONE);
+                }
             }
         }
     }
