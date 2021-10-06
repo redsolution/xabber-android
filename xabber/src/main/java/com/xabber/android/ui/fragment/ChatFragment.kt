@@ -617,15 +617,19 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
     private fun restoreState() { //todo rewrite it
         // Restore typed text
-        skipOnTextChanges = true
-        inputEditText.setText(ChatManager.getInstance().getTypedMessage(accountJid, contactJid))
-        inputEditText.setSelection(
-            ChatManager.getInstance().getSelectionStart(accountJid, contactJid),
-            ChatManager.getInstance().getSelectionEnd(accountJid, contactJid)
-        )
-        skipOnTextChanges = false
-        if (inputEditText.text.toString().isNotEmpty()) {
-            inputEditText.requestFocus()
+        ChatManager.getInstance().getTypedMessage(accountJid, contactJid)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let {
+                skipOnTextChanges = true
+                inputEditText.setText(it)
+                inputEditText.setSelection(
+                    ChatManager.getInstance().getSelectionStart(accountJid, contactJid),
+                    ChatManager.getInstance().getSelectionEnd(accountJid, contactJid)
+                )
+                skipOnTextChanges = false
+                if (inputEditText.text.toString().isNotEmpty()) {
+                    inputEditText.requestFocus()
+                }
         }
 
         // Restore scroll position
@@ -796,16 +800,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         inputEditText = view.findViewById(R.id.chat_input)
         setUpIme()
         inputEditText.setOnEditorActionListener { _: TextView?, actionId: Int, event: KeyEvent? ->
-            LogManager.d(
-                "InputViewDebug", "editorActionListener called, actionId = "
-                        + actionId + ", event != null ? " + (event != null) + ", "
-            )
-            if (event != null) {
-                LogManager.d(
-                    "InputViewDebug", "event.getAction() = "
-                            + event.action + ", event.getKeyCode() = " + event.keyCode
-                )
-            }
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 sendMessage()
                 return@setOnEditorActionListener true
@@ -818,16 +812,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             false
         }
         inputEditText.setOnKeyListener { _: View?, keyCode: Int, event: KeyEvent ->
-            if (SettingsManager.chatsSendByEnter()) {
-                if (keyCode < 29 || keyCode > 54 || event.keyCode < 29 || event.keyCode > 54) {
-                    LogManager.d(
-                        "InputViewDebug", "onKeyListener called, "
-                                + "keyCode = " + keyCode
-                                + ", event.getAction() = " + event.action
-                                + ", event.getKeyCode() = " + event.keyCode
-                    )
-                }
-            }
             if (keyCode == KeyEvent.KEYCODE_ENTER
                 && SettingsManager.chatsSendByEnter()
                 && event.action == KeyEvent.ACTION_DOWN
