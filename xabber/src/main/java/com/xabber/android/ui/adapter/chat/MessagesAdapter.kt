@@ -197,110 +197,114 @@ class MessagesAdapter(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-//        this.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//
-//            }
-//        })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
             VIEW_TYPE_ACTION_MESSAGE -> ActionMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_system_message, parent, false)
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_system_message, parent, false
+                )
             )
             VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE -> GroupchatSystemMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_system_message, parent, false)
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_system_message, parent, false
+                )
             )
             VIEW_TYPE_INCOMING_MESSAGE -> IncomingMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_NOFLEX -> NoFlexIncomingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_noflex, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_noflex, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> NoFlexIncomingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_image, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_image, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> NoFlexIncomingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_image_text, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_image_text, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_noflex, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_noflex, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_image, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_image, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_incoming_image_text, parent, false),
-                this, this, this, bindListener,
-                this, SettingsManager.chatsAppearanceStyle()
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_incoming_image_text, parent, false
+                ),
+                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE -> OutgoingMessageVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX -> NoFlexOutgoingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_noflex, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_noflex, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> NoFlexOutgoingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_image, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_image, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> NoFlexOutgoingMsgVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_image_text, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_image_text, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_noflex, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_noflex, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_image, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_image, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_outgoing_image_text, parent, false),
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_outgoing_image_text, parent, false
+                ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             else -> throw IllegalStateException("Unsupported view type!")
@@ -337,11 +341,16 @@ class MessagesAdapter(
                     actualCurrentMessage.groupchatUserId != actualNextMessage.groupchatUserId
                 }
                 actualNextMessage.groupchatUserId == null && actualCurrentMessage.groupchatUserId == null -> {
-                    val currentMessageSender = ContactJid.from(actualCurrentMessage.originalFrom)
-                    val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
+                    try{
+                        val currentMessageSender = ContactJid.from(actualCurrentMessage.originalFrom)
+                        val previousMessageSender = ContactJid.from(actualNextMessage.originalFrom)
 
-                    !currentMessageSender.bareJid.toString()
-                        .contains(previousMessageSender.bareJid.toString())
+                        !currentMessageSender.bareJid.toString()
+                            .contains(previousMessageSender.bareJid.toString())
+                    } catch (ex: ContactJid.ContactJidCreateException) {
+                        true
+                    }
+
                 }
                 else -> {
                     true
