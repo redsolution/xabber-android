@@ -1052,7 +1052,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     private fun setUpInputViewButtons() {
         var empty = inputEditText.text.toString().trim { it <= ' ' }.isEmpty()
         if (empty) {
-            empty = bottomMessagesPanel == null
+            empty = bottomMessagesPanel != null
         }
         if (empty != isInputEmpty) {
             isInputEmpty = empty
