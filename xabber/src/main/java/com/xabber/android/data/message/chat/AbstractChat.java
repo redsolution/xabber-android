@@ -125,7 +125,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private static int getSizeOfEncodedChars(String str) {
-        return StringUtilsKt.escapeXml(str).toCharArray().length;
+        String string = StringUtilsKt.escapeXml(str);
+        return string.codePointCount(0, string.length());
     }
 
     public boolean isActive() {
