@@ -304,9 +304,6 @@ object MessageHandler {
             chat.isArchived = false
         }
 
-        // update last id in chat
-        chat.lastMessageId = messageRealmObject.stanzaId
-
         // notification
         var isNotify = isIncoming && !isGroupSystem
 

@@ -61,7 +61,7 @@ import io.realm.RealmResults;
  * @author alexander.ivanov
  */
 public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener,
-        OnAccountDisabledListener, OnDisconnectListener {
+        OnAccountDisabledListener {
 
     public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
@@ -112,15 +112,6 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
         chats.clear(accountItem.getAccount().toString());
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
             listener.onAction();
-        }
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) return;
-        AccountJid account = connection.getAccount();
-        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            chat.onDisconnect();
         }
     }
 

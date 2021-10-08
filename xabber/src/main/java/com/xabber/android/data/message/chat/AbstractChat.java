@@ -111,7 +111,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private MessageRealmObject lastMessage;
     protected RealmResults<MessageRealmObject> messages;
     private RealmResults<MessageRealmObject> unreadMessages;
-    private String lastMessageId = null;
     private boolean addContactSuggested = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final ContactJid user) {
@@ -647,18 +646,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     protected void onComplete() { }
 
-    /**
-     * Disconnection occurred.
-     */
-    void onDisconnect() { setLastMessageId(null); }
-
     @Override
     public void onChange(@NotNull RealmResults<MessageRealmObject> messageRealmObjects) { updateLastMessage(); }
 
     /**
      * UNREAD MESSAGES
      */
-
     public String getFirstUnreadMessageId() {
         String id = null;
         RealmResults<MessageRealmObject> results = getAllUnreadMessages();
@@ -805,10 +798,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         this.lastPosition = lastPosition;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
-
-    public String getLastMessageId() { return lastMessageId; }
-
-    public void setLastMessageId(String lastMessageId) { this.lastMessageId = lastMessageId; }
 
     public Resourcepart getResource() { return resource; }
 
